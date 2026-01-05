@@ -1,26 +1,130 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@theme {
+  --color-primary: #0d9488;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #d97706;
+  --color-secondary-foreground: #ffffff;
+  
+  /* Mapping neutral to stone */
+  --color-neutral-50: #fafaf9;
+  --color-neutral-100: #f5f5f4;
+  --color-neutral-200: #e7e5e4;
+  --color-neutral-300: #d6d3d1;
+  --color-neutral-400: #a8a29e;
+  --color-neutral-500: #78716c;
+  --color-neutral-600: #57534e;
+  --color-neutral-700: #44403c;
+  --color-neutral-800: #292524;
+  --color-neutral-900: #1c1917;
+
+  --font-heading: 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  --background: #ffffff;
+  --foreground: #1c1917; /* stone-900 */
+  
+  /* Primary - Teal */
+  --primary: #0d9488; /* teal-600 */
+  --primary-foreground: #ffffff;
+
+  /* Secondary - Amber */
+  --secondary: #d97706; /* amber-600 */
+  --secondary-foreground: #ffffff;
+
+  /* Card */
+  --card: #ffffff;
+  --card-foreground: #1c1917;
+
+  /* Popover */
+  --popover: #ffffff;
+  --popover-foreground: #1c1917;
+
+  /* Muted */
+  --muted: #f5f5f4; /* stone-100 */
+  --muted-foreground: #78716c; /* stone-500 */
+
+  /* Accent */
+  --accent: #f5f5f4; /* stone-100 */
+  --accent-foreground: #1c1917;
+
+  /* Destructive */
+  --destructive: #ef4444; /* red-500 */
+  --destructive-foreground: #ffffff;
+
+  /* Border/Input/Ring */
+  --border: #e7e5e4; /* stone-200 */
+  --input: #e7e5e4; /* stone-200 */
+  --ring: #0d9488; /* teal-600 */
+
+  --radius: 0.5rem;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #1c1917; /* stone-900 */
+    --foreground: #fafaf9; /* stone-50 */
+
+    /* Primary - Teal Dark */
+    --primary: #0f766e; /* teal-700 */
+    --primary-foreground: #ffffff;
+
+    /* Secondary - Amber Dark */
+    --secondary: #fbbf24; /* amber-400 */
+    --secondary-foreground: #000000;
+
+    /* Card */
+    --card: #1c1917;
+    --card-foreground: #fafaf9;
+
+    /* Popover */
+    --popover: #1c1917;
+    --popover-foreground: #fafaf9;
+
+    /* Muted */
+    --muted: #292524; /* stone-800 */
+    --muted-foreground: #a8a29e; /* stone-400 */
+
+    /* Accent */
+    --accent: #292524; /* stone-800 */
+    --accent-foreground: #fafaf9;
+
+    /* Destructive */
+    --destructive: #7f1d1d; /* red-900 */
+    --destructive-foreground: #ffffff;
+
+    /* Border/Input/Ring */
+    --border: #292524; /* stone-800 */
+    --input: #292524; /* stone-800 */
+    --ring: #0d9488; /* teal-600 */
   }
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+code, pre {
+  font-family: var(--font-mono);
+}
+
+/* Utilities for shadcn */
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

@@ -1,0 +1,51 @@
+interface EmptyStateProps {
+    onAddManually?: () => void
+    onUploadDocument?: () => void
+    viaAgentInvite?: boolean
+}
+
+export function EmptyState({ onAddManually, onUploadDocument, viaAgentInvite = false }: EmptyStateProps) {
+    return (
+        <div className="max-w-2xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+            <div className="text-center">
+                {/* Icon */}
+                <div className="mx-auto w-16 h-16 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center mb-6">
+                    <svg className="w-8 h-8 text-stone-400 dark:text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                </div>
+
+                {/* Message */}
+                <h2 className="text-xl font-semibold text-stone-900 dark:text-stone-100 mb-2">
+                    Προσθέστε την πρώτη σας ασφάλιση
+                </h2>
+                <p className="text-sm text-stone-600 dark:text-stone-400 mb-8 max-w-md mx-auto">
+                    Προσθέστε την πρώτη σας ασφάλιση για να έχετε μια ξεκάθαρη εικόνα των ασφαλιστικών σας καλύψεων.
+                </p>
+
+                {/* CTAs */}
+                <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+                    <button
+                        onClick={onUploadDocument}
+                        className="flex-1 px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors"
+                    >
+                        Μεταφόρτωση εγγράφου
+                    </button>
+                    <button
+                        onClick={onAddManually}
+                        className="flex-1 px-6 py-3 bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 font-medium rounded-lg transition-colors"
+                    >
+                        Χειροκίνητη προσθήκη
+                    </button>
+                </div>
+
+                {/* Optional agent reassurance */}
+                {viaAgentInvite && (
+                    <p className="mt-6 text-xs text-stone-500 dark:text-stone-400">
+                        Ο πράκτοράς σας μπορεί να σας βοηθήσει να προσθέσετε ασφαλίσεις αν προτιμάτε.
+                    </p>
+                )}
+            </div>
+        </div>
+    )
+}

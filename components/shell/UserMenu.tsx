@@ -1,0 +1,163 @@
+import React, { useState } from 'react'
+
+export interface UserMenuProps {
+    user: {
+        name: string
+        email?: string
+        avatarUrl?: string
+    }
+    language?: 'el' | 'en'
+    notificationCount?: number
+    onLanguageChange?: (language: 'el' | 'en') => void
+    onLogout?: () => void
+    compact?: boolean
+}
+
+export function UserMenu({
+    user,
+    language = 'el',
+    notificationCount = 0,
+    onLanguageChange,
+    onLogout,
+    compact = false,
+}: UserMenuProps) {
+    const [isOpen, setIsOpen] = useState(false)
+
+    const initials = user.name
+        .split(' ')
+        .map((n) => n[0])
+        .join('')
+        .toUpperCase()
+        .slice(0, 2)
+
+    if (compact) {
+        return (
+            <div className="flex items-center gap-2">
+                {/* Notifications */}
+                <button className="relative p-2 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-400">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
+                    {notificationCount > 0 && (
+                        <span className="absolute top-1 right-1 w-2 h-2 bg-amber-500 rounded-full" />
+                    )}
+                </button>
+
+                {/* Avatar */}
+                <button className="w-8 h-8 rounded-full bg-teal-600 text-white text-sm font-medium flex items-center justify-center">
+                    {initials}
+                </button>
+            </div>
+        )
+    }
+
+    return (
+        <div className="relative">
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors"
+            >
+                <div className="w-10 h-10 rounded-full bg-teal-600 text-white text-sm font-medium flex items-center justify-center flex-shrink-0">
+                    {initials}
+                </div>
+                <div className="flex-1 min-w-0 text-left">
+                    <div className="text-sm font-medium text-stone-900 dark:text-stone-100 truncate">
+                        {user.name}
+                    </div>
+                    {user.email && (
+                        <div className="text-xs text-stone-500 dark:text-stone-400 truncate">
+                            {user.email}
+                        </div>
+                    )}
+                </div>
+                <svg
+                    className={`w-4 h-4 text-stone-500 transition-transform flex-shrink-0 ${isOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+            </button>
+
+            {isOpen && (
+                <>
+                    <div
+                        className="fixed inset-0 z-10"
+                        onClick={() => setIsOpen(false)}
+                    />
+                    <div className="absolute bottom-full left-0 right-0 mb-1 z-20 bg-white dark:bg-stone-800 rounded-lg shadow-lg border border-stone-200 dark:border-stone-700 overflow-hidden">
+                        {/* Notifications */}
+                        <button
+                            className="w-full px-4 py-2 text-left text-sm text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 flex items-center justify-between"
+                            onClick={() => setIsOpen(false)}
+                        >
+                            <span>Notifications</span>
+                            {notificationCount > 0 && (
+                                <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
+                                    {notificationCount}
+                                </span>
+                            )}
+                        </button>
+
+                        {/* Language switcher */}
+                        <div className="px-4 py-2 border-t border-stone-200 dark:border-stone-700">
+                            <div className="text-xs text-stone-500 dark:text-stone-400 mb-1">Language</div>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => {
+                                        onLanguageChange?.('el')
+                                        setIsOpen(false)
+                                    }}
+                                    className={`
+                    flex-1 px-3 py-1.5 text-xs font-medium rounded transition-colors
+                    ${language === 'el'
+                                            ? 'bg-teal-600 text-white'
+                                            : 'bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600'
+                                        }
+                  `}
+                                >
+                                    Ελληνικά
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        onLanguageChange?.('en')
+                                        setIsOpen(false)
+                                    }}
+                                    className={`
+                    flex-1 px-3 py-1.5 text-xs font-medium rounded transition-colors
+                    ${language === 'en'
+                                            ? 'bg-teal-600 text-white'
+                                            : 'bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600'
+                                        }
+                  `}
+                                >
+                                    English
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Settings */}
+                        <button
+                            className="w-full px-4 py-2 text-left text-sm text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 border-t border-stone-200 dark:border-stone-700"
+                            onClick={() => setIsOpen(false)}
+                        >
+                            Settings
+                        </button>
+
+                        {/* Logout */}
+                        <button
+                            onClick={() => {
+                                onLogout?.()
+                                setIsOpen(false)
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-stone-50 dark:hover:bg-stone-700 border-t border-stone-200 dark:border-stone-700"
+                        >
+                            Logout
+                        </button>
+                    </div>
+                </>
+            )}
+        </div>
+    )
+}
