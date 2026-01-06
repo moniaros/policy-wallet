@@ -1,3 +1,5 @@
+"use client"
+
 interface EmptyStateProps {
     onAddManually?: () => void
     onUploadDocument?: () => void
@@ -24,18 +26,12 @@ export function EmptyState({ onAddManually, onUploadDocument, viaAgentInvite = f
                 </p>
 
                 {/* CTAs */}
-                <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
-                    <button
-                        onClick={onUploadDocument}
-                        className="flex-1 px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors"
-                    >
-                        Μεταφόρτωση εγγράφου
-                    </button>
+                <div className="flex justify-center max-w-md mx-auto">
                     <button
                         onClick={onAddManually}
-                        className="flex-1 px-6 py-3 bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 font-medium rounded-lg transition-colors"
+                        className="w-full px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors shadow-sm"
                     >
-                        Χειροκίνητη προσθήκη
+                        Προσθήκη ασφάλισης
                     </button>
                 </div>
 

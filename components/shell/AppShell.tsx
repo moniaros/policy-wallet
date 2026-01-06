@@ -1,4 +1,7 @@
+"use client"
+
 import React, { useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { MainNav } from './MainNav'
 import { UserMenu } from './UserMenu'
 import { RoleSwitcher } from './RoleSwitcher'
@@ -35,7 +38,6 @@ export interface AppShellProps {
     notificationCount?: number
     onNavigate?: (href: string) => void
     onRoleSwitch?: (role: UserRole) => void
-    onLanguageChange?: (language: 'el' | 'en') => void
     onLogout?: () => void
 }
 
@@ -45,13 +47,12 @@ export function AppShell({
     currentRole,
     availableRoles = [],
     user,
-    language = 'el',
     notificationCount = 0,
     onNavigate,
     onRoleSwitch,
-    onLanguageChange,
     onLogout,
 }: AppShellProps) {
+    const pathname = usePathname()
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [roleChangeToast, setRoleChangeToast] = useState<string | null>(null)
 
@@ -94,9 +95,7 @@ export function AppShell({
 
                     <UserMenu
                         user={user}
-                        language={language}
                         notificationCount={notificationCount}
-                        onLanguageChange={onLanguageChange}
                         onLogout={onLogout}
                         compact
                     />
@@ -143,7 +142,13 @@ export function AppShell({
                     {/* Navigation */}
                     <div className="flex-1 overflow-y-auto py-4">
                         <MainNav
-                            navigation={navigation}
+                            navigation={navigation.map(group => ({
+                                ...group,
+                                items: group.items.map(item => ({
+                                    ...item,
+                                    isActive: pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
+                                }))
+                            }))}
                             onNavigate={(href) => {
                                 onNavigate?.(href)
                                 setSidebarOpen(false)
@@ -155,9 +160,7 @@ export function AppShell({
                     <div className="hidden lg:block border-t border-stone-200 dark:border-stone-700 p-4">
                         <UserMenu
                             user={user}
-                            language={language}
                             notificationCount={notificationCount}
-                            onLanguageChange={onLanguageChange}
                             onLogout={onLogout}
                         />
                     </div>

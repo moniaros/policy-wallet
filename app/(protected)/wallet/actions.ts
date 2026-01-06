@@ -30,7 +30,7 @@ export async function createPolicy(formData: FormData) {
 
     const validatedData = PolicySchema.parse(rawData)
 
-    await db.policy.create({
+    const policy = await db.policy.create({
         data: {
             ownerUserId: session.user.id,
             createdByUserId: session.user.id,
@@ -40,9 +40,28 @@ export async function createPolicy(formData: FormData) {
             startDate: new Date(validatedData.startDate),
             endDate: new Date(validatedData.endDate),
             premiumAmount: validatedData.premiumAmount,
-            status: "active", // Default to active for manual entry
+            status: "active",
         }
     })
+
+    // Handle files
+    const files = formData.getAll("files") as File[]
+    for (const file of files) {
+        if (file.size > 0) {
+            const mockUrl = `https://storage.googleapis.com/policywallet-uploads/${file.name}`
+            await db.policyDocument.create({
+                data: {
+                    policyId: policy.id,
+                    fileUrl: mockUrl,
+                    fileName: file.name,
+                    fileSize: file.size,
+                    source: "policyholder",
+                    uploadedByUserId: session.user.id,
+                    processingStatus: "completed"
+                }
+            })
+        }
+    }
 
     revalidatePath("/wallet")
     redirect("/wallet")
@@ -161,4 +180,18 @@ export async function uploadPolicyDocument(formData: FormData) {
 
     revalidatePath("/wallet")
     return { success: true, policyId: policy.id }
+}
+
+export async function getInsurers() {
+    return db.insurer.findMany({
+        where: { isActive: true },
+        orderBy: { name: 'asc' }
+    })
+}
+
+export async function getInsuranceTypes() {
+    return db.insuranceType.findMany({
+        where: { isActive: true },
+        orderBy: { name: 'asc' }
+    })
 }

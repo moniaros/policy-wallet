@@ -151,6 +151,34 @@ model PolicyholderProfile {
 }
 
 // ========================================
+// LOOKUP TABLES (Admin Managed)
+// ========================================
+
+model Insurer {
+  id        String   @id @default(cuid()) @map("insurer_id")
+  name      String   @unique
+  logoUrl   String?  @map("logo_url")
+  isActive  Boolean  @default(true) @map("is_active")
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("insurers")
+}
+
+model InsuranceType {
+  id        String   @id @default(cuid()) @map("type_id")
+  name      String   @unique
+  slug      String   @unique // e.g. 'motor', 'health'
+  isActive  Boolean  @default(true) @map("is_active")
+  
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("insurance_types")
+}
+
+// ========================================
 // TENANCY (Foundational)
 // ========================================
 
@@ -237,11 +265,15 @@ model PolicyDocument {
 
 model GapDefinition {
   id              String   @id @default(cuid()) @map("gap_definition_id")
+  slug            String   @unique
   name            String
+  title           String   // Display title
   description     String   @db.Text
   lineOfBusiness  String   @map("line_of_business")
+  severity        String   // 'critical', 'high', 'medium', 'low'
   defaultSeverity String   @map("default_severity") // 'critical', 'high', 'medium', 'low'
   ruleId          String   @map("rule_id")
+  detectionLogic  Json     @map("detection_logic") // Rule configuration
   isActive        Boolean  @default(true) @map("is_active")
 
   instances       GapInstance[]
@@ -408,43 +440,6 @@ model QuestionnaireResponse {
   @@map("questionnaire_responses")
 }
 
-// ========================================
-// NOTIFICATIONS
-// ========================================
-
-model NotificationEvent {
-  id                String   @id @default(cuid()) @map("event_id")
-  userId            String   @map("user_id")
-  eventType         String   @map("event_type")
-  channel           String   // 'email', 'push'
-  status            String   @default("queued") // 'queued', 'sent', 'failed'
-  title             String
-  message           String   @db.Text
-  relatedObjectType String?  @map("related_object_type")
-  relatedObjectId   String?  @map("related_object_id")
-  
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt         DateTime @default(now()) @map("created_at")
-  sentAt            DateTime? @map("sent_at")
-
-  @@map("notification_events")
-}
-
-model NotificationPreference {
-  id              String   @id @default(cuid()) @map("preference_id")
-  userId          String   @map("user_id")
-  eventType       String   @map("event_type")
-  channel         String   // 'email', 'push'
-  enabled         Boolean  @default(true)
-  
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  updatedAt       DateTime @updatedAt @map("updated_at")
-
-  @@unique([userId, eventType, channel])
-  @@map("notification_preferences")
-}
 
 // ========================================
 // SUBSCRIPTIONS & BILLING
@@ -623,6 +618,46 @@ model AdminUser {
   createdAt   DateTime @default(now()) @map("created_at")
 
   @@map("admin_users")
+}
+
+// ========================================
+// NOTIFICATIONS
+// ========================================
+
+model NotificationEvent {
+  id                String   @id @default(cuid()) @map("event_id")
+  userId            String   @map("user_id")
+  eventType         String   @map("event_type")
+  channel           String   // 'email', 'push', 'whatsapp', 'viber'
+  status            String   @default("queued") // 'queued', 'sent', 'failed'
+  title             String
+  message           String
+  relatedObjectType String?  @map("related_object_type") // 'policy', 'customer', 'questionnaire'
+  relatedObjectId   String?  @map("related_object_id")
+  failureReason     String?  @map("failure_reason")
+  
+  sentAt            DateTime? @map("sent_at")
+  createdAt         DateTime @default(now()) @map("created_at")
+  
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("notification_events")
+}
+
+model NotificationPreference {
+  id        String   @id @default(cuid()) @map("preference_id")
+  userId    String   @map("user_id")
+  eventType String   @map("event_type")
+  channel   String   // 'email', 'push'
+  enabled   Boolean  @default(true)
+  
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, eventType, channel])
+  @@map("notification_preferences")
 }
 
 model ActivityLog {

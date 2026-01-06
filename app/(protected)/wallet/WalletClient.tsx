@@ -12,7 +12,7 @@ export function WalletClient({ policies }: { policies: Policy[] }) {
             policies={policies}
             onViewPolicy={(id) => router.push(`/wallet/${id}`)}
             onAddManually={() => router.push('/wallet/add')}
-            onUploadDocument={() => router.push('/wallet/upload')}
+            onUploadDocument={() => router.push('/wallet/add')}
             onViewDocuments={(id) => router.push(`/wallet/${id}/documents`)}
         />
     )

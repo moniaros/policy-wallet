@@ -1,4 +1,7 @@
+"use client"
+
 import React, { useState } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export interface UserMenuProps {
     user: {
@@ -6,22 +9,19 @@ export interface UserMenuProps {
         email?: string
         avatarUrl?: string
     }
-    language?: 'el' | 'en'
     notificationCount?: number
-    onLanguageChange?: (language: 'el' | 'en') => void
     onLogout?: () => void
     compact?: boolean
 }
 
 export function UserMenu({
     user,
-    language = 'el',
     notificationCount = 0,
-    onLanguageChange,
     onLogout,
     compact = false,
 }: UserMenuProps) {
     const [isOpen, setIsOpen] = useState(false)
+    const { language, setLanguage, t } = useLanguage()
 
     const initials = user.name
         .split(' ')
@@ -106,7 +106,7 @@ export function UserMenu({
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => {
-                                        onLanguageChange?.('el')
+                                        setLanguage('el')
                                         setIsOpen(false)
                                     }}
                                     className={`
@@ -121,7 +121,7 @@ export function UserMenu({
                                 </button>
                                 <button
                                     onClick={() => {
-                                        onLanguageChange?.('en')
+                                        setLanguage('en')
                                         setIsOpen(false)
                                     }}
                                     className={`

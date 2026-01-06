@@ -1,3 +1,5 @@
+"use client"
+
 import type { PolicyWalletProps, Policy } from './types'
 import { StatusSummary } from './StatusSummary'
 import { PolicyCard } from './PolicyCard'
@@ -133,20 +135,12 @@ export function PolicyWallet({
 
             {/* Add Policy CTAs */}
             <div className="mt-12 pt-8 border-t border-stone-200 dark:border-stone-700">
-                <div className="flex flex-col sm:flex-row gap-3">
-                    <button
-                        onClick={onAddManually}
-                        className="flex-1 px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors"
-                    >
-                        Προσθήκη ασφάλισης
-                    </button>
-                    <button
-                        onClick={onUploadDocument}
-                        className="flex-1 px-4 py-3 bg-stone-100 hover:bg-stone-200 dark:bg-stone-800 dark:hover:bg-stone-700 text-stone-900 dark:text-stone-100 font-medium rounded-lg transition-colors"
-                    >
-                        Μεταφόρτωση εγγράφου
-                    </button>
-                </div>
+                <button
+                    onClick={onAddManually}
+                    className="w-full px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors shadow-sm"
+                >
+                    Προσθήκη ασφάλισης
+                </button>
             </div>
         </div>
     )

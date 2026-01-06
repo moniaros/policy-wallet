@@ -23,18 +23,31 @@ export default async function ProtectedLayout({
         navigation.push({
             title: "My Insurance",
             items: [
-                { label: "Wallet", href: "/wallet", isActive: true },
-                { label: "Coverage", href: "/coverage" },
-                { label: "Notifications", href: "/notifications" },
+                { label: "Wallet", href: "/wallet" },
+                { label: "Pending Tasks", href: "/tasks" },
+                { label: "Coverage Insights", href: "/coverage-insights" },
+                { label: "Alerts & History", href: "/notifications" },
             ]
         })
     } else if (currentRole === "agent") {
         navigation.push({
             title: "Agency",
             items: [
-                { label: "Dashboard", href: "/dashboard", isActive: true },
+                { label: "Dashboard", href: "/dashboard" },
                 { label: "Customers", href: "/customers" },
                 { label: "Opportunities", href: "/opportunities" },
+                { label: "Insights", href: "/insights" },
+                { label: "Communication", href: "/notifications" },
+            ]
+        })
+    } else if (currentRole === "admin") {
+        navigation.push({
+            title: "Administrative",
+            items: [
+                { label: "Dashboard", href: "/admin/dashboard" },
+                { label: "Users & Roles", href: "/admin/users" },
+                { label: "Insurers", href: "/admin/insurers" },
+                { label: "Insurance Types", href: "/admin/types" },
             ]
         })
     }
