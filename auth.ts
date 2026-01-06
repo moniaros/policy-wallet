@@ -2,10 +2,12 @@ import NextAuth, { type DefaultSession } from "next-auth"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import GoogleProvider from "next-auth/providers/google"
 import EmailProvider from "next-auth/providers/email"
+import CredentialsProvider from "next-auth/providers/credentials"
 import { db } from "@/lib/db"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
 import authConfig from "./auth.config"
+import { cookies } from "next/headers"
 
 // Extend built-in session types
 declare module "next-auth" {
@@ -31,7 +33,30 @@ export const {
     },
     ...authConfig,
     providers: [
-        ...authConfig.providers,
+        CredentialsProvider({
+            name: "Sign in",
+            id: "credentials",
+            credentials: {
+                email: { label: "Email", type: "email" },
+                password: { label: "Password", type: "password" },
+            },
+            async authorize(credentials: any) {
+                const parsedCredentials = z
+                    .object({ email: z.string().email(), password: z.string().min(6) })
+                    .safeParse(credentials)
+
+                if (parsedCredentials.success) {
+                    const { email, password } = parsedCredentials.data
+                    const user = await db.user.findUnique({ where: { email } })
+                    if (!user || !(user as any).password) return null
+
+                    const passwordsMatch = await bcrypt.compare(password, (user as any).password)
+                    if (passwordsMatch) return user as any
+                }
+
+                return null
+            },
+        }),
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -91,6 +116,36 @@ export const {
             },
         }),
     ],
+    events: {
+        async createUser({ user }) {
+            try {
+                const cookieStore = await cookies()
+                const referrerId = cookieStore.get("pw_referrer")?.value
+
+                if (referrerId && user.id) {
+                    // Check if referrer exists
+                    const referrer = await db.user.findUnique({
+                        where: { id: referrerId }
+                    })
+
+                    if (referrer) {
+                        await db.referral.create({
+                            data: {
+                                referrerUserId: referrerId,
+                                referredUserId: user.id,
+                                referredEmail: user.email || "",
+                                status: "pending",
+                                creditsEarned: 0 // Will be credited when they upgrade
+                            }
+                        })
+                        console.log(`Referral created: ${referrerId} -> ${user.id}`)
+                    }
+                }
+            } catch (error) {
+                console.error("Error in createUser event:", error)
+            }
+        }
+    },
     callbacks: {
         async session({ token, session }) {
             if (token.sub && session.user) {

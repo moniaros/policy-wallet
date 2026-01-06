@@ -127,12 +127,12 @@ export function AccountClientPage({ initialData }: Props) {
                 {activeTab === 'referrals' && (
                     <Referrals
                         currentUser={initialData.user}
-                        referralLink={`https://policywallet.com/join?ref=${initialData.user.user_id}`}
+                        referralLink={`${typeof window !== 'undefined' ? window.location.origin : ''}/?ref=${initialData.user.user_id}`}
                         referrals={initialData.referrals}
                         creditTransactions={initialData.creditTransactions}
                         creditBalance={initialData.creditBalance}
                         onCopyLink={() => {
-                            navigator.clipboard.writeText(`https://policywallet.com/join?ref=${initialData.user.user_id}`)
+                            navigator.clipboard.writeText(`${window.location.origin}/?ref=${initialData.user.user_id}`)
                         }}
                     />
                 )}

@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { MainNav } from './MainNav'
 import { UserMenu } from './UserMenu'
 import { RoleSwitcher } from './RoleSwitcher'
@@ -53,8 +53,18 @@ export function AppShell({
     onLogout,
 }: AppShellProps) {
     const pathname = usePathname()
+    const router = useRouter()
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [roleChangeToast, setRoleChangeToast] = useState<string | null>(null)
+
+    const handleNavigate = (href: string) => {
+        if (onNavigate) {
+            onNavigate(href)
+        } else {
+            router.push(href)
+        }
+        setSidebarOpen(false)
+    }
 
     const hasMultipleRoles = availableRoles.length > 1
 
@@ -149,10 +159,7 @@ export function AppShell({
                                     isActive: pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
                                 }))
                             }))}
-                            onNavigate={(href) => {
-                                onNavigate?.(href)
-                                setSidebarOpen(false)
-                            }}
+                            onNavigate={handleNavigate}
                         />
                     </div>
 

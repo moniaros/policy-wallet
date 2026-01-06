@@ -280,7 +280,7 @@ export async function upgradeSubscription(planId: string) {
         data: { status: 'expired' }
     })
 
-    await db.subscription.create({
+    const newSubscription = await db.subscription.create({
         data: {
             userId: session.user.id,
             planId: planId,
@@ -290,6 +290,46 @@ export async function upgradeSubscription(planId: string) {
             autoRenew: true
         }
     })
+
+    // Handle Referral Conversion
+    if (Number(plan.price) > 0) {
+        const referral = await db.referral.findFirst({
+            where: { referredUserId: session.user.id, status: 'pending' }
+        })
+
+        if (referral) {
+            const creditAmount = 25; // 25 EUR equivalent credits
+
+            await db.$transaction(async (tx) => {
+                const updatedReferral = await tx.referral.update({
+                    where: { id: referral.id },
+                    data: {
+                        status: 'converted',
+                        creditedAt: new Date(),
+                        creditsEarned: creditAmount,
+                        referredSubscriptionId: newSubscription.id
+                    }
+                })
+
+                const lastTx = await tx.creditTransaction.findFirst({
+                    where: { userId: referral.referrerUserId },
+                    orderBy: { createdAt: 'desc' }
+                })
+                const currentBalance = lastTx?.balanceAfter || 0
+
+                await tx.creditTransaction.create({
+                    data: {
+                        userId: referral.referrerUserId,
+                        amount: creditAmount,
+                        transactionType: 'earn',
+                        balanceAfter: currentBalance + creditAmount,
+                        description: `Conversion bonus: ${session.user.email}`,
+                        referralId: updatedReferral.id
+                    }
+                })
+            })
+        }
+    }
 
     revalidatePath("/account")
     return { success: true }

@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function main() {
@@ -50,14 +51,20 @@ async function main() {
 
     // 1. Create Users
 
+    const hashedPassword = await bcrypt.hash('password123', 10)
+
     // Policyholder 1
     const ph1 = await prisma.user.upsert({
         where: { email: 'ph1@example.com' },
-        update: { roles: 'policyholder,admin' },
+        update: {
+            roles: 'policyholder,admin',
+            password: hashedPassword
+        },
         create: {
             email: 'ph1@example.com',
             name: 'Maria Papadopoulou',
             roles: 'policyholder,admin',
+            password: hashedPassword,
             preferredLanguage: 'el',
             policyholderProfile: {
                 create: {}
@@ -68,11 +75,12 @@ async function main() {
     // Agent 1
     const ag1 = await prisma.user.upsert({
         where: { email: 'agent1@example.com' },
-        update: {},
+        update: { password: hashedPassword },
         create: {
             email: 'agent1@example.com',
             name: 'Nikos Insurance',
             roles: 'agent',
+            password: hashedPassword,
             preferredLanguage: 'el',
             agentProfile: {
                 create: {
@@ -87,11 +95,12 @@ async function main() {
     // Mixed Role
     const mixed1 = await prisma.user.upsert({
         where: { email: 'mixed@example.com' },
-        update: {},
+        update: { password: hashedPassword },
         create: {
             email: 'mixed@example.com',
             name: 'Giorgos Dual',
             roles: 'policyholder,agent',
+            password: hashedPassword,
             preferredLanguage: 'el',
             agentProfile: {
                 create: {

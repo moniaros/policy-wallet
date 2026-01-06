@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -10,92 +7,64 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ========================================
-// USERS & ROLES
-// ========================================
-
 model User {
-  id                String    @id @default(cuid()) @map("user_id")
-  name              String?
-  email             String    @unique
-  emailVerified     DateTime?
-  image             String?
-  preferredLanguage String    @default("el") @map("preferred_language") // 'el' or 'en'
-  roles             String    @default("policyholder") // Comma-separated: "policyholder", "agent", "admin"
-  
-  accounts          Account[]
-  sessions          Session[]
-  
-  // Profile links
-  agentProfile      AgentProfile?
-  policyholderProfile PolicyholderProfile?
-
-  // Relations
-  policiesOwned     Policy[]          @relation("Owner")
-  policiesCreated   Policy[]          @relation("Creator")
-  documentsUploaded PolicyDocument[]  
-  
-  // Agent Relations
-  customerRelationshipsAsAgent CustomerRelationship[] @relation("Agent")
-  customerRelationshipsAsCustomer CustomerRelationship[] @relation("Customer")
-  
-  // Access Control
-  grantsGiven       AccessGrant[]     @relation("Granter")
-  grantsReceived    AccessGrant[]     @relation("Grantee")
-  
-  // Invites & Opportunities
-  invitesSent       Invite[]          @relation("Inviter")
-  invitesReceived   Invite[]          @relation("Invitee")
-  opportunitiesOwned Opportunity[]
-  
-  // Questionnaires
-  questionnairesSent     QuestionnaireInstance[] @relation("Sender")
-  questionnairesReceived QuestionnaireInstance[] @relation("Receiver")
-  questionnaireResponses QuestionnaireResponse[]
-
-  // Notifications
-  notifications     NotificationEvent[]
-  notificationPreferences NotificationPreference[]
-
-  // Billing (User centric for MVP)
-  subscriptions     Subscription[]
-  creditTransactions CreditTransaction[]
-  invoices          Invoice[]
-  paymentMethods    PaymentMethod[]
-  entitlementUsages EntitlementUsage[]
-
-  // Security
-  securityEvents    SecurityEvent[]
-  activeSessions    ActiveSession[]
-  
-  // Admin
-  adminProfile      AdminUser?
-
-  // Referrals
-  referralsMade     Referral[] @relation("Referrer")
-  referralsReceived Referral[] @relation("Referred")
-
-  createdAt         DateTime  @default(now()) @map("created_at")
-  updatedAt         DateTime  @updatedAt @map("updated_at")
+  id                              String                   @id @default(cuid()) @map("user_id")
+  name                            String?
+  email                           String                   @unique
+  emailVerified                   DateTime?
+  image                           String?
+  preferredLanguage               String                   @default("el") @map("preferred_language")
+  roles                           String                   @default("policyholder")
+  createdAt                       DateTime                 @default(now()) @map("created_at")
+  updatedAt                       DateTime                 @updatedAt @map("updated_at")
+  password                        String?
+  grantsReceived                  AccessGrant[]            @relation("Grantee")
+  grantsGiven                     AccessGrant[]            @relation("Granter")
+  accounts                        Account[]
+  activeSessions                  ActiveSession[]
+  adminProfile                    AdminUser?
+  agentProfile                    AgentProfile?
+  creditTransactions              CreditTransaction[]
+  customerRelationshipsAsAgent    CustomerRelationship[]   @relation("Agent")
+  customerRelationshipsAsCustomer CustomerRelationship[]   @relation("Customer")
+  entitlementUsages               EntitlementUsage[]
+  invitesReceived                 Invite[]                 @relation("Invitee")
+  invitesSent                     Invite[]                 @relation("Inviter")
+  invoices                        Invoice[]
+  notifications                   NotificationEvent[]
+  notificationPreferences         NotificationPreference[]
+  opportunitiesOwned              Opportunity[]
+  paymentMethods                  PaymentMethod[]
+  policiesCreated                 Policy[]                 @relation("Creator")
+  policiesOwned                   Policy[]                 @relation("Owner")
+  documentsUploaded               PolicyDocument[]
+  policyholderProfile             PolicyholderProfile?
+  questionnairesSent              QuestionnaireInstance[]  @relation("Sender")
+  questionnairesReceived          QuestionnaireInstance[]  @relation("Receiver")
+  questionnaireResponses          QuestionnaireResponse[]
+  referralsReceived               Referral[]               @relation("Referred")
+  referralsMade                   Referral[]               @relation("Referrer")
+  securityEvents                  SecurityEvent[]
+  sessions                        Session[]
+  subscriptions                   Subscription[]
 
   @@map("users")
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String  @map("user_id")
-  type               String
-  provider           String
-  providerAccountId  String  @map("provider_account_id")
-  refresh_token      String? @db.Text
-  access_token       String? @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String? @db.Text
-  session_state      String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@map("accounts")
@@ -121,18 +90,16 @@ model VerificationToken {
 }
 
 model AgentProfile {
-  id                 String   @id @default(cuid()) @map("profile_id")
-  userId             String   @unique @map("user_id")
-  verificationStatus String   @default("pending") @map("verification_status") // 'pending', 'verified', 'rejected'
-  agencyName         String?  @map("agency_name")
-  licenseNumber      String?  @map("license_number")
+  id                    String    @id @default(cuid()) @map("profile_id")
+  userId                String    @unique @map("user_id")
+  verificationStatus    String    @default("pending") @map("verification_status")
+  agencyName            String?   @map("agency_name")
+  licenseNumber         String?   @map("license_number")
   onboardingCompletedAt DateTime? @map("onboarding_completed_at")
-  
-  submittedAt        DateTime @default(now()) @map("submitted_at")
-  createdAt          DateTime @default(now()) @map("created_at")
-  updatedAt          DateTime @updatedAt @map("updated_at")
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  submittedAt           DateTime  @default(now()) @map("submitted_at")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("agent_profiles")
 }
@@ -141,25 +108,18 @@ model PolicyholderProfile {
   id          String   @id @default(cuid()) @map("profile_id")
   userId      String   @unique @map("user_id")
   preferences Json?
-  
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("policyholder_profiles")
 }
-
-// ========================================
-// LOOKUP TABLES (Admin Managed)
-// ========================================
 
 model Insurer {
   id        String   @id @default(cuid()) @map("insurer_id")
   name      String   @unique
   logoUrl   String?  @map("logo_url")
   isActive  Boolean  @default(true) @map("is_active")
-  
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -169,74 +129,58 @@ model Insurer {
 model InsuranceType {
   id        String   @id @default(cuid()) @map("type_id")
   name      String   @unique
-  slug      String   @unique // e.g. 'motor', 'health'
+  slug      String   @unique
   isActive  Boolean  @default(true) @map("is_active")
-  
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("insurance_types")
 }
 
-// ========================================
-// TENANCY (Foundational)
-// ========================================
-
 model Tenant {
-  id          String @id @default(cuid()) @map("tenant_id")
-  name        String
-  type        String @default("personal") // 'personal', 'agency'
-  members     TenantMembership[]
-  
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id        String             @id @default(cuid()) @map("tenant_id")
+  name      String
+  type      String             @default("personal")
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @updatedAt @map("updated_at")
+  members   TenantMembership[]
 
   @@map("tenants")
 }
 
 model TenantMembership {
-  id        String @id @default(cuid()) @map("membership_id")
-  tenantId  String @map("tenant_id")
-  userId    String @map("user_id")
-  role      String @default("member") // 'owner', 'admin', 'member'
-
-  tenant    Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  // Note: Linking to User mainly via logic or if needed relationally, but keeping simple for now
-  
+  id        String   @id @default(cuid()) @map("membership_id")
+  tenantId  String   @map("tenant_id")
+  userId    String   @map("user_id")
+  role      String   @default("member")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, userId])
   @@map("tenant_memberships")
 }
 
-// ========================================
-// POLICIES
-// ========================================
-
 model Policy {
-  id               String   @id @default(cuid()) @map("policy_id")
-  ownerUserId      String   @map("owner_user_id")
-  createdByUserId  String   @map("created_by_user_id")
-  policyNumber     String   @map("policy_number")
-  insurerName      String   @map("insurer_name")
-  lineOfBusiness   String   @map("line_of_business") // 'motor', 'health', 'home', etc.
-  startDate        DateTime @map("start_date")
-  endDate          DateTime @map("end_date")
-  status           String   // 'active', 'expiring_soon', 'expired', 'cancelled'
-  premiumAmount    Decimal? @map("premium_amount")
-  premiumCurrency  String?  @default("EUR") @map("premium_currency")
-  coverageSummary  String?  @db.Text @map("coverage_summary")
-  
-  documents        PolicyDocument[]
-  gapInstances     GapInstance[]
-  opportunities    Opportunity[]
-
-  owner            User     @relation("Owner", fields: [ownerUserId], references: [id])
-  creator          User     @relation("Creator", fields: [createdByUserId], references: [id])
-
-  createdAt        DateTime @default(now()) @map("created_at")
-  updatedAt        DateTime @updatedAt @map("updated_at")
+  id              String           @id @default(cuid()) @map("policy_id")
+  ownerUserId     String           @map("owner_user_id")
+  createdByUserId String           @map("created_by_user_id")
+  policyNumber    String           @map("policy_number")
+  insurerName     String           @map("insurer_name")
+  lineOfBusiness  String           @map("line_of_business")
+  startDate       DateTime         @map("start_date")
+  endDate         DateTime         @map("end_date")
+  status          String
+  premiumAmount   Decimal?         @map("premium_amount")
+  premiumCurrency String?          @default("EUR") @map("premium_currency")
+  coverageSummary String?          @map("coverage_summary")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+  gapInstances    GapInstance[]
+  opportunities   Opportunity[]
+  creator         User             @relation("Creator", fields: [createdByUserId], references: [id])
+  owner           User             @relation("Owner", fields: [ownerUserId], references: [id])
+  documents       PolicyDocument[]
 
   @@map("policies")
 }
@@ -247,238 +191,194 @@ model PolicyDocument {
   fileUrl          String   @map("file_url")
   fileName         String   @map("file_name")
   fileSize         Int      @map("file_size")
-  source           String   // 'agent', 'policyholder'
-  processingStatus String   @default("pending") @map("processing_status") // 'pending', 'completed', 'failed'
+  source           String
+  processingStatus String   @default("pending") @map("processing_status")
   uploadedByUserId String   @map("uploaded_by_user_id")
-  
+  uploadedAt       DateTime @default(now()) @map("uploaded_at")
   policy           Policy   @relation(fields: [policyId], references: [id], onDelete: Cascade)
   uploader         User     @relation(fields: [uploadedByUserId], references: [id])
-
-  uploadedAt       DateTime @default(now()) @map("uploaded_at")
 
   @@map("policy_documents")
 }
 
-// ========================================
-// COVERAGE INTELLIGENCE
-// ========================================
-
 model GapDefinition {
-  id              String   @id @default(cuid()) @map("gap_definition_id")
-  slug            String   @unique
+  id              String        @id @default(cuid()) @map("gap_definition_id")
+  slug            String        @unique
   name            String
-  title           String   // Display title
-  description     String   @db.Text
-  lineOfBusiness  String   @map("line_of_business")
-  severity        String   // 'critical', 'high', 'medium', 'low'
-  defaultSeverity String   @map("default_severity") // 'critical', 'high', 'medium', 'low'
-  ruleId          String   @map("rule_id")
-  detectionLogic  Json     @map("detection_logic") // Rule configuration
-  isActive        Boolean  @default(true) @map("is_active")
-
+  title           String
+  description     String
+  lineOfBusiness  String        @map("line_of_business")
+  severity        String
+  defaultSeverity String        @map("default_severity")
+  ruleId          String        @map("rule_id")
+  detectionLogic  Json          @map("detection_logic")
+  isActive        Boolean       @default(true) @map("is_active")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
   instances       GapInstance[]
-
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
 
   @@map("gap_definitions")
 }
 
 model GapInstance {
-  id              String   @id @default(cuid()) @map("gap_instance_id")
-  policyId        String   @map("policy_id")
-  gapDefinitionId String   @map("gap_definition_id")
+  id              String        @id @default(cuid()) @map("gap_instance_id")
+  policyId        String        @map("policy_id")
+  gapDefinitionId String        @map("gap_definition_id")
   severity        String
-  status          String   @default("open") // 'open', 'acknowledged', 'resolved', 'dismissed'
-  aiExplanation   String?  @db.Text @map("ai_explanation")
-  aiSuggestion    String?  @db.Text @map("ai_suggestion")
-
-  policy          Policy   @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  status          String        @default("open")
+  aiExplanation   String?       @map("ai_explanation")
+  aiSuggestion    String?       @map("ai_suggestion")
+  detectedAt      DateTime      @default(now()) @map("detected_at")
+  resolvedAt      DateTime?     @map("resolved_at")
   definition      GapDefinition @relation(fields: [gapDefinitionId], references: [id])
+  policy          Policy        @relation(fields: [policyId], references: [id], onDelete: Cascade)
   opportunities   Opportunity[]
-
-  detectedAt      DateTime @default(now()) @map("detected_at")
-  resolvedAt      DateTime? @map("resolved_at")
 
   @@map("gap_instances")
 }
 
-// ========================================
-// AGENT WORKSPACE & RELATIONSHIPS
-// ========================================
-
 model CustomerRelationship {
-  id                  String   @id @default(cuid()) @map("relationship_id")
-  agentUserId         String   @map("agent_user_id")
-  policyholderUserId  String   @map("policyholder_user_id")
-  status              String   @default("pending_activation") // 'pending_activation', 'active', 'inactive'
-  activationStatus    String   @default("no_policies") @map("activation_status") // 'no_policies', 'has_policies', 'has_gaps'
-  
-  agent               User     @relation("Agent", fields: [agentUserId], references: [id])
-  customer            User     @relation("Customer", fields: [policyholderUserId], references: [id])
-  
-  opportunities       Opportunity[]
+  id                     String                  @id @default(cuid()) @map("relationship_id")
+  agentUserId            String                  @map("agent_user_id")
+  policyholderUserId     String                  @map("policyholder_user_id")
+  status                 String                  @default("pending_activation")
+  activationStatus       String                  @default("no_policies") @map("activation_status")
+  createdAt              DateTime                @default(now()) @map("created_at")
+  lastInteractionAt      DateTime?               @map("last_interaction_at")
+  agent                  User                    @relation("Agent", fields: [agentUserId], references: [id])
+  customer               User                    @relation("Customer", fields: [policyholderUserId], references: [id])
+  opportunities          Opportunity[]
   questionnaireInstances QuestionnaireInstance[]
-
-  createdAt           DateTime @default(now()) @map("created_at")
-  lastInteractionAt   DateTime? @map("last_interaction_at")
 
   @@unique([agentUserId, policyholderUserId])
   @@map("customer_relationships")
 }
 
 model AccessGrant {
-  id              String   @id @default(cuid()) @map("grant_id")
-  granterUserId   String   @map("granter_user_id") // Policyholder
-  granteeUserId   String   @map("grantee_user_id") // Agent
-  scope           String   // 'portfolio', 'policy', etc
-  permissions     String   // "view,upload,suggest"
-  status          String   @default("active") // 'active', 'revoked'
-  
-  granter         User     @relation("Granter", fields: [granterUserId], references: [id])
-  grantee         User     @relation("Grantee", fields: [granteeUserId], references: [id])
-
-  grantedAt       DateTime @default(now()) @map("granted_at")
-  revokedAt       DateTime? @map("revoked_at")
+  id            String    @id @default(cuid()) @map("grant_id")
+  granterUserId String    @map("granter_user_id")
+  granteeUserId String    @map("grantee_user_id")
+  scope         String
+  permissions   String
+  status        String    @default("active")
+  grantedAt     DateTime  @default(now()) @map("granted_at")
+  revokedAt     DateTime? @map("revoked_at")
+  grantee       User      @relation("Grantee", fields: [granteeUserId], references: [id])
+  granter       User      @relation("Granter", fields: [granterUserId], references: [id])
 
   @@map("access_grants")
 }
 
 model Invite {
-  id                   String   @id @default(cuid()) @map("invite_id")
-  inviterUserId        String   @map("inviter_user_id")
-  inviteeEmail         String   @map("invitee_email")
-  inviteeUserId        String?  @map("invitee_user_id")
-  inviteType           String   @map("invite_type") // 'signup', 'collaboration_grant'
+  id                   String    @id @default(cuid()) @map("invite_id")
+  inviterUserId        String    @map("inviter_user_id")
+  inviteeEmail         String    @map("invitee_email")
+  inviteeUserId        String?   @map("invitee_user_id")
+  inviteType           String    @map("invite_type")
   scope                String?
-  requestedPermissions String?  @map("requested_permissions")
-  token                String   @unique
-  expiresAt            DateTime @map("expires_at")
-  
-  inviter              User     @relation("Inviter", fields: [inviterUserId], references: [id])
-  invitee              User?    @relation("Invitee", fields: [inviteeUserId], references: [id])
-
+  requestedPermissions String?   @map("requested_permissions")
+  token                String    @unique
+  expiresAt            DateTime  @map("expires_at")
   consumedAt           DateTime? @map("consumed_at")
-  createdAt            DateTime @default(now()) @map("created_at")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  invitee              User?     @relation("Invitee", fields: [inviteeUserId], references: [id])
+  inviter              User      @relation("Inviter", fields: [inviterUserId], references: [id])
 
   @@map("invites")
 }
 
 model Opportunity {
-  id                String   @id @default(cuid()) @map("opportunity_id")
-  relationshipId    String   @map("relationship_id")
-  policyId          String?  @map("policy_id")
-  gapInstanceId     String?  @map("gap_instance_id")
-  status            String   @default("open") // 'open', 'contacted', 'won', 'lost'
-  nextActionAt      DateTime? @map("next_action_at")
-  notes             String?  @db.Text
-  ownerAgentUserId  String   @map("owner_agent_user_id")
-
-  relationship      CustomerRelationship @relation(fields: [relationshipId], references: [id])
-  policy            Policy?   @relation(fields: [policyId], references: [id])
-  gapInstance       GapInstance? @relation(fields: [gapInstanceId], references: [id])
-  owner             User      @relation(fields: [ownerAgentUserId], references: [id])
-
-  createdAt         DateTime @default(now()) @map("created_at")
-  updatedAt         DateTime @updatedAt @map("updated_at")
+  id               String               @id @default(cuid()) @map("opportunity_id")
+  relationshipId   String               @map("relationship_id")
+  policyId         String?              @map("policy_id")
+  gapInstanceId    String?              @map("gap_instance_id")
+  status           String               @default("open")
+  nextActionAt     DateTime?            @map("next_action_at")
+  notes            String?
+  ownerAgentUserId String               @map("owner_agent_user_id")
+  createdAt        DateTime             @default(now()) @map("created_at")
+  updatedAt        DateTime             @updatedAt @map("updated_at")
+  gapInstance      GapInstance?         @relation(fields: [gapInstanceId], references: [id])
+  owner            User                 @relation(fields: [ownerAgentUserId], references: [id])
+  policy           Policy?              @relation(fields: [policyId], references: [id])
+  relationship     CustomerRelationship @relation(fields: [relationshipId], references: [id])
 
   @@map("opportunities")
 }
 
-// ========================================
-// QUESTIONNAIRES & INSIGHTS
-// ========================================
-
 model QuestionnaireTemplate {
-  id              String   @id @default(cuid()) @map("template_id")
-  name            String
-  lineOfBusiness  String   @map("line_of_business")
-  version         Int      @default(1)
-  questions       Json     // Array of question objects
-  isActive        Boolean  @default(true) @map("is_active")
-
-  instances       QuestionnaireInstance[]
-
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  id             String                  @id @default(cuid()) @map("template_id")
+  name           String
+  lineOfBusiness String                  @map("line_of_business")
+  version        Int                     @default(1)
+  questions      Json
+  isActive       Boolean                 @default(true) @map("is_active")
+  createdAt      DateTime                @default(now()) @map("created_at")
+  updatedAt      DateTime                @updatedAt @map("updated_at")
+  instances      QuestionnaireInstance[]
 
   @@map("questionnaire_templates")
 }
 
 model QuestionnaireInstance {
-  id              String   @id @default(cuid()) @map("instance_id")
-  templateId      String   @map("template_id")
-  relationshipId  String   @map("relationship_id")
-  sentToUserId    String   @map("sent_to_user_id")
-  sentByUserId    String   @map("sent_by_user_id")
-  status          String   @default("pending") // 'pending', 'completed', 'expired'
-  
-  template        QuestionnaireTemplate @relation(fields: [templateId], references: [id])
-  relationship    CustomerRelationship @relation(fields: [relationshipId], references: [id])
-  sender          User     @relation("Sender", fields: [sentByUserId], references: [id])
-  receiver        User     @relation("Receiver", fields: [sentToUserId], references: [id])
-
-  sentAt          DateTime @default(now()) @map("sent_at")
-  completedAt     DateTime? @map("completed_at")
-  
-  responses       QuestionnaireResponse[]
+  id             String                  @id @default(cuid()) @map("instance_id")
+  templateId     String                  @map("template_id")
+  relationshipId String                  @map("relationship_id")
+  sentToUserId   String                  @map("sent_to_user_id")
+  sentByUserId   String                  @map("sent_by_user_id")
+  status         String                  @default("pending")
+  sentAt         DateTime                @default(now()) @map("sent_at")
+  completedAt    DateTime?               @map("completed_at")
+  relationship   CustomerRelationship    @relation(fields: [relationshipId], references: [id])
+  sender         User                    @relation("Sender", fields: [sentByUserId], references: [id])
+  receiver       User                    @relation("Receiver", fields: [sentToUserId], references: [id])
+  template       QuestionnaireTemplate   @relation(fields: [templateId], references: [id])
+  responses      QuestionnaireResponse[]
 
   @@map("questionnaire_instances")
 }
 
 model QuestionnaireResponse {
-  id              String   @id @default(cuid()) @map("response_id")
-  instanceId      String   @map("instance_id")
-  userId          String   @map("user_id")
-  answers         Json
-  
-  instance        QuestionnaireInstance @relation(fields: [instanceId], references: [id])
-  user            User     @relation(fields: [userId], references: [id])
-
-  submittedAt     DateTime @default(now()) @map("submitted_at")
+  id          String                @id @default(cuid()) @map("response_id")
+  instanceId  String                @map("instance_id")
+  userId      String                @map("user_id")
+  answers     Json
+  submittedAt DateTime              @default(now()) @map("submitted_at")
+  instance    QuestionnaireInstance @relation(fields: [instanceId], references: [id])
+  user        User                  @relation(fields: [userId], references: [id])
 
   @@map("questionnaire_responses")
 }
 
-
-// ========================================
-// SUBSCRIPTIONS & BILLING
-// ========================================
-
 model Plan {
-  id             String   @id @default(cuid()) @map("plan_id")
-  planType       String   @map("plan_type") // 'policyholder', 'agent'
-  name           String
-  displayName    String   @map("display_name")
-  price          Decimal
-  currency       String   @default("EUR")
-  billingPeriod  String   @map("billing_period") // 'monthly', 'yearly'
-  entitlements   Json
-  
-  subscriptions  Subscription[]
+  id            String         @id @default(cuid()) @map("plan_id")
+  planType      String         @map("plan_type")
+  name          String
+  displayName   String         @map("display_name")
+  price         Decimal
+  currency      String         @default("EUR")
+  billingPeriod String         @map("billing_period")
+  entitlements  Json
+  createdAt     DateTime       @default(now()) @map("created_at")
+  subscriptions Subscription[]
 
-  createdAt      DateTime @default(now()) @map("created_at")
-  
   @@map("plans")
 }
 
 model Subscription {
-  id                 String   @id @default(cuid()) @map("subscription_id")
-  userId             String   @map("user_id")
-  planId             String   @map("plan_id")
-  status             String   @default("active") // 'active', 'cancelled'
-  currentPeriodStart DateTime @map("current_period_start")
-  currentPeriodEnd   DateTime @map("current_period_end")
-  autoRenew          Boolean  @default(true) @map("auto_renew")
-  
-  user               User     @relation(fields: [userId], references: [id])
-  plan               Plan     @relation(fields: [planId], references: [id])
-
-  createdAt          DateTime @default(now()) @map("created_at")
-  updatedAt          DateTime @updatedAt @map("updated_at")
-  
-  invoices           Invoice[]
+  id                 String             @id @default(cuid()) @map("subscription_id")
+  userId             String             @map("user_id")
+  planId             String             @map("plan_id")
+  status             String             @default("active")
+  currentPeriodStart DateTime           @map("current_period_start")
+  currentPeriodEnd   DateTime           @map("current_period_end")
+  autoRenew          Boolean            @default(true) @map("auto_renew")
+  createdAt          DateTime           @default(now()) @map("created_at")
+  updatedAt          DateTime           @updatedAt @map("updated_at")
   entitlementUsages  EntitlementUsage[]
+  invoices           Invoice[]
+  plan               Plan               @relation(fields: [planId], references: [id])
+  user               User               @relation(fields: [userId], references: [id])
 
   @@map("subscriptions")
 }
@@ -487,52 +387,47 @@ model CreditTransaction {
   id              String   @id @default(cuid()) @map("transaction_id")
   userId          String   @map("user_id")
   amount          Int
-  transactionType String   @map("transaction_type") // 'earn', 'spend'
+  transactionType String   @map("transaction_type")
   balanceAfter    Int      @map("balance_after")
   description     String
   referralId      String?  @map("referral_id")
-  
+  createdAt       DateTime @default(now()) @map("created_at")
   user            User     @relation(fields: [userId], references: [id])
 
-  createdAt       DateTime @default(now()) @map("created_at")
-  
   @@map("credit_transactions")
 }
 
 model Referral {
-  id                      String   @id @default(cuid()) @map("referral_id")
-  referrerUserId          String   @map("referrer_user_id")
-  referredUserId          String?  @map("referred_user_id")
-  referredEmail           String   @map("referred_email")
-  referredSubscriptionId  String?  @map("referred_subscription_id")
-  status                  String   @default("pending") // 'pending', 'converted'
-  creditsEarned           Int      @default(0) @map("credits_earned")
-  
-  referrer                User     @relation("Referrer", fields: [referrerUserId], references: [id])
-  referred                User?    @relation("Referred", fields: [referredUserId], references: [id])
+  id                     String    @id @default(cuid()) @map("referral_id")
+  referrerUserId         String    @map("referrer_user_id")
+  referredUserId         String?   @map("referred_user_id")
+  referredEmail          String    @map("referred_email")
+  referredSubscriptionId String?   @map("referred_subscription_id")
+  status                 String    @default("pending")
+  creditsEarned          Int       @default(0) @map("credits_earned")
+  creditedAt             DateTime? @map("credited_at")
+  createdAt              DateTime  @default(now()) @map("created_at")
+  referred               User?     @relation("Referred", fields: [referredUserId], references: [id])
+  referrer               User      @relation("Referrer", fields: [referrerUserId], references: [id])
 
-  creditedAt              DateTime? @map("credited_at")
-  createdAt               DateTime @default(now()) @map("created_at")
-  
   @@map("referrals")
 }
 
 model Invoice {
-  id             String   @id @default(cuid()) @map("invoice_id")
-  userId         String   @map("user_id")
-  subscriptionId String   @map("subscription_id")
-  invoiceNumber  String   @map("invoice_number")
+  id             String       @id @default(cuid()) @map("invoice_id")
+  userId         String       @map("user_id")
+  subscriptionId String       @map("subscription_id")
+  invoiceNumber  String       @map("invoice_number")
   amount         Decimal
-  currency       String   @default("EUR")
-  taxAmount      Decimal  @map("tax_amount")
-  totalAmount    Decimal  @map("total_amount")
-  status         String   // 'paid', 'pending', 'failed'
-  billingDate    DateTime @map("billing_date")
-  pdfUrl         String?  @map("pdf_url")
-  paidAt         DateTime? @map("paid_at")
-  
-  user           User     @relation(fields: [userId], references: [id])
+  currency       String       @default("EUR")
+  taxAmount      Decimal      @map("tax_amount")
+  totalAmount    Decimal      @map("total_amount")
+  status         String
+  billingDate    DateTime     @map("billing_date")
+  pdfUrl         String?      @map("pdf_url")
+  paidAt         DateTime?    @map("paid_at")
   subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+  user           User         @relation(fields: [userId], references: [id])
 
   @@map("invoices")
 }
@@ -546,32 +441,24 @@ model PaymentMethod {
   expiryMonth Int?     @map("expiry_month")
   expiryYear  Int?     @map("expiry_year")
   isDefault   Boolean  @default(false) @map("is_default")
-  
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   createdAt   DateTime @default(now()) @map("created_at")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("payment_methods")
 }
 
 model EntitlementUsage {
-  id             String   @id @default(cuid()) @map("usage_id")
-  userId         String   @map("user_id")
-  subscriptionId String   @map("subscription_id")
-  usageType      String   @map("usage_type") // 'ai_analysis'
+  id             String       @id @default(cuid()) @map("usage_id")
+  userId         String       @map("user_id")
+  subscriptionId String       @map("subscription_id")
+  usageType      String       @map("usage_type")
   amount         Int
-  
-  user           User     @relation(fields: [userId], references: [id])
+  occurredAt     DateTime     @default(now()) @map("occurred_at")
   subscription   Subscription @relation(fields: [subscriptionId], references: [id])
-
-  occurredAt     DateTime @default(now()) @map("occurred_at")
+  user           User         @relation(fields: [userId], references: [id])
 
   @@map("entitlement_usages")
 }
-
-// ========================================
-// SECURITY
-// ========================================
 
 model ActiveSession {
   id           String   @id @default(cuid()) @map("session_id")
@@ -580,11 +467,9 @@ model ActiveSession {
   deviceName   String   @map("device_name")
   ipAddress    String   @map("ip_address")
   location     String?
-  
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   lastActiveAt DateTime @default(now()) @map("last_active_at")
   createdAt    DateTime @default(now()) @map("created_at")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("active_sessions")
 }
@@ -592,54 +477,40 @@ model ActiveSession {
 model SecurityEvent {
   id        String   @id @default(cuid()) @map("event_id")
   userId    String   @map("user_id")
-  eventType String   @map("event_type") // 'login', 'logout'
+  eventType String   @map("event_type")
   ipAddress String?  @map("ip_address")
   userAgent String?  @map("user_agent")
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("security_events")
 }
 
-// ========================================
-// ADMIN
-// ========================================
-
 model AdminUser {
   id          String   @id @default(cuid()) @map("admin_user_id")
   userId      String   @unique @map("user_id")
-  adminLevel  String   @map("admin_level") // 'SuperAdmin', 'OpsAdmin'
-  permissions String[] // Array of strings
-  
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  adminLevel  String   @map("admin_level")
+  permissions String[]
   createdAt   DateTime @default(now()) @map("created_at")
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("admin_users")
 }
 
-// ========================================
-// NOTIFICATIONS
-// ========================================
-
 model NotificationEvent {
-  id                String   @id @default(cuid()) @map("event_id")
-  userId            String   @map("user_id")
-  eventType         String   @map("event_type")
-  channel           String   // 'email', 'push', 'whatsapp', 'viber'
-  status            String   @default("queued") // 'queued', 'sent', 'failed'
+  id                String    @id @default(cuid()) @map("event_id")
+  userId            String    @map("user_id")
+  eventType         String    @map("event_type")
+  channel           String
+  status            String    @default("queued")
   title             String
   message           String
-  relatedObjectType String?  @map("related_object_type") // 'policy', 'customer', 'questionnaire'
-  relatedObjectId   String?  @map("related_object_id")
-  failureReason     String?  @map("failure_reason")
-  
+  relatedObjectType String?   @map("related_object_type")
+  relatedObjectId   String?   @map("related_object_id")
+  createdAt         DateTime  @default(now()) @map("created_at")
   sentAt            DateTime? @map("sent_at")
-  createdAt         DateTime @default(now()) @map("created_at")
-  
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  failureReason     String?   @map("failure_reason")
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("notification_events")
@@ -649,12 +520,10 @@ model NotificationPreference {
   id        String   @id @default(cuid()) @map("preference_id")
   userId    String   @map("user_id")
   eventType String   @map("event_type")
-  channel   String   // 'email', 'push'
+  channel   String
   enabled   Boolean  @default(true)
-  
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, eventType, channel])
   @@map("notification_preferences")
@@ -667,7 +536,6 @@ model ActivityLog {
   actionType   String   @map("action_type")
   description  String
   isBreakGlass Boolean  @default(false) @map("is_break_glass")
-  
   timestamp    DateTime @default(now())
 
   @@map("activity_logs")

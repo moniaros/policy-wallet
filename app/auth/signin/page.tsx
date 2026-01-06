@@ -7,54 +7,36 @@ import Image from "next/image"
 
 export default function SignInPage() {
     const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
     const [isLoading, setIsLoading] = useState(false)
-    const [isSent, setIsSent] = useState(false)
+    const [error, setError] = useState<string | null>(null)
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
+        setError(null)
 
         try {
-            await signIn("email", {
+            const result = await signIn("credentials", {
                 email,
+                password,
                 callbackUrl: "/wallet",
                 redirect: false
             })
-            setIsSent(true)
+
+            if (result?.error) {
+                setError("Invalid email or password")
+            } else {
+                window.location.href = "/wallet"
+            }
         } catch (error) {
+            setError("Something went wrong. Please try again.")
             console.error(error)
         } finally {
             setIsLoading(false)
         }
     }
 
-    if (isSent) {
-        return (
-            <div className="flex min-h-screen items-center justify-center bg-stone-50 px-4">
-                <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-10 shadow-xl border border-stone-100 text-center">
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-teal-50">
-                        <svg className="h-10 w-10 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h2 className="text-3xl font-bold text-stone-900">Check your email</h2>
-                        <p className="mt-4 text-stone-600">
-                            We've sent a magic link to <span className="font-semibold text-stone-900">{email}</span>. Click the link to sign in.
-                        </p>
-                    </div>
-                    <div className="pt-4">
-                        <button
-                            onClick={() => setIsSent(false)}
-                            className="text-teal-600 hover:text-teal-700 font-medium transition-colors"
-                        >
-                            Try a different email
-                        </button>
-                    </div>
-                </div>
-            </div>
-        )
-    }
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-stone-50 px-4">
@@ -71,6 +53,11 @@ export default function SignInPage() {
 
                 <div className="mt-8 space-y-6">
                     <form onSubmit={handleSubmit} className="space-y-4">
+                        {error && (
+                            <div className="p-3 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm font-medium">
+                                {error}
+                            </div>
+                        )}
                         <div>
                             <label htmlFor="email" className="block text-sm font-medium text-stone-700">
                                 Email address
@@ -86,6 +73,23 @@ export default function SignInPage() {
                             />
                         </div>
 
+                        <div>
+                            <div className="flex items-center justify-between">
+                                <label htmlFor="password" className="block text-sm font-medium text-stone-700">
+                                    Password
+                                </label>
+                            </div>
+                            <input
+                                id="password"
+                                type="password"
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="mt-1 block w-full rounded-lg border border-stone-300 bg-white px-4 py-3 text-stone-900 shadow-sm transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+                                placeholder="••••••••"
+                            />
+                        </div>
+
                         <button
                             type="submit"
                             disabled={isLoading}
@@ -97,7 +101,7 @@ export default function SignInPage() {
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                                 </svg>
                             ) : (
-                                "Send Magic Link"
+                                "Sign In"
                             )}
                         </button>
                     </form>

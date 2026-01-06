@@ -20,7 +20,7 @@ export async function detectGapsForPolicy(policy: Policy): Promise<DetectedGap[]
     const detectedGaps: DetectedGap[] = []
 
     // Get active gap definitions for this line of business
-    const gapDefinitions = await db.gapDefinition.findMany({
+    const gapDefinitions = await (db.gapDefinition.findMany as any)({
         where: {
             lineOfBusiness: policy.lineOfBusiness,
             isActive: true,
@@ -34,9 +34,9 @@ export async function detectGapsForPolicy(policy: Policy): Promise<DetectedGap[]
             detectedGaps.push({
                 gapDefinitionId: gapDef.id,
                 policyId: policy.id,
-                severity: gapDef.severity as GapSeverity,
-                title: gapDef.title,
-                description: gapDef.description,
+                severity: (gapDef.severity || 'medium') as GapSeverity,
+                title: gapDef.title || gapDef.name || 'Coverage Gap',
+                description: gapDef.description || '',
                 detectedAt: new Date(),
             })
         }
@@ -67,37 +67,24 @@ export async function detectGapsForUser(userId: string): Promise<DetectedGap[]> 
 
 /**
  * Evaluate gap detection logic
- * This is a simplified version - in production, you'd have more sophisticated logic
  */
 function evaluateGapLogic(policy: Policy, gapDef: GapDefinition): boolean {
-    const logic = gapDef.detectionLogic as any
-
-    // Simple rule evaluation
-    // In production, this would be more sophisticated with a proper rule engine
+    const logic = (gapDef as any).detectionLogic as any
+    if (!logic) return false
 
     if (logic.type === 'missing_coverage') {
-        // Check if coverage summary doesn't include required coverage
-        const coverageSummary = policy.coverageSummary?.toLowerCase() || ''
+        const coverageSummary = (policy as any).coverageSummary?.toLowerCase() || ''
         const requiredCoverage = logic.requiredCoverage?.toLowerCase() || ''
         return !coverageSummary.includes(requiredCoverage)
     }
 
     if (logic.type === 'low_limit') {
-        // Check if coverage limit is below threshold
         const limit = policy.premiumAmount ? Number(policy.premiumAmount) : 0
         const threshold = logic.threshold || 0
         return limit < threshold
     }
 
-    if (logic.type === 'high_deductible') {
-        // Check if deductible is above threshold
-        // This would require a deductible field in the policy model
-        // For now, we'll skip this check
-        return false
-    }
-
     if (logic.type === 'always') {
-        // Always detect this gap (for testing or universal gaps)
         return true
     }
 
@@ -109,7 +96,6 @@ function evaluateGapLogic(policy: Policy, gapDef: GapDefinition): boolean {
  */
 export async function createGapInstances(detectedGaps: DetectedGap[]): Promise<void> {
     for (const gap of detectedGaps) {
-        // Check if gap instance already exists
         const existing = await db.gapInstance.findFirst({
             where: {
                 policyId: gap.policyId,
@@ -120,7 +106,6 @@ export async function createGapInstances(detectedGaps: DetectedGap[]): Promise<v
             },
         })
 
-        // Only create if doesn't exist
         if (!existing) {
             await db.gapInstance.create({
                 data: {
@@ -128,6 +113,7 @@ export async function createGapInstances(detectedGaps: DetectedGap[]): Promise<v
                     gapDefinitionId: gap.gapDefinitionId,
                     detectedAt: gap.detectedAt,
                     status: 'detected',
+                    severity: gap.severity,
                 },
             })
         }
@@ -156,6 +142,12 @@ export function getSeverityColor(severity: GapSeverity): {
             border: 'border-orange-200 dark:border-orange-800',
             dot: 'bg-orange-500',
         },
+        high_risk: { // Added for safety if it comes from different source
+            bg: 'bg-orange-50 dark:bg-orange-900/20',
+            text: 'text-orange-700 dark:text-orange-400',
+            border: 'border-orange-200 dark:border-orange-800',
+            dot: 'bg-orange-500',
+        },
         medium: {
             bg: 'bg-amber-50 dark:bg-amber-900/20',
             text: 'text-amber-700 dark:text-amber-400',
@@ -170,14 +162,14 @@ export function getSeverityColor(severity: GapSeverity): {
         },
     }
 
-    return colors[severity]
+    return (colors as any)[severity] || colors.medium
 }
 
 /**
  * Get severity label
  */
 export function getSeverityLabel(severity: GapSeverity, language: 'el' | 'en' = 'el'): string {
-    const labels = {
+    const labels: any = {
         el: {
             critical: 'Κρίσιμο',
             high: 'Υψηλό',
@@ -192,5 +184,5 @@ export function getSeverityLabel(severity: GapSeverity, language: 'el' | 'en' = 
         },
     }
 
-    return labels[language][severity]
+    return labels[language]?.[severity] || severity
 }
