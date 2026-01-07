@@ -1,28 +1,27 @@
-import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { db } from "@/lib/db"
+import { createApiResponse, createApiError } from "@/lib/api-utils"
+import { rateLimit } from "@/lib/rate-limit"
+import { logger } from "@/lib/logger"
 
 export async function POST(req: Request) {
     const session = await auth()
-    if (!session?.user?.id) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+
+    // Rate limiting: max 3 registration attempts per minute per IP
+    const ip = req.headers.get("x-forwarded-for") || "127.0.0.1"
+    const limitCheck = await rateLimit(ip as string, 3, 60000)
+    if (!limitCheck.success) return limitCheck.error!
 
     try {
-        const { token, platform, device_name } = await req.json()
+        const body = await req.json()
+        const { token, platform, device_name } = body
 
-        // Logic to store device token in the session or a dedicated Device table
-        // For MVP, if there's an ActiveSession table or similar, update it.
-        // Assuming we might have a pushToken field on User or a separate Device table.
-        // Let's assume we update the User for now if a specific table doesn't exist.
+        if (!token) return createApiError("BAD_REQUEST", "Token is required", 400)
 
         await db.user.update({
             where: { id: session.user.id },
             data: {
-                // @ts-ignore - assuming field might exist in future migrations or handled via meta
                 pushToken: token
             }
         })
@@ -33,20 +32,14 @@ export async function POST(req: Request) {
                 adminEmail: session.user.email || "unknown",
                 actionType: "DEVICE_REGISTERED",
                 description: `Registered ${platform} device: ${device_name}`,
-                timestamp: new Date()
             }
         })
 
-        return NextResponse.json({
-            data: { message: "Device token registered successfully" },
-            meta: { request_id: crypto.randomUUID(), language: "el" },
-            error: null
-        })
+        logger('info', 'Device registered', { userId: session.user.id, platform })
+
+        return createApiResponse({ message: "Device token registered successfully" })
     } catch (error) {
-        console.error(error)
-        return NextResponse.json(
-            { error: { code: "INTERNAL_ERROR", message: "Registration failed", status: 500 } },
-            { status: 500 }
-        )
+        logger('error', 'Device registration failed', { userId: session.user.id, error })
+        return createApiError("INTERNAL_ERROR", "Registration failed", 500)
     }
 }

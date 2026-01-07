@@ -1,15 +1,10 @@
-import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { db } from "@/lib/db"
+import { createApiResponse, createApiError } from "@/lib/api-utils"
 
 export async function GET(req: Request) {
     const session = await auth()
-    if (!session?.user?.id) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { searchParams } = new URL(req.url)
     const cursor = searchParams.get("cursor")
@@ -29,33 +24,26 @@ export async function GET(req: Request) {
             nextCursor = nextItem!.id
         }
 
-        return NextResponse.json({
-            data: {
-                notifications: notifications.map((n: any) => ({
-                    id: n.id,
-                    event_type: n.eventType,
-                    channel: n.channel,
-                    status: n.status,
-                    title: n.title,
-                    message: n.message,
-                    related_object_type: n.relatedObjectType,
-                    related_object_id: n.relatedObjectId,
-                    created_at: n.createdAt,
-                    sent_at: n.sentAt
-                })),
-                pagination: {
-                    next_cursor: nextCursor,
-                    has_more: !!nextCursor
-                }
-            },
-            meta: { request_id: crypto.randomUUID(), language: "el" },
-            error: null
+        return createApiResponse({
+            notifications: notifications.map((n: any) => ({
+                id: n.id,
+                event_type: n.eventType,
+                channel: n.channel,
+                status: n.status,
+                title: n.title,
+                message: n.message,
+                related_object_type: n.relatedObjectType,
+                related_object_id: n.relatedObjectId,
+                created_at: n.createdAt,
+                sent_at: n.sentAt
+            })),
+            pagination: {
+                next_cursor: nextCursor,
+                has_more: !!nextCursor
+            }
         })
     } catch (error) {
         console.error(error)
-        return NextResponse.json(
-            { error: { code: "INTERNAL_ERROR", message: "Server error", status: 500 } },
-            { status: 500 }
-        )
+        return createApiError("INTERNAL_ERROR", "Server error", 500)
     }
 }

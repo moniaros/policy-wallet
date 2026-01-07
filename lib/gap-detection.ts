@@ -66,27 +66,49 @@ export async function detectGapsForUser(userId: string): Promise<DetectedGap[]> 
 }
 
 /**
- * Evaluate gap detection logic
+ * Evaluate mature gap detection logic
  */
 function evaluateGapLogic(policy: Policy, gapDef: GapDefinition): boolean {
     const logic = (gapDef as any).detectionLogic as any
     if (!logic) return false
 
-    if (logic.type === 'missing_coverage') {
+    // Support for complex multi-condition rules
+    if (logic.rules && Array.isArray(logic.rules)) {
+        const operator = logic.operator || 'AND'
+        const results = logic.rules.map((rule: any) => evaluateSingleRule(policy, rule))
+
+        return operator === 'AND'
+            ? results.every((res: boolean) => res === true)
+            : results.some((res: boolean) => res === true)
+    }
+
+    // Fallback to legacy single-type logic
+    return evaluateSingleRule(policy, logic)
+}
+
+function evaluateSingleRule(policy: Policy, rule: any): boolean {
+    if (rule.type === 'missing_coverage') {
         const coverageSummary = (policy as any).coverageSummary?.toLowerCase() || ''
-        const requiredCoverage = logic.requiredCoverage?.toLowerCase() || ''
+        const requiredCoverage = rule.requiredCoverage?.toLowerCase() || ''
         return !coverageSummary.includes(requiredCoverage)
     }
 
-    if (logic.type === 'low_limit') {
+    if (rule.type === 'low_limit') {
         const limit = policy.premiumAmount ? Number(policy.premiumAmount) : 0
-        const threshold = logic.threshold || 0
+        const threshold = rule.threshold || 0
         return limit < threshold
     }
 
-    if (logic.type === 'always') {
-        return true
+    if (rule.type === 'insurer_match') {
+        return policy.insurerName.toLowerCase() === rule.value?.toLowerCase()
     }
+
+    if (rule.type === 'duration_short') {
+        const durationMonths = (policy.endDate.getTime() - policy.startDate.getTime()) / (1000 * 60 * 60 * 24 * 30.44)
+        return durationMonths < (rule.minMonths || 12)
+    }
+
+    if (rule.type === 'always') return true
 
     return false
 }

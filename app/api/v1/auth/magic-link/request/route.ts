@@ -1,41 +1,35 @@
 import { NextResponse } from "next/server"
 import { signIn } from "@/auth"
+import { rateLimit } from "@/lib/rate-limit"
+import { createApiResponse, createApiError } from "@/lib/api-utils"
 
 export async function POST(req: Request) {
+    const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "anonymous"
+    const limitCheck = rateLimit(ip as string, 5, 300000) // 5 attempts per 5 minutes
+
+    if (!limitCheck.success) return limitCheck.error!
+
     try {
-        const { email, language = "el" } = await req.json()
+        const body = await req.json()
+        const { email, language = "el" } = body
 
         if (!email) {
-            return NextResponse.json(
-                { error: { code: "BAD_REQUEST", message: "Email is required", status: 400 } },
-                { status: 400 }
-            )
+            return createApiError("BAD_REQUEST", "Email is required", 400, null, language)
         }
 
-        // We use signIn with redirect: false to prevent NextAuth from handled the whole flow
-        // However, next-auth v5 (authjs) signIn might behave differently in Route Handlers.
-        // For a pure API request, we might need a more custom solution if NextAuth doesn't support it well.
-        // But for MVP, let's try to use the standard way.
-
-        const result = await (signIn as any)("email", {
+        await (signIn as any)("email", {
             email,
             redirect: false,
-            callbackUrl: "/" // This is where they land after clicking link
+            callbackUrl: "/"
         })
 
-        return NextResponse.json({
-            data: {
-                message: "Magic link sent to your email",
-                expires_in: 900 // 15 mins
-            },
-            meta: { request_id: crypto.randomUUID(), language },
-            error: null
-        })
+        return createApiResponse({
+            message: "Magic link sent to your email",
+            expires_in: 900
+        }, language)
+
     } catch (error) {
         console.error("Magic link request failed:", error)
-        return NextResponse.json(
-            { error: { code: "INTERNAL_ERROR", message: "Failed to send magic link", status: 500 } },
-            { status: 500 }
-        )
+        return createApiError("INTERNAL_ERROR", "Failed to send magic link", 500)
     }
 }

@@ -1,4 +1,6 @@
 import { db } from "./db"
+import { sendMail } from "./mail"
+import { templates } from "./mail-templates"
 
 export type NotificationChannel = 'email' | 'push' | 'whatsapp' | 'viber'
 export type NotificationStatus = 'queued' | 'sent' | 'failed'
@@ -54,27 +56,45 @@ export async function sendNotification({
 
     if (finalChannels.length === 0) return []
 
-    // 3. Create Event Records
-    const eventPromises = finalChannels.map(channel =>
-        db.notificationEvent.create({
+    // 3. Create Event Records & 4. Trigger Actual Delivery
+    const user = await (db.user.findUnique as any)({ where: { id: userId }, select: { email: true, pushToken: true } })
+    if (!user) return []
+
+    const eventPromises = finalChannels.map(async (channel) => {
+        let status: NotificationStatus = 'sent'
+        let failureReason: string | null = null
+
+        try {
+            if (channel === 'email' && user.email) {
+                const template = (templates as any)[eventType.toUpperCase()]
+                const emailSubject = template ? template({ id: relatedObjectId }).subject : title
+                const emailHtml = template ? template({ id: relatedObjectId }).html : message
+
+                await sendMail({ to: user.email, subject: emailSubject || title, html: emailHtml || message })
+            } else if (channel === 'push' && user.pushToken) {
+                console.log(`[Push] To: ${user.pushToken} Title: ${title}`)
+            }
+        } catch (error: any) {
+            status = 'failed'
+            failureReason = error.message
+        }
+
+        return db.notificationEvent.create({
             data: {
                 userId,
                 eventType,
                 channel,
-                status: 'sent', // Mocking immediate success
+                status,
                 title,
                 message,
                 relatedObjectType,
                 relatedObjectId,
-                sentAt: new Date()
+                sentAt: status === 'sent' ? new Date() : null,
+                failureReason
             }
         })
-    )
+    })
 
     const events = await Promise.all(eventPromises)
-
-    // 4. Trigger Actual Delivery (Mocked)
-    console.log(`[Notification Service] Sent ${eventType} to user ${userId} via ${finalChannels.join(', ')}`)
-
     return events
 }

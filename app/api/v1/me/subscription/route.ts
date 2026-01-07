@@ -1,15 +1,10 @@
-import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { db } from "@/lib/db"
+import { createApiResponse, createApiError } from "@/lib/api-utils"
 
 export async function GET() {
     const session = await auth()
-    if (!session?.user?.id) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     try {
         const user = await db.user.findUnique({
@@ -18,53 +13,54 @@ export async function GET() {
                 subscriptions: {
                     where: { status: "active" },
                     take: 1,
-                    orderBy: { createdAt: "desc" }
+                    orderBy: { createdAt: "desc" },
+                    include: { plan: true }
                 }
             }
         })
 
-        // Mock subscription data if none exists for MVP
-        const subscription = user?.subscriptions[0] || {
-            id: "sub_free",
-            planId: "free",
-            status: "active",
-            currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+        if (!user) return createApiError("NOT_FOUND", "User not found", 404)
+
+        // Default Free Plan Fallback
+        const subscription = user.subscriptions[0]
+        const plan = subscription?.plan
+
+        const finalPlan = plan ? {
+            name: plan.name, // e.g., 'pro'
+            display_name: plan.displayName,
+            price: Number(plan.price),
+            currency: plan.currency,
+            billing_period: plan.billingPeriod
+        } : {
+            name: "free",
+            display_name: "Dwrean Paketo", // ASCII to avoid encoding issues if env varies
+            price: 0,
+            currency: "EUR",
+            billing_period: "monthly"
         }
 
-        // Mock usage limits
         const usage = {
             policies_created: await db.policy.count({ where: { ownerUserId: session.user.id, status: { not: "deleted" } } }),
-            policies_limit: 5,
-            ai_reviews_used: 0,
-            ai_reviews_limit: 3
+            policies_limit: subscription ? 100 : 5, // Simple logic: Free=5, Paid=100
+            ai_reviews_used: await db.policyDocument.count({ where: { uploadedByUserId: session.user.id } }), // Approximate
+            ai_reviews_limit: subscription ? 50 : 3
         }
 
-        return NextResponse.json({
+        return createApiResponse({
             data: {
                 subscription: {
-                    id: subscription.id,
-                    plan: {
-                        name: "Free",
-                        display_name: "Δωρεάν Πακέτο",
-                        price: 0,
-                        currency: "EUR",
-                        billing_period: "monthly"
-                    },
-                    status: subscription.status,
-                    current_period_end: (subscription as any).currentPeriodEnd,
-                    auto_renew: true
+                    id: subscription?.id || "sub_free_default",
+                    plan: finalPlan,
+                    status: subscription?.status || "active",
+                    current_period_end: subscription?.currentPeriodEnd || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                    auto_renew: subscription?.autoRenew ?? true
                 },
                 usage,
                 credit_balance: (user as any).creditBalance || 0
-            },
-            meta: { request_id: crypto.randomUUID(), language: "el" },
-            error: null
+            }
         })
     } catch (error) {
         console.error(error)
-        return NextResponse.json(
-            { error: { code: "INTERNAL_ERROR", message: "Server error", status: 500 } },
-            { status: 500 }
-        )
+        return createApiError("INTERNAL_ERROR", "Server error", 500)
     }
 }

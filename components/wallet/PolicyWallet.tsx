@@ -4,18 +4,22 @@ import type { PolicyWalletProps, Policy } from './types'
 import { StatusSummary } from './StatusSummary'
 import { PolicyCard } from './PolicyCard'
 import { EmptyState } from './EmptyState'
+import { useLanguage } from '@/contexts/LanguageContext'
+import { Skeleton } from '@/components/ui/skeleton'
 
 // Design tokens: teal (primary), amber (secondary), stone (neutral), Inter typography
 
 export function PolicyWallet({
     policies,
+    isLoading = false,
     onViewPolicy,
     onAddManually,
     onUploadDocument,
     onShareWithAgent,
     onAddToWallet,
     onViewDocuments,
-}: PolicyWalletProps) {
+}: PolicyWalletProps & { isLoading?: boolean }) {
+    const { t, language } = useLanguage()
     // Group policies by line of business
     const motorPolicies = policies.filter(p => p.lineOfBusiness === 'motor')
     const healthPolicies = policies.filter(p => p.lineOfBusiness === 'health')
@@ -35,6 +39,25 @@ export function PolicyWallet({
     const activeCount = policies.filter(p => p.status === 'active').length
     const expiringCount = policies.filter(p => p.status === 'expiring_soon').length
     const actionNeededCount = policies.filter(p => p.status === 'action_needed').length
+
+    // Loading State (Skeletons)
+    if (isLoading) {
+        return (
+            <div className="max-w-2xl mx-auto px-4 py-8">
+                <div className="grid grid-cols-3 gap-4 mb-8">
+                    {[1, 2, 3].map(i => <Skeleton key={i} className="h-24 rounded-xl" />)}
+                </div>
+                <div className="space-y-6">
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="space-y-3">
+                            <Skeleton className="h-4 w-32" />
+                            <Skeleton className="h-32 rounded-xl" />
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
 
     // Empty state
     if (policies.length === 0) {
@@ -63,7 +86,7 @@ export function PolicyWallet({
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
                         </svg>
                         <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-100 uppercase tracking-wide">
-                            Αυτοκίνητο
+                            {t.policyTypes.motor}
                         </h2>
                     </div>
                     <div className="space-y-3">
@@ -89,7 +112,7 @@ export function PolicyWallet({
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>
                         <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-100 uppercase tracking-wide">
-                            Υγεία
+                            {t.policyTypes.health}
                         </h2>
                     </div>
                     <div className="space-y-3">
@@ -115,7 +138,7 @@ export function PolicyWallet({
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                         </svg>
                         <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-100 uppercase tracking-wide">
-                            Κατοικία
+                            {t.policyTypes.home}
                         </h2>
                     </div>
                     <div className="space-y-3">
@@ -139,7 +162,7 @@ export function PolicyWallet({
                     onClick={onAddManually}
                     className="w-full px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors shadow-sm"
                 >
-                    Προσθήκη ασφάλισης
+                    {t.wallet.addPolicy}
                 </button>
             </div>
         </div>

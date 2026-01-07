@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { db } from "@/lib/db"
 import { z } from "zod"
+import { createApiResponse, createApiError } from "@/lib/api-utils"
+import { rateLimit } from "@/lib/rate-limit"
 
 const InviteSchema = z.object({
     invitee_email: z.string().email(),
@@ -12,12 +13,12 @@ const InviteSchema = z.object({
 
 export async function POST(req: Request) {
     const session = await auth()
-    if (!session?.user?.id) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+
+    // Rate limiting: max 5 invites per minute to prevent user or referral spam
+    const ip = req.headers.get("x-forwarded-for") || "127.0.0.1"
+    const limitCheck = rateLimit(ip as string, 5, 60000)
+    if (!limitCheck.success) return limitCheck.error!
 
     try {
         const body = await req.json()
@@ -32,24 +33,21 @@ export async function POST(req: Request) {
                 }
             })
             if (count !== policy_ids.length) {
-                return NextResponse.json(
-                    { error: { code: "FORBIDDEN", message: "You don't own all specified policies", status: 403 } },
-                    { status: 403 }
-                )
+                return createApiError("FORBIDDEN", "You don't own all specified policies", 403)
             }
         }
 
-        const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
+        const token = crypto.randomUUID().replace(/-/g, '')
 
         const invite = await db.invite.create({
             data: {
                 inviterUserId: session.user.id,
-                inviteeEmail: invite_email,
+                inviteeEmail: invitee_email,
                 inviteType: "access_grant",
                 scope: scope,
                 token: token,
                 expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-                requestedPermissions: JSON.stringify(policy_ids || []) // Using this field to store targeted policy IDs for MVP
+                requestedPermissions: JSON.stringify(policy_ids || [])
             }
         })
 
@@ -58,36 +56,25 @@ export async function POST(req: Request) {
                 adminUserId: session.user.id,
                 adminEmail: session.user.email || "unknown",
                 actionType: "INVITE_CREATED",
-                description: `Created invite for ${invite_email} with scope ${scope}`,
-                timestamp: new Date()
+                description: `Created invite for ${invitee_email} with scope ${scope}`,
             }
         })
 
-        return NextResponse.json({
-            data: {
-                id: invite.id,
-                invitee_email: invite.inviteeEmail,
-                scope: invite.scope,
-                token: invite.token,
-                invite_link: `${process.env.NEXTAUTH_URL}/accept-invite/${invite.token}`,
-                status: "sent",
-                expires_at: invite.expiresAt,
-                created_at: invite.createdAt
-            },
-            meta: { request_id: crypto.randomUUID(), language: "el" },
-            error: null
+        return createApiResponse({
+            id: invite.id,
+            invitee_email: invite.inviteeEmail,
+            scope: invite.scope,
+            token: invite.token,
+            invite_link: `${process.env.NEXTAUTH_URL}/accept-invite/${invite.token}`,
+            status: "sent",
+            expires_at: invite.expiresAt,
+            created_at: invite.createdAt
         })
     } catch (error) {
         console.error(error)
         if (error instanceof z.ZodError) {
-            return NextResponse.json(
-                { error: { code: "VALIDATION_ERROR", message: "Invalid data", details: error.errors, status: 400 } },
-                { status: 400 }
-            )
+            return createApiError("VALIDATION_ERROR", "Invalid data", 400, error.issues)
         }
-        return NextResponse.json(
-            { error: { code: "INTERNAL_ERROR", message: "Server error", status: 500 } },
-            { status: 500 }
-        )
+        return createApiError("INTERNAL_ERROR", "Server error", 500)
     }
 }

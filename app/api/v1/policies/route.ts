@@ -1,7 +1,9 @@
-import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { db } from "@/lib/db"
 import { z } from "zod"
+import { createApiResponse, createApiError } from "@/lib/api-utils"
+import { rateLimit } from "@/lib/rate-limit"
+import { logger } from "@/lib/logger"
 
 const PolicySchema = z.object({
     policyNumber: z.string().min(1),
@@ -16,12 +18,7 @@ const PolicySchema = z.object({
 
 export async function GET(req: Request) {
     const session = await auth()
-    if (!session?.user?.id) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { searchParams } = new URL(req.url)
     const lineOfBusiness = searchParams.get("line_of_business")
@@ -63,52 +60,42 @@ export async function GET(req: Request) {
             stats[item.lineOfBusiness] = item._count
         })
 
-        return NextResponse.json({
-            data: {
-                policies: policies.map(p => ({
-                    id: p.id,
-                    policyNumber: p.policyNumber,
-                    insurerName: p.insurerName,
-                    lineOfBusiness: p.lineOfBusiness,
-                    status: p.status,
-                    startDate: p.startDate,
-                    endDate: p.endDate,
-                    premiumAmount: p.premiumAmount,
-                    premiumCurrency: p.premiumCurrency,
-                    coverageSummary: p.coverageSummary,
-                    openGapsCount: (p as any)._count.gapInstances,
-                    createdAt: p.createdAt,
-                    updatedAt: p.updatedAt
-                })),
-                groupedByLine: stats,
-                pagination: {
-                    next_cursor: nextCursor,
-                    has_more: !!nextCursor
-                }
-            },
-            meta: {
-                request_id: crypto.randomUUID(),
-                language: "el"
-            },
-            error: null
+        return createApiResponse({
+            policies: policies.map(p => ({
+                id: p.id,
+                policyNumber: p.policyNumber,
+                insurerName: p.insurerName,
+                lineOfBusiness: p.lineOfBusiness,
+                status: p.status,
+                startDate: p.startDate,
+                endDate: p.endDate,
+                premiumAmount: p.premiumAmount,
+                premiumCurrency: p.premiumCurrency,
+                coverageSummary: p.coverageSummary,
+                openGapsCount: (p as any)._count.gapInstances,
+                createdAt: p.createdAt,
+                updatedAt: p.updatedAt
+            })),
+            groupedByLine: stats,
+            pagination: {
+                next_cursor: nextCursor,
+                has_more: !!nextCursor
+            }
         })
     } catch (error) {
-        console.error(error)
-        return NextResponse.json(
-            { error: { code: "INTERNAL_ERROR", message: "Server error", status: 500 } },
-            { status: 500 }
-        )
+        logger('error', 'Fetch policies failed', { userId: session.user.id, error })
+        return createApiError("INTERNAL_ERROR", "Server error", 500)
     }
 }
 
 export async function POST(req: Request) {
     const session = await auth()
-    if (!session?.user?.id) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+
+    // Rate limiting: max 10 policy creations per minute
+    const ip = req.headers.get("x-forwarded-for") || "127.0.0.1"
+    const limitCheck = await rateLimit(ip as string, 10, 60000)
+    if (!limitCheck.success) return limitCheck.error!
 
     try {
         const body = await req.json()
@@ -120,46 +107,27 @@ export async function POST(req: Request) {
                 ownerUserId: session.user.id,
                 createdByUserId: session.user.id,
                 status: "active",
-            },
-            include: {
-                _count: {
-                    select: { gapInstances: { where: { resolvedAt: null } } }
-                }
             }
         })
 
         await (db.activityLog as any).create({
             data: {
-                adminUserId: session.user.id, // Re-using adminUserId for consistency in this schema
+                adminUserId: session.user.id,
                 adminEmail: session.user.email || "unknown",
                 actionType: "POLICY_CREATED",
                 description: `Manual policy creation: ${policy.policyNumber}`,
-                timestamp: new Date()
             }
         })
 
-        return NextResponse.json({
-            data: {
-                ...policy,
-                openGapsCount: 0
-            },
-            meta: {
-                request_id: crypto.randomUUID(),
-                language: "el"
-            },
-            error: null
+        return createApiResponse({
+            ...policy,
+            openGapsCount: 0
         })
     } catch (error) {
-        console.error(error)
         if (error instanceof z.ZodError) {
-            return NextResponse.json(
-                { error: { code: "VALIDATION_ERROR", message: "Invalid data", details: error.errors, status: 400 } },
-                { status: 400 }
-            )
+            return createApiError("VALIDATION_ERROR", "Invalid data", 400, error.issues)
         }
-        return NextResponse.json(
-            { error: { code: "INTERNAL_ERROR", message: "Server error", status: 500 } },
-            { status: 500 }
-        )
+        logger('error', 'Create policy failed', { userId: session.user.id, error })
+        return createApiError("INTERNAL_ERROR", "Server error", 500)
     }
 }

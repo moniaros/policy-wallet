@@ -1,5 +1,7 @@
 "use client"
 
+import { useLanguage } from "@/contexts/LanguageContext"
+
 interface EmptyStateProps {
     onAddManually?: () => void
     onUploadDocument?: () => void
@@ -7,6 +9,8 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({ onAddManually, onUploadDocument, viaAgentInvite = false }: EmptyStateProps) {
+    const { t } = useLanguage()
+
     return (
         <div className="max-w-2xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
             <div className="text-center">
@@ -19,10 +23,10 @@ export function EmptyState({ onAddManually, onUploadDocument, viaAgentInvite = f
 
                 {/* Message */}
                 <h2 className="text-xl font-semibold text-stone-900 dark:text-stone-100 mb-2">
-                    Προσθέστε την πρώτη σας ασφάλιση
+                    {t.wallet.noPolicies}
                 </h2>
                 <p className="text-sm text-stone-600 dark:text-stone-400 mb-8 max-w-md mx-auto">
-                    Προσθέστε την πρώτη σας ασφάλιση για να έχετε μια ξεκάθαρη εικόνα των ασφαλιστικών σας καλύψεων.
+                    {t.wallet.noPoliciesDesc}
                 </p>
 
                 {/* CTAs */}
@@ -31,16 +35,9 @@ export function EmptyState({ onAddManually, onUploadDocument, viaAgentInvite = f
                         onClick={onAddManually}
                         className="w-full px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors shadow-sm"
                     >
-                        Προσθήκη ασφάλισης
+                        {t.wallet.addPolicy}
                     </button>
                 </div>
-
-                {/* Optional agent reassurance */}
-                {viaAgentInvite && (
-                    <p className="mt-6 text-xs text-stone-500 dark:text-stone-400">
-                        Ο πράκτοράς σας μπορεί να σας βοηθήσει να προσθέσετε ασφαλίσεις αν προτιμάτε.
-                    </p>
-                )}
             </div>
         </div>
     )

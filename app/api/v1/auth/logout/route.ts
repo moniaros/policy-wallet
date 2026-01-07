@@ -1,20 +1,30 @@
 import { NextResponse } from "next/server"
-import { signOut } from "@/auth"
+import { auth, signOut } from "@/auth"
+import { db } from "@/lib/db"
+import { createApiResponse, createApiError } from "@/lib/api-utils"
+
+import { logger } from "@/lib/logger"
 
 export async function POST() {
     try {
+        const session = await auth()
+        const sessionId = (session?.user as any)?.sessionId
+
+        // 1. Invalidate whitelisted session in DB
+        if (sessionId) {
+            await db.activeSession.delete({
+                where: { id: sessionId }
+            }).catch(() => {
+                // Ignore if session already deleted or non-existent
+            })
+        }
+
+        // 2. Perform NextAuth signout (clears cookies/JWT)
         await signOut({ redirect: false })
 
-        return NextResponse.json({
-            data: { message: "Logged out successfully" },
-            meta: { request_id: crypto.randomUUID(), language: "el" },
-            error: null
-        })
+        return createApiResponse({ message: "Logged out successfully" })
     } catch (error) {
-        console.error("Logout failed:", error)
-        return NextResponse.json(
-            { error: { code: "INTERNAL_ERROR", message: "Logout failed", status: 500 } },
-            { status: 500 }
-        )
+        logger('error', 'Logout failed', { error })
+        return createApiError("INTERNAL_ERROR", "Logout failed", 500)
     }
 }

@@ -1,27 +1,23 @@
-import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { db } from "@/lib/db"
+import { createApiResponse, createApiError } from "@/lib/api-utils"
+import { ensureOwnership } from "@/lib/security"
 
 export async function DELETE(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
     const session = await auth()
-    if (!session?.user?.id) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { id } = await params
 
+    const ownership = await ensureOwnership(db.accessGrant, id, session.user.id, "granterUserId")
+    if (!ownership.success) return ownership.error!
+
     try {
-        const grant = await db.accessGrant.update({
-            where: {
-                id,
-                granterUserId: session.user.id
-            },
+        await db.accessGrant.update({
+            where: { id },
             data: {
                 status: "revoked",
                 revokedAt: new Date()
@@ -34,20 +30,12 @@ export async function DELETE(
                 adminEmail: session.user.email || "unknown",
                 actionType: "ACCESS_REVOKED",
                 description: `Revoked access grant ${id}`,
-                timestamp: new Date()
             }
         })
 
-        return NextResponse.json({
-            data: { message: "Access revoked successfully" },
-            meta: { request_id: crypto.randomUUID(), language: "el" },
-            error: null
-        })
+        return createApiResponse({ message: "Access revoked successfully" })
     } catch (error) {
         console.error(error)
-        return NextResponse.json(
-            { error: { code: "FORBIDDEN", message: "Failed to revoke access", status: 403 } },
-            { status: 403 }
-        )
+        return createApiError("INTERNAL_ERROR", "Failed to revoke access", 500)
     }
 }

@@ -4,6 +4,7 @@ import { auth } from "@/auth"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
+import { logger } from "@/lib/logger"
 
 export async function getAccountData() {
     const session = await auth()
@@ -346,4 +347,44 @@ export async function cancelSubscription() {
 
     revalidatePath("/account")
     return { success: true }
+}
+
+export async function deleteAccount() {
+    const session = await auth()
+    if (!session?.user?.id) return { error: "Unauthorized" }
+
+    const userId = session.user.id
+
+    try {
+        await db.$transaction([
+            // Delete sessions first
+            db.activeSession.deleteMany({ where: { userId } }),
+            // Soft delete user
+            db.user.update({
+                where: { id: userId },
+                data: {
+                    email: `deleted_${userId}@policywallet.gr`, // Anonymize
+                    name: "Deleted User"
+                }
+            })
+        ])
+
+        // High priority audit log
+        await (db.activityLog as any).create({
+            data: {
+                adminUserId: userId,
+                adminEmail: "security",
+                actionType: "ACCOUNT_DELETED",
+                description: `User account ${userId} requested deletion and was anonymized.`,
+                isBreakGlass: true
+            }
+        })
+
+        logger('info', 'Account deleted', { userId })
+
+        return { success: true }
+    } catch (error) {
+        logger('error', 'Account deletion failed', { userId, error })
+        return { error: "Failed to delete account" }
+    }
 }

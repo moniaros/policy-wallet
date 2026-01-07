@@ -1,18 +1,20 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useTransition } from "react"
 import { createPolicy } from "../actions"
-import { useFormStatus } from "react-dom"
+import { useLanguage } from "@/contexts/LanguageContext"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
-function SubmitButton() {
-    const { pending } = useFormStatus()
+function SubmitButton({ pending }: { pending: boolean }) {
+    const { t } = useLanguage()
     return (
         <button
             type="submit"
             disabled={pending}
             className="w-full bg-teal-600 text-white py-3 rounded-lg font-medium hover:bg-teal-700 disabled:opacity-50 transition-colors shadow-sm"
         >
-            {pending ? "Creating Policy..." : "Save Policy"}
+            {pending ? t.common.loading : t.common.save}
         </button>
     )
 }
@@ -23,6 +25,9 @@ interface AddPolicyFormProps {
 }
 
 export function AddPolicyForm({ insurers, types }: AddPolicyFormProps) {
+    const { t } = useLanguage()
+    const router = useRouter()
+    const [isPending, startTransition] = useTransition()
     const [selectedFiles, setSelectedFiles] = useState<File[]>([])
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,17 +36,34 @@ export function AddPolicyForm({ insurers, types }: AddPolicyFormProps) {
         }
     }
 
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        const formData = new FormData(e.currentTarget)
+
+        startTransition(async () => {
+            try {
+                // Since createPolicy redirects on the server, we might not get back here on success
+                // But we can try to call it and handle errors
+                await createPolicy(formData)
+                toast.success(t.wallet.addPolicy + " Success")
+            } catch (error: any) {
+                console.error(error)
+                toast.error(error.message || t.errors.somethingWentWrong)
+            }
+        })
+    }
+
     return (
-        <form action={createPolicy} className="space-y-6 bg-white dark:bg-stone-800 p-6 sm:p-8 rounded-xl shadow-sm border border-stone-200 dark:border-stone-700">
+        <form onSubmit={handleSubmit} className="space-y-6 bg-white dark:bg-stone-800 p-6 sm:p-8 rounded-xl shadow-sm border border-stone-200 dark:border-stone-700">
             {/* Insurer Dropdown */}
             <div>
-                <label className="block text-sm font-semibold text-stone-700 dark:text-stone-300 mb-2">Insurer</label>
+                <label className="block text-sm font-semibold text-stone-700 dark:text-stone-300 mb-2">{t.wallet.insurer}</label>
                 <select
                     name="insurerName"
                     required
                     className="w-full px-4 py-2.5 bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all dark:text-stone-100"
                 >
-                    <option value="">Select Insurer</option>
+                    <option value="">{t.wallet.insurer}</option>
                     {insurers.map(i => (
                         <option key={i.id} value={i.name}>{i.name}</option>
                     ))}
@@ -50,23 +72,23 @@ export function AddPolicyForm({ insurers, types }: AddPolicyFormProps) {
 
             {/* Insurance Type Dropdown */}
             <div>
-                <label className="block text-sm font-semibold text-stone-700 dark:text-stone-300 mb-2">Insurance Type</label>
+                <label className="block text-sm font-semibold text-stone-700 dark:text-stone-300 mb-2">{t.wallet.type}</label>
                 <select
                     name="lineOfBusiness"
                     required
                     className="w-full px-4 py-2.5 bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-600 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all dark:text-stone-100"
                 >
-                    <option value="">Select Type</option>
+                    <option value="">{t.wallet.type}</option>
                     {types.map(t => (
                         <option key={t.id} value={t.slug}>{t.name}</option>
                     ))}
                 </select>
             </div>
 
-            {/* Basic Info (Number & Dates) - Kept because they are essential for the policy object but could be pre-filled/extracted later */}
+            {/* Basic Info (Number & Dates) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold text-stone-700 dark:text-stone-300 mb-2">Policy Number</label>
+                    <label className="block text-sm font-semibold text-stone-700 dark:text-stone-300 mb-2">{t.wallet.policyNumber}</label>
                     <input
                         name="policyNumber"
                         type="text"
@@ -76,7 +98,7 @@ export function AddPolicyForm({ insurers, types }: AddPolicyFormProps) {
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-stone-700 dark:text-stone-300 mb-2">Start Date</label>
+                    <label className="block text-sm font-semibold text-stone-700 dark:text-stone-300 mb-2">{t.wallet.startDate}</label>
                     <input
                         name="startDate"
                         type="date"
@@ -85,7 +107,7 @@ export function AddPolicyForm({ insurers, types }: AddPolicyFormProps) {
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold text-stone-700 dark:text-stone-300 mb-2">End Date</label>
+                    <label className="block text-sm font-semibold text-stone-700 dark:text-stone-300 mb-2">{t.wallet.endDate}</label>
                     <input
                         name="endDate"
                         type="date"
@@ -97,7 +119,7 @@ export function AddPolicyForm({ insurers, types }: AddPolicyFormProps) {
 
             {/* Multiple File Upload */}
             <div>
-                <label className="block text-sm font-semibold text-stone-700 dark:text-stone-300 mb-2">Policy Documents (PDF)</label>
+                <label className="block text-sm font-semibold text-stone-700 dark:text-stone-300 mb-2">{t.wallet.documents} (PDF)</label>
                 <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-stone-300 dark:border-stone-700 border-dashed rounded-lg hover:border-teal-400 dark:hover:border-teal-500 transition-colors">
                     <div className="space-y-1 text-center">
                         <svg className="mx-auto h-12 w-12 text-stone-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
@@ -105,7 +127,7 @@ export function AddPolicyForm({ insurers, types }: AddPolicyFormProps) {
                         </svg>
                         <div className="flex text-sm text-stone-600 dark:text-stone-400">
                             <label htmlFor="files" className="relative cursor-pointer bg-white dark:bg-stone-800 rounded-md font-medium text-teal-600 hover:text-teal-500 focus-within:outline-none">
-                                <span>Upload files</span>
+                                <span>{t.wallet.uploadDocument}</span>
                                 <input id="files" name="files" type="file" multiple accept=".pdf" className="sr-only" onChange={handleFileChange} />
                             </label>
                             <p className="pl-1">or drag and drop</p>
@@ -129,7 +151,7 @@ export function AddPolicyForm({ insurers, types }: AddPolicyFormProps) {
                 )}
             </div>
 
-            <SubmitButton />
+            <SubmitButton pending={isPending} />
         </form>
     )
 }

@@ -1,27 +1,23 @@
-import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { db } from "@/lib/db"
+import { createApiResponse, createApiError } from "@/lib/api-utils"
+import { ensureOwnership } from "@/lib/security"
 
 export async function GET(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
     const session = await auth()
-    if (!session?.user?.id) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { id } = await params
 
+    const ownership = await ensureOwnership(db.questionnaireInstance, id, session.user.id, "sentToUserId")
+    if (!ownership.success) return ownership.error!
+
     try {
-        const questionnaire = await db.questionnaireInstance.findFirst({
-            where: {
-                id,
-                sentToUserId: session.user.id
-            },
+        const questionnaire = await db.questionnaireInstance.findUnique({
+            where: { id },
             include: {
                 template: true,
                 sender: {
@@ -30,27 +26,15 @@ export async function GET(
             }
         })
 
-        if (!questionnaire) {
-            return NextResponse.json(
-                { error: { code: "NOT_FOUND", message: "Questionnaire not found", status: 404 } },
-                { status: 404 }
-            )
-        }
+        if (!questionnaire) return createApiError("NOT_FOUND", "Questionnaire not found", 404)
 
-        return NextResponse.json({
-            data: {
-                ...questionnaire,
-                questions: questionnaire.template.questions ? JSON.parse(questionnaire.template.questions as string) : []
-            },
-            meta: { request_id: crypto.randomUUID(), language: "el" },
-            error: null
+        return createApiResponse({
+            ...questionnaire,
+            questions: questionnaire.template.questions ? JSON.parse(questionnaire.template.questions as string) : []
         })
     } catch (error) {
         console.error(error)
-        return NextResponse.json(
-            { error: { code: "INTERNAL_ERROR", message: "Server error", status: 500 } },
-            { status: 500 }
-        )
+        return createApiError("INTERNAL_ERROR", "Server error", 500)
     }
 }
 
@@ -59,18 +43,18 @@ export async function POST(
     { params }: { params: Promise<{ id: string }> }
 ) {
     const session = await auth()
-    if (!session?.user?.id) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { id } = await params
+
+    const ownership = await ensureOwnership(db.questionnaireInstance, id, session.user.id, "sentToUserId")
+    if (!ownership.success) return ownership.error!
 
     try {
         const body = await req.json()
         const { answers } = body
+
+        if (!answers) return createApiError("BAD_REQUEST", "Answers are required", 400)
 
         const response = await db.questionnaireResponse.create({
             data: {
@@ -88,16 +72,9 @@ export async function POST(
             }
         })
 
-        return NextResponse.json({
-            data: response,
-            meta: { request_id: crypto.randomUUID(), language: "el" },
-            error: null
-        })
+        return createApiResponse(response)
     } catch (error) {
         console.error(error)
-        return NextResponse.json(
-            { error: { code: "BAD_REQUEST", message: "Failed to submit questionnaire", status: 400 } },
-            { status: 400 }
-        )
+        return createApiError("BAD_REQUEST", "Failed to submit questionnaire", 400)
     }
 }

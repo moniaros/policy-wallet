@@ -1,7 +1,9 @@
-import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { db } from "@/lib/db"
 import { z } from "zod"
+import { createApiResponse, createApiError } from "@/lib/api-utils"
+import { ensureOwnership } from "@/lib/security"
+import { logger } from "@/lib/logger"
 
 const UpdatePolicySchema = z.object({
     policyNumber: z.string().optional(),
@@ -17,21 +19,16 @@ export async function GET(
     { params }: { params: Promise<{ id: string }> }
 ) {
     const session = await auth()
-    if (!session?.user?.id) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { id } = await params
 
+    const ownership = await ensureOwnership(db.policy, id, session.user.id)
+    if (!ownership.success) return ownership.error!
+
     try {
-        const policy = await db.policy.findFirst({
-            where: {
-                id,
-                ownerUserId: session.user.id
-            },
+        const policy = await db.policy.findUnique({
+            where: { id },
             include: {
                 documents: true,
                 gapInstances: {
@@ -41,14 +38,8 @@ export async function GET(
             }
         })
 
-        if (!policy) {
-            return NextResponse.json(
-                { error: { code: "NOT_FOUND", message: "Policy not found", status: 404 } },
-                { status: 404 }
-            )
-        }
+        if (!policy) return createApiError("NOT_FOUND", "Policy not found", 404)
 
-        // Mock highlights for MVP
         const highlights = [
             `Policy Number: ${policy.policyNumber}`,
             `Insurer: ${policy.insurerName}`,
@@ -56,37 +47,27 @@ export async function GET(
             `Valid until: ${policy.endDate.toDateString()}`
         ]
 
-        return NextResponse.json({
-            data: {
-                ...policy,
-                highlights,
-                gaps: {
-                    count: policy.gapInstances.length,
-                    items: policy.gapInstances.map(gi => ({
-                        id: gi.id,
-                        gap_definition_id: gi.gapDefinitionId,
-                        title: (gi.definition as any).title,
-                        description: (gi.definition as any).description,
-                        severity: gi.severity,
-                        status: gi.status,
-                        ai_explanation: gi.aiExplanation,
-                        ai_suggestion: gi.aiSuggestion,
-                        detected_at: gi.detectedAt
-                    }))
-                }
-            },
-            meta: {
-                request_id: crypto.randomUUID(),
-                language: "el"
-            },
-            error: null
+        return createApiResponse({
+            ...policy,
+            highlights,
+            gaps: {
+                count: policy.gapInstances.length,
+                items: policy.gapInstances.map(gi => ({
+                    id: gi.id,
+                    gap_definition_id: gi.gapDefinitionId,
+                    title: (gi.definition as any).title,
+                    description: (gi.definition as any).description,
+                    severity: gi.severity,
+                    status: gi.status,
+                    ai_explanation: gi.aiExplanation,
+                    ai_suggestion: gi.aiSuggestion,
+                    detected_at: gi.detectedAt
+                }))
+            }
         })
     } catch (error) {
-        console.error(error)
-        return NextResponse.json(
-            { error: { code: "INTERNAL_ERROR", message: "Server error", status: 500 } },
-            { status: 500 }
-        )
+        logger('error', 'Fetch policy failed', { id, error, userId: session.user.id })
+        return createApiError("INTERNAL_ERROR", "Server error", 500)
     }
 }
 
@@ -95,38 +76,26 @@ export async function PATCH(
     { params }: { params: Promise<{ id: string }> }
 ) {
     const session = await auth()
-    if (!session?.user?.id) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { id } = await params
+
+    const ownership = await ensureOwnership(db.policy, id, session.user.id)
+    if (!ownership.success) return ownership.error!
 
     try {
         const body = await req.json()
         const validatedData = UpdatePolicySchema.parse(body)
 
         const policy = await db.policy.update({
-            where: {
-                id,
-                ownerUserId: session.user.id
-            },
+            where: { id },
             data: validatedData
         })
 
-        return NextResponse.json({
-            data: policy,
-            meta: { request_id: crypto.randomUUID(), language: "el" },
-            error: null
-        })
+        return createApiResponse(policy)
     } catch (error) {
         console.error(error)
-        return NextResponse.json(
-            { error: { code: "BAD_REQUEST", message: "Update failed", status: 400 } },
-            { status: 400 }
-        )
+        return createApiError("BAD_REQUEST", "Update failed", 400)
     }
 }
 
@@ -135,34 +104,35 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     const session = await auth()
-    if (!session?.user?.id) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { id } = await params
 
+    const ownership = await ensureOwnership(db.policy, id, session.user.id)
+    if (!ownership.success) return ownership.error!
+
     try {
         await db.policy.update({
-            where: {
-                id,
-                ownerUserId: session.user.id
-            },
+            where: { id },
             data: { status: "deleted" }
         })
 
-        return NextResponse.json({
-            data: { message: "Policy deleted successfully" },
-            meta: { request_id: crypto.randomUUID(), language: "el" },
-            error: null
+        // Log Activity
+        await (db.activityLog as any).create({
+            data: {
+                adminUserId: session.user.id,
+                adminEmail: session.user.email || "unknown",
+                actionType: "POLICY_DELETED",
+                description: `Soft-deleted policy ${id}`,
+                metadata: { policyId: id }
+            }
         })
+
+        logger('info', 'Policy soft-deleted', { id, userId: session.user.id })
+
+        return createApiResponse({ message: "Policy deleted successfully" })
     } catch (error) {
-        console.error(error)
-        return NextResponse.json(
-            { error: { code: "INTERNAL_ERROR", message: "Delete failed", status: 500 } },
-            { status: 500 }
-        )
+        logger('error', 'Delete policy failed', { id, error, userId: session.user.id })
+        return createApiError("INTERNAL_ERROR", "Delete failed", 500)
     }
 }

@@ -7,7 +7,7 @@ import { db } from "@/lib/db"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
 import authConfig from "./auth.config"
-import { cookies } from "next/headers"
+import { cookies, headers } from "next/headers"
 
 // Extend built-in session types
 declare module "next-auth" {
@@ -16,6 +16,7 @@ declare module "next-auth" {
             id: string
             roles: string
             preferredLanguage: string
+            sessionId?: string
         } & DefaultSession["user"]
     }
 }
@@ -73,6 +74,11 @@ export const {
             },
             from: process.env.SENDER_EMAIL || "noreply@policywallet.gr",
             sendVerificationRequest: async ({ identifier: email, url, provider }) => {
+                // Wrap the original URL in our handover bridge
+                const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000"
+                const token = new URL(url).searchParams.get("token")
+                const handoverUrl = `${baseUrl}/auth/handover?token=${token}&email=${encodeURIComponent(email)}&callbackUrl=${encodeURIComponent(url)}`
+
                 // If BREVO_API_KEY is present, use Brevo API
                 if (process.env.BREVO_API_KEY) {
                     const response = await fetch("https://api.brevo.com/v3/smtp/email", {
@@ -92,7 +98,8 @@ export const {
                                     <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
                                       <h2 style="color: #0d9488;">Welcome to PolicyWallet</h2>
                                       <p>Click the button below to sign in to your account.</p>
-                                      <a href="${url}" style="display: inline-block; background-color: #0d9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Sign In</a>
+                                      <p style="color: #666; font-size: 14px; margin-bottom: 24px;">Note: We've added a bridge page to help you open this in our mobile app if you're on your phone.</p>
+                                      <a href="${handoverUrl}" style="display: inline-block; background-color: #0d9488; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">Sign In Securely</a>
                                       <p style="margin-top: 24px; font-size: 14px; color: #666;">If you didn't request this email, you can safely ignore it.</p>
                                     </div>
                                   </body>
@@ -102,13 +109,8 @@ export const {
                     })
 
                     if (!response.ok) {
-                        const error = await response.text()
-                        console.error("BREVO_API_ERROR", error)
-                        console.log("Fallback: Magic Link URL:", url)
-                        // In production we should throw, but in dev we can just log the link
-                        if (process.env.NODE_ENV === "production") {
-                            throw new Error("Failed to send verification email via Brevo")
-                        }
+                        const error = await response.json()
+                        throw new Error(error.message || "Failed to send verification email")
                     }
                 } else {
                     console.log("Dev Mode: Magic Link URL:", url)
@@ -117,13 +119,39 @@ export const {
         }),
     ],
     events: {
+        async signIn({ user, account, profile }) {
+            try {
+                const headersList = await headers()
+                const ip = headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || "127.0.0.1"
+                const ua = headersList.get("user-agent") || "unknown"
+
+                await db.securityEvent.create({
+                    data: {
+                        userId: user.id!,
+                        eventType: "login_success",
+                        ipAddress: ip,
+                        userAgent: ua,
+                    }
+                })
+
+                await (db.activityLog as any).create({
+                    data: {
+                        adminUserId: user.id!,
+                        adminEmail: user.email!,
+                        actionType: "USER_LOGIN",
+                        description: `User logged in from ${ip}`,
+                    }
+                })
+            } catch (error) {
+                console.error("Error in signIn event:", error)
+            }
+        },
         async createUser({ user }) {
             try {
                 const cookieStore = await cookies()
                 const referrerId = cookieStore.get("pw_referrer")?.value
 
                 if (referrerId && user.id) {
-                    // Check if referrer exists
                     const referrer = await db.user.findUnique({
                         where: { id: referrerId }
                     })
@@ -135,10 +163,9 @@ export const {
                                 referredUserId: user.id,
                                 referredEmail: user.email || "",
                                 status: "pending",
-                                creditsEarned: 0 // Will be credited when they upgrade
+                                creditsEarned: 0
                             }
                         })
-                        console.log(`Referral created: ${referrerId} -> ${user.id}`)
                     }
                 }
             } catch (error) {
@@ -154,19 +181,49 @@ export const {
             if (token.roles && session.user) {
                 session.user.roles = token.roles as string
             }
+            if (token.sessionId && session.user) {
+                session.user.sessionId = token.sessionId as string
+            }
             return session
         },
-        async jwt({ token }) {
+        async jwt({ token, user, trigger }) {
+            if (trigger === "signIn" && user?.id) {
+                const headersList = await headers()
+                const ip = headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || "127.0.0.1"
+                const ua = headersList.get("user-agent") || "unknown"
+
+                const session = await db.activeSession.create({
+                    data: {
+                        userId: user.id,
+                        deviceType: ua.includes("Mobi") ? "mobile" : "desktop",
+                        deviceName: ua.slice(0, 255),
+                        ipAddress: ip,
+                        lastActiveAt: new Date(),
+                    }
+                })
+                token.sessionId = session.id
+            }
+
             if (!token.sub) return token
 
-            const user = await db.user.findUnique({
+            // Verify session is still valid (Whitelisting check)
+            if (token.sessionId) {
+                const activeSession = await db.activeSession.findUnique({
+                    where: { id: token.sessionId as string }
+                })
+                if (!activeSession) {
+                    return null as any // Invalidate token
+                }
+            }
+
+            const dbUser = await db.user.findUnique({
                 where: { id: token.sub },
                 select: { roles: true, preferredLanguage: true },
             })
 
-            if (user) {
-                token.roles = user.roles
-                token.preferredLanguage = user.preferredLanguage
+            if (dbUser) {
+                token.roles = dbUser.roles
+                token.preferredLanguage = dbUser.preferredLanguage
             }
 
             return token

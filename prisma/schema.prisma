@@ -33,6 +33,7 @@ model User {
   invoices                        Invoice[]
   notifications                   NotificationEvent[]
   notificationPreferences         NotificationPreference[]
+  pushToken                       String?                  @map("push_token")
   opportunitiesOwned              Opportunity[]
   paymentMethods                  PaymentMethod[]
   policiesCreated                 Policy[]                 @relation("Creator")
@@ -182,6 +183,8 @@ model Policy {
   owner           User             @relation("Owner", fields: [ownerUserId], references: [id])
   documents       PolicyDocument[]
 
+  @@index([ownerUserId])
+  @@index([createdByUserId])
   @@map("policies")
 }
 
@@ -198,6 +201,8 @@ model PolicyDocument {
   policy           Policy   @relation(fields: [policyId], references: [id], onDelete: Cascade)
   uploader         User     @relation(fields: [uploadedByUserId], references: [id])
 
+  @@index([policyId])
+  @@index([uploadedByUserId])
   @@map("policy_documents")
 }
 
@@ -234,6 +239,8 @@ model GapInstance {
   policy          Policy        @relation(fields: [policyId], references: [id], onDelete: Cascade)
   opportunities   Opportunity[]
 
+  @@index([policyId])
+  @@index([status])
   @@map("gap_instances")
 }
 
@@ -303,6 +310,8 @@ model Opportunity {
   policy           Policy?              @relation(fields: [policyId], references: [id])
   relationship     CustomerRelationship @relation(fields: [relationshipId], references: [id])
 
+  @@index([relationshipId])
+  @@index([policyId])
   @@map("opportunities")
 }
 
@@ -535,6 +544,7 @@ model ActivityLog {
   adminEmail   String   @map("admin_email")
   actionType   String   @map("action_type")
   description  String
+  metadata     Json?
   isBreakGlass Boolean  @default(false) @map("is_break_glass")
   timestamp    DateTime @default(now())
 

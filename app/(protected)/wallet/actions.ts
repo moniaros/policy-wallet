@@ -5,6 +5,8 @@ import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { z } from "zod"
+import { logger } from "@/lib/logger"
+import { uploadFile } from "@/lib/storage"
 
 const PolicySchema = z.object({
     insurerName: z.string().min(1, "Insurer name is required"),
@@ -48,11 +50,13 @@ export async function createPolicy(formData: FormData) {
     const files = formData.getAll("files") as File[]
     for (const file of files) {
         if (file.size > 0) {
-            const mockUrl = `https://storage.googleapis.com/policywallet-uploads/${file.name}`
+            // Upload actual file
+            const fileUrl = await uploadFile(file, "policies")
+
             await db.policyDocument.create({
                 data: {
                     policyId: policy.id,
-                    fileUrl: mockUrl,
+                    fileUrl: fileUrl,
                     fileName: file.name,
                     fileSize: file.size,
                     source: "policyholder",
@@ -62,6 +66,21 @@ export async function createPolicy(formData: FormData) {
             })
         }
     }
+
+    // Log Activity
+    await (db as any).activityLog.create({
+        data: {
+            adminUserId: session.user.id,
+            adminEmail: session.user.email || "unknown",
+            actionType: "POLICY_CREATED",
+            description: `Created policy ${policy.policyNumber} for ${policy.insurerName}`,
+            metadata: {
+                policyId: policy.id,
+                insurerName: policy.insurerName,
+                policyNumber: policy.policyNumber
+            }
+        }
+    })
 
     revalidatePath("/wallet")
     redirect("/wallet")
@@ -78,8 +97,19 @@ export async function uploadPolicyDocument(formData: FormData) {
         return { error: "No file uploaded" }
     }
 
-    // 1. Upload to storage (Mocking this part for One-Shot)
-    const mockUrl = `https://storage.googleapis.com/policywallet-uploads/${file.name}`
+    // Production Hardening: Size limit (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+        logger('warn', 'Policy upload rejected: file too large', { userId: session.user.id, size: file.size })
+        return { error: "File too large. Maximum size is 10MB." }
+    }
+
+    // 1. Upload to storage
+    let fileUrl = ""
+    try {
+        fileUrl = await uploadFile(file, "policies")
+    } catch (e) {
+        return { error: "Upload failed" }
+    }
 
     // 2. AI Extraction Logic (Gemini)
     let extractedData = {
@@ -133,7 +163,7 @@ export async function uploadPolicyDocument(formData: FormData) {
             const jsonStr = text.replace(/```json/g, "").replace(/```/g, "").trim();
             const aiJson = JSON.parse(jsonStr);
 
-            console.log("Gemini extracted:", aiJson);
+            logger('info', 'AI extraction successful', { userId: session.user.id, fileName: file.name })
 
             // Merge with defaults
             if (aiJson.insurerName) extractedData.insurerName = aiJson.insurerName;
@@ -143,7 +173,7 @@ export async function uploadPolicyDocument(formData: FormData) {
             if (aiJson.endDate) extractedData.endDate = new Date(aiJson.endDate);
 
         } catch (error) {
-            console.error("Gemini Extraction Failed:", error);
+            logger('error', 'AI extraction failed', { userId: session.user.id, error, fileName: file.name })
             // Fallback to placeholder is already set
         }
     }
@@ -169,12 +199,28 @@ export async function uploadPolicyDocument(formData: FormData) {
     await db.policyDocument.create({
         data: {
             policyId: policy.id,
-            fileUrl: mockUrl,
+            fileUrl: fileUrl,
             fileName: file.name,
             fileSize: file.size,
             source: "policyholder",
             uploadedByUserId: session.user.id,
             processingStatus: "completed"
+        }
+    })
+
+    // Log Activity
+    await (db as any).activityLog.create({
+        data: {
+            adminUserId: session.user.id,
+            adminEmail: session.user.email || "unknown",
+            actionType: "POLICY_UPLOADED",
+            description: `Uploaded and parsed document ${file.name} for ${policy.insurerName}`,
+            metadata: {
+                policyId: policy.id,
+                fileName: file.name,
+                extractedInsurer: policy.insurerName,
+                extractedPolicyNumber: policy.policyNumber
+            }
         }
     })
 

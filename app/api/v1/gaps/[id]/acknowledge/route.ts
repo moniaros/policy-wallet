@@ -1,46 +1,41 @@
-import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { db } from "@/lib/db"
+import { createApiResponse, createApiError } from "@/lib/api-utils"
 
 export async function PATCH(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
     const session = await auth()
-    if (!session?.user?.id) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { id } = await params
 
     try {
-        const gap = await db.gapInstance.update({
+        // Verify ownership through Policy relation
+        const gapCheck = await db.gapInstance.findFirst({
             where: {
                 id,
                 policy: { ownerUserId: session.user.id }
-            },
+            }
+        })
+
+        if (!gapCheck) return createApiError("NOT_FOUND", "Gap not found or ownership mismatch", 404)
+
+        const gap = await db.gapInstance.update({
+            where: { id },
             data: {
                 status: "acknowledged"
             }
         })
 
-        return NextResponse.json({
-            data: {
-                id: gap.id,
-                status: gap.status,
-                acknowledged_at: gap.updatedAt
-            },
-            meta: { request_id: crypto.randomUUID(), language: "el" },
-            error: null
+        return createApiResponse({
+            id: gap.id,
+            status: gap.status,
+            acknowledged_at: new Date()
         })
     } catch (error) {
         console.error(error)
-        return NextResponse.json(
-            { error: { code: "FORBIDDEN", message: "Failed to acknowledge gap", status: 403 } },
-            { status: 403 }
-        )
+        return createApiError("INTERNAL_ERROR", "Failed to acknowledge gap", 500)
     }
 }

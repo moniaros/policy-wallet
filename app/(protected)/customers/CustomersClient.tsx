@@ -13,11 +13,17 @@ interface Props {
 export function CustomersClient({ initialCustomers }: Props) {
     const [customers, setCustomers] = useState(initialCustomers)
     const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
 
     const handleSearch = async (query: string) => {
-        const results = await getCustomers(query)
-        setCustomers(results)
+        setIsLoading(true)
+        try {
+            const results = await getCustomers(query)
+            setCustomers(results)
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     const handleSuccess = () => {
@@ -28,6 +34,7 @@ export function CustomersClient({ initialCustomers }: Props) {
         <>
             <CustomerList
                 customers={customers}
+                isLoading={isLoading}
                 onSearch={handleSearch}
                 onCustomerClick={(id: string) => router.push(`/customers/${id}`)}
                 onAddCustomer={() => setIsAddModalOpen(true)}

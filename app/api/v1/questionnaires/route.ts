@@ -1,15 +1,10 @@
-import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { db } from "@/lib/db"
+import { createApiResponse, createApiError } from "@/lib/api-utils"
 
 export async function GET(req: Request) {
     const session = await auth()
-    if (!session?.user?.id) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { searchParams } = new URL(req.url)
     const status = searchParams.get("status") || "pending"
@@ -28,25 +23,18 @@ export async function GET(req: Request) {
             }
         })
 
-        return NextResponse.json({
-            data: {
-                questionnaires: questionnaires.map(q => ({
-                    id: q.id,
-                    template: q.template,
-                    sent_by: q.sender,
-                    status: q.status,
-                    sent_at: q.createdAt,
-                    completed_at: q.completedAt
-                }))
-            },
-            meta: { request_id: crypto.randomUUID(), language: "el" },
-            error: null
+        return createApiResponse({
+            questionnaires: questionnaires.map(q => ({
+                id: q.id,
+                template: q.template,
+                sent_by: (q as any).sender,
+                status: q.status,
+                sent_at: (q as any).sentAt,
+                completed_at: q.completedAt
+            }))
         })
     } catch (error) {
         console.error(error)
-        return NextResponse.json(
-            { error: { code: "INTERNAL_ERROR", message: "Server error", status: 500 } },
-            { status: 500 }
-        )
+        return createApiError("INTERNAL_ERROR", "Server error", 500)
     }
 }

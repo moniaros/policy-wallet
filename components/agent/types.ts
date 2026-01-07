@@ -99,6 +99,7 @@ export interface DashboardProps {
 
 export interface CustomerListProps {
     customers: Customer[]
+    isLoading?: boolean
     onSearch?: (query: string) => void
     onCustomerClick?: (customerId: string) => void
     onAddCustomer?: () => void

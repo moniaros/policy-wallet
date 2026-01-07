@@ -1,18 +1,14 @@
-import { NextResponse } from "next/server"
 import { auth } from "@/auth"
 import { db } from "@/lib/db"
+import { createApiResponse, createApiError } from "@/lib/api-utils"
+import { logger } from "@/lib/logger"
 
 export async function DELETE(
     req: Request,
     { params }: { params: Promise<{ id: string, docId: string }> }
 ) {
     const session = await auth()
-    if (!session?.user?.id) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { id, docId } = await params
 
@@ -27,12 +23,7 @@ export async function DELETE(
             include: { policy: true }
         })
 
-        if (!document) {
-            return NextResponse.json(
-                { error: { code: "NOT_FOUND", message: "Document not found", status: 404 } },
-                { status: 404 }
-            )
-        }
+        if (!document) return createApiError("NOT_FOUND", "Document not found", 404)
 
         await db.policyDocument.delete({
             where: { id: docId }
@@ -48,16 +39,11 @@ export async function DELETE(
             }
         })
 
-        return NextResponse.json({
-            data: { message: "Document deleted successfully" },
-            meta: { request_id: crypto.randomUUID(), language: "el" },
-            error: null
-        })
+        logger('info', 'Document deleted', { docId, policyId: id, userId: session.user.id })
+
+        return createApiResponse({ message: "Document deleted successfully" })
     } catch (error) {
-        console.error(error)
-        return NextResponse.json(
-            { error: { code: "INTERNAL_ERROR", message: "Delete failed", status: 500 } },
-            { status: 500 }
-        )
+        logger('error', 'Document delete failed', { docId, policyId: id, error })
+        return createApiError("INTERNAL_ERROR", "Delete failed", 500)
     }
 }

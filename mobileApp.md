@@ -5,6 +5,14 @@ This document specifies the REST API endpoints required for the **Policyholder-o
 
 **Base URL:** `/api/v1`
 
+### ⚡ Full Functionality (Missing MVP Features)
+- [x] Payments & Billing (Stripe Checkout + VAT Support)
+- [x] Communication Engine (Dispatcher + HTML Templates)
+- [x] Coverage Intelligence (AI-driven background gap detection)
+- [x] Policy Wallet Pass (Apple Wallet .pkpass API)
+- [x] Offline Support & PWA (Manifest & Metadata added)
+- [x] Mature Activity Log (Detailed Audit Trail + Metadata)
+
 ---
 
 ## A) Authentication & Session
