@@ -1,0 +1,124 @@
+import { NextResponse } from "next/server"
+import { auth } from "@/auth"
+import { db } from "@/lib/db"
+
+export async function GET() {
+    const session = await auth()
+    if (!session?.user?.id) {
+        return NextResponse.json(
+            {
+                data: null,
+                meta: { language: "el" },
+                error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 }
+            },
+            { status: 401 }
+        )
+    }
+
+    try {
+        const user = await db.user.findUnique({
+            where: { id: session.user.id },
+            include: {
+                policyholderProfile: true,
+            }
+        })
+
+        if (!user) {
+            return NextResponse.json(
+                {
+                    data: null,
+                    meta: { language: "el" },
+                    error: { code: "NOT_FOUND", message: "User not found", status: 404 }
+                },
+                { status: 404 }
+            )
+        }
+
+        return NextResponse.json({
+            data: {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                preferredLanguage: user.preferredLanguage,
+                roles: user.roles.split(","),
+                createdAt: user.createdAt,
+                profile: user.policyholderProfile ? {
+                    preferences: user.policyholderProfile.preferences
+                } : null
+            },
+            meta: {
+                request_id: crypto.randomUUID(),
+                language: user.preferredLanguage
+            },
+            error: null
+        })
+    } catch (error) {
+        console.error(error)
+        return NextResponse.json(
+            {
+                data: null,
+                meta: { language: "el" },
+                error: { code: "INTERNAL_ERROR", message: "Internal server error", status: 500 }
+            },
+            { status: 500 }
+        )
+    }
+}
+
+export async function PATCH(req: Request) {
+    const session = await auth()
+    if (!session?.user?.id) {
+        return NextResponse.json(
+            {
+                data: null,
+                meta: { language: "el" },
+                error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 }
+            },
+            { status: 401 }
+        )
+    }
+
+    try {
+        const body = await req.json()
+        const { name, preferredLanguage, profile } = body
+
+        const updatedUser = await db.user.update({
+            where: { id: session.user.id },
+            data: {
+                name: name !== undefined ? name : undefined,
+                preferredLanguage: preferredLanguage !== undefined ? preferredLanguage : undefined,
+                policyholderProfile: profile ? {
+                    upsert: {
+                        create: { preferences: profile.preferences },
+                        update: { preferences: profile.preferences }
+                    }
+                } : undefined
+            }
+        })
+
+        return NextResponse.json({
+            data: {
+                id: updatedUser.id,
+                email: updatedUser.email,
+                name: updatedUser.name,
+                preferredLanguage: updatedUser.preferredLanguage,
+                updatedAt: updatedUser.updatedAt
+            },
+            meta: {
+                request_id: crypto.randomUUID(),
+                language: updatedUser.preferredLanguage
+            },
+            error: null
+        })
+    } catch (error) {
+        console.error(error)
+        return NextResponse.json(
+            {
+                data: null,
+                meta: { language: "el" },
+                error: { code: "BAD_REQUEST", message: "Failed to update profile", status: 400 }
+            },
+            { status: 400 }
+        )
+    }
+}
