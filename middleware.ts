@@ -9,8 +9,12 @@ export default auth((req) => {
     const { nextUrl } = req
 
     const isApiAuthRoute = nextUrl.pathname.startsWith("/api/auth")
-    const isPublicRoute = ["/", "/auth/signin", "/auth/signup"].includes(nextUrl.pathname)
+    const isPublicRoute = ["/", "/auth/signin", "/auth/signup", "/auth/handover"].includes(nextUrl.pathname)
     const isAuthRoute = nextUrl.pathname.startsWith("/auth")
+
+    // Subdomain routing logic
+    const hostname = req.headers.get("host") || ""
+    const subdomain = hostname.split(".")[0]
 
     const ref = nextUrl.searchParams.get("ref")
 
@@ -45,6 +49,19 @@ export default auth((req) => {
             sameSite: "lax"
         })
         return response
+    }
+
+    // Authenticated Redirects based on Subdomain
+    if (isLoggedIn && nextUrl.pathname === "/") {
+        if (subdomain === "app") {
+            return NextResponse.redirect(new URL("/wallet", nextUrl))
+        }
+        if (subdomain === "agent") {
+            return NextResponse.redirect(new URL("/dashboard", nextUrl))
+        }
+        if (subdomain === "admin") {
+            return NextResponse.redirect(new URL("/admin", nextUrl))
+        }
     }
 
     return NextResponse.next()

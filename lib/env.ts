@@ -19,11 +19,13 @@ const envSchema = z.object({
     STRIPE_SECRET_KEY: z.string().min(1),
     STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
 
-    // Email (Brevo / SMTP)
-    BREVO_API_KEY: z.string().min(1).optional(),
-    SENDER_EMAIL: z.string().email().default("noreply@policywallet.gr"),
+    // Email / Brevo
+    BREVO_API_KEY: z.string().optional(),
+    SENDER_EMAIL: z.string().email().optional(),
+    BREVO_LIST_ID_USERS: z.string().optional(),
+    BREVO_LIST_ID_AGENTS: z.string().optional(),
 
-    // Redis (Rate Limiting)
+    // Redis / Upstash
     UPSTASH_REDIS_REST_URL: z.string().url().optional(),
     UPSTASH_REDIS_REST_TOKEN: z.string().min(1).optional(),
 

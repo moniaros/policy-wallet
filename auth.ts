@@ -8,6 +8,8 @@ import bcrypt from "bcryptjs"
 import { z } from "zod"
 import authConfig from "./auth.config"
 import { cookies, headers } from "next/headers"
+import { createBrevoContact } from "@/lib/brevo"
+import { env } from "@/lib/env"
 
 // Extend built-in session types
 declare module "next-auth" {
@@ -168,6 +170,23 @@ export const {
                         })
                     }
                 }
+
+                // Sync with Brevo CRM
+                if (user.email) {
+                    const listId = (user as any).roles === "agent"
+                        ? Number(env.BREVO_LIST_ID_AGENTS)
+                        : Number(env.BREVO_LIST_ID_USERS)
+
+                    await createBrevoContact({
+                        email: user.email,
+                        listIds: listId ? [listId] : [],
+                        attributes: {
+                            ROLE: (user as any).roles || "USER",
+                            SIGNUP_DATE: new Date().toISOString()
+                        }
+                    })
+                }
+
             } catch (error) {
                 console.error("Error in createUser event:", error)
             }
