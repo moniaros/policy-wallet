@@ -15,21 +15,21 @@ function VerifyEmailContent() {
 
     useEffect(() => {
         const verifyEmail = async () => {
-            const token_hash = searchParams.get('token_hash')
-            const type = searchParams.get('type')
+            const token = searchParams.get('token')
+            const email = searchParams.get('email')
 
-            if (!token_hash || type !== 'email') {
+            if (!token || !email) {
                 setStatus('error')
                 setMessage('Invalid verification link')
                 return
             }
 
             try {
-                // Call Supabase to confirm the email
+                // Call API to verify the token
                 const response = await fetch('/api/auth/verify', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token_hash, type })
+                    body: JSON.stringify({ token, email })
                 })
 
                 const data = await response.json()

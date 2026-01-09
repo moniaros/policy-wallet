@@ -96,12 +96,24 @@ export async function registerUser(formData: FormData) {
             }
         })
 
-        // 3. Generate verification link manually
-        // Supabase creates a token but we need to construct the link ourselves
-        // The verification link format from Supabase
-        const verificationUrl = `${baseUrl}/auth/verify?token_hash=${authData.user.id}&type=email`
+        // 3. Generate verification token with 15-minute expiry
+        const crypto = require('crypto')
+        const verificationToken = crypto.randomBytes(32).toString('hex')
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes from now
 
-        // 4. Send ONLY ONE branded email via Brevo with verification button
+        // Store token in database
+        await db.verificationToken.create({
+            data: {
+                identifier: email,
+                token: verificationToken,
+                expires: expiresAt
+            }
+        })
+
+        // 4. Create verification URL with the token
+        const verificationUrl = `${baseUrl}/auth/verify?token=${verificationToken}&email=${encodeURIComponent(email)}`
+
+        // 5. Send ONLY ONE branded email via Brevo with verification button
         const template = emailTemplates[language]
         const nextSteps = role === "agent" ? template.nextStepsAgent : template.nextStepsPolicyholder
 
@@ -169,7 +181,7 @@ export async function registerUser(formData: FormData) {
                             
                             <!-- Footer Notes -->
                             <p style="margin: 24px 0 0; color: #78716c; font-size: 13px; line-height: 1.6;">
-                                <strong>${template.expiryNote}</strong>
+                                <strong>${language === 'el' ? 'Αυτός ο σύνδεσμος θα λήξει σε 15 λεπτά για λόγους ασφαλείας.' : 'This link will expire in 15 minutes for security reasons.'}</strong>
                             </p>
                             <p style="margin: 8px 0 0; color: #78716c; font-size: 13px; line-height: 1.6;">
                                 ${template.ignoreNote}
