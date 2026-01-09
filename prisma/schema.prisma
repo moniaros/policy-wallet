@@ -18,6 +18,7 @@ model User {
   createdAt                       DateTime                 @default(now()) @map("created_at")
   updatedAt                       DateTime                 @updatedAt @map("updated_at")
   password                        String?
+  pushToken                       String?                  @map("push_token")
   grantsReceived                  AccessGrant[]            @relation("Grantee")
   grantsGiven                     AccessGrant[]            @relation("Granter")
   accounts                        Account[]
@@ -33,7 +34,6 @@ model User {
   invoices                        Invoice[]
   notifications                   NotificationEvent[]
   notificationPreferences         NotificationPreference[]
-  pushToken                       String?                  @map("push_token")
   opportunitiesOwned              Opportunity[]
   paymentMethods                  PaymentMethod[]
   policiesCreated                 Policy[]                 @relation("Creator")
