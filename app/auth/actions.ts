@@ -70,6 +70,9 @@ export async function registerUser(formData: FormData) {
 
     } catch (error) {
         console.error("Registration failed:", error)
-        return { success: false, error: "Something went wrong" }
+        if (error instanceof Error) {
+            return { success: false, error: error.message }
+        }
+        return { success: false, error: "An unexpected error occurred during registration." }
     }
 }

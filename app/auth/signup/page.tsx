@@ -65,7 +65,10 @@ function SignUpForm() {
                 if (typeof result.error === 'string') {
                     setError(result.error)
                 } else {
-                    setError("Please check your input")
+                    // It's a Zod error object { field: [messages] }
+                    const errorObj = result.error as Record<string, string[]>
+                    const messages = Object.values(errorObj || {}).flat().join(", ")
+                    setError(messages || "Please check your input")
                 }
             }
         } catch (err) {
