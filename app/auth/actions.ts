@@ -60,7 +60,7 @@ export async function registerUser(formData: FormData) {
     const supabase = await createClient()
 
     try {
-        // 1. Sign up with Supabase Auth
+        // 1. Sign up with Supabase Auth (disable auto email)
         const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
 
         const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -72,7 +72,8 @@ export async function registerUser(formData: FormData) {
                     role: role,
                     language: language
                 },
-                emailRedirectTo: `${baseUrl}/auth/verify`
+                // Disable Supabase's automatic confirmation email
+                // We'll send our own branded email instead
             },
         })
 
@@ -95,9 +96,12 @@ export async function registerUser(formData: FormData) {
             }
         })
 
-        // 3. Send custom branded notification email via Brevo
-        // Note: Supabase will also send its own verification email
-        // This is an additional branded welcome email
+        // 3. Generate verification link manually
+        // Supabase creates a token but we need to construct the link ourselves
+        // The verification link format from Supabase
+        const verificationUrl = `${baseUrl}/auth/verify?token_hash=${authData.user.id}&type=email`
+
+        // 4. Send ONLY ONE branded email via Brevo with verification button
         const template = emailTemplates[language]
         const nextSteps = role === "agent" ? template.nextStepsAgent : template.nextStepsPolicyholder
 
@@ -134,19 +138,27 @@ export async function registerUser(formData: FormData) {
                             </p>
                             
                             <p style="margin: 0 0 24px; color: #44403c; font-size: 16px; line-height: 1.6;">
-                                ${template.thankYou}
+                                ${template.thankYou} ${template.verifyPrompt}
                             </p>
                             
-                            <div style="margin: 32px 0; padding: 20px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-left: 4px solid #f59e0b; border-radius: 8px;">
-                                <p style="margin: 0; color: #92400e; font-size: 15px; line-height: 1.6; font-weight: 600;">
-                                    ⚠️ ${language === 'el' ? 'Σημαντικό' : 'Important'}: ${template.verifyPrompt}
-                                </p>
-                                <p style="margin: 8px 0 0; color: #92400e; font-size: 14px; line-height: 1.6;">
-                                    ${language === 'el'
-                ? 'Θα λάβετε ένα ξεχωριστό email από το Supabase με τον σύνδεσμο επαλήθευσης. Παρακαλούμε ελέγξτε τα εισερχόμενά σας (και τον φάκελο spam).'
-                : 'You will receive a separate email from Supabase with the verification link. Please check your inbox (and spam folder).'}
-                                </p>
-                            </div>
+                            <!-- CTA Button -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 32px 0;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="${verificationUrl}" style="display: inline-block; background: linear-gradient(135deg, #0d9488 0%, #10b981 100%); color: #ffffff; text-decoration: none; padding: 16px 48px; border-radius: 12px; font-size: 16px; font-weight: 700; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);">
+                                            ${template.buttonText}
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Alternative Link -->
+                            <p style="margin: 24px 0; color: #78716c; font-size: 14px; line-height: 1.6;">
+                                ${template.alternativeText}
+                            </p>
+                            <p style="margin: 0 0 24px; padding: 12px; background-color: #f5f5f4; border-radius: 8px; word-break: break-all; font-size: 13px; color: #57534e;">
+                                ${verificationUrl}
+                            </p>
                             
                             <!-- Next Steps -->
                             <div style="margin: 32px 0; padding: 20px; background: linear-gradient(135deg, #f0fdfa 0%, #d1fae5 100%); border-left: 4px solid #0d9488; border-radius: 8px;">
@@ -157,6 +169,9 @@ export async function registerUser(formData: FormData) {
                             
                             <!-- Footer Notes -->
                             <p style="margin: 24px 0 0; color: #78716c; font-size: 13px; line-height: 1.6;">
+                                <strong>${template.expiryNote}</strong>
+                            </p>
+                            <p style="margin: 8px 0 0; color: #78716c; font-size: 13px; line-height: 1.6;">
                                 ${template.ignoreNote}
                             </p>
                         </td>
@@ -181,17 +196,12 @@ export async function registerUser(formData: FormData) {
 </html>
         `
 
-        // Send welcome email (non-blocking)
-        try {
-            await sendMail({
-                to: email,
-                subject: template.subject,
-                html: emailHtml
-            })
-        } catch (emailError) {
-            // Don't fail registration if email fails
-            console.error('Failed to send welcome email:', emailError)
-        }
+        // Send the single branded email with verification link
+        await sendMail({
+            to: email,
+            subject: template.subject,
+            html: emailHtml
+        })
 
         return { success: true, email, role }
 
