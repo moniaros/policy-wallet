@@ -9,7 +9,7 @@ export default auth((req) => {
     const { nextUrl } = req
 
     const isApiAuthRoute = nextUrl.pathname.startsWith("/api/auth")
-    const isPublicRoute = ["/", "/auth/signin", "/auth/signup", "/auth/handover"].includes(nextUrl.pathname)
+    const isPublicRoute = ["/", "/auth/signin", "/auth/signup", "/auth/handover", "/terms", "/privacy"].includes(nextUrl.pathname)
     const isAuthRoute = nextUrl.pathname.startsWith("/auth")
 
     // Subdomain routing logic
