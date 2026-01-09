@@ -1,12 +1,14 @@
 "use server"
 
-import { auth } from "@/auth"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { z } from "zod"
+
+import { createClient } from "@/lib/supabase/server"
 import { logger } from "@/lib/logger"
 import { uploadFile } from "@/lib/storage"
+import { auth } from "@/auth"
 
 const PolicySchema = z.object({
     insurerName: z.string().min(1, "Insurer name is required"),
@@ -18,8 +20,25 @@ const PolicySchema = z.object({
 })
 
 export async function createPolicy(formData: FormData) {
-    const session = await auth()
-    if (!session?.user?.id) throw new Error("Unauthorized")
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user?.id) throw new Error("Unauthorized")
+
+    // We need to map Supabase User ID to our local DB User ID
+    // Assumption: We synced them properly or use email as lookup if IDs differ.
+    // If IDs are synced (ideal), then user.id is correct.
+    // If not, we might need: const dbUser = await db.user.findUnique({ where: { email: user.email } })
+    // For now, let's assume sync or db lookup by email for safety if ID mismatch is possible.
+
+    // Safer approach: Lookup by email to get the integer/UUID ID used in public.User table if it differs.
+    // But earlier we used db.user.create without specifying ID, so it generated a UUID.
+    // And we didn't force Supabase ID. 
+    // Let's rely on email for robust linking.
+    const dbUser = await db.user.findUnique({ where: { email: user.email! } })
+    if (!dbUser) throw new Error("User record not found")
+
+    const userId = dbUser.id
 
     const rawData = {
         insurerName: formData.get("insurerName"),
@@ -34,8 +53,8 @@ export async function createPolicy(formData: FormData) {
 
     const policy = await db.policy.create({
         data: {
-            ownerUserId: session.user.id,
-            createdByUserId: session.user.id,
+            ownerUserId: userId,
+            createdByUserId: userId,
             insurerName: validatedData.insurerName,
             policyNumber: validatedData.policyNumber,
             lineOfBusiness: validatedData.lineOfBusiness,
@@ -65,7 +84,7 @@ export async function createPolicy(formData: FormData) {
                     fileName: fileName,
                     fileSize: fileSize,
                     source: "policyholder",
-                    uploadedByUserId: session.user.id,
+                    uploadedByUserId: userId,
                     processingStatus: "completed"
                 }
             })
@@ -75,8 +94,8 @@ export async function createPolicy(formData: FormData) {
     // Log Activity
     await (db as any).activityLog.create({
         data: {
-            adminUserId: session.user.id,
-            adminEmail: session.user.email || "unknown",
+            adminUserId: userId,
+            adminEmail: user.email || "unknown",
             actionType: "POLICY_CREATED",
             description: `Created policy ${policy.policyNumber} for ${policy.insurerName}`,
             metadata: {
