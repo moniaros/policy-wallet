@@ -5,6 +5,7 @@ import { createPolicy } from "../actions"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { createClient } from "@/lib/supabase/client"
 
 function SubmitButton({ pending }: { pending: boolean }) {
     const { t } = useLanguage()
@@ -39,11 +40,44 @@ export function AddPolicyForm({ insurers, types }: AddPolicyFormProps) {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         const formData = new FormData(e.currentTarget)
+        const supabase = createClient()
 
         startTransition(async () => {
             try {
-                // Since createPolicy redirects on the server, we might not get back here on success
-                // But we can try to call it and handle errors
+                // 1. Upload files to Supabase Storage first
+                const uploadPromises = selectedFiles.map(async (file) => {
+                    const fileExt = file.name.split('.').pop()
+                    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+                    const filePath = `${fileName}`
+
+                    const { data, error } = await supabase.storage
+                        .from('policies')
+                        .upload(filePath, file)
+
+                    if (error) throw error
+
+                    const { data: { publicUrl } } = supabase.storage
+                        .from('policies')
+                        .getPublicUrl(filePath)
+
+                    return {
+                        url: publicUrl,
+                        name: file.name,
+                        size: file.size
+                    }
+                })
+
+                const uploadedDocs = await Promise.all(uploadPromises)
+
+                // 2. Prepare Form Data (Remove raw files, add URLs)
+                formData.delete("files")
+                uploadedDocs.forEach(doc => {
+                    formData.append("documentUrls", doc.url)
+                    formData.append("documentNames", doc.name)
+                    formData.append("documentSizes", doc.size.toString())
+                })
+
+                // 3. Create Policy in DB
                 await createPolicy(formData)
                 toast.success(t.wallet.addPolicy + " Success")
             } catch (error: any) {

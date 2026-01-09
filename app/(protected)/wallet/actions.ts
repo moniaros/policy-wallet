@@ -47,18 +47,23 @@ export async function createPolicy(formData: FormData) {
     })
 
     // Handle files
-    const files = formData.getAll("files") as File[]
-    for (const file of files) {
-        if (file.size > 0) {
-            // Upload actual file
-            const fileUrl = await uploadFile(file, "policies")
+    // Handle files (Files are now uploaded client-side to Supabase)
+    const documentUrls = formData.getAll("documentUrls") as string[]
+    const documentNames = formData.getAll("documentNames") as string[]
+    const documentSizes = formData.getAll("documentSizes") as string[]
 
+    for (let i = 0; i < documentUrls.length; i++) {
+        const fileUrl = documentUrls[i]
+        const fileName = documentNames[i] || "Unknown Document"
+        const fileSize = parseInt(documentSizes[i] || "0")
+
+        if (fileUrl) {
             await db.policyDocument.create({
                 data: {
                     policyId: policy.id,
                     fileUrl: fileUrl,
-                    fileName: file.name,
-                    fileSize: file.size,
+                    fileName: fileName,
+                    fileSize: fileSize,
                     source: "policyholder",
                     uploadedByUserId: session.user.id,
                     processingStatus: "completed"
