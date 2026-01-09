@@ -14,6 +14,7 @@ function SignUpForm() {
     const [name, setName] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
     const [role, setRole] = useState(defaultRole)
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -27,6 +28,7 @@ function SignUpForm() {
         formData.append("name", name)
         formData.append("email", email)
         formData.append("password", password)
+        formData.append("confirmPassword", confirmPassword)
         formData.append("role", role)
 
         try {
@@ -110,6 +112,17 @@ function SignUpForm() {
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            className="mt-1 block w-full rounded-lg border border-stone-300 px-4 py-3 shadow-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-stone-700">Confirm Password</label>
+                        <input
+                            type="password"
+                            required
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
                             className="mt-1 block w-full rounded-lg border border-stone-300 px-4 py-3 shadow-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
                         />
                     </div>
