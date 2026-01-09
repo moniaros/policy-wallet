@@ -57,6 +57,36 @@ export const en: TranslationKeys = {
         terms: 'Terms',
         and: 'and',
         privacyPolicy: 'Privacy Policy',
+        // Signup confirmation
+        accountCreated: 'Account Created!',
+        verifyEmailSent: 'Verification Email Sent',
+        checkInbox: 'Check Your Inbox',
+        verificationEmailSent: "We've sent a verification email to",
+        clickLinkToVerify: 'Click the link in the email to verify your email address and activate your account.',
+        didntReceiveEmail: "Didn't receive the email?",
+        checkSpam: 'Check your spam or junk folder',
+        resendEmail: 'Resend Email',
+        proceedToLogin: 'Proceed to Login',
+        welcomeToPolicyWallet: 'Welcome to PolicyWallet',
+        nextSteps: 'Next Steps',
+        nextStepsPolicyholder: [
+            'Verify your email address',
+            'Sign in to your account',
+            'Add your first policy',
+            'Explore coverage insights'
+        ],
+        nextStepsAgent: [
+            'Verify your email address',
+            'Sign in to your account',
+            'Complete your profile',
+            'Start managing customers'
+        ],
+        name: 'Name',
+        password: 'Password',
+        confirmPassword: 'Confirm Password',
+        createAccount: 'Create Account',
+        alreadyHaveAccount: 'Already have an account?',
+        passwordRequirements: 'At least 6 characters',
     },
 
     // Wallet

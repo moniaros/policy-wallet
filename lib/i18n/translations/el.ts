@@ -55,6 +55,36 @@ export const el = {
         terms: 'Όρους',
         and: 'και την',
         privacyPolicy: 'Πολιτική Απορρήτου',
+        // Signup confirmation
+        accountCreated: 'Ο λογαριασμός δημιουργήθηκε!',
+        verifyEmailSent: 'Επαλήθευση Email Απεστάλη',
+        checkInbox: 'Ελέγξτε τα εισερχόμενά σας',
+        verificationEmailSent: 'Σας στείλαμε ένα email επαλήθευσης στο',
+        clickLinkToVerify: 'Κάντε κλικ στο σύνδεσμο στο email για να επαληθεύσετε τη διεύθυνση email σας και να ενεργοποιήσετε τον λογαριασμό σας.',
+        didntReceiveEmail: 'Δεν λάβατε το email;',
+        checkSpam: 'Ελέγξτε τον φάκελο spam ή ανεπιθύμητης αλληλογραφίας',
+        resendEmail: 'Επαναποστολή Email',
+        proceedToLogin: 'Συνέχεια στη Σύνδεση',
+        welcomeToPolicyWallet: 'Καλώς ήρθατε στο PolicyWallet',
+        nextSteps: 'Επόμενα Βήματα',
+        nextStepsPolicyholder: [
+            'Επαληθεύστε τη διεύθυνση email σας',
+            'Συνδεθείτε στον λογαριασμό σας',
+            'Προσθέστε την πρώτη σας ασφάλεια',
+            'Εξερευνήστε τις πληροφορίες κάλυψης'
+        ],
+        nextStepsAgent: [
+            'Επαληθεύστε τη διεύθυνση email σας',
+            'Συνδεθείτε στον λογαριασμό σας',
+            'Ολοκληρώστε το προφίλ σας',
+            'Ξεκινήστε να διαχειρίζεστε πελάτες'
+        ],
+        name: 'Όνομα',
+        password: 'Κωδικός',
+        confirmPassword: 'Επιβεβαίωση Κωδικού',
+        createAccount: 'Δημιουργία Λογαριασμού',
+        alreadyHaveAccount: 'Έχετε ήδη λογαριασμό;',
+        passwordRequirements: 'Τουλάχιστον 6 χαρακτήρες',
     },
 
     // Wallet
