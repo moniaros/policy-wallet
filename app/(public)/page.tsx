@@ -23,10 +23,10 @@ export default function LandingPage() {
                     The neutral wallet to manage all your policies in one place. No spam, just clarity.
                 </p>
                 <div className="flex gap-4">
-                    <Link href="/auth/signin" className="px-8 py-3 bg-teal-600 text-white rounded-lg text-lg font-bold shadow-lg hover:bg-teal-700 transition-all">
+                    <Link href="/auth/signup" className="px-8 py-3 bg-teal-600 text-white rounded-lg text-lg font-bold shadow-lg hover:bg-teal-700 transition-all">
                         Join as Policyholder
                     </Link>
-                    <Link href="/auth/signin" className="px-8 py-3 bg-amber-500 text-white rounded-lg text-lg font-bold shadow-lg hover:bg-amber-600 transition-all">
+                    <Link href="/auth/signup?role=agent" className="px-8 py-3 bg-amber-500 text-white rounded-lg text-lg font-bold shadow-lg hover:bg-amber-600 transition-all">
                         For Agents
                     </Link>
                 </div>
