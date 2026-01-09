@@ -18,7 +18,7 @@ export default function InviteCustomerPage() {
             const result = await inviteCustomer(formData)
             if (result.success) {
                 setSuccess(true)
-                setToken(result.token)
+                setToken((result as any).token)
             }
         } catch (err: any) {
             setError(err.message || "Failed to send invitation")

@@ -20,7 +20,8 @@ export async function POST() {
         }
 
         // 2. Perform NextAuth signout (clears cookies/JWT)
-        await signOut({ redirect: false })
+        // Note: We rely on DB session invalidation. Client should handle cookie clearing.
+        // await signOut({ redirect: false })
 
         return createApiResponse({ message: "Logged out successfully" })
     } catch (error) {

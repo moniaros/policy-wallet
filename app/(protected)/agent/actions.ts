@@ -315,9 +315,19 @@ export async function updateOpportunityStatus(opportunityId: string, status: Opp
     return { success: true }
 }
 
+export async function inviteCustomer(formData: FormData) {
+    const session = await auth()
+    if (!session?.user?.id) return { success: false, error: "Unauthorized" }
+
+    const email = formData.get("email") as string
+    if (!email) return { success: false, error: "Email is required" }
+
+    return await createAgentInvite(email, "portfolio")
+}
+
 export async function createAgentInvite(email: string, scope: AccessScope) {
     const session = await auth()
-    if (!session?.user?.id) return { error: "Unauthorized" }
+    if (!session?.user?.id) return { success: false, error: "Unauthorized" }
 
     const invite = await db.invite.create({
         data: {
@@ -349,7 +359,7 @@ export async function createAgentInvite(email: string, scope: AccessScope) {
     revalidatePath("/dashboard")
     revalidatePath("/customers")
     revalidatePath(`/customers/${customer?.id}`)
-    return { success: true, inviteId: invite.id }
+    return { success: true, inviteId: invite.id, token: invite.token }
 }
 
 export async function addCustomerManually(data: {

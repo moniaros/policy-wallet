@@ -27,7 +27,7 @@ export function AccountOverview({
 
     const getUsagePercentage = (used: number, limit: number | string) => {
         if (limit === 'unlimited') return 0
-        return Math.round((used / limit) * 100)
+        return Math.round((used / (limit as number)) * 100)
     }
 
     const renderEntitlement = (key: string, value: any) => {
@@ -90,8 +90,8 @@ export function AccountOverview({
                             <button
                                 onClick={() => onSwitchRole?.('policyholder')}
                                 className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isPolicyholder
-                                        ? 'bg-white text-stone-900 shadow-xl'
-                                        : 'text-stone-400 hover:text-white'
+                                    ? 'bg-white text-stone-900 shadow-xl'
+                                    : 'text-stone-400 hover:text-white'
                                     }`}
                             >
                                 Ασφαλισμένος
@@ -99,8 +99,8 @@ export function AccountOverview({
                             <button
                                 onClick={() => onSwitchRole?.('agent')}
                                 className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${!isPolicyholder
-                                        ? 'bg-white text-stone-900 shadow-xl'
-                                        : 'text-stone-400 hover:text-white'
+                                    ? 'bg-white text-stone-900 shadow-xl'
+                                    : 'text-stone-400 hover:text-white'
                                     }`}
                             >
                                 Πράκτορας
@@ -197,10 +197,10 @@ export function AccountOverview({
                                             <div className="h-2 bg-stone-50 dark:bg-stone-800 rounded-full overflow-hidden">
                                                 <div
                                                     className={`h-full transition-all duration-1000 ${percentage >= 90
-                                                            ? 'bg-red-500'
-                                                            : percentage >= 70
-                                                                ? 'bg-amber-500'
-                                                                : 'bg-teal-500'
+                                                        ? 'bg-red-500'
+                                                        : percentage >= 70
+                                                            ? 'bg-amber-500'
+                                                            : 'bg-teal-500'
                                                         }`}
                                                     style={{ width: `${Math.min(percentage, 100)}%` }}
                                                 />

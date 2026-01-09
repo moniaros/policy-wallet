@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
     // Rate limiting: max 5 invites per minute to prevent user or referral spam
     const ip = req.headers.get("x-forwarded-for") || "127.0.0.1"
-    const limitCheck = rateLimit(ip as string, 5, 60000)
+    const limitCheck = await rateLimit(ip as string, 5, 60000)
     if (!limitCheck.success) return limitCheck.error!
 
     try {

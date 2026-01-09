@@ -6,17 +6,57 @@ This guide walks you through deploying PolicyWallet with the new multi-subdomain
 Ensure these new variables are set in your Vercel Project Settings (and `.env` for local dev):
 
 ```env
+# --- CORE ---
+# Database (Postgres/Prisma)
+DATABASE_URL=postgresql://user:password@host:port/db?sslmode=require
+
+# Authentication (NextAuth)
+AUTH_SECRET=generate_with_openssl_rand_base64_32
+NEXTAUTH_URL=https://app.policywallet.gr  # Base URL for the main app
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+# --- INTELLIGENCE ---
+# AI / Gemini
+GEMINI_API_KEY=AIzaSy...
+
+# --- INTEGRATIONS ---
 # Brevo (Email Marketing / CRM)
 BREVO_API_KEY=xkeysib-...
 SENDER_EMAIL=noreply@policywallet.gr
 BREVO_LIST_ID_USERS=2   # ID of the list for policyholders
 BREVO_LIST_ID_AGENTS=3  # ID of the list for agents
 
-# Auth Cookie (Must be root domain to share sessions or wildcard)
-# AUTH_COOKIE_DOMAIN=.policywallet.gr  # Optional, if you want shared login state
+# Payments (Stripe)
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# Storage (Optional - Defaults to local /public/uploads)
+# STORAGE_BUCKET=your-bucket-name
+# GOOGLE_APPLICATION_CREDENTIALS=base64_encoded_json_key
+
+# Throttling / Rate Limiting (Upstash Redis)
+UPSTASH_REDIS_REST_URL=https://...
+UPSTASH_REDIS_REST_TOKEN=...
 ```
 
-## 2. DNS Configuration (Cloudflare)
+## 2. Database Setup (Production)
+Vercel does not automatically migrate your production database. You must run migrations manually or during the build.
+
+**Option A: Manual Migration (Recommended for first deploy)**
+Run this from your local machine, pointing to your production database URL:
+```bash
+# In your local .env, set DATABASE_URL=postgresql://user:password@prod-host...
+npx prisma migrate deploy
+```
+
+**Option B: Build Command Override**
+In Vercel -> Settings -> General -> Build & Development Settings:
+- Build Command: `npx prisma migrate deploy && next build`
+
+## 3. DNS Configuration (Cloudflare)
 You need to point all three subdomains to your Vercel deployment.
 
 | Type  | Name    | Value                      | Proxy Status |

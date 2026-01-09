@@ -5,7 +5,7 @@ import { createApiResponse, createApiError } from "@/lib/api-utils"
 
 export async function POST(req: Request) {
     const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "anonymous"
-    const limitCheck = rateLimit(ip as string, 5, 300000) // 5 attempts per 5 minutes
+    const limitCheck = await rateLimit(ip as string, 5, 300000) // 5 attempts per 5 minutes
 
     if (!limitCheck.success) return limitCheck.error!
 

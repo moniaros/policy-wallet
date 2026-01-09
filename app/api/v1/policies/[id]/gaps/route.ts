@@ -51,7 +51,7 @@ export async function GET(
                     ai_explanation: gi.aiExplanation,
                     ai_suggestion: gi.aiSuggestion,
                     detected_at: gi.detectedAt,
-                    acknowledged_at: gi.status === "acknowledged" ? gi.updatedAt : null
+                    acknowledged_at: null
                 })),
                 summary
             },

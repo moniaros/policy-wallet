@@ -77,7 +77,7 @@ export async function POST(
                 signed_url: document.fileUrl, // Stub
                 signed_url_expires_at: new Date(Date.now() + 3600000),
                 processing_status: document.processingStatus,
-                uploaded_at: document.createdAt
+                uploaded_at: document.uploadedAt
             },
             meta: { request_id: crypto.randomUUID(), language: "el" },
             error: null

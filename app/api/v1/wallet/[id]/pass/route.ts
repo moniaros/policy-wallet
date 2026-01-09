@@ -4,12 +4,12 @@ import { createApiError } from "@/lib/api-utils"
 
 export async function GET(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     const session = await auth()
     if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
-    const policyId = params.id
+    const { id: policyId } = await params
 
     try {
         const policy = await db.policy.findUnique({

@@ -15,8 +15,8 @@ export async function GET() {
         const user = await db.user.findUnique({
             where: { id: session.user.id },
             include: {
-                referralsAsReferrer: {
-                    include: { referredUser: { select: { email: true } } }
+                referralsMade: {
+                    include: { referred: { select: { email: true } } }
                 }
             }
         })
@@ -27,8 +27,8 @@ export async function GET() {
             data: {
                 referral_code: referralCode,
                 referral_link: `https://policywallet.gr/join/${referralCode}`,
-                credits_earned: user?.referralsAsReferrer.reduce((acc, curr) => acc + curr.creditsEarned, 0) || 0,
-                referrals: user?.referralsAsReferrer.map(r => ({
+                credits_earned: (user as any)?.referralsMade.reduce((acc: number, curr: any) => acc + curr.creditsEarned, 0) || 0,
+                referrals: (user as any)?.referralsMade.map((r: any) => ({
                     id: r.id,
                     referred_email: r.referredEmail,
                     status: r.status,

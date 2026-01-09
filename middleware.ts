@@ -60,7 +60,7 @@ export default auth((req) => {
             return NextResponse.redirect(new URL("/dashboard", nextUrl))
         }
         if (subdomain === "admin") {
-            return NextResponse.redirect(new URL("/admin", nextUrl))
+            return NextResponse.redirect(new URL("/admin/dashboard", nextUrl))
         }
     }
 

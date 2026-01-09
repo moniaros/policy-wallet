@@ -29,14 +29,15 @@ export async function GET(req: Request) {
             nextCursor = nextItem!.id
         }
 
-        const user = await db.user.findUnique({
-            where: { id: session.user.id },
-            select: { creditBalance: true }
-        } as any)
+        const latestTx = await db.creditTransaction.findFirst({
+            where: { userId: session.user.id },
+            orderBy: { createdAt: 'desc' },
+            select: { balanceAfter: true }
+        })
 
         return NextResponse.json({
             data: {
-                current_balance: user?.creditBalance || 0,
+                current_balance: latestTx?.balanceAfter || 0,
                 transactions: transactions.map((t: any) => ({
                     id: t.id,
                     amount: t.amount,

@@ -179,7 +179,7 @@ export const {
 
                     await createBrevoContact({
                         email: user.email,
-                        listIds: listId ? [listId] : [],
+                        listIds: !isNaN(listId) && listId > 0 ? [listId] : [],
                         attributes: {
                             ROLE: (user as any).roles || "USER",
                             SIGNUP_DATE: new Date().toISOString()

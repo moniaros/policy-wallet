@@ -12,8 +12,12 @@ export async function DELETE(
 
     const { id } = await params
 
-    const ownership = await ensureOwnership(db.accessGrant, id, session.user.id, "granterUserId")
-    if (!ownership.success) return ownership.error!
+    const grant = await db.accessGrant.findUnique({
+        where: { id },
+    })
+
+    if (!grant) return createApiError("NOT_FOUND", "Access grant not found", 404)
+    if (grant.granterUserId !== session.user.id) return createApiError("FORBIDDEN", "Ownership verification failed", 403)
 
     try {
         await db.accessGrant.update({

@@ -9,14 +9,14 @@ const envSchema = z.object({
     NEXTAUTH_URL: z.string().url().optional(),
 
     // AI / Gemini
-    GEMINI_API_KEY: z.string().min(1),
+    GEMINI_API_KEY: z.string().optional(),
 
     // Storage (Optional - Defaults to local /public/uploads)
     STORAGE_BUCKET: z.string().optional(),
     GOOGLE_APPLICATION_CREDENTIALS: z.string().optional(),
 
     // Payments (Stripe)
-    STRIPE_SECRET_KEY: z.string().min(1),
+    STRIPE_SECRET_KEY: z.string().optional(),
     STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
 
     // Email / Brevo
