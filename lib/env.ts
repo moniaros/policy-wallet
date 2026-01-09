@@ -2,11 +2,11 @@ import { z } from "zod";
 
 const envSchema = z.object({
     // Database
-    DATABASE_URL: z.string().url(),
+    DATABASE_URL: z.string().optional(),
 
     // Authentication
     AUTH_SECRET: z.string().min(1),
-    NEXTAUTH_URL: z.string().url().optional(),
+    NEXTAUTH_URL: z.string().optional(),
 
     // AI / Gemini
     GEMINI_API_KEY: z.string().optional(),
@@ -26,7 +26,7 @@ const envSchema = z.object({
     BREVO_LIST_ID_AGENTS: z.string().optional(),
 
     // Redis / Upstash
-    UPSTASH_REDIS_REST_URL: z.string().url().optional(),
+    UPSTASH_REDIS_REST_URL: z.string().optional(),
     UPSTASH_REDIS_REST_TOKEN: z.string().min(1).optional(),
 
     // App
