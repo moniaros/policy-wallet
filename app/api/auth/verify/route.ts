@@ -57,19 +57,26 @@ export async function POST(request: NextRequest) {
         // 4. Also update Supabase Auth to mark email as verified
         const supabase = await createClient()
 
-        // Get the user by email
-        const { data: { users }, error: listError } = await supabase.auth.admin.listUsers()
+        // Get the user by email from Supabase Auth
+        const { data: { users }, error: getUserError } = await supabase.auth.admin.listUsers()
 
-        if (listError) {
-            console.error('Error listing users:', listError)
-        } else {
-            const user = users?.find(u => u.email === email)
+        if (!getUserError && users) {
+            const user = users.find(u => u.email === email)
             if (user) {
                 // Update user to mark email as confirmed
-                await supabase.auth.admin.updateUserById(user.id, {
-                    email_confirm: true
-                })
+                const { error: updateError } = await supabase.auth.admin.updateUserById(
+                    user.id,
+                    {
+                        email_confirm: true
+                    }
+                )
+
+                if (updateError) {
+                    console.error('Error confirming email in Supabase:', updateError)
+                }
             }
+        } else {
+            console.error('Error listing users from Supabase:', getUserError)
         }
 
         // 5. Delete the used token
