@@ -61,7 +61,7 @@ export default function SignInPage() {
                 </div>
 
                 <div className="mt-8">
-                    <form onSubmit={handleSubmit} className="space-y-5">
+                    <form onSubmit={handleSubmit} className="space-y-5" method="post">
                         {error && (
                             <div className="p-4 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm font-medium animate-pulse">
                                 {error}
@@ -72,6 +72,7 @@ export default function SignInPage() {
                                 Email address
                             </label>
                             <input
+                                name="email"
                                 id="email"
                                 type="email"
                                 required
@@ -92,6 +93,7 @@ export default function SignInPage() {
                                 </Link>
                             </div>
                             <input
+                                name="password"
                                 id="password"
                                 type="password"
                                 required

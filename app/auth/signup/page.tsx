@@ -99,7 +99,7 @@ function SignUpForm() {
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+                <form onSubmit={handleSubmit} className="mt-8 space-y-5" method="post">
                     {error && (
                         <div className="p-4 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm font-medium animate-pulse">
                             {error}
@@ -110,6 +110,7 @@ function SignUpForm() {
                         <div>
                             <label className="block text-sm font-medium text-stone-700 mb-1">Full Name</label>
                             <input
+                                name="name"
                                 type="text"
                                 required
                                 value={name}
@@ -122,6 +123,7 @@ function SignUpForm() {
                         <div>
                             <label className="block text-sm font-medium text-stone-700 mb-1">Email address</label>
                             <input
+                                name="email"
                                 type="email"
                                 required
                                 value={email}
@@ -135,6 +137,7 @@ function SignUpForm() {
                             <div>
                                 <label className="block text-sm font-medium text-stone-700 mb-1">Password</label>
                                 <input
+                                    name="password"
                                     type="password"
                                     required
                                     value={password}
@@ -147,6 +150,7 @@ function SignUpForm() {
                             <div>
                                 <label className="block text-sm font-medium text-stone-700 mb-1">Confirm</label>
                                 <input
+                                    name="confirmPassword"
                                     type="password"
                                     required
                                     value={confirmPassword}
@@ -167,8 +171,8 @@ function SignUpForm() {
                                         type="button"
                                         onClick={() => setRole('policyholder')}
                                         className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${role === 'policyholder'
-                                                ? 'bg-white text-teal-700 shadow-sm'
-                                                : 'text-stone-500 hover:text-stone-900'
+                                            ? 'bg-white text-teal-700 shadow-sm'
+                                            : 'text-stone-500 hover:text-stone-900'
                                             }`}
                                     >
                                         Policyholder
@@ -177,8 +181,8 @@ function SignUpForm() {
                                         type="button"
                                         onClick={() => setRole('agent')}
                                         className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${role === 'agent'
-                                                ? 'bg-white text-teal-700 shadow-sm'
-                                                : 'text-stone-500 hover:text-stone-900'
+                                            ? 'bg-white text-teal-700 shadow-sm'
+                                            : 'text-stone-500 hover:text-stone-900'
                                             }`}
                                     >
                                         Agent
