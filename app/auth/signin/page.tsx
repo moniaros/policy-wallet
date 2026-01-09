@@ -39,27 +39,36 @@ export default function SignInPage() {
 
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-stone-50 px-4">
-            <div className="w-full max-w-md space-y-8 rounded-2xl bg-white p-10 shadow-xl border border-stone-100">
+        <div className="flex min-h-screen flex-col items-center justify-center bg-stone-50 px-4 py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+            {/* Background Decoration */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
+                <div className="absolute -top-[30%] -right-[10%] w-[70%] h-[70%] rounded-full bg-teal-50/50 blur-3xl opacity-60" />
+                <div className="absolute bottom-[0%] -left-[10%] w-[50%] h-[50%] rounded-full bg-blue-50/50 blur-3xl opacity-50" />
+            </div>
+
+            <div className="w-full max-w-md space-y-8 rounded-2xl bg-white/80 backdrop-blur-xl p-10 shadow-2xl border border-white/50 relative z-10 transition-all duration-300 hover:shadow-teal-900/5">
                 <div className="text-center">
-                    <Link href="/" className="inline-block font-bold text-2xl text-teal-700 mb-6">
-                        PolicyWallet
+                    <Link href="/" className="inline-block">
+                        <span className="sr-only">PolicyWallet</span>
+                        <h1 className="text-3xl font-extrabold tracking-tight text-teal-700">
+                            PolicyWallet
+                        </h1>
                     </Link>
-                    <h2 className="text-3xl font-bold tracking-tight text-stone-900">Welcome back</h2>
-                    <p className="mt-2 text-stone-600">
+                    <h2 className="mt-6 text-2xl font-bold tracking-tight text-stone-900">Welcome back</h2>
+                    <p className="mt-2 text-sm text-stone-600">
                         Sign in to your neutral insurance wallet
                     </p>
                 </div>
 
-                <div className="mt-8 space-y-6">
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="mt-8">
+                    <form onSubmit={handleSubmit} className="space-y-5">
                         {error && (
-                            <div className="p-3 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm font-medium">
+                            <div className="p-4 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm font-medium animate-pulse">
                                 {error}
                             </div>
                         )}
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-stone-700">
+                            <label htmlFor="email" className="block text-sm font-medium text-stone-700 mb-1">
                                 Email address
                             </label>
                             <input
@@ -68,16 +77,19 @@ export default function SignInPage() {
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="mt-1 block w-full rounded-lg border border-stone-300 bg-white px-4 py-3 text-stone-900 shadow-sm transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+                                className="block w-full rounded-lg border border-stone-300 px-4 py-3 bg-white/50 focus:bg-white transition-colors focus:border-teal-500 focus:ring-teal-500/20 focus:outline-none focus:ring-4 sm:text-sm"
                                 placeholder="name@example.com"
                             />
                         </div>
 
                         <div>
-                            <div className="flex items-center justify-between">
+                            <div className="flex items-center justify-between mb-1">
                                 <label htmlFor="password" className="block text-sm font-medium text-stone-700">
                                     Password
                                 </label>
+                                <Link href="#" className="text-xs font-medium text-teal-600 hover:text-teal-500">
+                                    Forgot password?
+                                </Link>
                             </div>
                             <input
                                 id="password"
@@ -85,39 +97,44 @@ export default function SignInPage() {
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="mt-1 block w-full rounded-lg border border-stone-300 bg-white px-4 py-3 text-stone-900 shadow-sm transition-all focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20"
+                                className="block w-full rounded-lg border border-stone-300 px-4 py-3 bg-white/50 focus:bg-white transition-colors focus:border-teal-500 focus:ring-teal-500/20 focus:outline-none focus:ring-4 sm:text-sm"
                                 placeholder="••••••••"
                             />
                         </div>
 
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="flex w-full items-center justify-center rounded-lg bg-teal-600 px-4 py-3 text-sm font-bold text-white shadow-lg transition-all hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50"
-                        >
-                            {isLoading ? (
-                                <svg className="h-5 w-5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                </svg>
-                            ) : (
-                                "Sign In"
-                            )}
-                        </button>
+                        <div className="pt-2">
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className="flex w-full items-center justify-center rounded-lg bg-teal-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-teal-600/20 transition-all hover:bg-teal-700 hover:shadow-teal-600/40 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isLoading ? (
+                                    <span className="flex items-center gap-2">
+                                        <svg className="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                        </svg>
+                                        Signing In...
+                                    </span>
+                                ) : (
+                                    "Sign In"
+                                )}
+                            </button>
+                        </div>
                     </form>
 
-                    <div className="relative">
+                    <div className="relative my-6">
                         <div className="absolute inset-0 flex items-center">
                             <div className="w-full border-t border-stone-200" />
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="bg-white px-4 text-stone-500">Or continue with</span>
+                            <span className="bg-white/80 backdrop-blur-sm px-2 text-stone-500">Or continue with</span>
                         </div>
                     </div>
 
                     <button
                         onClick={() => signIn("google", { callbackUrl: "/wallet" })}
-                        className="flex w-full items-center justify-center gap-3 rounded-lg border border-stone-300 bg-white px-4 py-3 text-sm font-medium text-stone-700 shadow-sm transition-all hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-stone-500"
+                        className="flex w-full items-center justify-center gap-3 rounded-lg border border-stone-200 bg-white px-4 py-3 text-sm font-medium text-stone-700 shadow-sm transition-all hover:bg-stone-50 hover:border-stone-300 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
                     >
                         <svg className="h-5 w-5" viewBox="0 0 24 24">
                             <path
@@ -141,10 +158,11 @@ export default function SignInPage() {
                     </button>
                 </div>
 
-                <p className="mt-8 text-center text-sm text-stone-500">
-                    By signing in, you agree to our{" "}
-                    <Link href="/terms" className="text-teal-600 hover:underline">Terms</Link> and{" "}
-                    <Link href="/privacy" className="text-teal-600 hover:underline">Privacy Policy</Link>.
+                <p className="mt-8 text-center text-sm text-stone-600">
+                    Don't have an account?{" "}
+                    <Link href="/auth/signup" className="font-semibold text-teal-600 hover:text-teal-500 transition-colors">
+                        Create Account
+                    </Link>
                 </p>
             </div>
         </div>
