@@ -1,15 +1,31 @@
-import { auth } from "@/auth"
+import { createClient } from "@/lib/supabase/server"
 import { db } from "@/lib/db"
 import { WalletClient } from "./WalletClient"
 import type { Policy, PolicyDocument } from "@/components/wallet/types"
+import { redirect } from "next/navigation"
 
 export default async function WalletPage() {
-    const session = await auth()
-    if (!session?.user?.id) return null
+    const supabase = await createClient()
+
+    // Get the current user from Supabase
+    const { data: { user }, error } = await supabase.auth.getUser()
+
+    if (error || !user) {
+        redirect('/auth/signin')
+    }
+
+    // Find the user in our database by email
+    const dbUser = await db.user.findUnique({
+        where: { email: user.email! }
+    })
+
+    if (!dbUser) {
+        redirect('/auth/signin')
+    }
 
     const policies = await db.policy.findMany({
         where: {
-            ownerUserId: session.user.id
+            ownerUserId: dbUser.id
         },
         include: {
             documents: true,
