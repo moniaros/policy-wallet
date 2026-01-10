@@ -1,34 +1,81 @@
-import NextAuth from "next-auth"
-import authConfig from "./auth.config"
-import { NextResponse } from "next/server"
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
 
-const { auth } = NextAuth(authConfig)
+export async function middleware(request: NextRequest) {
+    const { nextUrl } = request
 
-export default auth((req) => {
-    const isLoggedIn = !!req.auth
-    const { nextUrl } = req
+    // Create a Supabase client configured to use cookies
+    let response = NextResponse.next({
+        request: {
+            headers: request.headers,
+        },
+    })
+
+    const supabase = createServerClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        {
+            cookies: {
+                get(name: string) {
+                    return request.cookies.get(name)?.value
+                },
+                set(name: string, value: string, options: any) {
+                    request.cookies.set({
+                        name,
+                        value,
+                        ...options,
+                    })
+                    response = NextResponse.next({
+                        request: {
+                            headers: request.headers,
+                        },
+                    })
+                    response.cookies.set({
+                        name,
+                        value,
+                        ...options,
+                    })
+                },
+                remove(name: string, options: any) {
+                    request.cookies.set({
+                        name,
+                        value: '',
+                        ...options,
+                    })
+                    response = NextResponse.next({
+                        request: {
+                            headers: request.headers,
+                        },
+                    })
+                    response.cookies.set({
+                        name,
+                        value: '',
+                        ...options,
+                    })
+                },
+            },
+        }
+    )
+
+    // Check if user is authenticated
+    const { data: { user } } = await supabase.auth.getUser()
+    const isLoggedIn = !!user
 
     const isApiAuthRoute = nextUrl.pathname.startsWith("/api/auth")
     const isPublicRoute = ["/", "/auth/signin", "/auth/signup", "/auth/verify", "/auth/signup/confirmation", "/auth/handover", "/terms", "/privacy"].includes(nextUrl.pathname)
     const isAuthRoute = nextUrl.pathname.startsWith("/auth")
 
-    // Subdomain routing logic
-    const hostname = req.headers.get("host") || ""
-    const subdomain = hostname.split(".")[0]
-
-    const ref = nextUrl.searchParams.get("ref")
-
+    // Allow API routes
     if (isApiAuthRoute) {
-        return
+        return response
     }
 
-    if (isAuthRoute) {
-        if (isLoggedIn) {
-            return NextResponse.redirect(new URL("/wallet", nextUrl))
-        }
-        return
+    // If logged in and trying to access auth pages, redirect to wallet
+    if (isAuthRoute && isLoggedIn) {
+        return NextResponse.redirect(new URL("/wallet", nextUrl))
     }
 
+    // If not logged in and trying to access protected routes, redirect to signin
     if (!isLoggedIn && !isPublicRoute) {
         let callbackUrl = nextUrl.pathname
         if (nextUrl.search) {
@@ -39,35 +86,18 @@ export default auth((req) => {
         return NextResponse.redirect(new URL(`/auth/signin?callbackUrl=${encodedCallbackUrl}`, nextUrl))
     }
 
-    // Set referral cookie if present
-    if (ref) {
-        const response = NextResponse.next()
-        response.cookies.set("pw_referrer", ref, {
-            path: "/",
-            maxAge: 30 * 24 * 60 * 60, // 30 days
-            httpOnly: true,
-            sameSite: "lax"
-        })
-        return response
-    }
+    return response
+}
 
-    // Authenticated Redirects based on Subdomain
-    if (isLoggedIn && nextUrl.pathname === "/") {
-        if (subdomain === "app") {
-            return NextResponse.redirect(new URL("/wallet", nextUrl))
-        }
-        if (subdomain === "agent") {
-            return NextResponse.redirect(new URL("/dashboard", nextUrl))
-        }
-        if (subdomain === "admin") {
-            return NextResponse.redirect(new URL("/admin/dashboard", nextUrl))
-        }
-    }
-
-    return NextResponse.next()
-})
-
-// Optionally, don't invoke Middleware on some paths
 export const config = {
-    matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+    matcher: [
+        /*
+         * Match all request paths except for the ones starting with:
+         * - _next/static (static files)
+         * - _next/image (image optimization files)
+         * - favicon.ico (favicon file)
+         * - public folder
+         */
+        '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    ],
 }
