@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 
 export async function GET(req: Request) {
-    const session = await auth()
-    if (!session?.user?.id) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) {
         return NextResponse.json(
             { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
             { status: 401 }
@@ -17,7 +17,7 @@ export async function GET(req: Request) {
 
     try {
         const transactions = await (db as any).creditTransaction.findMany({
-            where: { userId: session.user.id },
+            where: { userId: authResult.dbUser.id },
             take: limit + 1,
             cursor: cursor ? { id: cursor } : undefined,
             orderBy: { createdAt: "desc" }
@@ -30,7 +30,7 @@ export async function GET(req: Request) {
         }
 
         const latestTx = await db.creditTransaction.findFirst({
-            where: { userId: session.user.id },
+            where: { userId: authResult.dbUser.id },
             orderBy: { createdAt: 'desc' },
             select: { balanceAfter: true }
         })

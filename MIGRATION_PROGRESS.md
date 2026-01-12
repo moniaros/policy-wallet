@@ -33,25 +33,21 @@ Migrating from dual authentication (NextAuth + Supabase) to Supabase-only authen
 - [x] `app/(protected)/agent/actions.ts` - Agent actions migrated ✨ NEW
 - [x] `app/(protected)/coverage-insights/actions.ts` - Coverage insights actions (if exists)
 
-### API Routes (7/27)
+### API Routes (11/27)
 - [x] `app/api/v1/me/route.ts` - **CRITICAL** - User profile endpoint
 - [x] `app/api/v1/policies/route.ts` - Policies CRUD
 - [x] `app/api/v1/policies/[id]/route.ts` - Policy detail (GET, PATCH, DELETE)
 - [x] `app/api/v1/notifications/route.ts` - Notifications list
 - [x] `app/api/v1/me/subscription/route.ts` - Subscription info
-- [x] `app/api/v1/notifications/preferences/route.ts` - Notification preferences ✨ NEW
-- [x] `app/api/v1/notifications/device-token/route.ts` - Device token registration ✨ NEW
-- [x] `app/api/v1/policies/[id]/documents/route.ts` - Policy documents ✨ NEW
+- [x] `app/api/v1/notifications/preferences/route.ts` - Notification preferences
+- [x] `app/api/v1/notifications/device-token/route.ts` - Device token registration
+- [x] `app/api/v1/policies/[id]/documents/route.ts` - Policy documents
+- [x] `app/api/v1/policies/[id]/gaps/route.ts` - Coverage gaps
+- [x] `app/api/v1/me/credits/route.ts` - Credits management ✨ NEW
+- [x] `app/api/v1/me/referral/route.ts` - Referral system ✨ NEW
 - [ ] `app/api/v1/policies/[id]/documents/[docId]/route.ts` - Document detail
-- [x] `app/api/v1/policies/[id]/gaps/route.ts` - Coverage gaps ✨ NEW
 - [ ] `app/api/v1/policies/[id]/review/route.ts` - Policy review
 - [ ] `app/api/v1/policies/[id]/wallet-pass/route.ts` - Wallet pass
-- [ ] `app/api/v1/notifications/route.ts` - Notifications
-- [ ] `app/api/v1/notifications/preferences/route.ts` - Notification preferences
-- [ ] `app/api/v1/notifications/device-token/route.ts` - Device tokens
-- [ ] `app/api/v1/me/subscription/route.ts` - User subscription
-- [ ] `app/api/v1/me/referral/route.ts` - Referral info
-- [ ] `app/api/v1/me/credits/route.ts` - Credits balance
 - [ ] `app/api/v1/questionnaires/route.ts` - Questionnaires
 - [ ] `app/api/v1/questionnaires/[id]/route.ts` - Questionnaire detail
 - [ ] `app/api/v1/invites/route.ts` - Invites
@@ -176,12 +172,12 @@ After each migration:
 ## 📊 Statistics
 
 - **Total Files to Migrate**: ~45
-- **Files Migrated**: 29
-- **Progress**: 64%
+- **Files Migrated**: 31
+- **Progress**: 69%
 - **Critical Path**: 100% ✅
 - **Protected Pages**: 100% ✅ **COMPLETE**
 - **Server Actions**: 100% ✅ **COMPLETE**
-- **API Routes**: 33% (9/27)
+- **API Routes**: 41% (11/27)
 
 ## 🔄 Next Steps
 

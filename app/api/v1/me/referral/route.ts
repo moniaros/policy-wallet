@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 
 export async function GET() {
-    const session = await auth()
-    if (!session?.user?.id) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) {
         return NextResponse.json(
             { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
             { status: 401 }
@@ -13,7 +13,7 @@ export async function GET() {
 
     try {
         const user = await db.user.findUnique({
-            where: { id: session.user.id },
+            where: { id: authResult.dbUser.id },
             include: {
                 referralsMade: {
                     include: { referred: { select: { email: true } } }
@@ -21,7 +21,7 @@ export async function GET() {
             }
         })
 
-        const referralCode = session.user.name?.split(" ")[0].toUpperCase() + session.user.id.substring(0, 4).toUpperCase()
+        const referralCode = authResult.dbUser.name?.split(" ")[0].toUpperCase() + authResult.dbUser.id.substring(0, 4).toUpperCase()
 
         return NextResponse.json({
             data: {
