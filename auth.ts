@@ -196,6 +196,18 @@ export const {
         async session({ token, session }) {
             if (token.sub && session.user) {
                 session.user.id = token.sub
+
+                // Fetch user details from database to ensure name and email are populated
+                const dbUser = await db.user.findUnique({
+                    where: { id: token.sub },
+                    select: { name: true, email: true, image: true },
+                })
+
+                if (dbUser) {
+                    session.user.name = dbUser.name
+                    session.user.email = dbUser.email
+                    session.user.image = dbUser.image
+                }
             }
             if (token.roles && session.user) {
                 session.user.roles = token.roles as string
