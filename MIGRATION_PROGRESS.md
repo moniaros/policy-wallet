@@ -64,8 +64,10 @@ Migrating from dual authentication (NextAuth + Supabase) to Supabase-only authen
 ### Auth Cleanup & Enhancements
 - [x] `app/api/v1/auth/magic-link/request/route.ts` - Migrated to Supabase signInWithOtp
 - [x] `app/(protected)/coverage-insights/actions.ts` - Migrated to use Auth Helpers
-- [x] `app/auth/callback/route.ts` - Created Supabase Auth Callback
+- [x] `app/auth/callback/route.ts` - Created Supabase Auth Callback with post-login logic
 - [x] `app/auth/auth-code-error/page.tsx` - Created Auth Error Page
+- [x] Removed `next-auth` and `@auth/prisma-adapter` packages
+- [x] Deleted `auth.ts`, `auth.config.ts`, and `app/api/auth/[...nextauth]`
 
 ## 🎯 Priority Migration Order
 
