@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { z } from "zod"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
@@ -12,8 +12,8 @@ const InviteSchema = z.object({
 })
 
 export async function POST(req: Request) {
-    const session = await auth()
-    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     // Rate limiting: max 5 invites per minute to prevent user or referral spam
     const ip = req.headers.get("x-forwarded-for") || "127.0.0.1"
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
             const count = await db.policy.count({
                 where: {
                     id: { in: policy_ids },
-                    ownerUserId: session.user.id
+                    ownerUserId: authResult.dbUser.id
                 }
             })
             if (count !== policy_ids.length) {
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
 
         const invite = await db.invite.create({
             data: {
-                inviterUserId: session.user.id,
+                inviterUserId: authResult.dbUser.id,
                 inviteeEmail: invitee_email,
                 inviteType: "access_grant",
                 scope: scope,
@@ -53,8 +53,8 @@ export async function POST(req: Request) {
 
         await (db.activityLog as any).create({
             data: {
-                adminUserId: session.user.id,
-                adminEmail: session.user.email || "unknown",
+                adminUserId: authResult.dbUser.id,
+                adminEmail: authResult.dbUser.email || "unknown",
                 actionType: "INVITE_CREATED",
                 description: `Created invite for ${invitee_email} with scope ${scope}`,
             }

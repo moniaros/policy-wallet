@@ -1,15 +1,15 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 
 export async function GET() {
-    const session = await auth()
-    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     try {
         const grants = await db.accessGrant.findMany({
             where: {
-                granterUserId: session.user.id,
+                granterUserId: authResult.dbUser.id,
                 status: "active"
             },
             include: {

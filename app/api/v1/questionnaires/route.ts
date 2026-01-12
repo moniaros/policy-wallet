@@ -1,10 +1,10 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 
 export async function GET(req: Request) {
-    const session = await auth()
-    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { searchParams } = new URL(req.url)
     const status = searchParams.get("status") || "pending"
@@ -12,7 +12,7 @@ export async function GET(req: Request) {
     try {
         const questionnaires = await db.questionnaireInstance.findMany({
             where: {
-                sentToUserId: session.user.id,
+                sentToUserId: authResult.dbUser.id,
                 status: status as any
             },
             include: {

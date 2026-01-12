@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { ensureOwnership } from "@/lib/security"
@@ -7,12 +7,12 @@ export async function GET(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const session = await auth()
-    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { id } = await params
 
-    const ownership = await ensureOwnership(db.questionnaireInstance, id, session.user.id, "sentToUserId")
+    const ownership = await ensureOwnership(db.questionnaireInstance, id, authResult.dbUser.id, "sentToUserId")
     if (!ownership.success) return ownership.error!
 
     try {
@@ -42,12 +42,12 @@ export async function POST(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const session = await auth()
-    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { id } = await params
 
-    const ownership = await ensureOwnership(db.questionnaireInstance, id, session.user.id, "sentToUserId")
+    const ownership = await ensureOwnership(db.questionnaireInstance, id, authResult.dbUser.id, "sentToUserId")
     if (!ownership.success) return ownership.error!
 
     try {
@@ -59,7 +59,7 @@ export async function POST(
         const response = await db.questionnaireResponse.create({
             data: {
                 instanceId: id,
-                userId: session.user.id,
+                userId: authResult.dbUser.id,
                 answers: JSON.stringify(answers)
             }
         })
