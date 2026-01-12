@@ -1,11 +1,9 @@
 import { getDashboardData, createAgentInvite } from "../agent/actions"
 import { DashboardClient } from "./DashboardClient"
-import { redirect } from "next/navigation"
-import { auth } from "@/auth"
+import { getAuthenticatedUser } from "@/lib/auth-helpers"
 
 export default async function DashboardPage() {
-    const session = await auth()
-    if (!session?.user?.id) redirect("/auth/signin")
+    const { dbUser } = await getAuthenticatedUser()
 
     const data = await getDashboardData()
     if (!data) {

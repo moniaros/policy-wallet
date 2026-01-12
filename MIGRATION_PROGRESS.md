@@ -9,31 +9,31 @@ Migrating from dual authentication (NextAuth + Supabase) to Supabase-only authen
 - [x] `lib/auth-helpers.ts` - Created centralized Supabase auth helpers
 - [x] `middleware.ts` - Already using Supabase (no changes needed)
 
-### Protected Pages (6/10)
+### Protected Pages (10/12)
 - [x] `app/(protected)/layout.tsx` - **CRITICAL** - Fixed redirect loop
 - [x] `app/(protected)/wallet/page.tsx` - **CRITICAL** - Main wallet page
 - [x] `app/(protected)/account/page.tsx` - Account settings page
 - [x] `app/(protected)/notifications/page.tsx` - Notifications page
 - [x] `app/(protected)/tasks/[id]/page.tsx` - Task detail page
-- [ ] `app/(protected)/dashboard/page.tsx` - Agent dashboard
-- [ ] `app/(protected)/opportunities/page.tsx` - Opportunities page
-- [ ] `app/(protected)/customers/page.tsx` - Customers list
+- [x] `app/(protected)/dashboard/page.tsx` - Agent dashboard ✨ NEW
+- [x] `app/(protected)/opportunities/page.tsx` - Opportunities page ✨ NEW
+- [x] `app/(protected)/customers/page.tsx` - Customers list ✨ NEW
 - [ ] `app/(protected)/customers/[id]/page.tsx` - Customer detail
 - [ ] `app/(protected)/coverage-insights/page.tsx` - Coverage insights
 - [ ] `app/(protected)/coverage/page.tsx` - Coverage page
 - [ ] `app/(protected)/wallet/[id]/page.tsx` - Policy detail page
 
-### Server Actions (3/6)
+### Server Actions (4/6)
 - [x] `app/(protected)/account/actions.ts` - All account actions migrated
 - [x] `app/(protected)/notifications/actions.ts` - Notification actions migrated
-- [ ] `app/(protected)/wallet/actions.ts` - Wallet actions
+- [x] `app/(protected)/wallet/actions.ts` - Wallet actions migrated ✨ NEW
 - [ ] `app/(protected)/tasks/actions.ts` - Task actions
 - [ ] `app/(protected)/agent/actions.ts` - Agent actions
 - [ ] `app/(protected)/coverage-insights/actions.ts` - Coverage insights actions
 
-### API Routes (1/27)
+### API Routes (2/27)
 - [x] `app/api/v1/me/route.ts` - **CRITICAL** - User profile endpoint
-- [ ] `app/api/v1/policies/route.ts` - Policies CRUD
+- [x] `app/api/v1/policies/route.ts` - Policies CRUD ✨ NEW
 - [ ] `app/api/v1/policies/[id]/route.ts` - Policy detail
 - [ ] `app/api/v1/policies/[id]/documents/route.ts` - Policy documents
 - [ ] `app/api/v1/policies/[id]/documents/[docId]/route.ts` - Document detail
@@ -170,8 +170,8 @@ After each migration:
 ## 📊 Statistics
 
 - **Total Files to Migrate**: ~45
-- **Files Migrated**: 10
-- **Progress**: 22%
+- **Files Migrated**: 16
+- **Progress**: 36%
 - **Critical Path**: 100% ✅
 
 ## 🔄 Next Steps

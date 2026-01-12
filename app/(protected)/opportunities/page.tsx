@@ -1,11 +1,11 @@
 import { db } from "@/lib/db"
-import { auth } from "@/auth"
+import { getAuthenticatedUser } from "@/lib/auth-helpers"
 
 export default async function OpportunitiesPage() {
-    const session = await auth()
+    const { dbUser } = await getAuthenticatedUser()
 
     const opportunities = await db.opportunity.findMany({
-        where: { ownerAgentUserId: session?.user?.id },
+        where: { ownerAgentUserId: dbUser.id },
         include: {
             relationship: {
                 include: {

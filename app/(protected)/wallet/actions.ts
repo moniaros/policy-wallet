@@ -8,7 +8,7 @@ import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"
 import { logger } from "@/lib/logger"
 import { uploadFile } from "@/lib/storage"
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 
 const PolicySchema = z.object({
     insurerName: z.string().min(1, "Insurer name is required"),
@@ -111,10 +111,13 @@ export async function createPolicy(formData: FormData) {
 }
 
 export async function uploadPolicyDocument(formData: FormData) {
-    const session = await auth()
-    if (!session?.user?.id) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) {
         return { error: "Unauthorized" }
     }
+
+    const userId = authResult.dbUser.id
+    const userEmail = authResult.dbUser.email || "unknown"
 
     const file = formData.get("file") as File
     if (!file) {
@@ -123,7 +126,7 @@ export async function uploadPolicyDocument(formData: FormData) {
 
     // Production Hardening: Size limit (10MB)
     if (file.size > 10 * 1024 * 1024) {
-        logger('warn', 'Policy upload rejected: file too large', { userId: session.user.id, size: file.size })
+        logger('warn', 'Policy upload rejected: file too large', { userId, size: file.size })
         return { error: "File too large. Maximum size is 10MB." }
     }
 
@@ -187,7 +190,7 @@ export async function uploadPolicyDocument(formData: FormData) {
             const jsonStr = text.replace(/```json/g, "").replace(/```/g, "").trim();
             const aiJson = JSON.parse(jsonStr);
 
-            logger('info', 'AI extraction successful', { userId: session.user.id, fileName: file.name })
+            logger('info', 'AI extraction successful', { userId, fileName: file.name })
 
             // Merge with defaults
             if (aiJson.insurerName) extractedData.insurerName = aiJson.insurerName;
@@ -197,7 +200,7 @@ export async function uploadPolicyDocument(formData: FormData) {
             if (aiJson.endDate) extractedData.endDate = new Date(aiJson.endDate);
 
         } catch (error) {
-            logger('error', 'AI extraction failed', { userId: session.user.id, error, fileName: file.name })
+            logger('error', 'AI extraction failed', { userId, error, fileName: file.name })
             // Fallback to placeholder is already set
         }
     }
@@ -205,8 +208,8 @@ export async function uploadPolicyDocument(formData: FormData) {
     // Create policy with extracted or default data
     const policy = await db.policy.create({
         data: {
-            ownerUserId: session.user.id,
-            createdByUserId: session.user.id,
+            ownerUserId: userId,
+            createdByUserId: userId,
             insurerName: extractedData.insurerName,
             policyNumber: extractedData.policyNumber,
             lineOfBusiness: extractedData.lineOfBusiness as any,
@@ -227,7 +230,7 @@ export async function uploadPolicyDocument(formData: FormData) {
             fileName: file.name,
             fileSize: file.size,
             source: "policyholder",
-            uploadedByUserId: session.user.id,
+            uploadedByUserId: userId,
             processingStatus: "completed"
         }
     })
@@ -235,8 +238,8 @@ export async function uploadPolicyDocument(formData: FormData) {
     // Log Activity
     await (db as any).activityLog.create({
         data: {
-            adminUserId: session.user.id,
-            adminEmail: session.user.email || "unknown",
+            adminUserId: userId,
+            adminEmail: userEmail,
             actionType: "POLICY_UPLOADED",
             description: `Uploaded and parsed document ${file.name} for ${policy.insurerName}`,
             metadata: {

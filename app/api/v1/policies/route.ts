@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { z } from "zod"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
@@ -17,8 +17,8 @@ const PolicySchema = z.object({
 })
 
 export async function GET(req: Request) {
-    const session = await auth()
-    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { searchParams } = new URL(req.url)
     const lineOfBusiness = searchParams.get("line_of_business")
@@ -29,7 +29,7 @@ export async function GET(req: Request) {
     try {
         const policies = await db.policy.findMany({
             where: {
-                ownerUserId: session.user.id,
+                ownerUserId: authResult.dbUser.id,
                 lineOfBusiness: lineOfBusiness || undefined,
                 status: status || { not: "deleted" },
             },
@@ -51,7 +51,7 @@ export async function GET(req: Request) {
 
         const groupedByLine = await db.policy.groupBy({
             by: ["lineOfBusiness"],
-            where: { ownerUserId: session.user.id, status: { not: "deleted" } },
+            where: { ownerUserId: authResult.dbUser.id, status: { not: "deleted" } },
             _count: true
         })
 
@@ -83,14 +83,14 @@ export async function GET(req: Request) {
             }
         })
     } catch (error) {
-        logger('error', 'Fetch policies failed', { userId: session.user.id, error })
+        logger('error', 'Fetch policies failed', { userId: authResult.dbUser.id, error })
         return createApiError("INTERNAL_ERROR", "Server error", 500)
     }
 }
 
 export async function POST(req: Request) {
-    const session = await auth()
-    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     // Rate limiting: max 10 policy creations per minute
     const ip = req.headers.get("x-forwarded-for") || "127.0.0.1"
@@ -104,16 +104,16 @@ export async function POST(req: Request) {
         const policy = await db.policy.create({
             data: {
                 ...validatedData,
-                ownerUserId: session.user.id,
-                createdByUserId: session.user.id,
+                ownerUserId: authResult.dbUser.id,
+                createdByUserId: authResult.dbUser.id,
                 status: "active",
             }
         })
 
         await (db.activityLog as any).create({
             data: {
-                adminUserId: session.user.id,
-                adminEmail: session.user.email || "unknown",
+                adminUserId: authResult.dbUser.id,
+                adminEmail: authResult.dbUser.email || "unknown",
                 actionType: "POLICY_CREATED",
                 description: `Manual policy creation: ${policy.policyNumber}`,
             }
@@ -127,7 +127,7 @@ export async function POST(req: Request) {
         if (error instanceof z.ZodError) {
             return createApiError("VALIDATION_ERROR", "Invalid data", 400, error.issues)
         }
-        logger('error', 'Create policy failed', { userId: session.user.id, error })
+        logger('error', 'Create policy failed', { userId: authResult.dbUser.id, error })
         return createApiError("INTERNAL_ERROR", "Server error", 500)
     }
 }
