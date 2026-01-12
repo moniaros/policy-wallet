@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { detectGapsForPolicy, createGapInstances } from "@/lib/gap-detection"
@@ -7,8 +7,8 @@ import { rateLimit } from "@/lib/rate-limit"
 import { logger } from "@/lib/logger"
 
 export async function POST(req: Request) {
-    const session = await auth()
-    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     // Rate limiting: max 5 policy analysis requests per minute per IP
     const ip = req.headers.get("x-forwarded-for") || "127.0.0.1"
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
             where: { id: policyId }
         })
 
-        if (!policy || policy.ownerUserId !== session.user.id) {
+        if (!policy || policy.ownerUserId !== authResult.dbUser.id) {
             return createApiError("FORBIDDEN", "Access denied", 403)
         }
 
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
         const criticalGaps = newGaps.filter(g => g.severity === 'critical' || g.severity === 'high')
         if (criticalGaps.length > 0) {
             await sendNotification({
-                userId: session.user.id,
+                userId: authResult.dbUser.id,
                 eventType: 'GAP_DETECTED',
                 title: 'Security Alert: Coverage Gap Detected',
                 message: `We found ${criticalGaps.length} critical gaps in your ${policy.insurerName} policy.`,
