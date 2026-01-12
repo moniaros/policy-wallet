@@ -41,9 +41,9 @@ Migrating from dual authentication (NextAuth + Supabase) to Supabase-only authen
 - [x] `app/api/v1/me/subscription/route.ts` - Subscription info
 - [x] `app/api/v1/notifications/preferences/route.ts` - Notification preferences ✨ NEW
 - [x] `app/api/v1/notifications/device-token/route.ts` - Device token registration ✨ NEW
-- [ ] `app/api/v1/policies/[id]/documents/route.ts` - Policy documents
+- [x] `app/api/v1/policies/[id]/documents/route.ts` - Policy documents ✨ NEW
 - [ ] `app/api/v1/policies/[id]/documents/[docId]/route.ts` - Document detail
-- [ ] `app/api/v1/policies/[id]/gaps/route.ts` - Coverage gaps
+- [x] `app/api/v1/policies/[id]/gaps/route.ts` - Coverage gaps ✨ NEW
 - [ ] `app/api/v1/policies/[id]/review/route.ts` - Policy review
 - [ ] `app/api/v1/policies/[id]/wallet-pass/route.ts` - Wallet pass
 - [ ] `app/api/v1/notifications/route.ts` - Notifications
@@ -176,12 +176,12 @@ After each migration:
 ## 📊 Statistics
 
 - **Total Files to Migrate**: ~45
-- **Files Migrated**: 27
-- **Progress**: 60%
+- **Files Migrated**: 29
+- **Progress**: 64%
 - **Critical Path**: 100% ✅
 - **Protected Pages**: 100% ✅ **COMPLETE**
 - **Server Actions**: 100% ✅ **COMPLETE**
-- **API Routes**: 26% (7/27)
+- **API Routes**: 33% (9/27)
 
 ## 🔄 Next Steps
 

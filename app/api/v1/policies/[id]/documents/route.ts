@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 
 export async function POST(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const session = await auth()
-    if (!session?.user?.id) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) {
         return NextResponse.json(
             { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
             { status: 401 }
@@ -31,7 +31,7 @@ export async function POST(
         const policy = await db.policy.findFirst({
             where: {
                 id,
-                ownerUserId: session.user.id
+                ownerUserId: authResult.dbUser.id
             }
         })
 
@@ -52,15 +52,15 @@ export async function POST(
                 fileName: file.name,
                 fileSize: file.size,
                 source: source as string,
-                uploadedByUserId: session.user.id,
+                uploadedByUserId: authResult.dbUser.id,
                 processingStatus: "pending"
             }
         })
 
         await (db.activityLog as any).create({
             data: {
-                adminUserId: session.user.id,
-                adminEmail: session.user.email || "unknown",
+                adminUserId: authResult.dbUser.id,
+                adminEmail: authResult.dbUser.email || "unknown",
                 actionType: "DOCUMENT_UPLOADED",
                 description: `Uploaded document ${file.name} for policy ${policy.policyNumber}`,
                 timestamp: new Date()

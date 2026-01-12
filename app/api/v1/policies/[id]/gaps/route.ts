@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 
 export async function GET(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const session = await auth()
-    if (!session?.user?.id) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) {
         return NextResponse.json(
             { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
             { status: 401 }
@@ -20,7 +20,7 @@ export async function GET(
         const gaps = await db.gapInstance.findMany({
             where: {
                 policyId: id,
-                policy: { ownerUserId: session.user.id }
+                policy: { ownerUserId: authResult.dbUser.id }
             },
             include: { definition: true }
         })
