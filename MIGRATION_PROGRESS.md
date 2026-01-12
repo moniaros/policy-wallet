@@ -47,7 +47,7 @@ Migrating from dual authentication (NextAuth + Supabase) to Supabase-only authen
 - [x] `app/api/v1/me/referral/route.ts` - Referral system ✨ NEW
 - [ ] `app/api/v1/policies/[id]/documents/[docId]/route.ts` - Document detail
 - [ ] `app/api/v1/policies/[id]/review/route.ts` - Policy review
-- [ ] `app/api/v1/policies/[id]/wallet-pass/route.ts` - Wallet pass
+- [x] `app/api/v1/policies/[id]/wallet-pass/route.ts` - Wallet pass ✨ NEW
 - [x] `app/api/v1/questionnaires/route.ts` - Questionnaires ✨ NEW
 - [x] `app/api/v1/questionnaires/[id]/route.ts` - Questionnaire detail ✨ NEW
 - [x] `app/api/v1/invites/route.ts` - Invites ✨ NEW
@@ -57,7 +57,7 @@ Migrating from dual authentication (NextAuth + Supabase) to Supabase-only authen
 - [ ] `app/api/v1/auth/logout/route.ts` - Logout
 - [x] `app/api/v1/access-grants/route.ts` - Access grants ✨ NEW
 - [x] `app/api/v1/access-grants/[id]/route.ts` - Access grant detail ✨ NEW
-- [ ] `app/api/v1/wallet/[id]/pass/route.ts` - Wallet pass
+- [x] `app/api/v1/wallet/[id]/pass/route.ts` - Wallet pass ✨ NEW
 - [ ] `app/api/v1/jobs/process-policy/route.ts` - Process policy job
 - [ ] `app/api/user/language/route.ts` - Update language
 
@@ -172,12 +172,12 @@ After each migration:
 ## 📊 Statistics
 
 - **Total Files to Migrate**: ~45
-- **Files Migrated**: 39
-- **Progress**: 86%
+- **Files Migrated**: 41
+- **Progress**: 91%
 - **Critical Path**: 100% ✅
 - **Protected Pages**: 100% ✅ **COMPLETE**
 - **Server Actions**: 100% ✅ **COMPLETE**
-- **API Routes**: 70% (19/27)
+- **API Routes**: 77% (21/27)
 
 ## 🔄 Next Steps
 

@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 
 export async function GET(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const session = await auth()
-    if (!session?.user?.id) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) {
         return NextResponse.json(
             { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
             { status: 401 }
@@ -20,7 +20,7 @@ export async function GET(
         const policy = await db.policy.findFirst({
             where: {
                 id,
-                ownerUserId: session.user.id
+                ownerUserId: authResult.dbUser.id
             }
         })
 
@@ -41,7 +41,7 @@ export async function GET(
                     label: "Policy Wallet",
                     insurer: policy.insurerName,
                     policy_id: policy.policyNumber,
-                    holder: session.user.name || "Policy Holder",
+                    holder: authResult.dbUser.name || "Policy Holder",
                     expiration: policy.endDate.toISOString().split('T')[0]
                 }
             },

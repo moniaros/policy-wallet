@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { createApiError } from "@/lib/api-utils"
 
@@ -6,8 +6,8 @@ export async function GET(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const session = await auth()
-    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { id: policyId } = await params
 
@@ -17,7 +17,7 @@ export async function GET(
             include: { owner: true }
         })
 
-        if (!policy || policy.ownerUserId !== session.user.id) {
+        if (!policy || policy.ownerUserId !== authResult.dbUser.id) {
             return createApiError("NOT_FOUND", "Policy not found", 404)
         }
 
