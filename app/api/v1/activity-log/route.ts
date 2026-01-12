@@ -1,10 +1,10 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 
 export async function GET(req: Request) {
-    const session = await auth()
-    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { searchParams } = new URL(req.url)
     const cursor = searchParams.get("cursor")
@@ -13,7 +13,7 @@ export async function GET(req: Request) {
     try {
         const logs = await (db.activityLog as any).findMany({
             where: {
-                adminUserId: session.user.id
+                adminUserId: authResult.dbUser.id
             },
             take: limit + 1,
             cursor: cursor ? { id: cursor } : undefined,

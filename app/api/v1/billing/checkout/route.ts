@@ -1,12 +1,12 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { createCheckoutSession } from "@/lib/billing"
 import { rateLimit } from "@/lib/rate-limit"
 import { logger } from "@/lib/logger"
 
 export async function POST(req: Request) {
-    const session = await auth()
-    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     // Rate limit: 5 checkout attempts per minute
     const ip = req.headers.get("x-forwarded-for") || "127.0.0.1"
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
         const { planId } = await req.json()
         if (!planId) return createApiError("BAD_REQUEST", "Plan ID is required", 400)
 
-        const checkout = await createCheckoutSession(session.user.id, planId)
+        const checkout = await createCheckoutSession(authResult.dbUser.id, planId)
 
         return createApiResponse({
             checkout_url: checkout.url,
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
             }
         })
     } catch (error: any) {
-        logger('error', 'Checkout session creation failed', { userId: session.user.id, error })
+        logger('error', 'Checkout session creation failed', { userId: authResult.dbUser.id, error })
         return createApiError("INTERNAL_ERROR", error.message || "Failed to create checkout session", 500)
     }
 }
