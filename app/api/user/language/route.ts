@@ -1,11 +1,11 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { NextResponse } from "next/server"
 
 export async function POST(request: Request) {
     try {
-        const session = await auth()
-        if (!session?.user?.id) {
+        const authResult = await getAuthenticatedUserOrNull()
+        if (!authResult) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
         }
 
@@ -16,7 +16,7 @@ export async function POST(request: Request) {
         }
 
         await db.user.update({
-            where: { id: session.user.id },
+            where: { id: authResult.dbUser.id },
             data: { preferredLanguage: language },
         })
 

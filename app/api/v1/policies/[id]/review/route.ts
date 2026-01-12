@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 
 export async function POST(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const session = await auth()
-    if (!session?.user?.id) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) {
         return NextResponse.json(
             { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
             { status: 401 }
@@ -20,7 +20,7 @@ export async function POST(
         const policy = await db.policy.findFirst({
             where: {
                 id,
-                ownerUserId: session.user.id
+                ownerUserId: authResult.dbUser.id
             }
         })
 
@@ -36,8 +36,8 @@ export async function POST(
 
         await (db.activityLog as any).create({
             data: {
-                adminUserId: session.user.id,
-                adminEmail: session.user.email || "unknown",
+                adminUserId: authResult.dbUser.id,
+                adminEmail: authResult.dbUser.email || "unknown",
                 actionType: "POLICY_REVIEW_TRIGGERED",
                 description: `Triggered AI review for policy ${policy.policyNumber}`,
                 timestamp: new Date()
