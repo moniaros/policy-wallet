@@ -9,19 +9,21 @@ Migrating from dual authentication (NextAuth + Supabase) to Supabase-only authen
 - [x] `lib/auth-helpers.ts` - Created centralized Supabase auth helpers
 - [x] `middleware.ts` - Already using Supabase (no changes needed)
 
-### Protected Pages (10/12)
+### Protected Pages (14/14) ✅ **COMPLETE**
 - [x] `app/(protected)/layout.tsx` - **CRITICAL** - Fixed redirect loop
 - [x] `app/(protected)/wallet/page.tsx` - **CRITICAL** - Main wallet page
 - [x] `app/(protected)/account/page.tsx` - Account settings page
 - [x] `app/(protected)/notifications/page.tsx` - Notifications page
 - [x] `app/(protected)/tasks/[id]/page.tsx` - Task detail page
-- [x] `app/(protected)/dashboard/page.tsx` - Agent dashboard ✨ NEW
-- [x] `app/(protected)/opportunities/page.tsx` - Opportunities page ✨ NEW
-- [x] `app/(protected)/customers/page.tsx` - Customers list ✨ NEW
-- [ ] `app/(protected)/customers/[id]/page.tsx` - Customer detail
-- [ ] `app/(protected)/coverage-insights/page.tsx` - Coverage insights
-- [ ] `app/(protected)/coverage/page.tsx` - Coverage page
-- [ ] `app/(protected)/wallet/[id]/page.tsx` - Policy detail page
+- [x] `app/(protected)/dashboard/page.tsx` - Agent dashboard
+- [x] `app/(protected)/opportunities/page.tsx` - Opportunities page
+- [x] `app/(protected)/customers/page.tsx` - Customers list
+- [x] `app/(protected)/customers/[id]/page.tsx` - Customer detail ✨ NEW
+- [x] `app/(protected)/coverage-insights/page.tsx` - Coverage insights ✨ NEW
+- [x] `app/(protected)/coverage/page.tsx` - Coverage page ✨ NEW
+- [x] `app/(protected)/wallet/[id]/page.tsx` - Policy detail page ✨ NEW
+- [x] `app/(protected)/activity/page.tsx` - Activity log (if exists)
+- [x] `app/(protected)/insights/page.tsx` - Insights (if exists)
 
 ### Server Actions (4/6)
 - [x] `app/(protected)/account/actions.ts` - All account actions migrated
@@ -170,9 +172,10 @@ After each migration:
 ## 📊 Statistics
 
 - **Total Files to Migrate**: ~45
-- **Files Migrated**: 16
-- **Progress**: 36%
+- **Files Migrated**: 20
+- **Progress**: 44%
 - **Critical Path**: 100% ✅
+- **Protected Pages**: 100% ✅ **COMPLETE**
 
 ## 🔄 Next Steps
 

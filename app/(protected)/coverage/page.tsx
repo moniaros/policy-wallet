@@ -1,19 +1,15 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
-import { redirect } from "next/navigation"
 import { WalletSummary } from "@/components/coverage/WalletSummary"
 import { calculatePortfolioSummary } from "@/lib/policy-status"
 
 export default async function CoveragePage() {
-    const session = await auth()
-    if (!session?.user?.id) {
-        redirect("/auth/signin")
-    }
+    const { dbUser } = await getAuthenticatedUser()
 
     // Fetch user's policies
     const policies = await db.policy.findMany({
         where: {
-            ownerUserId: session.user.id
+            ownerUserId: dbUser.id
         },
         orderBy: {
             endDate: 'asc'

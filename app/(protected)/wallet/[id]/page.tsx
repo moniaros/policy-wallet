@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
 import Link from "next/link"
@@ -6,13 +6,12 @@ import { calculatePolicyStatus, getStatusColor, getStatusLabel, getDaysUntilExpi
 
 export default async function PolicyDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id: policyId } = await params
-    const session = await auth()
-    if (!session?.user?.id) return null
+    const { dbUser } = await getAuthenticatedUser()
 
     const policy = await db.policy.findUnique({
         where: {
             id: policyId,
-            ownerUserId: session.user.id
+            ownerUserId: dbUser.id
         },
         include: {
             documents: true

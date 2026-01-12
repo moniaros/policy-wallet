@@ -1,17 +1,13 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
-import { redirect } from "next/navigation"
 import { GapList } from "@/components/gaps/GapList"
 import { detectGapsForUser, createGapInstances } from "@/lib/gap-detection"
 
 export default async function CoverageInsightsPage() {
-    const session = await auth()
-    if (!session?.user?.id) {
-        redirect("/auth/signin")
-    }
+    const { dbUser } = await getAuthenticatedUser()
 
     // 1. Detect gaps for the user
-    const detectedGaps = await detectGapsForUser(session.user.id)
+    const detectedGaps = await detectGapsForUser(dbUser.id)
 
     // 2. Create gap instances in the DB (won't duplicate existing ones)
     if (detectedGaps.length > 0) {
@@ -22,7 +18,7 @@ export default async function CoverageInsightsPage() {
     const gapInstances = await db.gapInstance.findMany({
         where: {
             policy: {
-                ownerUserId: session.user.id
+                ownerUserId: dbUser.id
             },
             status: {
                 in: ['detected', 'acknowledged', 'open']
