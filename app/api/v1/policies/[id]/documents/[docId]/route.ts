@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { logger } from "@/lib/logger"
@@ -7,8 +7,8 @@ export async function DELETE(
     req: Request,
     { params }: { params: Promise<{ id: string, docId: string }> }
 ) {
-    const session = await auth()
-    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { id, docId } = await params
 
@@ -18,7 +18,7 @@ export async function DELETE(
             where: {
                 id: docId,
                 policyId: id,
-                policy: { ownerUserId: session.user.id }
+                policy: { ownerUserId: authResult.dbUser.id }
             },
             include: { policy: true }
         })
@@ -31,15 +31,15 @@ export async function DELETE(
 
         await (db.activityLog as any).create({
             data: {
-                adminUserId: session.user.id,
-                adminEmail: session.user.email || "unknown",
+                adminUserId: authResult.dbUser.id,
+                adminEmail: authResult.dbUser.email || "unknown",
                 actionType: "DOCUMENT_DELETED",
                 description: `Deleted document ${document.fileName} from policy ${document.policy.policyNumber}`,
                 timestamp: new Date()
             }
         })
 
-        logger('info', 'Document deleted', { docId, policyId: id, userId: session.user.id })
+        logger('info', 'Document deleted', { docId, policyId: id, userId: authResult.dbUser.id })
 
         return createApiResponse({ message: "Document deleted successfully" })
     } catch (error) {

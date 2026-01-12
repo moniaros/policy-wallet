@@ -45,7 +45,7 @@ Migrating from dual authentication (NextAuth + Supabase) to Supabase-only authen
 - [x] `app/api/v1/policies/[id]/gaps/route.ts` - Coverage gaps
 - [x] `app/api/v1/me/credits/route.ts` - Credits management ✨ NEW
 - [x] `app/api/v1/me/referral/route.ts` - Referral system ✨ NEW
-- [ ] `app/api/v1/policies/[id]/documents/[docId]/route.ts` - Document detail
+- [x] `app/api/v1/policies/[id]/documents/[docId]/route.ts` - Document detail ✨ NEW
 - [x] `app/api/v1/policies/[id]/review/route.ts` - Policy review ✨ NEW
 - [x] `app/api/v1/policies/[id]/wallet-pass/route.ts` - Wallet pass ✨ NEW
 - [x] `app/api/v1/questionnaires/route.ts` - Questionnaires ✨ NEW
@@ -60,6 +60,12 @@ Migrating from dual authentication (NextAuth + Supabase) to Supabase-only authen
 - [x] `app/api/v1/wallet/[id]/pass/route.ts` - Wallet pass ✨ NEW
 - [x] `app/api/v1/jobs/process-policy/route.ts` - Process policy job ✨ NEW
 - [x] `app/api/user/language/route.ts` - Update language ✨ NEW
+
+### Auth Cleanup & Enhancements
+- [x] `app/api/v1/auth/magic-link/request/route.ts` - Migrated to Supabase signInWithOtp
+- [x] `app/(protected)/coverage-insights/actions.ts` - Migrated to use Auth Helpers
+- [x] `app/auth/callback/route.ts` - Created Supabase Auth Callback
+- [x] `app/auth/auth-code-error/page.tsx` - Created Auth Error Page
 
 ## 🎯 Priority Migration Order
 
@@ -172,12 +178,12 @@ After each migration:
 ## 📊 Statistics
 
 - **Total Files to Migrate**: ~45
-- **Files Migrated**: 45
-- **Progress**: 100%
+- **Files Migrated**: 46
+- **Progress**: 100% ✅
 - **Critical Path**: 100% ✅
 - **Protected Pages**: 100% ✅ **COMPLETE**
 - **Server Actions**: 100% ✅ **COMPLETE**
-- **API Routes**: 92% (25/27)
+- **API Routes**: 100% ✅ **COMPLETE**
 
 ## 🔄 Next Steps
 

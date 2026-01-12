@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 
@@ -8,8 +8,8 @@ import { revalidatePath } from "next/cache"
  * Update the status of a gap instance
  */
 export async function updateGapStatus(gapId: string, status: 'acknowledged' | 'dismissed' | 'resolved') {
-    const session = await auth()
-    if (!session?.user?.id) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) {
         throw new Error("Unauthorized")
     }
 
@@ -23,7 +23,7 @@ export async function updateGapStatus(gapId: string, status: 'acknowledged' | 'd
         }
     })
 
-    if (!gap || gap.policy.ownerUserId !== session.user.id) {
+    if (!gap || gap.policy.ownerUserId !== authResult.dbUser.id) {
         throw new Error("Gap not found or unauthorized")
     }
 

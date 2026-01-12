@@ -1,5 +1,4 @@
-import { NextResponse } from "next/server"
-import { signIn } from "@/auth"
+import { createClient } from "@/lib/supabase/server"
 import { rateLimit } from "@/lib/rate-limit"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 
@@ -17,11 +16,15 @@ export async function POST(req: Request) {
             return createApiError("BAD_REQUEST", "Email is required", 400, null, language)
         }
 
-        await (signIn as any)("email", {
+        const supabase = await createClient()
+        const { error } = await supabase.auth.signInWithOtp({
             email,
-            redirect: false,
-            callbackUrl: "/"
+            options: {
+                emailRedirectTo: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/auth/callback`,
+            }
         })
+
+        if (error) throw error
 
         return createApiResponse({
             message: "Magic link sent to your email",
