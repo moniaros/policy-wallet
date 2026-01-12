@@ -1,14 +1,14 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 
 export async function GET() {
-    const session = await auth()
-    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     try {
         const user = await db.user.findUnique({
-            where: { id: session.user.id },
+            where: { id: authResult.dbUser.id },
             include: {
                 subscriptions: {
                     where: { status: "active" },
@@ -40,9 +40,9 @@ export async function GET() {
         }
 
         const usage = {
-            policies_created: await db.policy.count({ where: { ownerUserId: session.user.id, status: { not: "deleted" } } }),
+            policies_created: await db.policy.count({ where: { ownerUserId: authResult.dbUser.id, status: { not: "deleted" } } }),
             policies_limit: subscription ? 100 : 5, // Simple logic: Free=5, Paid=100
-            ai_reviews_used: await db.policyDocument.count({ where: { uploadedByUserId: session.user.id } }), // Approximate
+            ai_reviews_used: await db.policyDocument.count({ where: { uploadedByUserId: authResult.dbUser.id } }), // Approximate
             ai_reviews_limit: subscription ? 50 : 3
         }
 

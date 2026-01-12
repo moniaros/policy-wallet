@@ -33,10 +33,12 @@ Migrating from dual authentication (NextAuth + Supabase) to Supabase-only authen
 - [ ] `app/(protected)/agent/actions.ts` - Agent actions
 - [ ] `app/(protected)/coverage-insights/actions.ts` - Coverage insights actions
 
-### API Routes (2/27)
+### API Routes (5/27)
 - [x] `app/api/v1/me/route.ts` - **CRITICAL** - User profile endpoint
-- [x] `app/api/v1/policies/route.ts` - Policies CRUD ✨ NEW
-- [ ] `app/api/v1/policies/[id]/route.ts` - Policy detail
+- [x] `app/api/v1/policies/route.ts` - Policies CRUD
+- [x] `app/api/v1/policies/[id]/route.ts` - Policy detail (GET, PATCH, DELETE) ✨ NEW
+- [x] `app/api/v1/notifications/route.ts` - Notifications list ✨ NEW
+- [x] `app/api/v1/me/subscription/route.ts` - Subscription info ✨ NEW
 - [ ] `app/api/v1/policies/[id]/documents/route.ts` - Policy documents
 - [ ] `app/api/v1/policies/[id]/documents/[docId]/route.ts` - Document detail
 - [ ] `app/api/v1/policies/[id]/gaps/route.ts` - Coverage gaps
@@ -172,10 +174,11 @@ After each migration:
 ## 📊 Statistics
 
 - **Total Files to Migrate**: ~45
-- **Files Migrated**: 20
-- **Progress**: 44%
+- **Files Migrated**: 23
+- **Progress**: 51%
 - **Critical Path**: 100% ✅
 - **Protected Pages**: 100% ✅ **COMPLETE**
+- **API Routes**: 19% (5/27)
 
 ## 🔄 Next Steps
 

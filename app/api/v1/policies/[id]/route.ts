@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { z } from "zod"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
@@ -18,12 +18,12 @@ export async function GET(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const session = await auth()
-    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { id } = await params
 
-    const ownership = await ensureOwnership(db.policy, id, session.user.id)
+    const ownership = await ensureOwnership(db.policy, id, authResult.dbUser.id)
     if (!ownership.success) return ownership.error!
 
     try {
@@ -66,7 +66,7 @@ export async function GET(
             }
         })
     } catch (error) {
-        logger('error', 'Fetch policy failed', { id, error, userId: session.user.id })
+        logger('error', 'Fetch policy failed', { id, error, userId: authResult.dbUser.id })
         return createApiError("INTERNAL_ERROR", "Server error", 500)
     }
 }
@@ -75,12 +75,12 @@ export async function PATCH(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const session = await auth()
-    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { id } = await params
 
-    const ownership = await ensureOwnership(db.policy, id, session.user.id)
+    const ownership = await ensureOwnership(db.policy, id, authResult.dbUser.id)
     if (!ownership.success) return ownership.error!
 
     try {
@@ -103,12 +103,12 @@ export async function DELETE(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const session = await auth()
-    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { id } = await params
 
-    const ownership = await ensureOwnership(db.policy, id, session.user.id)
+    const ownership = await ensureOwnership(db.policy, id, authResult.dbUser.id)
     if (!ownership.success) return ownership.error!
 
     try {
@@ -120,19 +120,19 @@ export async function DELETE(
         // Log Activity
         await (db.activityLog as any).create({
             data: {
-                adminUserId: session.user.id,
-                adminEmail: session.user.email || "unknown",
+                adminUserId: authResult.dbUser.id,
+                adminEmail: authResult.dbUser.email || "unknown",
                 actionType: "POLICY_DELETED",
                 description: `Soft-deleted policy ${id}`,
                 metadata: { policyId: id }
             }
         })
 
-        logger('info', 'Policy soft-deleted', { id, userId: session.user.id })
+        logger('info', 'Policy soft-deleted', { id, userId: authResult.dbUser.id })
 
         return createApiResponse({ message: "Policy deleted successfully" })
     } catch (error) {
-        logger('error', 'Delete policy failed', { id, error, userId: session.user.id })
+        logger('error', 'Delete policy failed', { id, error, userId: authResult.dbUser.id })
         return createApiError("INTERNAL_ERROR", "Delete failed", 500)
     }
 }
