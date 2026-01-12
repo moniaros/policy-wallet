@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 
 export async function GET() {
-    const session = await auth()
-    if (!session?.user?.id) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) {
         return NextResponse.json(
             { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
             { status: 401 }
@@ -13,7 +13,7 @@ export async function GET() {
 
     try {
         const preferences = await (db as any).notificationPreference.findMany({
-            where: { userId: session.user.id }
+            where: { userId: authResult.dbUser.id }
         })
 
         // Default categories if nothing set
@@ -46,8 +46,8 @@ export async function GET() {
 }
 
 export async function PATCH(req: Request) {
-    const session = await auth()
-    if (!session?.user?.id) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) {
         return NextResponse.json(
             { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
             { status: 401 }
@@ -61,14 +61,14 @@ export async function PATCH(req: Request) {
             await (db as any).notificationPreference.upsert({
                 where: {
                     userId_eventType_channel: {
-                        userId: session.user.id,
+                        userId: authResult.dbUser.id,
                         eventType: pref.event_type,
                         channel: pref.channel
                     }
                 },
                 update: { enabled: pref.enabled },
                 create: {
-                    userId: session.user.id,
+                    userId: authResult.dbUser.id,
                     eventType: pref.event_type,
                     channel: pref.channel,
                     enabled: pref.enabled
