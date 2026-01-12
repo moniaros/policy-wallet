@@ -1,12 +1,11 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
 import { QuestionnaireForm } from "@/components/tasks/QuestionnaireForm"
 
 export default async function TaskDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params
-    const session = await auth()
-    if (!session?.user?.id) return null
+    const { dbUser } = await getAuthenticatedUser()
 
     const task = await db.questionnaireInstance.findUnique({
         where: { id },
@@ -18,7 +17,7 @@ export default async function TaskDetailPage({ params }: { params: Promise<{ id:
         }
     })
 
-    if (!task || task.sentToUserId !== session.user.id || task.status !== 'pending') {
+    if (!task || task.sentToUserId !== dbUser.id || task.status !== 'pending') {
         notFound()
     }
 

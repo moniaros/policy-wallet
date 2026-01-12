@@ -1,20 +1,15 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { AppShell } from "@/components/shell"
-import { redirect } from "next/navigation"
 
 export default async function ProtectedLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
-    const session = await auth()
-
-    if (!session?.user) {
-        redirect("/auth/signin")
-    }
+    const { dbUser } = await getAuthenticatedUser()
 
     // Construct navigation based on roles
-    const roles = session.user.roles?.split(",") || ["policyholder"]
+    const roles = dbUser.roles?.split(",") || ["policyholder"]
     const currentRole = roles[0] as "policyholder" | "agent" | "admin"
 
     const navigation = []
@@ -65,9 +60,9 @@ export default async function ProtectedLayout({
     return (
         <AppShell
             user={{
-                name: session.user.name || "User",
-                email: session.user.email || "",
-                avatarUrl: session.user.image || undefined,
+                name: dbUser.name || "User",
+                email: dbUser.email || "",
+                avatarUrl: dbUser.image || undefined,
             }}
             currentRole={userRoleObj}
             availableRoles={roles.map(r => ({ role: r as any, label: r }))}

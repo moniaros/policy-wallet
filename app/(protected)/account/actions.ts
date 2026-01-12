@@ -1,16 +1,16 @@
 "use server"
 
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { logger } from "@/lib/logger"
 
 export async function getAccountData() {
-    const session = await auth()
-    if (!session?.user?.id) return null
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return null
 
-    const userId = session.user.id
+    const userId = authResult.dbUser.id
 
     // 1. Fetch User & Current Subscription
     const user = await db.user.findUnique({
@@ -232,11 +232,11 @@ export async function getAccountData() {
 }
 
 export async function updatePreferredLanguage(language: 'el' | 'en') {
-    const session = await auth()
-    if (!session?.user?.id) return { error: "Unauthorized" }
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
 
     await db.user.update({
-        where: { id: session.user.id },
+        where: { id: authResult.dbUser.id },
         data: { preferredLanguage: language }
     })
 
@@ -245,11 +245,11 @@ export async function updatePreferredLanguage(language: 'el' | 'en') {
 }
 
 export async function logoutSession(sessionId: string) {
-    const session = await auth()
-    if (!session?.user?.id) return { error: "Unauthorized" }
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
 
     await db.activeSession.delete({
-        where: { id: sessionId, userId: session.user.id }
+        where: { id: sessionId, userId: authResult.dbUser.id }
     })
 
     revalidatePath("/account")
@@ -257,11 +257,11 @@ export async function logoutSession(sessionId: string) {
 }
 
 export async function logoutAllSessions() {
-    const session = await auth()
-    if (!session?.user?.id) return { error: "Unauthorized" }
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
 
     await db.activeSession.deleteMany({
-        where: { userId: session.user.id }
+        where: { userId: authResult.dbUser.id }
     })
 
     revalidatePath("/account")
@@ -269,21 +269,21 @@ export async function logoutAllSessions() {
 }
 
 export async function upgradeSubscription(planId: string) {
-    const session = await auth()
-    if (!session?.user?.id) return { error: "Unauthorized" }
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
 
     const plan = await db.plan.findUnique({ where: { id: planId } })
     if (!plan) return { error: "Plan not found" }
 
     // In a real app, integrate with Stripe/Payment provider here
     await db.subscription.updateMany({
-        where: { userId: session.user.id, status: 'active' },
+        where: { userId: authResult.dbUser.id, status: 'active' },
         data: { status: 'expired' }
     })
 
     const newSubscription = await db.subscription.create({
         data: {
-            userId: session.user.id,
+            userId: authResult.dbUser.id,
             planId: planId,
             status: 'active',
             currentPeriodStart: new Date(),
@@ -295,7 +295,7 @@ export async function upgradeSubscription(planId: string) {
     // Handle Referral Conversion
     if (Number(plan.price) > 0) {
         const referral = await db.referral.findFirst({
-            where: { referredUserId: session.user.id, status: 'pending' }
+            where: { referredUserId: authResult.dbUser.id, status: 'pending' }
         })
 
         if (referral) {
@@ -324,7 +324,7 @@ export async function upgradeSubscription(planId: string) {
                         amount: creditAmount,
                         transactionType: 'earn',
                         balanceAfter: currentBalance + creditAmount,
-                        description: `Conversion bonus: ${session.user.email}`,
+                        description: `Conversion bonus: ${authResult.dbUser.email}`,
                         referralId: updatedReferral.id
                     }
                 })
@@ -337,11 +337,11 @@ export async function upgradeSubscription(planId: string) {
 }
 
 export async function cancelSubscription() {
-    const session = await auth()
-    if (!session?.user?.id) return { error: "Unauthorized" }
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
 
     await db.subscription.updateMany({
-        where: { userId: session.user.id, status: 'active' },
+        where: { userId: authResult.dbUser.id, status: 'active' },
         data: { autoRenew: false }
     })
 
@@ -350,10 +350,10 @@ export async function cancelSubscription() {
 }
 
 export async function deleteAccount() {
-    const session = await auth()
-    if (!session?.user?.id) return { error: "Unauthorized" }
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
 
-    const userId = session.user.id
+    const userId = authResult.dbUser.id
 
     try {
         await db.$transaction([

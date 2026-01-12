@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server"
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 
 export async function GET() {
-    const session = await auth()
-    if (!session?.user?.id) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) {
         return NextResponse.json(
             {
                 data: null,
@@ -17,7 +17,7 @@ export async function GET() {
 
     try {
         const user = await db.user.findUnique({
-            where: { id: session.user.id },
+            where: { id: authResult.dbUser.id },
             include: {
                 policyholderProfile: true,
             }
@@ -66,8 +66,8 @@ export async function GET() {
 }
 
 export async function PATCH(req: Request) {
-    const session = await auth()
-    if (!session?.user?.id) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) {
         return NextResponse.json(
             {
                 data: null,
@@ -83,7 +83,7 @@ export async function PATCH(req: Request) {
         const { name, preferredLanguage, profile } = body
 
         const updatedUser = await db.user.update({
-            where: { id: session.user.id },
+            where: { id: authResult.dbUser.id },
             data: {
                 name: name !== undefined ? name : undefined,
                 preferredLanguage: preferredLanguage !== undefined ? preferredLanguage : undefined,

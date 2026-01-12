@@ -1,14 +1,14 @@
 "use server"
 
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 
 export async function getNotificationData() {
-    const session = await auth()
-    if (!session?.user?.id) return null
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return null
 
-    const userId = session.user.id
+    const userId = authResult.dbUser.id
 
     // 1. Fetch History
     const history = await db.notificationEvent.findMany({
@@ -136,20 +136,20 @@ export async function getNotificationData() {
 }
 
 export async function toggleNotificationPreference(eventType: string, channel: 'email' | 'push', enabled: boolean, role: 'policyholder' | 'agent') {
-    const session = await auth()
-    if (!session?.user?.id) return { error: "Unauthorized" }
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
 
     await db.notificationPreference.upsert({
         where: {
             userId_eventType_channel: {
-                userId: session.user.id,
+                userId: authResult.dbUser.id,
                 eventType,
                 channel
             }
         },
         update: { enabled },
         create: {
-            userId: session.user.id,
+            userId: authResult.dbUser.id,
             eventType,
             channel,
             enabled
