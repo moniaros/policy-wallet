@@ -1,6 +1,6 @@
 "use server"
 
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
@@ -21,10 +21,10 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
  */
 
 export async function getDashboardData() {
-    const session = await auth()
-    if (!session?.user?.id) return null
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return null
 
-    const agentId = session.user.id
+    const agentId = authResult.dbUser.id
 
     // 1. Fetch Summary Stats
     const relationships = await db.customerRelationship.findMany({
@@ -123,10 +123,10 @@ export async function getDashboardData() {
  */
 
 export async function getCustomers(query?: string): Promise<Customer[]> {
-    const session = await auth()
-    if (!session?.user?.id) return []
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return []
 
-    const agentId = session.user.id
+    const agentId = authResult.dbUser.id
 
     const relationships = await (db.customerRelationship.findMany as any)({
         where: {
@@ -184,10 +184,10 @@ export async function getCustomers(query?: string): Promise<Customer[]> {
 }
 
 export async function getCustomerProfile(customerId: string): Promise<Customer | null> {
-    const session = await auth()
-    if (!session?.user?.id) return null
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return null
 
-    const agentId = session.user.id
+    const agentId = authResult.dbUser.id
 
     const relationship = await (db.customerRelationship.findFirst as any)({
         where: {
@@ -287,8 +287,8 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
  */
 
 export async function updateOpportunityStatus(opportunityId: string, status: OpportunityStatus, notes?: string) {
-    const session = await auth()
-    if (!session?.user?.id) return { error: "Unauthorized" }
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
 
     await db.opportunity.update({
         where: { id: opportunityId },
@@ -316,8 +316,8 @@ export async function updateOpportunityStatus(opportunityId: string, status: Opp
 }
 
 export async function inviteCustomer(formData: FormData) {
-    const session = await auth()
-    if (!session?.user?.id) return { success: false, error: "Unauthorized" }
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { success: false, error: "Unauthorized" }
 
     const email = formData.get("email") as string
     if (!email) return { success: false, error: "Email is required" }
@@ -326,12 +326,12 @@ export async function inviteCustomer(formData: FormData) {
 }
 
 export async function createAgentInvite(email: string, scope: AccessScope) {
-    const session = await auth()
-    if (!session?.user?.id) return { success: false, error: "Unauthorized" }
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { success: false, error: "Unauthorized" }
 
     const invite = await db.invite.create({
         data: {
-            inviterUserId: session.user.id,
+            inviterUserId: authResult.dbUser.id,
             inviteeEmail: email,
             token: Math.random().toString(36).substring(7),
             inviteType: 'signup',
@@ -347,7 +347,7 @@ export async function createAgentInvite(email: string, scope: AccessScope) {
     if (customer) {
         await (db.customerRelationship.updateMany as any)({
             where: {
-                agentUserId: session.user.id,
+                agentUserId: authResult.dbUser.id,
                 policyholderUserId: customer.id
             },
             data: {
@@ -376,8 +376,8 @@ export async function addCustomerManually(data: {
         premiumAmount?: number;
     }
 }) {
-    const session = await auth()
-    if (!session?.user?.id) return { error: "Unauthorized" }
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
 
     try {
         // 1. Create or find user
@@ -399,7 +399,7 @@ export async function addCustomerManually(data: {
         const relationship = await db.customerRelationship.upsert({
             where: {
                 agentUserId_policyholderUserId: {
-                    agentUserId: session.user.id,
+                    agentUserId: authResult.dbUser.id,
                     policyholderUserId: user.id
                 }
             },
@@ -407,7 +407,7 @@ export async function addCustomerManually(data: {
                 status: 'inactive' // Added but not invited yet
             },
             create: {
-                agentUserId: session.user.id,
+                agentUserId: authResult.dbUser.id,
                 policyholderUserId: user.id,
                 status: 'inactive'
             }
@@ -418,7 +418,7 @@ export async function addCustomerManually(data: {
             await db.policy.create({
                 data: {
                     ownerUserId: user.id,
-                    createdByUserId: session.user.id,
+                    createdByUserId: authResult.dbUser.id,
                     insurerName: data.policy.insurerName,
                     policyNumber: data.policy.policyNumber,
                     lineOfBusiness: data.policy.lineOfBusiness,
@@ -439,8 +439,8 @@ export async function addCustomerManually(data: {
 }
 
 export async function parsePolicyPdfWithGemini(formData: FormData) {
-    const session = await auth()
-    if (!session?.user?.id) return { error: "Unauthorized" }
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
 
     const file = formData.get("file") as File
     if (!file) return { error: "No file provided" }
@@ -505,8 +505,8 @@ export async function getQuestionnaireTemplates() {
 }
 
 export async function sendQuestionnaire(relationshipId: string, templateId: string) {
-    const session = await auth()
-    if (!session?.user?.id) throw new Error("Unauthorized")
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) throw new Error("Unauthorized")
 
     const relationship = await db.customerRelationship.findUnique({
         where: { id: relationshipId },
@@ -519,7 +519,7 @@ export async function sendQuestionnaire(relationshipId: string, templateId: stri
         data: {
             relationshipId,
             templateId,
-            sentByUserId: session.user.id,
+            sentByUserId: authResult.dbUser.id,
             sentToUserId: relationship.policyholderUserId,
             status: 'pending'
         }
@@ -536,15 +536,15 @@ export async function sendQuestionnaire(relationshipId: string, templateId: stri
 }
 
 export async function sendReminder(customerId: string) {
-    const session = await auth()
-    if (!session?.user?.id) throw new Error("Unauthorized")
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) throw new Error("Unauthorized")
 
     // In a real app, this would send an email or push via a notification service
     // For now, we update the lastInteractionAt to show we touched this relationship
 
     await (db.customerRelationship.updateMany as any)({
         where: {
-            agentUserId: session.user.id,
+            agentUserId: authResult.dbUser.id,
             policyholderUserId: customerId
         },
         data: {

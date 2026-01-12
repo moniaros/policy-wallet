@@ -25,13 +25,13 @@ Migrating from dual authentication (NextAuth + Supabase) to Supabase-only authen
 - [x] `app/(protected)/activity/page.tsx` - Activity log (if exists)
 - [x] `app/(protected)/insights/page.tsx` - Insights (if exists)
 
-### Server Actions (4/6)
+### Server Actions (6/6) ✅ **COMPLETE**
 - [x] `app/(protected)/account/actions.ts` - All account actions migrated
 - [x] `app/(protected)/notifications/actions.ts` - Notification actions migrated
-- [x] `app/(protected)/wallet/actions.ts` - Wallet actions migrated ✨ NEW
-- [ ] `app/(protected)/tasks/actions.ts` - Task actions
-- [ ] `app/(protected)/agent/actions.ts` - Agent actions
-- [ ] `app/(protected)/coverage-insights/actions.ts` - Coverage insights actions
+- [x] `app/(protected)/wallet/actions.ts` - Wallet actions migrated
+- [x] `app/(protected)/tasks/actions.ts` - Task actions migrated ✨ NEW
+- [x] `app/(protected)/agent/actions.ts` - Agent actions migrated ✨ NEW
+- [x] `app/(protected)/coverage-insights/actions.ts` - Coverage insights actions (if exists)
 
 ### API Routes (5/27)
 - [x] `app/api/v1/me/route.ts` - **CRITICAL** - User profile endpoint
@@ -174,10 +174,11 @@ After each migration:
 ## 📊 Statistics
 
 - **Total Files to Migrate**: ~45
-- **Files Migrated**: 23
-- **Progress**: 51%
+- **Files Migrated**: 25
+- **Progress**: 56%
 - **Critical Path**: 100% ✅
 - **Protected Pages**: 100% ✅ **COMPLETE**
+- **Server Actions**: 100% ✅ **COMPLETE**
 - **API Routes**: 19% (5/27)
 
 ## 🔄 Next Steps

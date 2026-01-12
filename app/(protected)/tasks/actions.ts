@@ -1,16 +1,16 @@
 "use server"
 
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 
 export async function getPendingQuestionnaires() {
-    const session = await auth()
-    if (!session?.user?.id) return []
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return []
 
     return await db.questionnaireInstance.findMany({
         where: {
-            sentToUserId: session.user.id,
+            sentToUserId: authResult.dbUser.id,
             status: 'pending'
         },
         include: {
@@ -27,8 +27,8 @@ export async function getPendingQuestionnaires() {
 }
 
 export async function submitQuestionnaireResponse(instanceId: string, answers: any) {
-    const session = await auth()
-    if (!session?.user?.id) throw new Error("Unauthorized")
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) throw new Error("Unauthorized")
 
     // Start a transaction to ensure atomic update and response creation
     return await db.$transaction(async (tx) => {
@@ -36,7 +36,7 @@ export async function submitQuestionnaireResponse(instanceId: string, answers: a
         const response = await tx.questionnaireResponse.create({
             data: {
                 instanceId,
-                userId: session.user.id,
+                userId: authResult.dbUser.id,
                 answers
             }
         })
