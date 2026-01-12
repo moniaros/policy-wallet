@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 
@@ -6,8 +6,8 @@ export async function PATCH(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const session = await auth()
-    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { id } = await params
 
@@ -16,7 +16,7 @@ export async function PATCH(
         const gapCheck = await db.gapInstance.findFirst({
             where: {
                 id,
-                policy: { ownerUserId: session.user.id }
+                policy: { ownerUserId: authResult.dbUser.id }
             }
         })
 

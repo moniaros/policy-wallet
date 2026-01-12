@@ -1,4 +1,4 @@
-import { auth } from "@/auth"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { ensureOwnership } from "@/lib/security"
@@ -7,8 +7,8 @@ export async function DELETE(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const session = await auth()
-    if (!session?.user?.id) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
 
     const { id } = await params
 
@@ -17,7 +17,7 @@ export async function DELETE(
     })
 
     if (!grant) return createApiError("NOT_FOUND", "Access grant not found", 404)
-    if (grant.granterUserId !== session.user.id) return createApiError("FORBIDDEN", "Ownership verification failed", 403)
+    if (grant.granterUserId !== authResult.dbUser.id) return createApiError("FORBIDDEN", "Ownership verification failed", 403)
 
     try {
         await db.accessGrant.update({
@@ -30,8 +30,8 @@ export async function DELETE(
 
         await (db.activityLog as any).create({
             data: {
-                adminUserId: session.user.id,
-                adminEmail: session.user.email || "unknown",
+                adminUserId: authResult.dbUser.id,
+                adminEmail: authResult.dbUser.email || "unknown",
                 actionType: "ACCESS_REVOKED",
                 description: `Revoked access grant ${id}`,
             }
