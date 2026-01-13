@@ -146,6 +146,7 @@ export async function uploadPolicyDocument(formData: FormData) {
         lineOfBusiness: "motor", // Default fallback
         startDate: new Date(),
         endDate: new Date(Date.now() + 31536000000), // +1 year
+        coverageSummary: "Processing...",
     };
 
     if (process.env.GEMINI_API_KEY) {
@@ -168,6 +169,7 @@ export async function uploadPolicyDocument(formData: FormData) {
             - startDate (YYYY-MM-DD)
             - endDate (YYYY-MM-DD)
             - premiumAmount (number)
+            - coverageSummary (string): A short, clear summary of key coverages and limits (max 200 chars).
             
             If a field is missing, make a best guess or use null.
             `;
@@ -199,6 +201,7 @@ export async function uploadPolicyDocument(formData: FormData) {
             if (aiJson.lineOfBusiness) extractedData.lineOfBusiness = aiJson.lineOfBusiness.toLowerCase();
             if (aiJson.startDate) extractedData.startDate = new Date(aiJson.startDate);
             if (aiJson.endDate) extractedData.endDate = new Date(aiJson.endDate);
+            if (aiJson.coverageSummary) extractedData.coverageSummary = aiJson.coverageSummary;
 
         } catch (error) {
             logger('error', 'AI extraction failed', { userId, error, fileName: file.name })
@@ -216,6 +219,7 @@ export async function uploadPolicyDocument(formData: FormData) {
             lineOfBusiness: extractedData.lineOfBusiness as any,
             startDate: extractedData.startDate,
             endDate: extractedData.endDate,
+            coverageSummary: extractedData.coverageSummary,
             status: "active", // Assume active if parsed successfully? Or maybe 'incomplete' if low confidence?
             // For MVP, if we got data, let's say "active" or "action_needed" to verify.
             // Let's stick to 'incomplete' so user reviews it, but we pre-fill the data.
