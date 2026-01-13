@@ -273,3 +273,110 @@ export async function getInsuranceTypes() {
         orderBy: { name: 'asc' }
     })
 }
+
+export async function sharePolicy(policyId: string, agentEmail: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    // 1. Find the agent
+    const agent = await db.user.findUnique({
+        where: { email: agentEmail }
+    })
+
+    if (!agent) {
+        return { error: "Agent not found with this email." }
+    }
+
+    // Optional: Verify role
+    // if (!agent.roles.includes('agent')) return { error: "This user is not an agent." }
+
+    // 2. Create Access Grant
+    // We treat policy sharing as a scoped grant
+    await db.accessGrant.create({
+        data: {
+            granterUserId: authResult.dbUser.id,
+            granteeUserId: agent.id,
+            scope: `policy:${policyId}`,
+            permissions: "read",
+            status: "active"
+        }
+    })
+
+    // 3. Ensure a Relationship exists (so they show up in Agent's Customer list)
+    // We use upsert to avoid error if exists
+    // Note: status might need to be 'active' if they accepted, but here we force 'active' or 'pending'?
+    // Let's check if relationship exists first.
+    const existingRel = await db.customerRelationship.findUnique({
+        where: {
+            agentUserId_policyholderUserId: {
+                agentUserId: agent.id,
+                policyholderUserId: authResult.dbUser.id
+            }
+        }
+    })
+
+    if (!existingRel) {
+        await db.customerRelationship.create({
+            data: {
+                agentUserId: agent.id,
+                policyholderUserId: authResult.dbUser.id,
+                status: "active", // Auto-activate since customer initiated sharing
+                activationStatus: "active"
+            }
+        })
+    }
+
+    // 4. Log
+    await (db as any).activityLog.create({
+        data: {
+            adminUserId: authResult.dbUser.id,
+            adminEmail: authResult.dbUser.email || "unknown",
+            actionType: "POLICY_SHARED",
+            description: `Shared policy ${policyId} with ${agentEmail}`,
+            metadata: { policyId, agentEmail }
+        }
+    })
+
+    revalidatePath(`/wallet/${policyId}`)
+    return { success: true }
+}
+
+export async function getPolicyShares(policyId: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return []
+
+    // Get grants where scope includes this policy
+    const grants = await db.accessGrant.findMany({
+        where: {
+            granterUserId: authResult.dbUser.id,
+            scope: `policy:${policyId}`,
+            status: 'active'
+        },
+        include: {
+            grantee: {
+                select: { email: true, name: true, image: true }
+            }
+        }
+    })
+
+    return grants.map(g => ({
+        id: g.id,
+        email: g.grantee.email,
+        name: g.grantee.name,
+        image: g.grantee.image,
+        grantedAt: g.grantedAt
+    }))
+}
+
+export async function revokeShare(grantId: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    await db.accessGrant.update({
+        where: { id: grantId, granterUserId: authResult.dbUser.id },
+        data: { status: 'revoked', revokedAt: new Date() }
+    })
+
+    revalidatePath("/wallet")
+    return { success: true }
+}

@@ -3,6 +3,8 @@ import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import { calculatePolicyStatus, getStatusColor, getStatusLabel, getDaysUntilExpiry } from "@/lib/policy-status"
+import { getPolicyShares } from "../actions"
+import { SharePolicy } from "./SharePolicy"
 
 export default async function PolicyDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id: policyId } = await params
@@ -25,7 +27,11 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ i
     const status = calculatePolicyStatus(policy)
     const statusColor = getStatusColor(status)
     const statusLabel = getStatusLabel(status)
+
+
     const daysLeft = getDaysUntilExpiry(policy.endDate)
+
+    const shares = await getPolicyShares(policyId)
 
     return (
         <div className="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -172,8 +178,13 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ i
                             </ul>
                         )}
                     </div>
+
+
+                    {/* Share Policy */}
+                    <SharePolicy policyId={policyId} initialShares={shares} />
                 </div>
             </div>
         </div>
+
     )
 }

@@ -329,6 +329,41 @@ export async function createAgentInvite(email: string, scope: AccessScope) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { success: false, error: "Unauthorized" }
 
+    // 1. Ensure User exists (Placeholder if new)
+    let customer = await db.user.findUnique({
+        where: { email }
+    })
+
+    if (!customer) {
+        customer = await db.user.create({
+            data: {
+                email,
+                name: email.split('@')[0], // Placeholder name
+                roles: "policyholder"
+            }
+        })
+    }
+
+    // 2. Ensure Relationship exists
+    await db.customerRelationship.upsert({
+        where: {
+            agentUserId_policyholderUserId: {
+                agentUserId: authResult.dbUser.id,
+                policyholderUserId: customer.id
+            }
+        },
+        update: {
+            status: 'pending_activation'
+        },
+        create: {
+            agentUserId: authResult.dbUser.id,
+            policyholderUserId: customer.id,
+            status: 'pending_activation',
+            activationStatus: 'invited'
+        }
+    })
+
+    // 3. Create Invite
     const invite = await db.invite.create({
         data: {
             inviterUserId: authResult.dbUser.id,
@@ -339,26 +374,9 @@ export async function createAgentInvite(email: string, scope: AccessScope) {
         }
     })
 
-    // Update status in relationship if exists
-    const customer = await db.user.findUnique({
-        where: { email }
-    })
-
-    if (customer) {
-        await (db.customerRelationship.updateMany as any)({
-            where: {
-                agentUserId: authResult.dbUser.id,
-                policyholderUserId: customer.id
-            },
-            data: {
-                status: 'pending_activation'
-            }
-        })
-    }
-
     revalidatePath("/dashboard")
     revalidatePath("/customers")
-    revalidatePath(`/customers/${customer?.id}`)
+    revalidatePath(`/customers/${customer.id}`)
     return { success: true, inviteId: invite.id, token: invite.token }
 }
 
