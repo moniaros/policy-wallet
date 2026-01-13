@@ -80,6 +80,7 @@ export function AddPolicyForm({ insurers, types }: AddPolicyFormProps) {
                 // 3. Create Policy in DB
                 await createPolicy(formData)
                 toast.success(t.wallet.addPolicy + " Success")
+                router.push("/wallet")
             } catch (error: any) {
                 console.error(error)
                 toast.error(error.message || t.errors.somethingWentWrong)

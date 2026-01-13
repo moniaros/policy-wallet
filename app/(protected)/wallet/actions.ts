@@ -107,7 +107,8 @@ export async function createPolicy(formData: FormData) {
     })
 
     revalidatePath("/wallet")
-    redirect("/wallet")
+    revalidatePath("/wallet")
+    return { success: true }
 }
 
 export async function uploadPolicyDocument(formData: FormData) {

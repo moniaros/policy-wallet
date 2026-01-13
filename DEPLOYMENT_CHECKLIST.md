@@ -35,7 +35,13 @@ Verify all required environment variables are set in your production environment
   - [ ] `https://your-domain.com/auth/handover`
   - [ ] `http://localhost:3000/auth/callback` (for local testing)
 - [ ] Email templates are configured (optional)
-- [ ] RLS policies are set up if using Supabase storage
+- [ ] RLS policies are set up if using Supabase storage:
+  ```sql
+  -- Run this in Supabase SQL Editor if uploads fail
+  INSERT INTO storage.buckets (id, name, public) VALUES ('policies', 'policies', true) ON CONFLICT (id) DO NOTHING;
+  CREATE POLICY "Allow authenticated uploads" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'policies');
+  CREATE POLICY "Allow authenticated reads" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'policies');
+  ```
 
 ### 4. Code Quality
 - [ ] All TypeScript errors resolved: `npm run type-check`
