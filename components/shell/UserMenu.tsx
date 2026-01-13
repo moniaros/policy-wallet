@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 export interface UserMenuProps {
@@ -21,7 +22,26 @@ export function UserMenu({
     compact = false,
 }: UserMenuProps) {
     const [isOpen, setIsOpen] = useState(false)
+    const [isPending, startTransition] = useTransition()
+    const router = useRouter()
     const { language, setLanguage, t } = useLanguage()
+
+    const handleLanguageChange = (lang: 'el' | 'en') => {
+        startTransition(() => {
+            setLanguage(lang)
+            setIsOpen(false)
+            router.refresh()
+        })
+    }
+
+    const handleLogout = () => {
+        startTransition(async () => {
+            if (onLogout) {
+                await onLogout()
+            }
+            setIsOpen(false)
+        })
+    }
 
     const initials = user.name
         .split(' ')
@@ -105,31 +125,29 @@ export function UserMenu({
                             <div className="text-xs text-stone-500 dark:text-stone-400 mb-1">{t.userMenu.language}</div>
                             <div className="flex gap-2">
                                 <button
-                                    onClick={() => {
-                                        setLanguage('el')
-                                        setIsOpen(false)
-                                    }}
+                                    onClick={() => handleLanguageChange('el')}
+                                    disabled={isPending}
                                     className={`
                     flex-1 px-3 py-1.5 text-xs font-medium rounded transition-colors
                     ${language === 'el'
                                             ? 'bg-teal-600 text-white'
                                             : 'bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600'
                                         }
+                    ${isPending ? 'opacity-50 cursor-not-allowed' : ''}
                   `}
                                 >
                                     {t.userMenu.greek}
                                 </button>
                                 <button
-                                    onClick={() => {
-                                        setLanguage('en')
-                                        setIsOpen(false)
-                                    }}
+                                    onClick={() => handleLanguageChange('en')}
+                                    disabled={isPending}
                                     className={`
                     flex-1 px-3 py-1.5 text-xs font-medium rounded transition-colors
                     ${language === 'en'
                                             ? 'bg-teal-600 text-white'
                                             : 'bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600'
                                         }
+                    ${isPending ? 'opacity-50 cursor-not-allowed' : ''}
                   `}
                                 >
                                     {t.userMenu.english}
@@ -147,13 +165,11 @@ export function UserMenu({
 
                         {/* Logout */}
                         <button
-                            onClick={() => {
-                                onLogout?.()
-                                setIsOpen(false)
-                            }}
-                            className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-stone-50 dark:hover:bg-stone-700 border-t border-stone-200 dark:border-stone-700"
+                            onClick={handleLogout}
+                            disabled={isPending}
+                            className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-stone-50 dark:hover:bg-stone-700 border-t border-stone-200 dark:border-stone-700 disabled:opacity-50"
                         >
-                            {t.userMenu.logout}
+                            {isPending ? t.common.loading : t.userMenu.logout}
                         </button>
                     </div>
                 </>
