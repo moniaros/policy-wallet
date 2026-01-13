@@ -4,10 +4,18 @@
 
 export interface User {
     user_id: string
+    name: string | null
     email: string
     preferred_language: 'el' | 'en'
     role: string
     created_at: string
+}
+
+export interface NotificationPreference {
+    preference_id: string
+    event_type: string
+    channel: string
+    enabled: boolean
 }
 
 export interface PlanEntitlements {
@@ -206,14 +214,17 @@ export interface SettingsProps {
     activeSessions: ActiveSession[]
     /** User's security event history */
     securityEvents: SecurityEvent[]
+    notificationPreferences: NotificationPreference[]
+    /** Called when user wants to update their profile (name, etc) */
+    onUpdateProfile?: (data: { name: string }) => void
     /** Called when user wants to update their email */
     onUpdateEmail?: (newEmail: string) => void
     /** Called when user wants to change their password */
     onChangePassword?: () => void
     /** Called when user wants to update their language preference */
     onUpdateLanguage?: (language: 'el' | 'en') => void
-    /** Called when user wants to update notification preferences */
-    onUpdateNotifications?: (preferences: Record<string, boolean>) => void
+    /** Called when user wants to toggle a notification preference */
+    onToggleNotification?: (eventType: string, channel: string, enabled: boolean) => void
     /** Called when user wants to log out from a specific session */
     onLogoutSession?: (sessionId: string) => void
     /** Called when user wants to log out from all devices */

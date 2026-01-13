@@ -29,7 +29,8 @@ export async function getAccountData() {
             securityEvents: {
                 orderBy: { createdAt: 'desc' },
                 take: 10
-            }
+            },
+            notificationPreferences: true
         }
     })
 
@@ -74,6 +75,7 @@ export async function getAccountData() {
     // Transform for UI (Bridging snake_case and handling types)
     const uiUser = {
         user_id: user.id,
+        name: user.name,
         email: user.email!,
         preferred_language: user.preferredLanguage as 'el' | 'en',
         role: user.roles,
@@ -189,6 +191,13 @@ export async function getAccountData() {
         created_at: e.createdAt.toISOString()
     }))
 
+    const uinotificationPreferences = user.notificationPreferences.map(p => ({
+        preference_id: p.id,
+        event_type: p.eventType,
+        channel: p.channel,
+        enabled: p.enabled
+    }))
+
     return {
         user: uiUser,
         currentSubscription: finalSubscription,
@@ -227,7 +236,8 @@ export async function getAccountData() {
         invoices: uiInvoices,
         paymentMethods: uiPaymentMethods,
         activeSessions: uiSessions,
-        securityEvents: uiSecurity
+        securityEvents: uiSecurity,
+        notificationPreferences: uinotificationPreferences
     }
 }
 
@@ -387,4 +397,42 @@ export async function deleteAccount() {
         logger('error', 'Account deletion failed', { userId, error })
         return { error: "Failed to delete account" }
     }
+}
+
+export async function updateProfile({ name }: { name: string }) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    await db.user.update({
+        where: { id: authResult.dbUser.id },
+        data: { name }
+    })
+
+    revalidatePath("/account")
+    return { success: true }
+}
+
+export async function toggleNotificationPreference(eventType: string, channel: string, enabled: boolean) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    await db.notificationPreference.upsert({
+        where: {
+            userId_eventType_channel: {
+                userId: authResult.dbUser.id,
+                eventType,
+                channel
+            }
+        },
+        update: { enabled },
+        create: {
+            userId: authResult.dbUser.id,
+            eventType,
+            channel,
+            enabled
+        }
+    })
+
+    revalidatePath("/account")
+    return { success: true }
 }

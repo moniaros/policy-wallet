@@ -12,7 +12,9 @@ import {
     logoutSession,
     logoutAllSessions,
     upgradeSubscription,
-    cancelSubscription
+    cancelSubscription,
+    updateProfile,
+    toggleNotificationPreference
 } from "./actions"
 import { useRouter } from "next/navigation"
 
@@ -53,6 +55,14 @@ export function AccountClientPage({ initialData }: Props) {
 
     const handleLogoutAll = async () => {
         await logoutAllSessions()
+    }
+
+    const handleUpdateProfile = async (data: { name: string }) => {
+        await updateProfile(data)
+    }
+
+    const handleToggleNotification = async (eventType: string, channel: string, enabled: boolean) => {
+        await toggleNotificationPreference(eventType, channel, enabled)
     }
 
     return (
@@ -141,7 +151,10 @@ export function AccountClientPage({ initialData }: Props) {
                         currentUser={initialData.user}
                         activeSessions={initialData.activeSessions}
                         securityEvents={initialData.securityEvents}
+                        notificationPreferences={initialData.notificationPreferences || []}
                         onUpdateLanguage={handleLanguageUpdate}
+                        onUpdateProfile={handleUpdateProfile}
+                        onToggleNotification={handleToggleNotification}
                         onLogoutSession={handleLogoutSession}
                         onLogoutAllSessions={handleLogoutAll}
                     />
