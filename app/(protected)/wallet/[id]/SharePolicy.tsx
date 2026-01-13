@@ -16,19 +16,33 @@ interface Share {
 export function SharePolicy({ policyId, initialShares }: { policyId: string, initialShares: Share[] }) {
     const [email, setEmail] = useState("")
     const [loading, setLoading] = useState(false)
+    const [inviteLink, setInviteLink] = useState<string | null>(null)
     const router = useRouter()
 
     const handleShare = async () => {
         if (!email) return
         setLoading(true)
+        setInviteLink(null)
         const res = await sharePolicy(policyId, email)
         setLoading(false)
         if (res.error) {
             toast.error(res.error)
         } else {
-            toast.success("Policy shared successfully")
+            if (res.link) {
+                setInviteLink(res.link)
+                toast.success("Invitation created. Send the link to your agent.")
+            } else {
+                toast.success("Policy shared successfully")
+            }
             setEmail("")
             router.refresh()
+        }
+    }
+
+    const copyLink = () => {
+        if (inviteLink) {
+            navigator.clipboard.writeText(inviteLink)
+            toast.success("Link copied!")
         }
     }
 
@@ -44,6 +58,20 @@ export function SharePolicy({ policyId, initialShares }: { policyId: string, ini
     return (
         <div className="bg-white dark:bg-stone-800 rounded-3xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
             <h3 className="text-sm font-black text-stone-400 uppercase tracking-widest mb-4">Share with Agent</h3>
+
+            {inviteLink && (
+                <div className="mb-6 bg-teal-50 dark:bg-teal-900/20 p-4 rounded-xl border border-teal-100 dark:border-teal-800">
+                    <p className="text-xs font-bold text-teal-700 dark:text-teal-300 mb-2">Invitation Link Created</p>
+                    <div className="flex gap-2">
+                        <input
+                            readOnly
+                            value={inviteLink}
+                            className="bg-white dark:bg-stone-900 flex-1 px-3 py-1 text-xs rounded border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400"
+                        />
+                        <button onClick={copyLink} className="text-xs font-bold text-teal-600 hover:text-teal-700">Copy</button>
+                    </div>
+                </div>
+            )}
 
             <div className="flex gap-2 mb-6">
                 <input

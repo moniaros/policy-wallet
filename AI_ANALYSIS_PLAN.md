@@ -11,16 +11,22 @@
 - **Action**: Update `uploadPolicyDocument` prompt to return a `coverage_summary` and structured `coverage_details`.
 - **Storage**: Store structured data in a new `coverage_details` JSON column or existing `coverageSummary` text field.
 
-### 2. Policy Summarization (Priority: Medium)
-- **Goal**: Generate a "3-bullet point" summary of the policy for the dashboard.
-- **Action**: Add a summarization step or combine with the extraction step.
+## Phase 1: Enhanced Extraction (Completed)
+- [x] Extract `coverageSummary` (plain text)
+- [x] Store in `Policy` model
+- [x] Display in UI (Wallet Detail)
 
-### 3. Gap Analysis (Priority: High - Competitive Advantage)
-- **Goal**: Identify missing coverages based on the user's profile and existing policies.
-- **Action**: 
-    - Create a new background job or async action `analyzeGaps(userId)`.
-    - Compare active policies against `GapDefinition` rules.
-    - Use AI to evaluate if a policy covers a specific risk.
+## Phase 2: Gap Analysis (Implemented)
+- [x] Define `GapDefiniton` and `GapInstance` models
+- [x] Seed standard gaps (Motor, Health, Home) via `prisma/seed.ts`
+- [x] Create `analyzeGaps` server action
+- [x] Create UI to trigger analysis and view results (`AnalysisCard`)
+- [x] Integrate with Policy Detail page
+
+## Phase 3: Advanced Intelligence (Next)
+- [ ] Automated Opportunity creation for Agents
+- [ ] Email notifications for detected gaps
+- [ ] Detailed "Exclusions" analysis
 
 ### 4. Exclusions & Limitations (Priority: Medium)
 - **Goal**: Highlight what is NOT covered to prevent nasty surprises.

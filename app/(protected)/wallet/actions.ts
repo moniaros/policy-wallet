@@ -284,7 +284,34 @@ export async function sharePolicy(policyId: string, agentEmail: string) {
     })
 
     if (!agent) {
-        return { error: "Agent not found with this email." }
+        // Create Invite for non-existing user
+        const invite = await db.invite.create({
+            data: {
+                inviterUserId: authResult.dbUser.id,
+                inviteeEmail: agentEmail,
+                token: Math.random().toString(36).substring(7),
+                inviteType: 'share',
+                scope: `policy:${policyId}`,
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+            }
+        })
+
+        const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+        const link = `${baseUrl}/invite/${invite.token}`
+
+        // Log interaction
+        await (db as any).activityLog.create({
+            data: {
+                adminUserId: authResult.dbUser.id,
+                adminEmail: authResult.dbUser.email || "unknown",
+                actionType: "POLICY_SHARE_INVITE",
+                description: `Invited ${agentEmail} to share policy ${policyId}`,
+                metadata: { policyId, agentEmail }
+            }
+        })
+
+        revalidatePath(`/wallet/${policyId}`)
+        return { success: true, message: "Invitation sent to new user.", link }
     }
 
     // Optional: Verify role
@@ -378,5 +405,105 @@ export async function revokeShare(grantId: string) {
     })
 
     revalidatePath("/wallet")
+    revalidatePath("/wallet")
     return { success: true }
+}
+
+export async function analyzeGaps(policyId: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    const policy = await db.policy.findUnique({ where: { id: policyId, ownerUserId: authResult.dbUser.id } })
+    if (!policy) return { error: "Policy not found" }
+
+    const gaps = await db.gapDefinition.findMany({
+        where: {
+            lineOfBusiness: policy.lineOfBusiness,
+            isActive: true
+        }
+    })
+
+    if (gaps.length === 0) return { success: true, message: "No applicable gap definitions." }
+
+    // Clear existing gaps to re-analyze
+    await db.gapInstance.deleteMany({ where: { policyId } })
+
+    if (process.env.GEMINI_API_KEY) {
+        try {
+            const { GoogleGenerativeAI } = require("@google/generative-ai");
+            const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+            const prompt = `
+            Analyze the following insurance policy meta-data and Summary against the list of potential gaps.
+            
+            Policy:
+            Insurer: ${policy.insurerName}
+            Type: ${policy.lineOfBusiness}
+            Summary: ${policy.coverageSummary || "N/A"}
+            Premium: ${policy.premiumAmount}
+
+            Potential Gaps to Check:
+            ${gaps.map(g => `- Slug: ${g.slug} (${g.name}): ${(g.detectionLogic as any)?.check || g.description}`).join('\n')}
+
+            Return JSON array:
+            [
+                {
+                    "slug": "gap_slug_here",
+                    "isDetected": boolean,
+                    "explanation": "Why is it a gap? (Short sentence)",
+                    "suggestion": "What to do?"
+                }
+            ]
+            `;
+
+            const result = await model.generateContent(prompt);
+            const response = await result.response;
+            const text = response.text();
+
+            const jsonStr = text.replace(/```json/g, "").replace(/```/g, "").trim();
+            const analysis = JSON.parse(jsonStr);
+
+            let detectedCount = 0;
+
+            for (const item of analysis) {
+                if (item.isDetected) {
+                    const def = gaps.find(g => g.slug === item.slug)
+                    if (def) {
+                        await db.gapInstance.create({
+                            data: {
+                                policyId: policy.id,
+                                gapDefinitionId: def.id,
+                                severity: def.defaultSeverity || "medium",
+                                status: "open",
+                                aiExplanation: item.explanation,
+                                aiSuggestion: item.suggestion
+                            }
+                        })
+                        detectedCount++;
+                    }
+                }
+            }
+
+            // Log
+            await (db as any).activityLog.create({
+                data: {
+                    adminUserId: authResult.dbUser.id,
+                    adminEmail: authResult.dbUser.email || "unknown",
+                    actionType: "POLICY_ANALYZED",
+                    description: `Analyzed policy ${policyId} - ${detectedCount} gaps found`,
+                    metadata: { policyId, detectedCount }
+                }
+            })
+
+            revalidatePath(`/wallet/${policyId}`)
+            return { success: true, count: detectedCount }
+
+        } catch (e) {
+            console.error("AI Gap Analysis failed", e)
+            return { error: "Analysis failed" }
+        }
+    } else {
+        return { error: "AI Service Unavailable" }
+    }
 }

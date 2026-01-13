@@ -11,10 +11,12 @@ function SignUpForm() {
     const router = useRouter()
     const { t, language } = useLanguage()
     const urlRole = searchParams.get("role")
+    const urlEmail = searchParams.get("email")
+    const urlToken = searchParams.get("token")
 
     // Default role logic can be overridden by subdomain check
     const [name, setName] = useState("")
-    const [email, setEmail] = useState("")
+    const [email, setEmail] = useState(urlEmail || "")
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
     const [role, setRole] = useState(urlRole === "agent" ? "agent" : "policyholder")
@@ -46,6 +48,7 @@ function SignUpForm() {
         formData.append("confirmPassword", confirmPassword)
         formData.append("role", role)
         formData.append("language", language)
+        if (urlToken) formData.append("token", urlToken)
 
         try {
             const result = await registerUser(formData)

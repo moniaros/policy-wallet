@@ -11,7 +11,8 @@ const RegisterSchema = z.object({
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string().min(6),
     role: z.enum(["policyholder", "agent"]).default("policyholder"),
-    language: z.enum(["el", "en"]).default("el")
+    language: z.enum(["el", "en"]).default("el"),
+    token: z.string().optional()
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
@@ -48,6 +49,39 @@ const emailTemplates = {
     }
 }
 
+export async function redeemInvite(token: string, userId: string) {
+    const invite = await db.invite.findUnique({ where: { token } })
+    if (!invite || invite.consumedAt || invite.expiresAt < new Date()) return
+
+    // Mark consumed
+    await db.invite.update({
+        where: { id: invite.id },
+        data: { consumedAt: new Date(), inviteeUserId: userId }
+    })
+
+    if (invite.inviteType === 'signup') {
+        // Agent invited Customer
+        await (db.customerRelationship.updateMany as any)({
+            where: {
+                agentUserId: invite.inviterUserId,
+                policyholderUserId: userId
+            },
+            data: { status: 'active', activationStatus: 'activated' }
+        })
+    } else if (invite.inviteType === 'share' && invite.scope) {
+        // Policy Share
+        await db.accessGrant.create({
+            data: {
+                granterUserId: invite.inviterUserId,
+                granteeUserId: userId,
+                scope: invite.scope,
+                permissions: 'read',
+                status: 'active'
+            }
+        })
+    }
+}
+
 export async function registerUser(formData: FormData) {
     const data = Object.fromEntries(formData.entries())
     const validation = RegisterSchema.safeParse(data)
@@ -56,11 +90,11 @@ export async function registerUser(formData: FormData) {
         return { success: false, error: validation.error.flatten().fieldErrors }
     }
 
-    const { name, email, password, role, language } = validation.data
+    const { name, email, password, role, language, token } = validation.data
     const supabase = await createClient()
 
     try {
-        // 1. Sign up with Supabase Auth (disable auto email)
+        // 1. Sign up with Supabase Auth
         const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
 
         const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -72,8 +106,6 @@ export async function registerUser(formData: FormData) {
                     role: role,
                     language: language
                 },
-                // Disable Supabase's automatic confirmation email
-                // We'll send our own branded email instead
             },
         })
 
@@ -86,15 +118,39 @@ export async function registerUser(formData: FormData) {
             return { success: false, error: "Registration failed. Please try again." }
         }
 
-        // 2. Create local User record (Sync)
-        await db.user.create({
-            data: {
-                name,
-                email,
-                roles: role,
-                preferredLanguage: language
-            }
-        })
+        // 2. Create or Update local User record (Sync)
+        // Check if placeholder exists
+        const existingUser = await db.user.findUnique({ where: { email } })
+
+        let userId = ""
+
+        if (existingUser) {
+            // Claim placeholder
+            const updated = await db.user.update({
+                where: { email },
+                data: {
+                    name,
+                    roles: role,
+                    preferredLanguage: language
+                }
+            })
+            userId = updated.id
+        } else {
+            const newUser = await db.user.create({
+                data: {
+                    name,
+                    email,
+                    roles: role,
+                    preferredLanguage: language
+                }
+            })
+            userId = newUser.id
+        }
+
+        // 2b. Redeem Invite if present
+        if (token) {
+            await redeemInvite(token, userId)
+        }
 
         // 3. Generate verification token with 15-minute expiry
         const crypto = require('crypto')

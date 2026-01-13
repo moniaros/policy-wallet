@@ -6,6 +6,8 @@ import { calculatePolicyStatus, getStatusColor, getStatusLabel, getDaysUntilExpi
 import { getPolicyShares } from "../actions"
 import { SharePolicy } from "./SharePolicy"
 
+import { AnalysisCard } from "./AnalysisCard"
+
 export default async function PolicyDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id: policyId } = await params
     const { dbUser } = await getAuthenticatedUser()
@@ -16,7 +18,10 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ i
             ownerUserId: dbUser.id
         },
         include: {
-            documents: true
+            documents: true,
+            gapInstances: {
+                include: { definition: true }
+            }
         }
     })
 
@@ -27,8 +32,6 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ i
     const status = calculatePolicyStatus(policy)
     const statusColor = getStatusColor(status)
     const statusLabel = getStatusLabel(status)
-
-
     const daysLeft = getDaysUntilExpiry(policy.endDate)
 
     const shares = await getPolicyShares(policyId)
@@ -108,6 +111,9 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ i
                             {policy.coverageSummary || "No summary provided for this policy. Our AI analysis will populate this section as soon as your document is processed."}
                         </div>
                     </div>
+
+                    {/* Gap Analysis */}
+                    <AnalysisCard policyId={policyId} gaps={policy.gapInstances} />
                 </div>
 
                 {/* Sidebar */}
@@ -170,7 +176,7 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ i
                                             </div>
                                             <div className="overflow-hidden">
                                                 <p className="text-xs font-bold text-stone-900 dark:text-white truncate">{doc.fileName}</p>
-                                                <p className="text-[10px] text-stone-400 uppercase tracking-widest">Contract</p>
+                                                <p className="text-xs text-stone-400 uppercase tracking-widest">Contract</p>
                                             </div>
                                         </a>
                                     </li>
@@ -179,12 +185,10 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ i
                         )}
                     </div>
 
-
                     {/* Share Policy */}
                     <SharePolicy policyId={policyId} initialShares={shares} />
                 </div>
             </div>
         </div>
-
     )
 }
