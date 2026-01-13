@@ -92,7 +92,7 @@ export function UserMenu({
                             className="w-full px-4 py-2 text-left text-sm text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 flex items-center justify-between"
                             onClick={() => setIsOpen(false)}
                         >
-                            <span>Notifications</span>
+                            <span>{t.userMenu.notifications}</span>
                             {notificationCount > 0 && (
                                 <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
                                     {notificationCount}
@@ -102,7 +102,7 @@ export function UserMenu({
 
                         {/* Language switcher */}
                         <div className="px-4 py-2 border-t border-stone-200 dark:border-stone-700">
-                            <div className="text-xs text-stone-500 dark:text-stone-400 mb-1">Language</div>
+                            <div className="text-xs text-stone-500 dark:text-stone-400 mb-1">{t.userMenu.language}</div>
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => {
@@ -117,7 +117,7 @@ export function UserMenu({
                                         }
                   `}
                                 >
-                                    Ελληνικά
+                                    {t.userMenu.greek}
                                 </button>
                                 <button
                                     onClick={() => {
@@ -132,7 +132,7 @@ export function UserMenu({
                                         }
                   `}
                                 >
-                                    English
+                                    {t.userMenu.english}
                                 </button>
                             </div>
                         </div>
@@ -142,7 +142,7 @@ export function UserMenu({
                             className="w-full px-4 py-2 text-left text-sm text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 border-t border-stone-200 dark:border-stone-700"
                             onClick={() => setIsOpen(false)}
                         >
-                            Settings
+                            {t.userMenu.settings}
                         </button>
 
                         {/* Logout */}
@@ -153,7 +153,7 @@ export function UserMenu({
                             }}
                             className="w-full px-4 py-2 text-left text-sm text-red-600 dark:text-red-400 hover:bg-stone-50 dark:hover:bg-stone-700 border-t border-stone-200 dark:border-stone-700"
                         >
-                            Logout
+                            {t.userMenu.logout}
                         </button>
                     </div>
                 </>

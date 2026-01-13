@@ -1,6 +1,7 @@
 "use client"
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import type { Language } from '@/lib/i18n'
 import { getTranslations } from '@/lib/i18n'
 
@@ -25,6 +26,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         }
     }, [])
 
+    const router = useRouter()
     const setLanguage = (lang: Language) => {
         setLanguageState(lang)
         setTranslations(getTranslations(lang))
@@ -35,6 +37,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ language: lang }),
+        }).then(() => {
+            router.refresh()
         }).catch(console.error)
     }
 

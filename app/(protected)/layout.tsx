@@ -1,5 +1,7 @@
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { AppShell } from "@/components/shell"
+import { getTranslations } from "@/lib/i18n"
+import { signOut } from "@/app/auth/actions"
 
 export default async function ProtectedLayout({
     children,
@@ -12,46 +14,47 @@ export default async function ProtectedLayout({
     const roles = dbUser.roles?.split(",") || ["policyholder"]
     const currentRole = roles[0] as "policyholder" | "agent" | "admin"
 
-    const navigation = []
+    const navigation: any[] = []
+    const t = getTranslations(dbUser.preferredLanguage as any || 'el')
 
     if (currentRole === "policyholder") {
         navigation.push({
-            title: "My Insurance",
+            title: t.nav.wallet,
             items: [
-                { label: "Wallet", href: "/wallet" },
-                { label: "Pending Tasks", href: "/tasks" },
-                { label: "Coverage Insights", href: "/coverage-insights" },
-                { label: "Alerts & History", href: "/notifications" },
+                { label: t.nav.wallet, href: "/wallet" },
+                { label: t.nav.coverage, href: "/tasks" },
+                { label: t.nav.coverageInsights, href: "/coverage-insights" },
+                { label: t.nav.notifications, href: "/notifications" },
             ]
         })
     } else if (currentRole === "agent") {
         navigation.push({
             title: "Agency",
             items: [
-                { label: "Dashboard", href: "/dashboard" },
-                { label: "Customers", href: "/customers" },
-                { label: "Opportunities", href: "/opportunities" },
-                { label: "Insights", href: "/insights" },
-                { label: "Communication", href: "/notifications" },
+                { label: t.nav.dashboard, href: "/dashboard" },
+                { label: t.nav.customers, href: "/customers" },
+                { label: t.nav.opportunities, href: "/opportunities" },
+                { label: t.nav.insights, href: "/insights" },
+                { label: t.nav.notifications, href: "/notifications" },
             ]
         })
     } else if (currentRole === "admin") {
         navigation.push({
-            title: "Administrative",
+            title: t.nav.admin,
             items: [
-                { label: "Dashboard", href: "/admin/dashboard" },
-                { label: "Users & Roles", href: "/admin/users" },
-                { label: "Insurers", href: "/admin/insurers" },
-                { label: "Insurance Types", href: "/admin/types" },
+                { label: t.nav.dashboard, href: "/admin/dashboard" },
+                { label: t.nav.users, href: "/admin/users" },
+                { label: t.nav.insurers, href: "/admin/insurers" },
+                { label: t.nav.insuranceTypes, href: "/admin/types" },
             ]
         })
     }
 
     // Common settings
     navigation.push({
-        title: "Account",
+        title: t.nav.account,
         items: [
-            { label: "Settings", href: "/account" }
+            { label: t.userMenu.settings, href: "/account" }
         ]
     })
 
@@ -67,6 +70,7 @@ export default async function ProtectedLayout({
             currentRole={userRoleObj}
             availableRoles={roles.map(r => ({ role: r as any, label: r }))}
             navigation={navigation}
+            onLogout={signOut}
         >
             {children}
         </AppShell>

@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"
 import { sendMail } from "@/lib/mail"
+import { redirect } from "next/navigation"
 
 const RegisterSchema = z.object({
     name: z.string().min(1, "Name is required"),
@@ -284,4 +285,10 @@ export async function registerUser(formData: FormData) {
         }
         return { success: false, error: "An unexpected error occurred during registration." }
     }
+}
+
+export async function signOut() {
+    const supabase = await createClient()
+    await supabase.auth.signOut()
+    redirect("/auth/signin")
 }
