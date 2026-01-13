@@ -16,12 +16,15 @@
 - [x] Store in `Policy` model
 - [x] Display in UI (Wallet Detail)
 
-## Phase 2: Gap Analysis (Implemented)
-- [x] Define `GapDefiniton` and `GapInstance` models
+## Phase 2: Gap Analysis & ACORD Deep Extraction (Completed)
+- [x] Define `GapDefinition` and `GapInstance` models
 - [x] Seed standard gaps (Motor, Health, Home) via `prisma/seed.ts`
-- [x] Create `analyzeGaps` server action
+- [x] Create `analyzeGaps` server action with Deep Analysis
+- [x] Auto-update Policy metadata (Dates, Premium, Insurer) from documents
+- [x] Store structured ACORD data in `acordData`
 - [x] Create UI to trigger analysis and view results (`AnalysisCard`)
-- [x] Integrate with Policy Detail page
+- [x] Enhance UI with "AI Policy Insights" card and verified status
+- [x] Case-insensitive LOB matching for standard gaps
 
 ## Phase 3: Advanced Intelligence (Next)
 - [ ] Automated Opportunity creation for Agents

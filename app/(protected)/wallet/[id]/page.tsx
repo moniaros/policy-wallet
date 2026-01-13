@@ -114,6 +114,72 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ i
 
                     {/* Gap Analysis */}
                     <AnalysisCard policyId={policyId} gaps={policy.gapInstances} />
+
+                    {/* AI Analysis Insights (ACORD) */}
+                    {(policy as any).acordData && typeof (policy as any).acordData === 'object' && Object.keys((policy as any).acordData).length > 0 && (
+                        <div className="bg-white dark:bg-stone-800 rounded-3xl p-8 border border-stone-200 dark:border-stone-700 shadow-sm">
+                            <div className="flex items-center justify-between mb-6">
+                                <div className="flex items-center gap-3">
+                                    <h2 className="text-sm font-black text-stone-900 dark:text-white uppercase tracking-widest">AI Policy Insights</h2>
+                                    <span className="px-2 py-0.5 rounded-full bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 text-[9px] font-black uppercase tracking-widest border border-teal-100 dark:border-teal-800">
+                                        ACORD Verified
+                                    </span>
+                                </div>
+                                {(policy as any).lastAnalyzedAt && (
+                                    <span className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">
+                                        Last Check: {new Date((policy as any).lastAnalyzedAt).toLocaleDateString()}
+                                    </span>
+                                )}
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="space-y-6">
+                                    <div>
+                                        <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">Verification Overview</p>
+                                        <div className="p-4 bg-stone-50 dark:bg-stone-900/50 rounded-2xl border border-stone-100 dark:border-stone-800">
+                                            <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
+                                                Our AI has cross-referenced the policy contract with the digital wallet metadata.
+                                                The details below have been extracted directly from the official document.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">Contract Insurer</p>
+                                            <p className="text-xs font-bold text-stone-900 dark:text-white">{(policy as any).acordData.policy?.insurer || policy.insurerName}</p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">Premium Found</p>
+                                            <p className="text-xs font-bold text-teal-600 dark:text-teal-400">
+                                                {(policy as any).acordData.policy?.premium?.amount} {(policy as any).acordData.policy?.premium?.currency}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">Structured Coverages</p>
+                                    <div className="space-y-2">
+                                        {(policy as any).acordData.coverages?.map((cov: any, idx: number) => (
+                                            <div key={idx} className="flex justify-between items-center text-[11px] p-3 bg-white dark:bg-stone-800 rounded-xl border border-stone-100 dark:border-stone-700 hover:border-teal-200 dark:hover:border-teal-900/50 transition-colors shadow-sm">
+                                                <div className="flex flex-col">
+                                                    <span className="font-black text-stone-900 dark:text-stone-100 uppercase tracking-tighter">{cov.name}</span>
+                                                    {cov.deductible && <span className="text-[9px] text-stone-400">Deductible: {cov.deductible}</span>}
+                                                </div>
+                                                <span className="font-mono text-teal-600 dark:text-teal-400 font-black">{cov.limit}</span>
+                                            </div>
+                                        ))}
+                                        {(!(policy as any).acordData.coverages || (policy as any).acordData.coverages.length === 0) && (
+                                            <div className="p-4 text-center border-2 border-dashed border-stone-100 dark:border-stone-800 rounded-2xl">
+                                                <p className="text-xs text-stone-400 italic">No specific coverages parsed.</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Sidebar */}

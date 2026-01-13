@@ -176,6 +176,8 @@ model Policy {
   premiumAmount   Decimal?         @map("premium_amount")
   premiumCurrency String?          @default("EUR") @map("premium_currency")
   coverageSummary String?          @map("coverage_summary")
+  acordData       Json?            @map("acord_data")
+  lastAnalyzedAt  DateTime?        @map("last_analyzed_at")
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
   gapInstances    GapInstance[]
