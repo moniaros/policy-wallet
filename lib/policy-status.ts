@@ -17,6 +17,8 @@ export function calculatePolicyStatus(policy: Policy): PolicyStatus {
     }
 
     const today = new Date()
+    // If endDate is null, return action_needed
+    if (!policy.endDate) return 'action_needed'
     const endDate = new Date(policy.endDate)
     const daysUntilExpiry = Math.ceil((endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 
@@ -43,6 +45,7 @@ export function calculatePolicyStatus(policy: Policy): PolicyStatus {
  * Calculate days until expiry
  */
 export function getDaysUntilExpiry(endDate: Date): number {
+    if (!endDate) return 0
     const today = new Date()
     const end = new Date(endDate)
     return Math.ceil((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))

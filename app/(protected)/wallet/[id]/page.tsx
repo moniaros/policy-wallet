@@ -99,7 +99,7 @@ export default async function PolicyDetailPage({
                                 <div className="bg-stone-50 dark:bg-stone-900 p-6 rounded-2xl border border-stone-100 dark:border-stone-700 text-center md:min-w-[200px]">
                                     <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-1">Annual Premium</p>
                                     <p className="text-3xl font-black text-stone-900 dark:text-white leading-none">
-                                        {Number(policy.premiumAmount || 0).toLocaleString('el-GR', { style: 'currency', currency: policy.premiumCurrency || 'EUR' })}
+                                        {Number(policy.premiumAmount?.toString() || 0).toLocaleString('el-GR', { style: 'currency', currency: policy.premiumCurrency || 'EUR' })}
                                     </p>
                                 </div>
                             </div>
@@ -186,12 +186,14 @@ export default async function PolicyDetailPage({
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
                                             <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">Contract Insurer</p>
-                                            <p className="text-xs font-bold text-stone-900 dark:text-white">{(policy as any).acordData.policy?.insurer || policy.insurerName}</p>
+                                            <p className="text-xs font-bold text-stone-900 dark:text-white">
+                                                {String((policy as any).acordData.policy?.insurer || policy.insurerName)}
+                                            </p>
                                         </div>
                                         <div>
                                             <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">Premium Found</p>
                                             <p className="text-xs font-bold text-teal-600 dark:text-teal-400">
-                                                {(policy as any).acordData.policy?.premium?.amount} {(policy as any).acordData.policy?.premium?.currency}
+                                                {String((policy as any).acordData.policy?.premium?.amount || '')} {String((policy as any).acordData.policy?.premium?.currency || '')}
                                             </p>
                                         </div>
                                     </div>
