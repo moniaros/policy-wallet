@@ -27,37 +27,36 @@ export default async function PolicyDetailPage({
     const { dbUser } = await getAuthenticatedUser()
     const t = getTranslations((dbUser.preferredLanguage as 'el' | 'en') || 'el')
 
-    const policy = await db.policy.findUnique({
-        where: {
-            id: policyId,
-            ownerUserId: dbUser.id
-        },
-        include: {
-            documents: true,
-            gapInstances: {
-                include: { definition: true }
+    const [policy, sharesResult, aiUsageStats] = await Promise.all([
+        db.policy.findUnique({
+            where: {
+                id: policyId,
+                ownerUserId: dbUser.id
+            },
+            include: {
+                documents: true,
+                gapInstances: {
+                    include: { definition: true }
+                }
             }
-        }
-    })
+        }),
+        getPolicyShares(policyId).catch(error => {
+            console.error("Failed to load policy shares:", error)
+            return []
+        }),
+        getAIUsageStats()
+    ])
 
     if (!policy) {
         notFound()
     }
 
+    const shares = sharesResult || []
+
     const status = calculatePolicyStatus(policy)
     const statusColor = getStatusColor(status)
     const statusLabel = getStatusLabel(status)
     const daysLeft = getDaysUntilExpiry(policy.endDate)
-
-    let shares: any[] = []
-    try {
-        shares = await getPolicyShares(policyId)
-    } catch (error) {
-        console.error("Failed to load policy shares:", error)
-        // Fallback to empty array to allow page to render
-    }
-
-    const aiUsageStats = await getAIUsageStats()
 
     // Create serializable policy object for Client Component
     const walletPolicy = {
