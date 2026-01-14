@@ -34,6 +34,7 @@ export interface AppShellProps {
         name: string
         email?: string
         avatarUrl?: string
+        preferred_language?: 'el' | 'en'
     }
     language?: 'el' | 'en'
     notificationCount?: number
@@ -167,8 +168,25 @@ export function AppShell({
                     {/* Mobile Footer (Sign Out & Theme) */}
                     <div className="lg:hidden p-4 border-t border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/50 space-y-4">
                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium text-stone-600 dark:text-stone-400">Appearance</span>
-                            <ThemeToggle />
+                            <span className="text-sm font-medium text-stone-600 dark:text-stone-400">Settings</span>
+                            <div className="flex items-center gap-3">
+                                {/* Language */}
+                                <div className="flex bg-stone-200 dark:bg-stone-800 rounded-lg p-0.5">
+                                    <button
+                                        onClick={() => user.preferred_language !== 'el' && onNavigate?.('/?lang=el')}
+                                        className={`px-2 py-1 text-xs font-bold rounded-md transition-all ${user.preferred_language === 'el' ? 'bg-white dark:bg-stone-600 shadow-sm' : 'text-stone-500'}`}
+                                    >
+                                        GR
+                                    </button>
+                                    <button
+                                        onClick={() => user.preferred_language !== 'en' && onNavigate?.('/?lang=en')}
+                                        className={`px-2 py-1 text-xs font-bold rounded-md transition-all ${user.preferred_language === 'en' ? 'bg-white dark:bg-stone-600 shadow-sm' : 'text-stone-500'}`}
+                                    >
+                                        EN
+                                    </button>
+                                </div>
+                                <ThemeToggle />
+                            </div>
                         </div>
                         <button
                             onClick={onLogout}

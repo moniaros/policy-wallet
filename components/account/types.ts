@@ -6,6 +6,7 @@ export interface User {
     user_id: string
     name: string | null
     email: string
+    phone_number?: string | null
     preferred_language: 'el' | 'en'
     role: string
     created_at: string
@@ -216,7 +217,7 @@ export interface SettingsProps {
     securityEvents: SecurityEvent[]
     notificationPreferences: NotificationPreference[]
     /** Called when user wants to update their profile (name, etc) */
-    onUpdateProfile?: (data: { name: string }) => void
+    onUpdateProfile?: (data: { name?: string; phone?: string }) => void
     /** Called when user wants to update their email */
     onUpdateEmail?: (newEmail: string) => void
     /** Called when user wants to change their password */

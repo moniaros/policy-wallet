@@ -10,6 +10,7 @@ export interface UserMenuProps {
         name: string
         email?: string
         avatarUrl?: string
+        preferred_language?: 'el' | 'en'
     }
     notificationCount?: number
     onLogout?: () => void

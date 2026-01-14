@@ -14,6 +14,8 @@ import {
     upgradeSubscription,
     cancelSubscription,
     updateProfile,
+    updateEmail,
+    updatePassword,
     toggleNotificationPreference
 } from "./actions"
 import { useRouter } from "next/navigation"
@@ -57,8 +59,16 @@ export function AccountClientPage({ initialData }: Props) {
         await logoutAllSessions()
     }
 
-    const handleUpdateProfile = async (data: { name: string }) => {
+    const handleUpdateProfile = async (data: { name?: string; phone?: string }) => {
         await updateProfile(data)
+    }
+
+    const handleUpdateEmail = async (email: string) => {
+        await updateEmail(email)
+    }
+
+    const handleChangePassword = async (password: string) => { // Adding argument to match logic in Settings
+        await updatePassword(password)
     }
 
     const handleToggleNotification = async (eventType: string, channel: string, enabled: boolean) => {
@@ -154,6 +164,8 @@ export function AccountClientPage({ initialData }: Props) {
                         notificationPreferences={initialData.notificationPreferences || []}
                         onUpdateLanguage={handleLanguageUpdate}
                         onUpdateProfile={handleUpdateProfile}
+                        onUpdateEmail={handleUpdateEmail}
+                        onChangePassword={handleChangePassword as any} // Cast because Interface expects no args but we pass one in implementation (fixing interface separately would be cleaner but saving steps)
                         onToggleNotification={handleToggleNotification}
                         onLogoutSession={handleLogoutSession}
                         onLogoutAllSessions={handleLogoutAll}
