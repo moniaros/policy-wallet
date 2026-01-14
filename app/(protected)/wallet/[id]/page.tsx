@@ -5,6 +5,7 @@ import Link from "next/link"
 import { calculatePolicyStatus, getStatusColor, getStatusLabel, getDaysUntilExpiry } from "@/lib/policy-status"
 import { getPolicyShares } from "../actions"
 import { SharePolicy } from "./SharePolicy"
+import { DeletePolicy } from "./DeletePolicy"
 
 import { AnalysisCard } from "./AnalysisCard"
 
@@ -253,6 +254,9 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ i
 
                     {/* Share Policy */}
                     <SharePolicy policyId={policyId} initialShares={shares} />
+
+                    {/* Delete Policy */}
+                    <DeletePolicy policyId={policyId} />
                 </div>
             </div>
         </div>

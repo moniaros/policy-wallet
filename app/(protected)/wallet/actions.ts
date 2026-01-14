@@ -7,7 +7,7 @@ import { z } from "zod"
 
 import { createClient } from "@/lib/supabase/server"
 import { logger } from "@/lib/logger"
-import { uploadFile } from "@/lib/storage"
+import { uploadFile, deleteFile } from "@/lib/storage"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import fs from "fs/promises"
 import path from "path"
@@ -652,4 +652,74 @@ export async function analyzeGaps(policyId: string) {
     } else {
         return { error: "AI Service Unavailable" }
     }
+}
+
+export async function deletePolicy(policyId: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    const policy = await db.policy.findUnique({
+        where: { id: policyId },
+        include: { documents: true }
+    })
+
+    if (!policy) return { error: "Policy not found" }
+
+    // Case 1: Owner - Full Delete
+    if (policy.ownerUserId === authResult.dbUser.id) {
+        // 1. Delete physical files
+        for (const doc of policy.documents) {
+            await deleteFile(doc.fileUrl)
+        }
+
+        // 2. Clean up related data that might not cascade
+        // Opportunities refer to policy
+        await db.opportunity.deleteMany({
+            where: { policyId: policy.id }
+        })
+
+        // 3. Delete Policy (Cascades to PolicyDocuments, GapInstances)
+        await db.policy.delete({
+            where: { id: policy.id }
+        })
+
+        // Log
+        try {
+            await (db as any).activityLog.create({
+                data: {
+                    adminUserId: authResult.dbUser.id,
+                    adminEmail: authResult.dbUser.email || "unknown",
+                    actionType: "POLICY_DELETED",
+                    description: `Deleted policy ${policy.policyNumber}`,
+                    metadata: { policyId, insurer: policy.insurerName }
+                }
+            })
+        } catch (e) { /* ignore */ }
+
+        revalidatePath("/wallet")
+        return { success: true }
+    }
+
+    // Case 2: Not Owner - Remove Access
+    // Check for AccessGrant where I am the grantee
+    const grant = await db.accessGrant.findFirst({
+        where: {
+            granteeUserId: authResult.dbUser.id,
+            scope: `policy:${policyId}`,
+            status: 'active'
+        }
+    })
+
+    if (grant) {
+        // Revoke/Delete the grant
+        await db.accessGrant.update({
+            where: { id: grant.id },
+            data: { status: 'revoked', revokedAt: new Date() }
+        })
+
+        revalidatePath("/wallet")
+        return { success: true, message: "Policy removed from your shared wallet" }
+    }
+
+    return { error: "You are not authorized to delete this policy" }
 }

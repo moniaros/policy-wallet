@@ -41,3 +41,37 @@ export async function uploadFile(file: File, folder: string = "policies"): Promi
         throw new Error("File upload failed")
     }
 }
+
+export async function deleteFile(fileUrl: string): Promise<boolean> {
+    try {
+        if (!fileUrl) return true;
+
+        // Handle remote URLs (S3/Supabase) - Placeholder
+        if (fileUrl.startsWith('http')) {
+            // TODO: Implement S3 delete
+            return true;
+        }
+
+        // Handle Local Files
+        // fileUrl is like /uploads/policies/filename.ext
+        // We need to resolve to system path
+        // Remove leading / if present
+        const relativePath = fileUrl.startsWith('/') ? fileUrl.slice(1) : fileUrl;
+        const filePath = path.join(process.cwd(), "public", relativePath);
+
+        // Check availability
+        try {
+            await fs.access(filePath)
+        } catch {
+            return true; // File doesn't exist, consider deleted
+        }
+
+        await fs.unlink(filePath)
+        logger('info', 'File deleted locally', { filePath })
+        return true
+
+    } catch (error) {
+        logger('error', 'File deletion failed', { error, fileUrl })
+        return false
+    }
+}
