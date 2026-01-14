@@ -556,7 +556,7 @@ export async function analyzeGaps(policyId: string) {
                 "gapResults": [
                     {
                         "slug": "gap-slug",
-                        "isDetected": boolean,
+                        "isDetected": boolean, // Set to TRUE if the coverage is MISSING (Gap Detected). Set to FALSE if the policy COVERS this risk.
                         "explanation": { "en": "string", "el": "string" },
                         "suggestion": { "en": "string", "el": "string" }
                     }
