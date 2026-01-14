@@ -94,8 +94,7 @@
   --radius: 0.5rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+.dark {
     --background: #1c1917;
     /* stone-900 */
     --foreground: #fafaf9;
@@ -143,7 +142,6 @@
     --ring: #0d9488;
     /* teal-600 */
   }
-}
 
 body {
   background-color: var(--background);

@@ -41,23 +41,24 @@ export default function SignInPage() {
 
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-stone-50 px-4 py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="flex min-h-screen flex-col items-center justify-center bg-stone-50 dark:bg-stone-950 px-4 py-12 sm:px-6 lg:px-8 relative overflow-hidden transition-colors">
             {/* Background Decoration */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-                <div className="absolute -top-[30%] -right-[10%] w-[70%] h-[70%] rounded-full bg-teal-50/50 blur-3xl opacity-60" />
-                <div className="absolute bottom-[0%] -left-[10%] w-[50%] h-[50%] rounded-full bg-blue-50/50 blur-3xl opacity-50" />
+                <div className="absolute -top-[30%] -right-[10%] w-[70%] h-[70%] rounded-full bg-teal-100/30 dark:bg-teal-900/10 blur-3xl opacity-60" />
+                <div className="absolute bottom-[0%] -left-[10%] w-[50%] h-[50%] rounded-full bg-blue-100/30 dark:bg-blue-900/10 blur-3xl opacity-50" />
             </div>
 
-            <div className="w-full max-w-md space-y-8 rounded-2xl bg-white/80 backdrop-blur-xl p-10 shadow-2xl border border-white/50 relative z-10 transition-all duration-300 hover:shadow-teal-900/5">
+            <div className="w-full max-w-md space-y-8 rounded-3xl bg-white/80 dark:bg-stone-900/50 backdrop-blur-xl p-10 shadow-2xl border border-white/50 dark:border-white/5 relative z-10 transition-all duration-300 hover:shadow-teal-900/5">
                 <div className="text-center">
-                    <Link href="/" className="inline-block">
+                    <Link href="/" className="inline-block relative group">
                         <span className="sr-only">PolicyWallet</span>
-                        <h1 className="text-3xl font-extrabold tracking-tight text-teal-700">
-                            PolicyWallet
+                        <h1 className="text-3xl font-black tracking-tight text-stone-900 dark:text-white">
+                            Policy<span className="text-teal-600 dark:text-teal-400">Wallet</span>
                         </h1>
+                        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-teal-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                     </Link>
-                    <h2 className="mt-6 text-2xl font-bold tracking-tight text-stone-900">Welcome back</h2>
-                    <p className="mt-2 text-sm text-stone-600">
+                    <h2 className="mt-8 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-100">Welcome back</h2>
+                    <p className="mt-2 text-sm text-stone-600 dark:text-stone-400 font-medium">
                         Sign in to your neutral insurance wallet
                     </p>
                 </div>
@@ -65,12 +66,12 @@ export default function SignInPage() {
                 <div className="mt-8">
                     <form onSubmit={handleSubmit} className="space-y-5" method="post">
                         {error && (
-                            <div className="p-4 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm font-medium animate-pulse">
+                            <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 text-sm font-bold animate-pulse">
                                 {error}
                             </div>
                         )}
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-stone-700 mb-1">
+                            <label htmlFor="email" className="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1 uppercase tracking-wider">
                                 Email address
                             </label>
                             <input
@@ -80,17 +81,17 @@ export default function SignInPage() {
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="block w-full rounded-lg border border-stone-300 px-4 py-3 bg-white/50 focus:bg-white transition-colors focus:border-teal-500 focus:ring-teal-500/20 focus:outline-none focus:ring-4 sm:text-sm"
+                                className="block w-full rounded-xl border border-stone-200 dark:border-stone-700 px-4 py-3 bg-white/50 dark:bg-stone-800/50 text-stone-900 dark:text-white focus:bg-white dark:focus:bg-stone-800 transition-colors focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 dark:focus:ring-teal-500/20 focus:outline-none sm:text-sm"
                                 placeholder="name@example.com"
                             />
                         </div>
 
                         <div>
                             <div className="flex items-center justify-between mb-1">
-                                <label htmlFor="password" className="block text-sm font-medium text-stone-700">
+                                <label htmlFor="password" className="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
                                     Password
                                 </label>
-                                <Link href="#" className="text-xs font-medium text-teal-600 hover:text-teal-500">
+                                <Link href="#" className="text-xs font-bold text-teal-600 dark:text-teal-400 hover:text-teal-500">
                                     Forgot password?
                                 </Link>
                             </div>
@@ -101,7 +102,7 @@ export default function SignInPage() {
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="block w-full rounded-lg border border-stone-300 px-4 py-3 bg-white/50 focus:bg-white transition-colors focus:border-teal-500 focus:ring-teal-500/20 focus:outline-none focus:ring-4 sm:text-sm"
+                                className="block w-full rounded-xl border border-stone-200 dark:border-stone-700 px-4 py-3 bg-white/50 dark:bg-stone-800/50 text-stone-900 dark:text-white focus:bg-white dark:focus:bg-stone-800 transition-colors focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 dark:focus:ring-teal-500/20 focus:outline-none sm:text-sm"
                                 placeholder="••••••••"
                             />
                         </div>
@@ -110,7 +111,7 @@ export default function SignInPage() {
                             <button
                                 type="submit"
                                 disabled={isLoading}
-                                className="flex w-full items-center justify-center rounded-lg bg-teal-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-teal-600/20 transition-all hover:bg-teal-700 hover:shadow-teal-600/40 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex w-full items-center justify-center rounded-xl bg-teal-600 dark:bg-teal-500 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-teal-600/20 dark:shadow-teal-900/20 transition-all hover:bg-teal-700 dark:hover:bg-teal-600 hover:shadow-teal-600/40 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-stone-900 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                             >
                                 {isLoading ? (
                                     <span className="flex items-center gap-2">
@@ -127,18 +128,18 @@ export default function SignInPage() {
                         </div>
                     </form>
 
-                    <div className="relative my-6">
+                    <div className="relative my-8">
                         <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-stone-200" />
+                            <div className="w-full border-t border-stone-200 dark:border-stone-800" />
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="bg-white/80 backdrop-blur-sm px-2 text-stone-500">Or continue with</span>
+                            <span className="bg-white/80 dark:bg-stone-900/80 backdrop-blur-sm px-2 text-stone-500 dark:text-stone-400 font-medium">Or continue with</span>
                         </div>
                     </div>
 
-                    <p className="mt-8 text-center text-sm text-stone-600">
+                    <p className="mt-8 text-center text-sm text-stone-600 dark:text-stone-400">
                         Don't have an account?{" "}
-                        <Link href="/auth/signup" className="font-semibold text-teal-600 hover:text-teal-500 transition-colors">
+                        <Link href="/auth/signup" className="font-bold text-teal-600 dark:text-teal-400 hover:text-teal-500 transition-colors">
                             Create Account
                         </Link>
                     </p>

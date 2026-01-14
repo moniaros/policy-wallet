@@ -70,7 +70,7 @@ export function PolicyWallet({
     }
 
     return (
-        <div className="max-w-2xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
             {/* Status Summary */}
             <StatusSummary
                 activeCount={activeCount}
@@ -78,91 +78,103 @@ export function PolicyWallet({
                 actionNeededCount={actionNeededCount}
             />
 
-            {/* Motor Insurance */}
-            {sortedMotor.length > 0 && (
-                <section className="mt-8">
-                    <div className="flex items-center gap-2 mb-4">
-                        <svg className="w-5 h-5 text-stone-600 dark:text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-                        </svg>
-                        <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-100 uppercase tracking-wide">
-                            {t.policyTypes.motor}
-                        </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {/* Motor Insurance */}
+                {sortedMotor.length > 0 && (
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2 mb-2 px-2">
+                            <div className="p-2 bg-stone-100 dark:bg-stone-800 rounded-lg text-stone-600 dark:text-stone-400">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                                </svg>
+                            </div>
+                            <h2 className="text-xs font-black text-stone-400 uppercase tracking-widest">
+                                {t.policyTypes.motor}
+                            </h2>
+                        </div>
+                        <div className="space-y-4">
+                            {sortedMotor.map(policy => (
+                                <PolicyCard
+                                    key={policy.id}
+                                    policy={policy}
+                                    onView={() => onViewPolicy?.(policy.id)}
+                                    onShare={() => onShareWithAgent?.(policy.id)}
+                                    onAddToWallet={() => onAddToWallet?.(policy.id)}
+                                    onViewDocuments={() => onViewDocuments?.(policy.id)}
+                                />
+                            ))}
+                        </div>
                     </div>
-                    <div className="space-y-3">
-                        {sortedMotor.map(policy => (
-                            <PolicyCard
-                                key={policy.id}
-                                policy={policy}
-                                onView={() => onViewPolicy?.(policy.id)}
-                                onShare={() => onShareWithAgent?.(policy.id)}
-                                onAddToWallet={() => onAddToWallet?.(policy.id)}
-                                onViewDocuments={() => onViewDocuments?.(policy.id)}
-                            />
-                        ))}
-                    </div>
-                </section>
-            )}
+                )}
 
-            {/* Health Insurance */}
-            {sortedHealth.length > 0 && (
-                <section className="mt-8">
-                    <div className="flex items-center gap-2 mb-4">
-                        <svg className="w-5 h-5 text-stone-600 dark:text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                        <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-100 uppercase tracking-wide">
-                            {t.policyTypes.health}
-                        </h2>
+                {/* Health Insurance */}
+                {sortedHealth.length > 0 && (
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2 mb-2 px-2">
+                            <div className="p-2 bg-stone-100 dark:bg-stone-800 rounded-lg text-stone-600 dark:text-stone-400">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                            </div>
+                            <h2 className="text-xs font-black text-stone-400 uppercase tracking-widest">
+                                {t.policyTypes.health}
+                            </h2>
+                        </div>
+                        <div className="space-y-4">
+                            {sortedHealth.map(policy => (
+                                <PolicyCard
+                                    key={policy.id}
+                                    policy={policy}
+                                    onView={() => onViewPolicy?.(policy.id)}
+                                    onShare={() => onShareWithAgent?.(policy.id)}
+                                    onAddToWallet={() => onAddToWallet?.(policy.id)}
+                                    onViewDocuments={() => onViewDocuments?.(policy.id)}
+                                />
+                            ))}
+                        </div>
                     </div>
-                    <div className="space-y-3">
-                        {sortedHealth.map(policy => (
-                            <PolicyCard
-                                key={policy.id}
-                                policy={policy}
-                                onView={() => onViewPolicy?.(policy.id)}
-                                onShare={() => onShareWithAgent?.(policy.id)}
-                                onAddToWallet={() => onAddToWallet?.(policy.id)}
-                                onViewDocuments={() => onViewDocuments?.(policy.id)}
-                            />
-                        ))}
-                    </div>
-                </section>
-            )}
+                )}
 
-            {/* Home Insurance */}
-            {sortedHome.length > 0 && (
-                <section className="mt-8">
-                    <div className="flex items-center gap-2 mb-4">
-                        <svg className="w-5 h-5 text-stone-600 dark:text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                        </svg>
-                        <h2 className="text-sm font-semibold text-stone-900 dark:text-stone-100 uppercase tracking-wide">
-                            {t.policyTypes.home}
-                        </h2>
+                {/* Home Insurance */}
+                {sortedHome.length > 0 && (
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2 mb-2 px-2">
+                            <div className="p-2 bg-stone-100 dark:bg-stone-800 rounded-lg text-stone-600 dark:text-stone-400">
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                </svg>
+                            </div>
+                            <h2 className="text-xs font-black text-stone-400 uppercase tracking-widest">
+                                {t.policyTypes.home}
+                            </h2>
+                        </div>
+                        <div className="space-y-4">
+                            {sortedHome.map(policy => (
+                                <PolicyCard
+                                    key={policy.id}
+                                    policy={policy}
+                                    onView={() => onViewPolicy?.(policy.id)}
+                                    onShare={() => onShareWithAgent?.(policy.id)}
+                                    onAddToWallet={() => onAddToWallet?.(policy.id)}
+                                    onViewDocuments={() => onViewDocuments?.(policy.id)}
+                                />
+                            ))}
+                        </div>
                     </div>
-                    <div className="space-y-3">
-                        {sortedHome.map(policy => (
-                            <PolicyCard
-                                key={policy.id}
-                                policy={policy}
-                                onView={() => onViewPolicy?.(policy.id)}
-                                onShare={() => onShareWithAgent?.(policy.id)}
-                                onAddToWallet={() => onAddToWallet?.(policy.id)}
-                                onViewDocuments={() => onViewDocuments?.(policy.id)}
-                            />
-                        ))}
-                    </div>
-                </section>
-            )}
+                )}
+            </div>
 
             {/* Add Policy CTAs */}
-            <div className="mt-12 pt-8 border-t border-stone-200 dark:border-stone-700">
+            <div className="mt-16 pt-8 border-t border-stone-100 dark:border-stone-800 flex justify-center">
                 <button
                     onClick={onAddManually}
-                    className="w-full px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors shadow-sm"
+                    className="group relative inline-flex items-center justify-center gap-3 px-8 py-4 bg-stone-900 dark:bg-white text-white dark:text-stone-900 font-bold rounded-2xl shadow-xl shadow-stone-900/10 hover:scale-[1.02] hover:shadow-2xl transition-all duration-300"
                 >
+                    <span className="w-6 h-6 rounded-full bg-white/20 dark:bg-stone-900/20 flex items-center justify-center">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
+                    </span>
                     {t.wallet.addPolicy}
+                    <div className="absolute inset-0 rounded-2xl ring-2 ring-white/20 dark:ring-black/10 group-hover:ring-4 transition-all" />
                 </button>
             </div>
         </div>

@@ -19,6 +19,7 @@ model User {
   createdAt                       DateTime                 @default(now()) @map("created_at")
   updatedAt                       DateTime                 @updatedAt @map("updated_at")
   password                        String?
+  phoneNumber                     String?                  @map("phone_number")
   pushToken                       String?                  @map("push_token")
   grantsReceived                  AccessGrant[]            @relation("Grantee")
   grantsGiven                     AccessGrant[]            @relation("Granter")
