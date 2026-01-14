@@ -453,13 +453,21 @@ export async function analyzeGaps(policyId: string) {
             if (policy.documents.length > 0) {
                 const doc = policy.documents[0];
                 try {
-                    // Normalize fileUrl - strip leading slash to be safe
-                    let relativePath = doc.fileUrl.startsWith('/') ? doc.fileUrl.slice(1) : doc.fileUrl;
+                    let buffer: Buffer;
 
-                    const filePath = path.join(process.cwd(), "public", relativePath);
-                    console.log(`[Analysis] Reading file from: ${filePath}`);
-
-                    const buffer = await fs.readFile(filePath);
+                    if (doc.fileUrl.startsWith('http')) {
+                        console.log(`[Analysis] Fetching remote file from: ${doc.fileUrl}`);
+                        const response = await fetch(doc.fileUrl);
+                        if (!response.ok) throw new Error(`Failed to fetch remote file: ${response.statusText}`);
+                        const arrayBuffer = await response.arrayBuffer();
+                        buffer = Buffer.from(arrayBuffer);
+                    } else {
+                        // Normalize fileUrl - strip leading slash to be safe
+                        let relativePath = doc.fileUrl.startsWith('/') ? doc.fileUrl.slice(1) : doc.fileUrl;
+                        const filePath = path.join(process.cwd(), "public", relativePath);
+                        console.log(`[Analysis] Reading local file from: ${filePath}`);
+                        buffer = await fs.readFile(filePath);
+                    }
 
                     // Better MIME detection - Default to PDF as requested
                     let mimeType = "application/pdf";
@@ -474,7 +482,7 @@ export async function analyzeGaps(policyId: string) {
                             mimeType
                         }
                     };
-                    logger('info', 'Analysis: Reading document success', { filePath, mimeType });
+                    logger('info', 'Analysis: Reading document success', { fileUrl: doc.fileUrl, mimeType });
                 } catch (e: any) {
                     logger('error', 'Analysis: Document read failed', { error: e.message, fileUrl: doc.fileUrl });
                     // Throw to ensure we don't silently fail analysis
