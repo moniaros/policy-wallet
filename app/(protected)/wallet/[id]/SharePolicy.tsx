@@ -10,7 +10,7 @@ interface Share {
     email: string
     name: string | null
     image: string | null
-    grantedAt: Date
+    grantedAt: string
 }
 
 export function SharePolicy({ policyId, initialShares }: { policyId: string, initialShares: Share[] }) {

@@ -6,11 +6,20 @@ import { calculatePolicyStatus, getStatusColor, getStatusLabel, getDaysUntilExpi
 import { getPolicyShares } from "../actions"
 import { SharePolicy } from "./SharePolicy"
 import { DeletePolicy } from "./DeletePolicy"
+import { AddToWallet } from "./AddToWallet"
 
 import { AnalysisCard } from "./AnalysisCard"
 
-export default async function PolicyDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function PolicyDetailPage({
+    params,
+    searchParams
+}: {
+    params: Promise<{ id: string }>
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
     const { id: policyId } = await params
+    const resolvedSearchParams = await searchParams
+    const shouldOpenWallet = resolvedSearchParams.openWallet === 'true'
     const { dbUser } = await getAuthenticatedUser()
 
     const policy = await db.policy.findUnique({
@@ -36,6 +45,22 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ i
     const daysLeft = getDaysUntilExpiry(policy.endDate)
 
     const shares = await getPolicyShares(policyId)
+
+    // Create serializable policy object for Client Component
+    const walletPolicy = {
+        id: policy.id,
+        policyNumber: policy.policyNumber,
+        insurerName: policy.insurerName,
+        lineOfBusiness: policy.lineOfBusiness,
+        startDate: policy.startDate?.toISOString() ?? null,
+        endDate: policy.endDate?.toISOString() ?? null,
+        status: status
+    }
+
+    const serializedShares = shares.map(s => ({
+        ...s,
+        grantedAt: s.grantedAt.toISOString()
+    }))
 
     return (
         <div className="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -220,6 +245,13 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ i
                         </div>
                     </div>
 
+                    {/* Add to Wallet */}
+                    <AddToWallet
+                        policy={walletPolicy as any}
+                        holderName={dbUser.name || "Policy Holder"}
+                        initialOpen={shouldOpenWallet}
+                    />
+
                     {/* Documents Sidebar */}
                     <div className="bg-white dark:bg-stone-800 rounded-3xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
                         <div className="flex items-center justify-between mb-6">
@@ -253,7 +285,7 @@ export default async function PolicyDetailPage({ params }: { params: Promise<{ i
                     </div>
 
                     {/* Share Policy */}
-                    <SharePolicy policyId={policyId} initialShares={shares} />
+                    <SharePolicy policyId={policyId} initialShares={serializedShares} />
 
                     {/* Delete Policy */}
                     <DeletePolicy policyId={policyId} />
