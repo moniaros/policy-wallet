@@ -125,11 +125,11 @@ export const el = {
 
     // Policy Status
     policyStatus: {
-        active: 'Ενεργή',
-        expiringSoon: 'Λήγει Σύντομα',
-        expired: 'Έχει Λήξει',
-        actionNeeded: 'Απαιτείται Ενέργεια',
-        cancelled: 'Ακυρωμένη',
+        active: 'ΕΝΕΡΓΗ',
+        expiringSoon: 'ΛΗΓΕΙ ΣΥΝΤΟΜΑ',
+        expired: 'ΕΧΕΙ ΛΗΞΕΙ',
+        actionNeeded: 'ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ',
+        cancelled: 'ΑΚΥΡΩΜΕΝΗ',
     },
 
     // User Menu
@@ -171,6 +171,17 @@ export const el = {
     placeholders: {
         comingSoon: 'Έρχεται Σύντομα',
         milestone: 'Ορόσημο',
+    },
+
+    analysis: {
+        title: 'ΑΝΑΛΥΣΗ ΚΕΝΩΝ',
+        runAnalysis: 'Εκτέλεση Ανάλυσης AI',
+        analyzing: 'Ανάλυση...',
+        noGaps: 'Δεν εντοπίστηκαν κενά. Εκτελέστε ανάλυση για έλεγχο κάλυψης.',
+        gapDetected: 'Εντοπίστηκε Κενό Κάλυψης',
+        recommendation: 'Πρόταση',
+        analysisComplete: 'Η ανάλυση ολοκληρώθηκε. Βρέθηκαν ',
+        issues: ' ζητήματα.',
     },
 
     // Errors

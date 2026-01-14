@@ -50,6 +50,7 @@ export function CustomerProfileClient({ initialCustomer }: Props) {
                         alert('Invitation sent successfully!')
                     }
                 }}
+                onViewPolicy={(customerId, policyId) => router.push(`/customers/${customerId}/policy/${policyId}`)}
             />
         </>
     )

@@ -175,6 +175,17 @@ export const en: TranslationKeys = {
         milestone: 'Milestone',
     },
 
+    analysis: {
+        title: 'GAP ANALYSIS',
+        runAnalysis: 'Run AI Analysis',
+        analyzing: 'Analyzing...',
+        noGaps: 'No gaps detected yet. Run analysis to check coverage.',
+        gapDetected: 'Coverage Gap Detected',
+        recommendation: 'Recommendation',
+        analysisComplete: 'Analysis complete. Found ',
+        issues: ' issues.',
+    },
+
     // Errors
     errors: {
         somethingWentWrong: 'Something went wrong',

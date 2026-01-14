@@ -112,6 +112,7 @@ export interface CustomerProfileProps {
     onSendQuestionnaire?: (customerId: string) => void
     onSendReminder?: (customerId: string, opportunityId?: string) => void
     onInviteCustomer?: (customerId: string, email: string) => void
+    onViewPolicy?: (customerId: string, policyId: string) => void
     onBack?: () => void
 }
 

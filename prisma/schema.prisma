@@ -235,7 +235,9 @@ model GapInstance {
   severity        String
   status          String        @default("open")
   aiExplanation   String?       @map("ai_explanation")
+  aiExplanationEl String?       @map("ai_explanation_el")
   aiSuggestion    String?       @map("ai_suggestion")
+  aiSuggestionEl  String?       @map("ai_suggestion_el")
   detectedAt      DateTime      @default(now()) @map("detected_at")
   resolvedAt      DateTime?     @map("resolved_at")
   definition      GapDefinition @relation(fields: [gapDefinitionId], references: [id])

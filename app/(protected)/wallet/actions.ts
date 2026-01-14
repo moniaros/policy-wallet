@@ -422,10 +422,35 @@ export async function analyzeGaps(policyId: string) {
     if (!authResult) return { error: "Unauthorized" }
 
     const policy = await db.policy.findUnique({
-        where: { id: policyId, ownerUserId: authResult.dbUser.id },
+        where: { id: policyId },
         include: { documents: true }
     })
+
     if (!policy) return { error: "Policy not found" }
+
+    // Authorization: Allow Owner OR Authorized Agent
+    const isOwner = policy.ownerUserId === authResult.dbUser.id
+    if (!isOwner) {
+        // Check for AccessGrant (Portfolio Scope) or CustomerRelationship
+        const hasAccess = await db.accessGrant.findFirst({
+            where: {
+                granterUserId: policy.ownerUserId,
+                granteeUserId: authResult.dbUser.id,
+                status: 'active'
+            }
+        })
+
+        // Check Relationship as fallback if Grants aren't fully migrated/used yet
+        const hasRelationship = !hasAccess ? await db.customerRelationship.findFirst({
+            where: {
+                agentUserId: authResult.dbUser.id,
+                policyholderUserId: policy.ownerUserId,
+                // status: 'active' // Assuming existence implies some level of access, or check specific status
+            }
+        }) : null
+
+        if (!hasAccess && !hasRelationship) return { error: "Unauthorized access to this policy" }
+    }
 
     const normalizedLOB = policy.lineOfBusiness.toLowerCase().replace(' protection', '').trim();
     const gaps = await db.gapDefinition.findMany({
@@ -491,10 +516,22 @@ export async function analyzeGaps(policyId: string) {
             }
 
             const prompt = `
-            Review the provided insurance policy document (if provided) and/or metadata and identify any coverage gaps.
-            Also, verify if the current metadata is correct and provide a structured ACORD-compliant representation.
+            You are an expert insurance analyst. Your task is to analyze the provided policy document and database metadata.
 
-            Current Metadata:
+            CRITICAL: The provided DOCUMENT is the ABSOLUTE SOURCE OF TRUTH. 
+            The "Current Metadata" provided below may be incomplete or incorrect (e.g., 0.00 euros or missing dates).
+            You must FIRST extract the actual details from the document.
+
+            Step 1: Data Verification
+            - Extract Insurer, Policy Number, Dates, and Premium from the DOCUMENT.
+            - If the document is missing or unreadable, fall back to the Current Metadata only as a last resort.
+            - If the document shows a premium of "200" but metadata says "0", rely on the document.
+
+            Step 2: Gap Analysis
+            - Using the VERIFIED data from Step 1 (NOT the raw metadata), check for the following gaps.
+            - Provide a clear explanation based on the document's clauses.
+
+            Current Metadata (Reference Only):
             Insurer: ${policy.insurerName}
             Policy Number: ${policy.policyNumber}
             Type: ${policy.lineOfBusiness}
@@ -520,8 +557,8 @@ export async function analyzeGaps(policyId: string) {
                     {
                         "slug": "gap-slug",
                         "isDetected": boolean,
-                        "explanation": "string",
-                        "suggestion": "string"
+                        "explanation": { "en": "string", "el": "string" },
+                        "suggestion": { "en": "string", "el": "string" }
                     }
                 ],
                 "acordData": {
@@ -576,12 +613,15 @@ export async function analyzeGaps(policyId: string) {
                     if (def) {
                         await db.gapInstance.create({
                             data: {
-                                policyId: policy.id,
+                                policyId: policyId,
                                 gapDefinitionId: def.id,
                                 severity: def.defaultSeverity || "medium",
-                                status: "open",
-                                aiExplanation: item.explanation,
-                                aiSuggestion: item.suggestion
+                                status: item.isDetected ? "open" : "resolved",
+                                aiExplanation: item.explanation?.en || item.explanation || "No explanation provided",
+                                aiExplanationEl: item.explanation?.el || item.explanation || "Δεν δόθηκε εξήγηση",
+                                aiSuggestion: item.suggestion?.en || item.suggestion || "No suggestion",
+                                aiSuggestionEl: item.suggestion?.el || item.suggestion || "Καμία πρόταση",
+                                detectedAt: new Date()
                             }
                         })
                         detectedCount++;
