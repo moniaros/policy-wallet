@@ -44,7 +44,13 @@ export default async function PolicyDetailPage({
     const statusLabel = getStatusLabel(status)
     const daysLeft = getDaysUntilExpiry(policy.endDate)
 
-    const shares = await getPolicyShares(policyId)
+    let shares: any[] = []
+    try {
+        shares = await getPolicyShares(policyId)
+    } catch (error) {
+        console.error("Failed to load policy shares:", error)
+        // Fallback to empty array to allow page to render
+    }
 
     // Create serializable policy object for Client Component
     const walletPolicy = {
@@ -57,10 +63,10 @@ export default async function PolicyDetailPage({
         status: status || 'incomplete'
     }
 
-    const serializedShares = shares.map(s => ({
+    const serializedShares = Array.isArray(shares) ? shares.map(s => ({
         ...s,
         grantedAt: s.grantedAt ? s.grantedAt.toISOString() : new Date().toISOString()
-    }))
+    })) : []
 
     return (
         <div className="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -300,7 +306,7 @@ export default async function PolicyDetailPage({
                     </div>
 
                     {/* Share Policy */}
-                    <SharePolicy policyId={policyId} initialShares={serializedShares} />
+                    <SharePolicy policyId={policyId} initialShares={serializedShares || []} />
 
                     {/* Delete Policy */}
                     <DeletePolicy policyId={policyId} />
