@@ -571,7 +571,14 @@ export async function analyzeGaps(policyId: string) {
                         "effectiveDate": "YYYY-MM-DD",
                         "expirationDate": "YYYY-MM-DD"
                     },
-                    "coverages": [ { "name": "...", "limit": "...", "deductible": "..." } ]
+                    "coverages": [ 
+                        { 
+                            "name": "...", 
+                            "limit": "...", 
+                            "deductible": "...",
+                            "explanation": { "en": "Short description of what this covers (max 10 words)", "el": "Σύντομη περιγραφή (max 10 λέξεις)" }
+                        } 
+                    ]
                 }
             }
             `;
@@ -722,4 +729,23 @@ export async function deletePolicy(policyId: string) {
     }
 
     return { error: "You are not authorized to delete this policy" }
+}
+
+export async function getAIUsageStats() {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { count: 0, limit: 5 }
+
+    const startOfMonth = new Date()
+    startOfMonth.setDate(1)
+    startOfMonth.setHours(0, 0, 0, 0)
+
+    const count = await (db as any).activityLog.count({
+        where: {
+            adminUserId: authResult.dbUser.id,
+            actionType: "POLICY_ANALYZED",
+            timestamp: { gte: startOfMonth }
+        }
+    })
+
+    return { count, limit: 5 }
 }

@@ -10,6 +10,9 @@ import { AddToWallet } from "./AddToWallet"
 
 import { AnalysisCard } from "./AnalysisCard"
 import { getTranslations } from "@/lib/i18n"
+import { PolicyAnalysisTabs } from "./PolicyAnalysisTabs"
+import { AIUsageWidget } from "./AIUsageWidget"
+import { getAIUsageStats } from "../actions"
 
 export default async function PolicyDetailPage({
     params,
@@ -53,6 +56,8 @@ export default async function PolicyDetailPage({
         console.error("Failed to load policy shares:", error)
         // Fallback to empty array to allow page to render
     }
+
+    const aiUsageStats = await getAIUsageStats()
 
     // Create serializable policy object for Client Component
     const walletPolicy = {
@@ -146,8 +151,8 @@ export default async function PolicyDetailPage({
                         </div>
                     </div>
 
-                    {/* Gap Analysis */}
-                    <AnalysisCard
+                    {/* Combined AI Analysis & Insights */}
+                    <PolicyAnalysisTabs
                         policyId={policyId}
                         gaps={policy.gapInstances.map(g => ({
                             id: g.id,
@@ -160,78 +165,21 @@ export default async function PolicyDetailPage({
                                 severity: g.definition?.severity || "medium"
                             }
                         }))}
+                        acordData={(policy as any).acordData}
+                        t={t}
+                        lastAnalyzedAt={(policy as any).lastAnalyzedAt}
                     />
-
-                    {/* AI Analysis Insights (ACORD) */}
-                    {(policy as any).acordData && typeof (policy as any).acordData === 'object' && Object.keys((policy as any).acordData).length > 0 && (
-                        <div className="bg-white dark:bg-stone-800 rounded-3xl p-8 border border-stone-200 dark:border-stone-700 shadow-sm">
-                            <div className="flex items-center justify-between mb-6">
-                                <div className="flex items-center gap-3">
-                                    <h2 className="text-sm font-black text-stone-900 dark:text-white uppercase tracking-widest">{t.wallet.aiPolicyInsights}</h2>
-                                    <span className="px-2 py-0.5 rounded-full bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 text-[9px] font-black uppercase tracking-widest border border-teal-100 dark:border-teal-800">
-                                        {t.wallet.acordVerified}
-                                    </span>
-                                </div>
-                                {(policy as any).lastAnalyzedAt && (
-                                    <span className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">
-                                        Last Check: {new Date((policy as any).lastAnalyzedAt).toLocaleDateString()}
-                                    </span>
-                                )}
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                <div className="space-y-6">
-                                    <div>
-                                        <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">{t.wallet.verificationOverview}</p>
-                                        <div className="p-4 bg-stone-50 dark:bg-stone-900/50 rounded-2xl border border-stone-100 dark:border-stone-800">
-                                            <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
-                                                {t.wallet.verificationDesc}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">{t.wallet.contractInsurer}</p>
-                                            <p className="text-xs font-bold text-stone-900 dark:text-white">
-                                                {String((policy as any).acordData.policy?.insurer || policy.insurerName)}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">{t.wallet.premiumFound}</p>
-                                            <p className="text-xs font-bold text-teal-600 dark:text-teal-400">
-                                                {String((policy as any).acordData.policy?.premium?.amount || '')} {String((policy as any).acordData.policy?.premium?.currency || '')}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-3">
-                                    <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">{t.wallet.structuredCoverages}</p>
-                                    <div className="space-y-2">
-                                        {(policy as any).acordData.coverages?.map((cov: any, idx: number) => (
-                                            <div key={idx} className="flex justify-between items-center text-[11px] p-3 bg-white dark:bg-stone-800 rounded-xl border border-stone-100 dark:border-stone-700 hover:border-teal-200 dark:hover:border-teal-900/50 transition-colors shadow-sm">
-                                                <div className="flex flex-col">
-                                                    <span className="font-black text-stone-900 dark:text-stone-100 uppercase tracking-tighter">{String(cov.name || '')}</span>
-                                                    {cov.deductible && <span className="text-[9px] text-stone-400">Deductible: {String(cov.deductible)}</span>}
-                                                </div>
-                                                <span className="font-mono text-teal-600 dark:text-teal-400 font-black">{String(cov.limit || '')}</span>
-                                            </div>
-                                        ))}
-                                        {(!(policy as any).acordData.coverages || (policy as any).acordData.coverages.length === 0) && (
-                                            <div className="p-4 text-center border-2 border-dashed border-stone-100 dark:border-stone-800 rounded-2xl">
-                                                <p className="text-xs text-stone-400 italic">{t.wallet.noCoveragesFound}</p>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
 
                 {/* Sidebar */}
                 <div className="space-y-6">
+                    {/* Usage Widget */}
+                    <AIUsageWidget
+                        count={aiUsageStats.count}
+                        limit={aiUsageStats.limit}
+                        t={t}
+                    />
+
                     {/* Quick Stats Sidebar */}
                     <div className="bg-white dark:bg-stone-800 rounded-3xl p-6 shadow-sm border border-stone-200 dark:border-stone-700 space-y-6">
                         <div>
@@ -313,6 +261,6 @@ export default async function PolicyDetailPage({
                     <DeletePolicy policyId={policyId} />
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

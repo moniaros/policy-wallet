@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Toaster } from "sonner";
 import NextTopLoader from 'nextjs-toploader';
 
@@ -36,7 +37,14 @@ export default function RootLayout({
           speed={200}
         />
         <LanguageProvider>
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
         </LanguageProvider>
         <Toaster richColors position="top-right" />
         <Analytics />

@@ -129,6 +129,7 @@ export const en: TranslationKeys = {
         dangerZone: 'Danger Zone',
         deletePolicy: 'Delete Policy',
         aiPolicyInsights: 'AI Policy Insights',
+        aiAnalysis: 'Gap Analysis',
         acordVerified: 'ACORD Verified',
         verificationOverview: 'Verification Overview',
         verificationDesc: 'Our AI has cross-referenced the policy contract with the digital wallet metadata. The details below have been extracted directly from the official document.',
@@ -136,6 +137,10 @@ export const en: TranslationKeys = {
         premiumFound: 'Premium Found',
         structuredCoverages: 'Structured Coverages',
         noCoveragesFound: 'No specific coverages parsed.',
+        // Usage Widget
+        aiPlanUsage: 'AI Plan Usage',
+        analyses: 'analyses',
+        upgradePlan: 'Upgrade Plan',
     },
 
     // Policy Types

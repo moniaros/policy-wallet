@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { MainNav } from './MainNav'
 import { UserMenu } from './UserMenu'
 import { RoleSwitcher } from './RoleSwitcher'
+import { ThemeToggle } from '../ThemeToggle'
 
 export interface NavigationItem {
     label: string
@@ -161,6 +162,23 @@ export function AppShell({
                             }))}
                             onNavigate={handleNavigate}
                         />
+                    </div>
+
+                    {/* Mobile Footer (Sign Out & Theme) */}
+                    <div className="lg:hidden p-4 border-t border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/50 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-stone-600 dark:text-stone-400">Appearance</span>
+                            <ThemeToggle />
+                        </div>
+                        <button
+                            onClick={onLogout}
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-medium text-sm hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            Sign Out
+                        </button>
                     </div>
 
                     {/* User menu (desktop) */}

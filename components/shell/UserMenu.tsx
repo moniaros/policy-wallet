@@ -3,6 +3,7 @@
 import React, { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { ThemeToggle } from '../ThemeToggle'
 
 export interface UserMenuProps {
     user: {
@@ -162,6 +163,11 @@ export function UserMenu({
                         >
                             {t.userMenu.settings}
                         </button>
+
+                        <div className="flex items-center justify-between px-4 py-2 border-t border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-700">
+                            <span className="text-sm text-stone-700 dark:text-stone-300">Theme</span>
+                            <ThemeToggle />
+                        </div>
 
                         {/* Logout */}
                         <button

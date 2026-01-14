@@ -127,6 +127,7 @@ export const el = {
         dangerZone: 'Περιοχή Κινδύνου',
         deletePolicy: 'Διαγραφή Ασφάλισης',
         aiPolicyInsights: 'Ανάλυση Πολιτικής AI',
+        aiAnalysis: 'Ανάλυση Κενών',
         acordVerified: 'Επαληθεύτηκε κατά ACORD',
         verificationOverview: 'Επισκόπηση Επαλήθευσης',
         verificationDesc: 'Η AI έχει διασταυρώσει το ασφαλιστήριο συμβόλαιο με τα δεδομένα του ψηφιακού πορτοφολιού. Οι παρακάτω λεπτομέρειες έχουν εξαχθεί απευθείας από το επίσημο έγγραφο.',
@@ -134,6 +135,10 @@ export const el = {
         premiumFound: 'Εντοπισμένο Ασφάλιστρο',
         structuredCoverages: 'Δομημένες Καλύψεις',
         noCoveragesFound: 'Δεν αναλύθηκαν συγκεκριμένες καλύψεις.',
+        // Usage Widget
+        aiPlanUsage: 'Χρήση Πλάνου AI',
+        analyses: 'αναλύσεις',
+        upgradePlan: 'Αναβάθμιση',
     },
 
     // Policy Types
