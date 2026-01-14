@@ -211,10 +211,10 @@ export default async function PolicyDetailPage({
                                         {(policy as any).acordData.coverages?.map((cov: any, idx: number) => (
                                             <div key={idx} className="flex justify-between items-center text-[11px] p-3 bg-white dark:bg-stone-800 rounded-xl border border-stone-100 dark:border-stone-700 hover:border-teal-200 dark:hover:border-teal-900/50 transition-colors shadow-sm">
                                                 <div className="flex flex-col">
-                                                    <span className="font-black text-stone-900 dark:text-stone-100 uppercase tracking-tighter">{cov.name}</span>
-                                                    {cov.deductible && <span className="text-[9px] text-stone-400">Deductible: {cov.deductible}</span>}
+                                                    <span className="font-black text-stone-900 dark:text-stone-100 uppercase tracking-tighter">{String(cov.name || '')}</span>
+                                                    {cov.deductible && <span className="text-[9px] text-stone-400">Deductible: {String(cov.deductible)}</span>}
                                                 </div>
-                                                <span className="font-mono text-teal-600 dark:text-teal-400 font-black">{cov.limit}</span>
+                                                <span className="font-mono text-teal-600 dark:text-teal-400 font-black">{String(cov.limit || '')}</span>
                                             </div>
                                         ))}
                                         {(!(policy as any).acordData.coverages || (policy as any).acordData.coverages.length === 0) && (
