@@ -157,7 +157,7 @@ export async function uploadPolicyDocument(formData: FormData) {
         try {
             console.log("Analyzing document with Gemini...");
             const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }, { apiVersion: "v1" });
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
             const arrayBuffer = await file.arrayBuffer();
             const base64Data = Buffer.from(arrayBuffer).toString("base64");
@@ -446,7 +446,7 @@ export async function analyzeGaps(policyId: string) {
     if (process.env.GEMINI_API_KEY) {
         try {
             const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }, { apiVersion: "v1" });
+            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
             // Prepare Document if available
             let imagePart = null;
