@@ -176,10 +176,10 @@ model Policy {
   premiumAmount   Decimal?         @map("premium_amount")
   premiumCurrency String?          @default("EUR") @map("premium_currency")
   coverageSummary String?          @map("coverage_summary")
-  acordData       Json?            @map("acord_data")
-  lastAnalyzedAt  DateTime?        @map("last_analyzed_at")
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime         @updatedAt @map("updated_at")
+  acordData       Json?            @map("acord_data")
+  lastAnalyzedAt  DateTime?        @map("last_analyzed_at")
   gapInstances    GapInstance[]
   opportunities   Opportunity[]
   creator         User             @relation("Creator", fields: [createdByUserId], references: [id])
@@ -235,11 +235,11 @@ model GapInstance {
   severity        String
   status          String        @default("open")
   aiExplanation   String?       @map("ai_explanation")
-  aiExplanationEl String?       @map("ai_explanation_el")
   aiSuggestion    String?       @map("ai_suggestion")
-  aiSuggestionEl  String?       @map("ai_suggestion_el")
   detectedAt      DateTime      @default(now()) @map("detected_at")
   resolvedAt      DateTime?     @map("resolved_at")
+  aiExplanationEl String?       @map("ai_explanation_el")
+  aiSuggestionEl  String?       @map("ai_suggestion_el")
   definition      GapDefinition @relation(fields: [gapDefinitionId], references: [id])
   policy          Policy        @relation(fields: [policyId], references: [id], onDelete: Cascade)
   opportunities   Opportunity[]

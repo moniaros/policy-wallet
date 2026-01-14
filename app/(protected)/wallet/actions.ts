@@ -463,7 +463,7 @@ export async function analyzeGaps(policyId: string) {
         }
     })
 
-    if (gaps.length === 0) return { success: true, message: "No applicable gap definitions." }
+    if (gaps.length === 0) return { success: true, count: 0, message: "No applicable gap definitions." }
 
     // Clear existing gaps to re-analyze
     await db.gapInstance.deleteMany({ where: { policyId } })
