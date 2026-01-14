@@ -139,7 +139,20 @@ export default async function PolicyDetailPage({
                     </div>
 
                     {/* Gap Analysis */}
-                    <AnalysisCard policyId={policyId} gaps={policy.gapInstances} />
+                    <AnalysisCard
+                        policyId={policyId}
+                        gaps={policy.gapInstances.map(g => ({
+                            id: g.id,
+                            aiExplanation: g.aiExplanation,
+                            aiExplanationEl: g.aiExplanationEl,
+                            aiSuggestion: g.aiSuggestion,
+                            aiSuggestionEl: g.aiSuggestionEl,
+                            definition: {
+                                title: g.definition.title,
+                                severity: g.definition.severity
+                            }
+                        }))}
+                    />
 
                     {/* AI Analysis Insights (ACORD) */}
                     {(policy as any).acordData && typeof (policy as any).acordData === 'object' && Object.keys((policy as any).acordData).length > 0 && (
