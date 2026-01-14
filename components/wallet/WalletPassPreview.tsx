@@ -4,9 +4,10 @@ import { QrCode, Shield, Zap, Home, Heart } from 'lucide-react'
 interface WalletPassPreviewProps {
     policy: Policy
     holderName: string
+    plateNumber?: string
 }
 
-export function WalletPassPreview({ policy, holderName }: WalletPassPreviewProps) {
+export function WalletPassPreview({ policy, holderName, plateNumber }: WalletPassPreviewProps) {
     const getGradient = (type: string) => {
         switch (type) {
             case 'health':
@@ -80,7 +81,7 @@ export function WalletPassPreview({ policy, holderName }: WalletPassPreviewProps
                         </div>
                     </div>
 
-                    {/* Middle: Policy Number */}
+                    {/* Middle: Policy Number & Plate */}
                     <div className="mt-4">
                         <div className="flex items-center justify-between">
                             <div className="space-y-1">
@@ -89,11 +90,25 @@ export function WalletPassPreview({ policy, holderName }: WalletPassPreviewProps
                                     {policy.policyNumber}
                                 </p>
                             </div>
-                            {/* Contactless Icon */}
-                            <svg className="w-6 h-6 text-white/50" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" opacity="0.3" />
-                                <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" />
-                            </svg>
+
+                            {plateNumber && (
+                                <div className="text-right">
+                                    <p className="text-[10px] uppercase tracking-widest opacity-60 font-semibold">Plate No</p>
+                                    <div className="flex items-center gap-1 justify-end">
+                                        <span className="bg-blue-700 text-white text-[8px] font-bold px-1 rounded-sm border border-blue-800 shadow-sm">GR</span>
+                                        <p className="font-mono text-lg font-bold tracking-wider text-shadow-sm">
+                                            {plateNumber}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {!plateNumber && (
+                                <svg className="w-6 h-6 text-white/50" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" opacity="0.3" />
+                                    <path d="M12 6c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z" />
+                                </svg>
+                            )}
                         </div>
                     </div>
 

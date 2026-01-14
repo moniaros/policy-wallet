@@ -187,6 +187,16 @@ export default async function PolicyDetailPage({
                             <p className="font-mono text-sm text-stone-900 dark:text-stone-100 font-bold bg-stone-50 dark:bg-stone-900/50 p-3 rounded-xl border border-stone-100 dark:border-stone-700">{policy.policyNumber}</p>
                         </div>
 
+                        {(policy.acordData as any)?.vehicle?.plateNumber && (
+                            <div>
+                                <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">{t.wallet.plateNumber || "Plate Number"}</p>
+                                <div className="font-mono text-sm text-stone-900 dark:text-stone-100 font-bold bg-stone-50 dark:bg-stone-900/50 p-3 rounded-xl border border-stone-100 dark:border-stone-700 flex items-center gap-2">
+                                    <span className="px-1.5 py-0.5 rounded bg-blue-700 text-[10px] text-white font-bold border border-blue-800">GR</span>
+                                    {(policy.acordData as any).vehicle.plateNumber}
+                                </div>
+                            </div>
+                        )}
+
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">{t.wallet.starts}</p>
@@ -220,6 +230,7 @@ export default async function PolicyDetailPage({
                         policy={walletPolicy as any}
                         holderName={dbUser.name || "Policy Holder"}
                         initialOpen={shouldOpenWallet}
+                        plateNumber={(policy.acordData as any)?.vehicle?.plateNumber}
                     />
 
                     {/* Documents Sidebar */}

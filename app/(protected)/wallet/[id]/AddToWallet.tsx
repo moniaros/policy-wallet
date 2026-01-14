@@ -10,9 +10,10 @@ interface AddToWalletProps {
     policy: Policy
     holderName: string
     initialOpen?: boolean
+    plateNumber?: string
 }
 
-export function AddToWallet({ policy, holderName, initialOpen = false }: AddToWalletProps) {
+export function AddToWallet({ policy, holderName, initialOpen = false, plateNumber }: AddToWalletProps) {
     const [isOpen, setIsOpen] = useState(initialOpen)
     const [loading, setLoading] = useState(false)
     const [passData, setPassData] = useState<any>(null)
@@ -90,7 +91,7 @@ export function AddToWallet({ policy, holderName, initialOpen = false }: AddToWa
                         </div>
 
                         <div className="mb-8 transform hover:scale-[1.02] transition-transform duration-500">
-                            <WalletPassPreview policy={policy} holderName={holderName} />
+                            <WalletPassPreview policy={policy} holderName={holderName} plateNumber={plateNumber} />
                         </div>
 
                         <div className="grid grid-cols-1 gap-3">

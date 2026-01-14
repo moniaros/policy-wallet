@@ -571,6 +571,11 @@ export async function analyzeGaps(policyId: string) {
                         "effectiveDate": "YYYY-MM-DD",
                         "expirationDate": "YYYY-MM-DD"
                     },
+                    "vehicle": {
+                        "plateNumber": "ABC-1234",
+                        "make": "Toyota",
+                        "model": "Yaris"
+                    },
                     "coverages": [ 
                         { 
                             "name": "...", 
