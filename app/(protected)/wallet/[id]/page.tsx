@@ -52,14 +52,14 @@ export default async function PolicyDetailPage({
         policyNumber: policy.policyNumber,
         insurerName: policy.insurerName,
         lineOfBusiness: policy.lineOfBusiness,
-        startDate: policy.startDate?.toISOString() ?? null,
-        endDate: policy.endDate?.toISOString() ?? null,
-        status: status
+        startDate: policy.startDate ? policy.startDate.toISOString() : null,
+        endDate: policy.endDate ? policy.endDate.toISOString() : null,
+        status: status || 'incomplete'
     }
 
     const serializedShares = shares.map(s => ({
         ...s,
-        grantedAt: s.grantedAt.toISOString()
+        grantedAt: s.grantedAt ? s.grantedAt.toISOString() : new Date().toISOString()
     }))
 
     return (
@@ -143,13 +143,13 @@ export default async function PolicyDetailPage({
                         policyId={policyId}
                         gaps={policy.gapInstances.map(g => ({
                             id: g.id,
-                            aiExplanation: g.aiExplanation,
-                            aiExplanationEl: g.aiExplanationEl,
-                            aiSuggestion: g.aiSuggestion,
-                            aiSuggestionEl: g.aiSuggestionEl,
+                            aiExplanation: g.aiExplanation || null,
+                            aiExplanationEl: g.aiExplanationEl || null,
+                            aiSuggestion: g.aiSuggestion || null,
+                            aiSuggestionEl: g.aiSuggestionEl || null,
                             definition: {
-                                title: g.definition.title,
-                                severity: g.definition.severity
+                                title: g.definition?.title || "Unknown Gap",
+                                severity: g.definition?.severity || "medium"
                             }
                         }))}
                     />
