@@ -15,31 +15,62 @@ interface AddToWalletProps {
 
 export function AddToWallet({ policy, holderName, initialOpen = false, plateNumber }: AddToWalletProps) {
     const [isOpen, setIsOpen] = useState(initialOpen)
-    const [loading, setLoading] = useState(false)
+    const [loadingApple, setLoadingApple] = useState(false)
+    const [loadingGoogle, setLoadingGoogle] = useState(false)
     const [passData, setPassData] = useState<any>(null)
 
     const fetchPass = async (type: 'apple' | 'google') => {
-        setLoading(true)
+        if (type === 'apple') setLoadingApple(true)
+        else setLoadingGoogle(true)
+
         try {
-            const res = await fetch(`/api/v1/policies/${policy.id}/wallet-pass`)
-            const json = await res.json()
+            // Pass the 'type' query parameter to select the service
+            const res = await fetch(`/api/v1/policies/${policy.id}/wallet-pass?type=${type}`)
 
-            if (!res.ok) throw new Error(json.error?.message || "Failed to generate pass")
+            // Check content type to distinguish between JSON (Link/Error) and Blob (File)
+            const contentType = res.headers.get("content-type")
 
-            setPassData(json.data)
+            if (contentType && contentType.includes("application/json")) {
+                const json = await res.json()
 
-            // In a real app, we would redirect to the pass_url or handle the blob
-            // json.data.pass_url
+                if (!res.ok) {
+                    throw new Error(json.error?.message || `Failed to generate ${type} pass`)
+                }
 
-            toast.success(`${type === 'apple' ? 'Apple Wallet' : 'Google Wallet'} pass generated!`)
+                // CASE A: JSON Response (Likely Google Wallet Link)
+                if (json.data?.pass_url) {
+                    toast.success("Redirecting to Google Wallet...")
+                    // In production, we redirect the user to the "Save to Google Wallet" deep link
+                    window.location.href = json.data.pass_url
+                    return
+                }
 
-            // For demo purposes, we'll just show the success state. 
-            // If the URL was real, we'd window.location.href = json.data.pass_url
+                // If success but no URL? (Shouldn't happen for Google)
+                toast.success("Pass generated successfully.")
+            } else {
+                // CASE B: Blob Response (Apple Wallet .pkpass file)
+                // This handles the binary stream if the backend returns the file directly
+                if (!res.ok) throw new Error("Failed to download pass file")
+
+                const blob = await res.blob()
+                const url = window.URL.createObjectURL(blob)
+                const a = document.createElement("a")
+                a.href = url
+                a.download = `wallet-pass-${policy.policyNumber}.pkpass`
+                document.body.appendChild(a)
+                a.click()
+                window.URL.revokeObjectURL(url)
+                document.body.removeChild(a)
+
+                toast.success("Apple Wallet pass downloaded!")
+            }
 
         } catch (err: any) {
             toast.error(err.message)
+            console.error(err)
         } finally {
-            setLoading(false)
+            if (type === 'apple') setLoadingApple(false)
+            else setLoadingGoogle(false)
         }
     }
 
@@ -97,10 +128,10 @@ export function AddToWallet({ policy, holderName, initialOpen = false, plateNumb
                         <div className="grid grid-cols-1 gap-3">
                             <button
                                 onClick={() => fetchPass('apple')}
-                                disabled={loading}
-                                className="w-full h-12 bg-black text-white rounded-xl flex items-center justify-center gap-2 hover:bg-stone-800 transition-colors font-medium border border-stone-800 relative overflow-hidden"
+                                disabled={loadingApple || loadingGoogle}
+                                className="w-full h-12 bg-black text-white rounded-xl flex items-center justify-center gap-2 hover:bg-stone-800 transition-colors font-medium border border-stone-800 relative overflow-hidden disabled:opacity-50"
                             >
-                                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                                {loadingApple ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                                     <>
                                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.74 1.18 0 2.45-1.62 4.37-1.32 1.84.18 3.05 1.12 3.65 1.99-3.23 2.05-2.6 6.3 1.25 7.82-.66 1.76-1.66 3.49-4.35 3.74zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" /></svg>
                                         <span>Add to Apple Wallet</span>
@@ -110,10 +141,10 @@ export function AddToWallet({ policy, holderName, initialOpen = false, plateNumb
 
                             <button
                                 onClick={() => fetchPass('google')}
-                                disabled={loading}
-                                className="w-full h-12 bg-white text-stone-900 border border-stone-200 rounded-xl flex items-center justify-center gap-2 hover:bg-stone-50 transition-colors font-medium relative overflow-hidden"
+                                disabled={loadingApple || loadingGoogle}
+                                className="w-full h-12 bg-white text-stone-900 border border-stone-200 rounded-xl flex items-center justify-center gap-2 hover:bg-stone-50 transition-colors font-medium relative overflow-hidden disabled:opacity-50"
                             >
-                                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
+                                {loadingGoogle ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                                     <>
                                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12.441 12.378h-.002v.006h-.005v-.006h.007zm8.397-2.678h-8.39v3.42h5.174c-.506 2.37-2.458 3.93-4.835 3.93-2.924 0-5.29-2.366-5.29-5.29 0-2.923 2.366-5.289 5.29-5.289 1.266 0 2.433.435 3.35 1.16l2.502-2.434c-1.66-1.47-3.692-2.226-5.852-2.226-5.462 0-9.89 4.428-9.89 9.89 0 5.461 4.428 9.89 9.89 9.89 5.158 0 9.176-3.882 9.176-9.175 0-.74-.065-1.378-.15-1.921z" /></svg>
                                         <span>Add to Google Wallet</span>

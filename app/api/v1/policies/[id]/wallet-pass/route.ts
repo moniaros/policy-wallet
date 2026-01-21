@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { createGoogleWalletLink } from "@/lib/wallet/google"
+import { createApplePass } from "@/lib/wallet/apple"
 
 export async function GET(
     req: Request,
@@ -31,23 +33,47 @@ export async function GET(
             )
         }
 
-        // Stub payload for Wallet Pass
-        return NextResponse.json({
-            data: {
-                pass_type: "apple_wallet",
-                pass_url: `https://api.policywallet.gr/v1/passes/${policy.id}.pkpass`,
-                expires_at: new Date(Date.now() + 3600000), // 1 hour link
-                fields: {
-                    label: "Policy Wallet",
-                    insurer: policy.insurerName,
-                    policy_id: policy.policyNumber,
-                    holder: authResult.dbUser.name || "Policy Holder",
-                    expiration: policy.endDate.toISOString().split('T')[0]
-                }
-            },
-            meta: { request_id: crypto.randomUUID(), language: "el" },
-            error: null
-        })
+        const { searchParams } = new URL(req.url)
+        const type = searchParams.get('type') || 'google' // default to google if not specified
+
+        if (type === 'google') {
+            try {
+                const saveUrl = await createGoogleWalletLink(policy, authResult.dbUser)
+                return NextResponse.json({
+                    data: {
+                        pass_url: saveUrl,
+                    },
+                    meta: { language: "en" },
+                    error: null
+                })
+            } catch (e: any) {
+                console.error("Google Wallet Error:", e)
+                return NextResponse.json(
+                    { error: { code: "CONFIG_ERROR", message: e.message || "Failed to generate Google Pass" } },
+                    { status: 500 }
+                )
+            }
+        }
+
+        if (type === 'apple') {
+            try {
+                // In production, this returns a Buffer (file content)
+                // Since our helper currently throws because of missing certs, catching it here.
+                await createApplePass(policy, authResult.dbUser)
+
+                // If it succeeded (we had certs), we would return:
+                // return new NextResponse(buffer, { headers: { 'Content-Type': 'application/vnd.apple.pkpass' } })
+            } catch (e: any) {
+                console.error("Apple Wallet Error:", e)
+                return NextResponse.json(
+                    { error: { code: "CONFIG_ERROR", message: e.message || "Apple Wallet signing unavailable" } },
+                    { status: 500 }
+                )
+            }
+        }
+
+        return NextResponse.json({ error: "Invalid pass type" }, { status: 400 })
+
     } catch (error) {
         console.error(error)
         return NextResponse.json(
