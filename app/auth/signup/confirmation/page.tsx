@@ -96,8 +96,8 @@ function ConfirmationContent() {
                     </p>
                     <ul className="text-sm text-stone-600 space-y-2 ml-5 list-disc">
                         <li>{t.auth.checkSpam}</li>
-                        <li>Βεβαιωθείτε ότι η διεύθυνση email είναι σωστή</li>
-                        <li>Περιμένετε μερικά λεπτά - μπορεί να υπάρχει καθυστέρηση</li>
+                        <li>{t.auth.checkEmailCorrect}</li>
+                        <li>{t.auth.waitFewMinutes}</li>
                     </ul>
                 </div>
 

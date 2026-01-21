@@ -64,6 +64,8 @@ export const el = {
         didntReceiveEmail: 'Δεν λάβατε το email;',
         checkSpam: 'Ελέγξτε τον φάκελο spam ή ανεπιθύμητης αλληλογραφίας',
         resendEmail: 'Επαναποστολή Email',
+        checkEmailCorrect: 'Βεβαιωθείτε ότι η διεύθυνση email είναι σωστή',
+        waitFewMinutes: 'Περιμένετε μερικά λεπτά - μπορεί να υπάρχει καθυστέρηση',
         proceedToLogin: 'Συνέχεια στη Σύνδεση',
         welcomeToPolicyWallet: 'Καλώς ήρθατε στο PolicyWallet',
         nextSteps: 'Επόμενα Βήματα',

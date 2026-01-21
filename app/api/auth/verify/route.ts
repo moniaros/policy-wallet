@@ -55,19 +55,24 @@ export async function POST(request: NextRequest) {
         })
 
         // 4. Also update Supabase Auth to mark email as verified
-        const supabase = await createClient()
+        const { createAdminClient } = await import("@/lib/supabase/admin")
+        const supabaseAdmin = createAdminClient()
 
         // Get the user by email from Supabase Auth
-        const { data: { users }, error: getUserError } = await supabase.auth.admin.listUsers()
+        const { data: { users }, error: getUserError } = await supabaseAdmin.auth.admin.listUsers()
 
         if (!getUserError && users) {
             const user = users.find(u => u.email === email)
             if (user) {
                 // Update user to mark email as confirmed
-                const { error: updateError } = await supabase.auth.admin.updateUserById(
+                const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
                     user.id,
                     {
-                        email_confirm: true
+                        email_confirm: true,
+                        user_metadata: {
+                            ...user.user_metadata,
+                            email_verified: true
+                        }
                     }
                 )
 

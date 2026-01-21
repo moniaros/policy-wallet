@@ -2,6 +2,7 @@ import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { AppShell } from "@/components/shell"
 import { getTranslations } from "@/lib/i18n"
 import { signOut } from "@/app/auth/actions"
+import type { NavigationSection, UserRole } from "@/types/navigation"
 
 export default async function ProtectedLayout({
     children,
@@ -12,10 +13,10 @@ export default async function ProtectedLayout({
 
     // Construct navigation based on roles
     const roles = dbUser.roles?.split(",") || ["policyholder"]
-    const currentRole = roles[0] as "policyholder" | "agent" | "admin"
+    const currentRole = roles[0] as UserRole
 
-    const navigation: any[] = []
-    const t = getTranslations(dbUser.preferredLanguage as any || 'el')
+    const navigation: NavigationSection[] = []
+    const t = getTranslations(dbUser.preferredLanguage as 'en' | 'el' || 'el')
 
     if (currentRole === "policyholder") {
         navigation.push({
@@ -68,7 +69,7 @@ export default async function ProtectedLayout({
                 avatarUrl: dbUser.image || undefined,
             }}
             currentRole={userRoleObj}
-            availableRoles={roles.map(r => ({ role: r as any, label: r }))}
+            availableRoles={roles.map(r => ({ role: r as UserRole, label: r }))}
             navigation={navigation}
             onLogout={signOut}
         >

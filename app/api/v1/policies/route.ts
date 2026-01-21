@@ -4,17 +4,8 @@ import { z } from "zod"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { rateLimit } from "@/lib/rate-limit"
 import { logger } from "@/lib/logger"
-
-const PolicySchema = z.object({
-    policyNumber: z.string().min(1),
-    insurerName: z.string().min(1),
-    lineOfBusiness: z.string().min(1),
-    startDate: z.string().pipe(z.coerce.date()),
-    endDate: z.string().pipe(z.coerce.date()),
-    premiumAmount: z.number().optional(),
-    premiumCurrency: z.string().default("EUR"),
-    coverageSummary: z.string().optional(),
-})
+import { createPolicySchema } from "@/lib/validations/policy"
+import * as Sentry from "@sentry/nextjs"
 
 export async function GET(req: Request) {
     const authResult = await getAuthenticatedUserOrNull()
@@ -99,14 +90,23 @@ export async function POST(req: Request) {
 
     try {
         const body = await req.json()
-        const validatedData = PolicySchema.parse(body)
+
+        // Validate input with comprehensive schema
+        const validatedData = createPolicySchema.parse(body)
 
         const policy = await db.policy.create({
             data: {
-                ...validatedData,
+                policyNumber: validatedData.policyNumber,
+                insurerName: validatedData.insurerName,
+                lineOfBusiness: validatedData.lineOfBusiness,
+                startDate: new Date(validatedData.startDate),
+                endDate: new Date(validatedData.endDate),
+                premiumAmount: validatedData.premium,
+                premiumCurrency: "EUR",
+                coverageSummary: validatedData.coverageSummary,
+                status: validatedData.status,
                 ownerUserId: authResult.dbUser.id,
                 createdByUserId: authResult.dbUser.id,
-                status: "active",
             }
         })
 
@@ -125,8 +125,21 @@ export async function POST(req: Request) {
         })
     } catch (error) {
         if (error instanceof z.ZodError) {
-            return createApiError("VALIDATION_ERROR", "Invalid data", 400, error.issues)
+            return createApiError("VALIDATION_ERROR", "Invalid policy data", 400, error.issues)
         }
+
+        // Log error to Sentry
+        Sentry.captureException(error, {
+            tags: {
+                endpoint: '/api/v1/policies',
+                method: 'POST',
+                userId: authResult.dbUser.id
+            },
+            extra: {
+                userEmail: authResult.dbUser.email
+            }
+        })
+
         logger('error', 'Create policy failed', { userId: authResult.dbUser.id, error })
         return createApiError("INTERNAL_ERROR", "Server error", 500)
     }

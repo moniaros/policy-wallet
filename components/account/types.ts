@@ -221,7 +221,7 @@ export interface SettingsProps {
     /** Called when user wants to update their email */
     onUpdateEmail?: (newEmail: string) => void
     /** Called when user wants to change their password */
-    onChangePassword?: () => void
+    onChangePassword?: (newPassword?: string) => void
     /** Called when user wants to update their language preference */
     onUpdateLanguage?: (language: 'el' | 'en') => void
     /** Called when user wants to toggle a notification preference */

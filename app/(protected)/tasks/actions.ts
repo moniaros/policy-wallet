@@ -3,6 +3,7 @@
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
+import type { QuestionnaireAnswers } from "@/types/questionnaire"
 
 export async function getPendingQuestionnaires() {
     const authResult = await getAuthenticatedUserOrNull()
@@ -26,7 +27,7 @@ export async function getPendingQuestionnaires() {
     })
 }
 
-export async function submitQuestionnaireResponse(instanceId: string, answers: any) {
+export async function submitQuestionnaireResponse(instanceId: string, answers: QuestionnaireAnswers) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) throw new Error("Unauthorized")
 

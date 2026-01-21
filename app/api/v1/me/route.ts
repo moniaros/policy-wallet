@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { updateUserProfileSchema } from "@/lib/validations/user"
+import { z } from "zod"
+import * as Sentry from "@sentry/nextjs"
 
 export async function GET() {
     const authResult = await getAuthenticatedUserOrNull()
@@ -53,6 +56,14 @@ export async function GET() {
             error: null
         })
     } catch (error) {
+        Sentry.captureException(error, {
+            tags: {
+                endpoint: '/api/v1/me',
+                method: 'GET',
+                userId: authResult.dbUser.id
+            }
+        })
+
         console.error(error)
         return NextResponse.json(
             {
@@ -80,19 +91,17 @@ export async function PATCH(req: Request) {
 
     try {
         const body = await req.json()
-        const { name, preferredLanguage, profile } = body
+
+        // Validate input
+        const validatedData = updateUserProfileSchema.parse(body)
 
         const updatedUser = await db.user.update({
             where: { id: authResult.dbUser.id },
             data: {
-                name: name !== undefined ? name : undefined,
-                preferredLanguage: preferredLanguage !== undefined ? preferredLanguage : undefined,
-                policyholderProfile: profile ? {
-                    upsert: {
-                        create: { preferences: profile.preferences },
-                        update: { preferences: profile.preferences }
-                    }
-                } : undefined
+                name: validatedData.name,
+                preferredLanguage: validatedData.preferredLanguage,
+                phoneNumber: validatedData.phone,
+                image: validatedData.image,
             }
         })
 
@@ -102,6 +111,8 @@ export async function PATCH(req: Request) {
                 email: updatedUser.email,
                 name: updatedUser.name,
                 preferredLanguage: updatedUser.preferredLanguage,
+                phone: updatedUser.phoneNumber,
+                image: updatedUser.image,
                 updatedAt: updatedUser.updatedAt
             },
             meta: {
@@ -111,6 +122,30 @@ export async function PATCH(req: Request) {
             error: null
         })
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return NextResponse.json(
+                {
+                    data: null,
+                    meta: { language: "el" },
+                    error: {
+                        code: "VALIDATION_ERROR",
+                        message: "Invalid input data",
+                        status: 400,
+                        details: error.issues
+                    }
+                },
+                { status: 400 }
+            )
+        }
+
+        Sentry.captureException(error, {
+            tags: {
+                endpoint: '/api/v1/me',
+                method: 'PATCH',
+                userId: authResult.dbUser.id
+            }
+        })
+
         console.error(error)
         return NextResponse.json(
             {

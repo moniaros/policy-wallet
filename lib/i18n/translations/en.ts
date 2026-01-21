@@ -66,6 +66,8 @@ export const en: TranslationKeys = {
         didntReceiveEmail: "Didn't receive the email?",
         checkSpam: 'Check your spam or junk folder',
         resendEmail: 'Resend Email',
+        checkEmailCorrect: 'Make sure your email address is correct',
+        waitFewMinutes: 'Wait a few minutes - there might be a delay',
         proceedToLogin: 'Proceed to Login',
         welcomeToPolicyWallet: 'Welcome to PolicyWallet',
         nextSteps: 'Next Steps',
