@@ -1,18 +1,40 @@
 "use client"
 
-import { Suspense } from "react"
+import { Suspense, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { useLanguage } from "@/contexts/LanguageContext"
 
 function ConfirmationContent() {
     const searchParams = useSearchParams()
-    const { t } = useLanguage()
+    const { t, language } = useLanguage()
+    const [isResending, setIsResending] = useState(false)
+    const [resendMessage, setResendMessage] = useState<string | null>(null)
 
     const email = searchParams.get("email") || ""
     const role = searchParams.get("role") as "policyholder" | "agent" || "policyholder"
 
     const nextSteps = role === "agent" ? t.auth.nextStepsAgent : t.auth.nextStepsPolicyholder
+
+    const handleResend = async () => {
+        setIsResending(true)
+        setResendMessage(null)
+
+        try {
+            const { resendVerificationEmail } = await import("../../actions")
+            const result = await resendVerificationEmail(email, language as 'el' | 'en')
+
+            if (result.success) {
+                setResendMessage("✓ Verification email sent successfully!")
+            } else {
+                setResendMessage(result.error || "Failed to send email")
+            }
+        } catch (error) {
+            setResendMessage("An error occurred. Please try again.")
+        } finally {
+            setIsResending(false)
+        }
+    }
 
     return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-stone-50 via-teal-50/30 to-stone-50 px-4 py-12 sm:px-6 lg:px-8 relative overflow-hidden">
@@ -89,7 +111,7 @@ function ConfirmationContent() {
                     </ol>
                 </div>
 
-                {/* Help Section */}
+                {/* Help Section with Resend Button */}
                 <div className="bg-stone-50 border border-stone-200 rounded-xl p-5 space-y-3">
                     <p className="text-sm font-semibold text-stone-700">
                         {t.auth.didntReceiveEmail}
@@ -99,6 +121,37 @@ function ConfirmationContent() {
                         <li>{t.auth.checkEmailCorrect}</li>
                         <li>{t.auth.waitFewMinutes}</li>
                     </ul>
+
+                    {/* Resend Button */}
+                    <div className="pt-2">
+                        <button
+                            onClick={handleResend}
+                            disabled={isResending}
+                            className="w-full px-4 py-3 rounded-lg bg-white border-2 border-teal-200 text-teal-700 font-semibold hover:bg-teal-50 hover:border-teal-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                            {isResending ? (
+                                <>
+                                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                    </svg>
+                                    Sending...
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                    Resend Verification Email
+                                </>
+                            )}
+                        </button>
+                        {resendMessage && (
+                            <p className={`mt-2 text-sm text-center ${resendMessage.startsWith('✓') ? 'text-teal-600' : 'text-red-600'}`}>
+                                {resendMessage}
+                            </p>
+                        )}
+                    </div>
                 </div>
 
                 {/* Action Button */}

@@ -24,6 +24,14 @@ function SignUpForm() {
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
+    // Agent-specific fields
+    const [licenseNumber, setLicenseNumber] = useState("")
+    const [agencyName, setAgencyName] = useState("")
+
+    // Compliance
+    const [termsAccepted, setTermsAccepted] = useState(false)
+    const [marketingConsent, setMarketingConsent] = useState(false)
+
     useEffect(() => {
         // Domain-based Role Locking
         const hostname = window.location.hostname
@@ -48,6 +56,14 @@ function SignUpForm() {
         formData.append("confirmPassword", confirmPassword)
         formData.append("role", role)
         formData.append("language", language)
+        formData.append("termsAccepted", String(termsAccepted))
+        formData.append("marketingConsent", String(marketingConsent))
+
+        if (role === 'agent') {
+            formData.append("licenseNumber", licenseNumber)
+            formData.append("agencyName", agencyName)
+        }
+
         if (urlToken) formData.append("token", urlToken)
 
         try {
@@ -156,6 +172,79 @@ function SignUpForm() {
                                     className="block w-full rounded-lg border border-stone-300 px-4 py-3 bg-white/50 focus:bg-white transition-colors focus:border-teal-500 focus:ring-teal-500/20 focus:outline-none focus:ring-4 sm:text-sm"
                                     placeholder="••••••••"
                                 />
+                            </div>
+                        </div>
+
+                        {/* Agent-specific fields */}
+                        {role === 'agent' && (
+                            <>
+                                <div>
+                                    <label className="block text-sm font-medium text-stone-700 mb-1">
+                                        License Number <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        name="licenseNumber"
+                                        type="text"
+                                        required={role === 'agent'}
+                                        value={licenseNumber}
+                                        onChange={(e) => setLicenseNumber(e.target.value)}
+                                        className="block w-full rounded-lg border border-stone-300 px-4 py-3 bg-white/50 focus:bg-white transition-colors focus:border-teal-500 focus:ring-teal-500/20 focus:outline-none focus:ring-4 sm:text-sm"
+                                        placeholder="e.g., AG-12345"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-stone-700 mb-1">
+                                        Agency Name <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        name="agencyName"
+                                        type="text"
+                                        required={role === 'agent'}
+                                        value={agencyName}
+                                        onChange={(e) => setAgencyName(e.target.value)}
+                                        className="block w-full rounded-lg border border-stone-300 px-4 py-3 bg-white/50 focus:bg-white transition-colors focus:border-teal-500 focus:ring-teal-500/20 focus:outline-none focus:ring-4 sm:text-sm"
+                                        placeholder="Your Agency Name"
+                                    />
+                                </div>
+                            </>
+                        )}
+
+                        {/* Terms & Conditions */}
+                        <div className="space-y-3 pt-2">
+                            <div className="flex items-start">
+                                <input
+                                    type="checkbox"
+                                    id="termsAccepted"
+                                    checked={termsAccepted}
+                                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                                    className="mt-1 h-4 w-4 rounded border-stone-300 text-teal-600 focus:ring-teal-500"
+                                    required
+                                />
+                                <label htmlFor="termsAccepted" className="ml-2 text-sm text-stone-700">
+                                    I agree to the{" "}
+                                    <Link href="/terms" target="_blank" className="font-semibold text-teal-600 hover:text-teal-500">
+                                        Terms & Conditions
+                                    </Link>{" "}
+                                    and{" "}
+                                    <Link href="/privacy" target="_blank" className="font-semibold text-teal-600 hover:text-teal-500">
+                                        Privacy Policy
+                                    </Link>
+                                    <span className="text-red-500 ml-1">*</span>
+                                </label>
+                            </div>
+
+                            <div className="flex items-start">
+                                <input
+                                    type="checkbox"
+                                    id="marketingConsent"
+                                    checked={marketingConsent}
+                                    onChange={(e) => setMarketingConsent(e.target.checked)}
+                                    className="mt-1 h-4 w-4 rounded border-stone-300 text-teal-600 focus:ring-teal-500"
+                                />
+                                <label htmlFor="marketingConsent" className="ml-2 text-sm text-stone-700">
+                                    I consent to receive marketing communications and updates
+                                </label>
                             </div>
                         </div>
                     </div>

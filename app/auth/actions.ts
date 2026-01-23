@@ -13,10 +13,28 @@ const RegisterSchema = z.object({
     confirmPassword: z.string().min(6),
     role: z.enum(["policyholder", "agent"]).default("policyholder"),
     language: z.enum(["el", "en"]).default("el"),
-    token: z.string().optional()
+    token: z.string().optional(),
+    // Agent-specific fields
+    licenseNumber: z.string().optional(),
+    agencyName: z.string().optional(),
+    // Compliance
+    termsAccepted: z.boolean().refine((val) => val === true, {
+        message: "You must accept the terms and conditions"
+    }),
+    marketingConsent: z.boolean().optional()
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
+}).refine((data) => {
+    // If role is agent, require license and agency
+    if (data.role === "agent") {
+        return data.licenseNumber && data.licenseNumber.length > 0 &&
+            data.agencyName && data.agencyName.length > 0
+    }
+    return true
+}, {
+    message: "License Number and Agency Name are required for agents",
+    path: ["licenseNumber"]
 })
 
 const emailTemplates = {
@@ -148,7 +166,19 @@ export async function registerUser(formData: FormData) {
             userId = newUser.id
         }
 
-        // 2b. Redeem Invite if present
+        // 2b. Create AgentProfile if role is agent
+        if (role === 'agent') {
+            await db.agentProfile.create({
+                data: {
+                    userId: userId,
+                    licenseNumber: validation.data.licenseNumber || '',
+                    agencyName: validation.data.agencyName || '',
+                    verificationStatus: 'pending'
+                }
+            })
+        }
+
+        // 2c. Redeem Invite if present
         if (token) {
             await redeemInvite(token, userId)
         }
@@ -284,6 +314,130 @@ export async function registerUser(formData: FormData) {
             return { success: false, error: error.message }
         }
         return { success: false, error: "An unexpected error occurred during registration." }
+    }
+}
+
+export async function resendVerificationEmail(email: string, language: 'el' | 'en' = 'el') {
+    try {
+        // 1. Check if user exists
+        const user = await db.user.findUnique({ where: { email } })
+        if (!user) {
+            return { success: false, error: "User not found" }
+        }
+
+        // 2. Check if already verified (via Supabase)
+        const supabase = await createClient()
+        const { data: { user: authUser } } = await supabase.auth.getUser()
+
+        // If they're logged in and verified, no need to resend
+        if (authUser?.email === email && authUser.email_confirmed_at) {
+            return { success: false, error: "Email already verified" }
+        }
+
+        // 3. Delete old verification tokens for this email
+        await db.verificationToken.deleteMany({
+            where: { identifier: email }
+        })
+
+        // 4. Generate new verification token
+        const crypto = require('crypto')
+        const verificationToken = crypto.randomBytes(32).toString('hex')
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
+
+        await db.verificationToken.create({
+            data: {
+                identifier: email,
+                token: verificationToken,
+                expires: expiresAt
+            }
+        })
+
+        // 5. Send verification email
+        const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
+        const verificationUrl = `${baseUrl}/auth/verify?token=${verificationToken}&email=${encodeURIComponent(email)}`
+
+        const template = emailTemplates[language]
+        const role = user.roles.includes('agent') ? 'agent' : 'policyholder'
+        const nextSteps = role === "agent" ? template.nextStepsAgent : template.nextStepsPolicyholder
+
+        const emailHtml = `
+<!DOCTYPE html>
+<html lang="${language}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f4;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f4; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #0d9488 0%, #10b981 100%); padding: 40px 40px 30px; text-align: center;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: 700; letter-spacing: -0.5px;">
+                                PolicyWallet
+                            </h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 40px;">
+                            <h2 style="margin: 0 0 16px; color: #0d9488; font-size: 24px; font-weight: 700;">
+                                ${template.welcome}
+                            </h2>
+                            <p style="margin: 0 0 24px; color: #44403c; font-size: 16px; line-height: 1.6;">
+                                ${template.greeting(user.name || 'User')}
+                            </p>
+                            <p style="margin: 0 0 24px; color: #44403c; font-size: 16px; line-height: 1.6;">
+                                ${template.verifyPrompt}
+                            </p>
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 32px 0;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="${verificationUrl}" style="display: inline-block; background: linear-gradient(135deg, #0d9488 0%, #10b981 100%); color: #ffffff; text-decoration: none; padding: 16px 48px; border-radius: 12px; font-size: 16px; font-weight: 700; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);">
+                                            ${template.buttonText}
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            <p style="margin: 24px 0; color: #78716c; font-size: 14px; line-height: 1.6;">
+                                ${template.alternativeText}
+                            </p>
+                            <p style="margin: 0 0 24px; padding: 12px; background-color: #f5f5f4; border-radius: 8px; word-break: break-all; font-size: 13px; color: #57534e;">
+                                ${verificationUrl}
+                            </p>
+                            <p style="margin: 24px 0 0; color: #78716c; font-size: 13px; line-height: 1.6;">
+                                <strong>${language === 'el' ? 'Αυτός ο σύνδεσμος θα λήξει σε 15 λεπτά για λόγους ασφαλείας.' : 'This link will expire in 15 minutes for security reasons.'}</strong>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="background-color: #fafaf9; padding: 24px 40px; text-align: center; border-top: 1px solid #e7e5e4;">
+                            <p style="margin: 0 0 8px; color: #57534e; font-size: 14px; font-weight: 600;">
+                                ${template.teamSignature}
+                            </p>
+                            <p style="margin: 0; color: #a8a29e; font-size: 12px;">
+                                © ${new Date().getFullYear()} PolicyWallet. All rights reserved.
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+        `
+
+        await sendMail({
+            to: email,
+            subject: template.subject,
+            html: emailHtml
+        })
+
+        return { success: true }
+    } catch (error) {
+        console.error("Failed to resend verification email:", error)
+        return { success: false, error: "Failed to send email" }
     }
 }
 
