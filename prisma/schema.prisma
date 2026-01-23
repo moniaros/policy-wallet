@@ -50,6 +50,8 @@ model User {
   securityEvents                  SecurityEvent[]
   sessions                        Session[]
   subscriptions                   Subscription[]
+  tasksReceived                   UserTask[]               @relation("TaskRecipient")
+  tasksCreated                    UserTask[]               @relation("TaskCreator")
 
   @@map("users")
 }
@@ -555,4 +557,28 @@ model ActivityLog {
   timestamp    DateTime @default(now())
 
   @@map("activity_logs")
+}
+
+model UserTask {
+  id            String    @id @default(cuid()) @map("task_id")
+  userId        String    @map("user_id")
+  creatorUserId String?   @map("creator_user_id")
+  type          String    @default("general")
+  title         String
+  description   String?
+  status        String    @default("pending")
+  priority      String    @default("medium")
+  dueDate       DateTime? @map("due_date")
+  actionUrl     String?   @map("action_url")
+  actionLabel   String?   @map("action_label")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  completedAt   DateTime? @map("completed_at")
+
+  user    User  @relation("TaskRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  creator User? @relation("TaskCreator", fields: [creatorUserId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@map("user_tasks")
 }
