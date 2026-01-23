@@ -197,8 +197,8 @@ export async function registerUser(formData: FormData) {
             }
         })
 
-        // 4. Create verification URL with the token
-        const verificationUrl = `${baseUrl}/auth/verify?token=${verificationToken}&email=${encodeURIComponent(email)}`
+        // 4. Create verification URL with the token and email
+        const verificationUrl = `${baseUrl}/auth/verify-email?token=${verificationToken}&email=${encodeURIComponent(email)}`
 
         // 5. Send ONLY ONE branded email via Brevo with verification button
         const template = emailTemplates[language]
@@ -354,7 +354,7 @@ export async function resendVerificationEmail(email: string, language: 'el' | 'e
 
         // 5. Send verification email
         const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
-        const verificationUrl = `${baseUrl}/auth/verify?token=${verificationToken}&email=${encodeURIComponent(email)}`
+        const verificationUrl = `${baseUrl}/auth/verify-email?token=${verificationToken}&email=${encodeURIComponent(email)}`
 
         const template = emailTemplates[language]
         const role = user.roles.includes('agent') ? 'agent' : 'policyholder'

@@ -7,31 +7,38 @@ import { verifyEmailToken } from "./actions"
 
 function VerifyEmailContent() {
     const searchParams = useSearchParams()
+    const router = useRouter()
     const token = searchParams.get("token")
+    const email = searchParams.get("email")
     const [status, setStatus] = useState<"loading" | "success" | "error">("loading")
     const [message, setMessage] = useState("")
 
     useEffect(() => {
-        if (!token) {
+        if (!token || !email) {
             setStatus("error")
-            setMessage("No token provided")
+            setMessage("Invalid verification link")
             return
         }
 
-        verifyEmailToken(token)
+        verifyEmailToken(token, email)
             .then((result) => {
                 if (result.success) {
                     setStatus("success")
+                    // Auto-redirect to signin after 3 seconds
+                    setTimeout(() => {
+                        router.push("/auth/signin")
+                    }, 3000)
                 } else {
                     setStatus("error")
                     setMessage(result.error || "Verification failed")
                 }
             })
-            .catch(() => {
+            .catch((err) => {
+                console.error("Verification error:", err)
                 setStatus("error")
-                setMessage("Something went wrong")
+                setMessage("An unexpected error occurred")
             })
-    }, [token])
+    }, [token, email, router])
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-stone-50 px-4">
@@ -58,11 +65,14 @@ function VerifyEmailContent() {
                             </svg>
                         </div>
                         <h2 className="text-2xl font-bold text-stone-900 mb-2">Email Verified!</h2>
-                        <p className="text-stone-600 mb-8">
+                        <p className="text-stone-600 mb-4">
                             Your email has been successfully verified. You can now access all features.
                         </p>
-                        <Link href="/wallet" className="block w-full rounded-lg bg-teal-600 px-4 py-3 text-sm font-bold text-white shadow-lg hover:bg-teal-700 transition-all">
-                            Go to Dashboard
+                        <p className="text-sm text-stone-500 mb-8">
+                            Redirecting to sign in page in 3 seconds...
+                        </p>
+                        <Link href="/auth/signin" className="block w-full rounded-lg bg-teal-600 px-4 py-3 text-sm font-bold text-white shadow-lg hover:bg-teal-700 transition-all">
+                            Sign In Now
                         </Link>
                     </div>
                 )}
