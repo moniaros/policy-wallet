@@ -11,11 +11,16 @@ export default function SignInPage() {
     const [password, setPassword] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [showResendVerification, setShowResendVerification] = useState(false)
+    const [isResending, setIsResending] = useState(false)
+    const [resendMessage, setResendMessage] = useState<string | null>(null)
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
         setError(null)
+        setShowResendVerification(false)
+        setResendMessage(null)
 
         const supabase = createClient()
 
@@ -26,7 +31,14 @@ export default function SignInPage() {
             })
 
             if (error) {
-                setError(error.message)
+                // Check if error is due to unconfirmed email
+                if (error.message.toLowerCase().includes('email not confirmed') ||
+                    error.message.toLowerCase().includes('confirm your email')) {
+                    setError("Your email address has not been verified yet.")
+                    setShowResendVerification(true)
+                } else {
+                    setError(error.message)
+                }
             } else {
                 router.refresh()
                 router.push("/wallet")
@@ -39,6 +51,25 @@ export default function SignInPage() {
         }
     }
 
+    const handleResendVerification = async () => {
+        setIsResending(true)
+        setResendMessage(null)
+
+        try {
+            const { resendVerificationEmail } = await import("../actions")
+            const result = await resendVerificationEmail(email, 'en')
+
+            if (result.success) {
+                setResendMessage("✓ Verification email sent! Please check your inbox.")
+            } else {
+                setResendMessage(result.error || "Failed to send email")
+            }
+        } catch (error) {
+            setResendMessage("An error occurred. Please try again.")
+        } finally {
+            setIsResending(false)
+        }
+    }
 
     return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-stone-50 dark:bg-stone-950 px-4 py-12 sm:px-6 lg:px-8 relative overflow-hidden transition-colors">
@@ -66,8 +97,46 @@ export default function SignInPage() {
                 <div className="mt-8">
                     <form onSubmit={handleSubmit} className="space-y-5" method="post">
                         {error && (
-                            <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 text-sm font-bold animate-pulse">
-                                {error}
+                            <div className="space-y-3">
+                                <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 text-sm font-bold">
+                                    {error}
+                                </div>
+
+                                {showResendVerification && (
+                                    <div className="p-4 rounded-2xl bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-900/30 space-y-3">
+                                        <p className="text-sm text-stone-700 dark:text-stone-300">
+                                            Please check your email for the verification link. If you didn't receive it:
+                                        </p>
+                                        <button
+                                            type="button"
+                                            onClick={handleResendVerification}
+                                            disabled={isResending}
+                                            className="w-full px-4 py-2.5 rounded-lg bg-white dark:bg-stone-800 border-2 border-teal-200 dark:border-teal-700 text-teal-700 dark:text-teal-400 font-semibold hover:bg-teal-50 dark:hover:bg-teal-900/30 hover:border-teal-300 dark:hover:border-teal-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                        >
+                                            {isResending ? (
+                                                <>
+                                                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                                    </svg>
+                                                    Sending...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                    </svg>
+                                                    Resend Verification Email
+                                                </>
+                                            )}
+                                        </button>
+                                        {resendMessage && (
+                                            <p className={`text-sm text-center ${resendMessage.startsWith('✓') ? 'text-teal-600 dark:text-teal-400' : 'text-red-600 dark:text-red-400'}`}>
+                                                {resendMessage}
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         )}
                         <div>
