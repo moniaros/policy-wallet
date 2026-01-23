@@ -1,5 +1,6 @@
 import { db } from "@/lib/db"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
+import { OpportunitiesClient } from "./OpportunitiesClient"
 
 export default async function OpportunitiesPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -13,67 +14,26 @@ export default async function OpportunitiesPage() {
                         select: { name: true, email: true }
                     }
                 }
+            },
+            gapInstance: {
+                include: {
+                    definition: true
+                }
             }
         },
         orderBy: { createdAt: 'desc' }
     })
 
-    return (
-        <div className="max-w-7xl mx-auto px-4 py-8">
-            <header className="mb-8">
-                <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100">Opportunities</h1>
-                <p className="mt-2 text-stone-600 dark:text-stone-400">Track potential sales and coverage improvements for your customers.</p>
-            </header>
+    const formattedOpportunities = opportunities.map(opp => ({
+        id: opp.id,
+        customerName: opp.relationship.customer.name || 'Unknown',
+        customerEmail: opp.relationship.customer.email || '',
+        title: opp.gapInstance?.definition?.title || 'General Opportunity',
+        status: opp.status,
+        severity: opp.gapInstance?.severity || 'medium',
+        nextActionAt: opp.nextActionAt,
+        notes: opp.notes
+    }))
 
-            <div className="bg-white dark:bg-stone-800 rounded-3xl shadow-lg border border-stone-200 dark:border-stone-700 overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-stone-50 dark:bg-stone-900/50 border-b border-stone-100 dark:border-stone-700">
-                                <th className="px-6 py-5 text-xs font-black text-stone-400 uppercase tracking-widest pl-8">Customer</th>
-                                <th className="px-6 py-5 text-xs font-black text-stone-400 uppercase tracking-widest">Opportunity</th>
-                                <th className="px-6 py-5 text-xs font-black text-stone-400 uppercase tracking-widest">Status</th>
-                                <th className="px-6 py-5 text-xs font-black text-stone-400 uppercase tracking-widest">Next Action</th>
-                                <th className="px-6 py-5 text-xs font-black text-stone-400 uppercase tracking-widest text-right pr-8">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-stone-100 dark:divide-stone-700/50">
-                            {opportunities.length === 0 ? (
-                                <tr>
-                                    <td colSpan={5} className="px-6 py-12 text-center text-stone-400 italic">
-                                        No active opportunities. Run gap detection to find new ones!
-                                    </td>
-                                </tr>
-                            ) : (
-                                opportunities.map((opp) => (
-                                    <tr key={opp.id} className="hover:bg-stone-50 dark:hover:bg-stone-700/30 transition-colors group">
-                                        <td className="px-6 py-5 pl-8">
-                                            <div className="font-bold text-stone-900 dark:text-white capitalize">{opp.relationship.customer.name}</div>
-                                            <div className="text-xs font-medium text-stone-500 dark:text-stone-400">{opp.relationship.customer.email}</div>
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <div className="text-sm font-medium text-stone-700 dark:text-stone-300">{opp.notes || 'General Opportunity'}</div>
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-100 dark:border-amber-800`}>
-                                                {opp.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-5 text-sm font-bold text-stone-500">
-                                            {opp.nextActionAt ? new Date(opp.nextActionAt).toLocaleDateString() : '—'}
-                                        </td>
-                                        <td className="px-6 py-5 text-right pr-8">
-                                            <button className="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 font-bold text-sm bg-teal-50 dark:bg-teal-900/20 px-4 py-2 rounded-xl transition-colors opacity-0 group-hover:opacity-100">
-                                                Update
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    )
+    return <OpportunitiesClient initialOpportunities={formattedOpportunities} />
 }

@@ -286,7 +286,12 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
  * ACTIONS
  */
 
-export async function updateOpportunityStatus(opportunityId: string, status: OpportunityStatus, notes?: string) {
+export async function updateOpportunityStatus(
+    opportunityId: string,
+    status: OpportunityStatus,
+    notes?: string,
+    nextActionDate?: string
+) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
@@ -294,7 +299,8 @@ export async function updateOpportunityStatus(opportunityId: string, status: Opp
         where: { id: opportunityId },
         data: {
             status,
-            notes
+            notes,
+            nextActionAt: nextActionDate ? new Date(nextActionDate) : undefined
         }
     })
 
@@ -312,6 +318,7 @@ export async function updateOpportunityStatus(opportunityId: string, status: Opp
     }
 
     revalidatePath("/customers")
+    revalidatePath("/opportunities")
     return { success: true }
 }
 
