@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/lib/db"
-import { createClient } from "@/lib/supabase/server"
+import { createClient } from "@supabase/supabase-js"
 
 export async function verifyEmailToken(token: string, email: string) {
     try {
@@ -30,45 +30,54 @@ export async function verifyEmailToken(token: string, email: string) {
                         token
                     }
                 }
-            })
+            }).catch(() => { }) // Ignore delete errors
             return { success: false, error: "Verification link has expired. Please request a new one." }
         }
 
-        // 2. Verify email with Supabase Auth
-        const supabase = await createClient()
-
-        // Use Supabase Admin API to confirm email
-        const { data: { user }, error: supabaseError } = await supabase.auth.admin.updateUserById(
-            verificationToken.identifier,
-            { email_confirm: true }
-        )
-
-        if (supabaseError) {
-            console.error("Supabase verification error:", supabaseError)
-            // Fallback: try to get user by email and update
-            const { data: users } = await supabase.auth.admin.listUsers()
-            const targetUser = users?.users.find(u => u.email === email)
-
-            if (targetUser) {
-                await supabase.auth.admin.updateUserById(
-                    targetUser.id,
-                    { email_confirm: true }
-                )
-            } else {
-                return { success: false, error: "Unable to verify email. Please contact support." }
-            }
-        }
-
-        // 3. Update local database
+        // 2. Update local database (Primary Source of Truth for App)
         const dbUser = await db.user.findUnique({
             where: { email: verificationToken.identifier }
         })
 
-        if (dbUser) {
-            await db.user.update({
-                where: { id: dbUser.id },
-                data: { emailVerified: new Date() }
-            })
+        if (!dbUser) {
+            return { success: false, error: "User not found" }
+        }
+
+        await db.user.update({
+            where: { id: dbUser.id },
+            data: { emailVerified: new Date() }
+        })
+
+        // 3. Update Supabase Auth user (Best Effort via Service Role)
+        const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+
+        if (serviceRoleKey && supabaseUrl) {
+            try {
+                const supabaseAdmin = createClient(supabaseUrl, serviceRoleKey, {
+                    auth: {
+                        autoRefreshToken: false,
+                        persistSession: false
+                    }
+                })
+
+                // List users to find the ID (we need ID to update user)
+                const { data: { users }, error: listError } = await supabaseAdmin.auth.admin.listUsers()
+
+                if (!listError && users) {
+                    const supabaseUser = users.find(u => u.email === email)
+                    if (supabaseUser) {
+                        await supabaseAdmin.auth.admin.updateUserById(
+                            supabaseUser.id,
+                            { email_confirm: true }
+                        )
+                    }
+                }
+            } catch (adminError) {
+                console.warn("Non-critical: Failed to update Supabase verification status:", adminError)
+            }
+        } else {
+            console.warn("SUPABASE_SERVICE_ROLE_KEY not found. Skipping Supabase email confirmation.")
         }
 
         // 4. Delete the used token
@@ -79,7 +88,7 @@ export async function verifyEmailToken(token: string, email: string) {
                     token
                 }
             }
-        })
+        }).catch(() => { })
 
         return { success: true }
     } catch (error) {

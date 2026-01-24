@@ -24,10 +24,6 @@ function VerifyEmailContent() {
             .then((result) => {
                 if (result.success) {
                     setStatus("success")
-                    // Auto-redirect to signin after 3 seconds
-                    setTimeout(() => {
-                        router.push("/auth/signin")
-                    }, 3000)
                 } else {
                     setStatus("error")
                     setMessage(result.error || "Verification failed")
@@ -65,11 +61,8 @@ function VerifyEmailContent() {
                             </svg>
                         </div>
                         <h2 className="text-2xl font-bold text-stone-900 mb-2">Email Verified!</h2>
-                        <p className="text-stone-600 mb-4">
+                        <p className="text-stone-600 mb-8">
                             Your email has been successfully verified. You can now access all features.
-                        </p>
-                        <p className="text-sm text-stone-500 mb-8">
-                            Redirecting to sign in page in 3 seconds...
                         </p>
                         <Link href="/auth/signin" className="block w-full rounded-lg bg-teal-600 px-4 py-3 text-sm font-bold text-white shadow-lg hover:bg-teal-700 transition-all">
                             Sign In Now
