@@ -16,6 +16,33 @@ export async function GET(request: Request) {
         const { data: { user }, error } = await supabase.auth.exchangeCodeForSession(code)
 
         if (!error && user) {
+            // --- Email Verification Sync ---
+            // Ensure local database is synced with Supabase email verification status
+            try {
+                const dbUser = await db.user.findUnique({ where: { id: user.id } })
+
+                if (dbUser) {
+                    // If Supabase shows email is confirmed but local DB doesn't, sync it
+                    if (user.email_confirmed_at && !dbUser.emailVerified) {
+                        await db.user.update({
+                            where: { id: user.id },
+                            data: { emailVerified: new Date(user.email_confirmed_at) }
+                        })
+                        console.log(`✅ Synced email verification for user ${user.email}`)
+                    }
+
+                    // Clean up any pending verification tokens for this user
+                    if (user.email && user.email_confirmed_at) {
+                        await db.verificationToken.deleteMany({
+                            where: { identifier: user.email }
+                        }).catch(() => { }) // Ignore errors if no tokens exist
+                    }
+                }
+            } catch (syncError) {
+                console.error("Email verification sync error:", syncError)
+                // Don't block the callback if sync fails
+            }
+
             // --- Post-Login Logic ---
             try {
                 const headersList = await headers()
