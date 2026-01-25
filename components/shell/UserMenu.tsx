@@ -1,9 +1,10 @@
 "use client"
 
-import React, { useState, useTransition } from 'react'
+import React, { useState, useTransition, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { ThemeToggle } from '../ThemeToggle'
+import { NotificationBell } from '../notifications/NotificationBell'
 
 export interface UserMenuProps {
     user: {
@@ -55,15 +56,10 @@ export function UserMenu({
     if (compact) {
         return (
             <div className="flex items-center gap-2">
-                {/* Notifications */}
-                <button className="relative p-2 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-400">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                    </svg>
-                    {notificationCount > 0 && (
-                        <span className="absolute top-1 right-1 w-2 h-2 bg-amber-500 rounded-full" />
-                    )}
-                </button>
+                {/* Notifications - Interactive Bell */}
+                <NotificationBell
+                    initialUnreadCount={notificationCount}
+                />
 
                 {/* Avatar */}
                 <button className="w-8 h-8 rounded-full bg-teal-600 text-white text-sm font-medium flex items-center justify-center">
@@ -112,11 +108,14 @@ export function UserMenu({
                         {/* Notifications */}
                         <button
                             className="w-full px-4 py-2 text-left text-sm text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 flex items-center justify-between"
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => {
+                                setIsOpen(false)
+                                router.push('/notifications')
+                            }}
                         >
                             <span>{t.userMenu.notifications}</span>
                             {notificationCount > 0 && (
-                                <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
+                                <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
                                     {notificationCount}
                                 </span>
                             )}
