@@ -463,6 +463,84 @@ export async function addCustomerManually(data: {
     }
 }
 
+export async function addPolicyForCustomer(data: {
+    customerId: string;
+    policy: {
+        insurerName: string;
+        policyNumber: string;
+        lineOfBusiness: string;
+        startDate: string;
+        endDate: string;
+        premiumAmount?: number;
+        premiumCurrency?: string;
+        carPlate?: string;
+    }
+}) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { success: false, error: "Unauthorized" }
+
+    const agentId = authResult.dbUser.id
+
+    try {
+        // 1. Verify the agent has a relationship with this customer
+        const relationship = await db.customerRelationship.findFirst({
+            where: {
+                agentUserId: agentId,
+                policyholderUserId: data.customerId
+            }
+        })
+
+        if (!relationship) {
+            return { success: false, error: "You don't have access to this customer" }
+        }
+
+        // 2. Create the policy
+        const policy = await db.policy.create({
+            data: {
+                ownerUserId: data.customerId,
+                createdByUserId: agentId,
+                insurerName: data.policy.insurerName,
+                policyNumber: data.policy.policyNumber,
+                lineOfBusiness: data.policy.lineOfBusiness,
+                startDate: new Date(data.policy.startDate),
+                endDate: new Date(data.policy.endDate),
+                premiumAmount: data.policy.premiumAmount,
+                premiumCurrency: data.policy.premiumCurrency || 'EUR',
+                status: 'active',
+                // Store car plate in acordData JSON field
+                acordData: data.policy.carPlate ? { vehicle: { plateNumber: data.policy.carPlate } } : undefined
+            }
+        })
+
+        // 3. Update relationship last interaction
+        await db.customerRelationship.update({
+            where: { id: relationship.id },
+            data: { lastInteractionAt: new Date() }
+        })
+
+        // 4. Create a notification for the customer using NotificationEvent
+        await db.notificationEvent.create({
+            data: {
+                userId: data.customerId,
+                eventType: 'policy_added',
+                channel: 'in_app',
+                title: 'New Policy Added',
+                message: `Your agent has added a new ${data.policy.lineOfBusiness} policy from ${data.policy.insurerName} to your wallet.`,
+                relatedObjectType: 'policy',
+                relatedObjectId: policy.id
+            }
+        })
+
+        revalidatePath(`/customers/${data.customerId}`)
+        revalidatePath("/customers")
+        revalidatePath("/wallet")
+        return { success: true, policyId: policy.id }
+    } catch (e) {
+        console.error(e)
+        return { success: false, error: "Failed to add policy" }
+    }
+}
+
 export async function parsePolicyPdfWithGemini(formData: FormData) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }

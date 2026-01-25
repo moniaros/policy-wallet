@@ -355,7 +355,26 @@ export async function sharePolicy(policyId: string, agentEmail: string) {
         })
     }
 
-    // 4. Log
+    // 4. Get policy details for notification
+    const policy = await db.policy.findUnique({
+        where: { id: policyId },
+        select: { policyNumber: true, insurerName: true, lineOfBusiness: true }
+    })
+
+    // 5. Create notification for the agent
+    await db.notificationEvent.create({
+        data: {
+            userId: agent.id,
+            eventType: 'policy_shared',
+            channel: 'in_app',
+            title: 'New Policy Shared With You',
+            message: `${authResult.dbUser.name || 'A customer'} has shared their ${policy?.lineOfBusiness || 'insurance'} policy from ${policy?.insurerName || 'an insurer'} with you.`,
+            relatedObjectType: 'policy',
+            relatedObjectId: policyId
+        }
+    })
+
+    // 6. Log
     await (db as any).activityLog.create({
         data: {
             adminUserId: authResult.dbUser.id,
