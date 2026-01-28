@@ -11,13 +11,31 @@ interface AddToWalletProps {
     holderName: string
     initialOpen?: boolean
     plateNumber?: string
+    open?: boolean
+    onOpenChange?: (open: boolean) => void
+    trigger?: React.ReactNode
 }
 
-export function AddToWallet({ policy, holderName, initialOpen = false, plateNumber }: AddToWalletProps) {
-    const [isOpen, setIsOpen] = useState(initialOpen)
+export function AddToWallet({
+    policy,
+    holderName,
+    initialOpen = false,
+    plateNumber,
+    open: controlledOpen,
+    onOpenChange,
+    trigger
+}: AddToWalletProps) {
+    const [internalOpen, setInternalOpen] = useState(initialOpen)
     const [loadingApple, setLoadingApple] = useState(false)
     const [loadingGoogle, setLoadingGoogle] = useState(false)
-    const [passData, setPassData] = useState<any>(null)
+
+    // Derived state
+    const isOpen = controlledOpen !== undefined ? controlledOpen : internalOpen
+
+    const handleOpenChange = (newOpen: boolean) => {
+        if (onOpenChange) onOpenChange(newOpen)
+        else setInternalOpen(newOpen)
+    }
 
     const fetchPass = async (type: 'apple' | 'google') => {
         if (type === 'apple') setLoadingApple(true)
@@ -76,41 +94,47 @@ export function AddToWallet({ policy, holderName, initialOpen = false, plateNumb
 
     return (
         <>
-            <div className="bg-gradient-to-br from-stone-900 to-stone-800 rounded-3xl p-6 shadow-lg text-white relative overflow-hidden group cursor-pointer" onClick={() => setIsOpen(true)}>
-                <div className="absolute top-0 right-0 p-4 opacity-50 text-[10px] font-black uppercase tracking-widest">
-                    Digital Card
+            {trigger ? (
+                <div onClick={() => handleOpenChange(true)}>
+                    {trigger}
                 </div>
+            ) : (
+                <div className="bg-gradient-to-br from-stone-900 to-stone-800 rounded-3xl p-6 shadow-lg text-white relative overflow-hidden group cursor-pointer" onClick={() => handleOpenChange(true)}>
+                    <div className="absolute top-0 right-0 p-4 opacity-50 text-[10px] font-black uppercase tracking-widest">
+                        Digital Card
+                    </div>
 
-                <div className="relative z-10 flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur flex items-center justify-center text-2xl">
-                        💳
+                    <div className="relative z-10 flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur flex items-center justify-center text-2xl">
+                            💳
+                        </div>
+                        <div>
+                            <h3 className="font-bold text-lg leading-none">Add to Wallet</h3>
+                            <p className="text-stone-400 text-xs mt-1">Get your digital insurance card</p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 className="font-bold text-lg leading-none">Add to Wallet</h3>
-                        <p className="text-stone-400 text-xs mt-1">Get your digital insurance card</p>
-                    </div>
-                </div>
 
-                <div className="mt-6 flex gap-2">
-                    {/* Apple Wallet Badge Stub */}
-                    <div className="h-8 px-3 rounded-lg bg-black border border-white/20 flex items-center justify-center">
-                        <span className="text-[10px] font-bold">Apple Wallet</span>
-                    </div>
-                    {/* Google Wallet Badge Stub */}
-                    <div className="h-8 px-3 rounded-lg bg-black border border-white/20 flex items-center justify-center">
-                        <span className="text-[10px] font-bold">Google Pay</span>
+                    <div className="mt-6 flex gap-2">
+                        {/* Apple Wallet Badge Stub */}
+                        <div className="h-8 px-3 rounded-lg bg-black border border-white/20 flex items-center justify-center">
+                            <span className="text-[10px] font-bold">Apple Wallet</span>
+                        </div>
+                        {/* Google Wallet Badge Stub */}
+                        <div className="h-8 px-3 rounded-lg bg-black border border-white/20 flex items-center justify-center">
+                            <span className="text-[10px] font-bold">Google Pay</span>
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
             {/* Modal */}
             {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsOpen(false)} />
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => handleOpenChange(false)} />
 
                     <div className="relative w-full max-w-md bg-stone-50 dark:bg-stone-900 rounded-3xl shadow-2xl p-8 animate-in fade-in zoom-in-95 duration-200">
                         <button
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => handleOpenChange(false)}
                             className="absolute top-4 right-4 p-2 rounded-full hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-500 transition-colors"
                         >
                             <X className="w-5 h-5" />

@@ -1,9 +1,11 @@
 "use client"
 
 import { useState } from 'react'
-import { NotificationHistory, NotificationPreferences } from "@/components/notifications"
+import { NotificationHistory, NotificationPreferences, MobileNotificationList } from "@/components/notifications"
 import { toggleNotificationPreference } from "./actions"
 import { useRouter } from "next/navigation"
+import { useIsMobile } from "@/hooks/useResponsive"
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav"
 
 interface Props {
     initialData: any
@@ -52,8 +54,61 @@ export function NotificationsClientPage({ initialData, activeRole: initialRole }
     }
 
     const handleNavigate = (type: string, id: string) => {
-        if (type === 'policy') router.push(`/wallet?id=${id}`)
+        if (type === 'policy') router.push(`/wallet/${id}`)
         if (type === 'customer') router.push(`/customers/${id}`)
+    }
+
+    // Mobile View
+    const isMobile = useIsMobile()
+    if (isMobile) {
+        return (
+            <div className="min-h-screen bg-stone-50 dark:bg-stone-900 pb-20">
+                <div className="sticky top-0 z-30 bg-white dark:bg-stone-800 border-b border-stone-200 dark:border-stone-700 px-4 pt-4 pb-0 shadow-sm">
+                    <h1 className="text-xl font-black text-stone-900 dark:text-white mb-4">Notifications</h1>
+                    <div className="flex gap-6">
+                        <button
+                            onClick={() => setActiveTab('history')}
+                            className={`pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'history'
+                                ? 'border-teal-600 text-teal-600 dark:text-teal-400'
+                                : 'border-transparent text-stone-500'
+                                }`}
+                        >
+                            History
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('preferences')}
+                            className={`pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'preferences'
+                                ? 'border-teal-600 text-teal-600 dark:text-teal-400'
+                                : 'border-transparent text-stone-500'
+                                }`}
+                        >
+                            Preferences
+                        </button>
+                    </div>
+                </div>
+
+                <div className="animate-in fade-in duration-500">
+                    {activeTab === 'history' ? (
+                        <MobileNotificationList
+                            events={initialData.history}
+                            onNavigate={handleNavigate}
+                        />
+                    ) : (
+                        <div className="p-4">
+                            <NotificationPreferences
+                                currentUser={initialData.user}
+                                activeRole={currentRole}
+                                preferences={initialData.preferences}
+                                preferenceCategories={preferenceCategories}
+                                onToggleChannel={handleToggleChannel}
+                                onSwitchRole={setCurrentRole}
+                            />
+                        </div>
+                    )}
+                </div>
+                <MobileBottomNav />
+            </div>
+        )
     }
 
     return (

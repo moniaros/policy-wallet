@@ -12,12 +12,40 @@ export default async function WalletPage() {
         },
         include: {
             documents: true,
-            // In a real app we would include shared agents here
         },
         orderBy: {
             endDate: 'asc'
         }
     })
+
+    // Fetch agent relationship for mobile view
+    const customerRelationship = await db.customerRelationship.findFirst({
+        where: {
+            policyholderUserId: dbUser.id,
+            status: 'active'
+        },
+        include: {
+            agent: true
+        }
+    })
+
+    const agent = customerRelationship?.agent ? {
+        id: customerRelationship.agent.id,
+        name: customerRelationship.agent.name || 'Your Agent',
+        phone: customerRelationship.agent.phoneNumber || '',
+        email: customerRelationship.agent.email,
+        company: 'PolicyWallet Agent',
+        photoUrl: customerRelationship.agent.image || undefined,
+        isOnline: true
+    } : undefined
+
+    const user = {
+        id: dbUser.id,
+        name: dbUser.name || 'User',
+        email: dbUser.email,
+        photoUrl: dbUser.image || undefined,
+        isOnline: true
+    }
 
     // Map Prisma types to UI types
     const mappedPolicies: Policy[] = policies.map(p => ({
@@ -40,7 +68,7 @@ export default async function WalletPage() {
         }))
     }))
 
-    return <WalletClient policies={mappedPolicies} />
+    return <WalletClient policies={mappedPolicies} user={user} agent={agent} />
 }
 
 function mapStatus(dbStatus: string, endDate: Date): 'active' | 'expiring_soon' | 'incomplete' | 'action_needed' {

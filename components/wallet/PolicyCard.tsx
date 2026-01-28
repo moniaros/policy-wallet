@@ -75,7 +75,8 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
 
     // Get policy type icon
     const getPolicyIcon = () => {
-        switch (policy.lineOfBusiness) {
+        const lob = policy.lineOfBusiness as string
+        switch (lob) {
             case 'motor':
                 return '🚗'
             case 'health':
@@ -86,6 +87,8 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
                 return '🛡️'
             case 'travel':
                 return '✈️'
+            case 'liability':
+                return '⚖️'
             default:
                 return '📋'
         }
@@ -98,9 +101,9 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
         >
             {/* Status indicator line at top */}
             <div className={`absolute top-0 left-6 right-6 h-1 rounded-b-full ${policy.status === 'active' ? 'bg-teal-500' :
-                    policy.status === 'expiring_soon' ? 'bg-amber-500' :
-                        policy.status === 'action_needed' ? 'bg-red-500' :
-                            'bg-stone-300 dark:bg-stone-600'
+                policy.status === 'expiring_soon' ? 'bg-amber-500' :
+                    policy.status === 'action_needed' ? 'bg-red-500' :
+                        'bg-stone-300 dark:bg-stone-600'
                 }`} />
 
             {/* Shared with agent indicator */}
@@ -137,8 +140,8 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
                     {getStatusBadge()}
                     {daysLeft !== null && daysLeft >= 0 && daysLeft <= 60 && (
                         <span className={`text-xs font-bold uppercase tracking-wider ${daysLeft <= 7 ? 'text-red-500' :
-                                daysLeft <= 30 ? 'text-amber-600 dark:text-amber-400' :
-                                    'text-stone-400 dark:text-stone-500'
+                            daysLeft <= 30 ? 'text-amber-600 dark:text-amber-400' :
+                                'text-stone-400 dark:text-stone-500'
                             }`}>
                             {daysLeft === 0 ? (language === 'el' ? 'Λήγει σήμερα' : 'Expires today') :
                                 daysLeft === 1 ? (language === 'el' ? 'Λήγει αύριο' : 'Expires tomorrow') :

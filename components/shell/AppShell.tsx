@@ -88,8 +88,8 @@ export function AppShell({
                 </div>
             )}
 
-            {/* Mobile header */}
-            <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-white dark:bg-stone-800 border-b border-stone-200 dark:border-stone-700">
+            {/* Mobile header - Disabled in favor of Bottom Nav architecture */}
+            <div className="hidden fixed top-0 left-0 right-0 z-40 bg-white dark:bg-stone-800 border-b border-stone-200 dark:border-stone-700">
                 <div className="flex items-center justify-between px-4 h-16">
                     <button
                         onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -219,7 +219,7 @@ export function AppShell({
             )}
 
             {/* Main content */}
-            <main className="lg:pl-64 pt-16 lg:pt-0">
+            <main className="lg:pl-64 pt-0 lg:pt-0">
                 <div className="min-h-screen">
                     {children}
                 </div>

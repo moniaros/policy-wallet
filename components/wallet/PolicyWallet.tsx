@@ -16,10 +16,12 @@ export function PolicyWallet({
     onViewPolicy,
     onAddManually,
     onUploadDocument,
+    onBatchUpload,
     onShareWithAgent,
     onAddToWallet,
     onViewDocuments,
 }: PolicyWalletProps & { isLoading?: boolean }) {
+    const [showAddMenu, setShowAddMenu] = useState(false)
     const { t, language } = useLanguage()
     const [searchQuery, setSearchQuery] = useState('')
     const [activeFilter, setActiveFilter] = useState<'all' | 'motor' | 'health' | 'home' | 'life' | 'travel'>('all')
@@ -48,11 +50,11 @@ export function PolicyWallet({
     }, [policies, searchQuery, activeFilter])
 
     // Group filtered policies by line of business
-    const motorPolicies = filteredPolicies.filter(p => p.lineOfBusiness === 'motor')
-    const healthPolicies = filteredPolicies.filter(p => p.lineOfBusiness === 'health')
-    const homePolicies = filteredPolicies.filter(p => p.lineOfBusiness === 'home')
-    const lifePolicies = filteredPolicies.filter(p => p.lineOfBusiness === 'life')
-    const travelPolicies = filteredPolicies.filter(p => p.lineOfBusiness === 'travel')
+    const motorPolicies = filteredPolicies.filter(p => (p.lineOfBusiness as string) === 'motor')
+    const healthPolicies = filteredPolicies.filter(p => (p.lineOfBusiness as string) === 'health')
+    const homePolicies = filteredPolicies.filter(p => (p.lineOfBusiness as string) === 'home')
+    const lifePolicies = filteredPolicies.filter(p => (p.lineOfBusiness as string) === 'life')
+    const travelPolicies = filteredPolicies.filter(p => (p.lineOfBusiness as string) === 'travel')
 
     // Sort within each group: expiring_soon → action_needed → active → incomplete
     const sortPolicies = (pols: Policy[]) => {
@@ -80,11 +82,11 @@ export function PolicyWallet({
     // Category filter counts
     const categoryCounts = {
         all: policies.length,
-        motor: policies.filter(p => p.lineOfBusiness === 'motor').length,
-        health: policies.filter(p => p.lineOfBusiness === 'health').length,
-        home: policies.filter(p => p.lineOfBusiness === 'home').length,
-        life: policies.filter(p => p.lineOfBusiness === 'life').length,
-        travel: policies.filter(p => p.lineOfBusiness === 'travel').length,
+        motor: policies.filter(p => (p.lineOfBusiness as string) === 'motor').length,
+        health: policies.filter(p => (p.lineOfBusiness as string) === 'health').length,
+        home: policies.filter(p => (p.lineOfBusiness as string) === 'home').length,
+        life: policies.filter(p => (p.lineOfBusiness as string) === 'life').length,
+        travel: policies.filter(p => (p.lineOfBusiness as string) === 'travel').length,
     }
 
     // Loading State (Skeletons)
@@ -159,16 +161,58 @@ export function PolicyWallet({
                         {policies.length} {language === 'el' ? 'συμβόλαια' : 'policies'}
                     </p>
                 </div>
-                <button
-                    onClick={onAddManually}
-                    className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-2xl shadow-lg shadow-teal-600/20 hover:shadow-teal-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                >
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
-                    </svg>
-                    <span className="hidden sm:inline">{t.wallet.addPolicy}</span>
-                    <span className="sm:hidden">Add</span>
-                </button>
+                <div className="relative">
+                    <button
+                        onClick={() => setShowAddMenu(!showAddMenu)}
+                        className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-2xl shadow-lg shadow-teal-600/20 hover:shadow-teal-600/30 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span className="hidden sm:inline">{t.wallet.addPolicy}</span>
+                        <span className="sm:hidden">Add</span>
+                        <svg className="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    {/* Add Dropdown Menu */}
+                    {showAddMenu && (
+                        <>
+                            <div className="fixed inset-0 z-10" onClick={() => setShowAddMenu(false)} />
+                            <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-stone-800 rounded-2xl shadow-xl border border-stone-200 dark:border-stone-700 overflow-hidden z-20 animate-in fade-in slide-in-from-top-2">
+                                <button
+                                    onClick={() => { onAddManually?.(); setShowAddMenu(false); }}
+                                    className="w-full px-4 py-3 text-left hover:bg-stone-50 dark:hover:bg-stone-700 flex items-center gap-3 transition-colors"
+                                >
+                                    <div className="w-8 h-8 bg-teal-100 dark:bg-teal-900/30 rounded-lg flex items-center justify-center">
+                                        <svg className="w-4 h-4 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-stone-900 dark:text-white text-sm">Add Manually</p>
+                                        <p className="text-xs text-stone-400">Enter policy details</p>
+                                    </div>
+                                </button>
+                                <button
+                                    onClick={() => { onBatchUpload?.(); setShowAddMenu(false); }}
+                                    className="w-full px-4 py-3 text-left hover:bg-stone-50 dark:hover:bg-stone-700 flex items-center gap-3 transition-colors border-t border-stone-100 dark:border-stone-700"
+                                >
+                                    <div className="w-8 h-8 bg-amber-100 dark:bg-amber-900/30 rounded-lg flex items-center justify-center">
+                                        <svg className="w-4 h-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-stone-900 dark:text-white text-sm">Batch Upload</p>
+                                        <p className="text-xs text-stone-400">Upload multiple files</p>
+                                    </div>
+                                </button>
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
 
             {/* Status Summary */}
@@ -220,16 +264,16 @@ export function PolicyWallet({
                             key={cat.key}
                             onClick={() => setActiveFilter(cat.key)}
                             className={`flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm whitespace-nowrap transition-all flex-shrink-0 ${activeFilter === cat.key
-                                    ? 'bg-stone-900 dark:bg-white text-white dark:text-stone-900 shadow-lg'
-                                    : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-700'
+                                ? 'bg-stone-900 dark:bg-white text-white dark:text-stone-900 shadow-lg'
+                                : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-700'
                                 }`}
                         >
                             <span>{cat.icon}</span>
                             <span>{cat.label}</span>
                             {categoryCounts[cat.key] > 0 && (
                                 <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeFilter === cat.key
-                                        ? 'bg-white/20 dark:bg-stone-900/20'
-                                        : 'bg-stone-200 dark:bg-stone-700'
+                                    ? 'bg-white/20 dark:bg-stone-900/20'
+                                    : 'bg-stone-200 dark:bg-stone-700'
                                     }`}>
                                     {categoryCounts[cat.key]}
                                 </span>

@@ -1,17 +1,28 @@
-export default function AdminDashboardPage() {
+import { getDashboardMetrics, getActivityLogs, getPendingAgents } from "../actions"
+import { getAuthenticatedUser } from "@/lib/auth-helpers"
+import { redirect } from "next/navigation"
+import DashboardClient from "./DashboardClient"
+
+export default async function AdminDashboardPage() {
+    // Verify admin role
+    const { dbUser } = await getAuthenticatedUser()
+
+    if (!dbUser.roles.includes("admin")) {
+        redirect("/wallet")
+    }
+
+    // Fetch dashboard data
+    const [metrics, activityLogs, pendingAgents] = await Promise.all([
+        getDashboardMetrics(),
+        getActivityLogs(1, 10),
+        getPendingAgents()
+    ])
+
     return (
-        <div className="max-w-6xl mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold mb-4 text-stone-900 dark:text-stone-100">
-                Admin Dashboard
-            </h1>
-            <p className="text-stone-600 dark:text-stone-400">
-                This section will display system metrics, activity logs, and platform health.
-            </p>
-            <div className="mt-8 p-6 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-                <p className="text-sm text-amber-800 dark:text-amber-200">
-                    📋 <strong>Milestone 10:</strong> Admin & Platform Control — Coming soon
-                </p>
-            </div>
-        </div>
+        <DashboardClient
+            metrics={metrics}
+            activityLogs={activityLogs.logs}
+            pendingAgentsCount={pendingAgents.length}
+        />
     )
 }

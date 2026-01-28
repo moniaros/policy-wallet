@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
     AccountOverview,
     Billing,
@@ -19,14 +19,46 @@ import {
     toggleNotificationPreference
 } from "./actions"
 import { useRouter } from "next/navigation"
+import { MobileAppShell } from "@/components/layout/MobileAppShell"
+import { useIsMobile } from "@/hooks/useResponsive"
+import type { Policy } from "@/components/wallet/types"
 
 interface Props {
     initialData: any
+    mobileProps?: {
+        policies: Policy[]
+        user: {
+            id: string
+            name: string
+            email: string
+            photoUrl?: string
+        }
+        agent?: {
+            id: string
+            name: string
+            phone: string
+            email: string
+            company: string
+            photoUrl?: string
+        }
+    }
 }
 
-export function AccountClientPage({ initialData }: Props) {
-    const [activeTab, setActiveTab] = useState<'overview' | 'billing' | 'referrals' | 'settings'>('overview')
+export function AccountClientPage({ initialData, mobileProps }: Props) {
+    const isMobile = useIsMobile()
     const router = useRouter()
+    const [activeTab, setActiveTab] = useState<'overview' | 'billing' | 'referrals' | 'settings'>('overview')
+
+    // Handle mobile view redirection/rendering
+    if (isMobile && mobileProps) {
+        return (
+            <MobileAppShell
+                policies={mobileProps.policies}
+                user={mobileProps.user}
+                agent={mobileProps.agent}
+            />
+        )
+    }
 
     const handleSwitchRole = (role: 'policyholder' | 'agent') => {
         // In a real dual-role system, this might update a session cookie or redirect

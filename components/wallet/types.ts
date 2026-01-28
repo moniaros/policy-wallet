@@ -15,7 +15,7 @@ export interface Policy {
     policyNumber: string
     insurerName: string
     insurerLogo: string | null
-    lineOfBusiness: 'motor' | 'health' | 'home'
+    lineOfBusiness: 'motor' | 'health' | 'home' | 'life' | 'travel' | 'liability' | 'pet' | 'professional'
     status: 'active' | 'expiring_soon' | 'incomplete' | 'action_needed'
     startDate: string | null
     endDate: string | null
@@ -23,6 +23,8 @@ export interface Policy {
     sharedWithAgents: SharedAgent[]
     coverageHighlights: string[]
     documents: PolicyDocument[]
+    userId?: string
+    acordData?: any
 }
 
 export interface PolicyWalletProps {
@@ -30,8 +32,10 @@ export interface PolicyWalletProps {
     onViewPolicy?: (policyId: string) => void
     onAddManually?: () => void
     onUploadDocument?: () => void
+    onBatchUpload?: () => void
     onShareWithAgent?: (policyId: string) => void
     onAddToWallet?: (policyId: string) => void
     onViewDocuments?: (policyId: string) => void
     onEditPolicy?: (policyId: string) => void
 }
+
