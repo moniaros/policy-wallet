@@ -1,4 +1,5 @@
-// ... (imports remain)
+"use server"
+
 import { db } from "@/lib/db"
 import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"

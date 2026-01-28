@@ -35,9 +35,6 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
 };
 
 // Sentry configuration options
