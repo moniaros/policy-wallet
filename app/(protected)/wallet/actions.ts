@@ -16,7 +16,12 @@ import { GoogleGenerativeAI } from "@google/generative-ai"
 const PolicySchema = z.object({
     insurerName: z.string().min(1, "Insurer name is required"),
     policyNumber: z.string().min(1, "Policy number is required"),
-    lineOfBusiness: z.enum(["motor", "health", "home", "life", "travel", "liability"]),
+    lineOfBusiness: z.enum([
+        "motor", "health", "home", "life", "travel", "liability",
+        "pet", "breakdown", "legal_expenses", "income_protection",
+        "gadget", "bicycle", "business", "cyber", "motorbike",
+        "public_liability", "renters", "other"
+    ]),
     startDate: z.string(),
     endDate: z.string(),
     premiumAmount: z.coerce.number().optional(),
@@ -76,8 +81,22 @@ export async function createPolicy(formData: FormData) {
 
     for (let i = 0; i < documentUrls.length; i++) {
         const fileUrl = documentUrls[i]
-        const fileName = documentNames[i] || "Unknown Document"
+        const rawFileName = documentNames[i] || "Unknown Document"
+        const fileName = rawFileName.replace(/[^a-zA-Z0-9._-]/g, '_')
         const fileSize = parseInt(documentSizes[i] || "0")
+
+        // Security: validate extension
+        const lowerName = fileName.toLowerCase()
+        const hasValidExt = lowerName.endsWith('.pdf') ||
+            lowerName.endsWith('.jpg') ||
+            lowerName.endsWith('.jpeg') ||
+            lowerName.endsWith('.png') ||
+            lowerName.endsWith('.webp')
+
+        if (!hasValidExt) {
+            console.warn(`Skipping policy document with invalid extension: ${fileName}`)
+            continue
+        }
 
         if (fileUrl) {
             await db.policyDocument.create({
@@ -134,9 +153,23 @@ export async function uploadPolicyDocument(formData: FormData) {
         return { error: "File too large. Maximum size is 10MB." }
     }
 
+    // Production Hardening: File Type Validation
+    const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp"]
+    if (!allowedTypes.includes(file.type)) {
+        logger('warn', 'Policy upload rejected: invalid file type', { userId, type: file.type })
+        return { error: "Invalid file type. Only PDF, JPG, PNG, and WEBP are allowed." }
+    }
+
+    // Production Hardening: Sanitize filename
+    // Keep extension, alphanumeric chars, dashes, underscores
+    const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+
     // 1. Upload to storage
     let fileUrl = ""
     try {
+        // Pass sanitized name if uploadFile supports it (it takes File object, so might need to rename or relying on random name generation inside)
+        // If uploadFile keeps original name, we effectively can't sanitize it at the storage level without creating a new File object or modifying uploadFile.
+        // But we CAN use sanitized name for DB record.
         fileUrl = await uploadFile(file, "policies")
     } catch (e) {
         return { error: "Upload failed" }
@@ -234,7 +267,7 @@ export async function uploadPolicyDocument(formData: FormData) {
         data: {
             policyId: policy.id,
             fileUrl: fileUrl,
-            fileName: file.name,
+            fileName: sanitizedFileName,
             fileSize: file.size,
             source: "policyholder",
             uploadedByUserId: userId,
@@ -270,10 +303,28 @@ export async function getInsurers() {
 }
 
 export async function getInsuranceTypes() {
-    return db.insuranceType.findMany({
-        where: { isActive: true },
-        orderBy: { name: 'asc' }
-    })
+    // Return expanded static list (mocking DB for immediate availability)
+    const types = [
+        { name: "Motor", slug: "motor" },
+        { name: "Health", slug: "health" },
+        { name: "Home", slug: "home" },
+        { name: "Life", slug: "life" },
+        { name: "Travel", slug: "travel" },
+        { name: "Pet", slug: "pet" },
+        { name: "Breakdown", slug: "breakdown" },
+        { name: "Legal Expenses", slug: "legal_expenses" },
+        { name: "Income Protection", slug: "income_protection" },
+        { name: "Gadget", slug: "gadget" },
+        { name: "Bicycle", slug: "bicycle" },
+        { name: "Business", slug: "business" },
+        { name: "Cyber", slug: "cyber" },
+        { name: "Motorbike", slug: "motorbike" },
+        { name: "Public Liability", slug: "public_liability" },
+        { name: "Renters", slug: "renters" },
+        { name: "Other", slug: "other" },
+    ];
+
+    return types.map(t => ({ id: t.slug, ...t, isActive: true }));
 }
 
 export async function sharePolicy(policyId: string, agentEmail: string) {

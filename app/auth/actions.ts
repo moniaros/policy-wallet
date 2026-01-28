@@ -1,11 +1,11 @@
-"use server"
-
+// ... (imports remain)
 import { db } from "@/lib/db"
 import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"
-import { sendMail } from "@/lib/mail"
+// sendMail removed
 import { redirect } from "next/navigation"
 
+// ... (Schema remains)
 const RegisterSchema = z.object({
     name: z.string().min(1, "Name is required"),
     email: z.string().email("Invalid email"),
@@ -37,38 +37,8 @@ const RegisterSchema = z.object({
     path: ["licenseNumber"]
 })
 
-const emailTemplates = {
-    el: {
-        subject: "Επαλήθευση Email - PolicyWallet",
-        greeting: (name: string) => `Γεια σας ${name},`,
-        welcome: "Καλώς ήρθατε στο PolicyWallet!",
-        thankYou: "Σας ευχαριστούμε που δημιουργήσατε λογαριασμό.",
-        verifyPrompt: "Για να ενεργοποιήσετε τον λογαριασμό σας, παρακαλούμε επαληθεύστε τη διεύθυνση email σας κάνοντας κλικ στο παρακάτω κουμπί:",
-        buttonText: "Επαλήθευση Email",
-        alternativeText: "Εάν το κουμπί δεν λειτουργεί, αντιγράψτε και επικολλήστε αυτόν τον σύνδεσμο στο πρόγραμμα περιήγησής σας:",
-        expiryNote: "Αυτός ο σύνδεσμος θα λήξει σε 24 ώρες.",
-        ignoreNote: "Εάν δεν δημιουργήσατε αυτόν τον λογαριασμό, μπορείτε να αγνοήσετε με ασφάλεια αυτό το email.",
-        nextStepsPolicyholder: "Μετά την επαλήθευση, μπορείτε να συνδεθείτε και να ξεκινήσετε να προσθέτετε τις ασφάλειές σας.",
-        nextStepsAgent: "Μετά την επαλήθευση, μπορείτε να συνδεθείτε και να ξεκινήσετε να διαχειρίζεστε τους πελάτες σας.",
-        teamSignature: "Η Ομάδα PolicyWallet"
-    },
-    en: {
-        subject: "Email Verification - PolicyWallet",
-        greeting: (name: string) => `Hello ${name},`,
-        welcome: "Welcome to PolicyWallet!",
-        thankYou: "Thank you for creating an account.",
-        verifyPrompt: "To activate your account, please verify your email address by clicking the button below:",
-        buttonText: "Verify Email",
-        alternativeText: "If the button doesn't work, copy and paste this link into your browser:",
-        expiryNote: "This link will expire in 24 hours.",
-        ignoreNote: "If you didn't create this account, you can safely ignore this email.",
-        nextStepsPolicyholder: "After verification, you can sign in and start adding your policies.",
-        nextStepsAgent: "After verification, you can sign in and start managing your customers.",
-        teamSignature: "The PolicyWallet Team"
-    }
-}
-
 export async function redeemInvite(token: string, userId: string) {
+    // ... (keep existing implementation)
     const invite = await db.invite.findUnique({ where: { token } })
     if (!invite || invite.consumedAt || invite.expiresAt < new Date()) return
 
@@ -114,8 +84,6 @@ export async function registerUser(formData: FormData) {
 
     try {
         // 1. Sign up with Supabase Auth
-        const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
-
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
@@ -138,13 +106,11 @@ export async function registerUser(formData: FormData) {
         }
 
         // 2. Create or Update local User record (Sync)
-        // Check if placeholder exists
         const existingUser = await db.user.findUnique({ where: { email } })
-
         let userId = ""
 
         if (existingUser) {
-            // Claim placeholder
+            // Claim placeholder (if functionality exists)
             const updated = await db.user.update({
                 where: { email },
                 data: {
@@ -155,13 +121,18 @@ export async function registerUser(formData: FormData) {
             })
             userId = updated.id
         } else {
+            // Create new user
             const newUser = await db.user.create({
                 data: {
                     name,
                     email,
                     roles: role,
                     preferredLanguage: language
-                }
+                } // Remove 'id' if passing uuid is handled by db or supabase. Usually we map supabase ID to db ID? 
+                // Wait, previous code didn't map supabase ID to DB ID explicitly, it just let Prisma generate CUID/UUID or mapped it if it matched.
+                // Looking at previous code, it just did `db.user.create`.
+                // Prisma schema likely uses CUIDs for IDs, independent of Supabase Auth IDs, unless synced.
+                // For now, retaining original logic.
             })
             userId = newUser.id
         }
@@ -173,7 +144,7 @@ export async function registerUser(formData: FormData) {
                     userId: userId,
                     licenseNumber: validation.data.licenseNumber || '',
                     agencyName: validation.data.agencyName || '',
-                    verificationStatus: 'pending'
+                    verificationStatus: 'pending' // Agents still need verification, but they should be able to login
                 }
             })
         }
@@ -183,261 +154,32 @@ export async function registerUser(formData: FormData) {
             await redeemInvite(token, userId)
         }
 
-        // 3. Generate verification token with 15-minute expiry
-        const crypto = require('crypto')
-        const verificationToken = crypto.randomBytes(32).toString('hex')
-        const expiresAt = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes from now
-
-        // Store token in database
-        await db.verificationToken.create({
-            data: {
-                identifier: email,
-                token: verificationToken,
-                expires: expiresAt
-            }
+        // 3. AUTO-LOGIN (Skip Email Verification)
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+            email,
+            password
         })
 
-        // 4. Create verification URL with the token and email
-        const verificationUrl = `${baseUrl}/auth/verify-email?token=${verificationToken}&email=${encodeURIComponent(email)}`
+        if (signInError) {
+            console.error("Auto-login failed:", signInError)
+            // If auto-login fails (e.g. Supabase enforce email confirm), we return success 
+            // but the client will try to redirect to login or wallet and fail.
+            // We'll return a special flag or just error.
+            // For this requirements, we assume it works or we instruct user to disable confirm.
+            return { success: true, warning: "Account created but auto-login failed. Please check email." }
+        }
 
-        // 5. Send ONLY ONE branded email via Brevo with verification button
-        const template = emailTemplates[language]
-        const nextSteps = role === "agent" ? template.nextStepsAgent : template.nextStepsPolicyholder
-
-        const emailHtml = `
-<!DOCTYPE html>
-<html lang="${language}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f4;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f4; padding: 40px 20px;">
-        <tr>
-            <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-                    <!-- Header -->
-                    <tr>
-                        <td style="background: linear-gradient(135deg, #0d9488 0%, #10b981 100%); padding: 40px 40px 30px; text-align: center;">
-                            <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: 700; letter-spacing: -0.5px;">
-                                PolicyWallet
-                            </h1>
-                        </td>
-                    </tr>
-                    
-                    <!-- Content -->
-                    <tr>
-                        <td style="padding: 40px;">
-                            <h2 style="margin: 0 0 16px; color: #0d9488; font-size: 24px; font-weight: 700;">
-                                ${template.welcome}
-                            </h2>
-                            
-                            <p style="margin: 0 0 24px; color: #44403c; font-size: 16px; line-height: 1.6;">
-                                ${template.greeting(name)}
-                            </p>
-                            
-                            <p style="margin: 0 0 24px; color: #44403c; font-size: 16px; line-height: 1.6;">
-                                ${template.thankYou} ${template.verifyPrompt}
-                            </p>
-                            
-                            <!-- CTA Button -->
-                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 32px 0;">
-                                <tr>
-                                    <td align="center">
-                                        <a href="${verificationUrl}" style="display: inline-block; background: linear-gradient(135deg, #0d9488 0%, #10b981 100%); color: #ffffff; text-decoration: none; padding: 16px 48px; border-radius: 12px; font-size: 16px; font-weight: 700; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);">
-                                            ${template.buttonText}
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                            
-                            <!-- Alternative Link -->
-                            <p style="margin: 24px 0; color: #78716c; font-size: 14px; line-height: 1.6;">
-                                ${template.alternativeText}
-                            </p>
-                            <p style="margin: 0 0 24px; padding: 12px; background-color: #f5f5f4; border-radius: 8px; word-break: break-all; font-size: 13px; color: #57534e;">
-                                ${verificationUrl}
-                            </p>
-                            
-                            <!-- Next Steps -->
-                            <div style="margin: 32px 0; padding: 20px; background: linear-gradient(135deg, #f0fdfa 0%, #d1fae5 100%); border-left: 4px solid #0d9488; border-radius: 8px;">
-                                <p style="margin: 0; color: #0f766e; font-size: 15px; line-height: 1.6; font-weight: 500;">
-                                    ${nextSteps}
-                                </p>
-                            </div>
-                            
-                            <!-- Footer Notes -->
-                            <p style="margin: 24px 0 0; color: #78716c; font-size: 13px; line-height: 1.6;">
-                                <strong>${language === 'el' ? 'Αυτός ο σύνδεσμος θα λήξει σε 15 λεπτά για λόγους ασφαλείας.' : 'This link will expire in 15 minutes for security reasons.'}</strong>
-                            </p>
-                            <p style="margin: 8px 0 0; color: #78716c; font-size: 13px; line-height: 1.6;">
-                                ${template.ignoreNote}
-                            </p>
-                        </td>
-                    </tr>
-                    
-                    <!-- Footer -->
-                    <tr>
-                        <td style="background-color: #fafaf9; padding: 24px 40px; text-align: center; border-top: 1px solid #e7e5e4;">
-                            <p style="margin: 0 0 8px; color: #57534e; font-size: 14px; font-weight: 600;">
-                                ${template.teamSignature}
-                            </p>
-                            <p style="margin: 0; color: #a8a29e; font-size: 12px;">
-                                © ${new Date().getFullYear()} PolicyWallet. All rights reserved.
-                            </p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</body>
-</html>
-        `
-
-        // Send the single branded email with verification link
-        await sendMail({
-            to: email,
-            subject: template.subject,
-            html: emailHtml
-        })
-
-        return { success: true, email, role }
+        return { success: true, redirect: "/wallet" }
 
     } catch (error) {
         console.error("Registration failed:", error)
         if (error instanceof Error) {
-            // Check for Prisma unique constraint errors
             if (error.message.includes("Unique constraint")) {
                 return { success: false, error: "User already exists" }
             }
             return { success: false, error: error.message }
         }
         return { success: false, error: "An unexpected error occurred during registration." }
-    }
-}
-
-export async function resendVerificationEmail(email: string, language: 'el' | 'en' = 'el') {
-    try {
-        // 1. Check if user exists
-        const user = await db.user.findUnique({ where: { email } })
-        if (!user) {
-            return { success: false, error: "User not found" }
-        }
-
-        // 2. Check if already verified (via Supabase)
-        const supabase = await createClient()
-        const { data: { user: authUser } } = await supabase.auth.getUser()
-
-        // If they're logged in and verified, no need to resend
-        if (authUser?.email === email && authUser.email_confirmed_at) {
-            return { success: false, error: "Email already verified" }
-        }
-
-        // 3. Delete old verification tokens for this email
-        await db.verificationToken.deleteMany({
-            where: { identifier: email }
-        })
-
-        // 4. Generate new verification token
-        const crypto = require('crypto')
-        const verificationToken = crypto.randomBytes(32).toString('hex')
-        const expiresAt = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
-
-        await db.verificationToken.create({
-            data: {
-                identifier: email,
-                token: verificationToken,
-                expires: expiresAt
-            }
-        })
-
-        // 5. Send verification email
-        const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
-        const verificationUrl = `${baseUrl}/auth/verify-email?token=${verificationToken}&email=${encodeURIComponent(email)}`
-
-        const template = emailTemplates[language]
-        const role = user.roles.includes('agent') ? 'agent' : 'policyholder'
-        const nextSteps = role === "agent" ? template.nextStepsAgent : template.nextStepsPolicyholder
-
-        const emailHtml = `
-<!DOCTYPE html>
-<html lang="${language}">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f4;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f4; padding: 40px 20px;">
-        <tr>
-            <td align="center">
-                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-                    <tr>
-                        <td style="background: linear-gradient(135deg, #0d9488 0%, #10b981 100%); padding: 40px 40px 30px; text-align: center;">
-                            <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: 700; letter-spacing: -0.5px;">
-                                PolicyWallet
-                            </h1>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 40px;">
-                            <h2 style="margin: 0 0 16px; color: #0d9488; font-size: 24px; font-weight: 700;">
-                                ${template.welcome}
-                            </h2>
-                            <p style="margin: 0 0 24px; color: #44403c; font-size: 16px; line-height: 1.6;">
-                                ${template.greeting(user.name || 'User')}
-                            </p>
-                            <p style="margin: 0 0 24px; color: #44403c; font-size: 16px; line-height: 1.6;">
-                                ${template.verifyPrompt}
-                            </p>
-                            <table width="100%" cellpadding="0" cellspacing="0" style="margin: 32px 0;">
-                                <tr>
-                                    <td align="center">
-                                        <a href="${verificationUrl}" style="display: inline-block; background: linear-gradient(135deg, #0d9488 0%, #10b981 100%); color: #ffffff; text-decoration: none; padding: 16px 48px; border-radius: 12px; font-size: 16px; font-weight: 700; box-shadow: 0 4px 12px rgba(13, 148, 136, 0.3);">
-                                            ${template.buttonText}
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                            <p style="margin: 24px 0; color: #78716c; font-size: 14px; line-height: 1.6;">
-                                ${template.alternativeText}
-                            </p>
-                            <p style="margin: 0 0 24px; padding: 12px; background-color: #f5f5f4; border-radius: 8px; word-break: break-all; font-size: 13px; color: #57534e;">
-                                ${verificationUrl}
-                            </p>
-                            <p style="margin: 24px 0 0; color: #78716c; font-size: 13px; line-height: 1.6;">
-                                <strong>${language === 'el' ? 'Αυτός ο σύνδεσμος θα λήξει σε 15 λεπτά για λόγους ασφαλείας.' : 'This link will expire in 15 minutes for security reasons.'}</strong>
-                            </p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="background-color: #fafaf9; padding: 24px 40px; text-align: center; border-top: 1px solid #e7e5e4;">
-                            <p style="margin: 0 0 8px; color: #57534e; font-size: 14px; font-weight: 600;">
-                                ${template.teamSignature}
-                            </p>
-                            <p style="margin: 0; color: #a8a29e; font-size: 12px;">
-                                © ${new Date().getFullYear()} PolicyWallet. All rights reserved.
-                            </p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</body>
-</html>
-        `
-
-        await sendMail({
-            to: email,
-            subject: template.subject,
-            html: emailHtml
-        })
-
-        return { success: true }
-    } catch (error) {
-        console.error("Failed to resend verification email:", error)
-        return { success: false, error: "Failed to send email" }
     }
 }
 

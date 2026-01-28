@@ -1,53 +1,62 @@
 "use client"
 
 import { useLanguage } from "@/contexts/LanguageContext"
+import { motion } from "framer-motion"
 
 interface EmptyStateProps {
     onAddManually?: () => void
     onUploadDocument?: () => void
     viaAgentInvite?: boolean
+    userName?: string
 }
 
-export function EmptyState({ onAddManually, onUploadDocument, viaAgentInvite = false }: EmptyStateProps) {
-    const { t } = useLanguage()
+export function EmptyState({ onAddManually, userName }: EmptyStateProps) {
+    const { t, language } = useLanguage()
 
     return (
-        <div className="max-w-md mx-auto px-4 py-20 sm:px-6 lg:px-8 relative overflow-hidden">
-            <div className="text-center relative z-10">
-                {/* Icon */}
-                <div className="relative mx-auto w-24 h-24 bg-stone-50 dark:bg-stone-900 rounded-3xl flex items-center justify-center mb-8 border border-stone-100 dark:border-stone-800 shadow-xl shadow-teal-900/5 group">
-                    <svg className="w-10 h-10 text-stone-300 dark:text-stone-600 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-                    </svg>
-                    <div className="absolute inset-0 bg-gradient-to-tr from-teal-50/50 to-transparent dark:from-teal-900/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                </div>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="max-w-lg w-full"
+            >
+                {/* Lobby Welcome */}
+                <h1 className="text-4xl md:text-5xl font-black text-stone-900 dark:text-white mb-6 tracking-tight leading-tight">
+                    {language === 'el' ? 'Καλώς ορίσατε' : 'Welcome'}, <br />
+                    <span className="text-teal-600 dark:text-teal-400">
+                        {userName || (language === 'el' ? 'στο PolicyWallet' : 'to PolicyWallet')}
+                    </span>
+                </h1>
 
-                {/* Message */}
-                <h2 className="text-2xl font-black text-stone-900 dark:text-white mb-3 tracking-tight">
-                    {t.wallet.noPolicies}
-                </h2>
-                <p className="text-stone-500 dark:text-stone-400 mb-10 leading-relaxed font-medium">
-                    {t.wallet.noPoliciesDesc}
+                <p className="text-lg text-stone-500 dark:text-stone-400 mb-12 font-medium">
+                    {language === 'el'
+                        ? 'Ξεκινήστε προσθέτοντας το πρώτο σας ασφαλιστήριο συμβόλαιο.'
+                        : 'Get started by adding your first insurance policy.'}
                 </p>
 
-                {/* CTAs */}
-                <div className="flex flex-col gap-4">
-                    <button
-                        onClick={onAddManually}
-                        className="w-full px-6 py-4 bg-teal-600 dark:bg-teal-500 hover:bg-teal-700 dark:hover:bg-teal-600 text-white font-bold rounded-2xl transition-all shadow-lg hover:shadow-teal-600/20 hover:-translate-y-0.5 active:translate-y-0"
-                    >
-                        {t.wallet.addPolicy}
-                    </button>
-                    {onUploadDocument && (
-                        <button
-                            onClick={onUploadDocument}
-                            className="w-full px-6 py-4 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-900 dark:text-white font-bold rounded-2xl border border-stone-200 dark:border-stone-700 transition-colors"
-                        >
-                            Upload PDF
-                        </button>
-                    )}
+                {/* Big Plus Button */}
+                <button
+                    onClick={onAddManually}
+                    className="group relative w-24 h-24 rounded-full bg-teal-600 hover:bg-teal-700 text-white flex items-center justify-center shadow-xl shadow-teal-600/30 transition-all duration-300 hover:scale-110 active:scale-95 mx-auto mb-8"
+                >
+                    <div className="absolute inset-0 rounded-full bg-teal-600/30 animate-ping opacity-75 group-hover:opacity-100" />
+                    <svg className="w-10 h-10 relative z-10 font-bold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" />
+                    </svg>
+                </button>
+
+                <p className="text-sm font-bold text-teal-600 dark:text-teal-400 uppercase tracking-widest animate-pulse">
+                    {language === 'el' ? 'Προσθήκη Συμβολαίου' : 'Add Policy'}
+                </p>
+
+                {/* Optional Decorative Elements */}
+                <div className="mt-16 grid grid-cols-3 gap-4 opacity-30 pointer-events-none grayscale">
+                    <div className="h-20 bg-stone-200 dark:bg-stone-800 rounded-2xl animate-pulse delay-75" />
+                    <div className="h-20 bg-stone-200 dark:bg-stone-800 rounded-2xl animate-pulse delay-150" />
+                    <div className="h-20 bg-stone-200 dark:bg-stone-800 rounded-2xl animate-pulse delay-300" />
                 </div>
-            </div>
+            </motion.div>
         </div>
     )
 }

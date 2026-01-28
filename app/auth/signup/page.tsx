@@ -70,8 +70,15 @@ function SignUpForm() {
             const result = await registerUser(formData)
 
             if (result.success) {
-                // Redirect to confirmation page
-                router.push(`/auth/signup/confirmation?email=${encodeURIComponent(result.email || email)}&role=${result.role || role}`)
+                if (result.redirect) {
+                    router.push(result.redirect)
+                } else if (result.warning) {
+                    // Account created but auto-login failed
+                    setError(result.warning)
+                } else {
+                    // Fallback to confirmation page if no redirect provided (legacy behavior)
+                    router.push(`/auth/signup/confirmation?email=${encodeURIComponent(result.email || email)}&role=${result.role || role}`)
+                }
             } else {
                 if (typeof result.error === 'string') {
                     setError(result.error)

@@ -20,6 +20,7 @@ export function PolicyWallet({
     onShareWithAgent,
     onAddToWallet,
     onViewDocuments,
+    user,
 }: PolicyWalletProps & { isLoading?: boolean }) {
     const [showAddMenu, setShowAddMenu] = useState(false)
     const { t, language } = useLanguage()
@@ -112,6 +113,7 @@ export function PolicyWallet({
             <EmptyState
                 onAddManually={onAddManually}
                 onUploadDocument={onUploadDocument}
+                userName={user?.name}
             />
         )
     }

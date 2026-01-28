@@ -212,8 +212,16 @@ export async function getUsers(
             where.roles = { contains: roleFilter }
         }
 
-        // Note: statusFilter would require a 'status' or 'isActive' field in User model
-        // For now, we'll skip this filter
+        // Filter by Agent Verification Status
+        if (statusFilter === 'pending_agents') {
+            where.agentProfile = {
+                verificationStatus: 'pending'
+            }
+            // Implicitly enforce agent role if not already
+            if (!where.roles) {
+                where.roles = { contains: 'agent' }
+            }
+        }
 
         const [users, total] = await Promise.all([
             db.user.findMany({

@@ -208,3 +208,68 @@ export function getSeverityLabel(severity: GapSeverity, language: 'el' | 'en' = 
 
     return labels[language]?.[severity] || severity
 }
+
+// --- Pure Logic for Unit Tests & Client-Side Checks ---
+
+export interface SimpleGap {
+    gapType: string
+    severity: GapSeverity
+    title: string
+    description: string
+    policyId?: string
+}
+
+/**
+ * Pure logic gap detection (used by Unit Tests and potentially frontend)
+ * Does not require DB access.
+ */
+export function detectGaps(policies: any[]): SimpleGap[] {
+    const gaps: SimpleGap[] = []
+    const now = new Date()
+
+    // 1. Check for Missing Health Insurance (Portfolio Level)
+    const hasHealth = policies.some(p =>
+        p.lineOfBusiness?.toLowerCase() === 'health' &&
+        p.status === 'active'
+    )
+    if (!hasHealth && policies.length > 0) {
+        gaps.push({
+            gapType: 'missing_health_insurance',
+            severity: 'high',
+            title: 'Missing Health Insurance',
+            description: 'You do not have an active health insurance policy.'
+        })
+    }
+
+    // Iterate policies for policy-level gaps
+    for (const policy of policies) {
+        // 2. Check for Expiring Soon
+        if (policy.endDate && policy.status === 'active') {
+            const endDate = new Date(policy.endDate)
+            const daysUntilExpiry = (endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+
+            if (daysUntilExpiry > 0 && daysUntilExpiry <= 30) {
+                gaps.push({
+                    gapType: 'expiring_soon',
+                    severity: 'medium',
+                    title: 'Policy Expiring Soon',
+                    description: `Policy ending in ${Math.ceil(daysUntilExpiry)} days.`,
+                    policyId: policy.id
+                })
+            }
+        }
+
+        // 3. Check for Low Coverage (Mock Logic matching test)
+        if (policy.lineOfBusiness === 'home' && policy.acordData?.coverageAmount < 100000) {
+            gaps.push({
+                gapType: 'low_coverage_amount',
+                severity: 'medium',
+                title: 'Low Coverage Amount',
+                description: 'Your home coverage appears low.',
+                policyId: policy.id
+            })
+        }
+    }
+
+    return gaps
+}

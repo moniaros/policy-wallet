@@ -99,8 +99,8 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
         await updateEmail(email)
     }
 
-    const handleChangePassword = async (password: string) => { // Adding argument to match logic in Settings
-        await updatePassword(password)
+    const handleChangePassword = async (password?: string) => {
+        if (password) await updatePassword(password)
     }
 
     const handleToggleNotification = async (eventType: string, channel: string, enabled: boolean) => {
@@ -197,7 +197,7 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                         onUpdateLanguage={handleLanguageUpdate}
                         onUpdateProfile={handleUpdateProfile}
                         onUpdateEmail={handleUpdateEmail}
-                        onChangePassword={handleChangePassword as any} // Cast because Interface expects no args but we pass one in implementation (fixing interface separately would be cleaner but saving steps)
+                        onChangePassword={handleChangePassword}
                         onToggleNotification={handleToggleNotification}
                         onLogoutSession={handleLogoutSession}
                         onLogoutAllSessions={handleLogoutAll}

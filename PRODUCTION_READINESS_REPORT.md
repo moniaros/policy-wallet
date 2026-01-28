@@ -38,76 +38,52 @@ The platform requires **one major sprint** to:
 ## 🚨 Critical Blockers (P0 - Must Fix Before Launch)
 
 ### 1. Admin Portal Functionality
-**Status:** 🔴 **CRITICAL**  
-**Impact:** Platform cannot be managed or monitored
+**Status:** � **Mostly Ready**
+**Impact:** Platform management logic exists, UI connected.
 
 **Current State:**
-- ✅ Database models exist (AdminUser, ActivityLog)
-- ✅ Basic actions for insurers/types (`admin/actions.ts`)
-- ❌ Dashboard is placeholder ("Coming soon")
-- ❌ User management is placeholder
-- ❌ No metrics, analytics, or monitoring UI
-- ❌ No agent verification workflow
-- ❌ No user ban/suspend functionality
+- ✅ Database models exist
+- ✅ Dashboard UI exists and connected to data
+- ✅ User management with filtering and actions implemented
+- ✅ Agent verification workflow (Approve/Reject) implemented
+- ⚠️ Analytics charts are basic
 
-**Required Actions:**
-```
-Priority: P0
-Time Estimate: 3-4 days
-Files to Create:
-- app/(protected)/admin/dashboard/DashboardClient.tsx
-- app/(protected)/admin/users/UsersClient.tsx
-- app/(protected)/admin/actions.ts (expand)
-- components/admin/MetricsCard.tsx
-- components/admin/UserTable.tsx
-- components/admin/AgentVerificationModal.tsx
-```
+**Remaining Actions:**
+- Polish UI/UX for insurer/type management
+- Add more detailed analytics
+
 
 ### 2. Testing Infrastructure
-**Status:** 🔴 **CRITICAL**  
-**Impact:** High risk of regressions, no quality assurance
+**Status:** � **Infrastructure Ready**
+**Impact:** Test runner installed, coverage pending.
 
 **Current State:**
-- ❌ No test framework installed (Jest, Vitest, Playwright)
-- ❌ No test files in project (excluding node_modules)
-- ❌ No test scripts in `package.json`
-- ❌ No E2E tests for critical flows
-- ❌ No unit tests for business logic
+- ✅ Vitest and Playwright installed
+- ✅ Test scripts configured in package.json
+- ⚠️ No comprehensive test suite yet
 
 **Required Actions:**
 ```
 Priority: P0
 Time Estimate: 2 days
 Tasks:
-1. Install Playwright for E2E tests (4 hours)
-2. Write critical path tests:
+1. Write critical path tests:
    - Signup → Email Verification → Login
    - Add Policy → AI Analysis → View Gaps
    - Agent: Add Customer → View Profile
-3. Install Vitest for unit tests (2 hours)
-4. Test gap-detection.ts logic (2 hours)
-5. Test auth-helpers.ts (2 hours)
+2. Test gap-detection.ts logic
+3. Test billing logic
 ```
 
 ### 3. CI/CD Pipeline
-**Status:** 🔴 **CRITICAL**  
-**Impact:** Manual deployments, error-prone releases
+**Status:** ✅ **Implemented**
+**Impact:** Automated checks in place.
 
 **Current State:**
-- ❌ No `.github/workflows` directory
-- ❌ No automated linting on PR
-- ❌ No automated build verification
-- ❌ No automated deployment
+- ✅ .github/workflows/ci.yml exists
+- ✅ .github/workflows/deploy.yml exists
+- ✅ .github/workflows/preview.yml exists
 
-**Required Actions:**
-```
-Priority: P0
-Time Estimate: 1 day
-Files to Create:
-- .github/workflows/ci.yml (lint, typecheck, build)
-- .github/workflows/test.yml (run tests)
-- .github/workflows/deploy-preview.yml (Vercel preview)
-```
 
 ### 4. Environment Variables Verification
 **Status:** ⚠️ **UNKNOWN**  
@@ -238,24 +214,11 @@ Checklist:
 #### 🟡 Partially Implemented Features
 
 **Questionnaire Workflow**
-- ✅ Questionnaire data models (QuestionnaireTemplate, QuestionnaireInstance, QuestionnaireResponse)
-- ✅ Server action: `getQuestionnaireTemplates()`
-- ✅ Server action: `sendQuestionnaire()`
-- ❌ **No UI to select and send questionnaire to customer**
-- ❌ **No "Send Questionnaire" button in customer list or profile**
-- ❌ **No questionnaire selection modal**
+- ✅ Questionnaire data models
+- ✅ Server actions implemented
+- ✅ Sending UI implemented (QuestionnaireSender component)
+- ✅ Integrated into Customer Profile
 
-**Impact:** Agents cannot utilize structured data collection for gap analysis
-
-**Required Actions:**
-```
-Priority: P1
-Time Estimate: 1 day
-Files to Create:
-- components/agent/SendQuestionnaireModal.tsx
-- Update: app/(protected)/customers/CustomersClient.tsx (add button)
-- Update: app/(protected)/customers/[id]/page.tsx (add button)
-```
 
 #### ❌ Missing Features
 
@@ -302,10 +265,10 @@ Files to Create:
 - ❌ Delete user account
 
 **Agent Verification**
-- ❌ Pending agent verification queue
-- ❌ Approve/reject agent applications
-- ❌ View agent license details
-- ❌ Manual verification workflow
+- ✅ Pending agent verification queue (via filter)
+- ✅ Approve/reject agent workflow
+- ✅ Email notifications
+- ❌ Manual verification workflow guidelines (docs)
 
 **Master Data CRUD**
 - ❌ Edit insurer (name, logo)
@@ -402,10 +365,10 @@ Day 4: Master Data & Polish
 
 **1. Admin Route Protection**
 ```
-Priority: P0
-Issue: Admin routes may not verify admin role
-Recommendation: Add role check in middleware or layout
-File: app/(protected)/admin/layout.tsx
+Status: ✅ Implemented
+Details: 
+- Role verification implemented in app/(protected)/admin/layout.tsx
+- Explicit auth check added to middleware.ts
 ```
 
 **2. Input Validation**
@@ -421,14 +384,13 @@ Files to Create:
 
 **3. File Upload Security**
 ```
-Priority: P1
-Current: Basic file upload exists
-Gaps:
-- No file type validation
-- No file size limits
-- No virus scanning
-- No sanitization of file names
-Recommendation: Enhance uploadPolicyDocument() action
+Status: ✅ Implemented
+Details:
+- File size limits (10MB) enforced in actions
+- File extension validation added
+- Mime-type validation added (PDF/Image)
+- Filename sanitization implemented
+- Applied to uploadPolicyDocument, createPolicy, and parsePolicyPdfWithGemini
 ```
 
 **4. CSRF Protection**

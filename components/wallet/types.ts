@@ -37,5 +37,8 @@ export interface PolicyWalletProps {
     onAddToWallet?: (policyId: string) => void
     onViewDocuments?: (policyId: string) => void
     onEditPolicy?: (policyId: string) => void
+    user?: {
+        name: string
+    }
 }
 

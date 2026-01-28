@@ -75,6 +75,16 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL("/wallet", nextUrl))
     }
 
+    // Role-Based Access Control (RBAC)
+    // Note: detailed role checks (e.g. admin vs agent) are handled in Layouts/Server Components
+    // because role data resides in the application database (Prisma), not the auth session.
+
+    // Explicitly protect admin routes
+    if (nextUrl.pathname.startsWith('/admin') && !isLoggedIn) {
+        const encodedCallbackUrl = encodeURIComponent(nextUrl.pathname + nextUrl.search)
+        return NextResponse.redirect(new URL(`/auth/signin?callbackUrl=${encodedCallbackUrl}`, nextUrl))
+    }
+
     // If not logged in and trying to access protected routes, redirect to signin
     if (!isLoggedIn && !isPublicRoute) {
         let callbackUrl = nextUrl.pathname

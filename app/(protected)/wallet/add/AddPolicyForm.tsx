@@ -24,7 +24,7 @@ function SubmitButton({ pending }: { pending: boolean }) {
                     </>
                 ) : (
                     <>
-                        {t.common.save}
+                        {t.wallet.addScan}
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                         </svg>
@@ -132,10 +132,10 @@ export function AddPolicyForm({ insurers, types }: AddPolicyFormProps) {
             <div className="mb-10 relative">
                 <div className="flex items-center gap-3 mb-4">
                     <span className="w-8 h-px bg-stone-200 dark:bg-stone-700" />
-                    <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-400 dark:text-stone-500">New Asset</h3>
+                    <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-400 dark:text-stone-500">{t.wallet.newAsset}</h3>
                 </div>
                 <h2 className="text-3xl font-black text-stone-900 dark:text-white tracking-tighter">
-                    Add Policy <span className="text-teal-600 dark:text-teal-500">.</span>
+                    {t.wallet.uploadTitle} <span className="text-teal-600 dark:text-teal-500">.</span>
                 </h2>
             </div>
 
@@ -151,7 +151,7 @@ export function AddPolicyForm({ insurers, types }: AddPolicyFormProps) {
                             required
                             className="w-full appearance-none bg-stone-50 dark:bg-stone-800/50 border-none rounded-xl px-4 py-4 text-sm font-bold text-stone-900 dark:text-white placeholder-stone-400 focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer hover:bg-stone-100 dark:hover:bg-stone-800"
                         >
-                            <option value="">Select Provider...</option>
+                            <option value="">{t.wallet.selectProvider}</option>
                             {insurers.map(i => (
                                 <option key={i.id} value={i.name}>{i.name}</option>
                             ))}
@@ -175,9 +175,11 @@ export function AddPolicyForm({ insurers, types }: AddPolicyFormProps) {
                             required
                             className="w-full appearance-none bg-stone-50 dark:bg-stone-800/50 border-none rounded-xl px-4 py-4 text-sm font-bold text-stone-900 dark:text-white placeholder-stone-400 focus:ring-2 focus:ring-teal-500 transition-all cursor-pointer hover:bg-stone-100 dark:hover:bg-stone-800"
                         >
-                            <option value="">Select Coverage Type...</option>
-                            {types.map(t => (
-                                <option key={t.id} value={t.slug}>{t.name}</option>
+                            <option value="">{t.wallet.selectType}</option>
+                            {types.map(type => (
+                                <option key={type.id} value={type.slug}>
+                                    {t.policyTypes[type.slug as keyof typeof t.policyTypes] || type.name}
+                                </option>
                             ))}
                         </select>
                         <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-stone-400">
@@ -256,10 +258,10 @@ export function AddPolicyForm({ insurers, types }: AddPolicyFormProps) {
                                 </svg>
                             </div>
                             <p className="text-sm font-bold text-stone-700 dark:text-stone-300 mb-1">
-                                {dragActive ? "Drop files here" : t.wallet.uploadDocument}
+                                {dragActive ? t.wallet.dropFiles : t.wallet.uploadDesc}
                             </p>
                             <p className="text-xs font-medium text-stone-400">
-                                Drag and drop or click to browse
+                                {t.wallet.dragDropBrowse}
                             </p>
                         </div>
                     </div>

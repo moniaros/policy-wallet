@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Search, Filter, Eye, Trash2, Shield, UserX, CheckCircle, XCircle } from "lucide-react"
 import { toast } from "sonner"
-import { changeUserRole, deleteUser } from "../actions"
+import { changeUserRole, deleteUser, approveAgent, rejectAgent } from "../actions"
 
 interface User {
     id: string
@@ -19,6 +19,7 @@ interface User {
         customerRelationshipsAsAgent: number
     }
     agentProfile: {
+        id: string
         verificationStatus: string
         agencyName: string | null
     } | null
@@ -51,6 +52,9 @@ export default function UsersClient({
     const [showDetailModal, setShowDetailModal] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const [showRoleModal, setShowRoleModal] = useState(false)
+    const [showApproveModal, setShowApproveModal] = useState(false)
+    const [showRejectModal, setShowRejectModal] = useState(false)
+    const [verificationReason, setVerificationReason] = useState("")
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault()
@@ -137,8 +141,8 @@ export default function UsersClient({
                                 key={role}
                                 onClick={() => handleRoleFilterChange(role)}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${roleFilter === role
-                                        ? "bg-blue-600 text-white"
-                                        : "bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600"
+                                    ? "bg-blue-600 text-white"
+                                    : "bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600"
                                     }`}
                             >
                                 {role === "all" ? "All Users" : role.charAt(0).toUpperCase() + role.slice(1) + "s"}
@@ -263,6 +267,32 @@ export default function UsersClient({
                                                         <Trash2 className="w-4 h-4" />
                                                     </button>
                                                 )}
+                                                {user.agentProfile?.verificationStatus === 'pending' && (
+                                                    <>
+                                                        <button
+                                                            onClick={() => {
+                                                                setSelectedUser(user)
+                                                                setVerificationReason("")
+                                                                setShowApproveModal(true)
+                                                            }}
+                                                            className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
+                                                            title="Approve Agent"
+                                                        >
+                                                            <CheckCircle className="w-4 h-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                setSelectedUser(user)
+                                                                setVerificationReason("")
+                                                                setShowRejectModal(true)
+                                                            }}
+                                                            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                                            title="Reject Agent"
+                                                        >
+                                                            <XCircle className="w-4 h-4" />
+                                                        </button>
+                                                    </>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>
@@ -335,6 +365,91 @@ export default function UsersClient({
                                 className="px-4 py-2 bg-stone-200 dark:bg-stone-700 text-stone-900 dark:text-stone-100 rounded-lg hover:bg-stone-300 dark:hover:bg-stone-600"
                             >
                                 Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Approve Modal */}
+            {showApproveModal && selectedUser && selectedUser.agentProfile && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-stone-800 rounded-lg max-w-md w-full p-6">
+                        <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-4">Approve Agent</h2>
+                        <p className="text-stone-600 dark:text-stone-400 mb-4">
+                            Are you sure you want to approve {selectedUser.name || selectedUser.email}? They will gain full agent access.
+                        </p>
+                        <textarea
+                            className="w-full p-2 border rounded mb-4 dark:bg-stone-700 dark:border-stone-600 dark:text-white"
+                            placeholder="Optional notes..."
+                            value={verificationReason}
+                            onChange={e => setVerificationReason(e.target.value)}
+                        />
+                        <div className="flex justify-end gap-2">
+                            <button
+                                onClick={() => setShowApproveModal(false)}
+                                className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    if (!selectedUser.agentProfile) return
+                                    const res = await approveAgent(selectedUser.agentProfile.id, verificationReason)
+                                    if (res?.success) {
+                                        toast.success("Agent approved")
+                                        setShowApproveModal(false)
+                                        router.refresh()
+                                    } else {
+                                        toast.error("Failed to approve")
+                                    }
+                                }}
+                                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                            >
+                                Approve
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Reject Modal */}
+            {showRejectModal && selectedUser && selectedUser.agentProfile && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-stone-800 rounded-lg max-w-md w-full p-6">
+                        <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-4">Reject Agent</h2>
+                        <p className="text-stone-600 dark:text-stone-400 mb-4">
+                            Please provide a reason for rejecting {selectedUser.name || selectedUser.email}.
+                        </p>
+                        <textarea
+                            className="w-full p-2 border rounded mb-4 dark:bg-stone-700 dark:border-stone-600 dark:text-white"
+                            placeholder="Rejection reason (required)..."
+                            value={verificationReason}
+                            onChange={e => setVerificationReason(e.target.value)}
+                        />
+                        <div className="flex justify-end gap-2">
+                            <button
+                                onClick={() => setShowRejectModal(false)}
+                                className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    if (!verificationReason) return toast.error("Reason is required")
+                                    if (!selectedUser.agentProfile) return
+                                    const res = await rejectAgent(selectedUser.agentProfile.id, verificationReason)
+                                    if (res?.success) {
+                                        toast.success("Agent rejected")
+                                        setShowRejectModal(false)
+                                        router.refresh()
+                                    } else {
+                                        toast.error("Failed to reject")
+                                    }
+                                }}
+                                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                            >
+                                Reject
                             </button>
                         </div>
                     </div>

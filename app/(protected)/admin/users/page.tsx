@@ -8,6 +8,7 @@ interface PageProps {
         page?: string
         search?: string
         role?: string
+        filter?: string
     }>
 }
 
@@ -23,9 +24,10 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
     const page = parseInt(params.page || "1")
     const search = params.search
     const roleFilter = params.role
+    const statusFilter = params.filter
 
     // Fetch users
-    const usersData = await getUsers(page, 20, search, roleFilter)
+    const usersData = await getUsers(page, 20, search, roleFilter, statusFilter)
 
     return (
         <UsersClient

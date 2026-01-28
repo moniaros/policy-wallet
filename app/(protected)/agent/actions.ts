@@ -548,6 +548,17 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
     const file = formData.get("file") as File
     if (!file) return { error: "No file provided" }
 
+    // Security: Size Check (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+        return { error: "File too large. Maximum size is 10MB." }
+    }
+
+    // Security: Type Check
+    const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp"]
+    if (!allowedTypes.includes(file.type)) {
+        return { error: "Invalid file type. Only PDF and images are allowed." }
+    }
+
     if (!process.env.GEMINI_API_KEY) {
         return { error: "Gemini API Key not configured" }
     }
@@ -579,7 +590,7 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
         const part = {
             inlineData: {
                 data: base64Data,
-                mimeType: "application/pdf",
+                mimeType: file.type === "application/pdf" ? "application/pdf" : "image/jpeg", // Basic fallback mapping
             },
         };
 

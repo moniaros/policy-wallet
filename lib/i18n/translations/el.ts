@@ -138,6 +138,14 @@ export const el = {
         structuredCoverages: 'Καλυψεις',
         noCoveragesFound: 'Δεν αναλύθηκαν συγκεκριμένες καλύψεις.',
         plateNumber: 'Αριθμός Κυκλοφορίας',
+        uploadTitle: "Τι είδους ασφαλιστήριο θέλετε να προσθέσετε;",
+        uploadDesc: "Επιλέξτε τα PDF των ασφαλιστηρίων σας.",
+        addScan: "Προσθήκη Σάρωσης",
+        selectProvider: "Επιλέξτε Πάροχο...",
+        selectType: "Επιλέξτε Τύπο Κάλυψης...",
+        dropFiles: "Σύρετε αρχεία εδώ",
+        dragDropBrowse: "Σύρετε και αφήστε ή κάντε κλικ για αναζήτηση",
+        newAsset: "Νέο Περιουσιακό Στοιχείο",
         // Usage Widget
         aiPlanUsage: 'Χρήση Πλάνου AI',
         analyses: 'αναλύσεις',
@@ -152,6 +160,18 @@ export const el = {
         life: 'Ζωή',
         travel: 'Ταξιδιωτική',
         liability: 'Αστική Ευθύνη',
+        pet: "Κατοικίδιο",
+        breakdown: "Οδική Βοήθεια",
+        legal_expenses: "Νομική Προστασία",
+        income_protection: "Προστασία Εισοδήματος",
+        gadget: "Συσκευές", // or Gadget
+        bicycle: "Ποδήλατο",
+        business: "Επιχείρηση",
+        cyber: "Cyber", // often used as is or Κυβερνοασφάλεια
+        motorbike: "Μοτοσικλέτα",
+        public_liability: "Αστική Ευθύνη",
+        renters: "Ενοικιαστή",
+        other: "Άλλο",
     },
 
     // Policy Status
