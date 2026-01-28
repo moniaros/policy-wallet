@@ -32,7 +32,8 @@ export default async function OpportunitiesPage() {
         status: opp.status,
         severity: opp.gapInstance?.severity || 'medium',
         nextActionAt: opp.nextActionAt,
-        notes: opp.notes
+        notes: opp.notes,
+        policyId: opp.gapInstance?.policyId || null
     }))
 
     return <OpportunitiesClient initialOpportunities={formattedOpportunities} />

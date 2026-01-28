@@ -14,6 +14,7 @@ interface Opportunity {
     severity: string
     nextActionAt: Date | null
     notes: string | null
+    policyId: string | null
 }
 
 interface OpportunitiesClientProps {
@@ -82,8 +83,8 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                         key={key}
                         onClick={() => setFilter(key)}
                         className={`px-4 py-2 rounded-xl font-semibold text-sm whitespace-nowrap transition-all ${filter === key
-                                ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/30'
-                                : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-700'
+                            ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/30'
+                            : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-700'
                             }`}
                     >
                         {label} {count > 0 && `(${count})`}
@@ -131,10 +132,10 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                         </td>
                                         <td className="px-6 py-5">
                                             <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full ${opp.status === 'won' ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-100 dark:border-green-800' :
-                                                    opp.status === 'lost' ? 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-100 dark:border-red-800' :
-                                                        opp.status === 'quoted' ? 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-100 dark:border-purple-800' :
-                                                            opp.status === 'contacted' ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-100 dark:border-blue-800' :
-                                                                'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-100 dark:border-amber-800'
+                                                opp.status === 'lost' ? 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-100 dark:border-red-800' :
+                                                    opp.status === 'quoted' ? 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-100 dark:border-purple-800' :
+                                                        opp.status === 'contacted' ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-100 dark:border-blue-800' :
+                                                            'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-100 dark:border-amber-800'
                                                 }`}>
                                                 {opp.status}
                                             </span>
@@ -149,6 +150,15 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                             >
                                                 Update
                                             </button>
+
+                                            {opp.policyId && (
+                                                <a
+                                                    href={`/wallet/${opp.policyId}`}
+                                                    className="ml-2 text-stone-500 hover:text-teal-600 font-bold text-sm bg-stone-50 dark:bg-stone-900/20 px-4 py-2 rounded-xl transition-colors opacity-0 group-hover:opacity-100 dark:text-stone-400 dark:hover:text-teal-400 inline-block"
+                                                >
+                                                    View Policy
+                                                </a>
+                                            )}
                                         </td>
                                     </tr>
                                 ))

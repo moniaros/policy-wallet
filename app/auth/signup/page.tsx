@@ -77,7 +77,7 @@ function SignUpForm() {
                     setError(result.warning)
                 } else {
                     // Fallback to confirmation page if no redirect provided (legacy behavior)
-                    router.push(`/auth/signup/confirmation?email=${encodeURIComponent(result.email || email)}&role=${result.role || role}`)
+                    router.push(`/auth/signup/confirmation?email=${encodeURIComponent(email)}&role=${role}`)
                 }
             } else {
                 if (typeof result.error === 'string') {

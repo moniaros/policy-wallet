@@ -242,6 +242,7 @@ export async function getUsers(
                     },
                     agentProfile: {
                         select: {
+                            id: true,
                             verificationStatus: true,
                             agencyName: true
                         }

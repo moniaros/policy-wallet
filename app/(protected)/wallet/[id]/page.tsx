@@ -22,10 +22,7 @@ export default async function PolicyDetailPage({
 
     const [policy, sharesResult, aiUsageStats] = await Promise.all([
         db.policy.findUnique({
-            where: {
-                id: policyId,
-                ownerUserId: dbUser.id
-            },
+            where: { id: policyId },
             include: {
                 documents: true,
                 gapInstances: {
@@ -42,6 +39,28 @@ export default async function PolicyDetailPage({
 
     if (!policy) {
         notFound()
+    }
+
+    // Authorization Check
+    const isOwner = policy.ownerUserId === dbUser.id
+    if (!isOwner) {
+        // Check for Access Grant
+        const grant = await db.accessGrant.findFirst({
+            where: {
+                granterUserId: policy.ownerUserId,
+                granteeUserId: dbUser.id,
+                scope: `policy:${policyId}`,
+                status: 'active'
+            }
+        })
+
+        if (!grant) {
+            // Optional: Check if they are the assigned Agent via CustomerRelationship
+            // Depending on business rules, an active relationship might grant read access to all policies
+            // For now, let's stick to explicit grants or assume relationship checking if needed.
+            // As per plan, we allow if AccessGrant exists.
+            notFound() // Or redirect/unauthorized
+        }
     }
 
     const shares = sharesResult || []
@@ -101,6 +120,7 @@ export default async function PolicyDetailPage({
             daysLeft={daysLeft}
             holderName={dbUser.name || "Policy Holder"}
             shouldOpenWallet={shouldOpenWallet}
+            isOwner={isOwner}
             t={t}
         />
     )

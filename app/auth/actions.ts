@@ -188,3 +188,27 @@ export async function signOut() {
     await supabase.auth.signOut()
     redirect("/auth/signin")
 }
+
+export async function resendVerificationEmail(email: string, language: string = 'el') {
+    const supabase = await createClient()
+
+    try {
+        const { error } = await supabase.auth.resend({
+            type: 'signup',
+            email,
+            options: {
+                emailRedirectTo: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/auth/callback`
+            }
+        })
+
+        if (error) {
+            console.error("Resend error:", error)
+            return { success: false, error: error.message }
+        }
+
+        return { success: true }
+    } catch (error) {
+        console.error("Resend exception:", error)
+        return { success: false, error: "Failed to resend email" }
+    }
+}

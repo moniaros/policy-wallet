@@ -3,16 +3,11 @@ import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { redirect } from "next/navigation"
 import UsersClient from "./UsersClient"
 
-interface PageProps {
-    searchParams: Promise<{
-        page?: string
-        search?: string
-        role?: string
-        filter?: string
-    }>
-}
-
-export default async function AdminUsersPage({ searchParams }: PageProps) {
+export default async function AdminUsersPage({
+    searchParams
+}: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
     // Verify admin role
     const { dbUser } = await getAuthenticatedUser()
 
@@ -21,10 +16,10 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
     }
 
     const params = await searchParams
-    const page = parseInt(params.page || "1")
-    const search = params.search
-    const roleFilter = params.role
-    const statusFilter = params.filter
+    const page = parseInt((params.page as string) || "1")
+    const search = params.search as string | undefined
+    const roleFilter = params.role as string | undefined
+    const statusFilter = params.filter as string | undefined
 
     // Fetch users
     const usersData = await getUsers(page, 20, search, roleFilter, statusFilter)

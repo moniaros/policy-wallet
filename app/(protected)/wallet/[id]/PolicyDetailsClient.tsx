@@ -20,6 +20,7 @@ interface PolicyDetailsClientProps {
     daysLeft: number
     holderName: string
     shouldOpenWallet: boolean
+    isOwner: boolean
     t: any
 }
 
@@ -33,6 +34,7 @@ export function PolicyDetailsClient({
     daysLeft,
     holderName,
     shouldOpenWallet,
+    isOwner,
     t
 }: PolicyDetailsClientProps) {
     const isMobile = useIsMobile()
@@ -272,10 +274,10 @@ export function PolicyDetailsClient({
                     </div>
 
                     {/* Share Policy */}
-                    <SharePolicy policyId={policy.id} initialShares={serializedShares || []} />
+                    {isOwner && <SharePolicy policyId={policy.id} initialShares={serializedShares || []} />}
 
                     {/* Delete Policy */}
-                    <DeletePolicy policyId={policy.id} />
+                    {isOwner && <DeletePolicy policyId={policy.id} />}
                 </div>
             </div>
         </div >
