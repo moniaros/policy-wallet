@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { db } from "@/lib/db"
+import { logger } from "@/lib/logger"
 
 export abstract class BaseService {
     protected readonly db: PrismaClient
@@ -21,60 +22,74 @@ export abstract class BaseService {
     }
 
     /**
-     * Logs an activity to the database.
-     * Useful for audit trails and tracking user actions.
+     * Log an activity to the activity log
+     * 
+     * @param userId - ID of the user performing the action
+     * @param actionType - Type of action being performed
+     * @param description - Human-readable description
+     * @param metadata - Additional metadata (optional)
+     * 
+     * @example
+     * ```typescript
+     * await this.logActivity(
+     *   userId,
+     *   'POLICY_CREATED',
+     *   'Created motor insurance policy',
+     *   { policyId: policy.id, insurerName: 'Test Insurance' }
+     * )
+     * ```
      */
     protected async logActivity(
         userId: string,
-        action: string,
+        actionType: string,
         description: string,
-        metadata?: Record<string, any>
+        metadata?: Record<string, unknown>
     ): Promise<void> {
         try {
-            // We need to fetch the email for the log, or we can make it optional/nullable in implementation if schema allows
-            // Looking at admin actions, it passes email.
-            // Ideally, the caller should provide context.
-            // For now, we will try to fetch user email if not provided, or just store what we have.
-            // However, the admin logActivity takes (adminUserId, adminEmail, ...).
-            // We'll check the schema for generic activity logs.
-            // The admin action uses `db.activityLog`.
-
-            // Let's look up the user email if we only have ID, OR rely on a context object passed to the service method.
-            // For this helper, we'll keep it simple: assume we might need to look it up or just log it.
-            // But waiting on an async lookup inside a log helper might be slow.
-            // Let's see if we can just log the userId.
-
             const user = await this.db.user.findUnique({
                 where: { id: userId },
                 select: { email: true }
             })
 
-            if (!user) {
-                console.warn(`Failed to find user ${userId} for activity logging`)
-                return
-            }
-
             await this.db.activityLog.create({
                 data: {
-                    adminUserId: userId, // Assuming activityLog is polymorphic or we are reusing this field. 
-                    // Wait, looking at admin actions: adminUserId, adminEmail.
-                    // If this is for general users, is there a 'userId' field?
-                    // I will check schema if possible, but based on admin actions, it seems to be designed for admins?
-                    // Or maybe it's a generic activity log table?
-                    // User request says "Audit logging helper method".
-                    // I will assume reusing `activityLog` table.
-                    // If the table columns are `adminUserId`, it might be specific to admin.
-                    // But for now I will map it there.
-                    adminEmail: user.email,
-                    actionType: action,
-                    description: description,
-                    metadata: metadata || {},
-                    timestamp: new Date()
+                    adminUserId: userId,
+                    adminEmail: user?.email || 'unknown',
+                    actionType,
+                    description,
+                    metadata: (metadata || {}) as any // Prisma JSON type
                 }
             })
         } catch (error) {
-            // Fail silently or log to console/Sentry, don't break the main flow
-            console.error("Failed to log activity:", error)
+            // Don't fail the operation if logging fails
+            // Use logger if available, otherwise console
+            if (typeof logger === 'function') {
+                logger('error', 'Failed to log activity', {
+                    userId,
+                    actionType,
+                    error: error instanceof Error ? error.message : String(error)
+                })
+            } else {
+                console.error('Failed to log activity:', error)
+            }
+        }
+    }
+
+    /**
+     * Get user email by ID (helper method)
+     * 
+     * @param userId - User ID
+     * @returns User email or 'unknown'
+     */
+    protected async getUserEmail(userId: string): Promise<string> {
+        try {
+            const user = await this.db.user.findUnique({
+                where: { id: userId },
+                select: { email: true }
+            })
+            return user?.email || 'unknown'
+        } catch {
+            return 'unknown'
         }
     }
 }
