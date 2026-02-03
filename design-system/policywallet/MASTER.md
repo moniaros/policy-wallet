@@ -7,8 +7,8 @@
 ---
 
 **Project:** PolicyWallet
-**Generated:** 2026-02-03 23:57:37
-**Category:** Fintech/Crypto
+**Generated:** 2026-02-04 00:58:17
+**Category:** Analytics Dashboard
 
 ---
 
@@ -18,24 +18,24 @@
 
 | Role | Hex | CSS Variable |
 |------|-----|--------------|
-| Primary | `#F59E0B` | `--color-primary` |
-| Secondary | `#FBBF24` | `--color-secondary` |
-| CTA/Accent | `#8B5CF6` | `--color-cta` |
-| Background | `#0F172A` | `--color-background` |
-| Text | `#F8FAFC` | `--color-text` |
+| Primary | `#1E40AF` | `--color-primary` |
+| Secondary | `#3B82F6` | `--color-secondary` |
+| CTA/Accent | `#F59E0B` | `--color-cta` |
+| Background | `#F8FAFC` | `--color-background` |
+| Text | `#1E3A8A` | `--color-text` |
 
-**Color Notes:** Gold trust + purple tech
+**Color Notes:** Blue data + amber highlights
 
 ### Typography
 
-- **Heading Font:** IBM Plex Sans
-- **Body Font:** IBM Plex Sans
-- **Mood:** financial, trustworthy, professional, corporate, banking, serious
-- **Google Fonts:** [IBM Plex Sans + IBM Plex Sans](https://fonts.google.com/share?selection.family=IBM+Plex+Sans:wght@300;400;500;600;700)
+- **Heading Font:** Fira Code
+- **Body Font:** Fira Sans
+- **Mood:** dashboard, data, analytics, code, technical, precise
+- **Google Fonts:** [Fira Code + Fira Sans](https://fonts.google.com/share?selection.family=Fira+Code:wght@400;500;600;700|Fira+Sans:wght@300;400;500;600;700)
 
 **CSS Import:**
 ```css
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
 ```
 
 ### Spacing Variables
@@ -68,7 +68,7 @@
 ```css
 /* Primary Button */
 .btn-primary {
-  background: #8B5CF6;
+  background: #F59E0B;
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
@@ -85,8 +85,8 @@
 /* Secondary Button */
 .btn-secondary {
   background: transparent;
-  color: #F59E0B;
-  border: 2px solid #F59E0B;
+  color: #1E40AF;
+  border: 2px solid #1E40AF;
   padding: 12px 24px;
   border-radius: 8px;
   font-weight: 600;
@@ -99,7 +99,7 @@
 
 ```css
 .card {
-  background: #0F172A;
+  background: #F8FAFC;
   border-radius: 12px;
   padding: 24px;
   box-shadow: var(--shadow-md);
@@ -125,9 +125,9 @@
 }
 
 .input:focus {
-  border-color: #F59E0B;
+  border-color: #1E40AF;
   outline: none;
-  box-shadow: 0 0 0 3px #F59E0B20;
+  box-shadow: 0 0 0 3px #1E40AF20;
 }
 ```
 
@@ -153,28 +153,27 @@
 
 ## Style Guidelines
 
-**Style:** Dark Mode (OLED)
+**Style:** Data-Dense Dashboard
 
-**Keywords:** Dark theme, low light, high contrast, deep black, midnight blue, eye-friendly, OLED, night mode, power efficient
+**Keywords:** Multiple charts/widgets, data tables, KPI cards, minimal padding, grid layout, space-efficient, maximum data visibility
 
-**Best For:** Night-mode apps, coding platforms, entertainment, eye-strain prevention, OLED devices, low-light
+**Best For:** Business intelligence dashboards, financial analytics, enterprise reporting, operational dashboards, data warehousing
 
-**Key Effects:** Minimal glow (text-shadow: 0 0 10px), dark-to-light transitions, low white emission, high readability, visible focus
+**Key Effects:** Hover tooltips, chart zoom on click, row highlighting on hover, smooth filter animations, data loading spinners
 
 ### Page Pattern
 
-**Pattern Name:** Enterprise Gateway
+**Pattern Name:** Data-Dense + Drill-Down
 
-- **Conversion Strategy:**  logo carousel,  tab switching for industries, Path selection (I am a...). Mega menu navigation. Trust signals prominent.
-- **CTA Placement:** Contact Sales (Primary) + Login (Secondary)
-- **Section Order:** 1. Hero (Video/Mission), 2. Solutions by Industry, 3. Solutions by Role, 4. Client Logos, 5. Contact Sales
+- **CTA Placement:** Above fold
+- **Section Order:** Hero > Features > CTA
 
 ---
 
 ## Anti-Patterns (Do NOT Use)
 
-- ❌ Light backgrounds
-- ❌ No security indicators
+- ❌ Ornate design
+- ❌ No filtering
 
 ### Additional Forbidden Patterns
 

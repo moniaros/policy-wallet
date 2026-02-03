@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { CustomerList, AddCustomerModal } from "@/components/agent"
 import { BulkImportModal } from "@/components/agent/BulkImportModal"
 import { Customer } from "@/components/agent/types"
@@ -13,6 +13,20 @@ interface Props {
 
 type FilterType = 'all' | 'activated' | 'invited' | 'inactive'
 type SortType = 'recent' | 'name' | 'policies' | 'gaps'
+
+// Type for CustomerList component
+interface CustomerListItem {
+    id: string
+    name: string
+    email: string
+    phone?: string
+    policiesCount: number
+    totalPremium?: number
+    lastContact?: string
+    status: 'active' | 'invited' | 'inactive'
+    hasOpenOpportunities?: boolean
+    avatar?: string
+}
 
 export function CustomersClient({ initialCustomers }: Props) {
     const [customers, setCustomers] = useState(initialCustomers)
@@ -44,32 +58,48 @@ export function CustomersClient({ initialCustomers }: Props) {
         alert(`Successfully imported ${count} customers!`)
     }
 
+    // Map Customer to CustomerListItem format
+    const mappedCustomers: CustomerListItem[] = useMemo(() => {
+        return customers.map(customer => ({
+            id: customer.id,
+            name: `${customer.name} ${customer.surname}`,
+            email: customer.email,
+            phone: customer.phone,
+            policiesCount: customer.policyCount,
+            lastContact: customer.lastInteractionDate,
+            status: customer.activationStatus === 'activated' ? 'active' : customer.activationStatus,
+            hasOpenOpportunities: (customer.openGapsCount || 0) > 0
+        }))
+    }, [customers])
+
     // Filter customers
-    const filteredCustomers = customers.filter(customer => {
+    const filteredCustomers = mappedCustomers.filter(customer => {
         if (filter === 'all') return true
-        return customer.activationStatus === filter
+        return customer.status === filter || (filter === 'activated' && customer.status === 'active')
     })
 
     // Sort customers
     const sortedCustomers = [...filteredCustomers].sort((a, b) => {
         switch (sort) {
             case 'name':
-                return `${a.name} ${a.surname}`.localeCompare(`${b.name} ${b.surname}`)
+                return a.name.localeCompare(b.name)
             case 'policies':
-                return (b.policyCount || 0) - (a.policyCount || 0)
+                return (b.policiesCount || 0) - (a.policiesCount || 0)
             case 'gaps':
-                return (b.openGapsCount || 0) - (a.openGapsCount || 0)
+                return (b.hasOpenOpportunities ? 1 : 0) - (a.hasOpenOpportunities ? 1 : 0)
             case 'recent':
             default:
-                return new Date(b.lastInteractionDate).getTime() - new Date(a.lastInteractionDate).getTime()
+                if (!a.lastContact) return 1
+                if (!b.lastContact) return -1
+                return new Date(b.lastContact).getTime() - new Date(a.lastContact).getTime()
         }
     })
 
     const statusCounts = {
-        all: customers.length,
-        activated: customers.filter(c => c.activationStatus === 'activated').length,
-        invited: customers.filter(c => c.activationStatus === 'invited').length,
-        inactive: customers.filter(c => c.activationStatus === 'inactive').length,
+        all: mappedCustomers.length,
+        activated: mappedCustomers.filter(c => c.status === 'active').length,
+        invited: mappedCustomers.filter(c => c.status === 'invited').length,
+        inactive: mappedCustomers.filter(c => c.status === 'inactive').length,
     }
 
     return (
@@ -142,10 +172,7 @@ export function CustomersClient({ initialCustomers }: Props) {
 
             <CustomerList
                 customers={sortedCustomers}
-                isLoading={isLoading}
-                onSearch={handleSearch}
                 onCustomerClick={(id: string) => router.push(`/customers/${id}`)}
-                onAddCustomer={() => setIsAddModalOpen(true)}
             />
 
             <AddCustomerModal
