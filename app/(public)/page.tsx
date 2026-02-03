@@ -1,11 +1,11 @@
-import { LandingPageClient } from "@/components/landing/LandingPageClient"
+import { WorldClassLanding } from "@/components/landing/WorldClassLanding"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-    title: "PolicyWallet - Your Insurance, Consolidated",
-    description: "The neutral wallet to manage all your policies in one place.",
+    title: "PolicyWallet - Το Έξυπνο Ασφαλιστικό σας Πορτοφόλι με AI",
+    description: "Μεγιστοποιήστε τα οφέλη της ασφάλισής σας με έξυπνες πληροφορίες και υπενθυμίσεις προληπτικής φροντίδας. Αποκτήστε πρόωρη πρόσβαση στην πλατφόρμα μας.",
 }
 
 export default function LandingPage() {
-    return <LandingPageClient />
+    return <WorldClassLanding />
 }

@@ -73,7 +73,6 @@ export interface UpdatePolicyInput {
 }
 
 export interface SharePolicyInput {
-    policyId: string
     agentEmail: string
 }
 

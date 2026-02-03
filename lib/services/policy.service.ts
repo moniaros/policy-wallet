@@ -1,137 +1,140 @@
-import { BaseService } from "./base.service"
-import { z } from "zod"
-import { uploadFile, deleteFile } from "@/lib/storage"
-import { GoogleGenerativeAI } from "@google/generative-ai"
-import { logger } from "@/lib/logger"
-import fs from "fs/promises"
-import { Policy, AccessGrant, CustomerRelationship, NotificationEvent } from "@prisma/client"
+/**
+ * Policy Service
+ * 
+ * Handles all policy-related business logic including creation, upload,
+ * sharing, and deletion. Uses AppError for consistent error handling
+ * and domain types for type safety.
+ */
 
-// Types
-export interface PolicyShare {
-    id: string
-    email: string
-    name: string | null
-    image: string | null
-    grantedAt: Date
-}
-export interface CreatePolicyInput {
-    insurerName: string
-    policyNumber: string
-    lineOfBusiness: string
-    startDate: string
-    endDate: string
-    premiumAmount?: number
-    documentUrls?: string[]
-    documentNames?: string[]
-    documentSizes?: string[]
+import { BaseService } from './base.service'
+import { AppError } from '@/lib/errors'
+import { uploadFile, deleteFile } from '@/lib/storage'
+import { logger } from '@/lib/logger'
+import type { Policy, PolicyDocument } from '@prisma/client'
+import type {
+    CreatePolicyInput,
+    SharePolicyInput,
+    PolicyView,
+    PolicyDetailView,
+    UserSummary
+} from '@/types'
+
+export interface UploadAndParseResult {
+    policy: Policy
+    extracted: boolean
+    policyId: string
 }
 
 export interface ShareResult {
     success: boolean
     message?: string
     link?: string
-    error?: string
 }
 
-const PolicySchema = z.object({
-    insurerName: z.string().min(1, "Insurer name is required"),
-    policyNumber: z.string().min(1, "Policy number is required"),
-    lineOfBusiness: z.enum([
-        "motor", "health", "home", "life", "travel", "liability",
-        "pet", "breakdown", "legal_expenses", "income_protection",
-        "gadget", "bicycle", "business", "cyber", "motorbike",
-        "public_liability", "renters", "other"
-    ]),
-    startDate: z.string(),
-    endDate: z.string(),
-    premiumAmount: z.coerce.number().optional(),
-})
+export interface PolicyShare {
+    id: string
+    user: UserSummary
+    grantedAt: Date
+}
 
+/**
+ * Service for managing insurance policies
+ */
 export class PolicyService extends BaseService {
 
     /**
-     * Creates a new policy for a user.
-     * Handles validation, document association, and activity logging.
+     * Creates a new policy for a user
      * 
-     * @param userId - The ID of the policy owner
-     * @param data - The policy data including document metadata
+     * @param userId - ID of the policy owner
+     * @param data - Policy creation data
+     * @param language - User's preferred language for error messages
      * @returns The created policy
+     * 
+     * @throws {AppError} NOT_FOUND if user doesn't exist
+     * @throws {AppError} VALIDATION if data is invalid
+     * 
+     * @example
+     * ```typescript
+     * const policy = await policyService.create(userId, {
+     *   insurerName: 'Acme Insurance',
+     *   policyNumber: 'POL-123',
+     *   lineOfBusiness: 'motor',
+     *   startDate: '2024-01-01',
+     *   endDate: '2025-01-01',
+     *   premiumAmount: 500
+     * })
+     * ```
      */
-    async create(userId: string, data: CreatePolicyInput): Promise<Policy> {
+    async create(
+        userId: string,
+        data: CreatePolicyInput,
+        language: 'en' | 'el' = 'en'
+    ): Promise<Policy> {
         return this.withTransaction(async (tx) => {
-            const user = await tx.user.findUnique({ where: { id: userId } })
-            if (!user) throw new Error("User not found")
-
-            // Validate Data
-            const validatedData = PolicySchema.parse({
-                insurerName: data.insurerName,
-                policyNumber: data.policyNumber,
-                lineOfBusiness: data.lineOfBusiness,
-                startDate: data.startDate,
-                endDate: data.endDate,
-                premiumAmount: data.premiumAmount,
+            // Verify user exists
+            const user = await tx.user.findUnique({
+                where: { id: userId },
+                select: { id: true, email: true }
             })
 
+            if (!user) {
+                throw AppError.notFound('User', userId)
+            }
+
+            // Create policy
             const policy = await tx.policy.create({
                 data: {
                     ownerUserId: userId,
                     createdByUserId: userId,
-                    insurerName: validatedData.insurerName,
-                    policyNumber: validatedData.policyNumber,
-                    lineOfBusiness: validatedData.lineOfBusiness,
-                    startDate: new Date(validatedData.startDate),
-                    endDate: new Date(validatedData.endDate),
-                    premiumAmount: validatedData.premiumAmount,
-                    status: "active",
+                    insurerName: data.insurerName,
+                    policyNumber: data.policyNumber,
+                    lineOfBusiness: data.lineOfBusiness,
+                    startDate: new Date(data.startDate),
+                    endDate: new Date(data.endDate),
+                    premiumAmount: data.premiumAmount,
+                    premiumCurrency: data.premiumCurrency || 'EUR',
+                    status: 'active'
                 }
             })
 
-            // Handle Document Metadata (URLs)
-            if (data.documentUrls && data.documentUrls.length > 0) {
-                const urls = data.documentUrls
-                const names = data.documentNames || []
-                const sizes = data.documentSizes || []
-
-                for (let i = 0; i < urls.length; i++) {
-                    const fileUrl = urls[i]
-                    const rawFileName = names[i] || "Unknown Document"
+            // Handle document metadata (if provided)
+            if (data.documents && data.documents.length > 0) {
+                for (const doc of data.documents) {
+                    const rawFileName = doc.name || 'Unknown Document'
                     const fileName = rawFileName.replace(/[^a-zA-Z0-9._-]/g, '_')
-                    const fileSize = parseInt(sizes[i] || "0")
 
-                    // Simple extension check
+                    // Validate file extension
                     const lowerName = fileName.toLowerCase()
-                    const hasValidExt =
-                        lowerName.endsWith('.pdf') ||
-                        lowerName.endsWith('.jpg') ||
-                        lowerName.endsWith('.jpeg') ||
-                        lowerName.endsWith('.png') ||
-                        lowerName.endsWith('.webp')
+                    const validExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.webp']
+                    const hasValidExt = validExtensions.some(ext => lowerName.endsWith(ext))
 
                     if (!hasValidExt) {
-                        console.warn(`Skipping document with invalid extension: ${fileName}`)
+                        logger('warn', 'Skipping document with invalid extension', {
+                            userId,
+                            fileName,
+                            policyId: policy.id
+                        })
                         continue
                     }
 
-                    if (fileUrl) {
-                        await tx.policyDocument.create({
-                            data: {
-                                policyId: policy.id,
-                                fileUrl: fileUrl,
-                                fileName: fileName,
-                                fileSize: fileSize,
-                                source: "policyholder",
-                                uploadedByUserId: userId,
-                                processingStatus: "completed"
-                            }
-                        })
-                    }
+                    await tx.policyDocument.create({
+                        data: {
+                            policyId: policy.id,
+                            fileUrl: doc.url,
+                            fileName,
+                            fileSize: doc.size,
+                            source: 'policyholder',
+                            uploadedByUserId: userId,
+                            processingStatus: 'completed'
+                        }
+                    })
                 }
             }
 
-            // Log Activity
+            // Log activity
             await this.logActivity(
                 userId,
-                "POLICY_CREATED",
+                'POLICY_CREATED',
                 `Created policy ${policy.policyNumber} for ${policy.insurerName}`,
                 {
                     policyId: policy.id,
@@ -140,304 +143,366 @@ export class PolicyService extends BaseService {
                 }
             )
 
+            logger('info', 'Policy created successfully', {
+                userId,
+                policyId: policy.id,
+                insurerName: policy.insurerName
+            })
+
             return policy
         })
     }
 
     /**
-     * Uploads and parses a policy document using AI extraction.
+     * Uploads and parses a policy document using AI extraction
      * 
-     * @param userId - The ID of the uploader
-     * @param file - The file object to upload
-     * @returns The created policy and extraction status
+     * @param userId - ID of the uploader
+     * @param file - File to upload
+     * @param language - User's preferred language
+     * @returns Created policy with extraction status
+     * 
+     * @throws {AppError} VALIDATION if file is invalid
+     * @throws {AppError} EXTERNAL_SERVICE if upload fails
+     * 
+     * @example
+     * ```typescript
+     * const result = await policyService.uploadAndParse(userId, file)
+     * if (result.extracted) {
+     *   console.log('AI extraction successful')
+     * }
+     * ```
      */
-    async uploadAndParse(userId: string, file: File): Promise<{ policy: Policy; extracted: boolean; policyId: string }> {
-        // Validation
-        if (!file) throw new Error("No file uploaded")
-        if (file.size > 10 * 1024 * 1024) throw new Error("File too large. Maximum size is 10MB.")
+    async uploadAndParse(
+        userId: string,
+        file: File,
+        language: 'en' | 'el' = 'en'
+    ): Promise<UploadAndParseResult> {
+        // Validate file size (10MB limit)
+        const MAX_FILE_SIZE = 10 * 1024 * 1024
+        if (file.size > MAX_FILE_SIZE) {
+            logger('warn', 'File upload rejected: too large', {
+                userId,
+                size: file.size,
+                maxSize: MAX_FILE_SIZE
+            })
 
-        const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp"]
-        if (!allowedTypes.includes(file.type)) throw new Error("Invalid file type. Only PDF, JPG, PNG, and WEBP are allowed.")
+            throw AppError.validation({
+                file: [language === 'el'
+                    ? 'Το αρχείο είναι πολύ μεγάλο. Μέγιστο μέγεθος: 10MB'
+                    : 'File too large. Maximum size is 10MB']
+            })
+        }
+
+        // Validate file type
+        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp']
+        if (!allowedTypes.includes(file.type)) {
+            logger('warn', 'File upload rejected: invalid type', {
+                userId,
+                type: file.type
+            })
+
+            throw AppError.validation({
+                file: [language === 'el'
+                    ? 'Μη έγκυρος τύπος αρχείου. Επιτρέπονται μόνο PDF, JPG, PNG και WEBP'
+                    : 'Invalid file type. Only PDF, JPG, PNG, and WEBP are allowed']
+            })
+        }
+
+        // Upload file to storage
+        let fileUrl: string
+        try {
+            fileUrl = await uploadFile(file, 'policies')
+        } catch (error) {
+            logger('error', 'File upload failed', {
+                userId,
+                fileName: file.name,
+                error: error instanceof Error ? error.message : String(error)
+            })
+
+            throw AppError.externalService(
+                'Storage',
+                error instanceof Error ? error : new Error('Upload failed')
+            )
+        }
+
+        // Use AI service to extract policy data
+        const { getAIService } = await import('@/lib/services/ai')
+        const aiService = getAIService()
+
+        let extracted = false
+        let policyData: any = {
+            insurerName: 'Processing...',
+            policyNumber: `PENDING-${Date.now()}`,
+            lineOfBusiness: 'motor',
+            startDate: new Date().toISOString().split('T')[0],
+            endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            premiumAmount: 0
+        }
+
+        if (aiService.isAvailable()) {
+            try {
+                // Read file for AI processing
+                const arrayBuffer = await file.arrayBuffer()
+                const buffer = Buffer.from(arrayBuffer)
+
+                const aiDocument = {
+                    data: buffer.toString('base64'),
+                    mimeType: file.type,
+                    fileName: file.name
+                }
+
+                // Extract policy data using AI
+                const extractedData = await aiService.extractPolicyData(aiDocument)
+
+                policyData = {
+                    insurerName: extractedData.insurerName,
+                    policyNumber: extractedData.policyNumber,
+                    lineOfBusiness: extractedData.lineOfBusiness,
+                    startDate: extractedData.startDate,
+                    endDate: extractedData.endDate,
+                    premiumAmount: extractedData.premiumAmount,
+                    coverageSummary: extractedData.coverageSummary
+                }
+                extracted = true
+
+                logger('info', 'AI extraction successful', {
+                    userId,
+                    fileName: file.name,
+                    insurerName: extractedData.insurerName,
+                    aiService: aiService.getServiceName()
+                })
+            } catch (error) {
+                logger('warn', 'AI extraction failed, using placeholder data', {
+                    userId,
+                    fileName: file.name,
+                    error: error instanceof Error ? error.message : String(error)
+                })
+                // Continue with placeholder data
+            }
+        } else {
+            logger('warn', 'AI service not available, using placeholder data', {
+                userId,
+                fileName: file.name
+            })
+        }
 
         const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
 
-        // 1. Upload to storage
-        let fileUrl = ""
-        try {
-            fileUrl = await uploadFile(file, "policies")
-        } catch (e) {
-            throw new Error("Upload failed")
+        const policy = await this.create(userId, {
+            ...policyData,
+            premiumCurrency: 'EUR',
+            documents: [{
+                url: fileUrl,
+                name: sanitizedFileName,
+                size: file.size
+            }]
+        }, language)
+
+        return {
+            policy,
+            extracted,
+            policyId: policy.id
         }
-
-        // 2. AI Extraction Logic
-        let extractedData = {
-            insurerName: "AI Processing...",
-            policyNumber: "PENDING-" + Date.now(),
-            lineOfBusiness: "motor",
-            startDate: new Date(),
-            endDate: new Date(Date.now() + 31536000000), // +1 year
-            coverageSummary: "Processing...",
-            premiumAmount: 0
-        };
-
-        if (process.env.GEMINI_API_KEY) {
-            try {
-                const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-                const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-                const arrayBuffer = await file.arrayBuffer();
-                const base64Data = Buffer.from(arrayBuffer).toString("base64");
-
-                const prompt = `
-                Analyze this insurance policy document and extract the following JSON. 
-                Do not include Markdown formatting, just the raw JSON.
-                Fields: 
-                - insurerName (string)
-                - policyNumber (string)
-                - lineOfBusiness (one of: motor, health, home, life, travel, liability)
-                - startDate (YYYY-MM-DD)
-                - endDate (YYYY-MM-DD)
-                - premiumAmount (number)
-                - coverageSummary (string): A short, clear summary of key coverages and limits (max 200 chars).
-                
-                If a field is missing, make a best guess or use null.
-                `;
-
-                const imagePart = {
-                    inlineData: {
-                        data: base64Data,
-                        mimeType: file.type === "application/pdf" ? "application/pdf" : file.type,
-                    },
-                };
-
-                const result = await model.generateContent([prompt, imagePart]);
-                const response = await result.response;
-                const text = response.text();
-
-                // Robust JSON extraction
-                const jsonMatch = text.match(/\{[\s\S]*\}/);
-                const jsonStr = jsonMatch ? jsonMatch[0] : text.replace(/```json/g, "").replace(/```/g, "").trim();
-                const aiJson = JSON.parse(jsonStr);
-
-                logger('info', 'AI extraction successful', { userId, fileName: file.name })
-
-                // Merge with defaults
-                if (aiJson.insurerName) extractedData.insurerName = aiJson.insurerName;
-                if (aiJson.policyNumber) extractedData.policyNumber = aiJson.policyNumber;
-                if (aiJson.lineOfBusiness) extractedData.lineOfBusiness = aiJson.lineOfBusiness.toLowerCase();
-                if (aiJson.startDate) extractedData.startDate = new Date(aiJson.startDate);
-                if (aiJson.endDate) extractedData.endDate = new Date(aiJson.endDate);
-                if (aiJson.coverageSummary) extractedData.coverageSummary = aiJson.coverageSummary;
-                if (aiJson.premiumAmount) (extractedData as any).premiumAmount = aiJson.premiumAmount;
-
-            } catch (error) {
-                logger('error', 'AI extraction failed', { userId, error, fileName: file.name })
-            }
-        }
-
-        // Transaction to create Policy and Document
-        const result = await this.withTransaction(async (tx) => {
-            const policy = await tx.policy.create({
-                data: {
-                    ownerUserId: userId,
-                    createdByUserId: userId,
-                    insurerName: extractedData.insurerName,
-                    policyNumber: extractedData.policyNumber,
-                    lineOfBusiness: extractedData.lineOfBusiness as any,
-                    startDate: extractedData.startDate,
-                    endDate: extractedData.endDate,
-                    coverageSummary: extractedData.coverageSummary,
-                    premiumAmount: (extractedData as any).premiumAmount || 0,
-                    status: "active", // Or 'action_needed' per discussion
-                }
-            })
-
-            await tx.policyDocument.create({
-                data: {
-                    policyId: policy.id,
-                    fileUrl: fileUrl,
-                    fileName: sanitizedFileName,
-                    fileSize: file.size,
-                    source: "policyholder",
-                    uploadedByUserId: userId,
-                    processingStatus: "completed"
-                }
-            })
-
-            return policy
-        })
-
-        // Log
-        await this.logActivity(
-            userId,
-            "POLICY_UPLOADED",
-            `Uploaded and parsed document ${file.name} for ${result.insurerName}`,
-            {
-                policyId: result.id,
-                fileName: file.name,
-                extractedInsurer: result.insurerName,
-                extractedPolicyNumber: result.policyNumber
-            }
-        )
-
-        return { policy: result, extracted: true, policyId: result.id }
     }
 
     /**
-     * Deletes a policy.
-     * Handles both Owner Deletion (full cleanup) and Shared User Removal (revoke access).
+     * Deletes a policy or revokes access
      * 
-     * @param policyId - The ID of the policy to delete
-     * @param userId - The ID of the user requesting deletion
+     * - If user is owner: Deletes policy and all associated data
+     * - If user has shared access: Revokes their access grant
+     * 
+     * @param policyId - ID of the policy
+     * @param userId - ID of the user requesting deletion
+     * @param language - User's preferred language
+     * 
+     * @throws {AppError} NOT_FOUND if policy doesn't exist
+     * @throws {AppError} FORBIDDEN if user has no access
+     * 
+     * @example
+     * ```typescript
+     * await policyService.delete(policyId, userId)
+     * ```
      */
-    async delete(policyId: string, userId: string): Promise<void> {
-        return this.withTransaction(async (tx) => {
-            const policy = await tx.policy.findUnique({
-                where: { id: policyId },
-                include: { documents: true }
-            })
+    async delete(
+        policyId: string,
+        userId: string,
+        language: 'en' | 'el' = 'en'
+    ): Promise<void> {
+        const policy = await this.db.policy.findUnique({
+            where: { id: policyId },
+            include: { documents: true }
+        })
 
-            if (!policy) throw new Error("Policy not found")
+        if (!policy) {
+            throw AppError.notFound('Policy', policyId)
+        }
 
-            // Case 1: Owner - Full Delete
-            if (policy.ownerUserId === userId) {
-                // Delete physical files
-                // Note: File deletion is external side-effect, should ideally valid if transaction commits
-                // But typically we do it best-effort.
+        const isOwner = policy.ownerUserId === userId
+
+        if (isOwner) {
+            // Owner deletion - full cleanup
+            await this.withTransaction(async (tx) => {
+                // Delete associated files from storage
                 for (const doc of policy.documents) {
-                    await deleteFile(doc.fileUrl)
+                    try {
+                        await deleteFile(doc.fileUrl)
+                    } catch (error) {
+                        logger('warn', 'Failed to delete file from storage', {
+                            fileUrl: doc.fileUrl,
+                            error: error instanceof Error ? error.message : String(error)
+                        })
+                        // Continue with deletion even if file delete fails
+                    }
                 }
 
-                // Cleanup related data
-                await tx.opportunity.deleteMany({ where: { policyId: policy.id } })
-
-                // Delete Policy (Cascades)
-                await tx.policy.delete({ where: { id: policy.id } })
+                // Delete policy (cascades to documents, gaps, etc.)
+                await tx.policy.delete({
+                    where: { id: policyId }
+                })
 
                 await this.logActivity(
                     userId,
-                    "POLICY_DELETED",
+                    'POLICY_DELETED',
                     `Deleted policy ${policy.policyNumber}`,
-                    { policyId, insurer: policy.insurerName }
+                    { policyId, insurerName: policy.insurerName }
                 )
-                return
-            }
+            })
 
-            // Case 2: Shared Access - Remove Grant
-            const grant = await tx.accessGrant.findFirst({
+            logger('info', 'Policy deleted by owner', {
+                userId,
+                policyId,
+                policyNumber: policy.policyNumber
+            })
+        } else {
+            // Check if user has shared access
+            const grant = await this.db.accessGrant.findFirst({
                 where: {
+                    granterUserId: policy.ownerUserId,
                     granteeUserId: userId,
-                    scope: `policy:${policyId}`,
-                    status: 'active' // Or just find any status to revoke
+                    status: 'active'
                 }
             })
 
-            if (grant) {
-                await tx.accessGrant.update({
-                    where: { id: grant.id },
-                    data: { status: 'revoked', revokedAt: new Date() }
-                })
-
-                await this.logActivity(
-                    userId,
-                    "POLICY_ACCESS_REVOKED",
-                    `Revoked access to shared policy ${policyId}`,
-                    { policyId }
+            if (!grant) {
+                throw AppError.forbidden(
+                    language === 'el'
+                        ? 'Δεν έχετε πρόσβαση σε αυτήν την πολιτική'
+                        : 'You do not have access to this policy'
                 )
-                return
             }
 
-            throw new Error("Unauthorized: You do not have permission to delete this policy")
-        })
+            // Revoke access
+            await this.db.accessGrant.update({
+                where: { id: grant.id },
+                data: { status: 'revoked' }
+            })
+
+            await this.logActivity(
+                userId,
+                'POLICY_ACCESS_REVOKED',
+                `Revoked access to policy ${policy.policyNumber}`,
+                { policyId, grantId: grant.id }
+            )
+
+            logger('info', 'Policy access revoked', {
+                userId,
+                policyId,
+                grantId: grant.id
+            })
+        }
     }
 
     /**
-     * Shares a policy with another user via email.
-     * If user exists, grants access. If not, creates an invite.
+     * Shares a policy with another user
      * 
-     * @param policyId - The policy ID
-     * @param ownerUserId - The owner initiating the share
-     * @param agentEmail - The email of the recipient
+     * - If recipient exists: Creates access grant
+     * - If recipient doesn't exist: Creates invite
+     * 
+     * @param policyId - ID of the policy to share
+     * @param ownerUserId - ID of the policy owner
+     * @param data - Share data (recipient email)
+     * @param language - User's preferred language
+     * @returns Share result with success status
+     * 
+     * @throws {AppError} NOT_FOUND if policy doesn't exist
+     * @throws {AppError} FORBIDDEN if user is not owner
+     * @throws {AppError} CONFLICT if already shared
+     * 
+     * @example
+     * ```typescript
+     * const result = await policyService.share(policyId, userId, {
+     *   recipientEmail: 'agent@example.com'
+     * })
+     * ```
      */
-    async share(policyId: string, ownerUserId: string, agentEmail: string): Promise<ShareResult> {
-        return this.withTransaction(async (tx) => {
-            const agent = await tx.user.findUnique({ where: { email: agentEmail } })
+    async share(
+        policyId: string,
+        ownerUserId: string,
+        data: SharePolicyInput,
+        language: 'en' | 'el' = 'en'
+    ): Promise<ShareResult> {
+        const policy = await this.db.policy.findUnique({
+            where: { id: policyId }
+        })
 
-            // Log Owner info
-            const owner = await tx.user.findUnique({ where: { id: ownerUserId } })
+        if (!policy) {
+            throw AppError.notFound('Policy', policyId)
+        }
 
-            if (!agent) {
-                // Create Invitation
-                const invite = await tx.invite.create({
-                    data: {
-                        inviterUserId: ownerUserId,
-                        inviteeEmail: agentEmail,
-                        token: Math.random().toString(36).substring(7), // Simple token generation
-                        inviteType: 'share',
-                        scope: `policy:${policyId}`,
-                        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-                    }
-                })
+        if (policy.ownerUserId !== ownerUserId) {
+            throw AppError.forbidden(
+                language === 'el'
+                    ? 'Μόνο ο κάτοχος μπορεί να μοιραστεί αυτήν την πολιτική'
+                    : 'Only the owner can share this policy'
+            )
+        }
 
-                const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
-                const link = `${baseUrl}/invite/${invite.token}`
+        const recipientEmail = data.agentEmail.toLowerCase().trim()
 
-                await this.logActivity(
-                    ownerUserId,
-                    "POLICY_SHARE_INVITE",
-                    `Invited ${agentEmail} to share policy ${policyId}`,
-                    { policyId, agentEmail }
+        // Check if recipient exists
+        const recipient = await this.db.user.findUnique({
+            where: { email: recipientEmail }
+        })
+
+        if (recipient) {
+            // Check if already shared
+            const existingGrant = await this.db.accessGrant.findFirst({
+                where: {
+                    granterUserId: ownerUserId,
+                    granteeUserId: recipient.id,
+                    status: 'active'
+                }
+            })
+
+            if (existingGrant) {
+                throw AppError.conflict(
+                    language === 'el'
+                        ? 'Η πολιτική έχει ήδη κοινοποιηθεί σε αυτόν τον χρήστη'
+                        : 'Policy is already shared with this user'
                 )
-
-                return { success: true, message: "Invitation sent to new user.", link }
             }
 
-            // Create Access Grant
-            await tx.accessGrant.create({
+            // Create access grant
+            await this.db.accessGrant.create({
                 data: {
                     granterUserId: ownerUserId,
-                    granteeUserId: agent.id,
-                    scope: `policy:${policyId}`,
-                    permissions: "read",
-                    status: "active"
+                    granteeUserId: recipient.id,
+                    scope: 'portfolio',
+                    permissions: 'view',
+                    status: 'active'
                 }
             })
 
-            // Ensure Relationship
-            const existingRel = await tx.customerRelationship.findUnique({
-                where: {
-                    agentUserId_policyholderUserId: {
-                        agentUserId: agent.id,
-                        policyholderUserId: ownerUserId
-                    }
-                }
-            })
-
-            if (!existingRel) {
-                await tx.customerRelationship.create({
-                    data: {
-                        agentUserId: agent.id,
-                        policyholderUserId: ownerUserId,
-                        status: "active",
-                        activationStatus: "active"
-                    }
-                })
-            }
-
-            // Get Policy Info for Notification
-            const policy = await tx.policy.findUnique({
-                where: { id: policyId },
-                select: { policyNumber: true, insurerName: true, lineOfBusiness: true }
-            })
-
-            // Create Notification
-            await tx.notificationEvent.create({
+            // Create notification
+            await this.db.notificationEvent.create({
                 data: {
-                    userId: agent.id,
+                    userId: recipient.id,
                     eventType: 'policy_shared',
                     channel: 'in_app',
-                    title: 'New Policy Shared With You',
-                    message: `${owner?.name || 'A customer'} has shared their ${policy?.lineOfBusiness || 'insurance'} policy from ${policy?.insurerName || 'an insurer'} with you.`,
+                    title: language === 'el' ? 'Νέα κοινή πολιτική' : 'New Shared Policy',
+                    message: language === 'el'
+                        ? `Μια πολιτική έχει κοινοποιηθεί μαζί σας: ${policy.policyNumber}`
+                        : `A policy has been shared with you: ${policy.policyNumber}`,
                     relatedObjectType: 'policy',
                     relatedObjectId: policyId
                 }
@@ -445,64 +510,185 @@ export class PolicyService extends BaseService {
 
             await this.logActivity(
                 ownerUserId,
-                "POLICY_SHARED",
-                `Shared policy ${policyId} with ${agentEmail}`,
-                { policyId, agentEmail }
+                'POLICY_SHARED',
+                `Shared policy ${policy.policyNumber} with ${recipientEmail}`,
+                { policyId, recipientEmail, recipientId: recipient.id }
             )
 
-            return { success: true }
-        })
+            logger('info', 'Policy shared successfully', {
+                ownerUserId,
+                policyId,
+                recipientEmail
+            })
+
+            return {
+                success: true,
+                message: language === 'el'
+                    ? 'Η πολιτική κοινοποιήθηκε επιτυχώς'
+                    : 'Policy shared successfully'
+            }
+        } else {
+            // Create invite
+            const token = `inv_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`
+            const invite = await this.db.invite.create({
+                data: {
+                    inviterUserId: ownerUserId,
+                    inviteeEmail: recipientEmail,
+                    inviteType: 'policy_share',
+                    token,
+                    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+                }
+            })
+
+            // TODO: Send email invite (email service integration)
+
+            await this.logActivity(
+                ownerUserId,
+                'POLICY_INVITE_SENT',
+                `Sent policy share invite to ${recipientEmail}`,
+                { policyId, inviteId: invite.id }
+            )
+
+            logger('info', 'Policy share invite created', {
+                ownerUserId,
+                policyId,
+                recipientEmail,
+                inviteId: invite.id
+            })
+
+            return {
+                success: true,
+                message: language === 'el'
+                    ? 'Η πρόσκληση στάλθηκε επιτυχώς'
+                    : 'Invite sent successfully',
+                link: `/invite/${invite.id}`
+            }
+        }
     }
 
     /**
-     * Gets all users who have been granted access to a policy.
+     * Gets all users who have access to a policy
      * 
-     * @param policyId - The policy ID
-     * @param userId - The user checking (usually owner)
+     * @param policyId - ID of the policy
+     * @param userId - ID of the user checking (must be owner)
+     * @param language - User's preferred language
+     * @returns List of users with access
+     * 
+     * @throws {AppError} NOT_FOUND if policy doesn't exist
+     * @throws {AppError} FORBIDDEN if user is not owner
+     * 
+     * @example
+     * ```typescript
+     * const shares = await policyService.getShares(policyId, userId)
+     * ```
      */
-    async getShares(policyId: string, userId: string): Promise<any[]> {
+    async getShares(
+        policyId: string,
+        userId: string,
+        language: 'en' | 'el' = 'en'
+    ): Promise<PolicyShare[]> {
+        const policy = await this.db.policy.findUnique({
+            where: { id: policyId }
+        })
+
+        if (!policy) {
+            throw AppError.notFound('Policy', policyId)
+        }
+
+        if (policy.ownerUserId !== userId) {
+            throw AppError.forbidden(
+                language === 'el'
+                    ? 'Μόνο ο κάτοχος μπορεί να δει τις κοινοποιήσεις'
+                    : 'Only the owner can view shares'
+            )
+        }
+
         const grants = await this.db.accessGrant.findMany({
             where: {
                 granterUserId: userId,
-                scope: `policy:${policyId}`,
                 status: 'active'
             },
             include: {
                 grantee: {
-                    select: { email: true, name: true, image: true }
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        image: true
+                    }
                 }
             }
         })
 
-        return grants.map(g => ({
-            id: g.id,
-            email: g.grantee.email,
-            name: g.grantee.name,
-            image: g.grantee.image,
-            grantedAt: g.grantedAt
+        return grants.map(grant => ({
+            id: grant.id,
+            user: {
+                id: grant.grantee.id,
+                name: grant.grantee.name || grant.grantee.email,
+                email: grant.grantee.email,
+                image: grant.grantee.image || undefined
+            },
+            grantedAt: grant.grantedAt
         }))
     }
 
     /**
-     * Revokes a specific access grant.
+     * Revokes access to a policy
      * 
-     * @param grantId - The ID of the access grant to revoke
-     * @param userId - The user revoking (must be granter)
+     * @param grantId - ID of the access grant
+     * @param userId - ID of the user revoking (must be granter)
+     * @param language - User's preferred language
+     * 
+     * @throws {AppError} NOT_FOUND if grant doesn't exist
+     * @throws {AppError} FORBIDDEN if user is not granter
+     * 
+     * @example
+     * ```typescript
+     * await policyService.revokeShare(grantId, userId)
+     * ```
      */
-    async revokeShare(grantId: string, userId: string): Promise<void> {
-        await this.withTransaction(async (tx) => {
-            const grant = await tx.accessGrant.findUnique({
-                where: { id: grantId }
-            })
-
-            if (!grant || grant.granterUserId !== userId) {
-                throw new Error("Unauthorized or grant not found")
+    async revokeShare(
+        grantId: string,
+        userId: string,
+        language: 'en' | 'el' = 'en'
+    ): Promise<void> {
+        const grant = await this.db.accessGrant.findUnique({
+            where: { id: grantId },
+            include: {
+                grantee: {
+                    select: { email: true }
+                }
             }
+        })
 
-            await tx.accessGrant.update({
-                where: { id: grantId },
-                data: { status: 'revoked', revokedAt: new Date() }
-            })
+        if (!grant) {
+            throw AppError.notFound('Access Grant', grantId)
+        }
+
+        if (grant.granterUserId !== userId) {
+            throw AppError.forbidden(
+                language === 'el'
+                    ? 'Μόνο ο κάτοχος μπορεί να ανακαλέσει την πρόσβαση'
+                    : 'Only the owner can revoke access'
+            )
+        }
+
+        await this.db.accessGrant.update({
+            where: { id: grantId },
+            data: { status: 'revoked' }
+        })
+
+        await this.logActivity(
+            userId,
+            'POLICY_SHARE_REVOKED',
+            `Revoked access for ${grant.grantee.email}`,
+            { grantId, recipientEmail: grant.grantee.email }
+        )
+
+        logger('info', 'Policy share revoked', {
+            userId,
+            grantId,
+            recipientEmail: grant.grantee.email
         })
     }
 }

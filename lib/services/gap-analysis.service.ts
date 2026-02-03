@@ -1,22 +1,24 @@
-import { BaseService } from "./base.service"
-import { db } from "@/lib/db"
-import { GoogleGenerativeAI } from "@google/generative-ai"
-import { logger } from "@/lib/logger"
-import path from "path"
-import fs from "fs/promises"
-import { Policy } from "@prisma/client"
-import {
-    GapSeverity,
-    detectGapsForPolicy as legacyDetectGapsForPolicy,
-    detectGapsForUser as legacyDetectGapsForUser
-} from "@/lib/gap-detection" // We might need to adjust imports if we move things or keep using legacy logic
+/**
+ * Gap Analysis Service
+ * 
+ * Handles coverage gap detection and analysis using AI.
+ * Identifies potential coverage gaps in insurance policies and provides
+ * recommendations for improvement.
+ */
+
+import { BaseService } from './base.service'
+import { AppError } from '@/lib/errors'
+import { logger } from '@/lib/logger'
+import path from 'path'
+import fs from 'fs/promises'
+import type { Policy, GapInstance } from '@prisma/client'
+import type { GapSeverity, GapStatus } from '@/types'
 
 // Type Definitions
 export interface GapAnalysisResult {
     success: boolean
-    count?: number
+    count: number
     message?: string
-    error?: string
 }
 
 export interface DetectedGap {
@@ -28,7 +30,7 @@ export interface DetectedGap {
     detectedAt: Date
 }
 
-interface GapDefinition {
+export interface GapDefinition {
     id: string
     name: string
     slug: string
@@ -39,28 +41,79 @@ interface GapDefinition {
     detectionLogic: any
 }
 
+export interface VerifiedMetadata {
+    insurerName?: string
+    policyNumber?: string
+    lineOfBusiness?: string
+    startDate?: string
+    endDate?: string
+    premiumAmount?: number
+    coverageSummary?: string
+}
+
+export interface GapResult {
+    slug: string
+    isDetected: boolean
+    explanation: { en: string; el: string } | string
+    suggestion: { en: string; el: string } | string
+}
+
+export interface AIAnalysisResponse {
+    verifiedMetadata: VerifiedMetadata
+    gapResults: GapResult[]
+    acordData?: any
+}
+
 // In-memory cache for definitions (simple optimization)
 let gapDefinitionsCache: Record<string, GapDefinition[]> = {}
 let lastCacheUpdate: number = 0
 
+/**
+ * Service for analyzing insurance policy coverage gaps
+ */
 export class GapAnalysisService extends BaseService {
 
     /**
-     * Analyzes a policy for coverage gaps using AI.
+     * Analyzes a policy for coverage gaps using AI
      * 
-     * @param policyId - The ID of the policy to analyze
-     * @param userId - The ID of the user requesting analysis
+     * Performs comprehensive gap analysis by:
+     * 1. Verifying user authorization
+     * 2. Fetching applicable gap definitions
+     * 3. Using AI to analyze policy documents
+     * 4. Creating gap instances for detected issues
+     * 5. Updating policy with verified metadata
+     * 
+     * @param policyId - ID of the policy to analyze
+     * @param userId - ID of the user requesting analysis
+     * @param language - User's preferred language for error messages
+     * @returns Analysis result with gap count
+     * 
+     * @throws {AppError} NOT_FOUND if policy doesn't exist
+     * @throws {AppError} FORBIDDEN if user lacks access
+     * @throws {AppError} EXTERNAL_SERVICE if AI service unavailable
+     * 
+     * @example
+     * ```typescript
+     * const result = await gapService.analyzePolicy(policyId, userId, 'en')
+     * console.log(`Found ${result.count} gaps`)
+     * ```
      */
-    async analyzePolicy(policyId: string, userId: string): Promise<GapAnalysisResult> {
+    async analyzePolicy(
+        policyId: string,
+        userId: string,
+        language: 'en' | 'el' = 'en'
+    ): Promise<GapAnalysisResult> {
         // 1. Authorization
         const policy = await this.db.policy.findUnique({
             where: { id: policyId },
             include: { documents: true }
         })
 
-        if (!policy) throw new Error("Policy not found")
+        if (!policy) {
+            throw AppError.notFound('Policy', policyId)
+        }
 
-        // Allow Owner OR Authorized Agent
+        // Check authorization: Owner OR Authorized Agent
         const isOwner = policy.ownerUserId === userId
         if (!isOwner) {
             const hasAccess = await this.db.accessGrant.findFirst({
@@ -74,148 +127,133 @@ export class GapAnalysisService extends BaseService {
             const hasRelationship = !hasAccess ? await this.db.customerRelationship.findFirst({
                 where: {
                     agentUserId: userId,
-                    policyholderUserId: policy.ownerUserId,
+                    policyholderUserId: policy.ownerUserId
                 }
             }) : null
 
-            if (!hasAccess && !hasRelationship) throw new Error("Unauthorized access to this policy")
+            if (!hasAccess && !hasRelationship) {
+                throw AppError.forbidden(
+                    language === 'el'
+                        ? 'Δεν έχετε πρόσβαση σε αυτήν την πολιτική'
+                        : 'You do not have access to this policy'
+                )
+            }
         }
 
         // 2. Fetch Gap Definitions
         const gaps = await this.getGapDefinitions(policy.lineOfBusiness)
 
-        if (gaps.length === 0) return { success: true, count: 0, message: "No applicable gap definitions." }
-
-        // Clear existing open gaps to re-analyze
-        await this.db.gapInstance.deleteMany({
-            where: {
+        if (gaps.length === 0) {
+            logger('info', 'No gap definitions found for policy', {
                 policyId,
-                status: 'open' // Keep resolved/dismissed history? Original code deleted all. Let's stick to original behavior for now or improve.
-                // Original code: await db.gapInstance.deleteMany({ where: { policyId } })
-                // Let's stick to original for consistency unless we want to persist resolved ones. 
-                // The prompt says "Clear existing gaps to re-analyze".
+                lineOfBusiness: policy.lineOfBusiness
+            })
+            return {
+                success: true,
+                count: 0,
+                message: language === 'el'
+                    ? 'Δεν υπάρχουν εφαρμόσιμοι ορισμοί κενών'
+                    : 'No applicable gap definitions'
             }
-        })
-        // Wait, if we delete resolved ones, we lose history. But if we don't, we might duplicate.
-        // The original code deleted ALL. Let's do that for now to avoid complexity, but noted for future improvement.
+        }
+
+        // Clear existing gaps to re-analyze
         await this.db.gapInstance.deleteMany({ where: { policyId } })
 
-        if (!process.env.GEMINI_API_KEY) {
-            throw new Error("AI Service Unavailable")
+        // 3. Use AI Service
+        const { getAIService } = await import('@/lib/services/ai')
+        const aiService = getAIService()
+
+        if (!aiService.isAvailable()) {
+            throw AppError.externalService(
+                'AI Service',
+                new Error('AI service not available')
+            )
         }
 
         try {
-            const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-            // Prepare Document if available
-            let imagePart = null;
+            // 4. Prepare Document
+            let aiDocument = null
             if (policy.documents.length > 0) {
-                const doc = policy.documents[0];
+                const doc = policy.documents[0]
                 try {
-                    let buffer: Buffer;
+                    let buffer: Buffer
 
                     if (doc.fileUrl.startsWith('http')) {
-                        const response = await fetch(doc.fileUrl);
-                        if (!response.ok) throw new Error(`Failed to fetch remote file: ${response.statusText}`);
-                        const arrayBuffer = await response.arrayBuffer();
-                        buffer = Buffer.from(arrayBuffer);
-                    } else {
-                        // Normalize fileUrl
-                        let relativePath = doc.fileUrl.startsWith('/') ? doc.fileUrl.slice(1) : doc.fileUrl;
-                        const filePath = path.join(process.cwd(), "public", relativePath);
-                        buffer = await fs.readFile(filePath);
-                    }
-
-                    let mimeType = "application/pdf";
-                    const lowerName = doc.fileName.toLowerCase();
-                    if (lowerName.endsWith(".jpg") || lowerName.endsWith(".jpeg")) mimeType = "image/jpeg";
-                    else if (lowerName.endsWith(".png")) mimeType = "image/png";
-                    else if (lowerName.endsWith(".webp")) mimeType = "image/webp";
-
-                    imagePart = {
-                        inlineData: {
-                            data: buffer.toString("base64"),
-                            mimeType
+                        const response = await fetch(doc.fileUrl)
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch: ${response.statusText}`)
                         }
-                    };
-                } catch (e: any) {
-                    logger('error', 'Analysis: Document read failed', { error: e.message, fileUrl: doc.fileUrl });
-                    // Continue without document if failed? Or fail? Original failed.
-                    throw new Error(`Failed to read document: ${e.message}`)
-                }
-            }
-
-            const prompt = `
-            You are an expert insurance analyst. Your task is to analyze the provided policy document and database metadata.
-
-            CRITICAL: The provided DOCUMENT is the ABSOLUTE SOURCE OF TRUTH. 
-            The "Current Metadata" provided below may be incomplete or incorrect.
-            You must FIRST extract the actual details from the document.
-
-            Step 1: Data Verification
-            - Extract Insurer, Policy Number, Dates, and Premium from the DOCUMENT.
-            - If the document is missing or unreadable, fall back to the Current Metadata.
-
-            Step 2: Gap Analysis
-            - Using the VERIFIED data from Step 1, check for the following gaps.
-            - Provide a clear explanation based on the document's clauses.
-
-            Current Metadata (Reference Only):
-            Insurer: ${policy.insurerName}
-            Policy Number: ${policy.policyNumber}
-            Type: ${policy.lineOfBusiness}
-            Dates: ${policy.startDate.toISOString().split('T')[0]} to ${policy.endDate.toISOString().split('T')[0]}
-            Premium: ${policy.premiumAmount}
-            Summary: ${policy.coverageSummary || "N/A"}
-
-            Potential Gaps to Check:
-            ${gaps.map(g => `- Slug: ${g.slug} (${g.name}): ${(g.detectionLogic as any)?.check || g.description}`).join('\n')}
-
-            IMPORTANT: Return ONLY a JSON object with this exact structure:
-            {
-                "verifiedMetadata": {
-                    "insurerName": "string",
-                    "policyNumber": "string",
-                    "lineOfBusiness": "motor|health|home|life|travel|liability",
-                    "startDate": "YYYY-MM-DD",
-                    "endDate": "YYYY-MM-DD",
-                    "premiumAmount": number,
-                    "coverageSummary": "string"
-                },
-                "gapResults": [
-                    {
-                        "slug": "gap-slug",
-                        "isDetected": boolean,
-                        "explanation": { "en": "string", "el": "string" },
-                        "suggestion": { "en": "string", "el": "string" }
+                        const arrayBuffer = await response.arrayBuffer()
+                        buffer = Buffer.from(arrayBuffer)
+                    } else {
+                        const relativePath = doc.fileUrl.startsWith('/')
+                            ? doc.fileUrl.slice(1)
+                            : doc.fileUrl
+                        const filePath = path.join(process.cwd(), 'public', relativePath)
+                        buffer = await fs.readFile(filePath)
                     }
-                ],
-                "acordData": {
-                    "acordStandard": "V1.0",
-                    "policy": { ... },
-                    "vehicle": { ... },
-                    "coverages": [ ... ]
+
+                    // Determine MIME type
+                    let mimeType = 'application/pdf'
+                    const lowerName = doc.fileName.toLowerCase()
+                    if (lowerName.endsWith('.jpg') || lowerName.endsWith('.jpeg')) {
+                        mimeType = 'image/jpeg'
+                    } else if (lowerName.endsWith('.png')) {
+                        mimeType = 'image/png'
+                    } else if (lowerName.endsWith('.webp')) {
+                        mimeType = 'image/webp'
+                    }
+
+                    aiDocument = {
+                        data: buffer.toString('base64'),
+                        mimeType,
+                        fileName: doc.fileName
+                    }
+
+                    logger('info', 'Document prepared for analysis', {
+                        policyId,
+                        fileName: doc.fileName,
+                        mimeType
+                    })
+                } catch (error) {
+                    logger('error', 'Failed to read document for analysis', {
+                        policyId,
+                        fileUrl: doc.fileUrl,
+                        error: error instanceof Error ? error.message : String(error)
+                    })
+
+                    throw AppError.externalService(
+                        'Document Storage',
+                        error instanceof Error ? error : new Error('Failed to read document')
+                    )
                 }
             }
-            `;
 
-            const parts: any[] = [prompt];
-            if (imagePart) parts.push(imagePart);
+            // 5. Prepare metadata and gap definitions for AI
+            const metadata = {
+                insurerName: policy.insurerName,
+                policyNumber: policy.policyNumber,
+                lineOfBusiness: policy.lineOfBusiness,
+                startDate: policy.startDate,
+                endDate: policy.endDate,
+                premiumAmount: policy.premiumAmount ? Number(policy.premiumAmount) : null,
+                coverageSummary: policy.coverageSummary
+            }
 
-            const result = await model.generateContent(parts);
-            const response = await result.response;
-            const text = response.text();
+            const gapDefinitions = gaps.map(g => ({
+                slug: g.slug,
+                name: g.name,
+                description: g.description,
+                checkCriteria: (g.detectionLogic as any)?.check || g.description || 'Check for this gap'
+            }))
 
-            const jsonMatch = text.match(/\{[\s\S]*\}/);
-            if (!jsonMatch) throw new Error("AI did not return a valid JSON object");
-            const analysis = JSON.parse(jsonMatch[0]);
+            // 6. Call AI Service
+            const analysis = await aiService.analyzeGaps(aiDocument, metadata, gapDefinitions)
+            const { verifiedMetadata, gapResults, acordData } = analysis
 
-            const { verifiedMetadata, gapResults, acordData } = analysis;
-
-            // Update Policy with verified data
-            // We use 'any' cast here because strict types might clash or optional fields might be missing in partial update
-            await (this.db.policy as any).update({
+            // 7. Update Policy with Verified Data
+            await this.db.policy.update({
                 where: { id: policyId },
                 data: {
                     insurerName: verifiedMetadata.insurerName || policy.insurerName,
@@ -223,84 +261,116 @@ export class GapAnalysisService extends BaseService {
                     lineOfBusiness: verifiedMetadata.lineOfBusiness || policy.lineOfBusiness,
                     startDate: this.parseAnalysisDate(verifiedMetadata.startDate) || policy.startDate,
                     endDate: this.parseAnalysisDate(verifiedMetadata.endDate) || policy.endDate,
-                    premiumAmount: typeof verifiedMetadata.premiumAmount === 'number' ? verifiedMetadata.premiumAmount : policy.premiumAmount,
+                    premiumAmount: typeof verifiedMetadata.premiumAmount === 'number'
+                        ? verifiedMetadata.premiumAmount
+                        : policy.premiumAmount,
                     coverageSummary: verifiedMetadata.coverageSummary || policy.coverageSummary,
                     acordData: acordData || (policy as any).acordData || {},
                     lastAnalyzedAt: new Date()
                 }
             })
 
-            let detectedCount = 0;
+            // 8. Create Gap Instances
+            let detectedCount = 0
             for (const item of gapResults) {
                 if (item.isDetected) {
                     const def = gaps.find(g => g.slug === item.slug)
                     if (def) {
                         await this.db.gapInstance.create({
                             data: {
-                                policyId: policyId,
+                                policyId,
                                 gapDefinitionId: def.id,
-                                severity: def.defaultSeverity || "medium",
-                                status: "open",
-                                aiExplanation: item.explanation?.en || item.explanation || "No explanation provided",
-                                aiExplanationEl: item.explanation?.el || item.explanation || "Δεν δόθηκε εξήγηση",
-                                aiSuggestion: item.suggestion?.en || item.suggestion || "No suggestion",
-                                aiSuggestionEl: item.suggestion?.el || item.suggestion || "Καμία πρόταση",
+                                severity: def.defaultSeverity || 'medium',
+                                status: 'open',
+                                aiExplanation: typeof item.explanation === 'object'
+                                    ? item.explanation.en
+                                    : item.explanation || 'No explanation provided',
+                                aiExplanationEl: typeof item.explanation === 'object'
+                                    ? item.explanation.el
+                                    : item.explanation || 'Δεν δόθηκε εξήγηση',
+                                aiSuggestion: typeof item.suggestion === 'object'
+                                    ? item.suggestion.en
+                                    : item.suggestion || 'No suggestion',
+                                aiSuggestionEl: typeof item.suggestion === 'object'
+                                    ? item.suggestion.el
+                                    : item.suggestion || 'Καμία πρόταση',
                                 detectedAt: new Date()
                             }
                         })
-                        detectedCount++;
+                        detectedCount++
                     }
                 }
             }
 
+            // 9. Log Activity
             await this.logActivity(
                 userId,
-                "POLICY_ANALYZED",
-                `Analyzed and updated policy ${policyId} - ${detectedCount} gaps found`,
+                'POLICY_ANALYZED',
+                `Analyzed policy ${policy.policyNumber} - ${detectedCount} gaps found`,
                 { policyId, detectedCount, updated: true }
             )
 
-            return { success: true, count: detectedCount }
+            logger('info', 'Gap analysis completed successfully', {
+                policyId,
+                detectedCount,
+                totalGapsChecked: gapResults.length,
+                aiService: aiService.getServiceName()
+            })
 
-        } catch (e: any) {
-            console.error("AI Gap Analysis failed", e)
-            return { success: false, error: `Analysis failed: ${e.message}` }
+            return {
+                success: true,
+                count: detectedCount,
+                message: language === 'el'
+                    ? `Βρέθηκαν ${detectedCount} κενά`
+                    : `Found ${detectedCount} gaps`
+            }
+
+        } catch (error) {
+            logger('error', 'Gap analysis failed', {
+                policyId,
+                error: error instanceof Error ? error.message : String(error)
+            })
+
+            throw AppError.externalService(
+                'AI Analysis',
+                error instanceof Error ? error : new Error('Analysis failed')
+            )
         }
     }
-
     /**
-     * Detects gaps for all user policies using locally defined logic (legacy/hybrid).
+     * Retrieves active gap definitions for a specific line of business
      * 
-     * @param userId - The user ID
-     */
-    async detectGapsForUser(userId: string): Promise<DetectedGap[]> {
-        // Reuse logic from gap-detection.ts which already interacts with DB
-        return legacyDetectGapsForUser(userId)
-    }
-
-    /**
-     * Retrieves active gap definitions for a specific Line of Business.
-     * Uses simple caching to reduce DB hits.
+     * Uses in-memory caching (5 minutes) to reduce database load.
      * 
-     * @param lineOfBusiness - The LOB to filter by (optional)
+     * @param lineOfBusiness - Line of business to filter by (optional)
+     * @returns Array of gap definitions
+     * 
+     * @example
+     * ```typescript
+     * const motorGaps = await gapService.getGapDefinitions('motor')
+     * ```
      */
     async getGapDefinitions(lineOfBusiness?: string): Promise<GapDefinition[]> {
         const now = Date.now()
+
         // Cache for 5 minutes
         if (now - lastCacheUpdate > 5 * 60 * 1000) {
             gapDefinitionsCache = {}
             lastCacheUpdate = now
         }
 
-        const normalizedLOB = lineOfBusiness ? lineOfBusiness.toLowerCase().replace(' protection', '').trim() : 'all';
+        const normalizedLOB = lineOfBusiness
+            ? lineOfBusiness.toLowerCase().replace(' protection', '').trim()
+            : 'all'
 
+        // Check cache
         if (gapDefinitionsCache[normalizedLOB]) {
             return gapDefinitionsCache[normalizedLOB]
         }
 
+        // Fetch from database
         const gaps = await this.db.gapDefinition.findMany({
             where: {
-                // If LOB is provided, filter by it. If not, maybe return all?
                 ...(lineOfBusiness ? {
                     lineOfBusiness: {
                         equals: normalizedLOB,
@@ -311,34 +381,75 @@ export class GapAnalysisService extends BaseService {
             }
         })
 
-        // Map Prisma result to our interface if needed, or cast
-        // Assuming strict match for now.
+        // Parse detection logic if stored as string
         const mappedGaps = gaps.map(g => ({
             ...g,
-            detectionLogic: g.detectionLogic ? (typeof g.detectionLogic === 'string' ? JSON.parse(g.detectionLogic) : g.detectionLogic) : {}
+            detectionLogic: g.detectionLogic
+                ? (typeof g.detectionLogic === 'string'
+                    ? JSON.parse(g.detectionLogic)
+                    : g.detectionLogic)
+                : {}
         })) as GapDefinition[]
 
+        // Update cache
         gapDefinitionsCache[normalizedLOB] = mappedGaps
+
+        logger('info', 'Gap definitions loaded', {
+            lineOfBusiness: normalizedLOB,
+            count: mappedGaps.length
+        })
+
         return mappedGaps
     }
 
     /**
-     * Mark a gap as resolved.
+     * Marks a gap instance as resolved
      * 
-     * @param gapInstanceId - The ID of the gap instance
-     * @param userId - The user ID acting
+     * @param gapInstanceId - ID of the gap instance
+     * @param userId - ID of the user resolving the gap
+     * @param language - User's preferred language
+     * 
+     * @throws {AppError} NOT_FOUND if gap doesn't exist
+     * @throws {AppError} FORBIDDEN if user lacks authorization
+     * 
+     * @example
+     * ```typescript
+     * await gapService.resolveGap(gapId, userId, 'en')
+     * ```
      */
-    async resolveGap(gapInstanceId: string, userId: string): Promise<void> {
-        // Simple auth check: user owns the policy associated with this gap?
+    async resolveGap(
+        gapInstanceId: string,
+        userId: string,
+        language: 'en' | 'el' = 'en'
+    ): Promise<void> {
         const gap = await this.db.gapInstance.findUnique({
             where: { id: gapInstanceId },
             include: { policy: true }
         })
 
-        if (!gap) throw new Error("Gap not found")
-        if (gap.policy.ownerUserId !== userId) {
-            // Check agents logic here if needed, simplified for now
-            throw new Error("Unauthorized")
+        if (!gap) {
+            throw AppError.notFound('Gap', gapInstanceId)
+        }
+
+        // Check authorization
+        const isOwner = gap.policy.ownerUserId === userId
+        if (!isOwner) {
+            // Check for agent access
+            const hasAccess = await this.db.accessGrant.findFirst({
+                where: {
+                    granterUserId: gap.policy.ownerUserId,
+                    granteeUserId: userId,
+                    status: 'active'
+                }
+            })
+
+            if (!hasAccess) {
+                throw AppError.forbidden(
+                    language === 'el'
+                        ? 'Δεν έχετε δικαίωμα να επιλύσετε αυτό το κενό'
+                        : 'You do not have permission to resolve this gap'
+                )
+            }
         }
 
         await this.db.gapInstance.update({
@@ -346,42 +457,102 @@ export class GapAnalysisService extends BaseService {
             data: { status: 'resolved' }
         })
 
-        await this.logActivity(userId, "GAP_RESOLVED", `Resolved gap ${gapInstanceId}`, { gapInstanceId })
+        await this.logActivity(
+            userId,
+            'GAP_RESOLVED',
+            `Resolved gap ${gapInstanceId}`,
+            { gapInstanceId, policyId: gap.policyId }
+        )
+
+        logger('info', 'Gap resolved', {
+            gapInstanceId,
+            userId,
+            policyId: gap.policyId
+        })
     }
 
     /**
-     * Mark a gap as dismissed.
+     * Marks a gap instance as dismissed
      * 
-     * @param gapInstanceId - The ID of the gap instance
-     * @param userId - The user ID acting
+     * @param gapInstanceId - ID of the gap instance
+     * @param userId - ID of the user dismissing the gap
      * @param reason - Reason for dismissal
+     * @param language - User's preferred language
+     * 
+     * @throws {AppError} NOT_FOUND if gap doesn't exist
+     * @throws {AppError} FORBIDDEN if user lacks authorization
+     * 
+     * @example
+     * ```typescript
+     * await gapService.dismissGap(gapId, userId, 'Not applicable', 'en')
+     * ```
      */
-    async dismissGap(gapInstanceId: string, userId: string, reason: string): Promise<void> {
+    async dismissGap(
+        gapInstanceId: string,
+        userId: string,
+        reason: string,
+        language: 'en' | 'el' = 'en'
+    ): Promise<void> {
         const gap = await this.db.gapInstance.findUnique({
             where: { id: gapInstanceId },
             include: { policy: true }
         })
 
-        if (!gap) throw new Error("Gap not found")
-        if (gap.policy.ownerUserId !== userId) {
-            throw new Error("Unauthorized")
+        if (!gap) {
+            throw AppError.notFound('Gap', gapInstanceId)
+        }
+
+        // Check authorization
+        const isOwner = gap.policy.ownerUserId === userId
+        if (!isOwner) {
+            // Check for agent access
+            const hasAccess = await this.db.accessGrant.findFirst({
+                where: {
+                    granterUserId: gap.policy.ownerUserId,
+                    granteeUserId: userId,
+                    status: 'active'
+                }
+            })
+
+            if (!hasAccess) {
+                throw AppError.forbidden(
+                    language === 'el'
+                        ? 'Δεν έχετε δικαίωμα να απορρίψετε αυτό το κενό'
+                        : 'You do not have permission to dismiss this gap'
+                )
+            }
         }
 
         await this.db.gapInstance.update({
             where: { id: gapInstanceId },
-            data: {
-                status: 'dismissed',
-                // We might need a field for dismissal reason in schema? 
-                // Previous implementation didn't specify one, so we just log it.
-            }
+            data: { status: 'dismissed' }
         })
 
-        await this.logActivity(userId, "GAP_DISMISSED", `Dismissed gap ${gapInstanceId}: ${reason}`, { gapInstanceId, reason })
+        await this.logActivity(
+            userId,
+            'GAP_DISMISSED',
+            `Dismissed gap ${gapInstanceId}: ${reason}`,
+            { gapInstanceId, policyId: gap.policyId, reason }
+        )
+
+        logger('info', 'Gap dismissed', {
+            gapInstanceId,
+            userId,
+            policyId: gap.policyId,
+            reason
+        })
     }
 
-    private parseAnalysisDate(d: string | undefined): Date | undefined {
-        if (!d) return undefined;
-        const date = new Date(d);
-        return isNaN(date.getTime()) ? undefined : date;
+    /**
+     * Parses a date string from AI analysis
+     * 
+     * @param dateString - Date string to parse
+     * @returns Parsed Date object or undefined if invalid
+     * @private
+     */
+    private parseAnalysisDate(dateString: string | undefined): Date | undefined {
+        if (!dateString) return undefined
+        const date = new Date(dateString)
+        return isNaN(date.getTime()) ? undefined : date
     }
 }
