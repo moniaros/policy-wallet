@@ -64,8 +64,16 @@ export function EnhancedDesktopPolicyWallet({
         active: policies.filter(p => p.status === 'active').length,
         expiring: policies.filter(p => p.status === 'expiring_soon').length,
         actionNeeded: policies.filter(p => p.status === 'action_needed').length,
-        totalPremium: policies.reduce((sum, p) => sum + (p.premium || 0), 0),
-        avgPremium: policies.length > 0 ? policies.reduce((sum, p) => sum + (p.premium || 0), 0) / policies.length : 0
+        totalPremium: policies.reduce((sum, p) => {
+            const acordData = p.acordData as any
+            const premium = parseFloat(acordData?.policy?.premium?.amount?.toString() || '0')
+            return sum + premium
+        }, 0),
+        avgPremium: policies.length > 0 ? policies.reduce((sum, p) => {
+            const acordData = p.acordData as any
+            const premium = parseFloat(acordData?.policy?.premium?.amount?.toString() || '0')
+            return sum + premium
+        }, 0) / policies.length : 0
     }
 
     // Coverage breakdown

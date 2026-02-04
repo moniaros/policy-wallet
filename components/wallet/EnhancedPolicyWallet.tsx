@@ -96,8 +96,8 @@ export function EnhancedPolicyWallet({
             left: [
                 {
                     id: 'favorite',
-                    label: policy.isFavorite ? 'Unfavorite' : 'Favorite',
-                    icon: <Star className="w-4 h-4" fill={policy.isFavorite ? 'currentColor' : 'none'} />,
+                    label: 'Favorite',
+                    icon: <Star className="w-4 h-4" fill="none" />,
                     color: 'amber',
                     onAction: () => onToggleFavorite(policy.id)
                 }
@@ -178,16 +178,16 @@ export function EnhancedPolicyWallet({
                                 key={cat.key}
                                 onClick={() => setActiveFilter(cat.key)}
                                 className={`flex items-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm whitespace-nowrap transition-all flex-shrink-0 ${activeFilter === cat.key
-                                        ? 'bg-sky-600 text-white shadow-lg shadow-sky-500/30'
-                                        : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800'
+                                    ? 'bg-sky-600 text-white shadow-lg shadow-sky-500/30'
+                                    : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800'
                                     }`}
                             >
                                 <span>{cat.icon}</span>
                                 <span>{cat.label}</span>
                                 {categoryCounts[cat.key] > 0 && (
                                     <span className={`text-xs px-2 py-0.5 rounded-full ${activeFilter === cat.key
-                                            ? 'bg-white/20'
-                                            : 'bg-slate-100 dark:bg-slate-800'
+                                        ? 'bg-white/20'
+                                        : 'bg-slate-100 dark:bg-slate-800'
                                         }`}>
                                         {categoryCounts[cat.key]}
                                     </span>

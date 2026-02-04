@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from 'react'
 import { UserDashboard } from '@/components/dashboard/UserDashboard'
 import {
     Shield,
@@ -275,7 +276,7 @@ export default function DashboardDemoPage() {
     }
 
     // Toggle between roles (for demo purposes)
-    const [role, setRole] = React.useState<'policyholder' | 'agent'>('policyholder')
+    const [role, setRole] = useState<'policyholder' | 'agent'>('policyholder')
     const data = role === 'policyholder' ? policyholderData : agentData
 
     return (
@@ -285,8 +286,8 @@ export default function DashboardDemoPage() {
                 <button
                     onClick={() => setRole('policyholder')}
                     className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${role === 'policyholder'
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                         }`}
                 >
                     Policyholder
@@ -294,8 +295,8 @@ export default function DashboardDemoPage() {
                 <button
                     onClick={() => setRole('agent')}
                     className={`px-4 py-2 rounded-md text-sm font-semibold transition-colors ${role === 'agent'
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
                         }`}
                 >
                     Agent
