@@ -1,7 +1,7 @@
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { getAccountData } from "./actions"
-import { AccountClientPage } from "./AccountClientPage"
+import { AccountClient } from "@/components/account/AccountClient"
 import type { Policy } from "@/components/wallet/types"
 
 export default async function AccountPage() {
@@ -67,13 +67,9 @@ export default async function AccountPage() {
     }))
 
     return (
-        <AccountClientPage
+        <AccountClient
             initialData={data}
-            mobileProps={{
-                policies: mappedPolicies,
-                user,
-                agent
-            }}
+            userLanguage={dbUser.preferredLanguage || 'en'}
         />
     )
 }

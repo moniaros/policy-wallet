@@ -90,6 +90,7 @@ export interface AIPolicyExtractionResponse {
     endDate: string
     premiumAmount: number
     coverageSummary: string
+    acordData?: any // ACORD-compliant structured data extracted from document
 }
 
 /**

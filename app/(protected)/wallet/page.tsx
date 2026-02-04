@@ -1,6 +1,6 @@
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
-import { WalletClient } from "./WalletClient"
+import { WalletListClient } from "@/components/wallet/WalletListClient"
 import type { Policy, PolicyDocument } from "@/components/wallet/types"
 
 export default async function WalletPage() {
@@ -68,7 +68,7 @@ export default async function WalletPage() {
         }))
     }))
 
-    return <WalletClient policies={mappedPolicies} user={user} agent={agent} />
+    return <WalletListClient policies={mappedPolicies} user={user} />
 }
 
 function mapStatus(dbStatus: string, endDate: Date): 'active' | 'expiring_soon' | 'incomplete' | 'action_needed' {

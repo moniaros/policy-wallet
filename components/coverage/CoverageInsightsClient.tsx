@@ -127,14 +127,14 @@ export function CoverageInsightsClient({
     const healthStatus = getHealthStatus(stats.healthScore)
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-blue-950">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
 
                 {/* Hero Section */}
-                <div className="relative mb-12 overflow-hidden bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 rounded-3xl p-8 md:p-12 text-white shadow-2xl">
+                <div className="relative mb-12 overflow-hidden bg-gradient-to-br from-indigo-600 via-violet-600 to-indigo-700 rounded-3xl p-8 md:p-12 text-white shadow-2xl">
                     {/* Decorative elements */}
                     <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-3xl rounded-full -mr-32 -mt-32" />
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-400/20 blur-3xl rounded-full -ml-32 -mb-32" />
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-violet-400/20 blur-3xl rounded-full -ml-32 -mb-32" />
 
                     <div className="relative z-10">
                         <div className="flex items-center gap-3 mb-4">
@@ -208,9 +208,9 @@ export function CoverageInsightsClient({
                 <div className="flex flex-wrap gap-2 mb-8">
                     <button
                         onClick={() => setSelectedView('overview')}
-                        className={`px-6 py-3 rounded-xl font-bold transition-all ${selectedView === 'overview'
-                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
-                                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                        className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 ${selectedView === 'overview'
+                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
                             }`}
                     >
                         <div className="flex items-center gap-2">
@@ -220,9 +220,9 @@ export function CoverageInsightsClient({
                     </button>
                     <button
                         onClick={() => setSelectedView('gaps')}
-                        className={`px-6 py-3 rounded-xl font-bold transition-all ${selectedView === 'gaps'
-                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
-                                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                        className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 ${selectedView === 'gaps'
+                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
                             }`}
                     >
                         <div className="flex items-center gap-2">
@@ -237,9 +237,9 @@ export function CoverageInsightsClient({
                     </button>
                     <button
                         onClick={() => setSelectedView('breakdown')}
-                        className={`px-6 py-3 rounded-xl font-bold transition-all ${selectedView === 'breakdown'
-                                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
-                                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                        className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 ${selectedView === 'breakdown'
+                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
+                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
                             }`}
                     >
                         <div className="flex items-center gap-2">

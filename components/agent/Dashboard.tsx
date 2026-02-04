@@ -40,7 +40,7 @@ export function Dashboard({
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
             {/* Mobile-optimized container */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
 
@@ -49,16 +49,16 @@ export function Dashboard({
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 sm:gap-8">
                         <div className="flex-1">
                             {/* Greeting Badge */}
-                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-sky-100 dark:bg-sky-900/30 border border-sky-200 dark:border-sky-800 rounded-full mb-4">
-                                <div className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
-                                <span className="text-xs font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">
+                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-indigo-100 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 rounded-full mb-4">
+                                <div className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+                                <span className="text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-400">
                                     {getGreeting()}
                                 </span>
                             </div>
 
                             {/* Title */}
                             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-3 sm:mb-4 leading-tight">
-                                Today's <span className="text-sky-600 dark:text-sky-400">Command</span>
+                                Today's <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Command Center</span>
                             </h1>
 
                             {/* Subtitle */}
@@ -70,7 +70,7 @@ export function Dashboard({
                         {/* CTA Button */}
                         <button
                             onClick={onInviteCustomer}
-                            className="group inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-700 hover:to-cyan-700 text-white rounded-2xl text-sm sm:text-base font-bold transition-all shadow-lg shadow-sky-500/30 hover:shadow-xl hover:shadow-sky-500/40 hover:-translate-y-0.5 active:scale-95"
+                            className="group inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-2xl text-sm sm:text-base font-bold transition-all duration-300 shadow-lg shadow-emerald-500/30 hover:shadow-xl hover:shadow-emerald-500/40 hover:-translate-y-0.5 active:scale-95"
                         >
                             <svg className="w-5 h-5 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 4v16m8-8H4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -84,7 +84,7 @@ export function Dashboard({
                 {/* Stats Grid - Mobile Optimized */}
                 <div className="grid grid-cols-3 gap-3 sm:gap-6 mb-8 sm:mb-16">
                     {/* Activated */}
-                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                         <div className="flex items-center gap-2 mb-2 sm:mb-3">
                             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                             <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -99,7 +99,7 @@ export function Dashboard({
                     </div>
 
                     {/* Pending Invite */}
-                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                         <div className="flex items-center gap-2 mb-2 sm:mb-3">
                             <div className="w-2 h-2 rounded-full bg-amber-500" />
                             <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -114,7 +114,7 @@ export function Dashboard({
                     </div>
 
                     {/* Inactive */}
-                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                         <div className="flex items-center gap-2 mb-2 sm:mb-3">
                             <div className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-700" />
                             <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -148,7 +148,7 @@ export function Dashboard({
                                 <button
                                     key={priority.id}
                                     onClick={() => onPriorityClick?.(priority.customerId)}
-                                    className="w-full flex items-center justify-between p-4 sm:p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl text-left hover:border-sky-500/50 hover:shadow-lg hover:-translate-y-0.5 transition-all group active:scale-[0.98]"
+                                    className="w-full flex items-center justify-between p-4 sm:p-6 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 rounded-2xl sm:rounded-3xl text-left hover:border-indigo-500/50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group active:scale-[0.98] cursor-pointer"
                                 >
                                     <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
                                         {/* Icon */}
