@@ -559,12 +559,13 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
         return { error: "Invalid file type. Only PDF and images are allowed." }
     }
 
-    if (!process.env.GEMINI_API_KEY) {
+    const apiKey = process.env.GEMINI_API_KEY
+    if (!apiKey || typeof apiKey !== 'string' || apiKey.trim().length === 0 || apiKey === 'undefined') {
         return { error: "Gemini API Key not configured" }
     }
 
     try {
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const genAI = new GoogleGenerativeAI(apiKey.trim());
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const arrayBuffer = await file.arrayBuffer();

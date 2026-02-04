@@ -5,6 +5,8 @@ import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { logger } from "@/lib/logger"
+import { stripe } from "@/lib/stripe"
+import { env } from "@/lib/env"
 
 export async function getAccountData() {
     const authResult = await getAuthenticatedUserOrNull()
@@ -286,65 +288,73 @@ export async function upgradeSubscription(planId: string) {
     const plan = await db.plan.findUnique({ where: { id: planId } })
     if (!plan) return { error: "Plan not found" }
 
-    // In a real app, integrate with Stripe/Payment provider here
-    await db.subscription.updateMany({
-        where: { userId: authResult.dbUser.id, status: 'active' },
-        data: { status: 'expired' }
-    })
-
-    const newSubscription = await db.subscription.create({
-        data: {
-            userId: authResult.dbUser.id,
-            planId: planId,
-            status: 'active',
-            currentPeriodStart: new Date(),
-            currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-            autoRenew: true
-        }
-    })
-
-    // Handle Referral Conversion
-    if (Number(plan.price) > 0) {
-        const referral = await db.referral.findFirst({
-            where: { referredUserId: authResult.dbUser.id, status: 'pending' }
+    if (!plan.stripePriceId) {
+        // Fallback or development mode: manual update
+        await db.subscription.updateMany({
+            where: { userId: authResult.dbUser.id, status: 'active' },
+            data: { status: 'expired' }
         })
 
-        if (referral) {
-            const creditAmount = 25; // 25 EUR equivalent credits
+        await db.subscription.create({
+            data: {
+                userId: authResult.dbUser.id,
+                planId: planId,
+                status: 'active',
+                currentPeriodStart: new Date(),
+                currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                autoRenew: true
+            }
+        })
 
-            await db.$transaction(async (tx) => {
-                const updatedReferral = await tx.referral.update({
-                    where: { id: referral.id },
-                    data: {
-                        status: 'converted',
-                        creditedAt: new Date(),
-                        creditsEarned: creditAmount,
-                        referredSubscriptionId: newSubscription.id
-                    }
-                })
-
-                const lastTx = await tx.creditTransaction.findFirst({
-                    where: { userId: referral.referrerUserId },
-                    orderBy: { createdAt: 'desc' }
-                })
-                const currentBalance = lastTx?.balanceAfter || 0
-
-                await tx.creditTransaction.create({
-                    data: {
-                        userId: referral.referrerUserId,
-                        amount: creditAmount,
-                        transactionType: 'earn',
-                        balanceAfter: currentBalance + creditAmount,
-                        description: `Conversion bonus: ${authResult.dbUser.email}`,
-                        referralId: updatedReferral.id
-                    }
-                })
-            })
-        }
+        revalidatePath('/account')
+        return { success: true }
     }
 
-    revalidatePath("/account")
-    return { success: true }
+    try {
+        const session = await stripe.checkout.sessions.create({
+            customer: authResult.dbUser.stripeCustomerId || undefined,
+            customer_email: authResult.dbUser.stripeCustomerId ? undefined : authResult.dbUser.email,
+            line_items: [
+                {
+                    price: plan.stripePriceId,
+                    quantity: 1,
+                },
+            ],
+            mode: 'subscription',
+            success_url: `${env.NEXTAUTH_URL || 'http://localhost:3000'}/account?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${env.NEXTAUTH_URL || 'http://localhost:3000'}/account`,
+            metadata: {
+                userId: authResult.dbUser.id,
+                planId: plan.id,
+            },
+        })
+
+        return { url: session.url }
+    } catch (error) {
+        logger('error', 'Stripe checkout creation failed', { error })
+        return { error: "Failed to initialize payment" }
+    }
+}
+
+export async function createBillingPortalSession() {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    if (!authResult.dbUser.stripeCustomerId) {
+        return { error: "No billing information found" }
+    }
+
+    try {
+        const session = await stripe.billingPortal.sessions.create({
+            customer: authResult.dbUser.stripeCustomerId,
+            return_url: `${env.NEXTAUTH_URL || 'http://localhost:3000'}/account`,
+        })
+
+        return { url: session.url }
+    } catch (error) {
+        logger('error', 'Stripe portal creation failed', { error })
+        return { error: "Failed to open billing portal" }
+    }
 }
 
 export async function cancelSubscription() {

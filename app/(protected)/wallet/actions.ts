@@ -605,15 +605,22 @@ export async function askPolicyQuestion(policyId: string, question: string) {
 
     if (!hasAccess) return { error: "Unauthorized" }
 
-    // Check if Gemini API is available
-    const apiKey = process.env.GEMINI_API_KEY
-    if (!apiKey) {
+    // Use centralized AI service
+    const aiService = getAIService()
+    if (!aiService.isAvailable()) {
         return { error: "AI service is not configured" }
     }
 
     try {
-        const genAI = new GoogleGenerativeAI(apiKey)
-        const model = genAI.getGenerativeModel({
+        const genAI = (aiService as any).genAI // Access the underlying instance if needed, but better to use service methods
+        // Actually, let's keep it simple for now and just use the same logic but safer
+        const apiKey = process.env.GEMINI_API_KEY
+        if (!apiKey || apiKey === 'undefined') {
+            return { error: "AI service is not configured" }
+        }
+
+        const genAIInstance = new GoogleGenerativeAI(apiKey.trim())
+        const model = genAIInstance.getGenerativeModel({
             model: 'gemini-2.0-flash-exp',
             generationConfig: {
                 temperature: 0.3, // Balanced for Q&A

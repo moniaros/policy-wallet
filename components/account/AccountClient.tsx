@@ -16,8 +16,12 @@ import {
     TrendingUp,
     Award,
     Sparkles,
-    Target
+    Target,
+    ExternalLink,
+    Loader2
 } from 'lucide-react'
+import { createBillingPortalSession, upgradeSubscription } from '@/app/(protected)/account/actions'
+import { toast } from 'sonner'
 
 interface AccountClientProps {
     initialData: {
@@ -28,6 +32,7 @@ interface AccountClientProps {
         creditBalance: number
         referrals: any[]
         activeSessions: any[]
+        availablePlans: any[]
     }
     userLanguage?: string
 }
@@ -36,7 +41,43 @@ type TabType = 'overview' | 'billing' | 'referrals' | 'settings'
 
 export function AccountClient({ initialData, userLanguage = 'en' }: AccountClientProps) {
     const [activeTab, setActiveTab] = useState<TabType>('overview')
+    const [isPortalLoading, setIsPortalLoading] = useState(false)
+    const [isUpgradeLoading, setIsUpgradeLoading] = useState<string | null>(null)
     const lang = userLanguage === 'el' ? 'el' : 'en'
+
+    const handleOpenPortal = async () => {
+        setIsPortalLoading(true)
+        try {
+            const res = await createBillingPortalSession()
+            if (res.error) {
+                toast.error(res.error)
+            } else if (res.url) {
+                window.location.href = res.url
+            }
+        } catch (err) {
+            toast.error("Failed to open billing portal")
+        } finally {
+            setIsPortalLoading(false)
+        }
+    }
+
+    const handleUpgrade = async (planId: string) => {
+        setIsUpgradeLoading(planId)
+        try {
+            const res = await upgradeSubscription(planId)
+            if (res.error) {
+                toast.error(res.error)
+            } else if (res.url) {
+                window.location.href = res.url
+            } else if (res.success) {
+                toast.success("Subscription updated successfully")
+            }
+        } catch (err) {
+            toast.error("Upgrade failed")
+        } finally {
+            setIsUpgradeLoading(null)
+        }
+    }
 
     const copy = {
         title: {
@@ -168,8 +209,8 @@ export function AccountClient({ initialData, userLanguage = 'en' }: AccountClien
                                 key={key}
                                 onClick={() => setActiveTab(key)}
                                 className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === key
-                                        ? 'bg-amber-600 text-white shadow-lg shadow-amber-500/30'
-                                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                                    ? 'bg-amber-600 text-white shadow-lg shadow-amber-500/30'
+                                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                                     }`}
                             >
                                 <Icon className="w-4 h-4" />
@@ -239,16 +280,91 @@ export function AccountClient({ initialData, userLanguage = 'en' }: AccountClien
                     )}
 
                     {activeTab === 'billing' && (
-                        <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-xl border border-slate-200 dark:border-slate-800">
-                            <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-6">
-                                {copy.billing[lang]}
-                            </h2>
-                            <p className="text-slate-600 dark:text-slate-400">
-                                {lang === 'el'
-                                    ? 'Διαχειριστείτε τις μεθόδους πληρωμής και τα τιμολόγιά σας'
-                                    : 'Manage your payment methods and invoices'
-                                }
-                            </p>
+                        <div className="space-y-6">
+                            {/* Manage Billing Card */}
+                            <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-xl border border-slate-200 dark:border-slate-800">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                    <div>
+                                        <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">
+                                            {copy.billing[lang]}
+                                        </h2>
+                                        <p className="text-slate-600 dark:text-slate-400">
+                                            {lang === 'el'
+                                                ? 'Διαχειριστείτε τις μεθόδους πληρωμής, τις συνδρομές και τα τιμολόγιά σας'
+                                                : 'Manage your payment methods, subscriptions, and invoices'
+                                            }
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={handleOpenPortal}
+                                        disabled={isPortalLoading}
+                                        className="flex items-center justify-center gap-2 px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl font-black hover:scale-105 transition-all disabled:opacity-50 shadow-xl"
+                                    >
+                                        {isPortalLoading ? (
+                                            <Loader2 className="w-5 h-5 animate-spin" />
+                                        ) : (
+                                            <ExternalLink className="w-5 h-5" />
+                                        )}
+                                        {lang === 'el' ? 'Άνοιγμα Πύλης Χρέωσης' : 'Open Billing Portal'}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Plan Selection / Upgrade */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {initialData.availablePlans?.map((plan: any) => (
+                                    <div
+                                        key={plan.plan_id}
+                                        className={`bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-xl border-2 transition-all ${initialData.currentPlan?.plan_id === plan.plan_id
+                                            ? 'border-amber-500 ring-4 ring-amber-500/10'
+                                            : 'border-slate-100 dark:border-slate-800'
+                                            }`}
+                                    >
+                                        <div className="flex justify-between items-start mb-6">
+                                            <div className="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                                                {plan.plan_type}
+                                            </div>
+                                            {initialData.currentPlan?.plan_id === plan.plan_id && (
+                                                <div className="bg-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                                                    Current
+                                                </div>
+                                            )}
+                                        </div>
+                                        <h3 className="text-xl font-black mb-1">{plan.name}</h3>
+                                        <div className="flex items-baseline gap-1 mb-6">
+                                            <span className="text-3xl font-black">€{plan.price}</span>
+                                            <span className="text-slate-500 text-sm">/{plan.billing_interval}</span>
+                                        </div>
+
+                                        <ul className="space-y-3 mb-8">
+                                            {plan.entitlements && Object.entries(plan.entitlements).map(([key, value]: [string, any]) => (
+                                                <li key={key} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                                                    <Sparkles className="w-4 h-4 text-amber-500" />
+                                                    <span className="capitalize">{key.replace(/_/g, ' ')}:</span>
+                                                    <span className="font-bold">{value === 'unlimited' ? '∞' : value === true ? 'Yes' : value}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+
+                                        <button
+                                            onClick={() => handleUpgrade(plan.plan_id)}
+                                            disabled={!!isUpgradeLoading || initialData.currentPlan?.plan_id === plan.plan_id}
+                                            className={`w-full py-4 rounded-2xl font-black transition-all ${initialData.currentPlan?.plan_id === plan.plan_id
+                                                ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed'
+                                                : 'bg-amber-600 text-white hover:bg-amber-700 shadow-lg shadow-amber-600/20 active:scale-95'
+                                                }`}
+                                        >
+                                            {isUpgradeLoading === plan.plan_id ? (
+                                                <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                                            ) : (
+                                                initialData.currentPlan?.plan_id === plan.plan_id
+                                                    ? (lang === 'el' ? 'Ενεργό' : 'Current Plan')
+                                                    : (lang === 'el' ? 'Αναβάθμιση' : 'Upgrade Plan')
+                                            )}
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     )}
 

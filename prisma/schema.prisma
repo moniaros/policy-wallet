@@ -21,6 +21,7 @@ model User {
   password                        String?
   phoneNumber                     String?                  @map("phone_number")
   pushToken                       String?                  @map("push_token")
+  stripeCustomerId                String?                  @unique @map("stripe_customer_id")
   grantsReceived                  AccessGrant[]            @relation("Grantee")
   grantsGiven                     AccessGrant[]            @relation("Granter")
   accounts                        Account[]
@@ -381,6 +382,7 @@ model Plan {
   currency      String         @default("EUR")
   billingPeriod String         @map("billing_period")
   entitlements  Json
+  stripePriceId String?        @map("stripe_price_id")
   createdAt     DateTime       @default(now()) @map("created_at")
   subscriptions Subscription[]
 
@@ -395,6 +397,9 @@ model Subscription {
   currentPeriodStart DateTime           @map("current_period_start")
   currentPeriodEnd   DateTime           @map("current_period_end")
   autoRenew          Boolean            @default(true) @map("auto_renew")
+  stripeSubscriptionId String?          @unique @map("stripe_subscription_id")
+  stripePriceId      String?            @map("stripe_price_id")
+  stripeStatus       String?            @map("stripe_status")
   createdAt          DateTime           @default(now()) @map("created_at")
   updatedAt          DateTime           @updatedAt @map("updated_at")
   entitlementUsages  EntitlementUsage[]
@@ -633,6 +638,7 @@ model TokenPurchase {
   tokensPurchased        BigInt   @map("tokens_purchased")
   amountEur              Decimal  @map("amount_eur") @db.Decimal(10, 2)
   stripePaymentIntentId  String?  @map("stripe_payment_intent_id")
+  stripeSessionId        String?  @unique @map("stripe_session_id")
   status                 String   @default("pending") // 'pending', 'completed', 'failed'
   createdAt              DateTime @default(now()) @map("created_at")
 

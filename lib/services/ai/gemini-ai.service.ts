@@ -23,10 +23,23 @@ export class GeminiAIService implements IAIService {
   private apiKey: string | null = null
 
   constructor(apiKey?: string) {
-    this.apiKey = apiKey || process.env.GEMINI_API_KEY || null
+    const key = apiKey || process.env.GEMINI_API_KEY
 
-    if (this.apiKey) {
-      this.genAI = new GoogleGenerativeAI(this.apiKey)
+    // Ensure key is a non-empty string
+    if (key && typeof key === 'string' && key.trim().length > 0 && key !== 'undefined' && key !== 'null') {
+      this.apiKey = key.trim()
+      try {
+        this.genAI = new GoogleGenerativeAI(this.apiKey)
+      } catch (err) {
+        logger('error', 'Failed to initialize GoogleGenerativeAI SDK', {
+          error: err instanceof Error ? err.message : String(err)
+        })
+        this.genAI = null
+        this.apiKey = null
+      }
+    } else {
+      this.apiKey = null
+      this.genAI = null
     }
   }
 

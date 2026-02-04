@@ -18,6 +18,7 @@ const envSchema = z.object({
     // Payments (Stripe)
     STRIPE_SECRET_KEY: z.string().optional(),
     STRIPE_WEBHOOK_SECRET: z.string().min(1).optional(),
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().optional(),
 
     // Email / Brevo
     BREVO_API_KEY: z.string().optional(),
