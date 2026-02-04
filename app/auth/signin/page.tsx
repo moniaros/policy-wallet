@@ -4,6 +4,7 @@ import { useState } from "react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
+import { Loader2, Mail, Lock, AlertCircle, ArrowRight, CheckCircle } from "lucide-react"
 
 export default function SignInPage() {
     const router = useRouter()
@@ -31,7 +32,6 @@ export default function SignInPage() {
             })
 
             if (error) {
-                // Check if error is due to unconfirmed email
                 if (error.message.toLowerCase().includes('email not confirmed') ||
                     error.message.toLowerCase().includes('confirm your email')) {
                     setError("Your email address has not been verified yet.")
@@ -60,7 +60,7 @@ export default function SignInPage() {
             const result = await resendVerificationEmail(email, 'en')
 
             if (result.success) {
-                setResendMessage("✓ Verification email sent! Please check your inbox.")
+                setResendMessage("Verification email sent! Please check your inbox.")
             } else {
                 setResendMessage(result.error || "Failed to send email")
             }
@@ -72,143 +72,153 @@ export default function SignInPage() {
     }
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-stone-50 dark:bg-stone-950 px-4 py-12 sm:px-6 lg:px-8 relative overflow-hidden transition-colors">
-            {/* Background Decoration */}
+        <div className="flex min-h-screen flex-col items-center justify-center bg-slate-900 px-4 py-12 relative overflow-hidden">
+            {/* Liquid Background */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-                <div className="absolute -top-[30%] -right-[10%] w-[70%] h-[70%] rounded-full bg-teal-100/30 dark:bg-teal-900/10 blur-3xl opacity-60" />
-                <div className="absolute bottom-[0%] -left-[10%] w-[50%] h-[50%] rounded-full bg-blue-100/30 dark:bg-blue-900/10 blur-3xl opacity-50" />
+                <div className="absolute -top-[20%] -right-[10%] w-[60%] h-[60%] rounded-full bg-amber-500/10 blur-[120px] animate-pulse-slow" />
+                <div className="absolute bottom-[0%] -left-[10%] w-[50%] h-[50%] rounded-full bg-violet-600/10 blur-[120px] animate-pulse-slow delay-700" />
             </div>
 
-            <div className="w-full max-w-md space-y-8 rounded-3xl bg-white/80 dark:bg-stone-900/50 backdrop-blur-xl p-10 shadow-2xl border border-white/50 dark:border-white/5 relative z-10 transition-all duration-300 hover:shadow-teal-900/5">
-                <div className="text-center">
-                    <Link href="/" className="inline-block relative group">
-                        <span className="sr-only">PolicyWallet</span>
-                        <h1 className="text-3xl font-black tracking-tight text-stone-900 dark:text-white">
-                            Policy<span className="text-teal-600 dark:text-teal-400">Wallet</span>
+            <div className="w-full max-w-md bg-slate-900/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/50 p-8 sm:p-10 relative z-10 animate-in fade-in zoom-in duration-500 hover:shadow-amber-500/5 transition-all">
+                <div className="text-center mb-8">
+                    <Link href="/" className="inline-block group mb-6">
+                        <h1 className="text-3xl font-black tracking-tighter text-white">
+                            Policy<span className="text-amber-500">Wallet</span>
                         </h1>
-                        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-8 h-1 bg-teal-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
                     </Link>
-                    <h2 className="mt-8 text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-100">Welcome back</h2>
-                    <p className="mt-2 text-sm text-stone-600 dark:text-stone-400 font-medium">
-                        Sign in to your neutral insurance wallet
+                    <h2 className="text-xl font-bold text-white mb-2">Welcome Back</h2>
+                    <p className="text-slate-400 text-sm">
+                        Sign in to manage your insurance portfolio
                     </p>
                 </div>
 
-                <div className="mt-8">
-                    <form onSubmit={handleSubmit} className="space-y-5" method="post">
-                        {error && (
-                            <div className="space-y-3">
-                                <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 text-sm font-bold">
-                                    {error}
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    {error && (
+                        <div className="space-y-4">
+                            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-3">
+                                <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                                <div className="text-sm">
+                                    <p className="text-red-400 font-medium">{error}</p>
                                 </div>
-
-                                {showResendVerification && (
-                                    <div className="p-4 rounded-2xl bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-900/30 space-y-3">
-                                        <p className="text-sm text-stone-700 dark:text-stone-300">
-                                            Please check your email for the verification link. If you didn't receive it:
-                                        </p>
-                                        <button
-                                            type="button"
-                                            onClick={handleResendVerification}
-                                            disabled={isResending}
-                                            className="w-full px-4 py-2.5 rounded-lg bg-white dark:bg-stone-800 border-2 border-teal-200 dark:border-teal-700 text-teal-700 dark:text-teal-400 font-semibold hover:bg-teal-50 dark:hover:bg-teal-900/30 hover:border-teal-300 dark:hover:border-teal-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                                        >
-                                            {isResending ? (
-                                                <>
-                                                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                                    </svg>
-                                                    Sending...
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                                    </svg>
-                                                    Resend Verification Email
-                                                </>
-                                            )}
-                                        </button>
-                                        {resendMessage && (
-                                            <p className={`text-sm text-center ${resendMessage.startsWith('✓') ? 'text-teal-600 dark:text-teal-400' : 'text-red-600 dark:text-red-400'}`}>
-                                                {resendMessage}
-                                            </p>
-                                        )}
-                                    </div>
-                                )}
                             </div>
-                        )}
-                        <div>
-                            <label htmlFor="email" className="block text-xs font-bold text-stone-500 dark:text-stone-400 mb-1 uppercase tracking-wider">
-                                Email address
+
+                            {showResendVerification && (
+                                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-3">
+                                    <p className="text-sm text-amber-200/80">
+                                        Check your email for the verification link. Missing it?
+                                    </p>
+                                    <button
+                                        type="button"
+                                        onClick={handleResendVerification}
+                                        disabled={isResending}
+                                        className="w-full py-2.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 text-sm font-bold transition-all border border-amber-500/30 flex items-center justify-center gap-2"
+                                    >
+                                        {isResending ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                Sending...
+                                            </>
+                                        ) : (
+                                            "Resend Verification Email"
+                                        )}
+                                    </button>
+                                    {resendMessage && (
+                                        <div className="flex items-center gap-2 justify-center text-sm">
+                                            {resendMessage.includes('sent') ?
+                                                <CheckCircle className="w-4 h-4 text-green-500" /> :
+                                                <AlertCircle className="w-4 h-4 text-red-500" />
+                                            }
+                                            <span className={resendMessage.includes('sent') ? 'text-green-400' : 'text-red-400'}>
+                                                {resendMessage}
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    <div className="space-y-5">
+                        <div className="space-y-1.5">
+                            <label htmlFor="email" className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
+                                Email Address
                             </label>
-                            <input
-                                name="email"
-                                id="email"
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="block w-full rounded-xl border border-stone-200 dark:border-stone-700 px-4 py-3 bg-white/50 dark:bg-stone-800/50 text-stone-900 dark:text-white focus:bg-white dark:focus:bg-stone-800 transition-colors focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 dark:focus:ring-teal-500/20 focus:outline-none sm:text-sm"
-                                placeholder="name@example.com"
-                            />
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Mail className="h-5 w-5 text-slate-500 group-focus-within:text-amber-500 transition-colors" />
+                                </div>
+                                <input
+                                    id="email"
+                                    type="email"
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="block w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all font-medium sm:text-sm"
+                                    placeholder="name@company.com"
+                                />
+                            </div>
                         </div>
 
-                        <div>
-                            <div className="flex items-center justify-between mb-1">
-                                <label htmlFor="password" className="block text-xs font-bold text-stone-500 dark:text-stone-400 uppercase tracking-wider">
+                        <div className="space-y-1.5">
+                            <div className="flex items-center justify-between">
+                                <label htmlFor="password" className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
                                     Password
                                 </label>
-                                <Link href="#" className="text-xs font-bold text-teal-600 dark:text-teal-400 hover:text-teal-500">
+                                <Link
+                                    href="/auth/forgot-password"
+                                    className="text-xs font-bold text-amber-500 hover:text-amber-400 hover:underline transition-all"
+                                >
                                     Forgot password?
                                 </Link>
                             </div>
-                            <input
-                                name="password"
-                                id="password"
-                                type="password"
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="block w-full rounded-xl border border-stone-200 dark:border-stone-700 px-4 py-3 bg-white/50 dark:bg-stone-800/50 text-stone-900 dark:text-white focus:bg-white dark:focus:bg-stone-800 transition-colors focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 dark:focus:ring-teal-500/20 focus:outline-none sm:text-sm"
-                                placeholder="••••••••"
-                            />
-                        </div>
-
-                        <div className="pt-2">
-                            <button
-                                type="submit"
-                                disabled={isLoading}
-                                className="flex w-full items-center justify-center rounded-xl bg-teal-600 dark:bg-teal-500 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-teal-600/20 dark:shadow-teal-900/20 transition-all hover:bg-teal-700 dark:hover:bg-teal-600 hover:shadow-teal-600/40 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 dark:focus:ring-offset-stone-900 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                            >
-                                {isLoading ? (
-                                    <span className="flex items-center gap-2">
-                                        <svg className="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                        </svg>
-                                        Signing In...
-                                    </span>
-                                ) : (
-                                    "Sign In"
-                                )}
-                            </button>
-                        </div>
-                    </form>
-
-                    <div className="relative my-8">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-stone-200 dark:border-stone-800" />
-                        </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="bg-white/80 dark:bg-stone-900/80 backdrop-blur-sm px-2 text-stone-500 dark:text-stone-400 font-medium">Or continue with</span>
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Lock className="h-5 w-5 text-slate-500 group-focus-within:text-amber-500 transition-colors" />
+                                </div>
+                                <input
+                                    id="password"
+                                    type="password"
+                                    required
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="block w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all font-medium sm:text-sm"
+                                    placeholder="••••••••"
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    <p className="mt-8 text-center text-sm text-stone-600 dark:text-stone-400">
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full flex items-center justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-amber-500/20 text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:-translate-y-0.5"
+                    >
+                        {isLoading ? (
+                            <span className="flex items-center gap-2">
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                Signing In...
+                            </span>
+                        ) : (
+                            <span className="flex items-center gap-2">
+                                Sign In <ArrowRight className="w-4 h-4 opacity-80" />
+                            </span>
+                        )}
+                    </button>
+                </form>
+
+                <div className="relative my-8">
+                    <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-slate-700" />
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                        <span className="bg-slate-900 px-3 text-slate-500 font-medium rounded-full">Or continue with</span>
+                    </div>
+                </div>
+
+                <div className="text-center">
+                    <p className="text-sm text-slate-400">
                         Don't have an account?{" "}
-                        <Link href="/auth/signup" className="font-bold text-teal-600 dark:text-teal-400 hover:text-teal-500 transition-colors">
+                        <Link href="/auth/signup" className="font-bold text-amber-500 hover:text-amber-400 transition-colors">
                             Create Account
                         </Link>
                     </p>

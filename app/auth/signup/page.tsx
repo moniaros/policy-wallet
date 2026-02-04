@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { registerUser } from "../actions"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { User, Mail, Lock, Building, FileBadge, ArrowRight, Loader2, CheckCircle, Shield, Briefcase } from "lucide-react"
 
 function SignUpForm() {
     const searchParams = useSearchParams()
@@ -97,222 +98,258 @@ function SignUpForm() {
     }
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-stone-50 px-4 py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-            {/* Background Decoration */}
+        <div className="flex min-h-screen flex-col items-center justify-center bg-slate-900 px-4 py-12 relative overflow-hidden">
+            {/* Liquid Background */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-                <div className="absolute -top-[30%] -right-[10%] w-[70%] h-[70%] rounded-full bg-teal-50/50 blur-3xl opacity-60" />
-                <div className="absolute bottom-[0%] -left-[10%] w-[50%] h-[50%] rounded-full bg-blue-50/50 blur-3xl opacity-50" />
+                <div className="absolute -top-[20%] right-[10%] w-[60%] h-[60%] rounded-full bg-amber-500/10 blur-[120px] animate-pulse-slow" />
+                <div className="absolute bottom-[0%] left-[10%] w-[50%] h-[50%] rounded-full bg-violet-600/10 blur-[120px] animate-pulse-slow delay-700" />
             </div>
 
-            <div className="w-full max-w-md space-y-8 rounded-2xl bg-white/80 backdrop-blur-xl p-10 shadow-2xl border border-white/50 relative z-10 transition-all duration-300 hover:shadow-teal-900/5">
-                <div className="text-center">
-                    <Link href="/" className="inline-block">
-                        <span className="sr-only">PolicyWallet</span>
-                        <h1 className="text-3xl font-extrabold tracking-tight text-teal-700">
-                            PolicyWallet
+            <div className="w-full max-w-xl bg-slate-900/50 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-700/50 p-8 sm:p-10 relative z-10 animate-in fade-in zoom-in duration-500">
+                <div className="text-center mb-8">
+                    <Link href="/" className="inline-block group mb-6">
+                        <h1 className="text-3xl font-black tracking-tighter text-white">
+                            Policy<span className="text-amber-500">Wallet</span>
                         </h1>
                     </Link>
-                    <h2 className="mt-6 text-2xl font-bold tracking-tight text-stone-900">
+                    <h2 className="text-2xl font-bold text-white mb-2">
                         Join as {role === 'agent' ? 'Agent' : 'Policyholder'}
                     </h2>
-                    <p className="mt-2 text-sm text-stone-600">
-                        Create your account to get started
+                    <p className="text-slate-400 text-sm">
+                        Create your {role === 'agent' ? 'professional' : 'personal'} account to get started
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="mt-8 space-y-5" method="post">
+                {/* Role Switcher */}
+                {!isRoleLocked && (
+                    <div className="flex justify-center mb-8">
+                        <div className="bg-slate-800/50 p-1 rounded-xl flex gap-1 border border-slate-700/50">
+                            <button
+                                type="button"
+                                onClick={() => setRole('policyholder')}
+                                className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${role === 'policyholder'
+                                    ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/25'
+                                    : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                                    }`}
+                            >
+                                <Shield className="w-4 h-4" />
+                                Policyholder
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setRole('agent')}
+                                className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${role === 'agent'
+                                    ? 'bg-violet-600 text-white shadow-lg shadow-violet-600/25'
+                                    : 'text-slate-400 hover:text-white hover:bg-slate-700'
+                                    }`}
+                            >
+                                <Briefcase className="w-4 h-4" />
+                                Agent
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="space-y-5">
                     {error && (
-                        <div className="p-4 rounded-lg bg-red-50 border border-red-100 text-red-600 text-sm font-medium animate-pulse">
+                        <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium flex items-center gap-3 animate-pulse">
+                            <div className="w-1.5 h-1.5 rounded-full bg-red-500" />
                             {error}
                         </div>
                     )}
 
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-stone-700 mb-1">Full Name</label>
-                            <input
-                                name="name"
-                                type="text"
-                                required
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="block w-full rounded-lg border border-stone-300 px-4 py-3 bg-white/50 focus:bg-white transition-colors focus:border-teal-500 focus:ring-teal-500/20 focus:outline-none focus:ring-4 sm:text-sm"
-                                placeholder="John Doe"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-stone-700 mb-1">Email address</label>
-                            <input
-                                name="email"
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="block w-full rounded-lg border border-stone-300 px-4 py-3 bg-white/50 focus:bg-white transition-colors focus:border-teal-500 focus:ring-teal-500/20 focus:outline-none focus:ring-4 sm:text-sm"
-                                placeholder="john@example.com"
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div>
-                                <label className="block text-sm font-medium text-stone-700 mb-1">Password</label>
+                    <div className="space-y-5">
+                        <div className="space-y-1.5">
+                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Full Name</label>
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <User className="h-5 w-5 text-slate-500 group-focus-within:text-amber-500 transition-colors" />
+                                </div>
                                 <input
-                                    name="password"
-                                    type="password"
+                                    name="name"
+                                    type="text"
                                     required
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="block w-full rounded-lg border border-stone-300 px-4 py-3 bg-white/50 focus:bg-white transition-colors focus:border-teal-500 focus:ring-teal-500/20 focus:outline-none focus:ring-4 sm:text-sm"
-                                    placeholder="••••••••"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    className="block w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all font-medium sm:text-sm"
+                                    placeholder="John Doe"
                                 />
                             </div>
+                        </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-stone-700 mb-1">Confirm</label>
+                        <div className="space-y-1.5">
+                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Email address</label>
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Mail className="h-5 w-5 text-slate-500 group-focus-within:text-amber-500 transition-colors" />
+                                </div>
                                 <input
-                                    name="confirmPassword"
-                                    type="password"
+                                    name="email"
+                                    type="email"
                                     required
-                                    value={confirmPassword}
-                                    onChange={(e) => setConfirmPassword(e.target.value)}
-                                    className="block w-full rounded-lg border border-stone-300 px-4 py-3 bg-white/50 focus:bg-white transition-colors focus:border-teal-500 focus:ring-teal-500/20 focus:outline-none focus:ring-4 sm:text-sm"
-                                    placeholder="••••••••"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="block w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all font-medium sm:text-sm"
+                                    placeholder="john@example.com"
                                 />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                            <div className="space-y-1.5">
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Password</label>
+                                <div className="relative group">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Lock className="h-5 w-5 text-slate-500 group-focus-within:text-amber-500 transition-colors" />
+                                    </div>
+                                    <input
+                                        name="password"
+                                        type="password"
+                                        required
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="block w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all font-medium sm:text-sm"
+                                        placeholder="••••••••"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-1.5">
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Confirm</label>
+                                <div className="relative group">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <Lock className="h-5 w-5 text-slate-500 group-focus-within:text-amber-500 transition-colors" />
+                                    </div>
+                                    <input
+                                        name="confirmPassword"
+                                        type="password"
+                                        required
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        className="block w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all font-medium sm:text-sm"
+                                        placeholder="••••••••"
+                                    />
+                                </div>
                             </div>
                         </div>
 
                         {/* Agent-specific fields */}
                         {role === 'agent' && (
-                            <>
-                                <div>
-                                    <label className="block text-sm font-medium text-stone-700 mb-1">
+                            <div className="bg-slate-800/30 p-5 rounded-2xl border border-slate-700 space-y-5 animate-in slide-in-from-top-4 duration-300">
+                                <div className="flex items-center gap-2 text-violet-400 mb-1">
+                                    <Briefcase className="w-4 h-4" />
+                                    <span className="text-xs font-bold uppercase tracking-wider">Agency Details</span>
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
                                         License Number <span className="text-red-500">*</span>
                                     </label>
-                                    <input
-                                        name="licenseNumber"
-                                        type="text"
-                                        required={role === 'agent'}
-                                        value={licenseNumber}
-                                        onChange={(e) => setLicenseNumber(e.target.value)}
-                                        className="block w-full rounded-lg border border-stone-300 px-4 py-3 bg-white/50 focus:bg-white transition-colors focus:border-teal-500 focus:ring-teal-500/20 focus:outline-none focus:ring-4 sm:text-sm"
-                                        placeholder="e.g., AG-12345"
-                                    />
+                                    <div className="relative group">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <FileBadge className="h-5 w-5 text-slate-500 group-focus-within:text-violet-500 transition-colors" />
+                                        </div>
+                                        <input
+                                            name="licenseNumber"
+                                            type="text"
+                                            required={role === 'agent'}
+                                            value={licenseNumber}
+                                            onChange={(e) => setLicenseNumber(e.target.value)}
+                                            className="block w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all font-medium sm:text-sm"
+                                            placeholder="e.g., AG-12345"
+                                        />
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-stone-700 mb-1">
+                                <div className="space-y-1.5">
+                                    <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
                                         Agency Name <span className="text-red-500">*</span>
                                     </label>
-                                    <input
-                                        name="agencyName"
-                                        type="text"
-                                        required={role === 'agent'}
-                                        value={agencyName}
-                                        onChange={(e) => setAgencyName(e.target.value)}
-                                        className="block w-full rounded-lg border border-stone-300 px-4 py-3 bg-white/50 focus:bg-white transition-colors focus:border-teal-500 focus:ring-teal-500/20 focus:outline-none focus:ring-4 sm:text-sm"
-                                        placeholder="Your Agency Name"
-                                    />
+                                    <div className="relative group">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                            <Building className="h-5 w-5 text-slate-500 group-focus-within:text-violet-500 transition-colors" />
+                                        </div>
+                                        <input
+                                            name="agencyName"
+                                            type="text"
+                                            required={role === 'agent'}
+                                            value={agencyName}
+                                            onChange={(e) => setAgencyName(e.target.value)}
+                                            className="block w-full pl-10 pr-4 py-3 bg-slate-900/50 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all font-medium sm:text-sm"
+                                            placeholder="Your Agency Name"
+                                        />
+                                    </div>
                                 </div>
-                            </>
+                            </div>
                         )}
 
                         {/* Terms & Conditions */}
                         <div className="space-y-3 pt-2">
-                            <div className="flex items-start">
-                                <input
-                                    type="checkbox"
-                                    id="termsAccepted"
-                                    checked={termsAccepted}
-                                    onChange={(e) => setTermsAccepted(e.target.checked)}
-                                    className="mt-1 h-4 w-4 rounded border-stone-300 text-teal-600 focus:ring-teal-500"
-                                    required
-                                />
-                                <label htmlFor="termsAccepted" className="ml-2 text-sm text-stone-700">
+                            <label className="flex items-start cursor-pointer group">
+                                <div className="relative flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        id="termsAccepted"
+                                        checked={termsAccepted}
+                                        onChange={(e) => setTermsAccepted(e.target.checked)}
+                                        className="peer h-5 w-5 rounded border-slate-600 bg-slate-800 text-amber-500 focus:ring-amber-500 focus:ring-offset-slate-900 transition-all"
+                                        required
+                                    />
+                                </div>
+                                <span className="ml-3 text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
                                     I agree to the{" "}
-                                    <Link href="/terms" target="_blank" className="font-semibold text-teal-600 hover:text-teal-500">
+                                    <Link href="/terms" target="_blank" className="font-bold text-amber-500 hover:text-amber-400 hover:underline">
                                         Terms & Conditions
                                     </Link>{" "}
                                     and{" "}
-                                    <Link href="/privacy" target="_blank" className="font-semibold text-teal-600 hover:text-teal-500">
+                                    <Link href="/privacy" target="_blank" className="font-bold text-amber-500 hover:text-amber-400 hover:underline">
                                         Privacy Policy
                                     </Link>
                                     <span className="text-red-500 ml-1">*</span>
-                                </label>
-                            </div>
-
-                            <div className="flex items-start">
-                                <input
-                                    type="checkbox"
-                                    id="marketingConsent"
-                                    checked={marketingConsent}
-                                    onChange={(e) => setMarketingConsent(e.target.checked)}
-                                    className="mt-1 h-4 w-4 rounded border-stone-300 text-teal-600 focus:ring-teal-500"
-                                />
-                                <label htmlFor="marketingConsent" className="ml-2 text-sm text-stone-700">
-                                    I consent to receive marketing communications and updates
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-
-                    {!isRoleLocked && (
-                        <div className="flex items-center justify-center gap-6 pt-2">
-                            <div className="flex items-center">
-                                <span className="mr-3 text-sm font-medium text-stone-700">I am a:</span>
-                                <div className="flex bg-stone-100 p-1 rounded-lg">
-                                    <button
-                                        type="button"
-                                        onClick={() => setRole('policyholder')}
-                                        className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${role === 'policyholder'
-                                            ? 'bg-white text-teal-700 shadow-sm'
-                                            : 'text-stone-500 hover:text-stone-900'
-                                            }`}
-                                    >
-                                        Policyholder
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setRole('agent')}
-                                        className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${role === 'agent'
-                                            ? 'bg-white text-teal-700 shadow-sm'
-                                            : 'text-stone-500 hover:text-stone-900'
-                                            }`}
-                                    >
-                                        Agent
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    <div className="pt-2">
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="flex w-full items-center justify-center rounded-lg bg-teal-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-teal-600/20 transition-all hover:bg-teal-700 hover:shadow-teal-600/40 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {isLoading ? (
-                                <span className="flex items-center gap-2">
-                                    <svg className="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                    </svg>
-                                    Creating Account...
                                 </span>
-                            ) : (
-                                "Create Account"
-                            )}
-                        </button>
+                            </label>
+
+                            <label className="flex items-start cursor-pointer group">
+                                <div className="relative flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        id="marketingConsent"
+                                        checked={marketingConsent}
+                                        onChange={(e) => setMarketingConsent(e.target.checked)}
+                                        className="peer h-5 w-5 rounded border-slate-600 bg-slate-800 text-amber-500 focus:ring-amber-500 focus:ring-offset-slate-900 transition-all"
+                                    />
+                                </div>
+                                <span className="ml-3 text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
+                                    I consent to receive marketing communications and updates
+                                </span>
+                            </label>
+                        </div>
                     </div>
+
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full flex items-center justify-center py-4 px-4 border border-transparent rounded-xl shadow-lg shadow-amber-500/20 text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:-translate-y-0.5"
+                    >
+                        {isLoading ? (
+                            <span className="flex items-center gap-2">
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                Creating Account...
+                            </span>
+                        ) : (
+                            <span className="flex items-center gap-2">
+                                Create Account <ArrowRight className="w-4 h-4 opacity-80" />
+                            </span>
+                        )}
+                    </button>
                 </form>
 
-                <p className="mt-8 text-center text-sm text-stone-600">
-                    {t.auth.alreadyHaveAccount}{" "}
-                    <Link href="/auth/signin" className="font-semibold text-teal-600 hover:text-teal-500 transition-colors">
-                        {t.auth.signIn}
-                    </Link>
-                </p>
+                <div className="mt-8 pt-8 border-t border-slate-700/50 text-center">
+                    <p className="text-sm text-slate-400">
+                        {t.auth.alreadyHaveAccount}{" "}
+                        <Link href="/auth/signin" className="font-bold text-amber-500 hover:text-amber-400 hover:underline transition-colors">
+                            {t.auth.signIn}
+                        </Link>
+                    </p>
+                </div>
             </div>
         </div>
     )
@@ -320,7 +357,11 @@ function SignUpForm() {
 
 export default function SignUpPage() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={
+            <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
+            </div>
+        }>
             <SignUpForm />
         </Suspense>
     )

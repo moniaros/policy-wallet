@@ -213,3 +213,23 @@ export async function resendVerificationEmail(email: string, language: string = 
         return { success: false, error: "Failed to resend email" }
     }
 }
+
+export async function resetPasswordForEmail(email: string) {
+    const supabase = await createClient()
+
+    try {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/auth/reset-password`,
+        })
+
+        if (error) {
+            console.error("Reset password error:", error)
+            return { success: false, error: error.message }
+        }
+
+        return { success: true }
+    } catch (error) {
+        console.error("Reset password exception:", error)
+        return { success: false, error: "Failed to send password reset email" }
+    }
+}
