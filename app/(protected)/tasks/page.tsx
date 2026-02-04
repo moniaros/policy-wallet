@@ -6,10 +6,17 @@ export default async function TasksPage() {
     const { dbUser } = await getAuthenticatedUser()
     const actionItems = await getPendingActionItems()
 
+    // Serialize dates for client component
+    const serializedItems = actionItems.map(item => ({
+        ...item,
+        createdAt: item.createdAt.toISOString(),
+        dueDate: item.dueDate?.toISOString()
+    }))
+
     return (
         <TasksClient
-            actionItems={actionItems}
-            userLanguage={dbUser.preferred_language || 'en'}
+            actionItems={serializedItems}
+            userLanguage={dbUser.preferredLanguage || 'en'}
         />
     )
 }

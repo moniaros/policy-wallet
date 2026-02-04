@@ -20,7 +20,7 @@ import {
 
 interface ActionItem {
     id: string
-    type: 'questionnaire' | 'reminder' | 'request' | 'recommendation'
+    type: 'questionnaire' | 'reminder' | 'request' | 'recommendation' | 'general'
     title: string
     description?: string
     priority: 'low' | 'medium' | 'high'
@@ -260,8 +260,8 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                                 key={key}
                                 onClick={() => setFilter(key)}
                                 className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all ${filter === key
-                                        ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
-                                        : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
+                                    : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
                                     }`}
                             >
                                 <Icon className="w-4 h-4" />
@@ -288,8 +288,8 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                                     key={p}
                                     onClick={() => setPriorityFilter(p as PriorityFilter)}
                                     className={`px-3 py-1.5 rounded-lg font-medium text-xs transition-all ${priorityFilter === p
-                                            ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900'
-                                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                        ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900'
+                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                                         }`}
                                 >
                                     {p === 'all' ? copy.filterAll[lang] : p.charAt(0).toUpperCase() + p.slice(1)}
@@ -311,8 +311,8 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                                     key={key}
                                     onClick={() => setSort(key)}
                                     className={`px-3 py-1.5 rounded-lg font-medium text-xs transition-all ${sort === key
-                                            ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900'
-                                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                                        ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-900'
+                                        : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                                         }`}
                                 >
                                     {label}
