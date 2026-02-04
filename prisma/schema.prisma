@@ -52,6 +52,10 @@ model User {
   subscriptions                   Subscription[]
   tasksReceived                   UserTask[]               @relation("TaskRecipient")
   tasksCreated                    UserTask[]               @relation("TaskCreator")
+  tokenUsage                      TokenUsage[]             @relation("TokenUsage")
+  tokenBalance                    TokenBalance?            @relation("TokenBalance")
+  tokenPurchases                  TokenPurchase[]          @relation("TokenPurchases")
+  monthlyTokenUsage               MonthlyTokenUsage[]      @relation("MonthlyTokenUsage")
 
   @@map("users")
 }
@@ -188,6 +192,7 @@ model Policy {
   creator         User             @relation("Creator", fields: [createdByUserId], references: [id])
   owner           User             @relation("Owner", fields: [ownerUserId], references: [id])
   documents       PolicyDocument[]
+  tokenUsages     TokenUsage[]     @relation("PolicyTokenUsage")
 
   @@index([ownerUserId])
   @@index([createdByUserId])
@@ -581,4 +586,77 @@ model UserTask {
   @@index([userId])
   @@index([status])
   @@map("user_tasks")
+}
+
+// ============================================================================
+// TOKEN TRACKING MODELS
+// ============================================================================
+
+model TokenUsage {
+  id            String   @id @default(cuid()) @map("usage_id")
+  userId        String   @map("user_id")
+  operationType String   @map("operation_type") // 'policy_analysis', 'gap_detection', 'qa_session', etc.
+  policyId      String?  @map("policy_id")
+  inputTokens   Int      @map("input_tokens")
+  outputTokens  Int      @map("output_tokens")
+  totalTokens   Int      @map("total_tokens") // inputTokens + outputTokens
+  costEur       Decimal  @map("cost_eur") @db.Decimal(10, 6)
+  model         String   // 'gemini-2.0-flash', etc.
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  user   User    @relation("TokenUsage", fields: [userId], references: [id], onDelete: Cascade)
+  policy Policy? @relation("PolicyTokenUsage", fields: [policyId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([operationType])
+  @@map("token_usage")
+}
+
+model TokenBalance {
+  id              String    @id @default(cuid()) @map("balance_id")
+  userId          String    @unique @map("user_id")
+  purchasedTokens BigInt    @default(0) @map("purchased_tokens")
+  usedTokens      BigInt    @default(0) @map("used_tokens")
+  lastPurchaseAt  DateTime? @map("last_purchase_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  user User @relation("TokenBalance", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("token_balances")
+}
+
+model TokenPurchase {
+  id                     String   @id @default(cuid()) @map("purchase_id")
+  userId                 String   @map("user_id")
+  tokensPurchased        BigInt   @map("tokens_purchased")
+  amountEur              Decimal  @map("amount_eur") @db.Decimal(10, 2)
+  stripePaymentIntentId  String?  @map("stripe_payment_intent_id")
+  status                 String   @default("pending") // 'pending', 'completed', 'failed'
+  createdAt              DateTime @default(now()) @map("created_at")
+
+  user User @relation("TokenPurchases", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("token_purchases")
+}
+
+model MonthlyTokenUsage {
+  id                  String   @id @default(cuid()) @map("summary_id")
+  userId              String   @map("user_id")
+  month               DateTime @map("month") @db.Date // First day of month
+  tier                String   // 'free', 'essential', 'professional'
+  totalTokens         BigInt   @map("total_tokens")
+  totalCostEur        Decimal  @map("total_cost_eur") @db.Decimal(10, 2)
+  subscriptionTokens  BigInt   @map("subscription_tokens") // Tokens included in subscription
+  purchasedTokensUsed BigInt   @map("purchased_tokens_used") // On-demand tokens used
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  user User @relation("MonthlyTokenUsage", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, month])
+  @@index([month])
+  @@map("monthly_token_usage")
 }

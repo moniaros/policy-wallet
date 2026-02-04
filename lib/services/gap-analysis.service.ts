@@ -249,7 +249,7 @@ export class GapAnalysisService extends BaseService {
             }))
 
             // 6. Call AI Service
-            const analysis = await aiService.analyzeGaps(aiDocument, metadata, gapDefinitions)
+            const analysis = await aiService.analyzeGaps(aiDocument, metadata, gapDefinitions, { userId, policyId })
             const { verifiedMetadata, gapResults, acordData } = analysis
 
             // 7. Update Policy with Verified Data

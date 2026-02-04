@@ -11,6 +11,9 @@ import { uploadFile, deleteFile } from "@/lib/storage"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import fs from "fs/promises"
 import path from "path"
+import { getAIService } from "@/lib/services/ai"
+import { GapAnalysisService } from "@/lib/services/gap-analysis.service"
+import { trackTokenUsage } from "@/lib/token-tracking"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 
 const PolicySchema = z.object({
@@ -186,61 +189,37 @@ export async function uploadPolicyDocument(formData: FormData) {
         premiumAmount: 0
     };
 
-    if (process.env.GEMINI_API_KEY) {
-        try {
-            console.log("Analyzing document with Gemini...");
-            const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    try {
+        const aiService = getAIService()
 
-            const arrayBuffer = await file.arrayBuffer();
-            const base64Data = Buffer.from(arrayBuffer).toString("base64");
+        if (aiService.isAvailable()) {
+            console.log("Analyzing document with AI Service...");
 
-            const prompt = `
-            Analyze this insurance policy document and extract the following JSON. 
-            Do not include Markdown formatting, just the raw JSON.
-            Fields: 
-            - insurerName (string)
-            - policyNumber (string)
-            - lineOfBusiness (one of: motor, health, home, life, travel, liability)
-            - startDate (YYYY-MM-DD)
-            - endDate (YYYY-MM-DD)
-            - premiumAmount (number)
-            - coverageSummary (string): A short, clear summary of key coverages and limits (max 200 chars).
-            
-            If a field is missing, make a best guess or use null.
-            `;
+            const arrayBuffer = await file.arrayBuffer()
+            const base64Data = Buffer.from(arrayBuffer).toString("base64")
 
-            const imagePart = {
-                inlineData: {
-                    data: base64Data,
-                    mimeType: file.type === "application/pdf" ? "application/pdf" : file.type,
-                },
-            };
-
-            const result = await model.generateContent([prompt, imagePart]);
-            const response = await result.response;
-            const text = response.text();
-
-            // Robust JSON extraction
-            const jsonMatch = text.match(/\{[\s\S]*\}/);
-            const jsonStr = jsonMatch ? jsonMatch[0] : text.replace(/```json/g, "").replace(/```/g, "").trim();
-            const aiJson = JSON.parse(jsonStr);
+            const extractionResult = await aiService.extractPolicyData({
+                data: base64Data,
+                mimeType: file.type === "application/pdf" ? "application/pdf" : file.type,
+                fileName: file.name
+            }, {
+                userId: userId // Pass userId for token tracking
+            })
 
             logger('info', 'AI extraction successful', { userId, fileName: file.name })
 
-            // Merge with defaults
-            if (aiJson.insurerName) extractedData.insurerName = aiJson.insurerName;
-            if (aiJson.policyNumber) extractedData.policyNumber = aiJson.policyNumber;
-            if (aiJson.lineOfBusiness) extractedData.lineOfBusiness = aiJson.lineOfBusiness.toLowerCase();
-            if (aiJson.startDate) extractedData.startDate = new Date(aiJson.startDate);
-            if (aiJson.endDate) extractedData.endDate = new Date(aiJson.endDate);
-            if (aiJson.coverageSummary) extractedData.coverageSummary = aiJson.coverageSummary;
-            if (aiJson.premiumAmount) (extractedData as any).premiumAmount = aiJson.premiumAmount;
-
-        } catch (error) {
-            logger('error', 'AI extraction failed', { userId, error, fileName: file.name })
-            // Fallback to placeholder is already set
+            // Update extractedData with result
+            extractedData = {
+                ...extractedData,
+                ...extractionResult,
+                // Ensure type safety/conversion if needed
+                startDate: typeof extractionResult.startDate === 'string' ? new Date(extractionResult.startDate) : extractionResult.startDate,
+                endDate: typeof extractionResult.endDate === 'string' ? new Date(extractionResult.endDate) : extractionResult.endDate,
+            }
         }
+    } catch (error) {
+        logger('error', 'AI extraction failed', { userId, error, fileName: file.name })
+        // Fallback to placeholder is already set
     }
 
     // Create policy with extracted or default data
@@ -491,248 +470,16 @@ export async function analyzeGaps(policyId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
-    const policy = await db.policy.findUnique({
-        where: { id: policyId },
-        include: { documents: true }
-    })
+    const language = (authResult.dbUser.preferredLanguage as 'en' | 'el') || 'en'
+    const gapService = new GapAnalysisService(db)
 
-    if (!policy) return { error: "Policy not found" }
-
-    // Authorization: Allow Owner OR Authorized Agent
-    const isOwner = policy.ownerUserId === authResult.dbUser.id
-    if (!isOwner) {
-        // Check for AccessGrant (Portfolio Scope) or CustomerRelationship
-        const hasAccess = await db.accessGrant.findFirst({
-            where: {
-                granterUserId: policy.ownerUserId,
-                granteeUserId: authResult.dbUser.id,
-                status: 'active'
-            }
-        })
-
-        // Check Relationship as fallback if Grants aren't fully migrated/used yet
-        const hasRelationship = !hasAccess ? await db.customerRelationship.findFirst({
-            where: {
-                agentUserId: authResult.dbUser.id,
-                policyholderUserId: policy.ownerUserId,
-                // status: 'active' // Assuming existence implies some level of access, or check specific status
-            }
-        }) : null
-
-        if (!hasAccess && !hasRelationship) return { error: "Unauthorized access to this policy" }
-    }
-
-    const normalizedLOB = policy.lineOfBusiness.toLowerCase().replace(' protection', '').trim();
-    const gaps = await db.gapDefinition.findMany({
-        where: {
-            lineOfBusiness: {
-                equals: normalizedLOB,
-                mode: 'insensitive'
-            },
-            isActive: true
-        }
-    })
-
-    if (gaps.length === 0) return { success: true, count: 0, message: "No applicable gap definitions." }
-
-    // Clear existing gaps to re-analyze
-    await db.gapInstance.deleteMany({ where: { policyId } })
-
-    if (process.env.GEMINI_API_KEY) {
-        try {
-            const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-            const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
-
-            // Prepare Document if available
-            let imagePart = null;
-            if (policy.documents.length > 0) {
-                const doc = policy.documents[0];
-                try {
-                    let buffer: Buffer;
-
-                    if (doc.fileUrl.startsWith('http')) {
-                        console.log(`[Analysis] Fetching remote file from: ${doc.fileUrl}`);
-                        const response = await fetch(doc.fileUrl);
-                        if (!response.ok) throw new Error(`Failed to fetch remote file: ${response.statusText}`);
-                        const arrayBuffer = await response.arrayBuffer();
-                        buffer = Buffer.from(arrayBuffer);
-                    } else {
-                        // Normalize fileUrl - strip leading slash to be safe
-                        let relativePath = doc.fileUrl.startsWith('/') ? doc.fileUrl.slice(1) : doc.fileUrl;
-                        const filePath = path.join(process.cwd(), "public", relativePath);
-                        console.log(`[Analysis] Reading local file from: ${filePath}`);
-                        buffer = await fs.readFile(filePath);
-                    }
-
-                    // Better MIME detection - Default to PDF as requested
-                    let mimeType = "application/pdf";
-                    const lowerName = doc.fileName.toLowerCase();
-                    if (lowerName.endsWith(".jpg") || lowerName.endsWith(".jpeg")) mimeType = "image/jpeg";
-                    else if (lowerName.endsWith(".png")) mimeType = "image/png";
-                    else if (lowerName.endsWith(".webp")) mimeType = "image/webp";
-
-                    imagePart = {
-                        inlineData: {
-                            data: buffer.toString("base64"),
-                            mimeType
-                        }
-                    };
-                    logger('info', 'Analysis: Reading document success', { fileUrl: doc.fileUrl, mimeType });
-                } catch (e: any) {
-                    logger('error', 'Analysis: Document read failed', { error: e.message, fileUrl: doc.fileUrl });
-                    // Throw to ensure we don't silently fail analysis
-                    return { success: false, error: `Failed to read document: ${e.message}` };
-                }
-            }
-
-            const prompt = `
-            You are an expert insurance analyst. Your task is to analyze the provided policy document and database metadata.
-
-            CRITICAL: The provided DOCUMENT is the ABSOLUTE SOURCE OF TRUTH. 
-            The "Current Metadata" provided below may be incomplete or incorrect (e.g., 0.00 euros or missing dates).
-            You must FIRST extract the actual details from the document.
-
-            Step 1: Data Verification
-            - Extract Insurer, Policy Number, Dates, and Premium from the DOCUMENT.
-            - If the document is missing or unreadable, fall back to the Current Metadata only as a last resort.
-            - If the document shows a premium of "200" but metadata says "0", rely on the document.
-
-            Step 2: Gap Analysis
-            - Using the VERIFIED data from Step 1 (NOT the raw metadata), check for the following gaps.
-            - Provide a clear explanation based on the document's clauses.
-
-            Current Metadata (Reference Only):
-            Insurer: ${policy.insurerName}
-            Policy Number: ${policy.policyNumber}
-            Type: ${policy.lineOfBusiness}
-            Dates: ${policy.startDate.toISOString().split('T')[0]} to ${policy.endDate.toISOString().split('T')[0]}
-            Premium: ${policy.premiumAmount}
-            Summary: ${policy.coverageSummary || "N/A"}
-
-            Potential Gaps to Check:
-            ${gaps.map(g => `- Slug: ${g.slug} (${g.name}): ${(g.detectionLogic as any)?.check || g.description}`).join('\n')}
-
-            IMPORTANT: Return ONLY a JSON object with this exact structure:
-            {
-                "verifiedMetadata": {
-                    "insurerName": "string",
-                    "policyNumber": "string",
-                    "lineOfBusiness": "motor|health|home|life|travel|liability",
-                    "startDate": "YYYY-MM-DD",
-                    "endDate": "YYYY-MM-DD",
-                    "premiumAmount": number,
-                    "coverageSummary": "string (professional summary of coverages)"
-                },
-                "gapResults": [
-                    {
-                        "slug": "gap-slug",
-                        "isDetected": boolean, // Set to TRUE if the coverage is MISSING (Gap Detected). Set to FALSE if the policy COVERS this risk.
-                        "explanation": { "en": "string", "el": "string" },
-                        "suggestion": { "en": "string", "el": "string" }
-                    }
-                ],
-                "acordData": {
-                    "acordStandard": "V1.0",
-                    "policy": {
-                        "insurer": "...",
-                        "number": "...",
-                        "type": "...",
-                        "premium": { "amount": 0, "currency": "EUR" },
-                        "effectiveDate": "YYYY-MM-DD",
-                        "expirationDate": "YYYY-MM-DD"
-                    },
-                    "vehicle": {
-                        "plateNumber": "ABC-1234",
-                        "make": "Toyota",
-                        "model": "Yaris"
-                    },
-                    "coverages": [ 
-                        { 
-                            "name": "...", 
-                            "limit": "...", 
-                            "deductible": "...",
-                            "explanation": { "en": "Short description of what this covers (max 10 words)", "el": "Σύντομη περιγραφή (max 10 λέξεις)" }
-                        } 
-                    ]
-                }
-            }
-            `;
-
-            const parts: any[] = [prompt];
-            if (imagePart) parts.push(imagePart);
-
-            const result = await model.generateContent(parts);
-            const response = await result.response;
-            const text = response.text();
-
-            // Robust JSON extraction
-            const jsonMatch = text.match(/\{[\s\S]*\}/);
-            if (!jsonMatch) throw new Error("AI did not return a valid JSON object");
-            const analysis = JSON.parse(jsonMatch[0]);
-
-            const { verifiedMetadata, gapResults, acordData } = analysis;
-
-            // Update Policy with verified data
-            await (db.policy as any).update({
-                where: { id: policyId },
-                data: {
-                    insurerName: verifiedMetadata.insurerName || policy.insurerName,
-                    policyNumber: verifiedMetadata.policyNumber || policy.policyNumber,
-                    lineOfBusiness: verifiedMetadata.lineOfBusiness || policy.lineOfBusiness,
-                    startDate: parseAnalysisDate(verifiedMetadata.startDate) || policy.startDate,
-                    endDate: parseAnalysisDate(verifiedMetadata.endDate) || policy.endDate,
-                    premiumAmount: typeof verifiedMetadata.premiumAmount === 'number' ? (verifiedMetadata.premiumAmount as any) : policy.premiumAmount,
-                    coverageSummary: verifiedMetadata.coverageSummary || policy.coverageSummary,
-                    acordData: acordData || (policy as any).acordData || {},
-                    lastAnalyzedAt: new Date()
-                }
-            })
-
-            let detectedCount = 0;
-            for (const item of gapResults) {
-                if (item.isDetected) {
-                    const def = gaps.find(g => g.slug === item.slug)
-                    if (def) {
-                        await db.gapInstance.create({
-                            data: {
-                                policyId: policyId,
-                                gapDefinitionId: def.id,
-                                severity: def.defaultSeverity || "medium",
-                                status: item.isDetected ? "open" : "resolved",
-                                aiExplanation: item.explanation?.en || item.explanation || "No explanation provided",
-                                aiExplanationEl: item.explanation?.el || item.explanation || "Δεν δόθηκε εξήγηση",
-                                aiSuggestion: item.suggestion?.en || item.suggestion || "No suggestion",
-                                aiSuggestionEl: item.suggestion?.el || item.suggestion || "Καμία πρόταση",
-                                detectedAt: new Date()
-                            }
-                        })
-                        detectedCount++;
-                    }
-                }
-            }
-
-            // Log session
-            try {
-                await (db as any).activityLog.create({
-                    data: {
-                        adminUserId: authResult.dbUser.id,
-                        adminEmail: authResult.dbUser.email || "unknown",
-                        actionType: "POLICY_ANALYZED",
-                        description: `Analyzed and updated policy ${policyId} - ${detectedCount} gaps found`,
-                        metadata: { policyId, detectedCount, updated: true }
-                    }
-                })
-            } catch (l) { /* ignore log errors */ }
-
-            revalidatePath(`/wallet/${policyId}`)
-            return { success: true, count: detectedCount }
-
-        } catch (e) {
-            console.error("AI Gap Analysis failed", e)
-            return { error: `Analysis failed: ${e instanceof Error ? e.message : String(e)}` }
-        }
-    } else {
-        return { error: "AI Service Unavailable" }
+    try {
+        const result = await gapService.analyzePolicy(policyId, authResult.dbUser.id, language)
+        revalidatePath(`/wallet/${policyId}`)
+        return result
+    } catch (e) {
+        console.error("AI Gap Analysis failed", e)
+        return { error: `Analysis failed: ${e instanceof Error ? e.message : String(e)}` }
     }
 }
 
@@ -952,9 +699,22 @@ Answer the user's question:
             hasDocument: policy.documents.length > 0
         })
 
-        const result = await model.generateContent(parts)
-        const response = await result.response
-        const answer = response.text()
+        const result = await model.generateContent(parts);
+        const response = await result.response;
+        const answer = response.text();
+
+        // Track Token Usage
+        if (response.usageMetadata) {
+            const usage = response.usageMetadata
+            await trackTokenUsage({
+                userId: authResult.dbUser.id,
+                operationType: 'qa_session',
+                policyId: policyId,
+                inputTokens: usage.promptTokenCount,
+                outputTokens: usage.candidatesTokenCount,
+                model: 'gemini-2.0-flash'
+            }).catch(err => logger('error', 'Token tracking failed', { error: err }))
+        }
 
         // Log the interaction
         try {

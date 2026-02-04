@@ -98,15 +98,29 @@ export interface AIPolicyExtractionResponse {
  * 
  * All AI service implementations must implement this interface
  */
+/**
+ * Tracking options for AI operations
+ */
+export interface AITrackingOptions {
+    userId?: string
+    policyId?: string
+}
+
+/**
+ * AI Service Interface
+ * 
+ * All AI service implementations must implement this interface
+ */
 export interface IAIService {
     /**
      * Extracts policy information from a document
      * 
      * @param document - Document to analyze
+     * @param options - Tracking options
      * @returns Extracted policy information
      * @throws {Error} If extraction fails
      */
-    extractPolicyData(document: AIDocument): Promise<AIPolicyExtractionResponse>
+    extractPolicyData(document: AIDocument, options?: AITrackingOptions): Promise<AIPolicyExtractionResponse>
 
     /**
      * Analyzes a policy for coverage gaps
@@ -114,13 +128,15 @@ export interface IAIService {
      * @param document - Policy document to analyze (optional)
      * @param metadata - Current policy metadata
      * @param gapDefinitions - Gap definitions to check
+     * @param options - Tracking options
      * @returns Gap analysis results
      * @throws {Error} If analysis fails
      */
     analyzeGaps(
         document: AIDocument | null,
         metadata: PolicyMetadata,
-        gapDefinitions: GapDefinitionForAI[]
+        gapDefinitions: GapDefinitionForAI[],
+        options?: AITrackingOptions
     ): Promise<AIGapAnalysisResponse>
 
     /**

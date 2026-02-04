@@ -189,8 +189,8 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                                 key={tab.id}
                                 onClick={() => setFilter(tab.id as FilterType)}
                                 className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-all ${filter === tab.id
-                                        ? 'bg-white dark:bg-slate-700 text-emerald-600 shadow-sm'
-                                        : 'text-slate-500 hover:text-slate-900 dark:text-slate-400'
+                                    ? 'bg-white dark:bg-slate-700 text-emerald-600 shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-400'
                                     }`}
                             >
                                 {tab.label}
@@ -307,7 +307,7 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
             {/* Mobile FAB */}
             <button
                 onClick={() => router.push('/wallet/add')}
-                className="md:hidden fixed bottom-24 right-6 w-14 h-14 bg-emerald-600 text-white rounded-full shadow-2xl flex items-center justify-center z-40 active:scale-90 transition-transform"
+                className="md:hidden fixed bottom-24 right-6 w-14 h-14 bg-emerald-600 text-white rounded-full shadow-2xl flex items-center justify-center z-50 active:scale-90 transition-transform"
             >
                 <Plus className="w-7 h-7" />
             </button>

@@ -8,62 +8,65 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { logger } from '@/lib/logger'
 import type {
-    IAIService,
-    AIDocument,
-    PolicyMetadata,
-    GapDefinitionForAI,
-    AIPolicyExtractionResponse,
-    AIGapAnalysisResponse
+  IAIService,
+  AIDocument,
+  PolicyMetadata,
+  GapDefinitionForAI,
+  AIPolicyExtractionResponse,
+  AIGapAnalysisResponse,
+  AITrackingOptions
 } from './ai-service.interface'
+import { trackTokenUsage } from '@/lib/token-tracking'
 
 export class GeminiAIService implements IAIService {
-    private genAI: GoogleGenerativeAI | null = null
-    private apiKey: string | null = null
+  private genAI: GoogleGenerativeAI | null = null
+  private apiKey: string | null = null
 
-    constructor(apiKey?: string) {
-        this.apiKey = apiKey || process.env.GEMINI_API_KEY || null
+  constructor(apiKey?: string) {
+    this.apiKey = apiKey || process.env.GEMINI_API_KEY || null
 
-        if (this.apiKey) {
-            this.genAI = new GoogleGenerativeAI(this.apiKey)
+    if (this.apiKey) {
+      this.genAI = new GoogleGenerativeAI(this.apiKey)
+    }
+  }
+
+  /**
+   * Checks if Gemini AI service is available
+   */
+  isAvailable(): boolean {
+    return this.genAI !== null && this.apiKey !== null
+  }
+
+  /**
+   * Gets the service name
+   */
+  getServiceName(): string {
+    return 'Gemini AI'
+  }
+
+  /**
+   * Extracts policy data from a document using Gemini 2.0 Flash
+   * Supports both PDF and image formats with advanced multimodal analysis
+   */
+  async extractPolicyData(document: AIDocument, options?: AITrackingOptions): Promise<AIPolicyExtractionResponse> {
+    if (!this.genAI) {
+      throw new Error('Gemini AI service is not available')
+    }
+
+    try {
+      // Use Gemini 2.0 Flash for superior multimodal understanding
+      const modelName = 'gemini-2.0-flash-exp'
+      const model = this.genAI.getGenerativeModel({
+        model: modelName,
+        generationConfig: {
+          temperature: 0.1, // Low temperature for factual extraction
+          topP: 0.95,
+          topK: 40,
+          maxOutputTokens: 8192,
         }
-    }
+      })
 
-    /**
-     * Checks if Gemini AI service is available
-     */
-    isAvailable(): boolean {
-        return this.genAI !== null && this.apiKey !== null
-    }
-
-    /**
-     * Gets the service name
-     */
-    getServiceName(): string {
-        return 'Gemini AI'
-    }
-
-    /**
-     * Extracts policy data from a document using Gemini 2.0 Flash
-     * Supports both PDF and image formats with advanced multimodal analysis
-     */
-    async extractPolicyData(document: AIDocument): Promise<AIPolicyExtractionResponse> {
-        if (!this.genAI) {
-            throw new Error('Gemini AI service is not available')
-        }
-
-        try {
-            // Use Gemini 2.0 Flash for superior multimodal understanding
-            const model = this.genAI.getGenerativeModel({
-                model: 'gemini-2.0-flash-exp',
-                generationConfig: {
-                    temperature: 0.1, // Low temperature for factual extraction
-                    topP: 0.95,
-                    topK: 40,
-                    maxOutputTokens: 8192,
-                }
-            })
-
-            const prompt = `
+      const prompt = `
 You are an expert insurance document analyst with deep knowledge of ACORD standards and European insurance policies.
 
 TASK: Analyze this insurance policy document (PDF or image) and extract ALL available information into a structured JSON format.
@@ -168,84 +171,102 @@ LANGUAGE SUPPORT:
 Return ONLY the JSON object, nothing else.
 `
 
-            const imagePart = {
-                inlineData: {
-                    data: document.data,
-                    mimeType: document.mimeType
-                }
-            }
-
-            logger('info', 'Starting Gemini 2.0 Flash extraction', {
-                fileName: document.fileName,
-                mimeType: document.mimeType,
-                model: 'gemini-2.0-flash-exp'
-            })
-
-            const result = await model.generateContent([prompt, imagePart])
-            const response = await result.response
-            const text = response.text()
-
-            // Extract JSON from response (handle potential markdown wrapping)
-            const jsonMatch = text.match(/\{[\s\S]*\}/)
-            if (!jsonMatch) {
-                throw new Error('AI response did not contain valid JSON')
-            }
-
-            const jsonStr = jsonMatch[0]
-            const extracted = JSON.parse(jsonStr)
-
-            logger('info', 'Gemini 2.0 Flash extraction successful', {
-                fileName: document.fileName,
-                insurerName: extracted.insurerName,
-                policyNumber: extracted.policyNumber,
-                hasAcordData: !!extracted.acordData
-            })
-
-            // Return with fallbacks for required fields
-            return {
-                insurerName: extracted.insurerName || 'Unknown Insurer',
-                policyNumber: extracted.policyNumber || `PENDING-${Date.now()}`,
-                lineOfBusiness: extracted.lineOfBusiness || 'other',
-                startDate: extracted.startDate || new Date().toISOString().split('T')[0],
-                endDate: extracted.endDate || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                premiumAmount: extracted.premiumAmount || 0,
-                coverageSummary: extracted.coverageSummary || 'Extracted from document',
-                acordData: extracted.acordData || null
-            }
-        } catch (error) {
-            logger('error', 'Gemini 2.0 Flash extraction failed', {
-                fileName: document.fileName,
-                error: error instanceof Error ? error.message : String(error)
-            })
-            throw error
+      const imagePart = {
+        inlineData: {
+          data: document.data,
+          mimeType: document.mimeType
         }
+      }
+
+      logger('info', 'Starting Gemini 2.0 Flash extraction', {
+        fileName: document.fileName,
+        mimeType: document.mimeType,
+        model: 'gemini-2.0-flash-exp'
+      })
+
+      const result = await model.generateContent([prompt, imagePart])
+      const response = await result.response
+      const text = response.text()
+
+      // Track token usage if user ID is provided
+      if (options?.userId) {
+        const usage = response.usageMetadata
+        if (usage) {
+          await trackTokenUsage({
+            userId: options.userId,
+            operationType: 'policy_analysis',
+            policyId: options.policyId,
+            inputTokens: usage.promptTokenCount,
+            outputTokens: usage.candidatesTokenCount,
+            model: 'gemini-2.0-flash' // Map to known model key
+          }).catch(err => {
+            logger('error', 'Failed to track token usage', { error: err })
+          })
+        }
+      }
+
+      // Extract JSON from response (handle potential markdown wrapping)
+      const jsonMatch = text.match(/\{[\s\S]*\}/)
+      if (!jsonMatch) {
+        throw new Error('AI response did not contain valid JSON')
+      }
+
+      const jsonStr = jsonMatch[0]
+      const extracted = JSON.parse(jsonStr)
+
+      logger('info', 'Gemini 2.0 Flash extraction successful', {
+        fileName: document.fileName,
+        insurerName: extracted.insurerName,
+        policyNumber: extracted.policyNumber,
+        hasAcordData: !!extracted.acordData
+      })
+
+      // Return with fallbacks for required fields
+      return {
+        insurerName: extracted.insurerName || 'Unknown Insurer',
+        policyNumber: extracted.policyNumber || `PENDING-${Date.now()}`,
+        lineOfBusiness: extracted.lineOfBusiness || 'other',
+        startDate: extracted.startDate || new Date().toISOString().split('T')[0],
+        endDate: extracted.endDate || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        premiumAmount: extracted.premiumAmount || 0,
+        coverageSummary: extracted.coverageSummary || 'Extracted from document',
+        acordData: extracted.acordData || null
+      }
+    } catch (error) {
+      logger('error', 'Gemini 2.0 Flash extraction failed', {
+        fileName: document.fileName,
+        error: error instanceof Error ? error.message : String(error)
+      })
+      throw error
+    }
+  }
+
+  /**
+   * Analyzes policy for gaps using Gemini 2.0 Flash
+   */
+  async analyzeGaps(
+    document: AIDocument | null,
+    metadata: PolicyMetadata,
+    gapDefinitions: GapDefinitionForAI[],
+    options?: AITrackingOptions
+  ): Promise<AIGapAnalysisResponse> {
+    if (!this.genAI) {
+      throw new Error('Gemini AI service is not available')
     }
 
-    /**
-     * Analyzes policy for gaps using Gemini 2.0 Flash
-     */
-    async analyzeGaps(
-        document: AIDocument | null,
-        metadata: PolicyMetadata,
-        gapDefinitions: GapDefinitionForAI[]
-    ): Promise<AIGapAnalysisResponse> {
-        if (!this.genAI) {
-            throw new Error('Gemini AI service is not available')
+    try {
+      // Use Gemini 2.0 Flash for advanced analysis
+      const model = this.genAI.getGenerativeModel({
+        model: 'gemini-2.0-flash-exp',
+        generationConfig: {
+          temperature: 0.2, // Slightly higher for nuanced analysis
+          topP: 0.95,
+          topK: 40,
+          maxOutputTokens: 8192,
         }
+      })
 
-        try {
-            // Use Gemini 2.0 Flash for advanced analysis
-            const model = this.genAI.getGenerativeModel({
-                model: 'gemini-2.0-flash-exp',
-                generationConfig: {
-                    temperature: 0.2, // Slightly higher for nuanced analysis
-                    topP: 0.95,
-                    topK: 40,
-                    maxOutputTokens: 8192,
-                }
-            })
-
-            const prompt = `
+      const prompt = `
 You are an expert insurance analyst with deep knowledge of ACORD standards and European insurance policies.
 
 TASK: Analyze the provided policy document and metadata to identify coverage gaps.
@@ -314,49 +335,66 @@ IMPORTANT: Return ONLY a JSON object with this exact structure:
 Return ONLY valid JSON, no other text.
 `
 
-            const parts: any[] = [prompt]
-            if (document) {
-                parts.push({
-                    inlineData: {
-                        data: document.data,
-                        mimeType: document.mimeType
-                    }
-                })
-            }
+      const parts: any[] = [prompt]
+      if (document) {
+        parts.push({
+          inlineData: {
+            data: document.data,
+            mimeType: document.mimeType
+          }
+        })
+      }
 
-            logger('info', 'Starting Gemini 2.0 Flash gap analysis', {
-                policyNumber: metadata.policyNumber,
-                gapsToCheck: gapDefinitions.length,
-                hasDocument: !!document,
-                model: 'gemini-2.0-flash-exp'
-            })
+      logger('info', 'Starting Gemini 2.0 Flash gap analysis', {
+        policyNumber: metadata.policyNumber,
+        gapsToCheck: gapDefinitions.length,
+        hasDocument: !!document,
+        model: 'gemini-2.0-flash-exp'
+      })
 
-            const result = await model.generateContent(parts)
-            const response = await result.response
-            const text = response.text()
+      const result = await model.generateContent(parts)
+      const response = await result.response
+      const text = response.text()
 
-            // Extract JSON from response
-            const jsonMatch = text.match(/\{[\s\S]*\}/)
-            if (!jsonMatch) {
-                throw new Error('AI did not return valid JSON')
-            }
-
-            const analysis: AIGapAnalysisResponse = JSON.parse(jsonMatch[0])
-
-            logger('info', 'Gemini 2.0 Flash gap analysis successful', {
-                policyNumber: metadata.policyNumber,
-                gapsChecked: gapDefinitions.length,
-                gapsDetected: analysis.gapResults.filter(g => g.isDetected).length,
-                hasAcordData: !!analysis.acordData
-            })
-
-            return analysis
-        } catch (error) {
-            logger('error', 'Gemini 2.0 Flash gap analysis failed', {
-                policyNumber: metadata.policyNumber,
-                error: error instanceof Error ? error.message : String(error)
-            })
-            throw error
+      // Track token usage if user ID is provided
+      if (options?.userId) {
+        const usage = response.usageMetadata
+        if (usage) {
+          await trackTokenUsage({
+            userId: options.userId,
+            operationType: 'gap_detection',
+            policyId: options.policyId,
+            inputTokens: usage.promptTokenCount,
+            outputTokens: usage.candidatesTokenCount,
+            model: 'gemini-2.0-flash'
+          }).catch(err => {
+            logger('error', 'Failed to track token usage', { error: err })
+          })
         }
+      }
+
+      // Extract JSON from response
+      const jsonMatch = text.match(/\{[\s\S]*\}/)
+      if (!jsonMatch) {
+        throw new Error('AI did not return valid JSON')
+      }
+
+      const analysis: AIGapAnalysisResponse = JSON.parse(jsonMatch[0])
+
+      logger('info', 'Gemini 2.0 Flash gap analysis successful', {
+        policyNumber: metadata.policyNumber,
+        gapsChecked: gapDefinitions.length,
+        gapsDetected: analysis.gapResults.filter(g => g.isDetected).length,
+        hasAcordData: !!analysis.acordData
+      })
+
+      return analysis
+    } catch (error) {
+      logger('error', 'Gemini 2.0 Flash gap analysis failed', {
+        policyNumber: metadata.policyNumber,
+        error: error instanceof Error ? error.message : String(error)
+      })
+      throw error
     }
+  }
 }

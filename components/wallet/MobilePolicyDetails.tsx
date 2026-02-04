@@ -39,6 +39,9 @@ interface MobilePolicyDetailsProps {
     onAddToWallet: () => void
 }
 
+import { PolicyQA } from "@/components/wallet/PolicyQA"
+import { DeletePolicy } from "@/components/wallet/DeletePolicy"
+
 export function MobilePolicyDetails({
     policy,
     t,
@@ -47,17 +50,19 @@ export function MobilePolicyDetails({
     onAddToWallet
 }: MobilePolicyDetailsProps) {
     const router = useRouter()
-    const [activeTab, setActiveTab] = useState<'overview' | 'coverage' | 'documents'>('overview')
+    const [activeTab, setActiveTab] = useState<'overview' | 'coverage' | 'documents' | 'assistant'>('overview')
 
     // Swipe between tabs
     const swipeRef = useSwipe({
         onSwipeLeft: () => {
             if (activeTab === 'overview') setActiveTab('coverage')
             else if (activeTab === 'coverage') setActiveTab('documents')
+            else if (activeTab === 'documents') setActiveTab('assistant')
             hapticFeedback.selection()
         },
         onSwipeRight: () => {
-            if (activeTab === 'documents') setActiveTab('coverage')
+            if (activeTab === 'assistant') setActiveTab('documents')
+            else if (activeTab === 'documents') setActiveTab('coverage')
             else if (activeTab === 'coverage') setActiveTab('overview')
             hapticFeedback.selection()
         }
@@ -102,7 +107,7 @@ export function MobilePolicyDetails({
                 <div className="flex px-4 overflow-x-auto hide-scrollbar">
                     <button
                         onClick={() => setActiveTab('overview')}
-                        className={`flex-1 min-w-[30%] pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'overview'
+                        className={`flex-1 min-w-[24%] pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'overview'
                             ? 'border-teal-600 text-teal-600 dark:text-teal-400'
                             : 'border-transparent text-stone-500 hover:text-stone-700 dark:text-stone-400'
                             }`}
@@ -111,7 +116,7 @@ export function MobilePolicyDetails({
                     </button>
                     <button
                         onClick={() => setActiveTab('coverage')}
-                        className={`flex-1 min-w-[30%] pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'coverage'
+                        className={`flex-1 min-w-[24%] pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'coverage'
                             ? 'border-teal-600 text-teal-600 dark:text-teal-400'
                             : 'border-transparent text-stone-500 hover:text-stone-700 dark:text-stone-400'
                             }`}
@@ -120,12 +125,21 @@ export function MobilePolicyDetails({
                     </button>
                     <button
                         onClick={() => setActiveTab('documents')}
-                        className={`flex-1 min-w-[30%] pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'documents'
+                        className={`flex-1 min-w-[24%] pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'documents'
                             ? 'border-teal-600 text-teal-600 dark:text-teal-400'
                             : 'border-transparent text-stone-500 hover:text-stone-700 dark:text-stone-400'
                             }`}
                     >
-                        Documents ({policy.documents?.length || 0})
+                        Docs
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('assistant')}
+                        className={`flex-1 min-w-[24%] pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'assistant'
+                            ? 'border-teal-600 text-teal-600 dark:text-teal-400'
+                            : 'border-transparent text-stone-500 hover:text-stone-700 dark:text-stone-400'
+                            }`}
+                    >
+                        AI Help
                     </button>
                 </div>
             </div>
@@ -169,17 +183,6 @@ export function MobilePolicyDetails({
                             </div>
                         </div>
 
-                        {/* Add to Wallet Button */}
-                        <button
-                            onClick={onAddToWallet}
-                            className="w-full py-4 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-2xl font-bold text-sm uppercase tracking-wider shadow-lg active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
-                        >
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                            </svg>
-                            Add to Wallet
-                        </button>
-
                         {/* Quick Stats */}
                         <div className="grid grid-cols-2 gap-4">
                             <div className="bg-white dark:bg-stone-800 p-4 rounded-2xl border border-stone-200 dark:border-stone-700">
@@ -198,6 +201,20 @@ export function MobilePolicyDetails({
                                 </p>
                             </div>
                         </div>
+
+                        {/* Add to Wallet Button */}
+                        <button
+                            onClick={onAddToWallet}
+                            className="w-full py-4 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-2xl font-bold text-sm uppercase tracking-wider shadow-lg active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
+                        >
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                            Add to Wallet
+                        </button>
+
+                        {/* Delete Policy - Danger Zone */}
+                        <DeletePolicy policyId={policy.id} />
                     </div>
                 )}
 
@@ -266,6 +283,12 @@ export function MobilePolicyDetails({
                                 </button>
                             ))
                         )}
+                    </div>
+                )}
+
+                {activeTab === 'assistant' && (
+                    <div className="space-y-4 animate-in slide-in-from-right-4 duration-300">
+                        <PolicyQA policyId={policy.id} />
                     </div>
                 )}
             </div>

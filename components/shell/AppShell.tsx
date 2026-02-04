@@ -7,7 +7,7 @@ import { UserMenu } from './UserMenu'
 import { RoleSwitcher } from './RoleSwitcher'
 import { ThemeToggle } from '../ThemeToggle'
 import { PolicyWalletLogo } from '@/components/branding/Logo'
-import { Home, BarChart3, Bell, Settings, Users, Lightbulb, LayoutDashboard, MoreHorizontal } from 'lucide-react'
+import { Home, BarChart3, Bell, Settings, Users, Lightbulb, LayoutDashboard, MoreHorizontal, ListChecks, User } from 'lucide-react'
 
 export interface NavigationItem {
     label: string
@@ -49,9 +49,10 @@ export interface AppShellProps {
 const getBottomNavItems = (role: UserRole['role'], language: 'el' | 'en' = 'en') => {
     const translations = {
         wallet: { en: 'Wallet', el: 'Πορτοφόλι' },
+        tasks: { en: 'Tasks', el: 'Εργασίες' },
         coverage: { en: 'Coverage', el: 'Κάλυψη' },
         notifications: { en: 'Alerts', el: 'Ειδοποιήσεις' },
-        settings: { en: 'Settings', el: 'Ρυθμίσεις' },
+        settings: { en: 'Account', el: 'Λογαριασμός' },
         dashboard: { en: 'Dashboard', el: 'Πίνακας' },
         customers: { en: 'Customers', el: 'Πελάτες' },
         opportunities: { en: 'Leads', el: 'Ευκαιρίες' },
@@ -61,9 +62,10 @@ const getBottomNavItems = (role: UserRole['role'], language: 'el' | 'en' = 'en')
     if (role === 'policyholder') {
         return [
             { href: '/wallet', icon: Home, label: translations.wallet[language], id: 'wallet' },
+            { href: '/tasks', icon: ListChecks, label: translations.tasks[language], id: 'tasks' },
             { href: '/coverage-insights', icon: BarChart3, label: translations.coverage[language], id: 'coverage' },
             { href: '/notifications', icon: Bell, label: translations.notifications[language], id: 'notifications' },
-            { href: '/account', icon: Settings, label: translations.settings[language], id: 'settings' }
+            { href: '/account', icon: User, label: translations.settings[language], id: 'account' }
         ]
     } else if (role === 'agent') {
         return [
@@ -234,7 +236,7 @@ export function AppShell({
 
             {/* Mobile Bottom Navigation */}
             <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 safe-area-inset-bottom">
-                <div className="grid grid-cols-4 h-16">
+                <div className="grid grid-cols-5 h-16">
                     {bottomNavItems.map((item) => {
                         const Icon = item.icon
                         const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))

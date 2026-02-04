@@ -12,7 +12,8 @@ import type {
     PolicyMetadata,
     GapDefinitionForAI,
     AIPolicyExtractionResponse,
-    AIGapAnalysisResponse
+    AIGapAnalysisResponse,
+    AITrackingOptions
 } from './ai-service.interface'
 
 export class MockAIService implements IAIService {
@@ -41,7 +42,7 @@ export class MockAIService implements IAIService {
     /**
      * Simulates policy data extraction
      */
-    async extractPolicyData(document: AIDocument): Promise<AIPolicyExtractionResponse> {
+    async extractPolicyData(document: AIDocument, options?: AITrackingOptions): Promise<AIPolicyExtractionResponse> {
         // Simulate network delay
         await this.simulateDelay()
 
@@ -71,7 +72,8 @@ export class MockAIService implements IAIService {
     async analyzeGaps(
         document: AIDocument | null,
         metadata: PolicyMetadata,
-        gapDefinitions: GapDefinitionForAI[]
+        gapDefinitions: GapDefinitionForAI[],
+        options?: AITrackingOptions
     ): Promise<AIGapAnalysisResponse> {
         // Simulate network delay
         await this.simulateDelay()
