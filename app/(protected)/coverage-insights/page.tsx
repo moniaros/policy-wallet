@@ -69,8 +69,9 @@ export default async function CoverageInsightsPage() {
     let totalCoverage = 0
 
     policies.forEach(policy => {
-        const policyType = policy.acordData?.policy?.lineOfBusiness?.code || 'Other'
-        const coverageAmount = parseFloat(policy.acordData?.policy?.premium?.amount?.toString() || '0')
+        const acordData = policy.acordData as any
+        const policyType = acordData?.policy?.lineOfBusiness?.code || 'Other'
+        const coverageAmount = parseFloat(acordData?.policy?.premium?.amount?.toString() || '0')
 
         if (!coverageByType[policyType]) {
             coverageByType[policyType] = 0
@@ -78,6 +79,7 @@ export default async function CoverageInsightsPage() {
         coverageByType[policyType] += coverageAmount
         totalCoverage += coverageAmount
     })
+
 
     const coverageBreakdown = Object.entries(coverageByType).map(([type, amount]) => ({
         type,
@@ -99,7 +101,7 @@ export default async function CoverageInsightsPage() {
                 totalCoverage
             }}
             coverageBreakdown={coverageBreakdown}
-            userLanguage={dbUser.preferred_language || 'en'}
+            userLanguage={dbUser.preferredLanguage || 'en'}
         />
     )
 }

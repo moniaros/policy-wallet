@@ -3,6 +3,7 @@ import { useState } from "react"
 import { analyzeGaps } from "../actions"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { Sparkles, AlertTriangle, Lightbulb } from "lucide-react"
 
 import { useLanguage } from "@/contexts/LanguageContext"
 
@@ -37,20 +38,38 @@ export function AnalysisCard({ policyId, gaps }: { policyId: string, gaps: Gap[]
     }
 
     return (
-        <div className="bg-white dark:bg-stone-800 rounded-3xl shadow-sm border border-stone-200 dark:border-stone-700 overflow-hidden">
-            <div className="p-6 border-b border-stone-100 dark:border-stone-700 flex justify-between items-center">
-                <h2 className="text-sm font-black text-stone-400 uppercase tracking-widest">{t.analysis.title}</h2>
+        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 overflow-hidden transition-all duration-300 hover:shadow-xl">
+            <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-6 flex justify-between items-center">
+                <div className="flex items-center gap-3 text-white">
+                    <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                        <Sparkles className="w-6 h-6" />
+                    </div>
+                    <div>
+                        <h2 className="text-lg font-black">{t.analysis.title}</h2>
+                        <p className="text-sm text-emerald-100 mt-0.5">On-demand coverage gap analysis</p>
+                    </div>
+                </div>
                 <button
                     onClick={handleAnalyze}
                     disabled={analyzing}
-                    className="text-xs bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 px-3 py-1 rounded-lg font-bold hover:bg-teal-100 transition-colors disabled:opacity-50"
+                    className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl font-bold transition-all disabled:opacity-50 backdrop-blur-sm border border-white/30 hover:shadow-lg"
                 >
                     {analyzing ? t.analysis.analyzing : t.analysis.runAnalysis}
                 </button>
             </div>
             <div className="p-6">
                 {gaps.length === 0 ? (
-                    <p className="text-sm text-stone-500 italic">{t.analysis.noGaps}</p>
+                    <div className="text-center py-8">
+                        <div className="w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mx-auto mb-4">
+                            <Sparkles className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                        </div>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 font-semibold mb-2">
+                            {t.analysis.noGaps}
+                        </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-500">
+                            Click "Run Analysis" to check for coverage gaps
+                        </p>
+                    </div>
                 ) : (
                     <div className="space-y-4">
                         {gaps.map((gap) => {
@@ -58,19 +77,33 @@ export function AnalysisCard({ policyId, gaps }: { policyId: string, gaps: Gap[]
                             const suggestion = language === 'el' ? (gap.aiSuggestionEl || gap.aiSuggestion) : gap.aiSuggestion
 
                             return (
-                                <div key={gap.id} className="bg-red-50 dark:bg-red-900/10 p-4 rounded-xl border border-red-100 dark:border-red-900/30">
-                                    <div className="flex gap-3">
-                                        <div className="text-red-500 shrink-0 mt-0.5">
-                                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                            </svg>
+                                <div key={gap.id} className="bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 p-5 rounded-xl border border-red-200 dark:border-red-900/30 transition-all duration-300 hover:shadow-md">
+                                    <div className="flex gap-4">
+                                        <div className="shrink-0">
+                                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-lg">
+                                                <AlertTriangle className="w-5 h-5 text-white" />
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h4 className="font-bold text-red-900 dark:text-red-100 text-sm">{gap.definition.title || t.analysis.gapDetected}</h4>
-                                            <p className="text-xs text-red-700 dark:text-red-300 mt-1">{explanation}</p>
-                                            <p className="text-xs font-medium text-red-800 dark:text-red-200 mt-2 bg-red-100 dark:bg-red-900/50 p-2 rounded-lg">
-                                                💡 {t.analysis.recommendation}: {suggestion}
+                                        <div className="flex-1">
+                                            <h4 className="font-bold text-red-900 dark:text-red-100 text-sm mb-2">
+                                                {gap.definition.title || t.analysis.gapDetected}
+                                            </h4>
+                                            <p className="text-sm text-red-700 dark:text-red-300 leading-relaxed mb-3">
+                                                {explanation}
                                             </p>
+                                            <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 p-3 rounded-lg">
+                                                <div className="flex items-start gap-2">
+                                                    <Lightbulb className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                                                    <div>
+                                                        <p className="text-xs font-bold text-amber-900 dark:text-amber-100 mb-1">
+                                                            {t.analysis.recommendation}
+                                                        </p>
+                                                        <p className="text-xs text-amber-800 dark:text-amber-200">
+                                                            {suggestion}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

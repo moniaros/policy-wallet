@@ -6,6 +6,7 @@ import { AddToWallet } from "./AddToWallet"
 import { SharePolicy } from "./SharePolicy"
 import { DeletePolicy } from "./DeletePolicy"
 import { PolicyAnalysisTabs } from "./PolicyAnalysisTabs"
+import { PolicyQA } from "./PolicyQA"
 import { AIUsageWidget } from "./AIUsageWidget"
 import Link from "next/link"
 import { useState } from "react"
@@ -369,6 +370,9 @@ export function PolicyDetailsClient({
                             t={t}
                             lastAnalyzedAt={policy.lastAnalyzedAt}
                         />
+
+                        {/* Interactive Q&A */}
+                        <PolicyQA policyId={policy.id} />
                     </div>
 
                     {/* Right Column - Sidebar */}

@@ -824,3 +824,170 @@ export async function getAIUsageStats() {
 
     return { count, limit: 5 }
 }
+
+/**
+ * Ask a question about a policy document using AI
+ * Uses Gemini 2.0 Flash for intelligent Q&A
+ */
+export async function askPolicyQuestion(policyId: string, question: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    // Validate question
+    if (!question || question.trim().length < 3) {
+        return { error: "Please enter a valid question" }
+    }
+
+    // Fetch policy with documents
+    const policy = await db.policy.findUnique({
+        where: { id: policyId },
+        include: { documents: true }
+    })
+
+    if (!policy) return { error: "Policy not found" }
+
+    // Check authorization
+    const isOwner = policy.ownerUserId === authResult.dbUser.id
+    const hasAccess = isOwner || await db.accessGrant.findFirst({
+        where: {
+            granterUserId: policy.ownerUserId,
+            granteeUserId: authResult.dbUser.id,
+            status: 'active'
+        }
+    })
+
+    if (!hasAccess) return { error: "Unauthorized" }
+
+    // Check if Gemini API is available
+    const apiKey = process.env.GEMINI_API_KEY
+    if (!apiKey) {
+        return { error: "AI service is not configured" }
+    }
+
+    try {
+        const genAI = new GoogleGenerativeAI(apiKey)
+        const model = genAI.getGenerativeModel({
+            model: 'gemini-2.0-flash-exp',
+            generationConfig: {
+                temperature: 0.3, // Balanced for Q&A
+                topP: 0.95,
+                topK: 40,
+                maxOutputTokens: 2048,
+            }
+        })
+
+        // Prepare context from policy data
+        const context = `
+Policy Information:
+- Insurer: ${policy.insurerName}
+- Policy Number: ${policy.policyNumber}
+- Type: ${policy.lineOfBusiness}
+- Start Date: ${policy.startDate.toISOString().split('T')[0]}
+- End Date: ${policy.endDate.toISOString().split('T')[0]}
+- Premium: ${policy.premiumAmount || 'N/A'}
+- Coverage Summary: ${policy.coverageSummary || 'N/A'}
+
+${policy.acordData ? `
+Additional Details from Document:
+${JSON.stringify(policy.acordData, null, 2)}
+` : ''}
+`
+
+        const parts: any[] = []
+
+        // If there's a document, include it
+        if (policy.documents.length > 0) {
+            const doc = policy.documents[0]
+            try {
+                // Read the file from storage
+                const filePath = path.join(process.cwd(), 'public', doc.fileUrl)
+                const fileBuffer = await fs.readFile(filePath)
+                const base64Data = fileBuffer.toString('base64')
+
+                // Determine MIME type
+                const mimeType = doc.fileName.toLowerCase().endsWith('.pdf')
+                    ? 'application/pdf'
+                    : 'image/jpeg'
+
+                parts.push({
+                    inlineData: {
+                        data: base64Data,
+                        mimeType
+                    }
+                })
+            } catch (fileError) {
+                logger('warn', 'Could not read policy document for Q&A', {
+                    policyId,
+                    error: fileError instanceof Error ? fileError.message : String(fileError)
+                })
+            }
+        }
+
+        // Add the prompt
+        const prompt = `
+You are an expert insurance advisor helping a policyholder understand their insurance policy.
+
+${context}
+
+User Question: ${question}
+
+Instructions:
+1. Answer the question based on the policy document and metadata provided
+2. Be clear, concise, and helpful
+3. If the information is not available in the document, say so
+4. Provide specific references to policy sections when possible
+5. Use simple language that a non-expert can understand
+6. If the question is about coverage, explain what IS and IS NOT covered
+7. For Greek policies, you may respond in Greek if the question is in Greek
+
+Answer the user's question:
+`
+
+        parts.push(prompt)
+
+        logger('info', 'Processing policy question', {
+            policyId,
+            userId: authResult.dbUser.id,
+            questionLength: question.length,
+            hasDocument: policy.documents.length > 0
+        })
+
+        const result = await model.generateContent(parts)
+        const response = await result.response
+        const answer = response.text()
+
+        // Log the interaction
+        try {
+            await (db as any).activityLog.create({
+                data: {
+                    adminUserId: authResult.dbUser.id,
+                    adminEmail: authResult.dbUser.email || "unknown",
+                    actionType: "POLICY_QUESTION_ASKED",
+                    description: `Asked question about policy ${policy.policyNumber}`,
+                    metadata: {
+                        policyId,
+                        question: question.substring(0, 100),
+                        answerLength: answer.length
+                    }
+                }
+            })
+        } catch (e) { /* ignore logging errors */ }
+
+        logger('info', 'Policy question answered successfully', {
+            policyId,
+            answerLength: answer.length
+        })
+
+        return {
+            success: true,
+            answer,
+            question
+        }
+    } catch (error) {
+        logger('error', 'Failed to answer policy question', {
+            policyId,
+            error: error instanceof Error ? error.message : String(error)
+        })
+        return { error: "Failed to process your question. Please try again." }
+    }
+}
