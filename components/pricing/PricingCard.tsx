@@ -81,7 +81,7 @@ export function PricingCard({
             {isHighlighted && !isCurrentPlan && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-sm font-bold rounded-full shadow-lg flex items-center gap-1.5">
                     <Sparkles className="w-4 h-4" />
-                    {tierData.badge[language]}
+                    {'badge' in tierData && tierData.badge[language]}
                 </div>
             )}
 

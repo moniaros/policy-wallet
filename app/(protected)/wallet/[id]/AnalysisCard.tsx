@@ -29,9 +29,9 @@ export function AnalysisCard({ policyId, gaps }: { policyId: string, gaps: Gap[]
         const toastId = toast.loading(t.analysis.analyzing)
         const res = await analyzeGaps(policyId)
         setAnalyzing(false)
-        if (res.error) {
+        if ('error' in res && res.error) {
             toast.error(res.error, { id: toastId })
-        } else {
+        } else if ('count' in res) {
             toast.success(`${t.analysis.analysisComplete}${res.count}${t.analysis.issues}`, { id: toastId })
             router.refresh()
         }

@@ -113,10 +113,10 @@ export function FeatureComparison({ language, className = '' }: FeatureCompariso
                         <th className="text-center py-4 px-6 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 rounded-t-xl">
                             <div className="flex items-center justify-center gap-2">
                                 <span className="text-blue-600 dark:text-blue-400 font-black">
-                                    {copy.tiers.premium.name[language]}
+                                    {copy.tiers.professional.name[language]}
                                 </span>
                                 <span className="px-2 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full">
-                                    {copy.tiers.premium.badge[language]}
+                                    {copy.tiers.professional.badge[language]}
                                 </span>
                             </div>
                         </th>
