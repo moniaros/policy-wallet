@@ -6,26 +6,16 @@
 import { db as prisma } from '@/lib/db'
 import { getUserSubscription } from '@/lib/subscription-limits'
 import { Decimal } from '@prisma/client/runtime/library'
+import {
+    TOKEN_COSTS,
+    type AIModel,
+    type OperationType,
+    formatTokens,
+    formatCost
+} from '@/lib/token-utils'
 
-// Token costs for different AI models (in EUR per 1M tokens)
-export const TOKEN_COSTS = {
-    'gemini-2.0-flash': {
-        input: 0.00007, // €0.070 per 1M tokens
-        output: 0.00028, // €0.28 per 1M tokens
-    },
-} as const
-
-export type AIModel = keyof typeof TOKEN_COSTS
-
-export type OperationType =
-    | 'policy_analysis'
-    | 'gap_detection'
-    | 'qa_session'
-    | 'document_parsing'
-    | 'opportunity_analysis'
-    | 'client_report'
-    | 'notification_generation'
-    | 'other'
+// Re-export for backward compatibility if needed, but preferably use token-utils directly
+export { formatTokens, formatCost, TOKEN_COSTS, type AIModel, type OperationType }
 
 /**
  * Track token usage for an AI operation
@@ -59,7 +49,7 @@ export async function trackTokenUsage(params: {
         },
     })
 
-    // Update monthly summary
+    // Update monthly usage
     await updateMonthlyUsage(
         params.userId,
         params.inputTokens + params.outputTokens,
@@ -335,24 +325,4 @@ export async function getDailyUsageTrends(days: number = 30) {
         cost: Number(day.total_cost),
         operations: Number(day.operation_count),
     }))
-}
-
-/**
- * Format token count for display
- */
-export function formatTokens(tokens: number): string {
-    if (tokens >= 1_000_000) {
-        return `${(tokens / 1_000_000).toFixed(2)}M`
-    }
-    if (tokens >= 1_000) {
-        return `${(tokens / 1_000).toFixed(1)}K`
-    }
-    return tokens.toString()
-}
-
-/**
- * Format cost for display
- */
-export function formatCost(cost: number): string {
-    return `€${cost.toFixed(4)}`
 }

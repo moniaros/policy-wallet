@@ -3,7 +3,7 @@
  * Centralized logic for enforcing tier-based limits
  */
 
-import { prisma } from '@/lib/prisma'
+import { db as prisma } from '@/lib/db'
 
 export const SUBSCRIPTION_LIMITS = {
     free: {
@@ -42,12 +42,16 @@ export type FeatureKey = keyof typeof SUBSCRIPTION_LIMITS.free
  * Get user's subscription with tier information
  */
 export async function getUserSubscription(userId: string) {
-    const subscription = await prisma.subscription.findUnique({
+    const subscription = await prisma.subscription.findFirst({
         where: { userId },
+        include: { plan: true },
+        orderBy: { createdAt: 'desc' }
     })
 
+    const tier = (subscription?.plan?.name?.toLowerCase() || 'free') as SubscriptionTier
+
     return {
-        tier: (subscription?.tier as SubscriptionTier) || 'free',
+        tier: tier,
         status: subscription?.status || 'active',
         subscription,
     }

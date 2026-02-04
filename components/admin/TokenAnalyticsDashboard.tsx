@@ -10,7 +10,7 @@ import {
     ArrowUp,
     ArrowDown
 } from 'lucide-react'
-import { formatTokens, formatCost } from '@/lib/token-tracking'
+import { formatTokens, formatCost } from '@/lib/token-utils'
 
 interface TokenStats {
     total: {

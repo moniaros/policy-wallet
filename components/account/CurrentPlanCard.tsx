@@ -5,9 +5,11 @@ import { useRouter } from 'next/navigation'
 import { subscriptionCopy, formatMessage } from '@/lib/subscription-copy'
 import { Crown, Calendar, CreditCard, AlertCircle, CheckCircle2 } from 'lucide-react'
 
+export type SubscriptionTier = 'free' | 'essential' | 'professional'
+
 export interface CurrentPlanCardProps {
     subscription: {
-        tier: 'free' | 'premium'
+        tier: SubscriptionTier
         status: 'active' | 'canceled' | 'past_due'
         currentPeriodEnd?: Date
         policiesUsed: number
@@ -30,7 +32,7 @@ export function CurrentPlanCard({
     const copy = subscriptionCopy
     const { tier, status, currentPeriodEnd, policiesUsed, policiesLimit } = subscription
 
-    const isPremium = tier === 'premium'
+    const isPremium = tier !== 'free'
     const isCanceled = status === 'canceled'
     const isPastDue = status === 'past_due'
 
@@ -67,10 +69,10 @@ export function CurrentPlanCard({
                 {isPremium && (
                     <div className="text-right">
                         <div className="text-2xl font-black text-slate-900 dark:text-white">
-                            {copy.tiers.premium.price[language]}
+                            {copy.tiers[tier].price[language]}
                         </div>
                         <div className="text-sm text-slate-600 dark:text-slate-400">
-                            {copy.tiers.premium.period[language]}
+                            {copy.tiers[tier].period[language]}
                         </div>
                     </div>
                 )}
@@ -124,10 +126,10 @@ export function CurrentPlanCard({
                     <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
                         <div
                             className={`h-full rounded-full transition-all duration-300 ${usagePercentage >= 100
-                                    ? 'bg-red-600'
-                                    : usagePercentage >= 75
-                                        ? 'bg-orange-500'
-                                        : 'bg-blue-600'
+                                ? 'bg-red-600'
+                                : usagePercentage >= 75
+                                    ? 'bg-orange-500'
+                                    : 'bg-blue-600'
                                 }`}
                             style={{ width: `${usagePercentage}%` }}
                         />
