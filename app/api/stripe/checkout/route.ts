@@ -1,26 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
 import Stripe from 'stripe'
-import { authOptions } from '@/lib/auth'
+import { getAuthenticatedUserOrNull } from '@/lib/auth-helpers'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2024-12-18.acacia',
+    apiVersion: '2024-12-18.acacia' as any,
 })
 
 export async function POST(req: NextRequest) {
     try {
-        const session = await getServerSession(authOptions)
+        const user = await getAuthenticatedUserOrNull()
 
-        if (!session?.user?.email) {
+        if (!user) {
             return NextResponse.json(
                 { error: 'Unauthorized' },
                 { status: 401 }
             )
         }
 
+        const { dbUser } = user
+
         // Create Stripe checkout session
         const checkoutSession = await stripe.checkout.sessions.create({
-            customer_email: session.user.email,
+            customer_email: dbUser.email,
             mode: 'subscription',
             payment_method_types: ['card'],
             line_items: [
@@ -29,14 +30,14 @@ export async function POST(req: NextRequest) {
                     quantity: 1,
                 },
             ],
-            success_url: `${process.env.NEXTAUTH_URL}/account?success=true`,
-            cancel_url: `${process.env.NEXTAUTH_URL}/pricing?canceled=true`,
+            success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/account?success=true`,
+            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/pricing?canceled=true`,
             metadata: {
-                userId: session.user.id,
+                userId: dbUser.id,
             },
             subscription_data: {
                 metadata: {
-                    userId: session.user.id,
+                    userId: dbUser.id,
                 },
             },
         })

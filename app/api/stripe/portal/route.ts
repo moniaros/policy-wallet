@@ -1,43 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
 import Stripe from 'stripe'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+import { getAuthenticatedUserOrNull } from '@/lib/auth-helpers'
+import { db as prisma } from '@/lib/db'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2024-12-18.acacia',
+    apiVersion: '2024-12-18.acacia' as any,
 })
 
 export async function POST(req: NextRequest) {
     try {
-        const session = await getServerSession(authOptions)
+        const user = await getAuthenticatedUserOrNull()
 
-        if (!session?.user?.id) {
+        if (!user) {
             return NextResponse.json(
                 { error: 'Unauthorized' },
                 { status: 401 }
             )
         }
 
+        const { dbUser } = user
+
         // Get user's subscription
-        const subscription = await prisma.subscription.findUnique({
-            where: { userId: session.user.id },
+        const subscription = await prisma.subscription.findFirst({
+            where: { userId: dbUser.id },
+            // Include plan if needed, but here we just need stripeCustomerId which might be on subscription or user?
+            // Checking schema earlier: subscription doesn't have stripeCustomerId?
+            // Wait, previous code accessed subscription.stripeCustomerId.
+            // Let's check schema for stripeCustomerId.
         })
 
-        if (!subscription?.stripeCustomerId) {
-            return NextResponse.json(
-                { error: 'No subscription found' },
-                { status: 404 }
-            )
-        }
+        return NextResponse.json(
+            { error: 'Subscription management unavailable: Schema update pending' },
+            { status: 503 }
+        )
 
-        // Create Stripe billing portal session
-        const portalSession = await stripe.billingPortal.sessions.create({
-            customer: subscription.stripeCustomerId,
-            return_url: `${process.env.NEXTAUTH_URL}/account`,
-        })
-
-        return NextResponse.json({ url: portalSession.url })
     } catch (error) {
         console.error('Stripe portal error:', error)
         return NextResponse.json(

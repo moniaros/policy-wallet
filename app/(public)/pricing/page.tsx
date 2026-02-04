@@ -1,9 +1,9 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useSession } from 'next-auth/react'
+import { createClient } from '@/lib/supabase/client'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { PolicyWalletLogo } from '@/components/branding/Logo'
 import { ThemeToggle } from '@/components/ThemeToggle'
@@ -15,9 +15,26 @@ import { Shield, Lock, CreditCard } from 'lucide-react'
 
 export default function PricingPage() {
     const router = useRouter()
-    const { data: session } = useSession()
+    const [session, setSession] = useState<any>(null)
     const { language, setLanguage } = useLanguage()
     const copy = subscriptionCopy
+    const supabase = createClient()
+
+    useEffect(() => {
+        // Get initial session
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setSession(session)
+        })
+
+        // Listen for changes
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+            setSession(session)
+        })
+
+        return () => subscription.unsubscribe()
+    }, [supabase])
 
     const handleSelectPlan = async (tier: 'free' | 'essential' | 'professional') => {
         if (!session) {
