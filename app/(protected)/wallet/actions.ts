@@ -14,6 +14,7 @@ import path from "path"
 import { getAIService } from "@/lib/services/ai"
 import { GapAnalysisService } from "@/lib/services/gap-analysis.service"
 import { trackTokenUsage } from "@/lib/token-tracking"
+import { canUserUseFeature, getUpgradeMessage } from "@/lib/subscription-limits"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 
 const PolicySchema = z.object({
@@ -605,6 +606,14 @@ export async function askPolicyQuestion(policyId: string, question: string) {
 
     if (!hasAccess) return { error: "Unauthorized" }
 
+    // Check feature access
+    const isAllowed = await canUserUseFeature(authResult.dbUser.id, 'interactiveQA')
+    if (!isAllowed && !authResult.dbUser.roles.includes('admin')) {
+        return {
+            error: getUpgradeMessage('feature_locked', authResult.dbUser.preferredLanguage as any || 'en')
+        }
+    }
+
     // Use centralized AI service
     const aiService = getAIService()
     if (!aiService.isAvailable()) {
@@ -612,116 +621,24 @@ export async function askPolicyQuestion(policyId: string, question: string) {
     }
 
     try {
-        const genAI = (aiService as any).genAI // Access the underlying instance if needed, but better to use service methods
-        // Actually, let's keep it simple for now and just use the same logic but safer
-        const apiKey = process.env.GEMINI_API_KEY
-        if (!apiKey || apiKey === 'undefined') {
-            return { error: "AI service is not configured" }
-        }
-
-        const genAIInstance = new GoogleGenerativeAI(apiKey.trim())
-        const model = genAIInstance.getGenerativeModel({
-            model: 'gemini-2.0-flash-exp',
-            generationConfig: {
-                temperature: 0.3, // Balanced for Q&A
-                topP: 0.95,
-                topK: 40,
-                maxOutputTokens: 2048,
-            }
-        })
-
-        // Prepare context from policy data
-        const context = `
-Policy Information:
-- Insurer: ${policy.insurerName}
-- Policy Number: ${policy.policyNumber}
-- Type: ${policy.lineOfBusiness}
-- Start Date: ${policy.startDate.toISOString().split('T')[0]}
-- End Date: ${policy.endDate.toISOString().split('T')[0]}
-- Premium: ${policy.premiumAmount || 'N/A'}
-- Coverage Summary: ${policy.coverageSummary || 'N/A'}
-
-${policy.acordData ? `
-Additional Details from Document:
-${JSON.stringify(policy.acordData, null, 2)}
-` : ''}
-`
-
-        const parts: any[] = []
-
-        // If there's a document, include it
-        if (policy.documents.length > 0) {
-            const doc = policy.documents[0]
-            try {
-                // Read the file from storage
-                const filePath = path.join(process.cwd(), 'public', doc.fileUrl)
-                const fileBuffer = await fs.readFile(filePath)
-                const base64Data = fileBuffer.toString('base64')
-
-                // Determine MIME type
-                const mimeType = doc.fileName.toLowerCase().endsWith('.pdf')
-                    ? 'application/pdf'
-                    : 'image/jpeg'
-
-                parts.push({
-                    inlineData: {
-                        data: base64Data,
-                        mimeType
-                    }
-                })
-            } catch (fileError) {
-                logger('warn', 'Could not read policy document for Q&A', {
-                    policyId,
-                    error: fileError instanceof Error ? fileError.message : String(fileError)
-                })
-            }
-        }
-
-        // Add the prompt
-        const prompt = `
-You are an expert insurance advisor helping a policyholder understand their insurance policy.
-
-${context}
-
-User Question: ${question}
-
-Instructions:
-1. Answer the question based on the policy document and metadata provided
-2. Be clear, concise, and helpful
-3. If the information is not available in the document, say so
-4. Provide specific references to policy sections when possible
-5. Use simple language that a non-expert can understand
-6. If the question is about coverage, explain what IS and IS NOT covered
-7. For Greek policies, you may respond in Greek if the question is in Greek
-
-Answer the user's question:
-`
-
-        parts.push(prompt)
-
-        logger('info', 'Processing policy question', {
-            policyId,
-            userId: authResult.dbUser.id,
-            questionLength: question.length,
-            hasDocument: policy.documents.length > 0
-        })
-
-        const result = await model.generateContent(parts);
-        const response = await result.response;
-        const answer = response.text();
-
-        // Track Token Usage
-        if (response.usageMetadata) {
-            const usage = response.usageMetadata
-            await trackTokenUsage({
+        const answer = await aiService.askQuestion(
+            null, // No document for now
+            {
+                insurerName: policy.insurerName,
+                policyNumber: policy.policyNumber,
+                lineOfBusiness: policy.lineOfBusiness,
+                startDate: policy.startDate,
+                endDate: policy.endDate,
+                premiumAmount: policy.premiumAmount ? Number(policy.premiumAmount) : null,
+                coverageSummary: policy.coverageSummary
+            },
+            question,
+            {
                 userId: authResult.dbUser.id,
-                operationType: 'qa_session',
-                policyId: policyId,
-                inputTokens: usage.promptTokenCount,
-                outputTokens: usage.candidatesTokenCount,
-                model: 'gemini-2.0-flash'
-            }).catch(err => logger('error', 'Token tracking failed', { error: err }))
-        }
+                policyId: policy.id
+            }
+        )
+
 
         // Log the interaction
         try {

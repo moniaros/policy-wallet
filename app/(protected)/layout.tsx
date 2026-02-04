@@ -1,4 +1,4 @@
-import { getAuthenticatedUser } from "@/lib/auth-helpers"
+import { getAuthenticatedUser, getIsPayingUser } from "@/lib/auth-helpers"
 import { AppShell } from "@/components/shell"
 import { getTranslations } from "@/lib/i18n"
 import { signOut } from "@/app/auth/actions"
@@ -10,6 +10,7 @@ export default async function ProtectedLayout({
     children: React.ReactNode
 }) {
     const { dbUser } = await getAuthenticatedUser()
+    const isPayingUser = await getIsPayingUser(dbUser)
 
     // Construct navigation based on roles
     const roles = dbUser.roles?.split(",") || ["policyholder"]
@@ -23,8 +24,14 @@ export default async function ProtectedLayout({
             title: t.nav.wallet,
             items: [
                 { label: t.nav.wallet, href: "/wallet" },
-                { label: t.nav.coverage, href: "/tasks" },
-                { label: t.nav.coverageInsights, href: "/coverage-insights" },
+                {
+                    label: `${t.nav.coverage}${!isPayingUser ? ' (Pro)' : ''}`,
+                    href: "/coverage"
+                },
+                {
+                    label: `${t.nav.coverageInsights}${!isPayingUser ? ' (Plus)' : ''}`,
+                    href: "/coverage-insights"
+                },
                 { label: t.nav.notifications, href: "/notifications" },
             ]
         })

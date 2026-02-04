@@ -410,4 +410,102 @@ Return ONLY valid JSON, no other text.
       throw error
     }
   }
+
+  /**
+   * Answers a question about a policy
+   */
+  async askQuestion(
+    document: AIDocument | null,
+    metadata: PolicyMetadata,
+    question: string,
+    options?: AITrackingOptions
+  ): Promise<string> {
+    if (!this.genAI) {
+      throw new Error('AI service not initialized')
+    }
+
+    try {
+      const model = this.genAI.getGenerativeModel({
+        model: 'gemini-2.0-flash',
+        generationConfig: {
+          temperature: 0.3,
+          topP: 0.95,
+          topK: 40,
+          maxOutputTokens: 2048,
+        }
+      })
+
+      // Prepare context from policy data
+      const context = `
+Policy Information:
+- Insurer: ${metadata.insurerName}
+- Policy Number: ${metadata.policyNumber}
+- Type: ${metadata.lineOfBusiness}
+- Start Date: ${metadata.startDate.toISOString().split('T')[0]}
+- End Date: ${metadata.endDate.toISOString().split('T')[0]}
+- Premium: ${metadata.premiumAmount || 'N/A'}
+- Coverage Summary: ${metadata.coverageSummary || 'N/A'}
+`
+
+      const parts: any[] = []
+
+      // If there's a document, include it
+      if (document) {
+        parts.push({
+          inlineData: {
+            data: document.data,
+            mimeType: document.mimeType
+          }
+        })
+      }
+
+      // Add the prompt
+      const prompt = `
+You are an expert insurance advisor helping a policyholder understand their insurance policy.
+
+${context}
+
+User Question: ${question}
+
+Instructions:
+1. Answer the question based on the policy document and metadata provided
+2. Be clear, concise, and helpful
+3. If the information is not available in the document, say so
+4. Provide specific references to policy sections when possible
+5. Use simple language that a non-expert can understand
+6. If the question is about coverage, explain what IS and IS NOT covered
+7. For Greek policies, you may respond in Greek if the question is in Greek
+
+Answer the user's question:
+`
+      parts.push(prompt)
+
+      const result = await model.generateContent(parts)
+      const response = await result.response
+      const answer = response.text()
+
+      // Track Token Usage
+      if (options?.userId && response.usageMetadata) {
+        const usage = response.usageMetadata
+        trackTokenUsage({
+          userId: options.userId,
+          operationType: 'qa_session',
+          policyId: options.policyId,
+          inputTokens: usage.promptTokenCount,
+          outputTokens: usage.candidatesTokenCount,
+          model: 'gemini-2.0-flash'
+        }).catch(err => {
+          logger('error', 'Failed to track token usage in Q&A', { error: err })
+        })
+      }
+
+      return answer
+    } catch (error) {
+      logger('error', 'Gemini 2.0 Flash Q&A failed', {
+        policyNumber: metadata.policyNumber,
+        error: error instanceof Error ? error.message : String(error)
+      })
+      throw error
+    }
+  }
 }

@@ -1,6 +1,7 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import {
     User,
     CreditCard,
@@ -44,6 +45,20 @@ export function AccountClient({ initialData, userLanguage = 'en' }: AccountClien
     const [isPortalLoading, setIsPortalLoading] = useState(false)
     const [isUpgradeLoading, setIsUpgradeLoading] = useState<string | null>(null)
     const lang = userLanguage === 'el' ? 'el' : 'en'
+    const searchParams = useSearchParams()
+
+    useEffect(() => {
+        const upsell = searchParams.get('upsell')
+        if (upsell === 'coverage') {
+            setActiveTab('billing')
+            toast.info(
+                lang === 'el'
+                    ? "Η πρόσβαση στην Ανάλυση Κάλυψης απαιτεί συνδρομή Plus ή Premium."
+                    : "Access to Coverage Analysis requires a Plus or Premium subscription.",
+                { duration: 6000 }
+            )
+        }
+    }, [searchParams, lang])
 
     const handleOpenPortal = async () => {
         setIsPortalLoading(true)

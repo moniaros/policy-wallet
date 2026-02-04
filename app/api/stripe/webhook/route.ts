@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import Stripe from 'stripe'
+import { stripe } from '@/lib/stripe'
 import { db as prisma } from '@/lib/db'
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2024-12-18.acacia' as any,
-})
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
@@ -84,36 +81,43 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     const stripeSubscriptionId = session.subscription as string
 
     // Update user with stripe customer ID
-    await prisma.user.update({
+    await (prisma.user.update as any)({
         where: { id: userId },
         data: { stripeCustomerId }
     })
 
     if (stripeSubscriptionId) {
-        const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId)
+        const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId) as any
         const priceId = subscription.items.data[0].price.id
 
         // Find plan by priceId (stored in metadata usually) or lookup
         // For now, we'll try to find a plan that matches this price if we had a mapping
         // Or just update the existing subscription record
 
-        await prisma.subscription.updateMany({
+        await (prisma.subscription.updateMany as any)({
             where: { userId, status: 'active' },
             data: { status: 'past_due' } // Deactivate old ones
         })
 
+        if (subscription.status === 'canceled') {
+            console.log(`Subscription ${stripeSubscriptionId} is canceled, skipping creation`)
+            return
+        }
+
+        const sub = subscription as any
+
         // Create new subscription record
-        await prisma.subscription.create({
+        await (prisma.subscription.create as any)({
             data: {
                 userId,
-                planId: session.metadata?.planId || 'ph-plus', // Fallback or from metadata
+                planId: (session.metadata?.planId as string) || 'ph-plus',
                 stripeSubscriptionId,
                 stripePriceId: priceId,
-                stripeStatus: subscription.status,
+                stripeStatus: sub.status,
                 status: 'active',
-                currentPeriodStart: new Date(subscription.current_period_start * 1000),
-                currentPeriodEnd: new Date(subscription.current_period_end * 1000),
-                autoRenew: !subscription.cancel_at_period_end
+                currentPeriodStart: new Date(sub.current_period_start * 1000),
+                currentPeriodEnd: new Date(sub.current_period_end * 1000),
+                autoRenew: !sub.cancel_at_period_end
             }
         })
     }
@@ -121,11 +125,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     console.log(`Checkout completed for user ${userId}`)
 }
 
-async function handleInvoicePaid(invoice: Stripe.Invoice) {
+async function handleInvoicePaid(invoice: any) {
     const stripeSubscriptionId = invoice.subscription as string
     if (!stripeSubscriptionId) return
 
-    await prisma.subscription.update({
+    await (prisma.subscription.update as any)({
         where: { stripeSubscriptionId },
         data: {
             status: 'active',
@@ -147,11 +151,11 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
     }
 }
 
-async function handlePaymentFailed(invoice: Stripe.Invoice) {
+async function handlePaymentFailed(invoice: any) {
     const stripeSubscriptionId = invoice.subscription as string
     if (!stripeSubscriptionId) return
 
-    await prisma.subscription.update({
+    await (prisma.subscription.update as any)({
         where: { stripeSubscriptionId },
         data: {
             status: 'past_due',
@@ -161,11 +165,11 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
 }
 
 async function handleSubscriptionUpdated(stripeSubscription: Stripe.Subscription) {
-    await prisma.subscription.update({
+    await (prisma.subscription.update as any)({
         where: { stripeSubscriptionId: stripeSubscription.id },
         data: {
             stripeStatus: stripeSubscription.status,
-            currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000),
+            currentPeriodEnd: new Date((stripeSubscription as any).current_period_end * 1000),
             autoRenew: !stripeSubscription.cancel_at_period_end,
             stripePriceId: stripeSubscription.items.data[0].price.id
         }
@@ -173,7 +177,7 @@ async function handleSubscriptionUpdated(stripeSubscription: Stripe.Subscription
 }
 
 async function handleSubscriptionDeleted(stripeSubscription: Stripe.Subscription) {
-    await prisma.subscription.update({
+    await (prisma.subscription.update as any)({
         where: { stripeSubscriptionId: stripeSubscription.id },
         data: {
             status: 'cancelled',

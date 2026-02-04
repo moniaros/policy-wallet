@@ -140,6 +140,23 @@ export interface IAIService {
     ): Promise<AIGapAnalysisResponse>
 
     /**
+     * Answers a question about a policy
+     * 
+     * @param document - Policy document context (optional)
+     * @param metadata - Policy metadata context
+     * @param question - User's question
+     * @param options - Tracking options
+     * @returns Answer to the question
+     * @throws {Error} If question answering fails
+     */
+    askQuestion(
+        document: AIDocument | null,
+        metadata: PolicyMetadata,
+        question: string,
+        options?: AITrackingOptions
+    ): Promise<string>
+
+    /**
      * Checks if the AI service is available
      * 
      * @returns True if service is available

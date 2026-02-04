@@ -1,10 +1,10 @@
-import { getAuthenticatedUser } from "@/lib/auth-helpers"
+import { requirePayingUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { WalletSummary } from "@/components/coverage/WalletSummary"
 import { calculatePortfolioSummary } from "@/lib/policy-status"
 
 export default async function CoveragePage() {
-    const { dbUser } = await getAuthenticatedUser()
+    const { dbUser } = await requirePayingUser()
 
     // Fetch user's policies
     const policies = await db.policy.findMany({

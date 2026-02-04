@@ -132,6 +132,24 @@ export class MockAIService implements IAIService {
     }
 
     /**
+     * Answers a question about a policy (Mock)
+     */
+    async askQuestion(
+        document: AIDocument | null,
+        metadata: PolicyMetadata,
+        question: string,
+        options?: AITrackingOptions
+    ): Promise<string> {
+        await this.simulateDelay()
+
+        if (this.shouldFail) {
+            throw new Error('Mock AI Chat failed')
+        }
+
+        return `This is a mock answer to your question: "${question}". I've analyzed your ${metadata.insurerName} policy.`
+    }
+
+    /**
      * Sets whether the mock should fail
      */
     setShouldFail(shouldFail: boolean): void {

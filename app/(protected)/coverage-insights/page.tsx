@@ -1,11 +1,11 @@
-import { getAuthenticatedUser } from "@/lib/auth-helpers"
+import { requirePayingUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { GapList } from "@/components/gaps/GapList"
 import { detectGapsForUser, createGapInstances } from "@/lib/gap-detection"
 import { CoverageInsightsClient } from "@/components/coverage/CoverageInsightsClient"
 
 export default async function CoverageInsightsPage() {
-    const { dbUser } = await getAuthenticatedUser()
+    const { dbUser } = await requirePayingUser()
 
     // 1. Detect gaps for the user
     const detectedGaps = await detectGapsForUser(dbUser.id)
