@@ -25,6 +25,16 @@ export interface Policy {
     documents: PolicyDocument[]
     userId?: string
     acordData?: any
+    verified?: boolean
+    aiInsights?: {
+        exclusions: string[]
+        premiumBenchmark?: {
+            current: number
+            localAverage: number
+            savingsPotential: number
+        }
+    }
+
 }
 
 export interface PolicyWalletProps {

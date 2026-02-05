@@ -41,6 +41,10 @@ interface MobilePolicyDetailsProps {
 
 import { PolicyQA } from "@/components/wallet/PolicyQA"
 import { DeletePolicy } from "@/components/wallet/DeletePolicy"
+import { analyzeGaps } from '@/app/(protected)/wallet/actions'
+import { UpgradePrompt } from '@/components/account/UpgradePrompt'
+import { toast } from 'sonner'
+import { Sparkles, Loader2, RefreshCw } from 'lucide-react'
 
 export function MobilePolicyDetails({
     policy,
@@ -51,6 +55,35 @@ export function MobilePolicyDetails({
 }: MobilePolicyDetailsProps) {
     const router = useRouter()
     const [activeTab, setActiveTab] = useState<'overview' | 'coverage' | 'documents' | 'assistant'>('overview')
+    const [isAnalyzing, setIsAnalyzing] = useState(false)
+    const [gapLimitReached, setGapLimitReached] = useState(false)
+
+    const handleAnalyzeGaps = async () => {
+        setIsAnalyzing(true)
+        try {
+            const result = await analyzeGaps(policy.id)
+
+            if ('error' in result) {
+                if (result.error === 'LIMIT_REACHED') {
+                    setGapLimitReached(true)
+                } else {
+                    toast.error(result.error || 'Analysis failed')
+                    hapticFeedback.error()
+                }
+            } else if (result.success) {
+                toast.success(result.message)
+                hapticFeedback.success()
+                router.refresh()
+            } else {
+                // Handle case where success is false in GapAnalysisResult (if possible)
+                toast.error(result.message || 'Analysis completed with issues')
+            }
+        } catch (error) {
+            toast.error('Something went wrong')
+        } finally {
+            setIsAnalyzing(false)
+        }
+    }
 
     // Swipe between tabs
     const swipeRef = useSwipe({
@@ -227,27 +260,60 @@ export function MobilePolicyDetails({
                             </p>
                         </div>
 
-                        {/* Gaps / Recommendations */}
-                        {policy.gapInstances?.length > 0 && (
-                            <div className="space-y-4">
-                                <h3 className="text-sm font-black text-stone-400 uppercase tracking-widest px-1">{t.wallet.detectedGaps || 'Detected Gaps'}</h3>
-                                {policy.gapInstances.map((gap: any) => (
-                                    <div key={gap.id} className="bg-amber-50 dark:bg-amber-900/20 p-5 rounded-2xl border border-amber-100 dark:border-amber-800/50">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <svg className="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                            </svg>
-                                            <span className="text-sm font-bold text-amber-800 dark:text-amber-200">
-                                                {gap.definition?.title || t.analysis.gapDetected}
-                                            </span>
-                                        </div>
-                                        <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
-                                            {gap.aiExplanation}
-                                        </p>
-                                    </div>
-                                ))}
+                        {/* Gap Analysis Section */}
+                        <div>
+                            <div className="flex items-center justify-between mb-4 px-1">
+                                <h3 className="text-sm font-black text-stone-400 uppercase tracking-widest">{t.wallet.detectedGaps || 'Detected Gaps'}</h3>
+                                <button
+                                    onClick={handleAnalyzeGaps}
+                                    disabled={isAnalyzing}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors disabled:opacity-50"
+                                >
+                                    {isAnalyzing ? (
+                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    ) : (
+                                        <Sparkles className="w-3.5 h-3.5" />
+                                    )}
+                                    {isAnalyzing ? (t.common?.analyzing || 'Analyzing...') : (t.common?.analyze || 'Analyze Now')}
+                                </button>
                             </div>
-                        )}
+
+                            {gapLimitReached && (
+                                <UpgradePrompt
+                                    reason="gap_limit"
+                                    language={t.lang || 'en'} // Fallback if t.lang missing
+                                    onDismiss={() => setGapLimitReached(false)}
+                                    className="mb-4 bg-white dark:bg-stone-800 shadow-sm"
+                                />
+                            )}
+
+                            {policy.gapInstances?.length > 0 ? (
+                                <div className="space-y-4">
+                                    {policy.gapInstances.map((gap: any) => (
+                                        <div key={gap.id} className="bg-amber-50 dark:bg-amber-900/20 p-5 rounded-2xl border border-amber-100 dark:border-amber-800/50">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <svg className="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                                </svg>
+                                                <span className="text-sm font-bold text-amber-800 dark:text-amber-200">
+                                                    {gap.definition?.title || t.analysis.gapDetected}
+                                                </span>
+                                            </div>
+                                            <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
+                                                {gap.aiExplanation}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-8 bg-stone-50 dark:bg-stone-900/50 rounded-2xl border border-stone-100 dark:border-stone-800 border-dashed">
+                                    <p className="text-stone-400 text-sm mb-2">{t.wallet.noGapsFound || 'No gaps detected yet.'}</p>
+                                    <p className="text-xs text-stone-300 dark:text-stone-600">
+                                        Run analysis to check for missing coverage.
+                                    </p>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
 

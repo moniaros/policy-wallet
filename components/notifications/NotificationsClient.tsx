@@ -127,100 +127,76 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-cyan-950">
+        <div className="min-h-screen bg-stone-50 dark:bg-stone-900">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
 
-                {/* Hero Header */}
-                <div className="relative mb-12 overflow-hidden bg-gradient-to-br from-cyan-600 via-blue-600 to-cyan-700 rounded-3xl p-8 md:p-12 text-white shadow-2xl">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-3xl rounded-full -mr-32 -mt-32" />
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-400/20 blur-3xl rounded-full -ml-32 -mb-32" />
+                {/* Branded Header */}
+                <div className="px-6 pt-12 pb-8 flex items-center justify-between">
+                    <div className="flex items-center gap-0.5">
+                        <span className="text-2xl font-black tracking-tight text-stone-900 dark:text-white">Policy</span>
+                        <span className="text-2xl font-black tracking-tight text-teal-600">Wallet</span>
+                    </div>
+                </div>
 
-                    <div className="relative z-10">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                                <Bell className="w-5 h-5" />
-                            </div>
-                            <span className="text-xs font-bold uppercase tracking-wider text-cyan-100">
-                                {t.notifications.communicationCenter}
-                            </span>
+                <div className="px-6 pb-12">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-8 h-8 bg-teal-600 rounded-xl flex items-center justify-center text-white">
+                            <Bell className="w-4 h-4" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-500">
+                            {t.notifications.communicationCenter}
+                        </span>
+                    </div>
+
+                    <h1 className="text-5xl font-black text-stone-900 dark:text-white tracking-tighter mb-4 leading-tight">
+                        {lang === 'el' ? 'Ειδοποιήσεις' : 'Smart'} <span className="text-stone-400 dark:text-stone-500 italic">Alerts.</span>
+                    </h1>
+
+                    <p className="text-stone-500 text-lg max-w-xl mb-12">
+                        {t.activity.subtitle}
+                    </p>
+
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 leading-tight">
+                        {t.userMenu.notifications}
+                    </h1>
+
+                    <p className="text-lg md:text-xl text-cyan-100 max-w-2xl mb-8">
+                        {t.activity.subtitle}
+                    </p>
+
+                    {/* Stats Slider */}
+                    <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 -mx-6 px-6 snap-x mb-12">
+                        <div className="flex-shrink-0 w-[160px] bg-gradient-to-br from-teal-600 to-teal-400 rounded-[32px] p-6 text-white shadow-xl shadow-teal-600/20 snap-start">
+                            <span className="text-[10px] font-black uppercase tracking-widest opacity-80 block mb-2">{t.common.all || 'All'}</span>
+                            <span className="text-4xl font-black tracking-tighter">{counts.all}</span>
                         </div>
 
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 leading-tight">
-                            {t.userMenu.notifications}
-                        </h1>
+                        <div className="flex-shrink-0 w-[160px] bg-white dark:bg-stone-800 rounded-[32px] p-6 text-stone-900 dark:text-white shadow-sm border border-stone-100 dark:border-stone-800 snap-start">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-stone-400 block mb-2">{t.tasks.taskTypes.unread || 'Unread'}</span>
+                            <span className="text-4xl font-black tracking-tighter text-amber-500">{counts.unread}</span>
+                        </div>
 
-                        <p className="text-lg md:text-xl text-cyan-100 max-w-2xl mb-8">
-                            {t.activity.subtitle}
-                        </p>
-
-                        {/* Quick Stats */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Target className="w-4 h-4 text-cyan-200" />
-                                    <span className="text-xs font-semibold text-cyan-200 uppercase tracking-wide">
-                                        {t.common.all || 'All'}
-                                    </span>
-                                </div>
-                                <span className="text-3xl font-black">{counts.all}</span>
-                            </div>
-
-                            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Mail className="w-4 h-4 text-amber-300" />
-                                    <span className="text-xs font-semibold text-cyan-200 uppercase tracking-wide">
-                                        {t.tasks.taskTypes.unread || 'Unread'}
-                                    </span>
-                                </div>
-                                <span className="text-3xl font-black text-amber-400">{counts.unread}</span>
-                            </div>
-
-                            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Clock className="w-4 h-4 text-cyan-200" />
-                                    <span className="text-xs font-semibold text-cyan-200 uppercase tracking-wide">
-                                        {t.tasks.taskTypes.reminder}
-                                    </span>
-                                </div>
-                                <span className="text-3xl font-black">{counts.reminder}</span>
-                            </div>
-
-                            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Sparkles className="w-4 h-4 text-cyan-200" />
-                                    <span className="text-xs font-semibold text-cyan-200 uppercase tracking-wide">
-                                        {t.tasks.taskTypes.intelligence || 'Intelligence'}
-                                    </span>
-                                </div>
-                                <span className="text-3xl font-black">{counts.intelligence}</span>
-                            </div>
+                        <div className="flex-shrink-0 w-[160px] bg-white dark:bg-stone-800 rounded-[32px] p-6 text-stone-900 dark:text-white shadow-sm border border-stone-100 dark:border-stone-800 snap-start">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-stone-400 block mb-2">INTEL</span>
+                            <span className="text-4xl font-black tracking-tighter">{counts.intelligence}</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Tab Navigation */}
-                <div className="flex items-center justify-between mb-8">
-                    <div className="flex gap-2 p-1.5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-lg">
+                <div className="px-6 mb-8">
+                    <div className="flex p-1.5 bg-stone-100 dark:bg-stone-800 rounded-2xl border border-stone-200 dark:border-stone-700">
                         <button
                             onClick={() => setActiveTab('history')}
-                            className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'history'
-                                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
-                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                                }`}
+                            className={`flex-1 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'history' ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-white shadow-xl' : 'text-stone-400 hover:text-stone-600'}`}
                         >
                             {t.wallet.history || 'History'}
                         </button>
                         <button
                             onClick={() => setActiveTab('preferences')}
-                            className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'preferences'
-                                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
-                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                                }`}
+                            className={`flex-1 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'preferences' ? 'bg-white dark:bg-stone-900 text-stone-900 dark:text-white shadow-xl' : 'text-stone-400 hover:text-stone-600'}`}
                         >
-                            <div className="flex items-center gap-2">
-                                <Settings className="w-4 h-4" />
-                                {t.userMenu.preferences || 'Preferences'}
-                            </div>
+                            {t.userMenu.preferences || 'Settings'}
                         </button>
                     </div>
                 </div>
@@ -230,19 +206,21 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
                         {/* Search and Filters */}
                         <div className="mb-6 space-y-4">
                             {/* Search */}
-                            <div className="relative">
-                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                                <input
-                                    type="search"
-                                    placeholder={t.wallet.searchPlaceholder}
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all shadow-sm"
-                                />
+                            <div className="px-6 mb-6">
+                                <div className="relative">
+                                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-400" />
+                                    <input
+                                        type="search"
+                                        placeholder={t.wallet.searchPlaceholder}
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        className="w-full pl-12 pr-4 py-4 bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[28px] text-stone-900 dark:text-white placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-transparent transition-all shadow-sm"
+                                    />
+                                </div>
                             </div>
 
                             {/* Filters */}
-                            <div className="flex flex-wrap gap-2">
+                            <div className="flex flex-wrap gap-2 px-6 no-scrollbar overflow-x-auto pb-4 -mx-6 mb-4">
                                 {[
                                     { key: 'all' as FilterType, label: t.common.all || 'All', icon: Target },
                                     { key: 'unread' as FilterType, label: t.tasks.taskTypes.unread || 'Unread', icon: Mail },
@@ -253,19 +231,13 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
                                     <button
                                         key={key}
                                         onClick={() => setFilter(key)}
-                                        className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all ${filter === key
-                                            ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
-                                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                                        className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-[10px] uppercase tracking-widest transition-all whitespace-nowrap ${filter === key
+                                            ? 'bg-stone-900 dark:bg-white text-white dark:text-stone-900 shadow-xl'
+                                            : 'bg-white dark:bg-stone-900 text-stone-400 border border-stone-50 dark:border-stone-800'
                                             }`}
                                     >
                                         <Icon className="w-4 h-4" />
                                         {label}
-                                        {key !== 'all' && counts[key] > 0 && (
-                                            <span className={`px-2 py-0.5 rounded-full text-xs font-black ${filter === key ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-700'
-                                                }`}>
-                                                {counts[key]}
-                                            </span>
-                                        )}
                                     </button>
                                 ))}
                             </div>
@@ -286,7 +258,7 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
                                 </p>
                             </div>
                         ) : (
-                            <div className="space-y-3">
+                            <div className="space-y-3 px-6">
                                 {filteredNotifications.map((notif) => {
                                     const Icon = getIcon(notif.category)
                                     const colors = getPriorityColor(notif.priority)
@@ -294,9 +266,7 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
                                     return (
                                         <div
                                             key={notif.id}
-                                            className={`group bg-white dark:bg-slate-900 rounded-2xl p-6 border transition-all cursor-pointer hover:shadow-lg ${notif.read_at
-                                                ? 'border-slate-200 dark:border-slate-800'
-                                                : 'border-cyan-200 dark:border-cyan-800 bg-cyan-50/50 dark:bg-cyan-900/10'
+                                            className={`group bg-white dark:bg-stone-900 rounded-[32px] p-5 flex items-center gap-4 shadow-sm border border-stone-50 dark:border-stone-800/50 active:scale-[0.98] transition-all cursor-pointer ${notif.read_at ? 'opacity-70' : ''
                                                 }`}
                                             onClick={() => {
                                                 if (notif.related_object_type && notif.related_object_id) {
@@ -304,30 +274,27 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
                                                 }
                                             }}
                                         >
-                                            <div className="flex items-start gap-4">
-                                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${colors.bg} ${colors.border} border`}>
-                                                    <Icon className={`w-5 h-5 ${colors.text}`} />
-                                                </div>
-
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-start justify-between gap-4 mb-2">
-                                                        <h3 className="font-bold text-slate-900 dark:text-white">
-                                                            {notif.title}
-                                                        </h3>
-                                                        <div className="flex items-center gap-2 flex-shrink-0">
-                                                            {!notif.read_at && (
-                                                                <span className={`w-2 h-2 rounded-full ${colors.dot}`} />
-                                                            )}
-                                                            <span className="text-xs text-slate-500 dark:text-slate-400">
-                                                                {formatDate(notif.created_at)}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                                                        {notif.message}
-                                                    </p>
-                                                </div>
+                                            <div className="w-14 h-14 rounded-[20px] bg-stone-50 dark:bg-stone-800 flex items-center justify-center text-stone-400 group-hover:bg-teal-50 group-hover:text-teal-600 transition-colors">
+                                                <Icon className="w-7 h-7" />
                                             </div>
+
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center justify-between gap-2 mb-1">
+                                                    <h3 className="text-base font-black text-stone-900 dark:text-white tracking-tight truncate">
+                                                        {notif.title}
+                                                    </h3>
+                                                    <span className="text-[10px] font-bold text-stone-400 whitespace-nowrap">
+                                                        {formatDate(notif.created_at)}
+                                                    </span>
+                                                </div>
+                                                <p className="text-xs font-bold text-stone-400 line-clamp-2">
+                                                    {notif.message}
+                                                </p>
+                                            </div>
+
+                                            {!notif.read_at && (
+                                                <div className="w-2.5 h-2.5 rounded-full bg-teal-600 shadow-lg shadow-teal-600/40" />
+                                            )}
                                         </div>
                                     )
                                 })}

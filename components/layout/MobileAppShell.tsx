@@ -32,16 +32,19 @@ export function MobileAppShell({ policies, user, agent }: MobileAppShellProps) {
 
     // Determine active tab from pathname
     const activeTab = (() => {
-        if (pathname?.includes('/agent')) return 'agent'
-        if (pathname?.includes('/account') || pathname?.includes('/profile')) return 'profile'
-        return 'policies'
+        if (pathname === '/wallet' || pathname === '/') return 'home'
+        if (pathname?.includes('/tasks')) return 'tasks'
+        if (pathname?.includes('/coverage')) return 'coverage'
+        if (pathname?.includes('/notifications')) return 'alerts'
+        if (pathname?.includes('/account')) return 'account'
+        return 'home'
     })()
 
     return (
         <div className="min-h-screen bg-stone-50 dark:bg-stone-900">
             {/* Content */}
-            <div className="pb-20"> {/* Add padding for bottom nav */}
-                {activeTab === 'policies' && (
+            <div className="pb-24">
+                {activeTab === 'home' && (
                     <MyPoliciesScreen
                         policies={policies}
                         onViewPolicy={(id) => router.push(`/wallet/${id}`)}
@@ -49,27 +52,29 @@ export function MobileAppShell({ policies, user, agent }: MobileAppShellProps) {
                     />
                 )}
 
-                {activeTab === 'agent' && (
-                    <MyAgentScreen
-                        agent={agent}
-                        recentCommunications={[]}
-                        onCall={() => {
-                            hapticFeedback.tap()
-                            if (agent?.phone) window.location.href = `tel:${agent.phone}`
-                        }}
-                        onEmail={() => {
-                            hapticFeedback.tap()
-                            if (agent?.email) window.location.href = `mailto:${agent.email}`
-                        }}
-                        onChat={() => {
-                            hapticFeedback.tap()
-                            router.push('/chat')
-                        }}
-                        onViewCommunication={(id) => router.push(`/communications/${id}`)}
-                    />
+                {activeTab === 'tasks' && (
+                    <div className="p-8 text-center pt-24">
+                        <h2 className="text-3xl font-black text-stone-900 dark:text-white mb-4">Tasks</h2>
+                        <p className="text-stone-500">Redirecting to task center...</p>
+                        {/* The Task page will handle its own rendering if accessed directly */}
+                    </div>
                 )}
 
-                {activeTab === 'profile' && (
+                {activeTab === 'coverage' && (
+                    <div className="p-8 text-center pt-24">
+                        <h2 className="text-3xl font-black text-stone-900 dark:text-white mb-4">Coverage</h2>
+                        <p className="text-stone-500">Analyzing your protection...</p>
+                    </div>
+                )}
+
+                {activeTab === 'alerts' && (
+                    <div className="p-8 text-center pt-24">
+                        <h2 className="text-3xl font-black text-stone-900 dark:text-white mb-4">Alerts</h2>
+                        <p className="text-stone-500">Syncing notifications...</p>
+                    </div>
+                )}
+
+                {activeTab === 'account' && (
                     <MyProfileScreen
                         user={user}
                         onEditProfile={() => router.push('/account/edit')}

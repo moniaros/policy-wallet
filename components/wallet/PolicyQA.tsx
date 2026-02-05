@@ -5,6 +5,7 @@ import { askPolicyQuestion } from "@/app/(protected)/wallet/actions"
 import { toast } from "sonner"
 import { MessageCircle, Send, Sparkles, Loader2 } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { UpgradePrompt } from '@/components/account/UpgradePrompt'
 
 interface Message {
     role: 'user' | 'assistant'
@@ -13,11 +14,12 @@ interface Message {
 }
 
 export function PolicyQA({ policyId }: { policyId: string }) {
-    const { t } = useLanguage()
+    const { t, language } = useLanguage()
     const [question, setQuestion] = useState("")
     const [messages, setMessages] = useState<Message[]>([])
     const [isAsking, setIsAsking] = useState(false)
     const [showChat, setShowChat] = useState(false)
+    const [limitReached, setLimitReached] = useState(false)
 
     const handleAsk = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -38,7 +40,11 @@ export function PolicyQA({ policyId }: { policyId: string }) {
             const result = await askPolicyQuestion(policyId, question)
 
             if (result.error) {
-                toast.error(result.error)
+                if (result.error === "LIMIT_REACHED") {
+                    setLimitReached(true)
+                } else {
+                    toast.error(result.error)
+                }
                 // Remove the user message if there was an error
                 setMessages(prev => prev.slice(0, -1))
             } else if (result.answer) {
@@ -146,32 +152,48 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                         </div>
                     )}
 
-                    {/* Input Form */}
-                    <form onSubmit={handleAsk} className="relative">
-                        <input
-                            type="text"
-                            value={question}
-                            onChange={(e) => setQuestion(e.target.value)}
-                            placeholder={t.wallet.askAiPlaceholder}
-                            disabled={isAsking}
-                            className="w-full px-4 py-3 pr-12 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:border-indigo-500 dark:focus:border-indigo-400 focus:outline-none transition-colors disabled:opacity-50"
-                        />
-                        <button
-                            type="submit"
-                            disabled={!question.trim() || isAsking}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 text-white flex items-center justify-center hover:from-indigo-700 hover:to-violet-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/30"
-                        >
-                            {isAsking ? (
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                                <Send className="w-4 h-4" />
-                            )}
-                        </button>
-                    </form>
+                </div>
+            )}
 
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 text-center">
-                        {t.wallet.aiFootnote}
-                    </p>
+            {/* Input Form or Upgrade Prompt */}
+            {showChat && (
+                <div className="p-4 pt-0">
+                    {limitReached ? (
+                        <UpgradePrompt
+                            reason="daily_limit"
+                            language={language as 'el' | 'en'}
+                            onDismiss={() => setLimitReached(false)}
+                            className="bg-white dark:bg-slate-800 shadow-none border-blue-200 dark:border-blue-900"
+                        />
+                    ) : (
+                        <>
+                            <form onSubmit={handleAsk} className="relative">
+                                <input
+                                    type="text"
+                                    value={question}
+                                    onChange={(e) => setQuestion(e.target.value)}
+                                    placeholder={t.wallet.askAiPlaceholder}
+                                    disabled={isAsking}
+                                    className="w-full px-4 py-3 pr-12 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:border-indigo-500 dark:focus:border-indigo-400 focus:outline-none transition-colors disabled:opacity-50"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={!question.trim() || isAsking}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-gradient-to-r from-indigo-600 to-violet-600 text-white flex items-center justify-center hover:from-indigo-700 hover:to-violet-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/30"
+                                >
+                                    {isAsking ? (
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                    ) : (
+                                        <Send className="w-4 h-4" />
+                                    )}
+                                </button>
+                            </form>
+
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 text-center">
+                                {t.wallet.aiFootnote}
+                            </p>
+                        </>
+                    )}
                 </div>
             )}
         </div>

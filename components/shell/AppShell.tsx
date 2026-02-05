@@ -237,8 +237,8 @@ export function AppShell({
                 </main>
 
                 {/* Mobile Bottom Navigation */}
-                <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 safe-area-inset-bottom shadow-[0_-1px_3px_rgba(0,0,0,0.05)]">
-                    <div className="grid grid-cols-5 h-16">
+                <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-stone-800 border-t border-stone-200 dark:border-stone-700 safe-area-inset-bottom shadow-xl">
+                    <div className="grid grid-cols-5 h-20">
                         {bottomNavItems.map((item) => {
                             const Icon = item.icon
                             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
@@ -247,25 +247,25 @@ export function AppShell({
                                 <button
                                     key={item.id}
                                     onClick={() => handleNavigate(item.href)}
-                                    className={`flex flex-col items-center justify-center gap-1 transition-all ${isActive
-                                        ? 'text-emerald-600 dark:text-emerald-400'
-                                        : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
+                                    className={`flex flex-col items-center justify-center gap-1.5 transition-all active:scale-90 ${isActive
+                                        ? 'text-teal-600 dark:text-teal-400'
+                                        : 'text-stone-400 dark:text-stone-500'
                                         }`}
                                     aria-label={item.label}
                                     aria-current={isActive ? 'page' : undefined}
                                 >
                                     <div className="relative">
                                         <Icon
-                                            className={`w-6 h-6 transition-all duration-300 ${isActive ? 'scale-110 -translate-y-0.5' : 'scale-100'}`}
-                                            strokeWidth={isActive ? 2.5 : 2}
+                                            className="w-6 h-6"
+                                            strokeWidth={2.5}
                                         />
                                         {item.id === 'notifications' && notificationCount > 0 && (
-                                            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse">
+                                            <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-teal-600 text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-lg shadow-teal-600/30">
                                                 {notificationCount > 9 ? '9+' : notificationCount}
                                             </span>
                                         )}
                                     </div>
-                                    <span className={`text-[10px] font-medium transition-all ${isActive ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-400'}`}>
+                                    <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
                                         {item.label}
                                     </span>
                                 </button>

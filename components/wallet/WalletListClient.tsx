@@ -139,207 +139,138 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
         if (!dateStr) return '—'
         return new Date(dateStr).toLocaleDateString(language === 'el' ? 'el-GR' : 'en-GB', {
             day: 'numeric',
-            month: 'short',
-            year: 'numeric'
+            month: 'short'
         })
     }
 
-    return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-8">
-            {/* Hero Section */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-800 text-white rounded-b-3xl shadow-xl pb-16 pt-8 px-6 lg:px-12 mb-8">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-3xl rounded-full -mr-32 -mt-32 pointer-events-none mix-blend-overlay" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-300/20 blur-3xl rounded-full -ml-32 -mb-32 pointer-events-none mix-blend-overlay" />
+    const totalPremium = useMemo(() => {
+        return displayPolicies.reduce((sum, p) => sum + (p.acordData?.premium || 0), 0)
+    }, [displayPolicies])
 
-                <div className="relative z-10 max-w-7xl mx-auto">
-                    <div className="flex justify-between items-start mb-8">
-                        <div>
-                            <div className="flex items-center gap-2 mb-2 opacity-90">
-                                <Wallet className="w-5 h-5" />
-                                <span className="text-xs font-bold uppercase tracking-wider">Policy Wallet</span>
-                            </div>
-                            <h1 className="text-3xl lg:text-4xl font-bold tracking-tight mb-2">
-                                {t.wallet.yourCoverage}
-                            </h1>
-                            <p className="text-emerald-50 text-base lg:text-lg opacity-90 max-w-md">
-                                {t.wallet.manageTrack}
-                            </p>
-                        </div>
-                        <button
-                            onClick={() => router.push('/wallet/add')}
-                            className="flex items-center gap-2 bg-white text-emerald-700 px-4 py-2 md:px-6 md:py-2.5 rounded-xl font-bold hover:bg-emerald-50 active:scale-95 transition-all shadow-lg hover:shadow-xl text-sm md:text-base"
-                        >
-                            <Plus className="w-4 h-4 md:w-5 md:h-5" />
-                            {t.wallet.addPolicy}
-                        </button>
+    return (
+        <div className="min-h-screen bg-stone-50 dark:bg-stone-950 pb-24">
+            {/* Branded Header */}
+            <div className="px-6 pt-12 pb-6 flex items-center justify-between">
+                <div className="flex items-center gap-0.5">
+                    <span className="text-2xl font-black tracking-tight text-stone-900 dark:text-white">Policy</span>
+                    <span className="text-2xl font-black tracking-tight text-teal-600">Wallet</span>
+                </div>
+                <div className="w-12 h-12 rounded-full border-2 border-stone-200 dark:border-stone-800 flex items-center justify-center text-stone-400 group active:scale-95 transition-all">
+                    <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                        <line x1="9" y1="9" x2="9.01" y2="9" />
+                        <line x1="15" y1="9" x2="15.01" y2="9" />
+                    </svg>
+                </div>
+            </div>
+
+            <div className="px-6 mb-8">
+                <h2 className="text-xl font-black text-stone-900 dark:text-white tracking-tight mb-6">
+                    Your Coverage
+                </h2>
+
+                {/* KPI Cards Horizontal Scroll */}
+                <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 -mx-6 px-6 snap-x safe-area-inset-right">
+                    {/* Total Policies Card */}
+                    <div className="flex-shrink-0 w-[180px] bg-gradient-to-br from-teal-600 to-teal-400 rounded-[32px] p-6 text-white shadow-xl shadow-teal-600/20 snap-start">
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-80 block mb-2">Total Policies:</span>
+                        <span className="text-4xl font-black tracking-tighter">{stats.total}</span>
                     </div>
 
-                    {/* Stats Slider */}
-                    <div className="flex md:grid md:grid-cols-4 gap-4 overflow-x-auto no-scrollbar pb-2 md:pb-0 -mx-6 px-6 md:mx-0 md:px-0 snap-x">
-                        <div className="flex-shrink-0 w-[160px] md:w-auto bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 hover:bg-white/15 transition-colors snap-start">
-                            <div className="flex items-center gap-2 mb-1.5 text-emerald-100">
-                                <Shield className="w-4 h-4" />
-                                <span className="text-[10px] font-bold uppercase tracking-wide">{t.wallet.totalPolicies}</span>
-                            </div>
-                            <span className="text-3xl font-bold">{stats.total}</span>
+                    {/* Monthly Premium Card */}
+                    <div className="flex-shrink-0 w-[240px] bg-gradient-to-br from-teal-500 to-teal-300 rounded-[32px] p-6 text-white shadow-xl shadow-teal-500/20 snap-start">
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-80 block mb-2">Monthly Premium:</span>
+                        <div className="flex items-baseline gap-1">
+                            <span className="text-4xl font-black tracking-tighter">${totalPremium.toFixed(2)}</span>
                         </div>
-                        <div className="flex-shrink-0 w-[160px] md:w-auto bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 hover:bg-white/15 transition-colors snap-start">
-                            <div className="flex items-center gap-2 mb-1.5 text-emerald-100">
-                                <Clock className="w-4 h-4" />
-                                <span className="text-[10px] font-bold uppercase tracking-wide">{t.wallet.activePolicies}</span>
-                            </div>
-                            <span className="text-3xl font-bold">{stats.active}</span>
+                    </div>
+
+                    {/* Potential Savings Card */}
+                    <div className="flex-shrink-0 w-[220px] bg-stone-900 dark:bg-white rounded-[32px] p-6 shadow-xl shadow-stone-900/10 snap-start group relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <svg className="w-24 h-24 text-white dark:text-stone-900" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.15-1.46-3.27-3.4h1.96c.1 1.05 1.18 1.91 2.53 1.91 1.35 0 2.53-.86 2.53-1.95 0-1.01-.84-1.55-2.27-1.95-1.99-.54-3.41-1.38-3.41-3.36 0-1.89 1.4-3.03 3.09-3.42V4h2.67v1.93c1.61.35 2.87 1.45 2.99 3.23h-1.96c-.1-1.03-1.07-1.77-2.38-1.77-1.34 0-2.29.98-2.29 1.91 0 1.01.97 1.55 2.39 1.95 2.01.54 3.39 1.47 3.39 3.39 0 1.89-1.39 3.02-3.21 3.45z" /></svg>
                         </div>
-                        <div className={`flex-shrink-0 w-[160px] md:w-auto backdrop-blur-md border rounded-2xl p-4 transition-colors snap-start ${stats.expiring > 0 ? 'bg-amber-500/20 border-amber-400/40 text-white' : 'bg-white/10 border-white/20 hover:bg-white/15'}`}>
-                            <div className="flex items-center gap-2 mb-1.5 text-emerald-100">
-                                <AlertCircle className="w-4 h-4" />
-                                <span className="text-[10px] font-bold uppercase tracking-wide">{t.wallet.expiringPolicies}</span>
-                            </div>
-                            <span className="text-3xl font-bold">{stats.expiring}</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-stone-400 block mb-2 relative z-10">Potential Savings:</span>
+                        <div className="relative z-10">
+                            <span className="text-3xl font-black tracking-tighter text-white dark:text-stone-900">€142.00</span>
+                            <span className="text-xs font-bold text-emerald-400 dark:text-emerald-600 block mt-1">/ Year ROI</span>
                         </div>
-                        <div className={`flex-shrink-0 w-[160px] md:w-auto backdrop-blur-md border rounded-2xl p-4 transition-colors snap-start ${stats.actionNeeded > 0 ? 'bg-red-500/20 border-red-400/40 text-white' : 'bg-white/10 border-white/20 hover:bg-white/15'}`}>
-                            <div className="flex items-center gap-2 mb-1.5 text-emerald-100">
-                                <AlertTriangle className="w-4 h-4" />
-                                <span className="text-[10px] font-bold uppercase tracking-wide">{t.wallet.attentionNeeded}</span>
+                    </div>
+
+                    {/* Document Vault Card */}
+                    <div className="flex-shrink-0 w-[200px] bg-white dark:bg-stone-800 border-2 border-stone-100 dark:border-stone-700 rounded-[32px] p-6 snap-start">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-stone-400 block mb-2">Vault Health:</span>
+                        <div className="flex items-center gap-3">
+                            <div className="relative w-12 h-12">
+                                <svg className="w-full h-full transform -rotate-90">
+                                    <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="4" fill="none" className="text-stone-100 dark:text-stone-700" />
+                                    <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="4" fill="none" className="text-teal-500" strokeDasharray="125.6" strokeDashoffset="18.84" strokeLinecap="round" />
+                                </svg>
+                                <span className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-stone-900 dark:text-white">85%</span>
                             </div>
-                            <span className="text-3xl font-bold">{stats.actionNeeded}</span>
+                            <span className="text-xs font-bold text-stone-600 dark:text-stone-300 leading-tight">Docs<br />Organized</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20">
-                {/* Controls */}
-                <div className="bg-white dark:bg-slate-900 rounded-2xl p-3 shadow-lg border border-slate-200 dark:border-slate-800 mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
-                    {/* Tabs */}
-                    <div className="flex p-1 bg-slate-50 dark:bg-slate-950 rounded-xl overflow-x-auto max-w-full no-scrollbar w-full md:w-auto">
-                        {[
-                            { id: 'all', label: t.wallet.allPolicies },
-                            { id: 'active', label: t.wallet.activePolicies },
-                            { id: 'expiring', label: t.wallet.expiringPolicies },
-                            { id: 'action_needed', label: t.wallet.attentionNeeded }
-                        ].map((tab) => (
-                            <button
-                                key={tab.id}
-                                onClick={() => setFilter(tab.id as FilterType)}
-                                className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${filter === tab.id
-                                    ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700'
-                                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-400'
-                                    }`}
-                            >
-                                {tab.label}
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Search */}
-                    <div className="relative w-full md:w-auto md:min-w-[300px]">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                        <input
-                            type="text"
-                            placeholder={t.wallet.searchPlaceholder}
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 border-transparent focus:border-emerald-500/50 focus:bg-white dark:focus:bg-slate-900 rounded-xl text-sm font-medium focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
-                        />
-                    </div>
+            <div className="px-6 mb-8">
+                <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-xl font-black text-stone-900 dark:text-white tracking-tight">
+                        Policy List
+                    </h2>
+                    <button
+                        onClick={() => router.push('/wallet/add')}
+                        className="w-10 h-10 rounded-full bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-stone-600 dark:text-stone-400 active:scale-90 transition-all"
+                    >
+                        <Plus className="w-5 h-5" />
+                    </button>
                 </div>
 
-                {/* Policies Grid */}
-                {filteredPolicies.length === 0 ? (
-                    <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 border-dashed">
-                        <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <Shield className="w-8 h-8 text-emerald-500/50" />
+                {/* Policies List */}
+                <div className="space-y-4">
+                    {displayPolicies.length === 0 ? (
+                        <div className="text-center py-12 bg-white dark:bg-stone-900 rounded-[32px] border-2 border-dashed border-stone-100 dark:border-stone-800">
+                            <p className="text-stone-400 text-sm font-medium italic">No policies found.</p>
                         </div>
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{t.wallet.noPoliciesFound}</h3>
-                        <p className="text-slate-500 text-sm mb-8 max-w-sm mx-auto">
-                            {searchQuery
-                                ? t.wallet.noPoliciesFoundDesc
-                                : t.wallet.noPoliciesYetDesc}
-                        </p>
-                        {!searchQuery && (
-                            <button
-                                onClick={() => router.push('/wallet/add')}
-                                className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-emerald-700 transition-all shadow-md hover:shadow-lg active:scale-95"
-                            >
-                                <Plus className="w-5 h-5" />
-                                {t.wallet.addFirstPolicy}
-                            </button>
-                        )}
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                        {filteredPolicies.map((policy) => {
+                    ) : (
+                        displayPolicies.map((policy) => {
                             const Icon = getTypeIcon(policy.lineOfBusiness)
-                            const statusColor = getStatusColor(policy.status)
+                            const isActive = policy.status === 'active'
 
                             return (
                                 <div
                                     key={policy.id}
                                     onClick={() => router.push(`/wallet/${policy.id}`)}
-                                    className="group relative bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm hover:shadow-xl border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 dark:hover:border-emerald-500/30 transition-all duration-300 cursor-pointer overflow-hidden"
+                                    className="bg-white dark:bg-stone-900 rounded-[32px] p-5 flex items-center gap-4 shadow-sm border border-stone-50 dark:border-stone-800/50 active:scale-[0.98] transition-all cursor-pointer group"
                                 >
-                                    <div className="flex justify-between items-start mb-5">
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-center justify-center text-xl font-bold text-slate-700 dark:text-slate-200 border border-slate-100 dark:border-slate-700 group-hover:scale-105 transition-transform">
-                                                {policy.insurerLogo ? (
-                                                    // eslint-disable-next-line @next/next/no-img-element
-                                                    <img src={policy.insurerLogo} alt={policy.insurerName} className="w-8 h-8 object-contain" />
-                                                ) : (
-                                                    policy.insurerName.charAt(0)
-                                                )}
-                                            </div>
-                                            <div>
-                                                <h3 className="font-bold text-slate-900 dark:text-white leading-tight mb-0.5">
-                                                    {policy.insurerName}
-                                                </h3>
-                                                <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">
-                                                    {policy.policyNumber}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border ${statusColor}`}>
-                                            {getStatusLabel(policy.status)}
-                                        </div>
+                                    <div className={`w-14 h-14 rounded-[20px] flex items-center justify-center transition-colors ${isActive ? 'bg-teal-50 text-teal-600' : 'bg-stone-50 text-stone-400'}`}>
+                                        <Icon className="w-7 h-7" />
                                     </div>
 
-                                    <div className="space-y-3 mb-5">
-                                        <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200 transition-colors">
-                                            <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
-                                                <Icon className="w-4 h-4" />
-                                            </div>
-                                            <span className="text-sm font-medium capitalize">
-                                                {t.policyTypes[policy.lineOfBusiness as keyof typeof t.policyTypes] || policy.lineOfBusiness.replace('_', ' ')}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400">
-                                            <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
-                                                <Calendar className="w-4 h-4" />
-                                            </div>
-                                            <span className="text-sm font-medium">
-                                                {formatDate(policy.endDate)}
-                                            </span>
-                                        </div>
+                                    <div className="flex-1">
+                                        <h3 className="text-base font-black text-stone-900 dark:text-white tracking-tight">
+                                            {policy.insurerName}
+                                        </h3>
+                                        <p className="text-xs font-bold text-stone-400">
+                                            {policy.acordData?.model || policy.policyNumber}
+                                        </p>
                                     </div>
 
-                                    <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between transition-colors">
-                                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                                            {t.wallet.viewDetails}
-                                        </span>
-                                        <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center group-hover:bg-emerald-50 dark:group-hover:bg-emerald-900/20 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-all">
-                                            <ArrowUpRight className="w-4 h-4" />
-                                        </div>
+                                    <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${isActive
+                                        ? 'bg-teal-600 text-white'
+                                        : 'bg-amber-400 text-stone-900'
+                                        }`}>
+                                        {policy.status.replace('_', ' ')}
                                     </div>
-
-                                    {/* Gradient Border Bottom */}
-                                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </div>
                             )
-                        })}
-                    </div>
-                )}
+                        })
+                    )}
+                </div>
             </div>
-
         </div>
     )
 }
+

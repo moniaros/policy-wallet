@@ -9,16 +9,18 @@ export const SUBSCRIPTION_LIMITS = {
     free: {
         policies: 3,
         aiAnalysisPerMonth: 10,
-        questionsPerDay: 5,
+        questionsPerDay: 10,
+        gapAnalysisPerDay: 2,
         notifications: false,
         advancedAnalytics: false,
         agentCollaboration: false,
-        interactiveQA: false,
+        interactiveQA: true,
     },
     essential: {
         policies: 10,
         aiAnalysisPerMonth: null, // unlimited
         questionsPerDay: null, // unlimited
+        gapAnalysisPerDay: null, // unlimited
         notifications: true,
         advancedAnalytics: false,
         agentCollaboration: false,
@@ -28,6 +30,7 @@ export const SUBSCRIPTION_LIMITS = {
         policies: null, // unlimited
         aiAnalysisPerMonth: null, // unlimited
         questionsPerDay: null, // unlimited
+        gapAnalysisPerDay: null, // unlimited
         notifications: true,
         advancedAnalytics: true,
         agentCollaboration: true,

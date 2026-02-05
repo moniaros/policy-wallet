@@ -132,74 +132,66 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-900 dark:to-blue-950">
+        <div className="min-h-screen bg-stone-50 dark:bg-stone-900">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
 
-                {/* Hero Header */}
-                <div className="relative mb-12 overflow-hidden bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 rounded-3xl p-8 md:p-12 text-white shadow-2xl">
-                    {/* Decorative elements */}
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-3xl rounded-full -mr-32 -mt-32" />
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-cyan-400/20 blur-3xl rounded-full -ml-32 -mb-32" />
+                {/* Branded Header */}
+                <div className="px-6 pt-12 pb-8 flex items-center justify-between">
+                    <div className="flex items-center gap-0.5">
+                        <span className="text-2xl font-black tracking-tight text-stone-900 dark:text-white">Policy</span>
+                        <span className="text-2xl font-black tracking-tight text-teal-600">Wallet</span>
+                    </div>
+                </div>
 
-                    <div className="relative z-10">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                                <Target className="w-5 h-5" />
-                            </div>
-                            <span className="text-xs font-bold uppercase tracking-wider text-blue-100">
-                                {t.tasks.actionCenter}
-                            </span>
+                <div className="px-6 pb-12">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-8 h-8 bg-teal-600 rounded-xl flex items-center justify-center text-white">
+                            <Target className="w-4 h-4" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-500">
+                            {t.tasks.actionCenter}
+                        </span>
+                    </div>
+
+                    <h1 className="text-5xl font-black text-stone-900 dark:text-white tracking-tighter mb-4 leading-tight">
+                        {lang === 'el' ? 'Καθημερινή' : 'Daily'} <span className="text-stone-400 dark:text-stone-500 italic">Review.</span>
+                    </h1>
+
+                    <p className="text-stone-500 text-lg max-w-xl mb-12">
+                        {lang === 'el' ? 'Βελτιώστε τη βαθμολογία κάλυψής σας ολοκληρώνοντας αυτές τις εργασίες' : 'Improve your coverage score by completing these tasks'}
+                    </p>
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                            <Target className="w-5 h-5" />
+                        </div>
+                        <span className="text-xs font-bold uppercase tracking-wider text-blue-100">
+                            {t.tasks.actionCenter}
+                        </span>
+                    </div>
+
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 leading-tight">
+                        {lang === 'el' ? 'Καθημερινή Επισκόπηση' : 'Daily Review'}
+                    </h1>
+
+                    <p className="text-lg md:text-xl text-blue-100 max-w-2xl mb-8">
+                        {lang === 'el' ? 'Βελτιώστε τη βαθμολογία κάλυψής σας ολοκληρώνοντας αυτές τις εργασίες' : 'Improve your coverage score by completing these tasks'}
+                    </p>
+
+                    {/* Stats Slider */}
+                    <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 -mx-6 px-6 snap-x mb-12">
+                        <div className="flex-shrink-0 w-[160px] bg-gradient-to-br from-teal-600 to-teal-400 rounded-[32px] p-6 text-white shadow-xl shadow-teal-600/20 snap-start">
+                            <span className="text-[10px] font-black uppercase tracking-widest opacity-80 block mb-2">{t.tasks.priorities.high}</span>
+                            <span className="text-4xl font-black tracking-tighter">{priorityCounts.high}</span>
                         </div>
 
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 leading-tight">
-                            {lang === 'el' ? 'Καθημερινή Επισκόπηση' : 'Daily Review'}
-                        </h1>
+                        <div className="flex-shrink-0 w-[160px] bg-white dark:bg-stone-800 rounded-[32px] p-6 text-stone-900 dark:text-white shadow-sm border border-stone-100 dark:border-stone-800 snap-start">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-stone-400 block mb-2">{t.tasks.priorities.medium}</span>
+                            <span className="text-4xl font-black tracking-tighter">{priorityCounts.medium}</span>
+                        </div>
 
-                        <p className="text-lg md:text-xl text-blue-100 max-w-2xl mb-8">
-                            {lang === 'el' ? 'Βελτιώστε τη βαθμολογία κάλυψής σας ολοκληρώνοντας αυτές τις εργασίες' : 'Improve your coverage score by completing these tasks'}
-                        </p>
-
-                        {/* Stats */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <AlertTriangle className="w-4 h-4 text-red-300" />
-                                    <span className="text-xs font-semibold text-blue-200 uppercase tracking-wide">
-                                        {t.tasks.priorities.high}
-                                    </span>
-                                </div>
-                                <span className="text-3xl font-black text-red-400">{priorityCounts.high}</span>
-                            </div>
-
-                            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Clock className="w-4 h-4 text-amber-300" />
-                                    <span className="text-xs font-semibold text-blue-200 uppercase tracking-wide">
-                                        {t.tasks.priorities.medium}
-                                    </span>
-                                </div>
-                                <span className="text-3xl font-black text-amber-400">{priorityCounts.medium}</span>
-                            </div>
-
-                            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Lightbulb className="w-4 h-4 text-blue-200" />
-                                    <span className="text-xs font-semibold text-blue-200 uppercase tracking-wide">
-                                        {t.tasks.priorities.low}
-                                    </span>
-                                </div>
-                                <span className="text-3xl font-black">{priorityCounts.low}</span>
-                            </div>
-
-                            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <FileText className="w-4 h-4 text-blue-200" />
-                                    <span className="text-xs font-semibold text-blue-200 uppercase tracking-wide">
-                                        {t.tasks.total}
-                                    </span>
-                                </div>
-                                <span className="text-3xl font-black">{counts.all}</span>
-                            </div>
+                        <div className="flex-shrink-0 w-[160px] bg-white dark:bg-stone-800 rounded-[32px] p-6 text-stone-900 dark:text-white shadow-sm border border-stone-100 dark:border-stone-800 snap-start">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-stone-400 block mb-2">{t.tasks.priorities.low}</span>
+                            <span className="text-4xl font-black tracking-tighter">{priorityCounts.low}</span>
                         </div>
                     </div>
                 </div>
@@ -207,7 +199,7 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                 {/* Filters and Sort */}
                 <div className="mb-8 space-y-4">
                     {/* Type Filters */}
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 px-6 no-scrollbar overflow-x-auto pb-4 -mx-6">
                         {[
                             { key: 'all' as FilterType, label: t.common.all, icon: Target, count: counts.all },
                             { key: 'questionnaire' as FilterType, label: t.tasks.taskTypes.questionnaire, icon: FileText, count: counts.questionnaire },
@@ -218,19 +210,13 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                             <button
                                 key={key}
                                 onClick={() => setFilter(key)}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all ${filter === key
-                                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
-                                    : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                                className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-[10px] uppercase tracking-widest transition-all whitespace-nowrap ${filter === key
+                                    ? 'bg-stone-900 dark:bg-white text-white dark:text-stone-900 shadow-xl'
+                                    : 'bg-white dark:bg-stone-900 text-stone-400 border border-stone-100 dark:border-stone-800'
                                     }`}
                             >
                                 <Icon className="w-4 h-4" />
                                 {label}
-                                {count > 0 && (
-                                    <span className={`px-2 py-0.5 rounded-full text-xs font-black ${filter === key ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-700'
-                                        }`}>
-                                        {count}
-                                    </span>
-                                )}
                             </button>
                         ))}
                     </div>
@@ -296,77 +282,28 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                         </p>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 gap-6">
+                    <div className="grid grid-cols-1 gap-4 px-6">
                         {sortedTasks.map((task) => {
                             const Icon = getTaskIcon(task.type)
                             const colors = getPriorityColor(task.priority)
 
                             return (
-                                <div
+                                <Link
                                     key={task.id}
-                                    className="group bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 border border-slate-200 dark:border-slate-800 shadow-lg hover:shadow-xl transition-all relative overflow-hidden"
+                                    href={task.actionUrl || '#'}
+                                    className="bg-white dark:bg-stone-900 rounded-[32px] p-5 flex items-center gap-4 shadow-sm border border-stone-50 dark:border-stone-800/50 active:scale-[0.98] transition-all cursor-pointer group"
                                 >
-                                    {/* Priority accent */}
-                                    <div className={`absolute top-0 left-0 w-1 h-full ${colors.accent}`} />
-
-                                    <div className="flex flex-col lg:flex-row gap-6 lg:items-center justify-between pl-4">
-                                        <div className="flex-1">
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${colors.bg} ${colors.border} border`}>
-                                                    <Icon className={`w-5 h-5 ${colors.text}`} />
-                                                </div>
-                                                <span className={`text-xs font-black uppercase tracking-wider px-3 py-1 rounded-full ${colors.bg} ${colors.text} ${colors.border} border`}>
-                                                    {task.type} • {task.priority}
-                                                </span>
-                                            </div>
-
-                                            <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                                {task.title}
-                                            </h3>
-
-                                            {task.description && (
-                                                <p className="text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
-                                                    {task.description}
-                                                </p>
-                                            )}
-
-                                            <div className="flex items-center gap-3">
-                                                {task.metadata?.senderImage || task.metadata?.creatorImage ? (
-                                                    <img
-                                                        src={task.metadata.senderImage || task.metadata.creatorImage}
-                                                        alt=""
-                                                        className="w-8 h-8 rounded-full object-cover ring-2 ring-slate-100 dark:ring-slate-800"
-                                                    />
-                                                ) : (
-                                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm">
-                                                        {(task.metadata?.senderName || task.metadata?.creatorName || 'A')[0]}
-                                                    </div>
-                                                )}
-                                                <div className="text-sm">
-                                                    <span className="font-semibold text-slate-700 dark:text-slate-300">
-                                                        {task.metadata?.senderName || task.metadata?.creatorName || 'Your Agent'}
-                                                    </span>
-                                                    <span className="text-slate-500 dark:text-slate-400 mx-2">•</span>
-                                                    <span className="text-slate-500 dark:text-slate-400">
-                                                        {new Date(task.createdAt).toLocaleDateString(lang === 'el' ? 'el-GR' : 'en-US')}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex flex-col gap-3 min-w-[200px]">
-                                            {task.actionUrl && (
-                                                <Link
-                                                    href={task.actionUrl}
-                                                    className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/30 group/btn"
-                                                >
-                                                    {task.actionLabel || (lang === 'el' ? 'Προβολή' : 'View')}
-                                                    <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                                                </Link>
-                                            )}
-                                        </div>
+                                    <div className={`w-14 h-14 rounded-[20px] flex items-center justify-center transition-colors bg-stone-50 dark:bg-stone-800 text-stone-400 group-hover:bg-teal-50 group-hover:text-teal-600`}>
+                                        <Icon className="w-7 h-7" />
                                     </div>
-                                </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="text-base font-black text-stone-900 dark:text-white tracking-tight truncate">{task.title}</h3>
+                                        <p className="text-xs font-bold text-stone-400">{task.type.toUpperCase()}</p>
+                                    </div>
+                                    <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${task.priority === 'high' ? 'bg-teal-600 text-white' : 'bg-amber-400 text-stone-900'}`}>
+                                        {task.priority === 'high' ? 'PRIORITY' : task.priority}
+                                    </div>
+                                </Link>
                             )
                         })}
                     </div>

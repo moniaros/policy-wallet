@@ -6,7 +6,7 @@ import { X, Sparkles, Check } from 'lucide-react'
 import { subscriptionCopy } from '@/lib/subscription-copy'
 
 export interface UpgradePromptProps {
-    reason: 'policy_limit' | 'feature_locked' | 'notifications_disabled'
+    reason: 'policy_limit' | 'feature_locked' | 'notifications_disabled' | 'daily_limit' | 'gap_limit'
     language: 'el' | 'en'
     onDismiss?: () => void
     className?: string
@@ -52,6 +52,26 @@ export function UpgradePrompt({
                 en: 'Automatic email notifications for renewals and deadlines are only available on the Premium plan.',
             },
         },
+        daily_limit: {
+            title: {
+                el: 'Όριο Ημερήσιων Ερωτήσεων',
+                en: 'Daily Question Limit Reached',
+            },
+            description: {
+                el: 'Έχετε φτάσει το ημερήσιο όριο των 10 ερωτήσεων. Αναβαθμίστε για 500 ερωτήσεις/μήνα μόνο με €4.99.',
+                en: 'You have reached your daily limit of 10 questions. Upgrade for 500 questions/month for just €4.99.',
+            },
+        },
+        gap_limit: {
+            title: {
+                el: 'Όριο Ανάλυσης Κενών',
+                en: 'Gap Analysis Limit Reached',
+            },
+            description: {
+                el: 'Έχετε φτάσει το όριο των 2 αναλύσεων ανά ημέρα. Αναβαθμίστε για απεριόριστες αναλύσεις.',
+                en: 'You have reached your limit of 2 analyses per day. Upgrade for unlimited analyses.',
+            },
+        }
     }
 
     const message = messages[reason]
@@ -66,6 +86,10 @@ export function UpgradePrompt({
     const handleUpgrade = () => {
         router.push('/pricing')
     }
+
+    const ctaText = (reason === 'daily_limit' || reason === 'gap_limit')
+        ? (language === 'el' ? 'Ξεκλειδώστε με €4.99' : 'Unlock for €4.99')
+        : copy.cta.upgrade[language]
 
     return (
         <div
@@ -111,7 +135,7 @@ export function UpgradePrompt({
                     onClick={handleUpgrade}
                     className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-xl transition-all duration-200"
                 >
-                    {copy.cta.upgrade[language]}
+                    {ctaText}
                 </button>
                 {onDismiss && (
                     <button

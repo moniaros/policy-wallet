@@ -14,6 +14,7 @@ interface PolicyCardProps {
 
 export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocuments }: PolicyCardProps) {
     const [menuOpen, setMenuOpen] = useState(false)
+    const [showInsights, setShowInsights] = useState(false)
     const { t, language } = useLanguage()
 
     // Format date based on locale
@@ -106,6 +107,16 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
                         'bg-stone-300 dark:bg-stone-600'
                 }`} />
 
+            {/* Verified Badge */}
+            {policy.verified && (
+                <div className="absolute top-4 left-6 flex items-center gap-1.5 px-2 py-1 bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800 rounded-lg">
+                    <svg className="w-3 h-3 text-emerald-600 dark:text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-300">Verified by AI</span>
+                </div>
+            )}
+
             {/* Shared with agent indicator */}
             {policy.sharedWithAgents.length > 0 && (
                 <div className="absolute top-4 right-4 group/tooltip">
@@ -138,24 +149,105 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
                 {/* Status and Expiry */}
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                     {getStatusBadge()}
+
+                    {/* Renewal Countdown */}
                     {daysLeft !== null && daysLeft >= 0 && daysLeft <= 60 && (
-                        <span className={`text-xs font-bold uppercase tracking-wider ${daysLeft <= 7 ? 'text-red-500' :
-                            daysLeft <= 30 ? 'text-amber-600 dark:text-amber-400' :
-                                'text-stone-400 dark:text-stone-500'
-                            }`}>
-                            {daysLeft === 0 ? (language === 'el' ? 'Λήγει σήμερα' : 'Expires today') :
-                                daysLeft === 1 ? (language === 'el' ? 'Λήγει αύριο' : 'Expires tomorrow') :
-                                    `${daysLeft} ${language === 'el' ? 'ημέρες' : 'days'}`}
-                        </span>
+                        <div className="flex items-center gap-2">
+                            <span className={`text-xs font-bold uppercase tracking-wider ${daysLeft <= 7 ? 'text-red-500' : 'text-amber-600 dark:text-amber-400'}`}>
+                                {daysLeft} Days Left
+                            </span>
+                            {daysLeft <= 30 && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation()
+                                        // Trigger renewal
+                                        alert("Renewal request sent to agent!")
+                                    }}
+                                    className="px-2 py-1 bg-stone-900 dark:bg-white text-white dark:text-stone-900 text-[10px] font-black uppercase tracking-wider rounded-lg hover:bg-teal-600 dark:hover:bg-teal-400 transition-colors"
+                                >
+                                    Renew
+                                </button>
+                            )}
+                        </div>
                     )}
                 </div>
 
                 {/* Expiry date - always visible on larger screens */}
                 <div className="hidden sm:block mt-3 pt-3 border-t border-stone-100 dark:border-stone-700">
-                    <span className="text-xs font-medium text-stone-400 dark:text-stone-500">
-                        {t.wallet.ends}: {formatDate(policy.endDate)}
-                    </span>
+                    <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-stone-400 dark:text-stone-500">
+                            {t.wallet.ends}: {formatDate(policy.endDate)}
+                        </span>
+
+                        {policy.aiInsights && (
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    setShowInsights(!showInsights)
+                                }}
+                                className="flex items-center gap-1 text-xs font-bold text-teal-600 dark:text-teal-400 hover:text-teal-700"
+                            >
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                {showInsights ? 'Hide Insights' : 'AI Analysis'}
+                            </button>
+                        )}
+                    </div>
                 </div>
+
+                {/* AI Insights Section (Expanded) */}
+                {showInsights && policy.aiInsights && (
+                    <div className="mt-4 p-4 bg-stone-50 dark:bg-stone-900/50 rounded-2xl border border-stone-100 dark:border-stone-700 animate-in slide-in-from-top-2">
+
+                        {/* Exclusions */}
+                        {policy.aiInsights.exclusions && policy.aiInsights.exclusions.length > 0 && (
+                            <div className="mb-4">
+                                <h4 className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-2">What's NOT Covered</h4>
+                                <ul className="space-y-2">
+                                    {policy.aiInsights.exclusions.map((exclusion, i) => (
+                                        <li
+                                            key={i}
+                                            onClick={(e) => {
+                                                e.stopPropagation()
+                                                console.log("Opportunity Triggered: User viewed exclusion " + exclusion)
+                                            }}
+                                            className="flex items-start gap-2 text-xs font-medium text-stone-600 dark:text-stone-300 hover:bg-white dark:hover:bg-stone-800 p-2 rounded-lg cursor-pointer transition-colors"
+                                        >
+                                            <svg className="w-4 h-4 text-red-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                            </svg>
+                                            {exclusion}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
+                        {/* Benchmark */}
+                        {policy.aiInsights.premiumBenchmark && (
+                            <div>
+                                <h4 className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-2">Premium Fairness</h4>
+                                <div className="flex items-end gap-2">
+                                    <div>
+                                        <span className="text-xs text-stone-500">You Pay</span>
+                                        <div className="text-lg font-black text-stone-900 dark:text-white">€{policy.aiInsights.premiumBenchmark.current}</div>
+                                    </div>
+                                    <div className="mb-1 text-stone-300 dark:text-stone-600">vs</div>
+                                    <div>
+                                        <span className="text-xs text-stone-500">Local Avg</span>
+                                        <div className="text-lg font-bold text-stone-500">€{policy.aiInsights.premiumBenchmark.localAverage}</div>
+                                    </div>
+                                    {policy.aiInsights.premiumBenchmark.savingsPotential > 0 && (
+                                        <div className="ml-auto bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-3 py-1 rounded-xl text-xs font-bold">
+                                            Save €{policy.aiInsights.premiumBenchmark.savingsPotential}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
 
             {/* Quick Actions - Mobile: Bottom row, Desktop: Overflow menu */}

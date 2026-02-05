@@ -127,243 +127,163 @@ export function CoverageInsightsClient({
     const healthStatus = getHealthStatus(stats.healthScore)
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
+        <div className="min-h-screen bg-stone-50 dark:bg-stone-900">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
 
-                {/* Hero Section */}
-                <div className="relative mb-12 overflow-hidden bg-gradient-to-br from-indigo-600 via-violet-600 to-indigo-700 rounded-3xl p-8 md:p-12 text-white shadow-2xl">
-                    {/* Decorative elements */}
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-3xl rounded-full -mr-32 -mt-32" />
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-violet-400/20 blur-3xl rounded-full -ml-32 -mb-32" />
+                {/* Branded Header */}
+                <div className="px-6 pt-12 pb-8 flex items-center justify-between">
+                    <div className="flex items-center gap-0.5">
+                        <span className="text-2xl font-black tracking-tight text-stone-900 dark:text-white">Policy</span>
+                        <span className="text-2xl font-black tracking-tight text-teal-600">Wallet</span>
+                    </div>
+                </div>
 
-                    <div className="relative z-10">
-                        <div className="flex items-center gap-3 mb-4">
-                            <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                                <Sparkles className="w-5 h-5" />
+                <div className="px-6 pb-12">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-8 h-8 bg-teal-600 rounded-xl flex items-center justify-center text-white">
+                            <Sparkles className="w-4 h-4" />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-500">
+                            {lang === 'el' ? 'Αναφορά Νοημοσύνης' : 'Intelligence Report'}
+                        </span>
+                    </div>
+
+                    <h1 className="text-5xl font-black text-stone-900 dark:text-white tracking-tighter mb-4 leading-tight">
+                        {lang === 'el' ? 'Ανάλυση' : 'Coverage'} <span className="text-stone-400 dark:text-stone-500 italic">Insights.</span>
+                    </h1>
+
+                    <p className="text-stone-500 text-lg max-w-xl mb-12">
+                        {copy.subtitle[lang]}. {lang === 'el' ? 'Εντοπίσαμε' : 'We identified'} {stats.totalGaps} {lang === 'el' ? 'περιοχές όπου η προστασία σας θα μπορούσε να βελτιστοποιηθεί' : 'areas where your protection could be optimized'}.
+                    </p>
+
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 leading-tight">
+                        {copy.title[lang]}
+                    </h1>
+
+                    <p className="text-lg md:text-xl text-blue-100 max-w-2xl mb-8">
+                        {copy.subtitle[lang]}. {lang === 'el' ? 'Εντοπίσαμε' : 'We identified'} {stats.totalGaps} {lang === 'el' ? 'περιοχές όπου η προστασία σας θα μπορούσε να βελτιστοποιηθεί' : 'areas where your protection could be optimized'}.
+                    </p>
+
+                    {/* Stats Slider */}
+                    <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 -mx-6 px-6 snap-x mb-12">
+                        <div className="flex-shrink-0 w-[180px] bg-gradient-to-br from-teal-600 to-teal-400 rounded-[32px] p-6 text-white shadow-xl shadow-teal-600/20 snap-start">
+                            <span className="text-[10px] font-black uppercase tracking-widest opacity-80 block mb-2">{copy.healthScore[lang]}</span>
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-4xl font-black tracking-tighter">{stats.healthScore}%</span>
                             </div>
-                            <span className="text-xs font-bold uppercase tracking-wider text-blue-100">
-                                {lang === 'el' ? 'Αναφορά Νοημοσύνης' : 'Intelligence Report'}
-                            </span>
                         </div>
 
-                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 leading-tight">
-                            {copy.title[lang]}
-                        </h1>
+                        <div className="flex-shrink-0 w-[160px] bg-white dark:bg-stone-800 rounded-[32px] p-6 text-stone-900 dark:text-white shadow-sm border border-stone-100 dark:border-stone-800 snap-start">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-stone-400 block mb-2">{copy.criticalGaps[lang]}</span>
+                            <span className="text-4xl font-black tracking-tighter text-red-500">{stats.critical}</span>
+                        </div>
 
-                        <p className="text-lg md:text-xl text-blue-100 max-w-2xl mb-8">
-                            {copy.subtitle[lang]}. {lang === 'el' ? 'Εντοπίσαμε' : 'We identified'} {stats.totalGaps} {lang === 'el' ? 'περιοχές όπου η προστασία σας θα μπορούσε να βελτιστοποιηθεί' : 'areas where your protection could be optimized'}.
-                        </p>
-
-                        {/* Quick Stats */}
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Activity className="w-4 h-4 text-blue-200" />
-                                    <span className="text-xs font-semibold text-blue-200 uppercase tracking-wide">
-                                        {copy.healthScore[lang]}
-                                    </span>
-                                </div>
-                                <div className="flex items-end gap-2">
-                                    <span className="text-3xl font-black">{stats.healthScore}%</span>
-                                    <span className={`text-sm font-bold mb-1 ${healthStatus.color}`}>
-                                        {healthStatus.label}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <AlertTriangle className="w-4 h-4 text-red-300" />
-                                    <span className="text-xs font-semibold text-blue-200 uppercase tracking-wide">
-                                        {copy.criticalGaps[lang]}
-                                    </span>
-                                </div>
-                                <span className="text-3xl font-black text-red-400">{stats.critical}</span>
-                            </div>
-
-                            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <AlertCircle className="w-4 h-4 text-amber-300" />
-                                    <span className="text-xs font-semibold text-blue-200 uppercase tracking-wide">
-                                        {copy.highRisk[lang]}
-                                    </span>
-                                </div>
-                                <span className="text-3xl font-black text-amber-400">{stats.high}</span>
-                            </div>
-
-                            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <Shield className="w-4 h-4 text-blue-200" />
-                                    <span className="text-xs font-semibold text-blue-200 uppercase tracking-wide">
-                                        {copy.totalPolicies[lang]}
-                                    </span>
-                                </div>
-                                <span className="text-3xl font-black">{stats.totalPolicies}</span>
-                            </div>
+                        <div className="flex-shrink-0 w-[160px] bg-white dark:bg-stone-800 rounded-[32px] p-6 text-stone-900 dark:text-white shadow-sm border border-stone-100 dark:border-stone-800 snap-start">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-stone-400 block mb-2">{copy.totalPolicies[lang]}</span>
+                            <span className="text-4xl font-black tracking-tighter">{stats.totalPolicies}</span>
                         </div>
                     </div>
                 </div>
 
-                {/* View Toggle */}
-                <div className="flex flex-wrap gap-2 mb-8">
-                    <button
-                        onClick={() => setSelectedView('overview')}
-                        className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 ${selectedView === 'overview'
-                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
-                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
-                            }`}
-                    >
-                        <div className="flex items-center gap-2">
-                            <Target className="w-4 h-4" />
-                            {copy.viewOverview[lang]}
-                        </div>
-                    </button>
-                    <button
-                        onClick={() => setSelectedView('gaps')}
-                        className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 ${selectedView === 'gaps'
-                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
-                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
-                            }`}
-                    >
-                        <div className="flex items-center gap-2">
-                            <AlertTriangle className="w-4 h-4" />
-                            {copy.viewGaps[lang]}
-                            {stats.totalGaps > 0 && (
-                                <span className="px-2 py-0.5 bg-red-500 text-white text-xs font-black rounded-full">
-                                    {stats.totalGaps}
-                                </span>
-                            )}
-                        </div>
-                    </button>
-                    <button
-                        onClick={() => setSelectedView('breakdown')}
-                        className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 ${selectedView === 'breakdown'
-                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/30'
-                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
-                            }`}
-                    >
-                        <div className="flex items-center gap-2">
-                            <PieChart className="w-4 h-4" />
-                            {copy.viewBreakdown[lang]}
-                        </div>
-                    </button>
+                {/* View Selector */}
+                <div className="flex flex-wrap gap-2 px-6 no-scrollbar overflow-x-auto pb-6 -mx-6">
+                    {[
+                        { key: 'overview', label: copy.viewOverview[lang], icon: Target },
+                        { key: 'gaps', label: copy.viewGaps[lang], icon: AlertTriangle, count: stats.totalGaps },
+                        { key: 'breakdown', label: copy.viewBreakdown[lang], icon: PieChart }
+                    ].map(({ key, label, icon: Icon, count }) => (
+                        <button
+                            key={key}
+                            onClick={() => setSelectedView(key as any)}
+                            className={`flex items-center gap-2 px-6 py-3 rounded-full font-black text-[10px] uppercase tracking-widest transition-all whitespace-nowrap ${selectedView === key
+                                ? 'bg-stone-900 dark:bg-white text-white dark:text-stone-900 shadow-xl'
+                                : 'bg-white dark:bg-stone-900 text-stone-400 border border-stone-100 dark:border-stone-800'
+                                }`}
+                        >
+                            <Icon className="w-4 h-4" />
+                            {label}
+                        </button>
+                    ))}
                 </div>
 
                 {/* Content based on selected view */}
                 {selectedView === 'overview' && (
                     <div className="space-y-8">
                         {/* Health Score Visualization */}
-                        <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-xl border border-slate-200 dark:border-slate-800">
-                            <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-6">
-                                {copy.healthScore[lang]}
-                            </h2>
+                        {/* Health Score Visualization */}
+                        <div className="px-6">
+                            <div className="bg-white dark:bg-stone-900 rounded-[32px] p-8 shadow-sm border border-stone-100 dark:border-stone-800">
+                                <h2 className="text-xl font-black text-stone-900 dark:text-white mb-6">
+                                    {copy.healthScore[lang]}
+                                </h2>
 
-                            {/* Progress bar */}
-                            <div className="relative h-8 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mb-4">
-                                <div
-                                    className={`absolute inset-y-0 left-0 ${healthStatus.bg} transition-all duration-1000 ease-out rounded-full`}
-                                    style={{ width: `${stats.healthScore}%` }}
-                                />
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <span className="text-sm font-black text-slate-900 dark:text-white">
-                                        {stats.healthScore}% - {healthStatus.label}
-                                    </span>
-                                </div>
-                            </div>
-
-                            {/* Severity breakdown */}
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                                <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" />
-                                        <span className="text-xs font-bold text-red-600 dark:text-red-400 uppercase">
-                                            {lang === 'el' ? 'Κρίσιμα' : 'Critical'}
+                                {/* Progress bar */}
+                                <div className="relative h-12 bg-stone-50 dark:bg-stone-800 rounded-2xl overflow-hidden mb-8">
+                                    <div
+                                        className={`absolute inset-y-0 left-0 bg-gradient-to-r from-teal-600 to-teal-400 transition-all duration-1000 ease-out`}
+                                        style={{ width: `${stats.healthScore}%` }}
+                                    />
+                                    <div className="absolute inset-0 flex items-center justify-center">
+                                        <span className="text-sm font-black text-stone-900 dark:text-white uppercase tracking-widest">
+                                            {stats.healthScore}% - {healthStatus.label}
                                         </span>
                                     </div>
-                                    <span className="text-2xl font-black text-red-600 dark:text-red-400">{stats.critical}</span>
                                 </div>
 
-                                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-200 dark:border-amber-800">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-                                        <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase">
-                                            {lang === 'el' ? 'Υψηλά' : 'High'}
-                                        </span>
+                                {/* Severity breakdown */}
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-5 bg-stone-50 dark:bg-stone-800 rounded-[24px]">
+                                        <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest block mb-1">CRITICAL</span>
+                                        <span className="text-2xl font-black text-red-500 tracking-tighter">{stats.critical}</span>
                                     </div>
-                                    <span className="text-2xl font-black text-amber-600 dark:text-amber-400">{stats.high}</span>
-                                </div>
-
-                                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <Info className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                                        <span className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase">
-                                            {lang === 'el' ? 'Μέτρια' : 'Medium'}
-                                        </span>
+                                    <div className="p-5 bg-stone-50 dark:bg-stone-800 rounded-[24px]">
+                                        <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest block mb-1">STABLE</span>
+                                        <span className="text-2xl font-black text-teal-600 tracking-tighter">{stats.totalPolicies}</span>
                                     </div>
-                                    <span className="text-2xl font-black text-blue-600 dark:text-blue-400">{stats.medium}</span>
-                                </div>
-
-                                <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                                        <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 uppercase">
-                                            {lang === 'el' ? 'Χαμηλά' : 'Low'}
-                                        </span>
-                                    </div>
-                                    <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">{stats.low}</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Smart Insights */}
-                        <div className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-3xl p-8 border border-purple-200 dark:border-purple-800">
-                            <div className="flex items-center gap-3 mb-6">
-                                <div className="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center">
-                                    <Zap className="w-5 h-5 text-white" />
+                        {/* Smart Insights */}
+                        <div className="px-6 mb-12">
+                            <div className="bg-stone-900 dark:bg-white rounded-[32px] p-8 text-white dark:text-stone-900 shadow-xl">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <Zap className="w-6 h-6 text-teal-400" />
+                                    <h2 className="text-2xl font-black tracking-tighter">
+                                        {copy.insights[lang]}
+                                    </h2>
                                 </div>
-                                <h2 className="text-2xl font-black text-slate-900 dark:text-white">
-                                    {copy.insights[lang]}
-                                </h2>
-                            </div>
 
-                            <div className="space-y-4">
-                                {stats.critical > 0 && (
-                                    <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-red-200 dark:border-red-800">
-                                        <div className="flex items-start gap-3">
-                                            <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                                            <div>
-                                                <h3 className="font-bold text-slate-900 dark:text-white mb-1">
-                                                    {lang === 'el' ? 'Απαιτείται Άμεση Προσοχή' : 'Immediate Attention Required'}
-                                                </h3>
-                                                <p className="text-sm text-slate-600 dark:text-slate-400">
-                                                    {lang === 'el'
-                                                        ? `Έχετε ${stats.critical} κρίσιμα κενά κάλυψης που θα μπορούσαν να θέσουν σε κίνδυνο την οικονομική σας ασφάλεια.`
-                                                        : `You have ${stats.critical} critical coverage gaps that could jeopardize your financial security.`
-                                                    }
-                                                </p>
-                                            </div>
+                                <div className="space-y-4">
+                                    {stats.critical > 0 && (
+                                        <div className="p-5 bg-stone-800 dark:bg-stone-100 rounded-2xl border border-stone-700 dark:border-stone-200">
+                                            <h3 className="font-black tracking-tight mb-1 text-red-400">
+                                                {lang === 'el' ? 'Απαιτείται Άμεση Προσοχή' : 'Immediate Attention Required'}
+                                            </h3>
+                                            <p className="text-sm font-bold opacity-60">
+                                                {lang === 'el'
+                                                    ? `Έχετε ${stats.critical} κρίσιμα κενά κάλυψης.`
+                                                    : `You have ${stats.critical} critical coverage gaps.`
+                                                }
+                                            </p>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
 
-                                {stats.healthScore >= 90 && (
-                                    <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-emerald-200 dark:border-emerald-800">
-                                        <div className="flex items-start gap-3">
-                                            <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                                            <div>
-                                                <h3 className="font-bold text-slate-900 dark:text-white mb-1">
-                                                    {lang === 'el' ? 'Εξαιρετική Κάλυψη' : 'Excellent Coverage'}
-                                                </h3>
-                                                <p className="text-sm text-slate-600 dark:text-slate-400">
-                                                    {lang === 'el'
-                                                        ? 'Το χαρτοφυλάκιό σας είναι σε εξαιρετική κατάσταση. Συνεχίστε να παρακολουθείτε για αλλαγές.'
-                                                        : 'Your portfolio is in excellent shape. Continue monitoring for changes.'
-                                                    }
-                                                </p>
-                                            </div>
+                                    {stats.healthScore >= 90 && (
+                                        <div className="p-5 bg-stone-800 dark:bg-stone-100 rounded-2xl border border-stone-700 dark:border-stone-200">
+                                            <h3 className="font-black tracking-tight mb-1 text-teal-400">
+                                                {lang === 'el' ? 'Εξαιρετική Κάλυψη' : 'Excellent Coverage'}
+                                            </h3>
+                                            <p className="text-sm font-bold opacity-60">
+                                                {lang === 'el'
+                                                    ? 'Το χαρτοφυλάκιό σας είναι σε εξαιρετική κατάσταση.'
+                                                    : 'Your portfolio is in excellent shape.'
+                                                }
+                                            </p>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>

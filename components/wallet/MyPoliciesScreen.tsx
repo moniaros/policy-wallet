@@ -15,120 +15,87 @@ export function MyPoliciesScreen({ policies, onViewPolicy, onAddPolicy }: MyPoli
     const { language } = useLanguage()
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-teal-50 to-white dark:from-stone-900 dark:to-stone-800">
-            {/* Header */}
-            <div className="bg-white dark:bg-stone-800 border-b border-stone-200 dark:border-stone-700 sticky top-0 z-10">
-                <div className="max-w-md mx-auto px-4 py-4 flex items-center justify-between">
-                    <div>
-                        <h1 className="text-2xl font-black text-stone-900 dark:text-white">
-                            PolicyWallet
-                        </h1>
-                        <p className="text-sm text-stone-500 dark:text-stone-400">
-                            {language === 'el' ? 'Τα Συμβόλαια Μου' : 'My Policies'}
-                        </p>
-                    </div>
-                    <button
-                        onClick={onAddPolicy}
-                        className="w-11 h-11 flex items-center justify-center bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-full transition-all active:scale-[0.95]"
-                        aria-label={language === 'el' ? 'Προσθήκη συμβολαίου' : 'Add policy'}
-                    >
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                        </svg>
-                    </button>
+        <div className="min-h-screen bg-stone-50 dark:bg-stone-900">
+            {/* Branded Header */}
+            <div className="px-6 pt-12 pb-8 flex items-center justify-between">
+                <div className="flex items-center gap-0.5">
+                    <span className="text-2xl font-black tracking-tight text-stone-900 dark:text-white">Policy</span>
+                    <span className="text-2xl font-black tracking-tight text-teal-600">Wallet</span>
                 </div>
+                <button
+                    onClick={onAddPolicy}
+                    className="w-12 h-12 flex items-center justify-center bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-full transition-all active:scale-[0.95] shadow-xl"
+                >
+                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                    </svg>
+                </button>
+            </div>
+
+            <div className="px-6 pb-6">
+                <h1 className="text-4xl font-black text-stone-900 dark:text-white tracking-tighter mb-1 leading-tight">
+                    {language === 'el' ? 'Τα Συμβόλαια' : 'My'} <span className="text-stone-400 dark:text-stone-500 italic">Policies.</span>
+                </h1>
+                <p className="text-stone-500 text-sm font-bold uppercase tracking-widest">
+                    {policies.length} {language === 'el' ? 'Συμβόλαια Ενεργά' : 'Active Policies'}
+                </p>
             </div>
 
             {/* Policy List */}
-            <div className="max-w-md mx-auto px-4 py-6 space-y-4">
+            <div className="px-6 space-y-4">
                 {policies.length === 0 ? (
-                    <div className="text-center py-20">
-                        <div className="w-20 h-20 mx-auto mb-6 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center">
+                    <div className="text-center py-20 bg-white dark:bg-stone-800 rounded-[32px] border-2 border-dashed border-stone-200 dark:border-stone-700">
+                        <div className="w-20 h-20 mx-auto mb-6 bg-stone-100 dark:bg-stone-900 rounded-full flex items-center justify-center">
                             <DocumentIcon className="w-10 h-10 text-stone-400 dark:text-stone-500" />
                         </div>
-                        <h3 className="text-xl font-bold text-stone-900 dark:text-white mb-2">
+                        <h3 className="text-xl font-black text-stone-900 dark:text-white mb-2 tracking-tight">
                             {language === 'el' ? 'Δεν έχετε συμβόλαια' : 'No policies yet'}
                         </h3>
-                        <p className="text-stone-600 dark:text-stone-400 mb-6">
+                        <p className="text-stone-500 mb-8 max-w-[200px] mx-auto">
                             {language === 'el'
                                 ? 'Προσθέστε το πρώτο σας συμβόλαιο για να ξεκινήσετε'
                                 : 'Add your first policy to get started'}
                         </p>
                         <button
                             onClick={onAddPolicy}
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-2xl transition-all active:scale-[0.98]"
+                            className="inline-flex items-center gap-2 px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white font-black rounded-2xl transition-all active:scale-[0.98] shadow-lg shadow-teal-600/20"
                         >
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                            </svg>
                             {language === 'el' ? 'Προσθήκη Συμβολαίου' : 'Add Policy'}
                         </button>
                     </div>
                 ) : (
                     policies.map(policy => (
-                        <div key={policy.id} className="bg-white dark:bg-stone-800 rounded-3xl p-5 border-2 border-stone-200 dark:border-stone-700 shadow-sm">
-                            <div className="flex items-start gap-4">
-                                {/* Icon */}
-                                <div className="flex-shrink-0 w-16 h-16 bg-teal-50 dark:bg-teal-900/20 rounded-2xl flex items-center justify-center">
-                                    {policy.lineOfBusiness === 'motor' && <CarIcon className="w-8 h-8 text-teal-600 dark:text-teal-400" />}
-                                    {policy.lineOfBusiness === 'home' && <HomeIcon className="w-8 h-8 text-teal-600 dark:text-teal-400" />}
-                                    {!['motor', 'home'].includes(policy.lineOfBusiness as string) && <DocumentIcon className="w-8 h-8 text-teal-600 dark:text-teal-400" />}
-                                </div>
-
-                                {/* Content */}
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="text-lg font-black text-stone-900 dark:text-white mb-1">
-                                        {policy.insurerName || (language === 'el' ? 'Ασφάλεια' : 'Insurance')}
-                                    </h3>
-                                    <p className="text-sm text-stone-600 dark:text-stone-400 mb-1">
-                                        {language === 'el' ? 'Πήμος' : 'Policy'}: {policy.policyNumber}
-                                    </p>
-                                    <p className="text-sm text-stone-600 dark:text-stone-400">
-                                        {language === 'el' ? 'Λλέθη' : 'Expires'}: {policy.endDate ? new Date(policy.endDate).toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US', { day: '2-digit', month: '2-digit', year: '2-digit' }) : '—'}
-                                    </p>
-                                </div>
+                        <div
+                            key={policy.id}
+                            onClick={() => onViewPolicy?.(policy.id)}
+                            className="bg-white dark:bg-stone-900 rounded-[32px] p-5 flex items-center gap-4 shadow-sm border border-stone-50 dark:border-stone-800/50 active:scale-[0.98] transition-all cursor-pointer group"
+                        >
+                            <div className="w-14 h-14 rounded-[20px] bg-stone-50 dark:bg-stone-800 flex items-center justify-center text-stone-400 group-hover:bg-teal-50 group-hover:text-teal-600 transition-colors">
+                                {policy.lineOfBusiness === 'motor' && <CarIcon className="w-7 h-7" />}
+                                {policy.lineOfBusiness === 'home' && <HomeIcon className="w-7 h-7" />}
+                                {!['motor', 'home'].includes(policy.lineOfBusiness as string) && <DocumentIcon className="w-7 h-7" />}
                             </div>
 
-                            {/* View Button */}
-                            <button
-                                onClick={() => onViewPolicy?.(policy.id)}
-                                className="w-full mt-4 px-4 py-2.5 bg-teal-500 hover:bg-teal-600 text-white font-bold rounded-xl transition-all active:scale-[0.98]"
-                            >
-                                {language === 'el' ? 'Προβολή' : 'View'}
-                            </button>
+                            <div className="flex-1 min-w-0">
+                                <h3 className="text-base font-black text-stone-900 dark:text-white tracking-tight truncate">
+                                    {policy.insurerName}
+                                </h3>
+                                <p className="text-xs font-bold text-stone-400 uppercase tracking-wider">
+                                    {policy.policyNumber}
+                                </p>
+                            </div>
+
+                            <div className="flex flex-col items-end gap-1">
+                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${policy.status === 'active' ? 'bg-teal-600 text-white' : 'bg-amber-400 text-stone-900'}`}>
+                                    {policy.status.replace('_', ' ')}
+                                </span>
+                                <span className="text-[10px] font-bold text-stone-400">
+                                    {policy.endDate ? new Date(policy.endDate).toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US', { day: '2-digit', month: '2-digit' }) : ''}
+                                </span>
+                            </div>
                         </div>
                     ))
                 )}
-            </div>
-
-            {/* Bottom Navigation */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-stone-800 border-t border-stone-200 dark:border-stone-700 safe-area-inset-bottom">
-                <div className="max-w-md mx-auto px-4 py-3 flex items-center justify-around">
-                    <button className="flex flex-col items-center gap-1 text-teal-600 dark:text-teal-400">
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                        </svg>
-                        <span className="text-xs font-bold">{language === 'el' ? 'Αρχή' : 'Home'}</span>
-                    </button>
-                    <button className="flex flex-col items-center gap-1 text-stone-900 dark:text-white">
-                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <span className="text-xs font-bold">{language === 'el' ? 'Συμβόλαια' : 'Policies'}</span>
-                    </button>
-                    <button className="flex flex-col items-center gap-1 text-stone-400 dark:text-stone-500">
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                        <span className="text-xs font-bold">{language === 'el' ? 'Πράκτορας' : 'Agent'}</span>
-                    </button>
-                    <button className="flex flex-col items-center gap-1 text-stone-400 dark:text-stone-500">
-                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                        <span className="text-xs font-bold">{language === 'el' ? 'Προφίλ' : 'Profile'}</span>
-                    </button>
-                </div>
             </div>
         </div>
     )

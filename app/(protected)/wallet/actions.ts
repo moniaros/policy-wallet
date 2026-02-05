@@ -14,7 +14,7 @@ import path from "path"
 import { getAIService } from "@/lib/services/ai"
 import { GapAnalysisService } from "@/lib/services/gap-analysis.service"
 import { trackTokenUsage } from "@/lib/token-tracking"
-import { canUserUseFeature, getUpgradeMessage } from "@/lib/subscription-limits"
+import { canUserUseFeature, getUpgradeMessage, getUserSubscription, SUBSCRIPTION_LIMITS } from "@/lib/subscription-limits"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 
 const PolicySchema = z.object({
@@ -471,6 +471,27 @@ export async function analyzeGaps(policyId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
+    // Check Daily Limit for Gap Analysis
+    const { tier } = await getUserSubscription(authResult.dbUser.id)
+    const dailyLimit = SUBSCRIPTION_LIMITS[tier].gapAnalysisPerDay
+
+    if (dailyLimit !== null && !authResult.dbUser.roles.includes('admin')) {
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+
+        const count = await (db as any).activityLog.count({
+            where: {
+                adminUserId: authResult.dbUser.id,
+                actionType: "POLICY_ANALYZED",
+                timestamp: { gte: today }
+            }
+        })
+
+        if (count >= dailyLimit) {
+            return { error: "LIMIT_REACHED" }
+        }
+    }
+
     const language = (authResult.dbUser.preferredLanguage as 'en' | 'el') || 'en'
     const gapService = new GapAnalysisService(db)
 
@@ -611,6 +632,29 @@ export async function askPolicyQuestion(policyId: string, question: string) {
     if (!isAllowed && !authResult.dbUser.roles.includes('admin')) {
         return {
             error: getUpgradeMessage('feature_locked', authResult.dbUser.preferredLanguage as any || 'en')
+        }
+    }
+
+    // Check Daily Limit
+    const { tier } = await getUserSubscription(authResult.dbUser.id)
+    const dailyLimit = SUBSCRIPTION_LIMITS[tier].questionsPerDay
+
+    if (dailyLimit !== null && !authResult.dbUser.roles.includes('admin')) {
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+
+        const count = await (db as any).activityLog.count({
+            where: {
+                adminUserId: authResult.dbUser.id,
+                actionType: "POLICY_QUESTION_ASKED",
+                timestamp: { gte: today }
+            }
+        })
+
+        if (count >= dailyLimit) {
+            return {
+                error: "LIMIT_REACHED"
+            }
         }
     }
 
