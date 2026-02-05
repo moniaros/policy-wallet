@@ -17,7 +17,7 @@ export function MyPoliciesScreen({ policies, onViewPolicy, onAddPolicy }: MyPoli
     return (
         <div className="min-h-screen bg-stone-50 dark:bg-stone-900">
             {/* Branded Header */}
-            <div className="px-6 pt-12 pb-8 flex items-center justify-between">
+            <div className="px-6 pt-12 pb-8 flex items-center justify-between sticky top-0 z-20 bg-stone-50/95 dark:bg-stone-900/95 backdrop-blur-md">
                 <div className="flex items-center gap-0.5">
                     <span className="text-2xl font-black tracking-tight text-stone-900 dark:text-white">Policy</span>
                     <span className="text-2xl font-black tracking-tight text-teal-600">Wallet</span>
@@ -36,9 +36,26 @@ export function MyPoliciesScreen({ policies, onViewPolicy, onAddPolicy }: MyPoli
                 <h1 className="text-4xl font-black text-stone-900 dark:text-white tracking-tighter mb-1 leading-tight">
                     {language === 'el' ? 'Τα Συμβόλαια' : 'My'} <span className="text-stone-400 dark:text-stone-500 italic">Policies.</span>
                 </h1>
-                <p className="text-stone-500 text-sm font-bold uppercase tracking-widest">
+                <p className="text-stone-500 text-sm font-bold uppercase tracking-widest mb-6">
                     {policies.length} {language === 'el' ? 'Συμβόλαια Ενεργά' : 'Active Policies'}
                 </p>
+
+                {/* KPI Cards Horizontal Scroll */}
+                <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 -mx-6 px-6 snap-x safe-area-inset-right">
+                    {/* Total Policies Card */}
+                    <div className="flex-shrink-0 w-[160px] bg-gradient-to-br from-teal-600 to-teal-400 rounded-[32px] p-6 text-white shadow-xl shadow-teal-600/20 snap-start">
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-80 block mb-2">Total Policies:</span>
+                        <span className="text-4xl font-black tracking-tighter">{policies.length}</span>
+                    </div>
+
+                    {/* Yearly Premium Card */}
+                    <div className="flex-shrink-0 w-[200px] bg-gradient-to-br from-teal-500 to-teal-300 rounded-[32px] p-6 text-white shadow-xl shadow-teal-500/20 snap-start">
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-80 block mb-2">Yearly Premium:</span>
+                        <div className="flex items-baseline gap-1">
+                            <span className="text-4xl font-black tracking-tighter">€{policies.reduce((sum, p) => sum + (p.premiumAmount || 0), 0).toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {/* Policy List */}

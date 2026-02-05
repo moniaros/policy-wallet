@@ -144,13 +144,13 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
     }
 
     const totalPremium = useMemo(() => {
-        return displayPolicies.reduce((sum, p) => sum + (p.acordData?.premium || 0), 0)
+        return displayPolicies.reduce((sum, p) => sum + (p.premiumAmount || 0), 0)
     }, [displayPolicies])
 
     return (
         <div className="min-h-screen bg-stone-50 dark:bg-stone-950 pb-24">
             {/* Branded Header */}
-            <div className="px-6 pt-12 pb-6 flex items-center justify-between">
+            <div className="px-6 pt-12 pb-6 flex items-center justify-between sticky top-0 md:relative z-20 bg-stone-50/95 dark:bg-stone-950/95 backdrop-blur-md md:bg-transparent">
                 <div className="flex items-center gap-0.5">
                     <span className="text-2xl font-black tracking-tight text-stone-900 dark:text-white">Policy</span>
                     <span className="text-2xl font-black tracking-tight text-teal-600">Wallet</span>
@@ -180,23 +180,24 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
 
                     {/* Monthly Premium Card */}
                     <div className="flex-shrink-0 w-[240px] bg-gradient-to-br from-teal-500 to-teal-300 rounded-[32px] p-6 text-white shadow-xl shadow-teal-500/20 snap-start">
-                        <span className="text-[10px] font-black uppercase tracking-widest opacity-80 block mb-2">Monthly Premium:</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest opacity-80 block mb-2">Yearly Premium:</span>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-4xl font-black tracking-tighter">${totalPremium.toFixed(2)}</span>
+                            <span className="text-4xl font-black tracking-tighter">€{totalPremium.toFixed(2)}</span>
                         </div>
                     </div>
 
-                    {/* Potential Savings Card */}
+                    {/* Potential Savings Card - Hidden until real data is available to remove dummy data
                     <div className="flex-shrink-0 w-[220px] bg-stone-900 dark:bg-white rounded-[32px] p-6 shadow-xl shadow-stone-900/10 snap-start group relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                             <svg className="w-24 h-24 text-white dark:text-stone-900" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.15-1.46-3.27-3.4h1.96c.1 1.05 1.18 1.91 2.53 1.91 1.35 0 2.53-.86 2.53-1.95 0-1.01-.84-1.55-2.27-1.95-1.99-.54-3.41-1.38-3.41-3.36 0-1.89 1.4-3.03 3.09-3.42V4h2.67v1.93c1.61.35 2.87 1.45 2.99 3.23h-1.96c-.1-1.03-1.07-1.77-2.38-1.77-1.34 0-2.29.98-2.29 1.91 0 1.01.97 1.55 2.39 1.95 2.01.54 3.39 1.47 3.39 3.39 0 1.89-1.39 3.02-3.21 3.45z" /></svg>
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-widest text-stone-400 block mb-2 relative z-10">Potential Savings:</span>
                         <div className="relative z-10">
-                            <span className="text-3xl font-black tracking-tighter text-white dark:text-stone-900">€142.00</span>
+                            <span className="text-3xl font-black tracking-tighter text-white dark:text-stone-900">€0.00</span>
                             <span className="text-xs font-bold text-emerald-400 dark:text-emerald-600 block mt-1">/ Year ROI</span>
                         </div>
                     </div>
+                    */}
 
                     {/* Document Vault Card */}
                     <div className="flex-shrink-0 w-[200px] bg-white dark:bg-stone-800 border-2 border-stone-100 dark:border-stone-700 rounded-[32px] p-6 snap-start">

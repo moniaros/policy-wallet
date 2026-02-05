@@ -8,7 +8,7 @@ import { RoleSwitcher } from './RoleSwitcher'
 import { ThemeToggle } from '../ThemeToggle'
 import { PolicyWalletLogo } from '@/components/branding/Logo'
 import { InstallPrompt } from "@/components/pwa/InstallPrompt"
-import { Home, BarChart3, Bell, Settings, Users, Lightbulb, LayoutDashboard, MoreHorizontal, ListChecks, User, LogOut, Wallet } from 'lucide-react'
+import { Home, BarChart3, Bell, Settings, Users, Lightbulb, LayoutDashboard, MoreHorizontal, ListChecks, User, LogOut, Wallet, Shield } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 export interface NavigationItem {
@@ -51,11 +51,11 @@ export interface AppShellProps {
 const getBottomNavItems = (role: UserRole['role'], t: any) => {
     if (role === 'policyholder') {
         return [
-            { href: '/wallet', icon: LayoutDashboard, label: t.nav.dashboard, id: 'dashboard' },
             { href: '/wallet', icon: Wallet, label: t.nav.wallet, id: 'wallet' },
+            { href: '/tasks', icon: ListChecks, label: 'Tasks', id: 'tasks' },
+            { href: '/coverage', icon: Shield, label: 'Coverage', id: 'coverage' },
             { href: '/notifications', icon: Bell, label: t.nav.notifications, id: 'notifications' },
-            { href: '/account', icon: User, label: t.userMenu.settings, id: 'account' },
-            { href: '#logout', icon: LogOut, label: t.userMenu.logout, id: 'logout' }
+            { href: '/account', icon: User, label: t.userMenu.settings, id: 'account' }
         ]
     } else if (role === 'agent') {
         const translations = {

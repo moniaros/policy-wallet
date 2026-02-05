@@ -69,7 +69,7 @@ export function MyProfileScreen({
     return (
         <div className="min-h-screen bg-stone-50 dark:bg-stone-900">
             {/* Branded Header */}
-            <div className="px-6 pt-12 pb-8 flex items-center justify-between">
+            <div className="px-6 pt-12 pb-8 flex items-center justify-between sticky top-0 z-20 bg-stone-50/95 dark:bg-stone-900/95 backdrop-blur-md">
                 <div className="flex items-center gap-0.5">
                     <span className="text-2xl font-black tracking-tight text-stone-900 dark:text-white">Policy</span>
                     <span className="text-2xl font-black tracking-tight text-teal-600">Wallet</span>
@@ -115,8 +115,8 @@ export function MyProfileScreen({
                                 }`}
                         >
                             <div className={`flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${item.danger
-                                    ? 'bg-red-50 dark:bg-red-900/20 text-red-600'
-                                    : 'bg-stone-50 dark:bg-stone-800 text-stone-400 group-hover:bg-teal-50 group-hover:text-teal-600'
+                                ? 'bg-red-50 dark:bg-red-900/20 text-red-600'
+                                : 'bg-stone-50 dark:bg-stone-800 text-stone-400 group-hover:bg-teal-50 group-hover:text-teal-600'
                                 }`}>
                                 {item.icon}
                             </div>

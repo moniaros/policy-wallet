@@ -84,7 +84,7 @@ export function UpgradePrompt({
     ]
 
     const handleUpgrade = () => {
-        router.push('/pricing')
+        router.push('/upgrade')
     }
 
     const ctaText = (reason === 'daily_limit' || reason === 'gap_limit')

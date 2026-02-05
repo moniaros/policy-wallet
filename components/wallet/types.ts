@@ -26,6 +26,8 @@ export interface Policy {
     userId?: string
     acordData?: any
     verified?: boolean
+    premiumAmount?: number
+    premiumCurrency?: string
     aiInsights?: {
         exclusions: string[]
         premiumBenchmark?: {
@@ -34,7 +36,6 @@ export interface Policy {
             savingsPotential: number
         }
     }
-
 }
 
 export interface PolicyWalletProps {

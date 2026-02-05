@@ -58,6 +58,8 @@ export default async function WalletPage() {
         startDate: p.startDate.toISOString(),
         endDate: p.endDate.toISOString(),
         lastUpdated: p.updatedAt.toISOString(),
+        premiumAmount: p.premiumAmount ? Number(p.premiumAmount) : undefined,
+        premiumCurrency: p.premiumCurrency || 'EUR',
         sharedWithAgents: [], // Mock for now
         coverageHighlights: [], // Mock or parse from summary
         documents: p.documents.map((d: any) => ({
