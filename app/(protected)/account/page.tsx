@@ -1,7 +1,7 @@
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { getAccountData } from "./actions"
-import { AccountClient } from "@/components/account/AccountClient"
+import { AccountClientPage } from "./AccountClientPage"
 import type { Policy } from "@/components/wallet/types"
 
 export default async function AccountPage() {
@@ -29,7 +29,7 @@ export default async function AccountPage() {
         id: customerRelationship.agent.id,
         name: customerRelationship.agent.name || 'Your Agent',
         phone: customerRelationship.agent.phoneNumber || '',
-        email: customerRelationship.agent.email,
+        email: customerRelationship.agent.email || '',
         company: 'PolicyWallet Agent',
         photoUrl: customerRelationship.agent.image || undefined,
         isOnline: true
@@ -67,9 +67,13 @@ export default async function AccountPage() {
     }))
 
     return (
-        <AccountClient
+        <AccountClientPage
             initialData={data}
-            userLanguage={dbUser.preferredLanguage || 'en'}
+            mobileProps={{
+                policies: mappedPolicies,
+                user,
+                agent
+            }}
         />
     )
 }
@@ -84,3 +88,4 @@ function mapStatus(dbStatus: string, endDate: Date): 'active' | 'expiring_soon' 
 
     return 'active'
 }
+
