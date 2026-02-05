@@ -5,7 +5,7 @@ import { NotificationHistory, NotificationPreferences, MobileNotificationList } 
 import { toggleNotificationPreference } from "./actions"
 import { useRouter } from "next/navigation"
 import { useIsMobile } from "@/hooks/useResponsive"
-import { MobileBottomNav } from "@/components/layout/MobileBottomNav"
+
 
 interface Props {
     initialData: any
@@ -106,7 +106,7 @@ export function NotificationsClientPage({ initialData, activeRole: initialRole }
                         </div>
                     )}
                 </div>
-                <MobileBottomNav />
+
             </div>
         )
     }
