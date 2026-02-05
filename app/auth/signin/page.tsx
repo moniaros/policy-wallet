@@ -75,15 +75,15 @@ export default function SignInPage() {
         <div className="flex min-h-screen flex-col items-center justify-center bg-slate-900 px-4 py-12 relative overflow-hidden">
             {/* Liquid Background */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-                <div className="absolute -top-[20%] -right-[10%] w-[60%] h-[60%] rounded-full bg-amber-500/10 blur-[120px] animate-pulse-slow" />
-                <div className="absolute bottom-[0%] -left-[10%] w-[50%] h-[50%] rounded-full bg-violet-600/10 blur-[120px] animate-pulse-slow delay-700" />
+                <div className="absolute -top-[20%] -right-[10%] w-[60%] h-[60%] rounded-full bg-emerald-500/10 blur-[120px] animate-pulse-slow" />
+                <div className="absolute bottom-[0%] -left-[10%] w-[50%] h-[50%] rounded-full bg-teal-500/10 blur-[120px] animate-pulse-slow delay-700" />
             </div>
 
-            <div className="w-full max-w-md bg-slate-900/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/50 p-8 sm:p-10 relative z-10 animate-in fade-in zoom-in duration-500 hover:shadow-amber-500/5 transition-all">
+            <div className="w-full max-w-md bg-slate-900/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/50 p-8 sm:p-10 relative z-10 animate-in fade-in zoom-in duration-500 hover:shadow-emerald-500/5 transition-all">
                 <div className="text-center mb-8">
                     <Link href="/" className="inline-block group mb-6">
                         <h1 className="text-3xl font-black tracking-tighter text-white">
-                            Policy<span className="text-amber-500">Wallet</span>
+                            Policy<span className="text-emerald-500">Wallet</span>
                         </h1>
                     </Link>
                     <h2 className="text-xl font-bold text-white mb-2">Welcome Back</h2>
@@ -103,15 +103,15 @@ export default function SignInPage() {
                             </div>
 
                             {showResendVerification && (
-                                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/20 space-y-3">
-                                    <p className="text-sm text-amber-200/80">
+                                <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 space-y-3">
+                                    <p className="text-sm text-emerald-200/80">
                                         Check your email for the verification link. Missing it?
                                     </p>
                                     <button
                                         type="button"
                                         onClick={handleResendVerification}
                                         disabled={isResending}
-                                        className="w-full py-2.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 text-sm font-bold transition-all border border-amber-500/30 flex items-center justify-center gap-2"
+                                        className="w-full py-2.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 text-sm font-bold transition-all border border-emerald-500/30 flex items-center justify-center gap-2"
                                     >
                                         {isResending ? (
                                             <>
@@ -145,7 +145,7 @@ export default function SignInPage() {
                             </label>
                             <div className="relative group">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Mail className="h-5 w-5 text-slate-500 group-focus-within:text-amber-500 transition-colors" />
+                                    <Mail className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-500 transition-colors" />
                                 </div>
                                 <input
                                     id="email"
@@ -153,7 +153,7 @@ export default function SignInPage() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="block w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all font-medium sm:text-sm"
+                                    className="block w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all font-bold sm:text-sm"
                                     placeholder="name@company.com"
                                 />
                             </div>
@@ -166,14 +166,14 @@ export default function SignInPage() {
                                 </label>
                                 <Link
                                     href="/auth/forgot-password"
-                                    className="text-xs font-bold text-amber-500 hover:text-amber-400 hover:underline transition-all"
+                                    className="text-xs font-bold text-emerald-500 hover:text-emerald-400 hover:underline transition-all"
                                 >
                                     Forgot password?
                                 </Link>
                             </div>
                             <div className="relative group">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Lock className="h-5 w-5 text-slate-500 group-focus-within:text-amber-500 transition-colors" />
+                                    <Lock className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-500 transition-colors" />
                                 </div>
                                 <input
                                     id="password"
@@ -181,7 +181,7 @@ export default function SignInPage() {
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="block w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500 transition-all font-medium sm:text-sm"
+                                    className="block w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all font-bold sm:text-sm"
                                     placeholder="••••••••"
                                 />
                             </div>
@@ -191,7 +191,7 @@ export default function SignInPage() {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full flex items-center justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-amber-500/20 text-sm font-bold text-white bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:-translate-y-0.5"
+                        className="w-full flex items-center justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-emerald-500/20 text-sm font-bold text-white bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:-translate-y-0.5"
                     >
                         {isLoading ? (
                             <span className="flex items-center gap-2">
@@ -218,7 +218,7 @@ export default function SignInPage() {
                 <div className="text-center">
                     <p className="text-sm text-slate-400">
                         Don't have an account?{" "}
-                        <Link href="/auth/signup" className="font-bold text-amber-500 hover:text-amber-400 transition-colors">
+                        <Link href="/auth/signup" className="font-bold text-emerald-500 hover:text-emerald-400 transition-colors">
                             Create Account
                         </Link>
                     </p>

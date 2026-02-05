@@ -145,11 +145,11 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
     }
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-8">
             {/* Hero Section */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-800 text-white rounded-b-[2.5rem] shadow-2xl pb-16 pt-8 px-6 lg:px-12 mb-8">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-3xl rounded-full -mr-32 -mt-32 pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-300/20 blur-3xl rounded-full -ml-32 -mb-32 pointer-events-none" />
+            <div className="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-800 text-white rounded-b-3xl shadow-xl pb-16 pt-8 px-6 lg:px-12 mb-8">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 blur-3xl rounded-full -mr-32 -mt-32 pointer-events-none mix-blend-overlay" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-teal-300/20 blur-3xl rounded-full -ml-32 -mb-32 pointer-events-none mix-blend-overlay" />
 
                 <div className="relative z-10 max-w-7xl mx-auto">
                     <div className="flex justify-between items-start mb-8">
@@ -158,51 +158,51 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                                 <Wallet className="w-5 h-5" />
                                 <span className="text-xs font-bold uppercase tracking-wider">Policy Wallet</span>
                             </div>
-                            <h1 className="text-4xl lg:text-5xl font-black tracking-tight mb-2">
+                            <h1 className="text-3xl lg:text-4xl font-bold tracking-tight mb-2">
                                 {t.wallet.yourCoverage}
                             </h1>
-                            <p className="text-emerald-50 text-lg opacity-90">
+                            <p className="text-emerald-50 text-base lg:text-lg opacity-90 max-w-md">
                                 {t.wallet.manageTrack}
                             </p>
                         </div>
                         <button
                             onClick={() => router.push('/wallet/add')}
-                            className="hidden md:flex items-center gap-2 bg-white text-emerald-700 px-6 py-3 rounded-xl font-bold hover:bg-emerald-50 active:scale-95 transition-all shadow-lg hover:shadow-xl"
+                            className="flex items-center gap-2 bg-white text-emerald-700 px-4 py-2 md:px-6 md:py-2.5 rounded-xl font-bold hover:bg-emerald-50 active:scale-95 transition-all shadow-lg hover:shadow-xl text-sm md:text-base"
                         >
-                            <Plus className="w-5 h-5" />
+                            <Plus className="w-4 h-4 md:w-5 md:h-5" />
                             {t.wallet.addPolicy}
                         </button>
                     </div>
 
-                    {/* Stats Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4">
-                            <div className="flex items-center gap-2 mb-1 text-emerald-100">
+                    {/* Stats Slider */}
+                    <div className="flex md:grid md:grid-cols-4 gap-4 overflow-x-auto no-scrollbar pb-2 md:pb-0 -mx-6 px-6 md:mx-0 md:px-0 snap-x">
+                        <div className="flex-shrink-0 w-[160px] md:w-auto bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 hover:bg-white/15 transition-colors snap-start">
+                            <div className="flex items-center gap-2 mb-1.5 text-emerald-100">
                                 <Shield className="w-4 h-4" />
-                                <span className="text-xs font-bold uppercase">{t.wallet.totalPolicies}</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wide">{t.wallet.totalPolicies}</span>
                             </div>
-                            <span className="text-3xl font-black">{stats.total}</span>
+                            <span className="text-3xl font-bold">{stats.total}</span>
                         </div>
-                        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4">
-                            <div className="flex items-center gap-2 mb-1 text-emerald-100">
+                        <div className="flex-shrink-0 w-[160px] md:w-auto bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 hover:bg-white/15 transition-colors snap-start">
+                            <div className="flex items-center gap-2 mb-1.5 text-emerald-100">
                                 <Clock className="w-4 h-4" />
-                                <span className="text-xs font-bold uppercase">{t.wallet.activePolicies}</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wide">{t.wallet.activePolicies}</span>
                             </div>
-                            <span className="text-3xl font-black">{stats.active}</span>
+                            <span className="text-3xl font-bold">{stats.active}</span>
                         </div>
-                        <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 ${stats.expiring > 0 ? 'bg-amber-500/20 border-amber-400/30' : ''}`}>
-                            <div className="flex items-center gap-2 mb-1 text-emerald-100">
+                        <div className={`flex-shrink-0 w-[160px] md:w-auto backdrop-blur-md border rounded-2xl p-4 transition-colors snap-start ${stats.expiring > 0 ? 'bg-amber-500/20 border-amber-400/40 text-white' : 'bg-white/10 border-white/20 hover:bg-white/15'}`}>
+                            <div className="flex items-center gap-2 mb-1.5 text-emerald-100">
                                 <AlertCircle className="w-4 h-4" />
-                                <span className="text-xs font-bold uppercase">{t.wallet.expiringPolicies}</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wide">{t.wallet.expiringPolicies}</span>
                             </div>
-                            <span className="text-3xl font-black">{stats.expiring}</span>
+                            <span className="text-3xl font-bold">{stats.expiring}</span>
                         </div>
-                        <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 ${stats.actionNeeded > 0 ? 'bg-red-500/20 border-red-400/30' : ''}`}>
-                            <div className="flex items-center gap-2 mb-1 text-emerald-100">
+                        <div className={`flex-shrink-0 w-[160px] md:w-auto backdrop-blur-md border rounded-2xl p-4 transition-colors snap-start ${stats.actionNeeded > 0 ? 'bg-red-500/20 border-red-400/40 text-white' : 'bg-white/10 border-white/20 hover:bg-white/15'}`}>
+                            <div className="flex items-center gap-2 mb-1.5 text-emerald-100">
                                 <AlertTriangle className="w-4 h-4" />
-                                <span className="text-xs font-bold uppercase">{t.wallet.attentionNeeded}</span>
+                                <span className="text-[10px] font-bold uppercase tracking-wide">{t.wallet.attentionNeeded}</span>
                             </div>
-                            <span className="text-3xl font-black">{stats.actionNeeded}</span>
+                            <span className="text-3xl font-bold">{stats.actionNeeded}</span>
                         </div>
                     </div>
                 </div>
@@ -210,9 +210,9 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20">
                 {/* Controls */}
-                <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-xl border border-slate-200 dark:border-slate-800 mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div className="bg-white dark:bg-slate-900 rounded-2xl p-3 shadow-lg border border-slate-200 dark:border-slate-800 mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
                     {/* Tabs */}
-                    <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl overflow-x-auto max-w-full no-scrollbar">
+                    <div className="flex p-1 bg-slate-50 dark:bg-slate-950 rounded-xl overflow-x-auto max-w-full no-scrollbar w-full md:w-auto">
                         {[
                             { id: 'all', label: t.wallet.allPolicies },
                             { id: 'active', label: t.wallet.activePolicies },
@@ -222,8 +222,8 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                             <button
                                 key={tab.id}
                                 onClick={() => setFilter(tab.id as FilterType)}
-                                className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-all ${filter === tab.id
-                                    ? 'bg-white dark:bg-slate-700 text-emerald-600 shadow-sm'
+                                className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all ${filter === tab.id
+                                    ? 'bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-sm ring-1 ring-slate-200 dark:ring-slate-700'
                                     : 'text-slate-500 hover:text-slate-900 dark:text-slate-400'
                                     }`}
                             >
@@ -240,19 +240,19 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                             placeholder={t.wallet.searchPlaceholder}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-emerald-500 transition-all"
+                            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-950 border-transparent focus:border-emerald-500/50 focus:bg-white dark:focus:bg-slate-900 rounded-xl text-sm font-medium focus:ring-2 focus:ring-emerald-500/20 transition-all outline-none"
                         />
                     </div>
                 </div>
 
                 {/* Policies Grid */}
                 {filteredPolicies.length === 0 ? (
-                    <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 border-dashed">
-                        <div className="w-20 h-20 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <Shield className="w-10 h-10 text-emerald-500/50" />
+                    <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 border-dashed">
+                        <div className="w-16 h-16 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <Shield className="w-8 h-8 text-emerald-500/50" />
                         </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t.wallet.noPoliciesFound}</h3>
-                        <p className="text-slate-500 mb-8 max-w-sm mx-auto">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{t.wallet.noPoliciesFound}</h3>
+                        <p className="text-slate-500 text-sm mb-8 max-w-sm mx-auto">
                             {searchQuery
                                 ? t.wallet.noPoliciesFoundDesc
                                 : t.wallet.noPoliciesYetDesc}
@@ -260,7 +260,7 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                         {!searchQuery && (
                             <button
                                 onClick={() => router.push('/wallet/add')}
-                                className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-700 transition-all"
+                                className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-emerald-700 transition-all shadow-md hover:shadow-lg active:scale-95"
                             >
                                 <Plus className="w-5 h-5" />
                                 {t.wallet.addFirstPolicy}
@@ -268,7 +268,7 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                         )}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         {filteredPolicies.map((policy) => {
                             const Icon = getTypeIcon(policy.lineOfBusiness)
                             const statusColor = getStatusColor(policy.status)
@@ -277,11 +277,11 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                                 <div
                                     key={policy.id}
                                     onClick={() => router.push(`/wallet/${policy.id}`)}
-                                    className="group relative bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm hover:shadow-xl border border-slate-200 dark:border-slate-800 hover:border-emerald-200 dark:hover:border-emerald-800 transition-all duration-300 cursor-pointer overflow-hidden"
+                                    className="group relative bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm hover:shadow-xl border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 dark:hover:border-emerald-500/30 transition-all duration-300 cursor-pointer overflow-hidden"
                                 >
-                                    <div className="flex justify-between items-start mb-6">
+                                    <div className="flex justify-between items-start mb-5">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-2xl flex items-center justify-center text-2xl font-black text-slate-700 dark:text-slate-200 border border-slate-100 dark:border-slate-700">
+                                            <div className="w-12 h-12 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-center justify-center text-xl font-bold text-slate-700 dark:text-slate-200 border border-slate-100 dark:border-slate-700 group-hover:scale-105 transition-transform">
                                                 {policy.insurerLogo ? (
                                                     // eslint-disable-next-line @next/next/no-img-element
                                                     <img src={policy.insurerLogo} alt={policy.insurerName} className="w-8 h-8 object-contain" />
@@ -290,21 +290,21 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                                                 )}
                                             </div>
                                             <div>
-                                                <h3 className="font-bold text-slate-900 dark:text-white leading-tight">
+                                                <h3 className="font-bold text-slate-900 dark:text-white leading-tight mb-0.5">
                                                     {policy.insurerName}
                                                 </h3>
-                                                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mt-0.5">
+                                                <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">
                                                     {policy.policyNumber}
                                                 </p>
                                             </div>
                                         </div>
-                                        <div className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border ${statusColor}`}>
+                                        <div className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border ${statusColor}`}>
                                             {getStatusLabel(policy.status)}
                                         </div>
                                     </div>
 
-                                    <div className="space-y-4 mb-6">
-                                        <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400">
+                                    <div className="space-y-3 mb-5">
+                                        <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200 transition-colors">
                                             <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
                                                 <Icon className="w-4 h-4" />
                                             </div>
@@ -317,20 +317,22 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                                                 <Calendar className="w-4 h-4" />
                                             </div>
                                             <span className="text-sm font-medium">
-                                                {t.wallet.expiresDate} {formatDate(policy.endDate)}
+                                                {formatDate(policy.endDate)}
                                             </span>
                                         </div>
                                     </div>
 
-                                    <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between group-hover:text-emerald-600 transition-colors">
-                                        <span className="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-emerald-600">
+                                    <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between transition-colors">
+                                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
                                             {t.wallet.viewDetails}
                                         </span>
-                                        <ArrowUpRight className="w-5 h-5" />
+                                        <div className="w-8 h-8 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center group-hover:bg-emerald-50 dark:group-hover:bg-emerald-900/20 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-all">
+                                            <ArrowUpRight className="w-4 h-4" />
+                                        </div>
                                     </div>
 
-                                    {/* Hover Effect Gradient */}
-                                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    {/* Gradient Border Bottom */}
+                                    <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </div>
                             )
                         })}
@@ -338,13 +340,6 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                 )}
             </div>
 
-            {/* Mobile FAB */}
-            <button
-                onClick={() => router.push('/wallet/add')}
-                className="md:hidden fixed bottom-24 right-6 w-14 h-14 bg-emerald-600 text-white rounded-full shadow-2xl flex items-center justify-center z-50 active:scale-90 transition-transform"
-            >
-                <Plus className="w-7 h-7" />
-            </button>
         </div>
     )
 }

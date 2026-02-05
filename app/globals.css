@@ -1,26 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #0d9488;
+  --color-primary: #10b981;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #d97706;
+  --color-secondary: #f59e0b;
   --color-secondary-foreground: #ffffff;
 
-  /* Mapping neutral to stone */
-  --color-neutral-50: #fafaf9;
-  --color-neutral-100: #f5f5f4;
-  --color-neutral-200: #e7e5e4;
-  --color-neutral-300: #d6d3d1;
-  --color-neutral-400: #a8a29e;
-  --color-neutral-500: #78716c;
-  --color-neutral-600: #57534e;
-  --color-neutral-700: #44403c;
-  --color-neutral-800: #292524;
-  --color-neutral-900: #1c1917;
+  /* Mapping neutral to slate for premium feel */
+  --color-neutral-50: #f8fafc;
+  --color-neutral-100: #f1f5f9;
+  --color-neutral-200: #e2e8f0;
+  --color-neutral-300: #cbd5e1;
+  --color-neutral-400: #94a3b8;
+  --color-neutral-500: #64748b;
+  --color-neutral-600: #475569;
+  --color-neutral-700: #334155;
+  --color-neutral-800: #1e293b;
+  --color-neutral-900: #0f172a;
 
-  --font-heading: 'IBM Plex Sans', sans-serif;
-  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'Inter', sans-serif;
+  --font-body: 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   /* Shadcn UI Variables */
@@ -47,37 +47,37 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #1c1917;
-  /* stone-900 */
+  --foreground: #0f172a;
+  /* slate-900 */
 
-  /* Primary - Teal */
-  --primary: #0d9488;
-  /* teal-600 */
+  /* Primary - Emerald */
+  --primary: #10b981;
+  /* emerald-500 */
   --primary-foreground: #ffffff;
 
   /* Secondary - Amber */
-  --secondary: #d97706;
-  /* amber-600 */
+  --secondary: #f59e0b;
+  /* amber-500 */
   --secondary-foreground: #ffffff;
 
   /* Card */
   --card: #ffffff;
-  --card-foreground: #1c1917;
+  --card-foreground: #0f172a;
 
   /* Popover */
   --popover: #ffffff;
-  --popover-foreground: #1c1917;
+  --popover-foreground: #0f172a;
 
   /* Muted */
-  --muted: #f5f5f4;
-  /* stone-100 */
-  --muted-foreground: #78716c;
-  /* stone-500 */
+  --muted: #f1f5f9;
+  /* slate-100 */
+  --muted-foreground: #64748b;
+  /* slate-500 */
 
   /* Accent */
-  --accent: #f5f5f4;
-  /* stone-100 */
-  --accent-foreground: #1c1917;
+  --accent: #f8fafc;
+  /* slate-50 */
+  --accent-foreground: #0f172a;
 
   /* Destructive */
   --destructive: #ef4444;
@@ -85,50 +85,50 @@
   --destructive-foreground: #ffffff;
 
   /* Border/Input/Ring */
-  --border: #e7e5e4;
-  /* stone-200 */
-  --input: #e7e5e4;
-  /* stone-200 */
-  --ring: #0d9488;
-  /* teal-600 */
+  --border: #e2e8f0;
+  /* slate-200 */
+  --input: #e2e8f0;
+  /* slate-200 */
+  --ring: #10b981;
+  /* emerald-500 */
 
-  --radius: 0.5rem;
+  --radius: 0.75rem;
+  /* rounded-xl (12px) for premium feel */
 }
 
 .dark {
-  --background: #1c1917;
-  /* stone-900 */
-  --foreground: #fafaf9;
-  /* stone-50 */
+  --background: #020617;
+  /* slate-950 */
+  --foreground: #f8fafc;
+  /* slate-50 */
 
-  /* Primary - Teal Dark */
-  --primary: #0f766e;
-  /* teal-700 */
+  /* Primary - Emerald Dark */
+  --primary: #10b981;
   --primary-foreground: #ffffff;
 
-  /* Secondary - Amber Dark */
-  --secondary: #fbbf24;
-  /* amber-400 */
-  --secondary-foreground: #000000;
+  /* Secondary - Amber */
+  --secondary: #f59e0b;
+  --secondary-foreground: #ffffff;
 
   /* Card */
-  --card: #1c1917;
-  --card-foreground: #fafaf9;
+  --card: #0f172a;
+  /* slate-900 */
+  --card-foreground: #f8fafc;
 
   /* Popover */
-  --popover: #1c1917;
-  --popover-foreground: #fafaf9;
+  --popover: #0f172a;
+  --popover-foreground: #f8fafc;
 
   /* Muted */
-  --muted: #292524;
-  /* stone-800 */
-  --muted-foreground: #a8a29e;
-  /* stone-400 */
+  --muted: #1e293b;
+  /* slate-800 */
+  --muted-foreground: #94a3b8;
+  /* slate-400 */
 
   /* Accent */
-  --accent: #292524;
-  /* stone-800 */
-  --accent-foreground: #fafaf9;
+  --accent: #1e293b;
+  /* slate-800 */
+  --accent-foreground: #f8fafc;
 
   /* Destructive */
   --destructive: #7f1d1d;
@@ -136,12 +136,11 @@
   --destructive-foreground: #ffffff;
 
   /* Border/Input/Ring */
-  --border: #292524;
-  /* stone-800 */
-  --input: #292524;
-  /* stone-800 */
-  --ring: #0d9488;
-  /* teal-600 */
+  --border: #1e293b;
+  /* slate-800 */
+  --input: #1e293b;
+  /* slate-800 */
+  --ring: #10b981;
 }
 
 body {

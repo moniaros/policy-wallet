@@ -115,19 +115,19 @@ export function PolicyDetailsClient({
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
+        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950">
             {/* Liquid Glass Hero Section */}
             <div className="relative overflow-hidden">
                 {/* Animated Background Blobs */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                    <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-indigo-400/20 to-violet-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
+                    <div className="absolute -top-40 -right-40 w-96 h-96 bg-gradient-to-br from-emerald-400/20 to-teal-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
                     <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-tr from-emerald-400/20 to-teal-400/20 rounded-full blur-3xl animate-pulse" style={{ animationDuration: '6s' }} />
                 </div>
 
                 <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
                     {/* Breadcrumbs */}
                     <nav className="flex items-center gap-2 mb-8 text-sm font-medium">
-                        <Link href="/wallet" className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors duration-200">
+                        <Link href="/wallet" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors duration-200">
                             {t.wallet.title}
                         </Link>
                         <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,7 +141,7 @@ export function PolicyDetailsClient({
                         {/* Glass Card */}
                         <div className="relative bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl shadow-xl border border-white/20 dark:border-slate-700/50 overflow-hidden transition-all duration-500 hover:shadow-2xl">
                             {/* Gradient Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-emerald-500/5 pointer-events-none" />
+                            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-500/5 pointer-events-none" />
 
                             <div className="relative p-8 lg:p-12">
                                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
@@ -160,14 +160,14 @@ export function PolicyDetailsClient({
                                         </div>
 
                                         <div className="flex items-center gap-4 mb-3">
-                                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg">
+                                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg">
                                                 <Shield className="w-8 h-8 text-white" />
                                             </div>
                                             <div>
                                                 <h1 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
                                                     {getInsurerName()}
                                                 </h1>
-                                                <p className="text-lg text-indigo-600 dark:text-indigo-400 font-semibold mt-1 uppercase tracking-wide">
+                                                <p className="text-lg text-emerald-600 dark:text-emerald-400 font-semibold mt-1 uppercase tracking-wide">
                                                     {t.policyTypes[getCoverageType() as keyof typeof t.policyTypes] || getCoverageType()}
                                                 </p>
                                             </div>
@@ -198,14 +198,14 @@ export function PolicyDetailsClient({
                                             <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
                                                 {t.wallet.policyId}
                                             </p>
-                                            <p className="font-mono text-sm font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 group-hover:border-indigo-400 dark:group-hover:border-indigo-500 transition-colors duration-200">
+                                            <p className="font-mono text-sm font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 group-hover:border-emerald-400 dark:group-hover:border-emerald-500 transition-colors duration-200">
                                                 {getPolicyNumber()}
                                             </p>
                                         </div>
 
                                         {policy.acordData?.vehicle?.plateNumber && (
                                             <div className="group cursor-pointer">
-                                                <div className="font-mono text-sm font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 group-hover:border-indigo-400 dark:group-hover:border-indigo-500 transition-colors duration-200 flex items-center gap-2">
+                                                <div className="font-mono text-sm font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 group-hover:border-emerald-400 dark:group-hover:border-emerald-500 transition-colors duration-200 flex items-center gap-2">
                                                     <span className="px-2 py-0.5 rounded bg-blue-600 text-xs text-white font-bold">GR</span>
                                                     {policy.acordData.vehicle.plateNumber}
                                                 </div>
@@ -300,7 +300,7 @@ export function PolicyDetailsClient({
                                 {/* Insurer Contact */}
                                 {policy.acordData?.policy?.insurerContact && (
                                     <div className="flex items-start gap-4 group cursor-pointer">
-                                        <div className="mt-1 w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                        <div className="mt-1 w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" /></svg>
                                         </div>
                                         <div>
@@ -325,7 +325,7 @@ export function PolicyDetailsClient({
                                             </div>
                                         </div>
                                         <div className="flex items-start gap-4 group cursor-pointer">
-                                            <div className="mt-1 w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                            <div className="mt-1 w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300">
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" /></svg>
                                             </div>
                                             <div>
@@ -339,7 +339,7 @@ export function PolicyDetailsClient({
                         </div>
 
                         {/* Summary Section */}
-                        <div className="bg-gradient-to-br from-slate-50 to-indigo-50/30 dark:from-slate-900/50 dark:to-indigo-950/30 rounded-2xl p-8 border border-slate-200/50 dark:border-slate-700/50">
+                        <div className="bg-gradient-to-br from-slate-50 to-emerald-50/30 dark:from-slate-900/50 dark:to-emerald-950/30 rounded-2xl p-8 border border-slate-200/50 dark:border-slate-700/50">
                             <h2 className="text-sm font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                                 <FileText className="w-4 h-4" />
                                 {t.wallet.summary}
@@ -407,7 +407,7 @@ export function PolicyDetailsClient({
                                     <FileText className="w-4 h-4" />
                                     {t.wallet.documents}
                                 </h3>
-                                <button className="p-2 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors duration-200">
+                                <button className="p-2 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 rounded-lg transition-colors duration-200">
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg>
                                 </button>
                             </div>
@@ -421,15 +421,15 @@ export function PolicyDetailsClient({
                                 <ul className="space-y-3">
                                     {policy.documents.map((doc: any) => (
                                         <li key={doc.id}>
-                                            <a href={doc.fileUrl} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-3 rounded-xl hover:bg-indigo-50 dark:hover:bg-indigo-900/20 group transition-all duration-200 cursor-pointer border border-transparent hover:border-indigo-200 dark:hover:border-indigo-800">
-                                                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform duration-200">
+                                            <a href={doc.fileUrl} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-3 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-900/20 group transition-all duration-200 cursor-pointer border border-transparent hover:border-emerald-200 dark:hover:border-emerald-800">
+                                                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform duration-200">
                                                     <FileText className="w-5 h-5" />
                                                 </div>
                                                 <div className="flex-1 overflow-hidden">
                                                     <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{doc.fileName}</p>
                                                     <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t.wallet.contract}</p>
                                                 </div>
-                                                <Download className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200" />
+                                                <Download className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-200" />
                                             </a>
                                         </li>
                                     ))}

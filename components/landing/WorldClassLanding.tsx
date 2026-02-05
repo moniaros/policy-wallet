@@ -17,11 +17,8 @@ import {
     Code,
     Heart,
     ArrowRight,
-    Check,
-    Sparkles,
-    Upload,
-    Zap,
-    CheckCircle2
+    CheckCircle2,
+    Sparkles
 } from 'lucide-react'
 
 export function WorldClassLanding() {
@@ -49,7 +46,7 @@ export function WorldClassLanding() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-blue-950">
+        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950">
             {/* Header */}
             <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border-b border-slate-200/60 dark:border-slate-700/60">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -62,8 +59,8 @@ export function WorldClassLanding() {
                                 <button
                                     onClick={() => setLanguage('el')}
                                     className={`px-3 py-1.5 text-sm font-bold rounded transition-all ${lang === 'el'
-                                            ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-sm'
-                                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                                        ? 'bg-white dark:bg-slate-700 text-emerald-600 shadow-sm'
+                                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                                         }`}
                                 >
                                     ΕΛ
@@ -71,8 +68,8 @@ export function WorldClassLanding() {
                                 <button
                                     onClick={() => setLanguage('en')}
                                     className={`px-3 py-1.5 text-sm font-bold rounded transition-all ${lang === 'en'
-                                            ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-sm'
-                                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                                        ? 'bg-white dark:bg-slate-700 text-emerald-600 shadow-sm'
+                                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                                         }`}
                                 >
                                     EN
@@ -83,7 +80,7 @@ export function WorldClassLanding() {
 
                             <Link
                                 href="/auth/signin"
-                                className="px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                className="px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                             >
                                 {lang === 'el' ? 'Σύνδεση' : 'Sign In'}
                             </Link>
@@ -97,7 +94,7 @@ export function WorldClassLanding() {
                 <div className="max-w-7xl mx-auto">
                     <div className="text-center max-w-4xl mx-auto">
                         {/* Beta Badge */}
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-semibold mb-6 animate-in fade-in slide-in-from-top-4 duration-700">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-full text-sm font-semibold mb-6 animate-in fade-in slide-in-from-top-4 duration-700">
                             <Sparkles className="w-4 h-4" />
                             {copy.hero.badge[lang]}
                         </div>
@@ -117,7 +114,7 @@ export function WorldClassLanding() {
                         <div className="flex flex-col sm:flex-row gap-4 justify-center animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500">
                             <a
                                 href="#early-access"
-                                className="px-8 py-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold rounded-xl shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/40 transition-all duration-200 flex items-center justify-center gap-2 group"
+                                className="px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold rounded-xl shadow-xl shadow-emerald-500/30 hover:shadow-2xl hover:shadow-emerald-500/40 transition-all duration-200 flex items-center justify-center gap-2 group"
                             >
                                 {copy.hero.cta.primary[lang]}
                                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -149,9 +146,9 @@ export function WorldClassLanding() {
                         {copy.howItWorks.steps.map((step, idx) => (
                             <div
                                 key={idx}
-                                className="relative p-8 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-800 dark:to-blue-900/20 rounded-2xl border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group"
+                                className="relative p-8 bg-gradient-to-br from-slate-50 to-emerald-50 dark:from-slate-800 dark:to-emerald-900/20 rounded-2xl border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group"
                             >
-                                <div className="absolute -top-6 left-8 w-12 h-12 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-lg">
+                                <div className="absolute -top-6 left-8 w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-lg">
                                     {step.number}
                                 </div>
                                 <div className="mt-6">
@@ -186,10 +183,10 @@ export function WorldClassLanding() {
                             return (
                                 <div
                                     key={idx}
-                                    className="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-xl transition-all duration-300 group"
+                                    className="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-700 hover:shadow-xl transition-all duration-300 group"
                                 >
-                                    <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                        <Icon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                        <Icon className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                                     </div>
                                     <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
                                         {feature.title[lang]}
@@ -205,17 +202,17 @@ export function WorldClassLanding() {
             </section>
 
             {/* Early Access CTA */}
-            <section id="early-access" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 text-white relative overflow-hidden">
+            <section id="early-access" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 text-white relative overflow-hidden">
                 {/* Decorative elements */}
                 <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-teal-400/20 rounded-full blur-3xl" />
 
                 <div className="max-w-4xl mx-auto relative z-10">
                     <div className="text-center mb-12">
                         <h2 className="text-4xl md:text-5xl font-black mb-4">
                             {copy.earlyAccess.title[lang]}
                         </h2>
-                        <p className="text-xl text-blue-100 mb-8">
+                        <p className="text-xl text-emerald-100 mb-8">
                             {copy.earlyAccess.subtitle[lang]}
                         </p>
 
@@ -239,12 +236,12 @@ export function WorldClassLanding() {
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder={copy.earlyAccess.form.email[lang]}
                                 required
-                                className="w-full px-6 py-4 bg-white/90 dark:bg-slate-900/90 text-slate-900 dark:text-white rounded-xl border-2 border-transparent focus:border-blue-400 outline-none transition-all"
+                                className="w-full px-6 py-4 bg-white/90 dark:bg-slate-900/90 text-slate-900 dark:text-white rounded-xl border-2 border-transparent focus:border-emerald-400 outline-none transition-all"
                             />
                             <button
                                 type="submit"
                                 disabled={submitted}
-                                className="w-full px-6 py-4 bg-white hover:bg-blue-50 text-blue-600 font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50"
+                                className="w-full px-6 py-4 bg-white hover:bg-emerald-50 text-emerald-600 font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50"
                             >
                                 {submitted
                                     ? (lang === 'el' ? '✓ Επιτυχής Εγγραφή!' : '✓ Successfully Registered!')
@@ -252,7 +249,7 @@ export function WorldClassLanding() {
                                 }
                             </button>
                         </div>
-                        <p className="text-xs text-blue-100 mt-4 text-center">
+                        <p className="text-xs text-emerald-100 mt-4 text-center">
                             {copy.earlyAccess.form.consent[lang]}
                         </p>
                     </form>
@@ -271,8 +268,8 @@ export function WorldClassLanding() {
                             const Icon = icons[item.icon as keyof typeof icons]
                             return (
                                 <div key={idx} className="text-center p-6">
-                                    <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/30 dark:to-cyan-900/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                        <Icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                        <Icon className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
                                     </div>
                                     <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
                                         {item.title[lang]}

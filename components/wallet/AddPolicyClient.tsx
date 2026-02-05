@@ -357,9 +357,9 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                     <button
                         type="submit"
                         disabled={isPending}
-                        className="w-full group relative overflow-hidden bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl py-4 font-black text-sm uppercase tracking-widest hover:scale-[1.01] active:scale-[0.99] transition-all shadow-xl hover:shadow-2xl disabled:opacity-70 disabled:scale-100"
+                        className="w-full group relative overflow-hidden bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white rounded-2xl py-4 font-bold text-sm uppercase tracking-widest hover:scale-[1.01] active:scale-[0.99] transition-all shadow-xl hover:shadow-2xl shadow-emerald-500/20 disabled:opacity-70 disabled:scale-100"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-emerald-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                        <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                         <span className="relative z-10 flex items-center justify-center gap-2">
                             {isPending ? (
                                 <>

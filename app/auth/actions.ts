@@ -219,7 +219,7 @@ export async function resetPasswordForEmail(email: string) {
 
     try {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/auth/reset-password`,
+            redirectTo: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/auth/callback?next=/auth/reset-password`,
         })
 
         if (error) {
@@ -231,5 +231,21 @@ export async function resetPasswordForEmail(email: string) {
     } catch (error) {
         console.error("Reset password exception:", error)
         return { success: false, error: "Failed to send password reset email" }
+    }
+}
+
+export async function updateUserPassword(password: string) {
+    const supabase = await createClient()
+
+    try {
+        const { error } = await supabase.auth.updateUser({ password })
+
+        if (error) {
+            return { success: false, error: error.message }
+        }
+
+        return { success: true }
+    } catch (error) {
+        return { success: false, error: "Failed to update password" }
     }
 }

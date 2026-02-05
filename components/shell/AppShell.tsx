@@ -8,7 +8,7 @@ import { RoleSwitcher } from './RoleSwitcher'
 import { ThemeToggle } from '../ThemeToggle'
 import { PolicyWalletLogo } from '@/components/branding/Logo'
 import { InstallPrompt } from "@/components/pwa/InstallPrompt"
-import { Home, BarChart3, Bell, Settings, Users, Lightbulb, LayoutDashboard, MoreHorizontal, ListChecks, User } from 'lucide-react'
+import { Home, BarChart3, Bell, Settings, Users, Lightbulb, LayoutDashboard, MoreHorizontal, ListChecks, User, LogOut, Wallet } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 
 export interface NavigationItem {
@@ -48,33 +48,27 @@ export interface AppShellProps {
 }
 
 // Bottom navigation items based on role
-const getBottomNavItems = (role: UserRole['role'], language: 'el' | 'en' = 'en') => {
-    const translations = {
-        wallet: { en: 'Wallet', el: 'Πορτοφόλι' },
-        tasks: { en: 'Tasks', el: 'Εργασίες' },
-        coverage: { en: 'Coverage', el: 'Κάλυψη' },
-        notifications: { en: 'Alerts', el: 'Ειδοποιήσεις' },
-        settings: { en: 'Account', el: 'Λογαριασμός' },
-        dashboard: { en: 'Dashboard', el: 'Πίνακας' },
-        customers: { en: 'Customers', el: 'Πελάτες' },
-        opportunities: { en: 'Leads', el: 'Ευκαιρίες' },
-        more: { en: 'More', el: 'Περισσότερα' }
-    }
-
+const getBottomNavItems = (role: UserRole['role'], t: any) => {
     if (role === 'policyholder') {
         return [
-            { href: '/wallet', icon: Home, label: translations.wallet[language], id: 'wallet' },
-            { href: '/tasks', icon: ListChecks, label: translations.tasks[language], id: 'tasks' },
-            { href: '/coverage-insights', icon: BarChart3, label: translations.coverage[language], id: 'coverage' },
-            { href: '/notifications', icon: Bell, label: translations.notifications[language], id: 'notifications' },
-            { href: '/account', icon: User, label: translations.settings[language], id: 'account' }
+            { href: '/wallet', icon: LayoutDashboard, label: t.nav.dashboard, id: 'dashboard' },
+            { href: '/wallet', icon: Wallet, label: t.nav.wallet, id: 'wallet' },
+            { href: '/notifications', icon: Bell, label: t.nav.notifications, id: 'notifications' },
+            { href: '/account', icon: User, label: t.userMenu.settings, id: 'account' },
+            { href: '#logout', icon: LogOut, label: t.userMenu.logout, id: 'logout' }
         ]
     } else if (role === 'agent') {
+        const translations = {
+            dashboard: t.nav.dashboard,
+            customers: t.nav.customers,
+            opportunities: t.nav.opportunities,
+            more: t.common.actions
+        }
         return [
-            { href: '/dashboard', icon: LayoutDashboard, label: translations.dashboard[language], id: 'dashboard' },
-            { href: '/customers', icon: Users, label: translations.customers[language], id: 'customers' },
-            { href: '/opportunities', icon: Lightbulb, label: translations.opportunities[language], id: 'opportunities' },
-            { href: '/account', icon: MoreHorizontal, label: translations.more[language], id: 'more' }
+            { href: '/dashboard', icon: LayoutDashboard, label: translations.dashboard, id: 'dashboard' },
+            { href: '/customers', icon: Users, label: translations.customers, id: 'customers' },
+            { href: '/opportunities', icon: Lightbulb, label: translations.opportunities, id: 'opportunities' },
+            { href: '/account', icon: MoreHorizontal, label: translations.more, id: 'more' }
         ]
     }
     return []
@@ -98,6 +92,10 @@ export function AppShell({
     const [roleChangeToast, setRoleChangeToast] = useState<string | null>(null)
 
     const handleNavigate = (href: string) => {
+        if (href === '#logout') {
+            onLogout?.()
+            return
+        }
         if (onNavigate) {
             onNavigate(href)
         } else {
@@ -114,14 +112,14 @@ export function AppShell({
         setTimeout(() => setRoleChangeToast(null), 3000)
     }
 
-    const bottomNavItems = getBottomNavItems(currentRole.role, (user.preferred_language || language) as 'el' | 'en')
+    const bottomNavItems = getBottomNavItems(currentRole.role, t)
 
     return (
         <>
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans">
                 {/* Role change confirmation toast */}
                 {roleChangeToast && (
-                    <div className="fixed top-4 right-4 z-50 bg-sky-600 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
+                    <div className="fixed top-4 right-4 z-50 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
                         <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
@@ -187,13 +185,13 @@ export function AppShell({
                                     <div className="flex bg-slate-200 dark:bg-slate-800 rounded-lg p-0.5">
                                         <button
                                             onClick={() => user.preferred_language !== 'el' && onNavigate?.('/?lang=el')}
-                                            className={`px-2.5 py-1.5 text-xs font-bold rounded-md transition-all ${user.preferred_language === 'el' ? 'bg-white dark:bg-slate-600 shadow-sm text-sky-700 dark:text-sky-400' : 'text-slate-500'}`}
+                                            className={`px-2.5 py-1.5 text-xs font-bold rounded-md transition-all ${user.preferred_language === 'el' ? 'bg-white dark:bg-slate-600 shadow-sm text-emerald-700 dark:text-emerald-400' : 'text-slate-500'}`}
                                         >
                                             GR
                                         </button>
                                         <button
                                             onClick={() => user.preferred_language !== 'en' && onNavigate?.('/?lang=en')}
-                                            className={`px-2.5 py-1.5 text-xs font-bold rounded-md transition-all ${user.preferred_language === 'en' ? 'bg-white dark:bg-slate-600 shadow-sm text-sky-700 dark:text-sky-400' : 'text-slate-500'}`}
+                                            className={`px-2.5 py-1.5 text-xs font-bold rounded-md transition-all ${user.preferred_language === 'en' ? 'bg-white dark:bg-slate-600 shadow-sm text-emerald-700 dark:text-emerald-400' : 'text-slate-500'}`}
                                         >
                                             EN
                                         </button>
@@ -239,7 +237,7 @@ export function AppShell({
                 </main>
 
                 {/* Mobile Bottom Navigation */}
-                <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 safe-area-inset-bottom">
+                <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 safe-area-inset-bottom shadow-[0_-1px_3px_rgba(0,0,0,0.05)]">
                     <div className="grid grid-cols-5 h-16">
                         {bottomNavItems.map((item) => {
                             const Icon = item.icon
@@ -250,24 +248,24 @@ export function AppShell({
                                     key={item.id}
                                     onClick={() => handleNavigate(item.href)}
                                     className={`flex flex-col items-center justify-center gap-1 transition-all ${isActive
-                                        ? 'text-sky-600 dark:text-sky-400'
-                                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300'
+                                        ? 'text-emerald-600 dark:text-emerald-400'
+                                        : 'text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300'
                                         }`}
                                     aria-label={item.label}
                                     aria-current={isActive ? 'page' : undefined}
                                 >
                                     <div className="relative">
                                         <Icon
-                                            className={`w-6 h-6 transition-transform ${isActive ? 'scale-110' : 'scale-100'}`}
+                                            className={`w-6 h-6 transition-all duration-300 ${isActive ? 'scale-110 -translate-y-0.5' : 'scale-100'}`}
                                             strokeWidth={isActive ? 2.5 : 2}
                                         />
                                         {item.id === 'notifications' && notificationCount > 0 && (
-                                            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                                            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse">
                                                 {notificationCount > 9 ? '9+' : notificationCount}
                                             </span>
                                         )}
                                     </div>
-                                    <span className={`text-[11px] font-semibold ${isActive ? 'font-bold' : 'font-medium'}`}>
+                                    <span className={`text-[10px] font-medium transition-all ${isActive ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-slate-400'}`}>
                                         {item.label}
                                     </span>
                                 </button>
