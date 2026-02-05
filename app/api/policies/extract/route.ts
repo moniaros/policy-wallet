@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { GoogleGenerativeAI } from "@google/generative-ai"
+import { env } from "@/lib/env"
 
 export async function POST(request: NextRequest) {
     const authResult = await getAuthenticatedUserOrNull()
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
         }
 
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" })
+        const model = genAI.getGenerativeModel({ model: env.GEMINI_MODEL_EXTRACTION })
 
         const arrayBuffer = await file.arrayBuffer()
         const base64Data = Buffer.from(arrayBuffer).toString("base64")

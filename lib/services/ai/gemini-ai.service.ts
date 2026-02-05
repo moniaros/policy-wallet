@@ -7,6 +7,7 @@
 
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import { logger } from '@/lib/logger'
+import { env } from '@/lib/env'
 import type {
   IAIService,
   AIDocument,
@@ -67,8 +68,8 @@ export class GeminiAIService implements IAIService {
     }
 
     try {
-      // Use Gemini 2.0 Flash for superior multimodal understanding
-      const modelName = 'gemini-2.0-flash-exp'
+      // Use configured Gemini model for extraction
+      const modelName = env.GEMINI_MODEL_EXTRACTION
       const model = this.genAI.getGenerativeModel({
         model: modelName,
         generationConfig: {
@@ -211,7 +212,7 @@ Return ONLY the JSON object, nothing else.
             policyId: options.policyId,
             inputTokens: usage.promptTokenCount,
             outputTokens: usage.candidatesTokenCount,
-            model: 'gemini-2.0-flash' // Map to known model key
+            model: env.GEMINI_MODEL_EXTRACTION as any
           }).catch(err => {
             logger('error', 'Failed to track token usage', { error: err })
           })
@@ -268,9 +269,9 @@ Return ONLY the JSON object, nothing else.
     }
 
     try {
-      // Use Gemini 2.0 Flash for advanced analysis
+      // Use configured Gemini model for gap analysis
       const model = this.genAI.getGenerativeModel({
-        model: 'gemini-2.0-flash-exp',
+        model: env.GEMINI_MODEL_GAP_ANALYSIS,
         generationConfig: {
           temperature: 0.2, // Slightly higher for nuanced analysis
           topP: 0.95,
@@ -379,7 +380,7 @@ Return ONLY valid JSON, no other text.
             policyId: options.policyId,
             inputTokens: usage.promptTokenCount,
             outputTokens: usage.candidatesTokenCount,
-            model: 'gemini-2.0-flash'
+            model: env.GEMINI_MODEL_GAP_ANALYSIS as any
           }).catch(err => {
             logger('error', 'Failed to track token usage', { error: err })
           })
@@ -426,7 +427,7 @@ Return ONLY valid JSON, no other text.
 
     try {
       const model = this.genAI.getGenerativeModel({
-        model: 'gemini-2.0-flash',
+        model: env.GEMINI_MODEL_QA,
         generationConfig: {
           temperature: 0.3,
           topP: 0.95,
@@ -493,7 +494,7 @@ Answer the user's question:
           policyId: options.policyId,
           inputTokens: usage.promptTokenCount,
           outputTokens: usage.candidatesTokenCount,
-          model: 'gemini-2.0-flash'
+          model: env.GEMINI_MODEL_QA as any
         }).catch(err => {
           logger('error', 'Failed to track token usage in Q&A', { error: err })
         })

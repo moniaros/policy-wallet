@@ -10,6 +10,18 @@ export const TOKEN_COSTS = {
         input: 0.00007, // €0.070 per 1M tokens
         output: 0.00028, // €0.28 per 1M tokens
     },
+    'gemini-2.0-flash-exp': {
+        input: 0.00007,
+        output: 0.00028,
+    },
+    'gemini-3-flash-preview': {
+        input: 0.00007,
+        output: 0.00028,
+    },
+    'gemini-3-pro-preview': {
+        input: 0.00035,
+        output: 0.0014,
+    },
 } as const
 
 export type AIModel = keyof typeof TOKEN_COSTS
