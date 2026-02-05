@@ -33,8 +33,8 @@ export function PolicyAnalysisTabs({ acordData, gaps, policyId, t, lastAnalyzedA
                 <button
                     onClick={() => setActiveTab('gaps')}
                     className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all ${activeTab === 'gaps'
-                            ? 'bg-white dark:bg-stone-700 text-stone-900 dark:text-white shadow-sm'
-                            : 'text-stone-500 hover:text-stone-700 dark:hover:text-stone-300'
+                        ? 'bg-white dark:bg-stone-700 text-stone-900 dark:text-white shadow-sm'
+                        : 'text-stone-500 hover:text-stone-700 dark:hover:text-stone-300'
                         }`}
                 >
                     {t.wallet.aiAnalysis || "Gap Analysis"}
@@ -48,8 +48,8 @@ export function PolicyAnalysisTabs({ acordData, gaps, policyId, t, lastAnalyzedA
                     onClick={() => setActiveTab('insights')}
                     disabled={!hasAcordData}
                     className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all ${activeTab === 'insights'
-                            ? 'bg-white dark:bg-stone-700 text-stone-900 dark:text-white shadow-sm'
-                            : 'text-stone-500 hover:text-stone-700 dark:hover:text-stone-300'
+                        ? 'bg-white dark:bg-stone-700 text-stone-900 dark:text-white shadow-sm'
+                        : 'text-stone-500 hover:text-stone-700 dark:hover:text-stone-300'
                         } ${!hasAcordData ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
                     {t.wallet.aiPolicyInsights || "Policy Insights"}
@@ -78,7 +78,7 @@ export function PolicyAnalysisTabs({ acordData, gaps, policyId, t, lastAnalyzedA
                             </div>
                             {lastAnalyzedAt && (
                                 <span className="text-[10px] text-stone-400 font-bold uppercase tracking-widest hidden sm:inline-block">
-                                    Last Check: {new Date(lastAnalyzedAt).toLocaleDateString()}
+                                    {t.wallet.lastCheck}: {new Date(lastAnalyzedAt).toLocaleDateString(t.common.locale || 'el-GR')}
                                 </span>
                             )}
                         </div>
@@ -118,7 +118,7 @@ export function PolicyAnalysisTabs({ acordData, gaps, policyId, t, lastAnalyzedA
                                             <div className="flex justify-between items-start">
                                                 <div className="flex flex-col">
                                                     <span className="font-bold text-xs text-stone-900 dark:text-stone-100 uppercase tracking-tight">{String(cov.name || '')}</span>
-                                                    {cov.deductible && <span className="text-[9px] text-stone-400">Deductible: {String(cov.deductible)}</span>}
+                                                    {cov.deductible && <span className="text-[9px] text-stone-400">{t.wallet.deductibleLabel} {String(cov.deductible)}</span>}
                                                 </div>
                                                 <span className="font-mono text-xs text-teal-600 dark:text-teal-400 font-black bg-teal-50 dark:bg-teal-900/30 px-2 py-1 rounded-lg">{String(cov.limit || '')}</span>
                                             </div>

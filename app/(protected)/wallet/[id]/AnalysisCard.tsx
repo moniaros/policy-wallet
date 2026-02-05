@@ -46,7 +46,7 @@ export function AnalysisCard({ policyId, gaps }: { policyId: string, gaps: Gap[]
                     </div>
                     <div>
                         <h2 className="text-lg font-black">{t.analysis.title}</h2>
-                        <p className="text-sm text-emerald-100 mt-0.5">On-demand coverage gap analysis</p>
+                        <p className="text-sm text-emerald-100 mt-0.5">{t.wallet.analysisSubtitle}</p>
                     </div>
                 </div>
                 <button
@@ -67,7 +67,7 @@ export function AnalysisCard({ policyId, gaps }: { policyId: string, gaps: Gap[]
                             {t.analysis.noGaps}
                         </p>
                         <p className="text-xs text-slate-500 dark:text-slate-500">
-                            Click "Run Analysis" to check for coverage gaps
+                            {t.wallet.runAnalysisDesc}
                         </p>
                     </div>
                 ) : (

@@ -112,7 +112,7 @@ export function MobilePolicyDetails({
                             : 'border-transparent text-stone-500 hover:text-stone-700 dark:text-stone-400'
                             }`}
                     >
-                        Overview
+                        {t.wallet.verificationOverview || 'Overview'}
                     </button>
                     <button
                         onClick={() => setActiveTab('coverage')}
@@ -121,7 +121,7 @@ export function MobilePolicyDetails({
                             : 'border-transparent text-stone-500 hover:text-stone-700 dark:text-stone-400'
                             }`}
                     >
-                        Coverage
+                        {t.wallet.coverageHighlights || 'Coverage'}
                     </button>
                     <button
                         onClick={() => setActiveTab('documents')}
@@ -130,7 +130,7 @@ export function MobilePolicyDetails({
                             : 'border-transparent text-stone-500 hover:text-stone-700 dark:text-stone-400'
                             }`}
                     >
-                        Docs
+                        {t.wallet.documents || 'Docs'}
                     </button>
                     <button
                         onClick={() => setActiveTab('assistant')}
@@ -161,12 +161,12 @@ export function MobilePolicyDetails({
                                 </span>
                             </div>
                             <div className="mt-6">
-                                <p className="text-white/80 text-xs font-bold uppercase tracking-widest mb-1">Policy Number</p>
+                                <p className="text-white/80 text-xs font-bold uppercase tracking-widest mb-1">{t.wallet.policyNumber}</p>
                                 <p className="text-2xl font-mono font-bold tracking-tight">{policy.policyNumber}</p>
                             </div>
                             <div className="mt-6 pt-6 border-t border-white/20 flex justify-between items-end">
                                 <div>
-                                    <p className="text-white/80 text-xs font-bold uppercase tracking-widest mb-1">Premium</p>
+                                    <p className="text-white/80 text-xs font-bold uppercase tracking-widest mb-1">{t.wallet.premium}</p>
                                     <p className="text-xl font-bold">
                                         {Number(policy.premiumAmount || 0).toLocaleString('el-GR', {
                                             style: 'currency',
@@ -175,7 +175,7 @@ export function MobilePolicyDetails({
                                     </p>
                                 </div>
                                 <div className="text-right">
-                                    <p className="text-white/80 text-xs font-bold uppercase tracking-widest mb-1">Expires</p>
+                                    <p className="text-white/80 text-xs font-bold uppercase tracking-widest mb-1">{t.wallet.ends}</p>
                                     <p className="text-sm font-bold">
                                         {new Date(policy.endDate).toLocaleDateString()}
                                     </p>
@@ -186,18 +186,18 @@ export function MobilePolicyDetails({
                         {/* Quick Stats */}
                         <div className="grid grid-cols-2 gap-4">
                             <div className="bg-white dark:bg-stone-800 p-4 rounded-2xl border border-stone-200 dark:border-stone-700">
-                                <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-1">Start Date</p>
+                                <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-1">{t.wallet.startDate}</p>
                                 <p className="font-bold text-stone-900 dark:text-white">
                                     {new Date(policy.startDate).toLocaleDateString()}
                                 </p>
                             </div>
                             <div className="bg-white dark:bg-stone-800 p-4 rounded-2xl border border-stone-200 dark:border-stone-700">
-                                <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-1">Days Left</p>
+                                <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-1">{t.wallet.expiresIn}</p>
                                 <p className={`font-bold ${(Date.parse(policy.endDate) - Date.now()) / (86400000) < 30
                                     ? 'text-amber-600'
                                     : 'text-stone-900 dark:text-white'
                                     }`}>
-                                    {Math.ceil((Date.parse(policy.endDate) - Date.now()) / (86400000))} Days
+                                    {Math.ceil((Date.parse(policy.endDate) - Date.now()) / (86400000))} {t.wallet.days}
                                 </p>
                             </div>
                         </div>
@@ -210,7 +210,7 @@ export function MobilePolicyDetails({
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                             </svg>
-                            Add to Wallet
+                            {t.wallet.addPolicy}
                         </button>
 
                         {/* Delete Policy - Danger Zone */}
@@ -221,16 +221,16 @@ export function MobilePolicyDetails({
                 {activeTab === 'coverage' && (
                     <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
                         <div className="bg-white dark:bg-stone-800 p-6 rounded-3xl border border-stone-200 dark:border-stone-700">
-                            <h3 className="text-sm font-black text-stone-400 uppercase tracking-widest mb-4">Summary</h3>
+                            <h3 className="text-sm font-black text-stone-400 uppercase tracking-widest mb-4">{t.wallet.summary}</h3>
                             <p className="text-stone-600 dark:text-stone-300 leading-relaxed text-sm">
-                                {policy.coverageSummary || "No coverage summary available for this policy."}
+                                {policy.coverageSummary || t.wallet.summaryFallback}
                             </p>
                         </div>
 
                         {/* Gaps / Recommendations */}
                         {policy.gapInstances?.length > 0 && (
                             <div className="space-y-4">
-                                <h3 className="text-sm font-black text-stone-400 uppercase tracking-widest px-1">Detected Gaps</h3>
+                                <h3 className="text-sm font-black text-stone-400 uppercase tracking-widest px-1">{t.wallet.detectedGaps || 'Detected Gaps'}</h3>
                                 {policy.gapInstances.map((gap: any) => (
                                     <div key={gap.id} className="bg-amber-50 dark:bg-amber-900/20 p-5 rounded-2xl border border-amber-100 dark:border-amber-800/50">
                                         <div className="flex items-center gap-2 mb-2">
@@ -238,7 +238,7 @@ export function MobilePolicyDetails({
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                             </svg>
                                             <span className="text-sm font-bold text-amber-800 dark:text-amber-200">
-                                                {gap.definition?.title || "Coverage Gap"}
+                                                {gap.definition?.title || t.analysis.gapDetected}
                                             </span>
                                         </div>
                                         <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
@@ -255,7 +255,7 @@ export function MobilePolicyDetails({
                     <div className="space-y-4 animate-in slide-in-from-right-4 duration-300">
                         {policy.documents?.length === 0 ? (
                             <div className="text-center py-12 text-stone-400">
-                                <p>No documents found</p>
+                                <p>{t.wallet.noDocuments}</p>
                             </div>
                         ) : (
                             policy.documents?.map((doc: any) => (

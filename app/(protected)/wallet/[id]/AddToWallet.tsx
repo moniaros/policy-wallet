@@ -5,6 +5,7 @@ import { WalletPassPreview } from "@/components/wallet"
 import { Policy } from "@/components/wallet/types"
 import { toast } from "sonner"
 import { Loader2, Download, X } from "lucide-react"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 interface AddToWalletProps {
     policy: Policy
@@ -25,6 +26,7 @@ export function AddToWallet({
     onOpenChange,
     trigger
 }: AddToWalletProps) {
+    const { t } = useLanguage()
     const [internalOpen, setInternalOpen] = useState(initialOpen)
     const [loadingApple, setLoadingApple] = useState(false)
     const [loadingGoogle, setLoadingGoogle] = useState(false)
@@ -101,7 +103,7 @@ export function AddToWallet({
             ) : (
                 <div className="bg-gradient-to-br from-stone-900 to-stone-800 rounded-3xl p-6 shadow-lg text-white relative overflow-hidden group cursor-pointer" onClick={() => handleOpenChange(true)}>
                     <div className="absolute top-0 right-0 p-4 opacity-50 text-[10px] font-black uppercase tracking-widest">
-                        Digital Card
+                        {t.wallet.digitalCard}
                     </div>
 
                     <div className="relative z-10 flex items-center gap-4">
@@ -109,8 +111,8 @@ export function AddToWallet({
                             💳
                         </div>
                         <div>
-                            <h3 className="font-bold text-lg leading-none">Add to Wallet</h3>
-                            <p className="text-stone-400 text-xs mt-1">Get your digital insurance card</p>
+                            <h3 className="font-bold text-lg leading-none">{t.wallet.addToWallet}</h3>
+                            <p className="text-stone-400 text-xs mt-1">{t.wallet.digitalCardDesc}</p>
                         </div>
                     </div>
 
@@ -121,7 +123,7 @@ export function AddToWallet({
                         </div>
                         {/* Google Wallet Badge Stub */}
                         <div className="h-8 px-3 rounded-lg bg-black border border-white/20 flex items-center justify-center">
-                            <span className="text-[10px] font-bold">Google Pay</span>
+                            <span className="text-[10px] font-bold">Google Wallet</span>
                         </div>
                     </div>
                 </div>
@@ -141,8 +143,8 @@ export function AddToWallet({
                         </button>
 
                         <div className="text-center mb-8">
-                            <h2 className="text-xl font-black text-stone-900 dark:text-white uppercase tracking-tight">Your Digital Pass</h2>
-                            <p className="text-sm text-stone-500 mt-2">Add this policy to your mobile wallet for quick access.</p>
+                            <h2 className="text-xl font-black text-stone-900 dark:text-white uppercase tracking-tight">{t.wallet.yourDigitalPass}</h2>
+                            <p className="text-sm text-stone-500 mt-2">{t.wallet.addWalletDesc}</p>
                         </div>
 
                         <div className="mb-8 transform hover:scale-[1.02] transition-transform duration-500">
@@ -158,7 +160,7 @@ export function AddToWallet({
                                 {loadingApple ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                                     <>
                                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.74 1.18 0 2.45-1.62 4.37-1.32 1.84.18 3.05 1.12 3.65 1.99-3.23 2.05-2.6 6.3 1.25 7.82-.66 1.76-1.66 3.49-4.35 3.74zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" /></svg>
-                                        <span>Add to Apple Wallet</span>
+                                        <span>{t.wallet.addToApple}</span>
                                     </>
                                 )}
                             </button>
@@ -171,7 +173,7 @@ export function AddToWallet({
                                 {loadingGoogle ? <Loader2 className="w-5 h-5 animate-spin" /> : (
                                     <>
                                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12.441 12.378h-.002v.006h-.005v-.006h.007zm8.397-2.678h-8.39v3.42h5.174c-.506 2.37-2.458 3.93-4.835 3.93-2.924 0-5.29-2.366-5.29-5.29 0-2.923 2.366-5.289 5.29-5.289 1.266 0 2.433.435 3.35 1.16l2.502-2.434c-1.66-1.47-3.692-2.226-5.852-2.226-5.462 0-9.89 4.428-9.89 9.89 0 5.461 4.428 9.89 9.89 9.89 5.158 0 9.176-3.882 9.176-9.175 0-.74-.065-1.378-.15-1.921z" /></svg>
-                                        <span>Add to Google Wallet</span>
+                                        <span>{t.wallet.addToGoogle}</span>
                                     </>
                                 )}
                             </button>

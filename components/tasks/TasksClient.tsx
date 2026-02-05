@@ -17,6 +17,7 @@ import {
     Sparkles,
     Target
 } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface ActionItem {
     id: string
@@ -48,53 +49,11 @@ type PriorityFilter = 'all' | 'high' | 'medium' | 'low'
 type SortType = 'recent' | 'priority' | 'dueDate'
 
 export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientProps) {
+    const { t, language } = useLanguage()
     const [filter, setFilter] = useState<FilterType>('all')
     const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>('all')
     const [sort, setSort] = useState<SortType>('priority')
-    const lang = userLanguage === 'el' ? 'el' : 'en'
-
-    const copy = {
-        title: {
-            el: 'Καθημερινή Επισκόπηση',
-            en: 'Daily Review'
-        },
-        subtitle: {
-            el: 'Βελτιώστε τη βαθμολογία κάλυψής σας ολοκληρώνοντας αυτές τις εργασίες',
-            en: 'Improve your coverage score by completing these tasks'
-        },
-        pendingActions: {
-            el: 'Εκκρεμείς Ενέργειες',
-            en: 'Pending Actions'
-        },
-        allComplete: {
-            el: 'Όλα Τέλεια!',
-            en: 'Everything is Perfect!'
-        },
-        allCompleteDesc: {
-            el: 'Έχετε ολοκληρώσει όλες τις εκκρεμείς αιτήσεις. Θα σας ειδοποιήσουμε όταν υπάρχουν νέες πληροφορίες.',
-            en: "You've completed all outstanding requests. We'll notify you when new insights are available."
-        },
-        filterAll: {
-            el: 'Όλα',
-            en: 'All'
-        },
-        sortBy: {
-            el: 'Ταξινόμηση:',
-            en: 'Sort by:'
-        },
-        priority: {
-            el: 'Προτεραιότητα',
-            en: 'Priority'
-        },
-        recent: {
-            el: 'Πρόσφατα',
-            en: 'Recent'
-        },
-        dueDate: {
-            el: 'Προθεσμία',
-            en: 'Due Date'
-        }
-    }
+    const lang = language || userLanguage || 'en'
 
     // Filter tasks
     const filteredTasks = actionItems.filter(task => {
@@ -188,16 +147,16 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                                 <Target className="w-5 h-5" />
                             </div>
                             <span className="text-xs font-bold uppercase tracking-wider text-blue-100">
-                                {lang === 'el' ? 'Κέντρο Ενεργειών' : 'Action Center'}
+                                {t.tasks.actionCenter}
                             </span>
                         </div>
 
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 leading-tight">
-                            {copy.title[lang]}
+                            {lang === 'el' ? 'Καθημερινή Επισκόπηση' : 'Daily Review'}
                         </h1>
 
                         <p className="text-lg md:text-xl text-blue-100 max-w-2xl mb-8">
-                            {copy.subtitle[lang]}
+                            {lang === 'el' ? 'Βελτιώστε τη βαθμολογία κάλυψής σας ολοκληρώνοντας αυτές τις εργασίες' : 'Improve your coverage score by completing these tasks'}
                         </p>
 
                         {/* Stats */}
@@ -206,7 +165,7 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                                 <div className="flex items-center gap-2 mb-2">
                                     <AlertTriangle className="w-4 h-4 text-red-300" />
                                     <span className="text-xs font-semibold text-blue-200 uppercase tracking-wide">
-                                        {lang === 'el' ? 'Υψηλή' : 'High'}
+                                        {t.tasks.priorities.high}
                                     </span>
                                 </div>
                                 <span className="text-3xl font-black text-red-400">{priorityCounts.high}</span>
@@ -216,7 +175,7 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                                 <div className="flex items-center gap-2 mb-2">
                                     <Clock className="w-4 h-4 text-amber-300" />
                                     <span className="text-xs font-semibold text-blue-200 uppercase tracking-wide">
-                                        {lang === 'el' ? 'Μέτρια' : 'Medium'}
+                                        {t.tasks.priorities.medium}
                                     </span>
                                 </div>
                                 <span className="text-3xl font-black text-amber-400">{priorityCounts.medium}</span>
@@ -226,7 +185,7 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                                 <div className="flex items-center gap-2 mb-2">
                                     <Lightbulb className="w-4 h-4 text-blue-200" />
                                     <span className="text-xs font-semibold text-blue-200 uppercase tracking-wide">
-                                        {lang === 'el' ? 'Χαμηλή' : 'Low'}
+                                        {t.tasks.priorities.low}
                                     </span>
                                 </div>
                                 <span className="text-3xl font-black">{priorityCounts.low}</span>
@@ -236,7 +195,7 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                                 <div className="flex items-center gap-2 mb-2">
                                     <FileText className="w-4 h-4 text-blue-200" />
                                     <span className="text-xs font-semibold text-blue-200 uppercase tracking-wide">
-                                        {lang === 'el' ? 'Σύνολο' : 'Total'}
+                                        {t.tasks.total}
                                     </span>
                                 </div>
                                 <span className="text-3xl font-black">{counts.all}</span>
@@ -250,11 +209,11 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                     {/* Type Filters */}
                     <div className="flex flex-wrap gap-2">
                         {[
-                            { key: 'all' as FilterType, label: copy.filterAll[lang], icon: Target, count: counts.all },
-                            { key: 'questionnaire' as FilterType, label: lang === 'el' ? 'Ερωτηματολόγια' : 'Questionnaires', icon: FileText, count: counts.questionnaire },
-                            { key: 'reminder' as FilterType, label: lang === 'el' ? 'Υπενθυμίσεις' : 'Reminders', icon: Bell, count: counts.reminder },
-                            { key: 'request' as FilterType, label: lang === 'el' ? 'Αιτήματα' : 'Requests', icon: Clock, count: counts.request },
-                            { key: 'recommendation' as FilterType, label: lang === 'el' ? 'Συστάσεις' : 'Recommendations', icon: Lightbulb, count: counts.recommendation }
+                            { key: 'all' as FilterType, label: t.common.all, icon: Target, count: counts.all },
+                            { key: 'questionnaire' as FilterType, label: t.tasks.taskTypes.questionnaire, icon: FileText, count: counts.questionnaire },
+                            { key: 'reminder' as FilterType, label: t.tasks.taskTypes.reminder, icon: Bell, count: counts.reminder },
+                            { key: 'request' as FilterType, label: t.tasks.taskTypes.request, icon: Clock, count: counts.request },
+                            { key: 'recommendation' as FilterType, label: t.tasks.taskTypes.recommendation, icon: Lightbulb, count: counts.recommendation }
                         ].map(({ key, label, icon: Icon, count }) => (
                             <button
                                 key={key}
@@ -281,7 +240,7 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                         <div className="flex items-center gap-2">
                             <Filter className="w-4 h-4 text-slate-400" />
                             <span className="text-sm font-bold text-slate-600 dark:text-slate-400">
-                                {copy.priority[lang]}:
+                                {t.common.priority}:
                             </span>
                             {['all', 'high', 'medium', 'low'].map((p) => (
                                 <button
@@ -292,7 +251,7 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                                         : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
                                         }`}
                                 >
-                                    {p === 'all' ? copy.filterAll[lang] : p.charAt(0).toUpperCase() + p.slice(1)}
+                                    {p === 'all' ? t.common.all : (t.tasks.priorities[p as keyof typeof t.tasks.priorities] || p)}
                                 </button>
                             ))}
                         </div>
@@ -300,12 +259,12 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                         <div className="flex items-center gap-2">
                             <SortAsc className="w-4 h-4 text-slate-400" />
                             <span className="text-sm font-bold text-slate-600 dark:text-slate-400">
-                                {copy.sortBy[lang]}
+                                {t.common.sort}:
                             </span>
                             {[
-                                { key: 'priority' as SortType, label: copy.priority[lang] },
-                                { key: 'recent' as SortType, label: copy.recent[lang] },
-                                { key: 'dueDate' as SortType, label: copy.dueDate[lang] }
+                                { key: 'priority' as SortType, label: t.common.priority },
+                                { key: 'recent' as SortType, label: t.common.recent || 'Recent' },
+                                { key: 'dueDate' as SortType, label: t.common.dueDate || 'Due Date' }
                             ].map(({ key, label }) => (
                                 <button
                                     key={key}
@@ -330,10 +289,10 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                             <CheckCircle2 className="w-12 h-12 text-emerald-600 dark:text-emerald-400 relative z-10" />
                         </div>
                         <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-3">
-                            {copy.allComplete[lang]}
+                            {lang === 'el' ? 'Όλα Τέλεια!' : 'Everything is Perfect!'}
                         </h2>
                         <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto">
-                            {copy.allCompleteDesc[lang]}
+                            {lang === 'el' ? 'Έχετε ολοκληρώσει όλες τις εκκρεμείς αιτήσεις. Θα σας ειδοποιήσουμε όταν υπάρχουν νέες πληροφορίες.' : "You've completed all outstanding requests. We'll notify you when new insights are available."}
                         </p>
                     </div>
                 ) : (

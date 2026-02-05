@@ -4,6 +4,7 @@ import { useState } from "react"
 import { askPolicyQuestion } from "@/app/(protected)/wallet/actions"
 import { toast } from "sonner"
 import { MessageCircle, Send, Sparkles, Loader2 } from "lucide-react"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 interface Message {
     role: 'user' | 'assistant'
@@ -12,6 +13,7 @@ interface Message {
 }
 
 export function PolicyQA({ policyId }: { policyId: string }) {
+    const { t } = useLanguage()
     const [question, setQuestion] = useState("")
     const [messages, setMessages] = useState<Message[]>([])
     const [isAsking, setIsAsking] = useState(false)
@@ -48,14 +50,14 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                 setMessages(prev => [...prev, assistantMessage])
             }
         } catch (error) {
-            toast.error("Failed to get answer")
+            toast.error(t.wallet.failedAnswer)
             setMessages(prev => prev.slice(0, -1))
         } finally {
             setIsAsking(false)
         }
     }
 
-    const suggestedQuestions = [
+    const suggestedQuestions = t.wallet.suggestedQuestions || [
         "What is covered under this policy?",
         "What is my deductible?",
         "When does this policy expire?",
@@ -73,8 +75,8 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                             <Sparkles className="w-6 h-6" />
                         </div>
                         <div>
-                            <h3 className="text-lg font-black">Ask AI About Your Policy</h3>
-                            <p className="text-sm text-indigo-100 mt-0.5">Get instant answers to your questions</p>
+                            <h3 className="text-lg font-black">{t.wallet.askAiTitle}</h3>
+                            <p className="text-sm text-indigo-100 mt-0.5">{t.wallet.askAiSubtitle}</p>
                         </div>
                     </div>
                     <button
@@ -115,7 +117,7 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                                     <div className="bg-slate-100 dark:bg-slate-800 rounded-2xl p-4">
                                         <div className="flex items-center gap-2">
                                             <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
-                                            <span className="text-sm text-slate-600 dark:text-slate-400">Thinking...</span>
+                                            <span className="text-sm text-slate-600 dark:text-slate-400">{t.wallet.thinking}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -127,7 +129,7 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                     {messages.length === 0 && (
                         <div className="mb-6">
                             <p className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-3">
-                                Try asking:
+                                {t.wallet.tryAsking}
                             </p>
                             <div className="space-y-2">
                                 {suggestedQuestions.map((q, idx) => (
@@ -150,7 +152,7 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                             type="text"
                             value={question}
                             onChange={(e) => setQuestion(e.target.value)}
-                            placeholder="Ask anything about your policy..."
+                            placeholder={t.wallet.askAiPlaceholder}
                             disabled={isAsking}
                             className="w-full px-4 py-3 pr-12 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder-slate-400 focus:border-indigo-500 dark:focus:border-indigo-400 focus:outline-none transition-colors disabled:opacity-50"
                         />
@@ -168,7 +170,7 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                     </form>
 
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 text-center">
-                        AI responses are based on your policy document and may not be 100% accurate
+                        {t.wallet.aiFootnote}
                     </p>
                 </div>
             )}

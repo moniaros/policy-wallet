@@ -16,6 +16,7 @@ import {
     Sparkles,
     Target
 } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface NotificationEvent {
     id: string
@@ -28,6 +29,15 @@ interface NotificationEvent {
     category: 'system_confirmation' | 'reminder' | 'intelligence'
     related_object_type?: string
     related_object_id?: string
+}
+
+const getIcon = (category: string) => {
+    switch (category) {
+        case 'system_confirmation': return CheckCircle2
+        case 'reminder': return Clock
+        case 'intelligence': return Sparkles
+        default: return Info
+    }
 }
 
 interface NotificationPreference {
@@ -49,62 +59,12 @@ type TabType = 'history' | 'preferences'
 type FilterType = 'all' | 'unread' | 'system_confirmation' | 'reminder' | 'intelligence'
 
 export function NotificationsClient({ initialData, userLanguage = 'en' }: NotificationsClientProps) {
+    const { t, language } = useLanguage()
     const [activeTab, setActiveTab] = useState<TabType>('history')
     const [filter, setFilter] = useState<FilterType>('all')
     const [searchQuery, setSearchQuery] = useState('')
     const router = useRouter()
-    const lang = userLanguage === 'el' ? 'el' : 'en'
-
-    const copy = {
-        title: {
-            el: 'Ειδοποιήσεις',
-            en: 'Notifications'
-        },
-        subtitle: {
-            el: 'Παρακολουθήστε όλες τις ενημερώσεις και διαχειριστείτε τις προτιμήσεις σας',
-            en: 'Track all updates and manage your preferences'
-        },
-        history: {
-            el: 'Ιστορικό',
-            en: 'History'
-        },
-        preferences: {
-            el: 'Προτιμήσεις',
-            en: 'Preferences'
-        },
-        all: {
-            el: 'Όλα',
-            en: 'All'
-        },
-        unread: {
-            el: 'Μη αναγνωσμένα',
-            en: 'Unread'
-        },
-        systemConfirmation: {
-            el: 'Επιβεβαιώσεις',
-            en: 'Confirmations'
-        },
-        reminder: {
-            el: 'Υπενθυμίσεις',
-            en: 'Reminders'
-        },
-        intelligence: {
-            el: 'Ευφυία',
-            en: 'Intelligence'
-        },
-        noNotifications: {
-            el: 'Δεν υπάρχουν ειδοποιήσεις',
-            en: 'No notifications'
-        },
-        noNotificationsDesc: {
-            el: 'Θα σας ειδοποιήσουμε όταν υπάρχει κάτι νέο',
-            en: "We'll notify you when there's something new"
-        },
-        searchPlaceholder: {
-            el: 'Αναζήτηση ειδοποιήσεων...',
-            en: 'Search notifications...'
-        }
-    }
+    const lang = language || userLanguage || 'en'
 
     // Filter notifications
     const filteredNotifications = initialData.history.filter(notif => {
@@ -124,14 +84,6 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
         intelligence: initialData.history.filter(n => n.category === 'intelligence').length
     }
 
-    const getIcon = (category: string) => {
-        switch (category) {
-            case 'system_confirmation': return CheckCircle2
-            case 'reminder': return Clock
-            case 'intelligence': return Sparkles
-            default: return Info
-        }
-    }
 
     const getPriorityColor = (priority: string) => {
         switch (priority) {
@@ -189,16 +141,16 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
                                 <Bell className="w-5 h-5" />
                             </div>
                             <span className="text-xs font-bold uppercase tracking-wider text-cyan-100">
-                                {lang === 'el' ? 'Κέντρο Επικοινωνίας' : 'Communication Center'}
+                                {t.notifications.communicationCenter}
                             </span>
                         </div>
 
                         <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 leading-tight">
-                            {copy.title[lang]}
+                            {t.userMenu.notifications}
                         </h1>
 
                         <p className="text-lg md:text-xl text-cyan-100 max-w-2xl mb-8">
-                            {copy.subtitle[lang]}
+                            {t.activity.subtitle}
                         </p>
 
                         {/* Quick Stats */}
@@ -207,7 +159,7 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
                                 <div className="flex items-center gap-2 mb-2">
                                     <Target className="w-4 h-4 text-cyan-200" />
                                     <span className="text-xs font-semibold text-cyan-200 uppercase tracking-wide">
-                                        {copy.all[lang]}
+                                        {t.common.all || 'All'}
                                     </span>
                                 </div>
                                 <span className="text-3xl font-black">{counts.all}</span>
@@ -217,7 +169,7 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
                                 <div className="flex items-center gap-2 mb-2">
                                     <Mail className="w-4 h-4 text-amber-300" />
                                     <span className="text-xs font-semibold text-cyan-200 uppercase tracking-wide">
-                                        {copy.unread[lang]}
+                                        {t.tasks.taskTypes.unread || 'Unread'}
                                     </span>
                                 </div>
                                 <span className="text-3xl font-black text-amber-400">{counts.unread}</span>
@@ -227,7 +179,7 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
                                 <div className="flex items-center gap-2 mb-2">
                                     <Clock className="w-4 h-4 text-cyan-200" />
                                     <span className="text-xs font-semibold text-cyan-200 uppercase tracking-wide">
-                                        {copy.reminder[lang]}
+                                        {t.tasks.taskTypes.reminder}
                                     </span>
                                 </div>
                                 <span className="text-3xl font-black">{counts.reminder}</span>
@@ -237,7 +189,7 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
                                 <div className="flex items-center gap-2 mb-2">
                                     <Sparkles className="w-4 h-4 text-cyan-200" />
                                     <span className="text-xs font-semibold text-cyan-200 uppercase tracking-wide">
-                                        {copy.intelligence[lang]}
+                                        {t.tasks.taskTypes.intelligence || 'Intelligence'}
                                     </span>
                                 </div>
                                 <span className="text-3xl font-black">{counts.intelligence}</span>
@@ -252,22 +204,22 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
                         <button
                             onClick={() => setActiveTab('history')}
                             className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'history'
-                                    ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
-                                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
+                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                                 }`}
                         >
-                            {copy.history[lang]}
+                            {t.wallet.history || 'History'}
                         </button>
                         <button
                             onClick={() => setActiveTab('preferences')}
                             className={`px-6 py-3 rounded-xl font-bold text-sm transition-all ${activeTab === 'preferences'
-                                    ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
-                                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
+                                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
                                 }`}
                         >
                             <div className="flex items-center gap-2">
                                 <Settings className="w-4 h-4" />
-                                {copy.preferences[lang]}
+                                {t.userMenu.preferences || 'Preferences'}
                             </div>
                         </button>
                     </div>
@@ -282,7 +234,7 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                                 <input
                                     type="search"
-                                    placeholder={copy.searchPlaceholder[lang]}
+                                    placeholder={t.wallet.searchPlaceholder}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     className="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all shadow-sm"
@@ -292,18 +244,18 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
                             {/* Filters */}
                             <div className="flex flex-wrap gap-2">
                                 {[
-                                    { key: 'all' as FilterType, label: copy.all[lang], icon: Target },
-                                    { key: 'unread' as FilterType, label: copy.unread[lang], icon: Mail },
-                                    { key: 'system_confirmation' as FilterType, label: copy.systemConfirmation[lang], icon: CheckCircle2 },
-                                    { key: 'reminder' as FilterType, label: copy.reminder[lang], icon: Clock },
-                                    { key: 'intelligence' as FilterType, label: copy.intelligence[lang], icon: Sparkles }
+                                    { key: 'all' as FilterType, label: t.common.all || 'All', icon: Target },
+                                    { key: 'unread' as FilterType, label: t.tasks.taskTypes.unread || 'Unread', icon: Mail },
+                                    { key: 'system_confirmation' as FilterType, label: t.tasks.taskTypes.confirmation || 'Confirmations', icon: CheckCircle2 },
+                                    { key: 'reminder' as FilterType, label: t.tasks.taskTypes.reminder, icon: Clock },
+                                    { key: 'intelligence' as FilterType, label: t.tasks.taskTypes.intelligence || 'Intelligence', icon: Sparkles }
                                 ].map(({ key, label, icon: Icon }) => (
                                     <button
                                         key={key}
                                         onClick={() => setFilter(key)}
                                         className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm transition-all ${filter === key
-                                                ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
-                                                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
+                                            ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30'
+                                            : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
                                             }`}
                                     >
                                         <Icon className="w-4 h-4" />
@@ -327,10 +279,10 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
                                     <Bell className="w-12 h-12 text-cyan-600 dark:text-cyan-400 relative z-10" />
                                 </div>
                                 <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-3">
-                                    {copy.noNotifications[lang]}
+                                    {t.wallet.noNotifications}
                                 </h2>
                                 <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto">
-                                    {copy.noNotificationsDesc[lang]}
+                                    {t.wallet.noNotificationsYetDesc || "We'll notify you when there's something new"}
                                 </p>
                             </div>
                         ) : (
@@ -343,8 +295,8 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
                                         <div
                                             key={notif.id}
                                             className={`group bg-white dark:bg-slate-900 rounded-2xl p-6 border transition-all cursor-pointer hover:shadow-lg ${notif.read_at
-                                                    ? 'border-slate-200 dark:border-slate-800'
-                                                    : 'border-cyan-200 dark:border-cyan-800 bg-cyan-50/50 dark:bg-cyan-900/10'
+                                                ? 'border-slate-200 dark:border-slate-800'
+                                                : 'border-cyan-200 dark:border-cyan-800 bg-cyan-50/50 dark:bg-cyan-900/10'
                                                 }`}
                                             onClick={() => {
                                                 if (notif.related_object_type && notif.related_object_id) {
@@ -386,14 +338,12 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
 
                 {activeTab === 'preferences' && (
                     <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 shadow-xl border border-slate-200 dark:border-slate-800">
+                        );
                         <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-6">
-                            {lang === 'el' ? 'Προτιμήσεις Ειδοποιήσεων' : 'Notification Preferences'}
+                            {t.userMenu.notificationsPreferences || 'Notification Preferences'}
                         </h2>
                         <p className="text-slate-600 dark:text-slate-400 mb-8">
-                            {lang === 'el'
-                                ? 'Διαχειριστείτε πώς θέλετε να λαμβάνετε ειδοποιήσεις'
-                                : 'Manage how you want to receive notifications'
-                            }
+                            {t.userMenu.notificationsPreferencesDesc || 'Manage how you want to receive notifications'}
                         </p>
                         {/* Preferences content would go here */}
                     </div>

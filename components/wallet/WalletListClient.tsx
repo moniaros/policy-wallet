@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/contexts/LanguageContext'
 import {
     Wallet,
     Plus,
@@ -34,6 +35,7 @@ interface WalletListClientProps {
 type FilterType = 'all' | 'active' | 'expiring' | 'action_needed'
 
 export function WalletListClient({ policies, user }: WalletListClientProps) {
+    const { t, language } = useLanguage()
     const router = useRouter()
     const [filter, setFilter] = useState<FilterType>('all')
     const [searchQuery, setSearchQuery] = useState('')
@@ -93,17 +95,17 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
 
     const getStatusLabel = (status: string) => {
         switch (status) {
-            case 'active': return 'Active'
-            case 'expiring_soon': return 'Expiring Soon'
-            case 'action_needed': type: return 'Action Needed'
-            case 'incomplete': return 'Incomplete'
+            case 'active': return t.policyStatus.active
+            case 'expiring_soon': return t.policyStatus.expiringSoon
+            case 'action_needed': return t.policyStatus.actionNeeded
+            case 'incomplete': return t.common.loading
             default: return status
         }
     }
 
     const formatDate = (dateStr: string | null) => {
         if (!dateStr) return '—'
-        return new Date(dateStr).toLocaleDateString('en-GB', {
+        return new Date(dateStr).toLocaleDateString(language === 'el' ? 'el-GR' : 'en-GB', {
             day: 'numeric',
             month: 'short',
             year: 'numeric'
@@ -125,10 +127,10 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                                 <span className="text-xs font-bold uppercase tracking-wider">Policy Wallet</span>
                             </div>
                             <h1 className="text-4xl lg:text-5xl font-black tracking-tight mb-2">
-                                Your Coverage
+                                {t.wallet.yourCoverage}
                             </h1>
                             <p className="text-emerald-50 text-lg opacity-90">
-                                Manage and track all your insurance assets in one place.
+                                {t.wallet.manageTrack}
                             </p>
                         </div>
                         <button
@@ -136,7 +138,7 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                             className="hidden md:flex items-center gap-2 bg-white text-emerald-700 px-6 py-3 rounded-xl font-bold hover:bg-emerald-50 active:scale-95 transition-all shadow-lg hover:shadow-xl"
                         >
                             <Plus className="w-5 h-5" />
-                            Add Policy
+                            {t.wallet.addPolicy}
                         </button>
                     </div>
 
@@ -145,28 +147,28 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                         <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4">
                             <div className="flex items-center gap-2 mb-1 text-emerald-100">
                                 <Shield className="w-4 h-4" />
-                                <span className="text-xs font-bold uppercase">Total Policies</span>
+                                <span className="text-xs font-bold uppercase">{t.wallet.totalPolicies}</span>
                             </div>
                             <span className="text-3xl font-black">{stats.total}</span>
                         </div>
                         <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4">
                             <div className="flex items-center gap-2 mb-1 text-emerald-100">
                                 <Clock className="w-4 h-4" />
-                                <span className="text-xs font-bold uppercase">Active</span>
+                                <span className="text-xs font-bold uppercase">{t.wallet.activePolicies}</span>
                             </div>
                             <span className="text-3xl font-black">{stats.active}</span>
                         </div>
                         <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 ${stats.expiring > 0 ? 'bg-amber-500/20 border-amber-400/30' : ''}`}>
                             <div className="flex items-center gap-2 mb-1 text-emerald-100">
                                 <AlertCircle className="w-4 h-4" />
-                                <span className="text-xs font-bold uppercase">Expiring</span>
+                                <span className="text-xs font-bold uppercase">{t.wallet.expiringPolicies}</span>
                             </div>
                             <span className="text-3xl font-black">{stats.expiring}</span>
                         </div>
                         <div className={`bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 ${stats.actionNeeded > 0 ? 'bg-red-500/20 border-red-400/30' : ''}`}>
                             <div className="flex items-center gap-2 mb-1 text-emerald-100">
                                 <AlertTriangle className="w-4 h-4" />
-                                <span className="text-xs font-bold uppercase">Attention</span>
+                                <span className="text-xs font-bold uppercase">{t.wallet.attentionNeeded}</span>
                             </div>
                             <span className="text-3xl font-black">{stats.actionNeeded}</span>
                         </div>
@@ -180,10 +182,10 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                     {/* Tabs */}
                     <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl overflow-x-auto max-w-full no-scrollbar">
                         {[
-                            { id: 'all', label: 'All Policies' },
-                            { id: 'active', label: 'Active' },
-                            { id: 'expiring', label: 'Expiring' },
-                            { id: 'action_needed', label: 'Action Needed' }
+                            { id: 'all', label: t.wallet.allPolicies },
+                            { id: 'active', label: t.wallet.activePolicies },
+                            { id: 'expiring', label: t.wallet.expiringPolicies },
+                            { id: 'action_needed', label: t.wallet.attentionNeeded }
                         ].map((tab) => (
                             <button
                                 key={tab.id}
@@ -203,7 +205,7 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                         <input
                             type="text"
-                            placeholder="Search policies..."
+                            placeholder={t.wallet.searchPlaceholder}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-emerald-500 transition-all"
@@ -217,11 +219,11 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                         <div className="w-20 h-20 bg-emerald-50 dark:bg-emerald-900/20 rounded-full flex items-center justify-center mx-auto mb-6">
                             <Shield className="w-10 h-10 text-emerald-500/50" />
                         </div>
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No policies found</h3>
+                        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t.wallet.noPoliciesFound}</h3>
                         <p className="text-slate-500 mb-8 max-w-sm mx-auto">
                             {searchQuery
-                                ? "We couldn't find any policies matching your search."
-                                : "Get started by adding your first insurance policy to your digital wallet."}
+                                ? t.wallet.noPoliciesFoundDesc
+                                : t.wallet.noPoliciesYetDesc}
                         </p>
                         {!searchQuery && (
                             <button
@@ -229,7 +231,7 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                                 className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-700 transition-all"
                             >
                                 <Plus className="w-5 h-5" />
-                                Add Your First Policy
+                                {t.wallet.addFirstPolicy}
                             </button>
                         )}
                     </div>
@@ -275,7 +277,7 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                                                 <Icon className="w-4 h-4" />
                                             </div>
                                             <span className="text-sm font-medium capitalize">
-                                                {policy.lineOfBusiness.replace('_', ' ')}
+                                                {t.policyTypes[policy.lineOfBusiness as keyof typeof t.policyTypes] || policy.lineOfBusiness.replace('_', ' ')}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-3 text-slate-600 dark:text-slate-400">
@@ -283,14 +285,14 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
                                                 <Calendar className="w-4 h-4" />
                                             </div>
                                             <span className="text-sm font-medium">
-                                                Expires {formatDate(policy.endDate)}
+                                                {t.wallet.expiresDate} {formatDate(policy.endDate)}
                                             </span>
                                         </div>
                                     </div>
 
                                     <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between group-hover:text-emerald-600 transition-colors">
                                         <span className="text-xs font-bold uppercase tracking-wider text-slate-400 group-hover:text-emerald-600">
-                                            View Details
+                                            {t.wallet.viewDetails}
                                         </span>
                                         <ArrowUpRight className="w-5 h-5" />
                                     </div>

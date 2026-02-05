@@ -8,6 +8,7 @@ import { RoleSwitcher } from './RoleSwitcher'
 import { ThemeToggle } from '../ThemeToggle'
 import { PolicyWalletLogo } from '@/components/branding/Logo'
 import { Home, BarChart3, Bell, Settings, Users, Lightbulb, LayoutDashboard, MoreHorizontal, ListChecks, User } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export interface NavigationItem {
     label: string
@@ -89,6 +90,7 @@ export function AppShell({
     onRoleSwitch,
     onLogout,
 }: AppShellProps) {
+    const { t, language } = useLanguage()
     const pathname = usePathname()
     const router = useRouter()
     const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -107,11 +109,11 @@ export function AppShell({
 
     const handleRoleSwitch = (role: UserRole) => {
         onRoleSwitch?.(role)
-        setRoleChangeToast(`You're now viewing PolicyWallet as ${role.label}`)
+        setRoleChangeToast(`${t.userMenu.viewingAs || "Viewing as"} ${role.label}`)
         setTimeout(() => setRoleChangeToast(null), 3000)
     }
 
-    const bottomNavItems = getBottomNavItems(currentRole.role, user.preferred_language)
+    const bottomNavItems = getBottomNavItems(currentRole.role, (user.preferred_language || language) as 'el' | 'en')
 
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -177,7 +179,7 @@ export function AppShell({
                     {/* Mobile Footer (Sign Out & Theme) */}
                     <div className="lg:hidden p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 space-y-4">
                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">Settings</span>
+                            <span className="text-sm font-semibold text-slate-600 dark:text-slate-400">{t.userMenu.settings}</span>
                             <div className="flex items-center gap-3">
                                 {/* Language */}
                                 <div className="flex bg-slate-200 dark:bg-slate-800 rounded-lg p-0.5">
@@ -204,7 +206,7 @@ export function AppShell({
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                             </svg>
-                            Sign Out
+                            {t.userMenu.logout}
                         </button>
                     </div>
 

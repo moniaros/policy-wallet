@@ -168,7 +168,7 @@ export function PolicyDetailsClient({
                                                     {getInsurerName()}
                                                 </h1>
                                                 <p className="text-lg text-indigo-600 dark:text-indigo-400 font-semibold mt-1 uppercase tracking-wide">
-                                                    {getCoverageType()} Protection
+                                                    {t.policyTypes[getCoverageType() as keyof typeof t.policyTypes] || getCoverageType()}
                                                 </p>
                                             </div>
                                         </div>
@@ -184,7 +184,7 @@ export function PolicyDetailsClient({
                                                     {t.wallet.annualPremium}
                                                 </p>
                                                 <p className="text-4xl font-black text-white leading-none">
-                                                    {getPremiumAmount().toLocaleString('el-GR', { style: 'currency', currency: getPremiumCurrency() })}
+                                                    {getPremiumAmount().toLocaleString(t.common.locale || 'el-GR', { style: 'currency', currency: getPremiumCurrency() })}
                                                 </p>
                                             </div>
                                         </div>
@@ -205,9 +205,6 @@ export function PolicyDetailsClient({
 
                                         {policy.acordData?.vehicle?.plateNumber && (
                                             <div className="group cursor-pointer">
-                                                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
-                                                    {t.wallet.plateNumber || "Plate Number"}
-                                                </p>
                                                 <div className="font-mono text-sm font-bold text-slate-900 dark:text-white bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 group-hover:border-indigo-400 dark:group-hover:border-indigo-500 transition-colors duration-200 flex items-center gap-2">
                                                     <span className="px-2 py-0.5 rounded bg-blue-600 text-xs text-white font-bold">GR</span>
                                                     {policy.acordData.vehicle.plateNumber}
@@ -220,7 +217,7 @@ export function PolicyDetailsClient({
                                                 {t.wallet.starts}
                                             </p>
                                             <p className="text-sm font-bold text-slate-900 dark:text-white">
-                                                {new Date(getStartDate()).toLocaleDateString()}
+                                                {new Date(getStartDate()).toLocaleDateString(t.common.locale || 'el-GR')}
                                             </p>
                                         </div>
 
@@ -229,7 +226,7 @@ export function PolicyDetailsClient({
                                                 {t.wallet.ends}
                                             </p>
                                             <p className="text-sm font-bold text-slate-900 dark:text-white">
-                                                {new Date(getEndDate()).toLocaleDateString()}
+                                                {new Date(getEndDate()).toLocaleDateString(t.common.locale || 'el-GR')}
                                             </p>
                                         </div>
                                     </div>
@@ -259,7 +256,7 @@ export function PolicyDetailsClient({
                                             <TrendingUp className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <p className="font-bold text-slate-900 dark:text-white">Deductible</p>
+                                            <p className="font-bold text-slate-900 dark:text-white">{t.wallet.deductible}</p>
                                             <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
                                                 {typeof policy.acordData.policy.deductible === 'object'
                                                     ? `${policy.acordData.policy.deductible.amount} ${policy.acordData.policy.deductible.currency || 'EUR'}`
@@ -275,7 +272,7 @@ export function PolicyDetailsClient({
                                             <Shield className="w-5 h-5" />
                                         </div>
                                         <div>
-                                            <p className="font-bold text-slate-900 dark:text-white">Coverage Limit</p>
+                                            <p className="font-bold text-slate-900 dark:text-white">{t.wallet.coverageLimit}</p>
                                             <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
                                                 {typeof policy.acordData.policy.coverageLimit === 'object'
                                                     ? `${policy.acordData.policy.coverageLimit.amount} ${policy.acordData.policy.coverageLimit.currency || 'EUR'}`
@@ -292,7 +289,7 @@ export function PolicyDetailsClient({
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" /></svg>
                                         </div>
                                         <div>
-                                            <p className="font-bold text-slate-900 dark:text-white">Vehicle</p>
+                                            <p className="font-bold text-slate-900 dark:text-white">{t.wallet.vehicle}</p>
                                             <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
                                                 {policy.acordData.vehicle.make} {policy.acordData.vehicle.model} {policy.acordData.vehicle.year && `(${policy.acordData.vehicle.year})`}
                                             </p>
@@ -307,7 +304,7 @@ export function PolicyDetailsClient({
                                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" /></svg>
                                         </div>
                                         <div>
-                                            <p className="font-bold text-slate-900 dark:text-white">Direct Support</p>
+                                            <p className="font-bold text-slate-900 dark:text-white">{t.wallet.directSupport}</p>
                                             <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
                                                 {policy.acordData.policy.insurerContact}
                                             </p>
@@ -323,8 +320,8 @@ export function PolicyDetailsClient({
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" /></svg>
                                             </div>
                                             <div>
-                                                <p className="font-bold text-slate-900 dark:text-white">Standard Coverage</p>
-                                                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">Full protection based on policy specifications.</p>
+                                                <p className="font-bold text-slate-900 dark:text-white">{t.wallet.standardCoverage}</p>
+                                                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">{t.wallet.standardCoverageDesc}</p>
                                             </div>
                                         </div>
                                         <div className="flex items-start gap-4 group cursor-pointer">
@@ -332,8 +329,8 @@ export function PolicyDetailsClient({
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" /></svg>
                                             </div>
                                             <div>
-                                                <p className="font-bold text-slate-900 dark:text-white">Direct Support</p>
-                                                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">24/7 emergency assistance via insurer.</p>
+                                                <p className="font-bold text-slate-900 dark:text-white">{t.wallet.directSupport}</p>
+                                                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">{t.wallet.emergencyAssistance}</p>
                                             </div>
                                         </div>
                                     </>
@@ -362,7 +359,7 @@ export function PolicyDetailsClient({
                                 aiSuggestion: g.aiSuggestion || null,
                                 aiSuggestionEl: g.aiSuggestionEl || null,
                                 definition: {
-                                    title: g.definition?.title || "Unknown Gap",
+                                    title: g.definition?.title || t.analysis.unknownGap || "Unknown Gap",
                                     severity: g.definition?.severity || "medium"
                                 }
                             }))}
@@ -387,7 +384,7 @@ export function PolicyDetailsClient({
                         {/* Quick Actions */}
                         <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-white/20 dark:border-slate-700/50">
                             <h3 className="text-sm font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">
-                                {t.wallet.actionItems || "Quick Actions"}
+                                {t.wallet.actionItems}
                             </h3>
                             <div className="space-y-3">
                                 {daysLeft <= 30 && (
@@ -430,7 +427,7 @@ export function PolicyDetailsClient({
                                                 </div>
                                                 <div className="flex-1 overflow-hidden">
                                                     <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{doc.fileName}</p>
-                                                    <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider">Contract</p>
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t.wallet.contract}</p>
                                                 </div>
                                                 <Download className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200" />
                                             </a>
