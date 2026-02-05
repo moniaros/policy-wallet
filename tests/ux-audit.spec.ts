@@ -143,7 +143,7 @@ test.describe('UX Audit - Wallet/Dashboard', () => {
 test.describe('UX Audit - Policy Detail View', () => {
     test('CRITICAL: should have quick action buttons', async ({ page }) => {
         // Navigate to first policy (adapt to your routing)
-        await loginAndNavigate(page, '/wallet');
+        await page.goto('/wallet');
 
         const firstPolicy = page.locator('[data-testid="policy-card"], .policy-card').first();
         if (await firstPolicy.count() > 0) {
@@ -173,7 +173,7 @@ test.describe('UX Audit - Policy Detail View', () => {
 
 test.describe('UX Audit - Add Policy Flow', () => {
     test('should support drag-and-drop file upload', async ({ page }) => {
-        await loginAndNavigate(page, '/wallet');
+        await page.goto('/wallet');
 
         // Find add policy button
         const addButton = page.getByRole('button', { name: /add policy|new policy|προσθήκη ασφάλειας/i });
@@ -190,7 +190,7 @@ test.describe('UX Audit - Add Policy Flow', () => {
 
     test('should show AI processing progress indicator', async ({ page }) => {
         // This would require actually uploading a file - placeholder test
-        await loginAndNavigate(page, '/wallet');
+        await page.goto('/wallet');
 
         console.info('ℹ️ AI processing progress should be tested with actual file upload');
     });
@@ -198,7 +198,7 @@ test.describe('UX Audit - Add Policy Flow', () => {
 
 test.describe('UX Audit - Tasks Page', () => {
     test('should show actionable empty state or task list', async ({ page }) => {
-        await loginAndNavigate(page, '/tasks');
+        await page.goto('/tasks');
 
         // Check for tasks or meaningful empty state
         const taskItems = page.locator('[data-testid="task-item"], .task-item');
@@ -217,7 +217,7 @@ test.describe('UX Audit - Tasks Page', () => {
     });
 
     test('tasks should have priority indicators', async ({ page }) => {
-        await loginAndNavigate(page, '/tasks');
+        await page.goto('/tasks');
 
         const taskItems = page.locator('[data-testid="task-item"], .task-item');
         if (await taskItems.count() > 0) {
@@ -231,7 +231,7 @@ test.describe('UX Audit - Tasks Page', () => {
     });
 
     test('should have "Add to Calendar" functionality', async ({ page }) => {
-        await loginAndNavigate(page, '/tasks');
+        await page.goto('/tasks');
 
         const calendarButton = page.getByRole('button', { name: /add.*calendar|ημερολόγιο/i });
         if (await calendarButton.count() === 0) {
@@ -242,7 +242,7 @@ test.describe('UX Audit - Tasks Page', () => {
 
 test.describe('UX Audit - Coverage Insights Page', () => {
     test('CRITICAL: Coverage Insights should not be just a placeholder', async ({ page }) => {
-        await loginAndNavigate(page, '/coverage');
+        await page.goto('/coverage');
 
         // Should NOT just say "analyzing" indefinitely
         const placeholder = page.locator('text=/analyzing|coming soon|under construction/i');
@@ -260,7 +260,7 @@ test.describe('UX Audit - Coverage Insights Page', () => {
 
 test.describe('UX Audit - Notifications/Alerts', () => {
     test('should have notification preferences settings', async ({ page }) => {
-        await loginAndNavigate(page, '/account');
+        await page.goto('/account');
 
         const notificationSettings = page.locator('text=/notification.*preferences|alert.*settings|ειδοποιήσεις/i');
         if (await notificationSettings.count() === 0) {
@@ -269,7 +269,7 @@ test.describe('UX Audit - Notifications/Alerts', () => {
     });
 
     test('should visually distinguish read/unread notifications', async ({ page }) => {
-        await loginAndNavigate(page, '/alerts');
+        await page.goto('/alerts');
 
         const notifications = page.locator('[data-testid="notification"], .notification-item');
         if (await notifications.count() > 0) {
@@ -285,7 +285,7 @@ test.describe('UX Audit - Notifications/Alerts', () => {
 
 test.describe('UX Audit - Account/Settings Page', () => {
     test('should show profile completeness indicator', async ({ page }) => {
-        await loginAndNavigate(page, '/account');
+        await page.goto('/account');
 
         const completeness = page.locator('text=/profile.*complete|completeness|ολοκλήρωση/i, [role="progressbar"]');
         if (await completeness.count() === 0) {
@@ -294,7 +294,7 @@ test.describe('UX Audit - Account/Settings Page', () => {
     });
 
     test('should have GDPR-compliant data export option', async ({ page }) => {
-        await loginAndNavigate(page, '/account');
+        await page.goto('/account');
 
         const exportButton = page.getByRole('button', { name: /download.*data|export.*data|λήψη.*δεδομένων/i });
         if (await exportButton.count() === 0) {
@@ -303,7 +303,7 @@ test.describe('UX Audit - Account/Settings Page', () => {
     });
 
     test('should show agent connection status', async ({ page }) => {
-        await loginAndNavigate(page, '/account');
+        await page.goto('/account');
 
         const agentStatus = page.locator('text=/agent.*status|connected.*agent|σύνδεση.*πράκτορα/i');
         if (await agentStatus.count() === 0) {
@@ -316,7 +316,7 @@ test.describe('UX Audit - Mobile Experience', () => {
     test.use({ viewport: { width: 375, height: 667 } }); // iPhone SE size
 
     test('should have bottom navigation with 4-5 items', async ({ page }) => {
-        await loginAndNavigate(page, '/wallet');
+        await page.goto('/wallet');
 
         const bottomNav = page.locator('nav[class*="bottom"], [data-testid="bottom-nav"]');
         await expect(bottomNav).toBeVisible();
@@ -329,14 +329,14 @@ test.describe('UX Audit - Mobile Experience', () => {
     });
 
     test('should support pull-to-refresh on wallet list', async ({ page }) => {
-        await loginAndNavigate(page, '/wallet');
+        await page.goto('/wallet');
 
         // This is hard to test programmatically - check for touch event listeners
         console.info('ℹ️ Pull-to-refresh should be tested manually on mobile device');
     });
 
     test('KPI cards should scroll horizontally on mobile', async ({ page }) => {
-        await loginAndNavigate(page, '/wallet');
+        await page.goto('/wallet');
 
         const kpiContainer = page.locator('[data-testid="kpi-cards"], .kpi-cards');
         if (await kpiContainer.count() > 0) {

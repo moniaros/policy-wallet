@@ -42,6 +42,9 @@ export function PolicyDetailsClient({
     const isMobile = useIsMobile()
     const [showMobileWalletModal, setShowMobileWalletModal] = useState(shouldOpenWallet)
 
+    // Detect language from translation object
+    const language = t.common?.locale?.startsWith('el') ? 'el' : 'en'
+
     // Helper functions to prioritize AI-extracted data
     const getInsurerName = () => {
         return policy.acordData?.policy?.insurerName || policy.insurerName
@@ -387,14 +390,59 @@ export function PolicyDetailsClient({
                                 {t.wallet.actionItems}
                             </h3>
                             <div className="space-y-3">
+                                {/* Renewal Warning */}
                                 {daysLeft <= 30 && (
                                     <div className="p-4 bg-gradient-to-r from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 text-amber-800 dark:text-amber-200 rounded-xl text-sm font-semibold border border-amber-200 dark:border-amber-800/50 flex items-center gap-3">
                                         <Calendar className="w-5 h-5 flex-shrink-0" />
                                         <span>{t.wallet.reviewRenewal}</span>
                                     </div>
                                 )}
-                                <button className="w-full p-4 bg-gradient-to-r from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30 text-emerald-800 dark:text-emerald-200 rounded-xl text-sm font-semibold border border-emerald-200 dark:border-emerald-800/50 hover:shadow-lg transition-all duration-200 flex items-center gap-3 cursor-pointer">
-                                    <Download className="w-5 h-5 flex-shrink-0" />
+
+                                {/* Contact Insurer */}
+                                <button
+                                    onClick={() => {
+                                        const phone = policy.acordData?.policy?.insurerContact || '210-XXXXXXX'
+                                        window.location.href = `tel:${phone}`
+                                    }}
+                                    className="w-full p-4 bg-gradient-to-r from-teal-100 to-emerald-100 dark:from-teal-900/30 dark:to-emerald-900/30 text-teal-800 dark:text-teal-200 rounded-xl text-sm font-semibold border border-teal-200 dark:border-teal-800/50 hover:shadow-lg transition-all duration-200 flex items-center gap-3 cursor-pointer group"
+                                >
+                                    <svg className="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    </svg>
+                                    <span>{language === 'el' ? 'Επικοινωνία με Ασφαλιστή' : 'Contact Insurer'}</span>
+                                </button>
+
+                                {/* Request Renewal/Quote */}
+                                <button
+                                    onClick={() => {
+                                        // TODO: Integrate with agent messaging system
+                                        alert(language === 'el' ? 'Αίτημα ανανέωσης στάλθηκε στον πράκτορα!' : 'Renewal request sent to your agent!')
+                                    }}
+                                    className="w-full p-4 bg-gradient-to-r from-violet-100 to-purple-100 dark:from-violet-900/30 dark:to-purple-900/30 text-violet-800 dark:text-violet-200 rounded-xl text-sm font-semibold border border-violet-200 dark:border-violet-800/50 hover:shadow-lg transition-all duration-200 flex items-center gap-3 cursor-pointer group"
+                                >
+                                    <svg className="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                    <span>{language === 'el' ? 'Αίτημα Ανανέωσης' : 'Request Renewal Quote'}</span>
+                                </button>
+
+                                {/* File a Claim */}
+                                <button
+                                    onClick={() => {
+                                        // TODO: Navigate to claims filing page or open form
+                                        alert(language === 'el' ? 'Φόρμα υποβολής αξίωσης θα επεκταθεί σύντομα' : 'Claims filing form coming soon')
+                                    }}
+                                    className="w-full p-4 bg-gradient-to-r from-red-100 to-rose-100 dark:from-red-900/30 dark:to-rose-900/30 text-red-800 dark:text-red-200 rounded-xl text-sm font-semibold border border-red-200 dark:border-red-800/50 hover:shadow-lg transition-all duration-200 flex items-center gap-3 cursor-pointer group"
+                                >
+                                    <svg className="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                    <span>{language === 'el' ? 'Υποβολή Αξίωσης' : 'File a Claim'}</span>
+                                </button>
+
+                                {/* Download Contract */}
+                                <button className="w-full p-4 bg-gradient-to-r from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30 text-emerald-800 dark:text-emerald-200 rounded-xl text-sm font-semibold border border-emerald-200 dark:border-emerald-800/50 hover:shadow-lg transition-all duration-200 flex items-center gap-3 cursor-pointer group">
+                                    <Download className="w-5 h-5 flex-shrink-0 group-hover:scale-110 transition-transform" />
                                     <span>{t.wallet.downloadContract}</span>
                                 </button>
                             </div>

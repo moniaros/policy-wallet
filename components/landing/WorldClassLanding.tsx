@@ -84,6 +84,14 @@ export function WorldClassLanding() {
                             >
                                 {lang === 'el' ? 'Σύνδεση' : 'Sign In'}
                             </Link>
+
+                            <Link
+                                href="/auth/signup"
+                                className="px-5 py-2.5 text-sm font-bold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-1.5"
+                            >
+                                {lang === 'el' ? 'Εγγραφή' : 'Get Started'}
+                                <ArrowRight className="w-4 h-4" />
+                            </Link>
                         </nav>
                     </div>
                 </div>

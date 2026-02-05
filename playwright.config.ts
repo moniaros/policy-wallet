@@ -4,7 +4,7 @@ import { defineConfig, devices } from '@playwright/test';
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
-    testDir: './tests/e2e',
+    testDir: './tests',
     fullyParallel: true,
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 2 : 0,
@@ -18,26 +18,53 @@ export default defineConfig({
     },
 
     projects: [
+        // Setup project - runs once to authenticate
+        {
+            name: 'setup',
+            testMatch: /.*\.setup\.ts/,
+        },
+
+        // Main test projects - use authenticated state
         {
             name: 'chromium',
-            use: { ...devices['Desktop Chrome'] },
+            use: {
+                ...devices['Desktop Chrome'],
+                storageState: 'playwright/.auth/user.json',
+            },
+            dependencies: ['setup'],
         },
         {
             name: 'firefox',
-            use: { ...devices['Desktop Firefox'] },
+            use: {
+                ...devices['Desktop Firefox'],
+                storageState: 'playwright/.auth/user.json',
+            },
+            dependencies: ['setup'],
         },
         {
             name: 'webkit',
-            use: { ...devices['Desktop Safari'] },
+            use: {
+                ...devices['Desktop Safari'],
+                storageState: 'playwright/.auth/user.json',
+            },
+            dependencies: ['setup'],
         },
         // Mobile viewports
         {
             name: 'Mobile Chrome',
-            use: { ...devices['Pixel 5'] },
+            use: {
+                ...devices['Pixel 5'],
+                storageState: 'playwright/.auth/user.json',
+            },
+            dependencies: ['setup'],
         },
         {
             name: 'Mobile Safari',
-            use: { ...devices['iPhone 12'] },
+            use: {
+                ...devices['iPhone 12'],
+                storageState: 'playwright/.auth/user.json',
+            },
+            dependencies: ['setup'],
         },
     ],
 
