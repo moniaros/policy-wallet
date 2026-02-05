@@ -78,4 +78,16 @@ const sentryWebpackPluginOptions = {
 };
 
 // Make sure adding Sentry options is the last code to run before exporting
-export default withSentryConfig(nextConfig, sentryWebpackPluginOptions);
+const withPWA = require("@ducanh2912/next-pwa").default({
+  dest: "public",
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
+  swcMinify: true,
+  disable: process.env.NODE_ENV === "development",
+  workboxOptions: {
+    disableDevLogs: true,
+  },
+});
+
+export default withSentryConfig(withPWA(nextConfig), sentryWebpackPluginOptions);

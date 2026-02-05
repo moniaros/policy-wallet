@@ -1,7 +1,7 @@
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { WalletListClient } from "@/components/wallet/WalletListClient"
-import type { Policy, PolicyDocument } from "@/components/wallet/types"
+import type { Policy } from "@/components/wallet/types"
 
 export default async function WalletPage() {
     const { dbUser } = await getAuthenticatedUser()

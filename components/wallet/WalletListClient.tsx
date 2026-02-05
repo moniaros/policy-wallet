@@ -23,6 +23,10 @@ import {
     AlertCircle,
     Calendar
 } from 'lucide-react'
+import { offlineStorage } from '@/lib/services/offline-storage'
+import { useOffline } from '@/components/providers/OfflineProvider'
+import { useEffect } from 'react'
+import { toast } from 'sonner'
 import type { Policy } from './types'
 
 interface WalletListClientProps {
@@ -39,19 +43,47 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
     const router = useRouter()
     const [filter, setFilter] = useState<FilterType>('all')
     const [searchQuery, setSearchQuery] = useState('')
+    const { isOnline } = useOffline()
+    const [displayPolicies, setDisplayPolicies] = useState<Policy[]>(policies)
 
-    // --- Derived Data ---
+    // --- Sync Logic ---
+    useEffect(() => {
+        const syncPolicies = async () => {
+            if (isOnline) {
+                // We are online, save latest policies to offline storage
+                if (policies.length > 0) {
+                    await offlineStorage.savePolicies(policies)
+                }
+                setDisplayPolicies(policies)
+            } else {
+                // We are offline, try to load from storage
+                try {
+                    const stored = await offlineStorage.getStoredPolicies()
+                    if (stored && stored.length > 0) {
+                        setDisplayPolicies(stored)
+                    } else {
+                        // Keep using initial policies if storage empty (likely empty array)
+                        setDisplayPolicies(policies)
+                    }
+                } catch (err) {
+                    console.error('Failed to load offline policies', err)
+                }
+            }
+        }
+        syncPolicies()
+    }, [isOnline, policies])
     const stats = useMemo(() => {
+        const source = displayPolicies
         return {
-            total: policies.length,
-            expiring: policies.filter(p => p.status === 'expiring_soon').length,
-            actionNeeded: policies.filter(p => p.status === 'action_needed' || p.status === 'incomplete').length,
-            active: policies.filter(p => p.status === 'active').length
+            total: source.length,
+            expiring: source.filter(p => p.status === 'expiring_soon').length,
+            actionNeeded: source.filter(p => p.status === 'action_needed' || p.status === 'incomplete').length,
+            active: source.filter(p => p.status === 'active').length
         }
     }, [policies])
 
     const filteredPolicies = useMemo(() => {
-        return policies.filter(policy => {
+        return displayPolicies.filter(policy => {
             // Text Search
             const searchLower = searchQuery.toLowerCase()
             const matchesSearch =
@@ -67,7 +99,7 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
 
             return matchesSearch && matchesFilter
         })
-    }, [policies, filter, searchQuery])
+    }, [displayPolicies, filter, searchQuery])
 
     // --- Helpers ---
     const getTypeIcon = (type: string) => {

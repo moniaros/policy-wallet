@@ -4,6 +4,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Toaster } from "sonner";
 import NextTopLoader from 'nextjs-toploader';
+import { OfflineProvider } from "@/components/providers/OfflineProvider";
 
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
@@ -37,14 +38,16 @@ export default function RootLayout({
           speed={200}
         />
         <LanguageProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            {children}
-          </ThemeProvider>
+          <OfflineProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              {children}
+            </ThemeProvider>
+          </OfflineProvider>
         </LanguageProvider>
         <Toaster richColors position="top-right" />
         <Analytics />
