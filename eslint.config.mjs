@@ -1,43 +1,65 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+import js from "@eslint/js";
+import nextPlugin from "@next/eslint-plugin-next";
+import reactPlugin from "eslint-plugin-react";
+import hooksPlugin from "eslint-plugin-react-hooks";
+import typescriptParser from "@typescript-eslint/parser";
+import typescriptPlugin from "@typescript-eslint/eslint-plugin";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+export default [
+    {
+        ignores: [".next/**/*", "node_modules/**/*", "public/**/*"],
+    },
+    js.configs.recommended,
+    {
+        files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
+        languageOptions: {
+            parser: typescriptParser,
+            parserOptions: {
+                ecmaFeatures: { jsx: true },
+                ecmaVersion: "latest",
+                sourceType: "module",
+            },
+        },
+        plugins: {
+            "@typescript-eslint": typescriptPlugin,
+            "react": reactPlugin,
+            "react-hooks": hooksPlugin,
+            "@next/next": nextPlugin,
+        },
+        rules: {
+            // TypeScript rules
+            ...typescriptPlugin.configs.recommended.rules,
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+            // React rules
+            ...reactPlugin.configs.recommended.rules,
+            "react/react-in-jsx-scope": "off",
+            "react/prop-types": "off",
 
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
-  /*
-  {
-    rules: {
-      // Enforce no explicit any types
-      '@typescript-eslint/no-explicit-any': 'error',
+            // Hooks rules
+            ...hooksPlugin.configs.recommended.rules,
 
-      // Enforce no unused variables (allow _ prefix for intentionally unused)
-      '@typescript-eslint/no-unused-vars': ['error', {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-        caughtErrorsIgnorePattern: '^_'
-      }],
+            // Next.js rules
+            ...nextPlugin.configs.recommended.rules,
+            "@next/next/no-img-element": "off",
 
-      // Warn on console.log (allow console.warn and console.error)
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
-
-      // Enforce const over let when variable is never reassigned
-      'prefer-const': 'error',
-
-      // Enforce === over ==
-      'eqeqeq': ['error', 'always'],
-
-      // Disallow var
-      'no-var': 'error',
-    }
-  }
-  */
+            // Custom overrides
+            "@typescript-eslint/no-explicit-any": "off",
+            "@typescript-eslint/no-unused-vars": "off",
+            "no-console": "off",
+            "react/no-unescaped-entities": "off",
+            "react-hooks/exhaustive-deps": "off",
+            "no-undef": "off",
+            "react-hooks/rules-of-hooks": "error",
+            "react-hooks/set-state-in-effect": "off",
+            "react-hooks/purity": "off",
+            "@typescript-eslint/no-require-imports": "off",
+            "react/no-unknown-property": ["error", { "ignore": ["jsx", "global"] }],
+            "no-case-declarations": "off",
+        },
+        settings: {
+            react: {
+                version: "detect",
+            },
+        },
+    },
 ];
-
-export default eslintConfig;

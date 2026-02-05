@@ -140,7 +140,7 @@ Part of Week 1: Foundation & Quick Wins`,
         labels: ['enhancement', 'error-handling', 'week-1'],
     },
     {
-        title: '🔒 Remove all \`any\` types and improve type safety',
+        title: '🔒 Remove all `any` types and improve type safety',
         body: `## Description
 Eliminate all \`any\` types and improve TypeScript type safety across the codebase.
 
