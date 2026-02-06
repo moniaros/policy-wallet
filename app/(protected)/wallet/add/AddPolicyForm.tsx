@@ -79,38 +79,43 @@ export function AddPolicyForm({ insurers, types }: AddPolicyFormProps) {
 
         startTransition(async () => {
             try {
-                // 1. Upload files to Supabase Storage first
-                const uploadPromises = selectedFiles.map(async (file) => {
-                    const fileExt = file.name.split('.').pop()
-                    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
-                    const filePath = `${fileName}`
+                // 1. Upload files to Supabase Storage (if any files selected)
+                if (selectedFiles.length > 0) {
+                    const uploadPromises = selectedFiles.map(async (file) => {
+                        const fileExt = file.name.split('.').pop()
+                        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+                        const filePath = `${fileName}`
 
-                    const { data, error } = await supabase.storage
-                        .from('policies')
-                        .upload(filePath, file)
+                        const { data, error } = await supabase.storage
+                            .from('policies')
+                            .upload(filePath, file)
 
-                    if (error) throw error
+                        if (error) throw error
 
-                    const { data: { publicUrl } } = supabase.storage
-                        .from('policies')
-                        .getPublicUrl(filePath)
+                        const { data: { publicUrl } } = supabase.storage
+                            .from('policies')
+                            .getPublicUrl(filePath)
 
-                    return {
-                        url: publicUrl,
-                        name: file.name,
-                        size: file.size
-                    }
-                })
+                        return {
+                            url: publicUrl,
+                            name: file.name,
+                            size: file.size
+                        }
+                    })
 
-                const uploadedDocs = await Promise.all(uploadPromises)
+                    const uploadedDocs = await Promise.all(uploadPromises)
 
-                // 2. Prepare Form Data (Remove raw files, add URLs)
-                formData.delete("files")
-                uploadedDocs.forEach(doc => {
-                    formData.append("documentUrls", doc.url)
-                    formData.append("documentNames", doc.name)
-                    formData.append("documentSizes", doc.size.toString())
-                })
+                    // 2. Prepare Form Data (Remove raw files, add URLs)
+                    formData.delete("files")
+                    uploadedDocs.forEach(doc => {
+                        formData.append("documentUrls", doc.url)
+                        formData.append("documentNames", doc.name)
+                        formData.append("documentSizes", doc.size.toString())
+                    })
+                } else {
+                    // No files selected - just remove the files field
+                    formData.delete("files")
+                }
 
                 // 3. Create Policy in DB
                 await createPolicy(formData)
@@ -229,7 +234,7 @@ export function AddPolicyForm({ insurers, types }: AddPolicyFormProps) {
                 {/* File Upload */}
                 <div>
                     <label className="text-[10px] font-black text-stone-400 uppercase tracking-widest block mb-2">
-                        {t.wallet.documents} (PDF)
+                        {t.wallet.documents} (PDF) <span className="text-teal-600 dark:text-teal-500">— {t.common.locale?.startsWith('el') ? 'Προαιρετικό' : 'Optional'}</span>
                     </label>
                     <div
                         className={`mt-1 relative group cursor-pointer transition-all duration-300 ${dragActive ? 'scale-[1.02]' : ''}`}

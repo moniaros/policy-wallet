@@ -74,7 +74,15 @@ export async function redeemInvite(token: string, userId: string) {
 
 export async function registerUser(formData: FormData) {
     const data = Object.fromEntries(formData.entries())
-    const validation = RegisterSchema.safeParse(data)
+
+    //Convert checkbox strings to booleans
+    const processedData = {
+        ...data,
+        termsAccepted: (data.termsAccepted as string) === 'true',
+        marketingConsent: (data.marketingConsent as string) === 'true'
+    }
+
+    const validation = RegisterSchema.safeParse(processedData)
 
     if (!validation.success) {
         return { success: false, error: validation.error.flatten().fieldErrors }

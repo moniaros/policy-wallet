@@ -4,11 +4,10 @@ import { useState, useEffect } from "react"
 import { WelcomeScreen } from "./WelcomeScreen"
 import { PreferencesScreen } from "./PreferencesScreen"
 import { FirstPolicyScreen } from "./FirstPolicyScreen"
-import { InteractiveTour } from "./InteractiveTour"
 import { SuccessScreen } from "./SuccessScreen"
 import { useRouter } from "next/navigation"
 
-export type OnboardingStep = 'welcome' | 'preferences' | 'first-policy' | 'tour' | 'success' | 'complete'
+export type OnboardingStep = 'welcome' | 'preferences' | 'first-policy' | 'success' | 'complete'
 
 export interface OnboardingProgress {
     currentStep: number
@@ -32,7 +31,7 @@ export function OnboardingFlow({ userName, onComplete }: OnboardingFlowProps) {
     const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome')
     const [progress, setProgress] = useState<OnboardingProgress>({
         currentStep: 1,
-        totalSteps: 5,
+        totalSteps: 4,
         completedSteps: new Set(),
         preferences: {
             insuranceTypes: [],
@@ -51,7 +50,7 @@ export function OnboardingFlow({ userName, onComplete }: OnboardingFlowProps) {
     }, [])
 
     const handleNext = () => {
-        const steps: OnboardingStep[] = ['welcome', 'preferences', 'first-policy', 'tour', 'success']
+        const steps: OnboardingStep[] = ['welcome', 'preferences', 'first-policy', 'success']
         const currentIndex = steps.indexOf(currentStep)
 
         if (currentIndex < steps.length - 1) {
@@ -70,7 +69,7 @@ export function OnboardingFlow({ userName, onComplete }: OnboardingFlowProps) {
     }
 
     const handleBack = () => {
-        const steps: OnboardingStep[] = ['welcome', 'preferences', 'first-policy', 'tour', 'success']
+        const steps: OnboardingStep[] = ['welcome', 'preferences', 'first-policy', 'success']
         const currentIndex = steps.indexOf(currentStep)
 
         if (currentIndex > 0) {
@@ -154,46 +153,38 @@ export function OnboardingFlow({ userName, onComplete }: OnboardingFlowProps) {
             )}
 
             {/* Onboarding Content */}
-            <div className="relative z-10">
-                {currentStep === 'welcome' && (
-                    <WelcomeScreen
-                        userName={userName}
-                        onNext={handleNext}
-                    />
-                )}
+            <div className="relative z-10 flex items-center justify-center min-h-screen px-4 py-12">
+                <div className="w-full max-w-4xl">
+                    {currentStep === 'welcome' && (
+                        <WelcomeScreen
+                            userName={userName}
+                            onNext={handleNext}
+                        />
+                    )}
 
-                {currentStep === 'preferences' && (
-                    <PreferencesScreen
-                        onComplete={handlePreferencesComplete}
-                        onBack={handleBack}
-                        onSkip={handleSkip}
-                        progress={progress}
-                    />
-                )}
+                    {currentStep === 'preferences' && (
+                        <PreferencesScreen
+                            progress={progress}
+                            onNext={handlePreferencesComplete}
+                            onBack={handleBack}
+                        />
+                    )}
 
-                {currentStep === 'first-policy' && (
-                    <FirstPolicyScreen
-                        preferences={progress.preferences}
-                        onPolicyAdded={handlePolicyAdded}
-                        onBack={handleBack}
-                        onSkip={handleSkip}
-                        progress={progress}
-                    />
-                )}
+                    {currentStep === 'first-policy' && (
+                        <FirstPolicyScreen
+                            progress={progress}
+                            onNext={handlePolicyAdded}
+                            onBack={handleBack}
+                        />
+                    )}
 
-                {currentStep === 'tour' && (
-                    <InteractiveTour
-                        onComplete={handleTourComplete}
-                        onSkip={handleSkip}
-                    />
-                )}
-
-                {currentStep === 'success' && (
-                    <SuccessScreen
-                        progress={progress}
-                        onComplete={handleComplete}
-                    />
-                )}
+                    {currentStep === 'success' && (
+                        <SuccessScreen
+                            userName={userName}
+                            onComplete={handleComplete}
+                        />
+                    )}
+                </div>
             </div>
         </div>
     )

@@ -91,15 +91,47 @@ export function PolicyDetailsClient({
                     policy={mobilePolicy}
                     t={t}
                     onDownloadDocument={(url) => window.open(url, '_blank')}
-                    onShare={() => {
+                    onShare={async () => {
+                        const shareUrl = window.location.href
+                        const shareData = {
+                            title: policy.insurerName,
+                            text: `Policy ${policy.policyNumber}`,
+                            url: shareUrl
+                        }
+
+                        // Try native share first (mobile)
                         if (typeof navigator !== 'undefined' && navigator.share) {
-                            navigator.share({
-                                title: policy.insurerName,
-                                text: `Policy ${policy.policyNumber}`,
-                                url: window.location.href
-                            }).catch(console.error)
+                            try {
+                                await navigator.share(shareData)
+                            } catch (err) {
+                                // User cancelled or error - ignore
+                                console.log('Share cancelled or failed:', err)
+                            }
                         } else {
-                            alert('Sharing not supported on this device')
+                            // Fallback to clipboard (desktop)
+                            try {
+                                await navigator.clipboard.writeText(shareUrl)
+                                // Show success toast
+                                const toast = document.createElement('div')
+                                toast.className = 'fixed bottom-4 right-4 bg-emerald-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-up'
+                                toast.innerHTML = `
+                                    <div class="flex items-center gap-2">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="font-semibold">${language === 'el' ? 'Ο σύνδεσμος αντιγράφηκε!' : 'Link copied to clipboard!'}</span>
+                                    </div>
+                                `
+                                document.body.appendChild(toast)
+                                setTimeout(() => {
+                                    toast.style.opacity = '0'
+                                    toast.style.transform = 'translateY(1rem)'
+                                    setTimeout(() => toast.remove(), 300)
+                                }, 3000)
+                            } catch (err) {
+                                // Clipboard failed - show URL in alert as last resort
+                                alert(`${language === 'el' ? 'Αντιγράψτε τον σύνδεσμο' : 'Copy this link'}: ${shareUrl}`)
+                            }
                         }
                     }}
                     onAddToWallet={() => setShowMobileWalletModal(true)}

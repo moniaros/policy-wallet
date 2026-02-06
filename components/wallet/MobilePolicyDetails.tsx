@@ -43,6 +43,7 @@ import { PolicyQA } from "@/components/wallet/PolicyQA"
 import { DeletePolicy } from "@/components/wallet/DeletePolicy"
 import { analyzeGaps } from '@/app/(protected)/wallet/actions'
 import { UpgradePrompt } from '@/components/account/UpgradePrompt'
+import { LimitReachedModal } from '@/components/account/LimitReachedModal'
 import { toast } from 'sonner'
 import { Sparkles, Loader2, RefreshCw } from 'lucide-react'
 
@@ -278,15 +279,6 @@ export function MobilePolicyDetails({
                                 </button>
                             </div>
 
-                            {gapLimitReached && (
-                                <UpgradePrompt
-                                    reason="gap_limit"
-                                    language={t.lang || 'en'} // Fallback if t.lang missing
-                                    onDismiss={() => setGapLimitReached(false)}
-                                    className="mb-4 bg-white dark:bg-stone-800 shadow-sm"
-                                />
-                            )}
-
                             {policy.gapInstances?.length > 0 ? (
                                 <div className="space-y-4">
                                     {policy.gapInstances.map((gap: any) => (
@@ -358,6 +350,12 @@ export function MobilePolicyDetails({
                     </div>
                 )}
             </div>
+            <LimitReachedModal
+                isOpen={gapLimitReached}
+                reason="gap_limit"
+                language={t.lang || 'en'}
+                onDismiss={() => setGapLimitReached(false)}
+            />
         </div>
     )
 }

@@ -248,6 +248,7 @@ export const en: TranslationKeys = {
             intelligence: 'Intelligence',
         },
         view: 'View',
+        manageTasks: 'Review and complete your pending insurance requirements',
     },
 
     // Policy Types

@@ -1,130 +1,199 @@
 "use client"
 
 import { useLanguage } from '@/contexts/LanguageContext'
+import { TrendingUp, Shield, Calendar, Euro } from 'lucide-react'
 
 interface StatusSummaryProps {
     activeCount: number
     expiringCount: number
     actionNeededCount: number
+    totalPremium?: number
+    coverageScore?: number
+    policyBreakdown?: {
+        health: number
+        auto: number
+        home: number
+        life: number
+        travel: number
+    }
+    expiringPolicies?: Array<{
+        name: string
+        expiryDate: string
+    }>
+    premiumTrend?: number[]
 }
 
-export function StatusSummary({ activeCount, expiringCount, actionNeededCount }: StatusSummaryProps) {
+export function StatusSummary({
+    activeCount,
+    expiringCount,
+    actionNeededCount,
+    totalPremium = 0,
+    policyBreakdown = { health: 0, auto: 0, home: 0, life: 0, travel: 0 },
+    expiringPolicies = [],
+    premiumTrend = []
+}: StatusSummaryProps) {
     const { t, language } = useLanguage()
 
+    // Calculate total including action needed, active, expiring.
+    // Note: This logic assumes 'totalPolicies' should match the sum of these statuses.
     const totalPolicies = activeCount + expiringCount + actionNeededCount
+
+    const premiumChange = premiumTrend.length >= 2 ? premiumTrend[premiumTrend.length - 1] - premiumTrend[premiumTrend.length - 2] : 0
+
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat(language === 'el' ? 'el-GR' : 'en-US', {
+            style: 'currency',
+            currency: 'EUR'
+        }).format(amount)
+    }
+
+    // Build breakdown text
+    const breakdownParts = []
+    if (policyBreakdown.health > 0) breakdownParts.push(`${policyBreakdown.health} Health`)
+    if (policyBreakdown.auto > 0) breakdownParts.push(`${policyBreakdown.auto} Auto`)
+    if (policyBreakdown.home > 0) breakdownParts.push(`${policyBreakdown.home} Home`)
+    if (policyBreakdown.life > 0) breakdownParts.push(`${policyBreakdown.life} Life`)
+    if (policyBreakdown.travel > 0) breakdownParts.push(`${policyBreakdown.travel} Travel`)
+    const breakdownText = breakdownParts.join(', ')
 
     return (
         <div className="mb-8">
-            {/* Status Cards Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-                {/* Total Policies */}
-                <div className="bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-2xl p-4 sm:p-5">
-                    <div className="flex items-center gap-2 mb-2">
-                        <div className="w-8 h-8 bg-stone-100 dark:bg-stone-700 rounded-lg flex items-center justify-center">
-                            <span className="text-lg">📋</span>
+            {/* Stats Cards Grid - 3 columns */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Card 1: Total Premium */}
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
+                            <Euro className="w-5 h-5 text-teal-600" />
                         </div>
+                        <h3 className="text-sm font-semibold text-gray-700">Total Premium</h3>
                     </div>
-                    <p className="text-2xl sm:text-3xl font-black text-stone-900 dark:text-white">
-                        {totalPolicies}
-                    </p>
-                    <p className="text-xs font-bold text-stone-500 uppercase tracking-wider mt-1">
-                        {language === 'el' ? 'Σύνολο' : 'Total'}
-                    </p>
+
+                    <div className="mb-4">
+                        <div className="text-4xl font-bold text-gray-900">
+                            {formatCurrency(totalPremium)}
+                        </div>
+                        {premiumChange !== 0 && (
+                            <div className="flex items-center gap-1 mt-2 text-sm text-teal-600">
+                                <TrendingUp className="w-4 h-4" />
+                                <span>{premiumChange > 0 ? '+' : ''}{formatCurrency(premiumChange)} from last month</span>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Mini Bar Chart */}
+                    {premiumTrend.length > 0 ? (
+                        <div className="flex items-end gap-1.5 h-16">
+                            {premiumTrend.map((value, index) => {
+                                const maxValue = Math.max(...premiumTrend)
+                                const height = (value / maxValue) * 100
+                                const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
+
+                                return (
+                                    <div key={index} className="flex-1 flex flex-col items-center gap-1">
+                                        <div
+                                            className="w-full bg-teal-500 rounded-t"
+                                            style={{ height: `${height}%` }}
+                                        />
+                                        <span className="text-xs text-gray-500">{months[index]}</span>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    ) : (
+                        <div className="h-16 flex items-center justify-center text-xs text-gray-400 italic">
+                            No history available
+                        </div>
+                    )}
                 </div>
 
-                {/* Active */}
-                <div className="bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-800 rounded-2xl p-4 sm:p-5">
-                    <div className="flex items-center gap-2 mb-2">
-                        <div className="w-8 h-8 bg-teal-100 dark:bg-teal-900/50 rounded-lg flex items-center justify-center">
-                            <div className="w-3 h-3 bg-teal-500 rounded-full animate-pulse" />
+                {/* Card 2: Active Policies */}
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
+                            <Shield className="w-5 h-5 text-teal-600" />
+                        </div>
+                        <h3 className="text-sm font-semibold text-gray-700">Active Policies</h3>
+                    </div>
+
+                    <div className="flex items-center justify-between mb-4">
+                        <div>
+                            <div className="text-4xl font-bold text-gray-900">
+                                {totalPolicies}
+                            </div>
+                            <div className="text-sm text-gray-600 mt-1">
+                                {breakdownText}
+                            </div>
+                        </div>
+
+                        {/* Circular Progress */}
+                        <div className="relative w-20 h-20">
+                            <svg className="w-20 h-20 transform -rotate-90">
+                                {/* Background circle */}
+                                <circle
+                                    cx="40"
+                                    cy="40"
+                                    r="32"
+                                    stroke="currentColor"
+                                    strokeWidth="6"
+                                    fill="none"
+                                    className="text-gray-200"
+                                />
+                                {/* Progress circle */}
+                                <circle
+                                    cx="40"
+                                    cy="40"
+                                    r="32"
+                                    stroke="currentColor"
+                                    strokeWidth="6"
+                                    fill="none"
+                                    strokeDasharray={`${2 * Math.PI * 32}`}
+                                    strokeDashoffset={`${2 * Math.PI * 32 * (1 - activeCount / (totalPolicies || 1))}`}
+                                    className="text-teal-600"
+                                    strokeLinecap="round"
+                                />
+                            </svg>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="text-sm font-bold text-gray-900">
+                                    {activeCount}/{totalPolicies}
+                                </span>
+                            </div>
                         </div>
                     </div>
-                    <p className="text-2xl sm:text-3xl font-black text-teal-700 dark:text-teal-300">
-                        {activeCount}
-                    </p>
-                    <p className="text-xs font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider mt-1">
-                        {t.policyStatus.active}
-                    </p>
                 </div>
 
-                {/* Expiring Soon */}
-                <div className={`border rounded-2xl p-4 sm:p-5 transition-all ${expiringCount > 0
-                        ? 'bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-800'
-                        : 'bg-stone-50 dark:bg-stone-800/50 border-stone-100 dark:border-stone-700'
-                    }`}>
-                    <div className="flex items-center gap-2 mb-2">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${expiringCount > 0
-                                ? 'bg-amber-100 dark:bg-amber-900/50'
-                                : 'bg-stone-100 dark:bg-stone-700'
-                            }`}>
-                            <span className="text-lg">⏰</span>
+                {/* Card 3: Upcoming Renewals */}
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
+                            <Calendar className="w-5 h-5 text-teal-600" />
                         </div>
+                        <h3 className="text-sm font-semibold text-gray-700">Upcoming Renewals</h3>
                     </div>
-                    <p className={`text-2xl sm:text-3xl font-black ${expiringCount > 0
-                            ? 'text-amber-700 dark:text-amber-300'
-                            : 'text-stone-400 dark:text-stone-500'
-                        }`}>
-                        {expiringCount}
-                    </p>
-                    <p className={`text-xs font-bold uppercase tracking-wider mt-1 ${expiringCount > 0
-                            ? 'text-amber-600 dark:text-amber-400'
-                            : 'text-stone-400 dark:text-stone-500'
-                        }`}>
-                        {t.policyStatus.expiringSoon}
-                    </p>
-                </div>
 
-                {/* Action Needed */}
-                <div className={`border rounded-2xl p-4 sm:p-5 transition-all ${actionNeededCount > 0
-                        ? 'bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-800 animate-pulse'
-                        : 'bg-stone-50 dark:bg-stone-800/50 border-stone-100 dark:border-stone-700'
-                    }`}>
-                    <div className="flex items-center gap-2 mb-2">
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${actionNeededCount > 0
-                                ? 'bg-red-100 dark:bg-red-900/50'
-                                : 'bg-stone-100 dark:bg-stone-700'
-                            }`}>
-                            <span className="text-lg">⚠️</span>
+                    <div className="mb-4">
+                        <div className="text-4xl font-bold text-gray-900">
+                            {expiringCount}
+                        </div>
+                        <div className="text-sm text-gray-600 mt-1">
+                            Policies expiring within 30 days
                         </div>
                     </div>
-                    <p className={`text-2xl sm:text-3xl font-black ${actionNeededCount > 0
-                            ? 'text-red-700 dark:text-red-300'
-                            : 'text-stone-400 dark:text-stone-500'
-                        }`}>
-                        {actionNeededCount}
-                    </p>
-                    <p className={`text-xs font-bold uppercase tracking-wider mt-1 ${actionNeededCount > 0
-                            ? 'text-red-600 dark:text-red-400'
-                            : 'text-stone-400 dark:text-stone-500'
-                        }`}>
-                        {t.policyStatus.actionNeeded}
-                    </p>
+
+                    {/* Renewal List */}
+                    {expiringPolicies.length > 0 && (
+                        <div className="space-y-2">
+                            {expiringPolicies.slice(0, 2).map((policy, index) => (
+                                <div key={index} className="flex items-center gap-2 text-sm">
+                                    <div className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
+                                    <span className="text-gray-700">{policy.name}</span>
+                                    <span className="text-gray-500">({policy.expiryDate})</span>
+                                </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
-
-            {/* Alert Banner for Urgent Items */}
-            {(expiringCount > 0 || actionNeededCount > 0) && (
-                <div className="mt-4 p-4 bg-gradient-to-r from-amber-50 to-red-50 dark:from-amber-900/10 dark:to-red-900/10 border border-amber-100 dark:border-amber-800/50 rounded-2xl flex items-center gap-3">
-                    <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/50 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <svg className="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-stone-900 dark:text-white">
-                            {language === 'el' ? 'Απαιτείται προσοχή' : 'Attention needed'}
-                        </p>
-                        <p className="text-xs text-stone-600 dark:text-stone-400 truncate">
-                            {expiringCount > 0 && `${expiringCount} ${language === 'el' ? 'λήγουν σύντομα' : 'expiring soon'}`}
-                            {expiringCount > 0 && actionNeededCount > 0 && ' • '}
-                            {actionNeededCount > 0 && `${actionNeededCount} ${language === 'el' ? 'χρειάζονται ενέργεια' : 'need action'}`}
-                        </p>
-                    </div>
-                    <svg className="w-5 h-5 text-stone-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </div>
-            )}
         </div>
     )
 }

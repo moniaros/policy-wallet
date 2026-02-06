@@ -17,6 +17,14 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
     const [showInsights, setShowInsights] = useState(false)
     const { t, language } = useLanguage()
 
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat(language === 'el' ? 'el-GR' : 'en-US', {
+            style: 'currency',
+            currency: 'EUR',
+            maximumFractionDigits: 0
+        }).format(amount)
+    }
+
     // Format date based on locale
     const formatDate = (dateStr: string | null) => {
         if (!dateStr) return '—'
@@ -69,6 +77,13 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
                         {t.policyStatus.actionNeeded}
                     </span>
                 )
+            case 'analyzing':
+                return (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-full">
+                        <span className="w-2 h-2 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></span>
+                        {language === 'el' ? 'ΑΝΑΛΥΣΗ...' : 'ANALYZING...'}
+                    </span>
+                )
             default:
                 return null
         }
@@ -104,7 +119,8 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
             <div className={`absolute top-0 left-6 right-6 h-1 rounded-b-full ${policy.status === 'active' ? 'bg-teal-500' :
                 policy.status === 'expiring_soon' ? 'bg-amber-500' :
                     policy.status === 'action_needed' ? 'bg-red-500' :
-                        'bg-stone-300 dark:bg-stone-600'
+                        policy.status === 'analyzing' ? 'bg-blue-500 animate-pulse' :
+                            'bg-stone-300 dark:bg-stone-600'
                 }`} />
 
             {/* Verified Badge */}
@@ -135,12 +151,14 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
             <div className="pr-10 sm:pr-12">
                 {/* Mobile: Icon + Insurer row */}
                 <div className="flex items-start gap-3 mb-3">
-                    <span className="text-2xl flex-shrink-0 mt-0.5">{getPolicyIcon()}</span>
+                    <span className="text-2xl flex-shrink-0 mt-0.5">
+                        {policy.status === 'analyzing' ? '🧠' : getPolicyIcon()}
+                    </span>
                     <div className="min-w-0 flex-1">
-                        <h3 className="text-lg sm:text-xl font-black text-stone-900 dark:text-white tracking-tight leading-tight truncate">
+                        <h3 className={`text-lg sm:text-xl font-black text-stone-900 dark:text-white tracking-tight leading-tight truncate ${policy.status === 'analyzing' ? 'animate-pulse opacity-70' : ''}`}>
                             {policy.insurerName}
                         </h3>
-                        <p className="text-sm font-mono text-stone-500 dark:text-stone-400 truncate">
+                        <p className={`text-sm font-mono text-stone-500 dark:text-stone-400 truncate ${policy.status === 'analyzing' ? 'animate-pulse' : ''}`}>
                             {policy.policyNumber}
                         </p>
                         {/* Display plate number for motor policies */}
@@ -238,16 +256,16 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
                                 <div className="flex items-end gap-2">
                                     <div>
                                         <span className="text-xs text-stone-500">You Pay</span>
-                                        <div className="text-lg font-black text-stone-900 dark:text-white">€{policy.aiInsights.premiumBenchmark.current}</div>
+                                        <div className="text-lg font-black text-stone-900 dark:text-white">{formatCurrency(policy.aiInsights.premiumBenchmark.current)}</div>
                                     </div>
                                     <div className="mb-1 text-stone-300 dark:text-stone-600">vs</div>
                                     <div>
                                         <span className="text-xs text-stone-500">Local Avg</span>
-                                        <div className="text-lg font-bold text-stone-500">€{policy.aiInsights.premiumBenchmark.localAverage}</div>
+                                        <div className="text-lg font-bold text-stone-500">{formatCurrency(policy.aiInsights.premiumBenchmark.localAverage)}</div>
                                     </div>
                                     {policy.aiInsights.premiumBenchmark.savingsPotential > 0 && (
                                         <div className="ml-auto bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-3 py-1 rounded-xl text-xs font-bold">
-                                            Save €{policy.aiInsights.premiumBenchmark.savingsPotential}
+                                            Save {formatCurrency(policy.aiInsights.premiumBenchmark.savingsPotential)}
                                         </div>
                                     )}
                                 </div>

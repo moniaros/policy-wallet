@@ -17,6 +17,8 @@ export interface NavigationItem {
     icon?: React.ReactNode
     isActive?: boolean
     badge?: number
+    variant?: 'default' | 'pro' | 'plus'
+    isLocked?: boolean
 }
 
 export interface NavigationGroup {
@@ -116,7 +118,24 @@ export function AppShell({
 
     return (
         <>
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans">
+            <div className="min-h-screen bg-stone-50 dark:bg-stone-950 font-sans">
+                {/* Mobile Top Header */}
+                <header className="lg:hidden sticky top-0 z-40 w-full h-16 bg-white/80 dark:bg-stone-950/80 backdrop-blur-xl border-b border-stone-200 dark:border-stone-800 px-4 flex items-center justify-between">
+                    <button onClick={() => setSidebarOpen(true)} className="p-2 -ml-2 text-stone-500 hover:text-stone-900 dark:hover:text-white transition-colors">
+                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+
+                    <button onClick={() => handleNavigate('/wallet')} className="hover:opacity-80 transition-opacity">
+                        <PolicyWalletLogo size="sm" language={user.preferred_language || 'en'} />
+                    </button>
+
+                    <div className="w-10 h-10 flex items-center justify-center">
+                        {/* Placeholder for future specific actions like search, but kept balanced for now */}
+                    </div>
+                </header>
+
                 {/* Role change confirmation toast */}
                 {roleChangeToast && (
                     <div className="fixed top-4 right-4 z-50 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
@@ -130,19 +149,21 @@ export function AppShell({
                 {/* Desktop Sidebar */}
                 <aside
                     className={`
-          fixed top-0 left-0 z-50 h-full w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800
-          transform transition-transform duration-200 ease-in-out
+          fixed top-0 left-0 z-50 h-full w-72 bg-white dark:bg-stone-950 border-r border-stone-200 dark:border-stone-800
+          transform transition-transform duration-300 ease-in-out shadow-xl
           lg:translate-x-0
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         `}
                 >
                     <div className="flex flex-col h-full">
-                        {/* Logo */}
-                        <div className="flex items-center justify-between px-6 h-16 border-b border-slate-200 dark:border-slate-800">
-                            <PolicyWalletLogo size="sm" language={user.preferred_language || 'en'} />
+                        {/* Enhanced Logo Section */}
+                        <div className="flex items-center justify-between px-6 h-20 border-b border-stone-200 dark:border-stone-800 bg-gradient-to-br from-stone-50 to-white dark:from-stone-900 dark:to-stone-950">
+                            <button onClick={() => handleNavigate('/wallet')} className="hover:opacity-80 transition-opacity">
+                                <PolicyWalletLogo size="md" language={user.preferred_language || 'en'} />
+                            </button>
                             <button
                                 onClick={() => setSidebarOpen(false)}
-                                className="lg:hidden p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors"
+                                className="lg:hidden p-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 transition-colors"
                                 aria-label="Close menu"
                             >
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,7 +184,7 @@ export function AppShell({
                         )}
 
                         {/* Navigation */}
-                        <div className="flex-1 overflow-y-auto py-4">
+                        <div className="flex-1 overflow-y-auto py-6 px-3">
                             <MainNav
                                 navigation={navigation.map(group => ({
                                     ...group,
@@ -211,7 +232,7 @@ export function AppShell({
                         </div>
 
                         {/* User menu (desktop) */}
-                        <div className="hidden lg:block border-t border-slate-200 dark:border-slate-800 p-4">
+                        <div className="hidden lg:block border-t border-stone-200 dark:border-stone-800 p-4 bg-stone-50 dark:bg-stone-900/30">
                             <UserMenu
                                 user={user}
                                 notificationCount={notificationCount}
@@ -230,7 +251,7 @@ export function AppShell({
                 )}
 
                 {/* Main content */}
-                <main className="lg:pl-64 pb-16 lg:pb-0">
+                <main className="lg:pl-72 pb-24 lg:pb-0">
                     <div className="min-h-screen">
                         {children}
                     </div>
@@ -265,8 +286,8 @@ export function AppShell({
                                             </span>
                                         )}
                                     </div>
-                                    <span className="text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
-                                        {item.label}
+                                    <span className="text-[10px] font-black lowercase tracking-[0.1em] whitespace-nowrap">
+                                        {item.label.toLowerCase()}
                                     </span>
                                 </button>
                             )

@@ -67,7 +67,7 @@ export class PolicyService extends BaseService {
      */
     async create(
         userId: string,
-        data: CreatePolicyInput,
+        data: CreatePolicyInput & { status?: string },
         language: 'en' | 'el' = 'en'
     ): Promise<Policy> {
         return this.withTransaction(async (tx) => {
@@ -93,7 +93,7 @@ export class PolicyService extends BaseService {
                     endDate: new Date(data.endDate),
                     premiumAmount: data.premiumAmount,
                     premiumCurrency: data.premiumCurrency || 'EUR',
-                    status: 'active'
+                    status: data.status || 'active'
                 }
             })
 
@@ -125,7 +125,7 @@ export class PolicyService extends BaseService {
                             fileSize: doc.size,
                             source: 'policyholder',
                             uploadedByUserId: userId,
-                            processingStatus: 'completed'
+                            processingStatus: data.status === 'analyzing' ? 'processing' : 'completed'
                         }
                     })
                 }
@@ -146,7 +146,8 @@ export class PolicyService extends BaseService {
             logger('info', 'Policy created successfully', {
                 userId,
                 policyId: policy.id,
-                insurerName: policy.insurerName
+                insurerName: policy.insurerName,
+                status: policy.status
             })
 
             return policy
@@ -177,30 +178,18 @@ export class PolicyService extends BaseService {
         file: File,
         language: 'en' | 'el' = 'en'
     ): Promise<UploadAndParseResult> {
-        // Validate file size (10MB limit)
-        const MAX_FILE_SIZE = 10 * 1024 * 1024
+        // 1. Initial Validation
+        const MAX_FILE_SIZE = 15 * 1024 * 1024 // Increased to 15MB for better document support
         if (file.size > MAX_FILE_SIZE) {
-            logger('warn', 'File upload rejected: too large', {
-                userId,
-                size: file.size,
-                maxSize: MAX_FILE_SIZE
-            })
-
             throw AppError.validation({
                 file: [language === 'el'
-                    ? 'Το αρχείο είναι πολύ μεγάλο. Μέγιστο μέγεθος: 10MB'
-                    : 'File too large. Maximum size is 10MB']
+                    ? 'Το αρχείο είναι πολύ μεγάλο. Μέγιστο μέγεθος: 15MB'
+                    : 'File too large. Maximum size is 15MB']
             })
         }
 
-        // Validate file type
         const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp']
         if (!allowedTypes.includes(file.type)) {
-            logger('warn', 'File upload rejected: invalid type', {
-                userId,
-                type: file.type
-            })
-
             throw AppError.validation({
                 file: [language === 'el'
                     ? 'Μη έγκυρος τύπος αρχείου. Επιτρέπονται μόνο PDF, JPG, PNG και WEBP'
@@ -208,89 +197,27 @@ export class PolicyService extends BaseService {
             })
         }
 
-        // Upload file to storage
+        // 2. Immediate Upload
         let fileUrl: string
         try {
             fileUrl = await uploadFile(file, 'policies')
         } catch (error) {
-            logger('error', 'File upload failed', {
-                userId,
-                fileName: file.name,
-                error: error instanceof Error ? error.message : String(error)
-            })
-
-            throw AppError.externalService(
-                'Storage',
-                error instanceof Error ? error : new Error('Upload failed')
-            )
-        }
-
-        // Use AI service to extract policy data
-        const { getAIService } = await import('@/lib/services/ai')
-        const aiService = getAIService()
-
-        let extracted = false
-        let policyData: any = {
-            insurerName: 'Processing...',
-            policyNumber: `PENDING-${Date.now()}`,
-            lineOfBusiness: 'motor',
-            startDate: new Date().toISOString().split('T')[0],
-            endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            premiumAmount: 0
-        }
-
-        if (aiService.isAvailable()) {
-            try {
-                // Read file for AI processing
-                const arrayBuffer = await file.arrayBuffer()
-                const buffer = Buffer.from(arrayBuffer)
-
-                const aiDocument = {
-                    data: buffer.toString('base64'),
-                    mimeType: file.type,
-                    fileName: file.name
-                }
-
-                // Extract policy data using AI
-                const extractedData = await aiService.extractPolicyData(aiDocument)
-
-                policyData = {
-                    insurerName: extractedData.insurerName,
-                    policyNumber: extractedData.policyNumber,
-                    lineOfBusiness: extractedData.lineOfBusiness,
-                    startDate: extractedData.startDate,
-                    endDate: extractedData.endDate,
-                    premiumAmount: extractedData.premiumAmount,
-                    coverageSummary: extractedData.coverageSummary
-                }
-                extracted = true
-
-                logger('info', 'AI extraction successful', {
-                    userId,
-                    fileName: file.name,
-                    insurerName: extractedData.insurerName,
-                    aiService: aiService.getServiceName()
-                })
-            } catch (error) {
-                logger('warn', 'AI extraction failed, using placeholder data', {
-                    userId,
-                    fileName: file.name,
-                    error: error instanceof Error ? error.message : String(error)
-                })
-                // Continue with placeholder data
-            }
-        } else {
-            logger('warn', 'AI service not available, using placeholder data', {
-                userId,
-                fileName: file.name
-            })
+            logger('error', 'File upload failed', { userId, fileName: file.name, error })
+            throw AppError.externalService('Storage', error instanceof Error ? error : new Error('Upload failed'))
         }
 
         const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
 
+        // 3. Create 'Analyzing' record immediately
+        // We use placeholders that the AI will soon replace
         const policy = await this.create(userId, {
-            ...policyData,
-            premiumCurrency: 'EUR',
+            insurerName: 'AI Analyzing...',
+            policyNumber: `PENDING-${Math.random().toString(36).substring(7).toUpperCase()}`,
+            lineOfBusiness: 'other',
+            startDate: new Date().toISOString(),
+            endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+            premiumAmount: 0,
+            status: 'analyzing', // Marks it for background processing
             documents: [{
                 url: fileUrl,
                 name: sanitizedFileName,
@@ -298,10 +225,132 @@ export class PolicyService extends BaseService {
             }]
         }, language)
 
+        logger('info', 'Policy upload initiated - analysis deferred to background', {
+            userId,
+            policyId: policy.id,
+            fileName: sanitizedFileName
+        })
+
         return {
             policy,
-            extracted,
+            extracted: false, // Will be true later
             policyId: policy.id
+        }
+    }
+
+    /**
+     * Executes the background AI analysis (Extraction + Gaps)
+     * This should be called asynchronously by the server action
+     */
+    async runBackgroundAnalysis(
+        policyId: string,
+        userId: string,
+        language: 'en' | 'el' = 'en'
+    ): Promise<void> {
+        const startTime = Date.now()
+        logger('info', 'Starting background policy analysis', { policyId, userId })
+
+        try {
+            // 1. Run Gap Analysis (Includes metadata extraction and gap detection)
+            const { GapAnalysisService } = await import('./gap-analysis.service')
+            const gapService = new GapAnalysisService(this.db)
+
+            // This service handles the call to aiService and updates the policy record with extracted data
+            await gapService.analyzePolicy(policyId, userId, language)
+
+            // 2. Post-Analysis Deduplication
+            // Now that we have the real policy number extracted by AI, check if it already exists in the user's wallet
+            const currentPolicy = await this.db.policy.findUnique({
+                where: { id: policyId },
+                include: { documents: true }
+            })
+
+            if (currentPolicy && currentPolicy.policyNumber && !currentPolicy.policyNumber.startsWith('PENDING-')) {
+                const existingPolicy = await this.db.policy.findFirst({
+                    where: {
+                        ownerUserId: userId,
+                        policyNumber: {
+                            equals: currentPolicy.policyNumber.trim(),
+                            mode: 'insensitive'
+                        },
+                        lineOfBusiness: currentPolicy.lineOfBusiness,
+                        id: { not: policyId },
+                        status: 'active'
+                    }
+                })
+
+                if (existingPolicy) {
+                    logger('info', 'Duplicate policy detected, merging documents', {
+                        userId,
+                        existingPolicyId: existingPolicy.id,
+                        tempPolicyId: policyId,
+                        policyNumber: currentPolicy.policyNumber
+                    })
+
+                    // Move documents to the existing policy
+                    await this.db.policyDocument.updateMany({
+                        where: { policyId },
+                        data: { policyId: existingPolicy.id }
+                    })
+
+                    // Optional: Merge coverage summary or other fields if the new analysis is more detailed
+                    // For now, we prioritize the existing record but add the new docs.
+
+                    // Delete the temporary placeholder policy
+                    await this.db.policy.delete({
+                        where: { id: policyId }
+                    })
+
+                    // Add a log for the merge
+                    await this.logActivity(
+                        userId,
+                        'POLICY_DEDUPLICATED',
+                        `Identified and merged duplicate upload for policy ${currentPolicy.policyNumber}`,
+                        {
+                            existingPolicyId: existingPolicy.id,
+                            mergedPolicyId: policyId,
+                            policyNumber: currentPolicy.policyNumber
+                        }
+                    )
+
+                    logger('info', 'Deduplication merge complete', { policyId: existingPolicy.id })
+                    return // Exit early since we deleted the current policy record
+                }
+            }
+
+            // 3. Mark document as completed (if not deduplicated)
+            await this.db.policyDocument.updateMany({
+                where: { policyId },
+                data: { processingStatus: 'completed' }
+            })
+
+            // 4. Mark policy as active (if not deduplicated)
+            await this.db.policy.update({
+                where: { id: policyId },
+                data: { status: 'active' }
+            })
+
+            logger('info', 'Background policy analysis completed successfully', {
+                policyId,
+                durationMs: Date.now() - startTime
+            })
+        } catch (error) {
+            logger('error', 'Background policy analysis failed', {
+                policyId,
+                userId,
+                error: error instanceof Error ? error.message : String(error)
+            })
+
+            // Update status to indicate manual action might be needed
+            await this.db.policy.update({
+                where: { id: policyId },
+                data: { status: 'action_needed' }
+            })
+
+            await this.db.policyDocument.updateMany({
+                where: { policyId },
+                data: { processingStatus: 'failed' }
+            })
         }
     }
 

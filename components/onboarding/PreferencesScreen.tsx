@@ -6,9 +6,8 @@ import { Car, Home, Heart, Briefcase, ArrowLeft, ArrowRight, Plus } from "lucide
 import type { OnboardingProgress } from "./OnboardingFlow"
 
 interface PreferencesScreenProps {
-    onComplete: (insuranceTypes: string[], language: string) => void
+    onNext: (insuranceTypes: string[], language: string) => void
     onBack: () => void
-    onSkip: () => void
     progress: OnboardingProgress
 }
 
@@ -19,7 +18,7 @@ const INSURANCE_TYPES = [
     { id: 'life', label: 'Life', icon: Briefcase, color: 'from-purple-500 to-purple-600' },
 ]
 
-export function PreferencesScreen({ onComplete, onBack, onSkip, progress }: PreferencesScreenProps) {
+export function PreferencesScreen({ progress, onNext, onBack }: PreferencesScreenProps) {
     const [selectedTypes, setSelectedTypes] = useState<string[]>([])
     const [showOthers, setShowOthers] = useState(false)
 
@@ -33,7 +32,7 @@ export function PreferencesScreen({ onComplete, onBack, onSkip, progress }: Pref
 
     const handleContinue = () => {
         if (selectedTypes.length > 0) {
-            onComplete(selectedTypes, 'en')
+            onNext(selectedTypes, 'en')
         }
     }
 
@@ -55,13 +54,6 @@ export function PreferencesScreen({ onComplete, onBack, onSkip, progress }: Pref
                         >
                             <ArrowLeft className="w-5 h-5" />
                             <span className="text-sm font-medium">Back</span>
-                        </button>
-                        <button
-                            onClick={onSkip}
-                            className="flex items-center gap-2 text-slate-500 hover:text-slate-700 transition-colors"
-                        >
-                            <span className="text-sm font-medium">Skip</span>
-                            <ArrowRight className="w-4 h-4" />
                         </button>
                     </div>
 
@@ -86,8 +78,8 @@ export function PreferencesScreen({ onComplete, onBack, onSkip, progress }: Pref
                                     <div
                                         key={i}
                                         className={`h-1 flex-1 rounded-full transition-all duration-300 ${i < progress.currentStep
-                                                ? 'bg-gradient-to-r from-indigo-500 to-violet-500'
-                                                : 'bg-slate-200'
+                                            ? 'bg-gradient-to-r from-indigo-500 to-violet-500'
+                                            : 'bg-slate-200'
                                             }`}
                                     />
                                 ))}
@@ -114,8 +106,8 @@ export function PreferencesScreen({ onComplete, onBack, onSkip, progress }: Pref
                                     transition={{ delay: index * 0.1 }}
                                     onClick={() => handleToggleType(type.id)}
                                     className={`relative p-6 rounded-2xl border-2 transition-all duration-200 cursor-pointer group ${isSelected
-                                            ? 'border-emerald-500 bg-emerald-50 shadow-lg shadow-emerald-100'
-                                            : 'border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md'
+                                        ? 'border-emerald-500 bg-emerald-50 shadow-lg shadow-emerald-100'
+                                        : 'border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md'
                                         }`}
                                 >
                                     {/* Selected Checkmark */}
@@ -156,8 +148,8 @@ export function PreferencesScreen({ onComplete, onBack, onSkip, progress }: Pref
                         onClick={handleContinue}
                         disabled={selectedTypes.length === 0}
                         className={`w-full py-4 px-8 rounded-xl font-semibold text-lg transition-all duration-200 ${selectedTypes.length > 0
-                                ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 cursor-pointer'
-                                : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                            ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 cursor-pointer'
+                            : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                             }`}
                     >
                         Continue

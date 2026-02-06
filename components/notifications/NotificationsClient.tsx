@@ -14,9 +14,11 @@ import {
     Filter,
     Search,
     Sparkles,
-    Target
+    Target,
+    LayoutDashboard
 } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { PageHeader } from '@/components/ui/PageHeader'
 
 interface NotificationEvent {
     id: string
@@ -127,61 +129,26 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
     }
 
     return (
-        <div className="min-h-screen bg-stone-50 dark:bg-stone-900">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-
-                {/* Branded Header */}
-                <div className="px-6 pt-12 pb-8 flex items-center justify-between">
-                    <div className="flex items-center gap-0.5">
-                        <span className="text-2xl font-black tracking-tight text-stone-900 dark:text-white">Policy</span>
-                        <span className="text-2xl font-black tracking-tight text-teal-600">Wallet</span>
-                    </div>
-                </div>
-
-                <div className="px-6 pb-12">
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-8 h-8 bg-teal-600 rounded-xl flex items-center justify-center text-white">
-                            <Bell className="w-4 h-4" />
-                        </div>
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-500">
-                            {t.notifications.communicationCenter}
-                        </span>
-                    </div>
-
-                    <h1 className="text-5xl font-black text-stone-900 dark:text-white tracking-tighter mb-4 leading-tight">
-                        {lang === 'el' ? 'Ειδοποιήσεις' : 'Smart'} <span className="text-stone-400 dark:text-stone-500 italic">Alerts.</span>
-                    </h1>
-
-                    <p className="text-stone-500 text-lg max-w-xl mb-12">
-                        {t.activity.subtitle}
-                    </p>
-
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 leading-tight">
-                        {t.userMenu.notifications}
-                    </h1>
-
-                    <p className="text-lg md:text-xl text-cyan-100 max-w-2xl mb-8">
-                        {t.activity.subtitle}
-                    </p>
-
-                    {/* Stats Slider */}
-                    <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 -mx-6 px-6 snap-x mb-12">
-                        <div className="flex-shrink-0 w-[160px] bg-gradient-to-br from-teal-600 to-teal-400 rounded-[32px] p-6 text-white shadow-xl shadow-teal-600/20 snap-start">
-                            <span className="text-[10px] font-black uppercase tracking-widest opacity-80 block mb-2">{t.common.all || 'All'}</span>
-                            <span className="text-4xl font-black tracking-tighter">{counts.all}</span>
+        <div className="min-h-screen bg-transparent">
+            <PageHeader
+                title={lang === 'el' ? 'Smart Alerts' : 'Smart Alerts'}
+                subtitle={t.activity.subtitle}
+                actions={
+                    <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 snap-x">
+                        <div className="flex-shrink-0 w-[140px] bg-gradient-to-br from-teal-600 to-teal-400 rounded-2xl p-4 text-white shadow-lg shadow-teal-600/20 snap-start">
+                            <span className="text-[10px] font-black uppercase tracking-widest opacity-80 block mb-1">{t.common.all || 'All'}</span>
+                            <span className="text-2xl font-black tracking-tighter">{counts.all}</span>
                         </div>
 
-                        <div className="flex-shrink-0 w-[160px] bg-white dark:bg-stone-800 rounded-[32px] p-6 text-stone-900 dark:text-white shadow-sm border border-stone-100 dark:border-stone-800 snap-start">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-stone-400 block mb-2">{t.tasks.taskTypes.unread || 'Unread'}</span>
-                            <span className="text-4xl font-black tracking-tighter text-amber-500">{counts.unread}</span>
-                        </div>
-
-                        <div className="flex-shrink-0 w-[160px] bg-white dark:bg-stone-800 rounded-[32px] p-6 text-stone-900 dark:text-white shadow-sm border border-stone-100 dark:border-stone-800 snap-start">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-stone-400 block mb-2">INTEL</span>
-                            <span className="text-4xl font-black tracking-tighter">{counts.intelligence}</span>
+                        <div className="flex-shrink-0 w-[140px] bg-white dark:bg-stone-800 rounded-2xl p-4 text-stone-900 dark:text-white shadow-sm border border-stone-100 dark:border-stone-800 snap-start">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-stone-400 block mb-1">{t.tasks.taskTypes.unread || 'Unread'}</span>
+                            <span className="text-2xl font-black tracking-tighter text-amber-500">{counts.unread}</span>
                         </div>
                     </div>
-                </div>
+                }
+            />
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
                 {/* Tab Navigation */}
                 <div className="px-6 mb-8">

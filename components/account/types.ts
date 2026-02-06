@@ -9,6 +9,7 @@ export interface User {
     phone_number?: string | null
     preferred_language: 'el' | 'en'
     role: string
+    image?: string | null
     created_at: string
 }
 

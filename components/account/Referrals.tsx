@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { ReferralsProps } from './types'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export function Referrals({
     currentUser,
@@ -14,10 +15,18 @@ export function Referrals({
     onCopyLink
 }: ReferralsProps) {
     const [copied, setCopied] = useState(false)
+    const { language } = useLanguage()
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString)
-        return date.toLocaleDateString('el-GR', { day: 'numeric', month: 'short', year: 'numeric' })
+        return date.toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })
+    }
+
+    const formatPrice = (price: number) => {
+        return new Intl.NumberFormat(language === 'el' ? 'el-GR' : 'en-US', {
+            style: 'currency',
+            currency: 'EUR'
+        }).format(price)
     }
 
     const handleCopyLink = () => {
@@ -116,7 +125,7 @@ export function Referrals({
                                 <span className="text-[10px] font-black uppercase tracking-widest text-amber-100">Credit Balance</span>
                             </div>
                             <div className="text-5xl font-black tracking-tighter mb-4">
-                                €{creditBalance.toFixed(2)}
+                                {formatPrice(creditBalance)}
                             </div>
                         </div>
 
@@ -206,11 +215,11 @@ export function Referrals({
                                             </td>
                                             <td className="px-10 py-6 whitespace-nowrap text-right">
                                                 <span className={`text-xs font-black ${transaction.amount > 0 ? 'text-teal-600 dark:text-teal-400' : 'text-stone-400'}`}>
-                                                    {transaction.amount > 0 ? '+' : ''}€{Math.abs(transaction.amount).toFixed(2)}
+                                                    {transaction.amount > 0 ? '+' : ''}{formatPrice(Math.abs(transaction.amount))}
                                                 </span>
                                             </td>
                                             <td className="px-10 py-6 whitespace-nowrap text-right text-xs font-black text-stone-900 dark:text-stone-100">
-                                                €{transaction.balance_after.toFixed(2)}
+                                                {formatPrice(transaction.balance_after)}
                                             </td>
                                         </tr>
                                     ))}

@@ -1,6 +1,7 @@
 "use client"
 
 import type { BillingProps } from './types'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export function Billing({
     currentUser,
@@ -14,14 +15,16 @@ export function Billing({
     onDowngrade,
     onCancel
 }: BillingProps) {
+    const { language } = useLanguage()
+
     const formatDate = (dateString: string | null) => {
         if (!dateString) return '—'
         const date = new Date(dateString)
-        return date.toLocaleDateString('el-GR', { day: 'numeric', month: 'short', year: 'numeric' })
+        return date.toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })
     }
 
     const formatPrice = (price: number, currency: string = 'EUR') => {
-        return new Intl.NumberFormat('el-GR', {
+        return new Intl.NumberFormat(language === 'el' ? 'el-GR' : 'en-US', {
             style: 'currency',
             currency
         }).format(price)

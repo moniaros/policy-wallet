@@ -73,9 +73,6 @@ function SignUpForm() {
             if (result.success) {
                 if (result.redirect) {
                     router.push(result.redirect)
-                } else if (result.warning) {
-                    // Account created but auto-login failed
-                    setError(result.warning)
                 } else {
                     // Fallback to confirmation page if no redirect provided (legacy behavior)
                     router.push(`/auth/signup/confirmation?email=${encodeURIComponent(email)}&role=${role}`)

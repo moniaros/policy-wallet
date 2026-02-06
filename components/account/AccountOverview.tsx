@@ -1,6 +1,7 @@
 "use client"
 
 import type { AccountOverviewProps } from './types'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export function AccountOverview({
     currentUser,
@@ -13,13 +14,15 @@ export function AccountOverview({
     onUpgrade,
     onSwitchRole
 }: AccountOverviewProps) {
+    const { language } = useLanguage()
+
     const formatDate = (dateString: string) => {
         const date = new Date(dateString)
-        return date.toLocaleDateString('el-GR', { day: 'numeric', month: 'short', year: 'numeric' })
+        return date.toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US', { day: 'numeric', month: 'short', year: 'numeric' })
     }
 
     const formatPrice = (price: number) => {
-        return new Intl.NumberFormat('el-GR', {
+        return new Intl.NumberFormat(language === 'el' ? 'el-GR' : 'en-US', {
             style: 'currency',
             currency: 'EUR'
         }).format(price)
@@ -62,13 +65,57 @@ export function AccountOverview({
         )
     }
 
-    // Check if user has dual roles
     const roles = currentUser.role.split(',').map(r => r.trim());
     const isDualRole = roles.length > 1;
     const isPolicyholder = currentPlan.plan_type === 'policyholder'
 
     return (
-        <div className="max-w-7xl mx-auto py-12">
+        <div className="max-w-7xl mx-auto py-8">
+            {/* Profile Header */}
+            <div className="flex flex-col md:flex-row items-center gap-8 mb-16 p-8 bg-white dark:bg-stone-900 rounded-[40px] border border-stone-100 dark:border-stone-800 shadow-sm relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/5 blur-[80px] rounded-full -mr-32 -mt-32 transition-colors group-hover:bg-teal-500/10" />
+
+                <div className="relative">
+                    <div className="w-32 h-32 rounded-[32px] overflow-hidden bg-stone-100 dark:bg-stone-800 border-4 border-white dark:border-stone-900 shadow-2xl transition-transform active:scale-95 group-hover:scale-105 duration-500">
+                        {currentUser.image ? (
+                            <img
+                                src={currentUser.image}
+                                alt={currentUser.name || 'User'}
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-teal-600 to-teal-400 text-white">
+                                <span className="text-4xl font-black">{(currentUser.name || 'U')[0]}</span>
+                            </div>
+                        )}
+                    </div>
+                    <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-emerald-500 border-4 border-white dark:border-stone-900 rounded-full shadow-lg"></div>
+                </div>
+
+                <div className="flex-1 text-center md:text-left relative z-10">
+                    <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
+                        <span className="px-3 py-1 bg-stone-100 dark:bg-stone-800 rounded-full text-[10px] font-black uppercase tracking-widest text-stone-500">
+                            {currentPlan.name} Tier
+                        </span>
+                        {isDualRole && (
+                            <span className="px-3 py-1 bg-teal-50 dark:bg-teal-900/20 rounded-full text-[10px] font-black uppercase tracking-widest text-teal-600 dark:text-teal-400 border border-teal-100 dark:border-teal-900/30">
+                                Dual-Role Account
+                            </span>
+                        )}
+                    </div>
+                    <h1 className="text-4xl font-black text-stone-900 dark:text-white tracking-tighter mb-2">
+                        {currentUser.name}
+                    </h1>
+                    <p className="text-stone-500 dark:text-stone-400 font-bold tracking-tight">
+                        {currentUser.email}
+                    </p>
+                </div>
+
+                <div className="flex-shrink-0 flex gap-3 relative z-10">
+                    {/* Future actions like Edit Profile */}
+                </div>
+            </div>
+
             {/* Role Switcher for Dual-Role Users */}
             {isDualRole && (
                 <div className="mb-12 relative overflow-hidden bg-stone-900 dark:bg-black rounded-[32px] p-8 text-white shadow-2xl">
@@ -163,7 +210,7 @@ export function AccountOverview({
                                 <span className="text-[10px] font-black uppercase tracking-widest text-teal-100">Wallet Credits</span>
                             </div>
                             <div className="text-5xl font-black tracking-tighter mb-4">
-                                €{creditBalance.toFixed(2)}
+                                {formatPrice(creditBalance)}
                             </div>
                             <p className="text-teal-50/70 text-xs font-medium leading-relaxed italic">
                                 Apply these credits during checkout for AI analysis upgrades or subscription maintenance.

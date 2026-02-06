@@ -80,8 +80,8 @@ export async function requirePayingUser() {
     const isPaid = subscription ? Number(subscription.plan.price) > 0 : false
 
     if (!isPaid) {
-        logger('info', 'Access denied to paid feature: Redirecting to upsell', { userId: dbUser.id })
-        redirect("/account?upsell=coverage")
+        logger('info', 'Access denied to paid feature: Redirecting to upgrade', { userId: dbUser.id })
+        redirect("/upgrade?reason=feature_locked")
     }
 
     return { dbUser, subscription, isPaid: true }

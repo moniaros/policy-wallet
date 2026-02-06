@@ -93,6 +93,8 @@ export default async function PolicyDetailPage({
         createdAt: policy.createdAt.toISOString(),
         updatedAt: policy.updatedAt.toISOString(),
         lastAnalyzedAt: policy.lastAnalyzedAt?.toISOString() || null,
+        premiumAmount: policy.premiumAmount ? Number(policy.premiumAmount) : null,
+        premiumCurrency: policy.premiumCurrency,
         documents: policy.documents.map(d => ({
             ...d,
             uploadedAt: d.uploadedAt.toISOString()

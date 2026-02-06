@@ -1,7 +1,9 @@
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
-import { WalletListClient } from "@/components/wallet/WalletListClient"
+import { PolicyWalletClient } from "@/components/wallet/PolicyWalletClient"
 import type { Policy } from "@/components/wallet/types"
+import { PageHeader } from "@/components/ui/PageHeader"
+import { Plus, Upload } from "lucide-react"
 
 export default async function WalletPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -70,7 +72,20 @@ export default async function WalletPage() {
         }))
     }))
 
-    return <WalletListClient policies={mappedPolicies} user={user} />
+    return (
+        <div className="min-h-screen bg-transparent">
+            <PageHeader
+                title={`Welcome back, ${user.name.split(' ')[0]}!`}
+                subtitle="Here's an overview of your insurance portfolio and key metrics."
+                actions={
+                    <div className="flex items-center gap-3">
+                        {/* Add Policy Actions */}
+                    </div>
+                }
+            />
+            <PolicyWalletClient policies={mappedPolicies} user={user} />
+        </div>
+    )
 }
 
 function mapStatus(dbStatus: string, endDate: Date): 'active' | 'expiring_soon' | 'incomplete' | 'action_needed' {

@@ -8,8 +8,10 @@
 export type NavigationItem = {
     label: string
     href: string
-    icon?: string
+    icon?: any
     badge?: number  // Only number to match AppShell
+    variant?: 'default' | 'pro' | 'plus'
+    isLocked?: boolean
 }
 
 export type NavigationSection = {

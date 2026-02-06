@@ -13,9 +13,11 @@ import fs from "fs/promises"
 import path from "path"
 import { getAIService } from "@/lib/services/ai"
 import { GapAnalysisService } from "@/lib/services/gap-analysis.service"
+import { PolicyService } from "@/lib/services/policy.service"
 import { trackTokenUsage } from "@/lib/token-tracking"
 import { canUserUseFeature, getUpgradeMessage, getUserSubscription, SUBSCRIPTION_LIMITS } from "@/lib/subscription-limits"
 import { GoogleGenerativeAI } from "@google/generative-ai"
+import { after } from 'next/server'
 
 const PolicySchema = z.object({
     insurerName: z.string().min(1, "Insurer name is required"),
@@ -144,135 +146,34 @@ export async function uploadPolicyDocument(formData: FormData) {
     }
 
     const userId = authResult.dbUser.id
-    const userEmail = authResult.dbUser.email || "unknown"
-
     const file = formData.get("file") as File
+
     if (!file) {
         return { error: "No file uploaded" }
     }
 
-    // Production Hardening: Size limit (10MB)
-    if (file.size > 10 * 1024 * 1024) {
-        logger('warn', 'Policy upload rejected: file too large', { userId, size: file.size })
-        return { error: "File too large. Maximum size is 10MB." }
-    }
-
-    // Production Hardening: File Type Validation
-    const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp"]
-    if (!allowedTypes.includes(file.type)) {
-        logger('warn', 'Policy upload rejected: invalid file type', { userId, type: file.type })
-        return { error: "Invalid file type. Only PDF, JPG, PNG, and WEBP are allowed." }
-    }
-
-    // Production Hardening: Sanitize filename
-    // Keep extension, alphanumeric chars, dashes, underscores
-    const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
-
-    // 1. Upload to storage
-    let fileUrl = ""
     try {
-        // Pass sanitized name if uploadFile supports it (it takes File object, so might need to rename or relying on random name generation inside)
-        // If uploadFile keeps original name, we effectively can't sanitize it at the storage level without creating a new File object or modifying uploadFile.
-        // But we CAN use sanitized name for DB record.
-        fileUrl = await uploadFile(file, "policies")
-    } catch (e) {
-        return { error: "Upload failed" }
-    }
+        const policyService = new PolicyService()
+        const language = (authResult.dbUser.preferredLanguage as 'en' | 'el') || 'en'
 
-    // 2. AI Extraction Logic (Gemini)
-    let extractedData = {
-        insurerName: "AI Processing...",
-        policyNumber: "PENDING-" + Date.now(),
-        lineOfBusiness: "motor", // Default fallback
-        startDate: new Date(),
-        endDate: new Date(Date.now() + 31536000000), // +1 year
-        coverageSummary: "Processing...",
-        premiumAmount: 0
-    };
+        // 1. Initiate upload (Creates 'analyzing' record)
+        const result = await policyService.uploadAndParse(userId, file, language)
 
-    try {
-        const aiService = getAIService()
-
-        if (aiService.isAvailable()) {
-            console.log("Analyzing document with AI Service...");
-
-            const arrayBuffer = await file.arrayBuffer()
-            const base64Data = Buffer.from(arrayBuffer).toString("base64")
-
-            const extractionResult = await aiService.extractPolicyData({
-                data: base64Data,
-                mimeType: file.type === "application/pdf" ? "application/pdf" : file.type,
-                fileName: file.name
-            }, {
-                userId: userId // Pass userId for token tracking
-            })
-
-            logger('info', 'AI extraction successful', { userId, fileName: file.name })
-
-            // Update extractedData with result
-            extractedData = {
-                ...extractedData,
-                ...extractionResult,
-                // Ensure type safety/conversion if needed
-                startDate: typeof extractionResult.startDate === 'string' ? new Date(extractionResult.startDate) : extractionResult.startDate,
-                endDate: typeof extractionResult.endDate === 'string' ? new Date(extractionResult.endDate) : extractionResult.endDate,
+        // 2. Trigger background analysis (Survives route changes)
+        after(async () => {
+            try {
+                await policyService.runBackgroundAnalysis(result.policyId, userId, language)
+            } catch (e) {
+                logger('error', 'Deferred analysis failed', { policyId: result.policyId, error: e })
             }
-        }
-    } catch (error) {
-        logger('error', 'AI extraction failed', { userId, error, fileName: file.name })
-        // Fallback to placeholder is already set
+        })
+
+        revalidatePath("/wallet")
+        return { success: true, policyId: result.policyId }
+    } catch (e: any) {
+        logger('error', 'Policy upload action failed', { userId, error: e.message })
+        return { error: e.message || "Upload failed" }
     }
-
-    // Create policy with extracted or default data
-    const policy = await db.policy.create({
-        data: {
-            ownerUserId: userId,
-            createdByUserId: userId,
-            insurerName: extractedData.insurerName,
-            policyNumber: extractedData.policyNumber,
-            lineOfBusiness: extractedData.lineOfBusiness as any,
-            startDate: extractedData.startDate,
-            endDate: extractedData.endDate,
-            coverageSummary: extractedData.coverageSummary,
-            premiumAmount: (extractedData as any).premiumAmount || 0,
-            status: "active", // Assume active if parsed successfully? Or maybe 'incomplete' if low confidence?
-            // For MVP, if we got data, let's say "active" or "action_needed" to verify.
-            // Let's stick to 'incomplete' so user reviews it, but we pre-fill the data.
-            // Wait, previous code used 'incomplete'. Let's switch to 'action_needed' so they notice it.
-        }
-    })
-
-    // Create document record
-    await db.policyDocument.create({
-        data: {
-            policyId: policy.id,
-            fileUrl: fileUrl,
-            fileName: sanitizedFileName,
-            fileSize: file.size,
-            source: "policyholder",
-            uploadedByUserId: userId,
-            processingStatus: "completed"
-        }
-    })
-
-    // Log Activity
-    await (db as any).activityLog.create({
-        data: {
-            adminUserId: userId,
-            adminEmail: userEmail,
-            actionType: "POLICY_UPLOADED",
-            description: `Uploaded and parsed document ${file.name} for ${policy.insurerName}`,
-            metadata: {
-                policyId: policy.id,
-                fileName: file.name,
-                extractedInsurer: policy.insurerName,
-                extractedPolicyNumber: policy.policyNumber
-            }
-        }
-    })
-
-    revalidatePath("/wallet")
-    return { success: true, policyId: policy.id }
 }
 
 export async function getInsurers() {

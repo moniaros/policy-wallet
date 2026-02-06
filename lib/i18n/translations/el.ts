@@ -246,6 +246,7 @@ export const el = {
             intelligence: 'Ευφυία',
         },
         view: 'Προβολή',
+        manageTasks: 'Ελέγξτε και ολοκληρώστε τις εκκρεμείς ασφαλιστικές σας υποχρεώσεις',
     },
 
     // Policy Types

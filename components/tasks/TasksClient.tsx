@@ -160,22 +160,6 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                     <p className="text-stone-500 text-lg max-w-xl mb-12">
                         {lang === 'el' ? 'Βελτιώστε τη βαθμολογία κάλυψής σας ολοκληρώνοντας αυτές τις εργασίες' : 'Improve your coverage score by completing these tasks'}
                     </p>
-                    <div className="flex items-center gap-3 mb-4">
-                        <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
-                            <Target className="w-5 h-5" />
-                        </div>
-                        <span className="text-xs font-bold uppercase tracking-wider text-blue-100">
-                            {t.tasks.actionCenter}
-                        </span>
-                    </div>
-
-                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 leading-tight">
-                        {lang === 'el' ? 'Καθημερινή Επισκόπηση' : 'Daily Review'}
-                    </h1>
-
-                    <p className="text-lg md:text-xl text-blue-100 max-w-2xl mb-8">
-                        {lang === 'el' ? 'Βελτιώστε τη βαθμολογία κάλυψής σας ολοκληρώνοντας αυτές τις εργασίες' : 'Improve your coverage score by completing these tasks'}
-                    </p>
 
                     {/* Stats Slider */}
                     <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 -mx-6 px-6 snap-x mb-12">
