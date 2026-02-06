@@ -427,7 +427,8 @@ export function PolicyDetailsClient({
                                 </button>
 
                                 {/* File a Claim */}
-                                <button
+                                {/* File a Claim - HIDDEN TEMPORARILY */}
+                                {/* <button
                                     onClick={() => {
                                         // TODO: Navigate to claims filing page or open form
                                         alert(language === 'el' ? 'Φόρμα υποβολής αξίωσης θα επεκταθεί σύντομα' : 'Claims filing form coming soon')
@@ -438,7 +439,7 @@ export function PolicyDetailsClient({
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                     </svg>
                                     <span>{language === 'el' ? 'Υποβολή Αξίωσης' : 'File a Claim'}</span>
-                                </button>
+                                </button> */}
 
                                 {/* Download Contract */}
                                 <button className="w-full p-4 bg-gradient-to-r from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30 text-emerald-800 dark:text-emerald-200 rounded-xl text-sm font-semibold border border-emerald-200 dark:border-emerald-800/50 hover:shadow-lg transition-all duration-200 flex items-center gap-3 cursor-pointer group">

@@ -325,15 +325,42 @@ export const el = {
     },
 
     analysis: {
-        title: 'ΑΝΑΛΥΣΗ ΚΕΝΩΝ',
+        title: 'ΑΝΑΛΥΣΗ ΑΣΦΑΛΙΣΤΙΚΩΝ ΚΕΝΩΝ',
         runAnalysis: 'Εκτέλεση Ανάλυσης AI',
         analyzing: 'Ανάλυση...',
-        noGaps: 'Δεν εντοπίστηκαν κενά. Εκτελέστε ανάλυση για έλεγχο κάλυψης.',
-        gapDetected: 'Εντοπίστηκε Κενό Κάλυψης',
-        recommendation: 'Πρόταση',
+        noGaps: 'Δεν εντοπίστηκαν ασφαλιστικά κενά. Εκτελέστε ανάλυση για έλεγχο κάλυψης.',
+        gapDetected: 'Εντοπίστηκε Ασφαλιστικό Κενό',
+        recommendation: 'Πρόταση Κάλυψης',
         analysisComplete: 'Η ανάλυση ολοκληρώθηκε. Βρέθηκαν ',
         issues: ' ζητήματα.',
-        unknownGap: 'Άγνωστο Κενό',
+        unknownGap: 'Άγνωστο Ασφαλιστικό Κενό',
+    },
+
+    // Standardized Coverage Names
+    coverage_names: {
+        // Motor
+        'THIRD PARTY MATERIAL DAMAGE': 'Υλικές Ζημιές Τρίτων',
+        'THIRD PARTY BODILY INJURY': 'Σωματικές Βλάβες Τρίτων',
+        'FIRE': 'Πυρκαγιά',
+        'THEFT': 'Κλοπή',
+        'PARTIAL THEFT': 'Μερική Κλοπή',
+        'NATURAL PHENOMENA / FLOOD': 'Φυσικά Φαινόμενα / Πλημμύρα',
+        'NATURAL PHENOMENA': 'Φυσικά Φαινόμενα',
+        'FLOOD': 'Πλημμύρα',
+        'LEGAL PROTECTION': 'Νομική Προστασία',
+        'PERSONAL ACCIDENT (DRIVER)': 'Προσωπικό Ατύχημα Οδηγού',
+        'PERSONAL ACCIDENT': 'Προσωπικό Ατύχημα',
+        'UNINSURED VEHICLE': 'Ανασφάλιστο Όχημα',
+        'ROADSIDE ASSISTANCE': 'Οδική Βοήθεια',
+        'GLASS BREAKAGE': 'Θραύση Κρυστάλλων',
+        'OWN DAMANGE': 'Ιδίες Ζημιές (Μικτή)',
+        'TERRORIST ACTS': 'Τρομοκρατικές Ενέργειες',
+        'MALICIOUS ACTS': 'Κακόβουλες Ενέργειες',
+
+        // Generic / Other
+        'Medical Expenses': 'Ιατροφαρμακευτικά Έξοδα',
+        'Hospitalization': 'Νοσηλεία',
+        'Outpatient Care': 'Εξωνοσοκομειακή Περίθαλψη',
     },
 
     // Errors

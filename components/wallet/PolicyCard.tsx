@@ -143,6 +143,13 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
                         <p className="text-sm font-mono text-stone-500 dark:text-stone-400 truncate">
                             {policy.policyNumber}
                         </p>
+                        {/* Display plate number for motor policies */}
+                        {policy.lineOfBusiness === 'motor' && policy.acordData?.vehicle?.plateNumber && (
+                            <p className="text-xs font-bold text-teal-600 dark:text-teal-400 mt-1 flex items-center gap-1.5">
+                                <span>🚗</span>
+                                {policy.acordData.vehicle.plateNumber}
+                            </p>
+                        )}
                     </div>
                 </div>
 

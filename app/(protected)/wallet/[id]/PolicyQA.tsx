@@ -60,7 +60,7 @@ export function PolicyQA({ policyId }: { policyId: string }) {
         "What is my deductible?",
         "When does this policy expire?",
         "What is NOT covered?",
-        "How do I file a claim?"
+        // "How do I file a claim?"
     ]
 
     return (
@@ -99,8 +99,8 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                                 >
                                     <div
                                         className={`max-w-[80%] rounded-2xl p-4 ${msg.role === 'user'
-                                                ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white'
-                                                : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
+                                            ? 'bg-gradient-to-r from-indigo-600 to-violet-600 text-white'
+                                            : 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
                                             }`}
                                     >
                                         <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>

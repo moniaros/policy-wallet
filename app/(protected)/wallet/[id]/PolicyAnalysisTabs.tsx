@@ -117,7 +117,9 @@ export function PolicyAnalysisTabs({ acordData, gaps, policyId, t, lastAnalyzedA
                                         <div key={idx} className="flex flex-col gap-2 p-3 bg-white dark:bg-stone-800 rounded-xl border border-stone-100 dark:border-stone-700 hover:border-teal-200 dark:hover:border-teal-900/50 transition-colors shadow-sm group">
                                             <div className="flex justify-between items-start">
                                                 <div className="flex flex-col">
-                                                    <span className="font-bold text-xs text-stone-900 dark:text-stone-100 uppercase tracking-tight">{String(cov.name || '')}</span>
+                                                    <span className="font-bold text-xs text-stone-900 dark:text-stone-100 uppercase tracking-tight">
+                                                        {(t.coverage_names as any)[cov.name] || String(cov.name || '')}
+                                                    </span>
                                                     {cov.deductible && <span className="text-[9px] text-stone-400">{t.wallet.deductibleLabel} {String(cov.deductible)}</span>}
                                                 </div>
                                                 <span className="font-mono text-xs text-teal-600 dark:text-teal-400 font-black bg-teal-50 dark:bg-teal-900/30 px-2 py-1 rounded-lg">{String(cov.limit || '')}</span>

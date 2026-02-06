@@ -338,6 +338,33 @@ export const en: TranslationKeys = {
         unknownGap: 'Unknown Gap',
     },
 
+    // Standardized Coverage Names (English to English)
+    coverage_names: {
+        // Motor
+        'THIRD PARTY MATERIAL DAMAGE': 'Third Party Material Damage',
+        'THIRD PARTY BODILY INJURY': 'Third Party Bodily Injury',
+        'FIRE': 'Fire',
+        'THEFT': 'Theft',
+        'PARTIAL THEFT': 'Partial Theft',
+        'NATURAL PHENOMENA / FLOOD': 'Natural Phenomena / Flood',
+        'NATURAL PHENOMENA': 'Natural Phenomena',
+        'FLOOD': 'Flood',
+        'LEGAL PROTECTION': 'Legal Protection',
+        'PERSONAL ACCIDENT (DRIVER)': 'Personal Accident (Driver)',
+        'PERSONAL ACCIDENT': 'Personal Accident',
+        'UNINSURED VEHICLE': 'Uninsured Vehicle',
+        'ROADSIDE ASSISTANCE': 'Roadside Assistance',
+        'GLASS BREAKAGE': 'Glass Breakage',
+        'OWN DAMANGE': 'Own Damage',
+        'TERRORIST ACTS': 'Terrorist Acts',
+        'MALICIOUS ACTS': 'Malicious Acts',
+
+        // Generic / Other
+        'Medical Expenses': 'Medical Expenses',
+        'Hospitalization': 'Hospitalization',
+        'Outpatient Care': 'Outpatient Care',
+    },
+
     // Errors
     errors: {
         somethingWentWrong: 'Something went wrong',
