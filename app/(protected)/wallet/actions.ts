@@ -65,6 +65,11 @@ export async function createPolicy(formData: FormData) {
 
     const validatedData = PolicySchema.parse(rawData)
 
+    // Handle files (Files are now uploaded client-side to Supabase)
+    const documentUrls = formData.getAll("documentUrls") as string[]
+    const documentNames = formData.getAll("documentNames") as string[]
+    const documentSizes = formData.getAll("documentSizes") as string[]
+
     // Determine default status based on uploads
     const initialStatus = documentUrls.length > 0 ? 'analyzing' : 'active'
 
@@ -83,11 +88,6 @@ export async function createPolicy(formData: FormData) {
     })
 
     // Handle files
-    // Handle files (Files are now uploaded client-side to Supabase)
-    const documentUrls = formData.getAll("documentUrls") as string[]
-    const documentNames = formData.getAll("documentNames") as string[]
-    const documentSizes = formData.getAll("documentSizes") as string[]
-
     for (let i = 0; i < documentUrls.length; i++) {
         const fileUrl = documentUrls[i]
         const rawFileName = documentNames[i] || "Unknown Document"
