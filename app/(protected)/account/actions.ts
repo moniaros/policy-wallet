@@ -293,6 +293,8 @@ export async function upgradeSubscription(planId: string) {
     const plan = await db.plan.findUnique({ where: { id: planId } })
     if (!plan) return { error: "Plan not found" }
 
+    const isProPlan = plan.name.toLowerCase().includes('pro')
+
     if (!plan.stripePriceId) {
         // Fallback or development mode: manual update
         await db.subscription.updateMany({
@@ -300,13 +302,15 @@ export async function upgradeSubscription(planId: string) {
             data: { status: 'expired' }
         })
 
+        const trialDays = isProPlan ? 14 : 30
+
         await db.subscription.create({
             data: {
                 userId: authResult.dbUser.id,
                 planId: planId,
                 status: 'active',
                 currentPeriodStart: new Date(),
-                currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                currentPeriodEnd: new Date(Date.now() + trialDays * 24 * 60 * 60 * 1000),
                 autoRenew: true
             }
         })
@@ -326,6 +330,9 @@ export async function upgradeSubscription(planId: string) {
                 },
             ],
             mode: 'subscription',
+            subscription_data: isProPlan ? {
+                trial_period_days: 14
+            } : undefined,
             success_url: `${env.NEXTAUTH_URL || 'http://localhost:3000'}/account?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${env.NEXTAUTH_URL || 'http://localhost:3000'}/account`,
             metadata: {

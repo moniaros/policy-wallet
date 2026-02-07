@@ -144,6 +144,12 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                 : 'bg-stone-50 dark:bg-stone-900/50 border-stone-200 dark:border-stone-800 hover:border-teal-200 dark:hover:border-teal-900'
                                 }`}
                         >
+                            {tier.id === 'ph-pro' && (
+                                <div className="absolute top-0 right-0 bg-purple-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-bl-2xl rounded-tr-[30px] shadow-lg z-20">
+                                    {language === 'el' ? '14 ΗΜΕΡΕΣ ΔΩΡΕΑΝ' : '14-DAY FREE TRIAL'}
+                                </div>
+                            )}
+
                             {isPopular && (
                                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-teal-500 to-emerald-500 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest shadow-lg">
                                     {tier.badge?.[language] || 'Popular'}
@@ -212,7 +218,9 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                     ? copy.cta.currentPlan[language]
                                     : loadingPlanId === tier.id
                                         ? (language === 'el' ? 'ΠΕΡΙΜΈΝΕΤΕ...' : 'PROCESSING...')
-                                        : copy.cta.upgrade[language]}
+                                        : (tier.id === 'ph-pro'
+                                            ? (language === 'el' ? 'ΔΩΡΕΑΝ ΔΟΚΙΜΗ 14 ΗΜΕΡΩΝ' : 'START 14-DAY FREE TRIAL')
+                                            : copy.cta.upgrade[language])}
                             </button>
                         </motion.div>
                     )

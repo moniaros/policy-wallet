@@ -279,40 +279,50 @@ export function AccountOverview({
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {availablePlans
                             .filter(plan => plan.price > (currentPlan.price || 0))
-                            .map((plan) => (
-                                <div
-                                    key={plan.plan_id}
-                                    className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[40px] p-10 shadow-sm hover:shadow-2xl hover:scale-[1.02] transition-all group"
-                                >
-                                    <div className="mb-10">
-                                        <h4 className="text-xl font-black text-stone-900 dark:text-white uppercase tracking-tight mb-2">
-                                            {plan.name}
-                                        </h4>
-                                        <div className="flex items-end gap-1">
-                                            <span className="text-3xl font-black text-stone-900 dark:text-white">{formatPrice(plan.price)}</span>
-                                            <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest pb-1">/ mo</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="mb-10 space-y-4">
-                                        {Object.entries(plan.entitlements)
-                                            .slice(0, 4)
-                                            .map(([key, value]) => (
-                                                <div key={key} className="flex items-center gap-3 text-xs font-medium text-stone-500 dark:text-stone-400">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.5)]" />
-                                                    <span>{value === 'unlimited' ? t.account.unlimited : value} {t.account.entitlements[key as keyof typeof t.account.entitlements] || key.replace(/_/g, ' ')}</span>
-                                                </div>
-                                            ))}
-                                    </div>
-
-                                    <button
-                                        onClick={() => onUpgrade?.(plan.plan_id)}
-                                        className="w-full py-5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-3xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-stone-900/10 hover:bg-teal-600 hover:dark:bg-teal-500 transition-all active:scale-95"
+                            .map((plan) => {
+                                const isPro = plan.name.toLowerCase().includes('pro')
+                                return (
+                                    <div
+                                        key={plan.plan_id}
+                                        className={`bg-white dark:bg-stone-900 border ${isPro ? 'border-teal-500 shadow-teal-500/10' : 'border-stone-100 dark:border-stone-800'} rounded-[40px] p-10 shadow-sm hover:shadow-2xl hover:scale-[1.02] transition-all group relative overflow-hidden`}
                                     >
-                                        {t.account.selectPlan}
-                                    </button>
-                                </div>
-                            ))}
+                                        {isPro && (
+                                            <div className="absolute top-5 right-5 bg-teal-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">
+                                                {language === 'el' ? '14 ΗΜΕΡΕΣ ΔΩΡΕΑΝ' : '14-DAY FREE TRIAL'}
+                                            </div>
+                                        )}
+                                        <div className="mb-10">
+                                            <h4 className="text-xl font-black text-stone-900 dark:text-white uppercase tracking-tight mb-2">
+                                                {plan.name}
+                                            </h4>
+                                            <div className="flex items-end gap-1">
+                                                <span className="text-3xl font-black text-stone-900 dark:text-white">{formatPrice(plan.price)}</span>
+                                                <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest pb-1">/ mo</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="mb-10 space-y-4">
+                                            {Object.entries(plan.entitlements)
+                                                .slice(0, 4)
+                                                .map(([key, value]) => (
+                                                    <div key={key} className="flex items-center gap-3 text-xs font-medium text-stone-500 dark:text-stone-400">
+                                                        <div className={`w-1.5 h-1.5 rounded-full ${isPro ? 'bg-teal-400 shadow-[0_0_8px_rgba(45,212,191,0.5)]' : 'bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.5)]'}`} />
+                                                        <span>{value === 'unlimited' ? t.account.unlimited : value} {t.account.entitlements[key as keyof typeof t.account.entitlements] || key.replace(/_/g, ' ')}</span>
+                                                    </div>
+                                                ))}
+                                        </div>
+
+                                        <button
+                                            onClick={() => onUpgrade?.(plan.plan_id)}
+                                            className={`w-full py-5 ${isPro ? 'bg-teal-600 hover:bg-teal-700' : 'bg-stone-900 dark:bg-white hover:bg-teal-600 hover:dark:bg-teal-500'} ${isPro ? 'text-white' : 'text-white dark:text-stone-900'} rounded-3xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-stone-900/10 transition-all active:scale-95`}
+                                        >
+                                            {isPro
+                                                ? (language === 'el' ? 'Ξεκινήστε δωρεάν δοκιμή 14 ημερών' : 'Start 14-Day Free Trial')
+                                                : t.account.selectPlan}
+                                        </button>
+                                    </div>
+                                )
+                            })}
                     </div>
                 </div>
             )}
