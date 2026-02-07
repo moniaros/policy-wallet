@@ -151,7 +151,7 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </button>
-                    <span className="font-bold text-slate-900 dark:text-white">Add New Policy</span>
+                    <span className="font-bold text-slate-900 dark:text-white">{t.wallet.addPolicy}</span>
                     <div className="w-9" /> {/* Spacer */}
                 </div>
             </div>
@@ -169,7 +169,7 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                                     <UploadCloud className="w-5 h-5" />
                                 </div>
                                 <h2 className="text-xl font-black text-slate-900 dark:text-white">
-                                    Upload Document
+                                    {t.wallet.uploadDocument}
                                 </h2>
                             </div>
 
@@ -200,10 +200,10 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                                         <FileText className="w-8 h-8" />
                                     </div>
                                     <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
-                                        Tap to upload policy PDF
+                                        {t.wallet.tapToUpload}
                                     </h3>
                                     <p className="text-slate-500 text-sm">
-                                        or drag and drop your files here
+                                        {t.wallet.dragDrop}
                                     </p>
                                 </label>
                             </div>
@@ -241,7 +241,7 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                             <div className="mt-4 flex items-center gap-2 p-3 bg-emerald-50/50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/20">
                                 <Shield className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                                 <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-200">
-                                    AI will automatically extract policy details.
+                                    {t.wallet.aiExtraction}
                                 </p>
                             </div>
                         </div>
@@ -254,7 +254,7 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                                 <FileText className="w-5 h-5" />
                             </div>
                             <h2 className="text-xl font-black text-slate-900 dark:text-white">
-                                Policy Details
+                                {t.wallet.policyDetails}
                             </h2>
                         </div>
 
@@ -263,7 +263,7 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                                 {/* Type - REQUIRED */}
                                 <div className="space-y-2">
                                     <label className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white ml-1">
-                                        Coverage Type <span className="text-red-500">*</span>
+                                        {t.wallet.coverageType} <span className="text-red-500">*</span>
                                     </label>
                                     <div className="relative">
                                         <select
@@ -271,9 +271,11 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                                             required
                                             className="w-full appearance-none bg-emerald-50/50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800 rounded-xl px-4 py-3.5 text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:bg-white dark:focus:bg-slate-800 transition-all"
                                         >
-                                            <option value="">Select Type</option>
-                                            {types.map(t => (
-                                                <option key={t.id} value={t.slug}>{t.name}</option>
+                                            <option value="">{t.wallet.selectTypePlaceholder}</option>
+                                            {types.map(typeItem => (
+                                                <option key={typeItem.id} value={typeItem.slug}>
+                                                    {t.policyTypes[typeItem.slug as keyof typeof t.policyTypes] || typeItem.name}
+                                                </option>
                                             ))}
                                         </select>
                                     </div>
@@ -283,16 +285,16 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                                 <div className="space-y-2">
                                     <div className="flex justify-between items-center ml-1">
                                         <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                                            Insurer Provider
+                                            {t.wallet.insurerProvider}
                                         </label>
-                                        <span className="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">Optional</span>
+                                        <span className="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">{t.wallet.optional}</span>
                                     </div>
                                     <div className="relative">
                                         <select
                                             name="insurerName"
                                             className="w-full appearance-none bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3.5 text-sm font-medium text-slate-900 dark:text-white focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-700"
                                         >
-                                            <option value="">Select or leave empty</option>
+                                            <option value="">{t.wallet.selectOrEmpty}</option>
                                             {insurers.map(i => (
                                                 <option key={i.id} value={i.name}>{i.name}</option>
                                             ))}
@@ -308,9 +310,9 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center ml-1">
                                     <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                                        Policy Number
+                                        {t.wallet.policyNumber}
                                     </label>
-                                    <span className="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">Optional</span>
+                                    <span className="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">{t.wallet.optional}</span>
                                 </div>
                                 <div className="relative">
                                     <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -327,7 +329,7 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <div className="flex justify-between items-center ml-1">
-                                        <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Start Date</label>
+                                        <label className="text-xs font-bold uppercase tracking-wider text-slate-500">{t.wallet.startDate}</label>
                                     </div>
                                     <div className="relative">
                                         <input
@@ -339,7 +341,7 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                                 </div>
                                 <div className="space-y-2">
                                     <div className="flex justify-between items-center ml-1">
-                                        <label className="text-xs font-bold uppercase tracking-wider text-slate-500">End Date</label>
+                                        <label className="text-xs font-bold uppercase tracking-wider text-slate-500">{t.wallet.endDate}</label>
                                     </div>
                                     <div className="relative">
                                         <input
@@ -364,11 +366,11 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                             {isPending ? (
                                 <>
                                     <Loader2 className="w-4 h-4 animate-spin" />
-                                    Processing...
+                                    {t.wallet.processing}
                                 </>
                             ) : (
                                 <>
-                                    Add Policy to Wallet
+                                    {t.wallet.addToWalletAction}
                                     <Check className="w-5 h-5" />
                                 </>
                             )}
@@ -376,7 +378,7 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                     </button>
 
                     <p className="text-center text-xs text-slate-500 dark:text-slate-400">
-                        Your data is encrypted and secure.
+                        {t.wallet.securityNote}
                     </p>
                 </form>
             </div>

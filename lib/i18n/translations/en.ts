@@ -218,6 +218,17 @@ export const en: TranslationKeys = {
         addToGoogle: 'Add to Google Wallet',
         lastCheck: 'Last Check',
         deductibleLabel: 'Deductible:',
+        tapToUpload: 'Tap to upload policy PDF',
+        dragDrop: 'or drag and drop your files here',
+        aiExtraction: 'AI will automatically extract policy details.',
+        coverageType: 'Coverage Type',
+        insurerProvider: 'Insurer Provider',
+        optional: 'Optional',
+        addToWalletAction: 'Add Policy to Wallet',
+        processing: 'Processing...',
+        securityNote: 'Your data is encrypted and secure.',
+        selectOrEmpty: 'Select or leave empty',
+        selectTypePlaceholder: 'Select Type',
     },
 
     activity: {

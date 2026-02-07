@@ -216,6 +216,17 @@ export const el = {
         addToGoogle: 'Προσθήκη στο Google Wallet',
         lastCheck: 'Τελευταίος Έλεγχος',
         deductibleLabel: 'Απαλλαγή:',
+        tapToUpload: 'Πατήστε για μεταφόρτωση PDF',
+        dragDrop: 'ή σύρετε τα αρχεία σας εδώ',
+        aiExtraction: 'Η AI θα εξαγάγει αυτόματα τα στοιχεία.',
+        coverageType: 'Τύπος Κάλυψης',
+        insurerProvider: 'Ασφαλιστικός Πάροχος',
+        optional: 'Προαιρετικό',
+        addToWalletAction: 'Προσθήκη στο Πορτοφόλι',
+        processing: 'Επεξεργασία...',
+        securityNote: 'Τα δεδομένα σας είναι κρυπτογραφημένα και ασφαλή.',
+        selectOrEmpty: 'Επιλέξτε ή αφήστε κενό',
+        selectTypePlaceholder: 'Επιλέξτε Τύπο',
     },
 
     activity: {
