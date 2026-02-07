@@ -15,6 +15,8 @@ export default async function DashboardPage() {
         <DashboardClient
             initialSummary={data.summary}
             initialPriorities={data.priorities}
+            isEmailVerified={!!dbUser.emailVerified}
+            userEmail={dbUser.email}
         />
     )
 }

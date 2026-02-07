@@ -72,6 +72,15 @@ export async function redeemInvite(token: string, userId: string) {
     }
 }
 
+import { generateVerificationToken } from "@/lib/tokens"
+import { sendEmail } from "@/lib/email/email-service"
+
+// ... (keep existing imports)
+
+// ... (keep RegisterSchema)
+
+// ... (keep redeemInvite)
+
 export async function registerUser(formData: FormData) {
     const data = Object.fromEntries(formData.entries())
 
@@ -93,6 +102,8 @@ export async function registerUser(formData: FormData) {
 
     try {
         // 1. Sign up with Supabase Auth
+        // NOTE: "Enable Email Confirmations" MUST be disabled in Supabase Project Settings
+        // for this flow to allow immediate login.
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email,
             password,
@@ -136,12 +147,9 @@ export async function registerUser(formData: FormData) {
                     name,
                     email,
                     roles: role,
-                    preferredLanguage: language
-                } // Remove 'id' if passing uuid is handled by db or supabase. Usually we map supabase ID to db ID? 
-                // Wait, previous code didn't map supabase ID to DB ID explicitly, it just let Prisma generate CUID/UUID or mapped it if it matched.
-                // Looking at previous code, it just did `db.user.create`.
-                // Prisma schema likely uses CUIDs for IDs, independent of Supabase Auth IDs, unless synced.
-                // For now, retaining original logic.
+                    preferredLanguage: language,
+                    emailVerified: null // Explicitly unverified
+                }
             })
             userId = newUser.id
         }
@@ -163,7 +171,33 @@ export async function registerUser(formData: FormData) {
             await redeemInvite(token, userId)
         }
 
-        // 3. AUTO-LOGIN (Skip Email Verification)
+        // 3. Manual Email Verification (Brevo)
+        try {
+            const verificationToken = await generateVerificationToken(email)
+            const confirmLink = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/auth/verify-email?token=${verificationToken.token}&email=${encodeURIComponent(email)}`
+
+            const subject = language === 'el' ? 'Επιβεβαίωση Email - PolicyWallet' : 'Confirm your Email - PolicyWallet'
+            const html = language === 'el'
+                ? `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2>Καλώς ήρθατε στο PolicyWallet!</h2>
+                    <p>Παρακαλώ κάντε κλικ στον παρακάτω σύνδεσμο για να επιβεβαιώσετε το email σας:</p>
+                    <a href="${confirmLink}" style="display: inline-block; padding: 12px 24px; background-color: #10b981; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Επιβεβαίωση Email</a>
+                    <p>Αν δεν εγγραφήκατε εσείς, αγνοήστε αυτό το email.</p>
+                   </div>`
+                : `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2>Welcome to PolicyWallet!</h2>
+                    <p>Please click the link below to confirm your email address:</p>
+                    <a href="${confirmLink}" style="display: inline-block; padding: 12px 24px; background-color: #10b981; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Verify Email</a>
+                    <p>If you didn't sign up, please ignore this email.</p>
+                   </div>`
+
+            await sendEmail({ to: email, subject, html })
+        } catch (emailError) {
+            console.error("Failed to send manual verification email:", emailError)
+            // Continue flow, user can resend later
+        }
+
+        // 4. AUTO-LOGIN (Skip Email Verification Block)
         const { error: signInError } = await supabase.auth.signInWithPassword({
             email,
             password
@@ -171,10 +205,6 @@ export async function registerUser(formData: FormData) {
 
         if (signInError) {
             console.error("Auto-login failed:", signInError)
-            // If auto-login fails (e.g. Supabase enforce email confirm), we return success 
-            // but the client will try to redirect to login or wallet and fail.
-            // We'll return a special flag or just error.
-            // For this requirements, we assume it works or we instruct user to disable confirm.
             return { success: true, warning: "Account created but auto-login failed. Please check email." }
         }
 
@@ -199,20 +229,27 @@ export async function signOut() {
 }
 
 export async function resendVerificationEmail(email: string, language: string = 'el') {
-    const supabase = await createClient()
-
     try {
-        const { error } = await supabase.auth.resend({
-            type: 'signup',
-            email,
-            options: {
-                emailRedirectTo: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/auth/callback`
-            }
-        })
+        const verificationToken = await generateVerificationToken(email)
+        const confirmLink = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/auth/verify-email?token=${verificationToken.token}&email=${encodeURIComponent(email)}`
 
-        if (error) {
-            console.error("Resend error:", error)
-            return { success: false, error: error.message }
+        const subject = language === 'el' ? 'Επιβεβαίωση Email - PolicyWallet' : 'Confirm your Email - PolicyWallet'
+        const html = language === 'el'
+            ? `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2>Επιβεβαίωση Email</h2>
+                <p>Παρακαλώ κάντε κλικ στον παρακάτω σύνδεσμο για να επιβεβαιώσετε το email σας:</p>
+                <a href="${confirmLink}" style="display: inline-block; padding: 12px 24px; background-color: #10b981; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Επιβεβαίωση Email</a>
+               </div>`
+            : `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2>Verify Email</h2>
+                <p>Please click the link below to confirm your email address:</p>
+                <a href="${confirmLink}" style="display: inline-block; padding: 12px 24px; background-color: #10b981; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Verify Email</a>
+               </div>`
+
+        const result = await sendEmail({ to: email, subject, html })
+
+        if (!result.success) {
+            return { success: false, error: "Failed to send email via provider" }
         }
 
         return { success: true }
