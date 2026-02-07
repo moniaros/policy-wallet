@@ -57,6 +57,7 @@ export interface Customer {
     openGapsCount: number
     lastInteractionDate: string
     createdAt: string
+    avatar?: string // Added
     inviteStatus?: InviteStatus
     inviteSentDate?: string
     policies?: Policy[]
@@ -101,8 +102,12 @@ export interface CustomerListProps {
     customers: Customer[]
     isLoading?: boolean
     onSearch?: (query: string) => void
-    onCustomerClick?: (customerId: string) => void
+    onCustomerClick: (customerId: string) => void
     onAddCustomer?: () => void
+    onCall?: (customerId: string) => void
+    onEmail?: (customerId: string) => void
+    onWhatsApp?: (customerId: string) => void
+    onBulkAction?: (action: 'export' | 'email' | 'delete', ids: string[]) => void
 }
 
 export interface CustomerProfileProps {

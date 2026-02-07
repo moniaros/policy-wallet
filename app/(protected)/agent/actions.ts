@@ -14,7 +14,12 @@ import {
     Permission
 } from "@/components/agent/types"
 
+
+
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { CustomerService } from "@/lib/services/customer.service";
+
+const customerService = new CustomerService(db);
 
 /**
  * AGENT DASHBOARD ACTIONS
@@ -26,95 +31,14 @@ export async function getDashboardData() {
 
     const agentId = authResult.dbUser.id
 
-    // 1. Fetch Summary Stats
-    const relationships = await db.customerRelationship.findMany({
-        where: { agentUserId: agentId },
-        select: { status: true, lastInteractionAt: true }
-    })
-
-    const summary: DashboardSummary = {
-        activated: relationships.filter((r: any) => r.status === 'active').length,
-        invited: relationships.filter((r: any) => r.status === 'pending_activation').length,
-        inactive: relationships.filter((r: any) => r.status === 'inactive').length
-    }
-
-    // 2. Fetch Priorities (Smart signals)
-    const priorities: Priority[] = []
-
-    // Signal: Open Opportunities
-    const openOpps = await (db.opportunity.findMany as any)({
-        where: {
-            ownerAgentUserId: agentId,
-            status: 'open'
-        },
-        include: {
-            relationship: {
-                include: { customer: true }
-            },
-            gapInstance: {
-                include: { definition: true }
-            }
-        },
-        take: 5
-    })
-
-    openOpps.forEach((opp: any) => {
-        priorities.push({
-            id: opp.id,
-            type: 'open_opportunity',
-            customerId: opp.relationship?.policyholderUserId || '',
-            customerName: opp.relationship?.customer?.name || 'Unknown',
-            message: `New risk gap detected: ${opp.gapInstance?.definition?.title || 'Coverage Gap'}`,
-            priority: opp.gapInstance?.severity === 'critical' || opp.gapInstance?.severity === 'high' ? 1 : 2
-        })
-    })
-
-    // Signal: Follow-up needed (activated but no interaction recently)
-    const followUps = await (db.customerRelationship.findMany as any)({
-        where: {
-            agentUserId: agentId,
-            status: 'active',
-            lastInteractionAt: { lte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
-        },
-        include: { customer: true },
-        take: 5
-    })
-
-    followUps.forEach((rel: any) => {
-        priorities.push({
-            id: rel.id,
-            type: 'follow_up',
-            customerId: rel.policyholderUserId,
-            customerName: rel.customer?.name || 'Unknown',
-            message: "Customer hasn't been contacted in over a week.",
-            priority: 3
-        })
-    })
-
-    // Signal: Pending Invites (sent but not consumed)
-    const pendingInvites = await db.invite.findMany({
-        where: {
-            inviterUserId: agentId,
-            consumedAt: null,
-            createdAt: { lte: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) }
-        },
-        take: 5
-    })
-
-    pendingInvites.forEach((inv: any) => {
-        priorities.push({
-            id: inv.id,
-            type: 'pending_invite',
-            customerId: '', // No ID yet
-            customerName: inv.inviteeEmail,
-            message: "Invitation sent 3+ days ago but not yet opened.",
-            priority: 4
-        })
-    })
+    const [stats, priorities] = await Promise.all([
+        customerService.getDashboardStats(agentId),
+        customerService.getAgentPriorities(agentId)
+    ]);
 
     return {
-        summary,
-        priorities: priorities.sort((a, b) => a.priority - b.priority)
+        summary: stats.summary,
+        priorities: priorities
     }
 }
 
@@ -128,57 +52,32 @@ export async function getCustomers(query?: string): Promise<Customer[]> {
 
     const agentId = authResult.dbUser.id
 
-    const relationships = await (db.customerRelationship.findMany as any)({
-        where: {
-            agentUserId: agentId,
-            ...(query ? {
-                customer: {
-                    OR: [
-                        { name: { contains: query, mode: 'insensitive' } },
-                        { email: { contains: query, mode: 'insensitive' } }
-                    ]
-                }
-            } : {})
-        },
-        include: {
-            customer: {
-                include: {
-                    policiesOwned: {
-                        include: {
-                            gapInstances: {
-                                where: { resolvedAt: null }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        orderBy: [
-            { lastInteractionAt: 'desc' }
-        ]
+    // Use a large limit for now to mimic "all" without changing UI signature yet
+    const result = await customerService.getCustomers(agentId, {
+        search: query,
+        status: undefined,
+        limit: 100
     })
 
-    return relationships.map((rel: any) => {
-        const nameParts = (rel.customer?.name || 'Unknown').split(' ')
+    return result.data.map((c: any) => {
+        const nameParts = (c.name || 'Unknown').split(' ')
         const firstName = nameParts[0]
         const lastName = nameParts.slice(1).join(' ') || ''
 
-        const allGaps = rel.customer?.policiesOwned?.flatMap((p: any) => p.gapInstances) || []
-
         return {
-            id: rel.policyholderUserId,
-            relationshipId: rel.id,
+            id: c.id,
+            relationshipId: c.relationshipId,
             name: firstName,
             surname: lastName,
-            email: rel.customer?.email || '',
-            phone: '',
-            activationStatus: (rel.status === 'pending_activation' ? 'invited' : rel.status === 'active' ? 'activated' : 'inactive') as ActivationStatus,
+            email: c.email || '',
+            phone: c.phoneNumber || '',
+            activationStatus: (c.status === 'pending_activation' ? 'invited' : c.status === 'active' ? 'activated' : 'inactive') as ActivationStatus,
             accessScope: 'portfolio' as AccessScope,
             permissions: ['view', 'upload'] as any,
-            policyCount: rel.customer?.policiesOwned?.length || 0,
-            openGapsCount: allGaps.length,
-            lastInteractionDate: rel.lastInteractionAt?.toISOString() || rel.createdAt.toISOString(),
-            createdAt: rel.createdAt.toISOString()
+            policyCount: c.policyCount || 0,
+            openGapsCount: c.openOpportunities || 0, // Approximate using open ops
+            lastInteractionDate: c.lastInteraction ? new Date(c.lastInteraction).toISOString() : new Date(c.joinedAt).toISOString(),
+            createdAt: new Date(c.joinedAt).toISOString()
         }
     })
 }
@@ -187,99 +86,60 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return null
 
-    const agentId = authResult.dbUser.id
+    try {
+        const profile = await customerService.getCustomerProfile(authResult.dbUser.id, customerId)
 
-    const relationship = await (db.customerRelationship.findFirst as any)({
-        where: {
-            agentUserId: agentId,
-            policyholderUserId: customerId
-        },
-        include: {
-            customer: {
-                include: {
-                    policiesOwned: {
-                        include: {
-                            gapInstances: {
-                                where: { resolvedAt: null },
-                                include: { definition: true }
-                            }
-                        }
-                    },
-                    questionnairesReceived: {
-                        where: { relationshipId: { not: null } },
-                        include: { template: true },
-                        orderBy: { createdAt: 'desc' }
-                    }
-                }
-            },
-            opportunities: {
-                include: {
-                    gapInstance: {
-                        include: { definition: true }
-                    }
-                },
-                orderBy: { createdAt: 'desc' }
+        const nameParts = (profile.customer.name || 'Unknown').split(' ')
+
+        // Mock interactions for now as service doesn't return them directly in this format yet
+        const interactions = [
+            {
+                id: 'i1',
+                type: 'invite_sent' as const,
+                message: 'Digital wallet invitation dispatched.',
+                timestamp: profile.relationship.joinedAt.toISOString()
             }
+        ]
+
+        return {
+            id: profile.customer.id,
+            relationshipId: profile.relationship.id,
+            name: nameParts[0],
+            surname: nameParts.slice(1).join(' ') || '',
+            email: profile.customer.email || '',
+            phone: profile.customer.phone || '',
+            activationStatus: (profile.relationship.status === 'pending_activation' ? 'invited' : profile.relationship.status === 'active' ? 'activated' : 'inactive') as ActivationStatus,
+            accessScope: 'portfolio',
+            permissions: ['view', 'upload', 'suggest', 'message'],
+            policyCount: profile.policies.length,
+            openGapsCount: profile.policies.reduce((ts, p) => ts + p.gaps, 0),
+            lastInteractionDate: profile.relationship.lastInteraction ? new Date(profile.relationship.lastInteraction).toISOString() : new Date(profile.relationship.joinedAt).toISOString(),
+            createdAt: new Date(profile.relationship.joinedAt).toISOString(),
+            policies: profile.policies.map(p => ({
+                policyId: p.id,
+                policyNumber: p.number,
+                insurerName: p.insurer,
+                lineOfBusiness: p.type as any,
+                startDate: p.startDate ? new Date(p.startDate).toISOString() : new Date().toISOString(),
+                endDate: new Date(p.expiresAt).toISOString(),
+                status: 'active'
+            })),
+            opportunities: profile.opportunities.map(o => ({
+                opportunityId: o.id,
+                policyId: o.policyId || '',
+                gapId: o.gapInstanceId || '',
+                gapTitle: o.relatedGap || 'Coverage Gap',
+                severity: (o.severity || 'medium') as any,
+                status: o.status as OpportunityStatus,
+                nextActionDate: '',
+                notes: o.notes || '',
+                createdAt: new Date(o.createdAt).toISOString()
+            })),
+            interactions
         }
-    })
-
-    if (!relationship) return null
-
-    const nameParts = (relationship.customer?.name || 'Unknown').split(' ')
-    const firstName = nameParts[0]
-    const lastName = nameParts.slice(1).join(' ') || ''
-
-    const allGaps = relationship.customer?.policiesOwned?.flatMap((p: any) => p.gapInstances) || []
-
-    // Fetch Interactions (Mocked for now)
-    const interactions = [
-        {
-            id: 'i1',
-            type: 'invite_sent' as const,
-            message: 'Digital wallet invitation dispatched.',
-            timestamp: relationship.createdAt.toISOString()
-        }
-    ]
-
-    const uiCustomer: Customer = {
-        id: relationship.policyholderUserId,
-        relationshipId: relationship.id,
-        name: firstName,
-        surname: lastName,
-        email: relationship.customer?.email || '',
-        phone: '',
-        activationStatus: (relationship.status === 'pending_activation' ? 'invited' : relationship.status === 'active' ? 'activated' : 'inactive') as ActivationStatus,
-        accessScope: 'portfolio',
-        permissions: ['view', 'upload', 'suggest', 'message'],
-        policyCount: relationship.customer?.policiesOwned?.length || 0,
-        openGapsCount: allGaps.length,
-        lastInteractionDate: relationship.lastInteractionAt?.toISOString() || relationship.createdAt.toISOString(),
-        createdAt: relationship.createdAt.toISOString(),
-        policies: (relationship.customer?.policiesOwned || []).map((p: any) => ({
-            policyId: p.id,
-            policyNumber: p.policyNumber,
-            insurerName: p.insurerName,
-            lineOfBusiness: p.lineOfBusiness as any,
-            carPlate: p.carPlate || undefined,
-            startDate: p.startDate.toISOString(),
-            endDate: p.endDate.toISOString(),
-            status: 'active'
-        })),
-        opportunities: (relationship.opportunities || []).map((o: any) => ({
-            opportunityId: o.id,
-            policyId: o.policyId || '',
-            gapId: o.gapInstanceId || '',
-            gapTitle: o.gapInstance?.definition?.title || 'Coverage Gap',
-            severity: (o.gapInstance?.severity || 'medium') as any,
-            status: o.status as OpportunityStatus,
-            nextActionDate: o.nextActionAt?.toISOString() || '',
-            notes: o.notes || '',
-            createdAt: o.createdAt.toISOString()
-        })),
-        interactions: interactions
+    } catch (e) {
+        return null
     }
-
-    return uiCustomer
 }
 
 /**
@@ -404,46 +264,22 @@ export async function addCustomerManually(data: {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
+    const agentId = authResult.dbUser.id
+
     try {
-        // 1. Create or find user
-        let user = await db.user.findUnique({
-            where: { email: data.email }
-        })
+        // 1. Create Customer Relationship via Service
+        const relationship = await customerService.createCustomer(agentId, {
+            email: data.email,
+            name: `${data.name} ${data.surname}`,
+            phoneNumber: data.phone
+        });
 
-        if (!user) {
-            user = await db.user.create({
-                data: {
-                    email: data.email,
-                    name: `${data.name} ${data.surname}`,
-                    roles: "policyholder"
-                }
-            })
-        }
-
-        // 2. Create relationship
-        const relationship = await db.customerRelationship.upsert({
-            where: {
-                agentUserId_policyholderUserId: {
-                    agentUserId: authResult.dbUser.id,
-                    policyholderUserId: user.id
-                }
-            },
-            update: {
-                status: 'inactive' // Added but not invited yet
-            },
-            create: {
-                agentUserId: authResult.dbUser.id,
-                policyholderUserId: user.id,
-                status: 'inactive'
-            }
-        })
-
-        // 3. Create policy if provided
+        // 2. Create policy if provided
         if (data.policy) {
             await db.policy.create({
                 data: {
-                    ownerUserId: user.id,
-                    createdByUserId: authResult.dbUser.id,
+                    ownerUserId: relationship.policyholderUserId,
+                    createdByUserId: agentId,
                     insurerName: data.policy.insurerName,
                     policyNumber: data.policy.policyNumber,
                     lineOfBusiness: data.policy.lineOfBusiness,
@@ -456,9 +292,13 @@ export async function addCustomerManually(data: {
         }
 
         revalidatePath("/customers")
-        return { success: true, customerId: user.id }
+        return { success: true, customerId: relationship.policyholderUserId }
     } catch (e) {
         console.error(e)
+        // Check if it's our custom AppError
+        if (e && typeof e === 'object' && 'userMessage' in e) {
+            return { error: (e as any).userMessage }
+        }
         return { error: "Failed to add customer" }
     }
 }

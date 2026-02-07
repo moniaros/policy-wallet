@@ -1,0 +1,384 @@
+import { BaseService } from "./base.service";
+import { Prisma } from "@prisma/client";
+import { AppError } from "@/lib/errors";
+
+export interface CustomerFilters {
+    search?: string;
+    status?: string;
+    page?: number;
+    limit?: number;
+}
+
+export interface CreateCustomerData {
+    email: string;
+    name: string;
+    phoneNumber?: string;
+    notes?: string;
+}
+
+export class CustomerService extends BaseService {
+
+    /**
+     * Get paginated list of customers for an agent
+     */
+    async getCustomers(agentUserId: string, filters: CustomerFilters = {}) {
+        const { search, status, page = 1, limit = 10 } = filters;
+        const skip = (page - 1) * limit;
+
+        const where: Prisma.CustomerRelationshipWhereInput = {
+            agentUserId,
+            ...(status && { status }),
+            ...(search && {
+                OR: [
+                    { customer: { name: { contains: search, mode: 'insensitive' } } },
+                    { customer: { email: { contains: search, mode: 'insensitive' } } },
+                ]
+            })
+        };
+
+        const [total, customers] = await Promise.all([
+            this.db.customerRelationship.count({ where }),
+            this.db.customerRelationship.findMany({
+                where,
+                include: {
+                    customer: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            image: true,
+                            phoneNumber: true,
+                            createdAt: true,
+                            policiesOwned: {
+                                select: { id: true, status: true }
+                            },
+                        }
+                    },
+                    opportunities: {
+                        where: { status: 'open' },
+                        select: { id: true }
+                    }
+                },
+                orderBy: { lastInteractionAt: 'desc' },
+                skip,
+                take: limit,
+            })
+        ]);
+
+        return {
+            data: customers.map(rel => ({
+                id: rel.customer.id,
+                relationshipId: rel.id,
+                name: rel.customer.name,
+                email: rel.customer.email,
+                image: rel.customer.image,
+                phoneNumber: rel.customer.phoneNumber,
+                status: rel.status,
+                joinedAt: rel.customer.createdAt,
+                policyCount: rel.customer.policiesOwned.length,
+                activePolicyCount: rel.customer.policiesOwned.filter(p => p.status === 'active').length,
+                openOpportunities: rel.opportunities.length,
+                lastInteraction: rel.lastInteractionAt,
+            })),
+            meta: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit)
+            }
+        };
+    }
+
+    /**
+     * Get detailed customer profile
+     */
+    async getCustomerProfile(agentUserId: string, customerId: string) {
+        const relationship = await this.db.customerRelationship.findFirst({
+            where: {
+                agentUserId,
+                policyholderUserId: customerId
+            },
+            include: {
+                customer: {
+                    include: {
+                        policiesOwned: {
+                            orderBy: { startDate: 'desc' },
+                            include: {
+                                gapInstances: {
+                                    where: { status: 'open' }
+                                }
+                            }
+                        }
+                    }
+                },
+                opportunities: {
+                    orderBy: { createdAt: 'desc' },
+                    include: {
+                        policy: { select: { policyNumber: true, insurerName: true } },
+                        gapInstance: { include: { definition: true } }
+                    }
+                }
+            }
+        });
+
+        if (!relationship) {
+            throw new AppError({
+                code: 'NOT_FOUND',
+                message: "Customer not found or access denied",
+                statusCode: 404
+            });
+        }
+
+        return {
+            customer: {
+                id: relationship.customer.id,
+                name: relationship.customer.name,
+                email: relationship.customer.email,
+                phone: relationship.customer.phoneNumber,
+                image: relationship.customer.image,
+            },
+            relationship: {
+                id: relationship.id,
+                status: relationship.status,
+                joinedAt: relationship.createdAt,
+                lastInteraction: relationship.lastInteractionAt,
+            },
+            policies: relationship.customer.policiesOwned.map(p => ({
+                id: p.id,
+                number: p.policyNumber,
+                insurer: p.insurerName,
+                type: p.lineOfBusiness,
+                status: p.status,
+                premium: p.premiumAmount,
+                startDate: p.startDate,
+                expiresAt: p.endDate,
+                gaps: p.gapInstances.length
+            })),
+            opportunities: relationship.opportunities.map(o => ({
+                id: o.id,
+                status: o.status,
+                notes: o.notes,
+                createdAt: o.createdAt,
+                severity: o.gapInstance?.severity,
+                policyId: o.policyId,
+                gapInstanceId: o.gapInstanceId,
+                relatedPolicy: o.policy?.policyNumber,
+                relatedGap: o.gapInstance?.definition.title
+            }))
+        };
+    }
+
+    /**
+     * Create a new customer (manual entry)
+     */
+    async createCustomer(agentUserId: string, data: CreateCustomerData) {
+        // 1. Check if user exists
+        let user = await this.db.user.findUnique({
+            where: { email: data.email }
+        });
+
+        if (!user) {
+            // Create phantom user
+            user = await this.db.user.create({
+                data: {
+                    email: data.email,
+                    name: data.name,
+                    phoneNumber: data.phoneNumber,
+                    roles: 'policyholder', // Default role
+                    password: null, // No password, phantom user
+                    emailVerified: null,
+                    policyholderProfile: {
+                        create: {}
+                    }
+                }
+            });
+        }
+
+        // 2. Check if relationship exists
+        const existingRel = await this.db.customerRelationship.findUnique({
+            where: {
+                agentUserId_policyholderUserId: {
+                    agentUserId,
+                    policyholderUserId: user.id
+                }
+            }
+        });
+
+        if (existingRel) {
+            throw AppError.conflict("Customer already exists in your list");
+        }
+
+        // 3. Create relationship
+        const relationship = await this.db.customerRelationship.create({
+            data: {
+                agentUserId,
+                policyholderUserId: user.id,
+                status: 'active',
+                lastInteractionAt: new Date()
+            }
+        });
+
+        await this.logActivity(agentUserId, 'CUSTOMER_ADDED', `Added customer ${data.name}`, {
+            customerId: user.id,
+            relationshipId: relationship.id
+        });
+
+        return relationship;
+    }
+
+    /**
+     * Get Dashboard Stats for Mission Control
+     */
+    async getDashboardStats(agentUserId: string) {
+        const [
+            totalCustomers,
+            activePolicies,
+            pendingOpportunities,
+            recentActivity
+        ] = await Promise.all([
+            // Total Customers
+            this.db.customerRelationship.count({
+                where: { agentUserId }
+            }),
+
+            // Active Policies (rough estimate via relationship)
+            this.db.policy.count({
+                where: {
+                    owner: {
+                        customerRelationshipsAsCustomer: {
+                            some: { agentUserId }
+                        }
+                    },
+                    status: 'active'
+                }
+            }),
+
+            // Open Opportunities
+            this.db.opportunity.count({
+                where: {
+                    ownerAgentUserId: agentUserId,
+                    status: 'open'
+                }
+            }),
+
+            // Recent Activity (Events)
+            this.db.notificationEvent.findMany({
+                where: {
+                    // Notifications for customers of this agent??
+                    // Or notifications for the agent themselves?
+                    // Let's get notifications for the agent for now
+                    userId: agentUserId
+                },
+                orderBy: { createdAt: 'desc' },
+                take: 5
+            })
+        ]);
+
+        return {
+            overview: {
+                totalCustomers,
+                activePolicies,
+                pendingOpportunities,
+                conversionRate: 0 // Placeholder
+            },
+            recentActivity: recentActivity.map(a => ({
+                id: a.id,
+                type: a.eventType,
+                message: a.message,
+                createdAt: a.createdAt
+            })),
+            summary: {
+                activated: await this.db.customerRelationship.count({ where: { agentUserId, status: 'active' } }),
+                invited: await this.db.customerRelationship.count({ where: { agentUserId, status: 'pending_activation' } }),
+                inactive: await this.db.customerRelationship.count({ where: { agentUserId, status: 'inactive' } })
+            }
+        };
+    }
+
+    /**
+     * Get Actionable Priorities for Agent
+     */
+    async getAgentPriorities(agentUserId: string) {
+        const priorities: Array<{
+            id: string;
+            type: 'open_opportunity' | 'follow_up' | 'pending_invite';
+            customerId: string;
+            customerName: string;
+            message: string;
+            priority: number;
+        }> = [];
+
+        // 1. Open Opportunities
+        const openOpps = await this.db.opportunity.findMany({
+            where: {
+                ownerAgentUserId: agentUserId,
+                status: 'open'
+            },
+            include: {
+                relationship: {
+                    include: { customer: true }
+                },
+                gapInstance: {
+                    include: { definition: true }
+                }
+            },
+            take: 5
+        });
+
+        openOpps.forEach(opp => {
+            priorities.push({
+                id: opp.id,
+                type: 'open_opportunity',
+                customerId: opp.relationship.policyholderUserId,
+                customerName: opp.relationship.customer?.name || 'Unknown',
+                message: `New risk gap detected: ${opp.gapInstance?.definition.title || 'Coverage Gap'}`,
+                priority: opp.gapInstance?.severity === 'critical' || opp.gapInstance?.severity === 'high' ? 1 : 2
+            });
+        });
+
+        // 2. Follow-up Needed (7 days inactivity)
+        const followUps = await this.db.customerRelationship.findMany({
+            where: {
+                agentUserId,
+                status: 'active',
+                lastInteractionAt: { lte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
+            },
+            include: { customer: true },
+            take: 5
+        });
+
+        followUps.forEach(rel => {
+            priorities.push({
+                id: rel.id,
+                type: 'follow_up',
+                customerId: rel.policyholderUserId,
+                customerName: rel.customer?.name || 'Unknown',
+                message: "Customer hasn't been contacted in over a week.",
+                priority: 3
+            });
+        });
+
+        // 3. Pending Invites (3+ days)
+        const pendingInvites = await this.db.invite.findMany({
+            where: {
+                inviterUserId: agentUserId,
+                consumedAt: null,
+                createdAt: { lte: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000) }
+            },
+            take: 5
+        });
+
+        pendingInvites.forEach(inv => {
+            priorities.push({
+                id: inv.id,
+                type: 'pending_invite',
+                customerId: '',
+                customerName: inv.inviteeEmail,
+                message: "Invitation sent 3+ days ago but not yet opened.",
+                priority: 4
+            });
+        });
+
+        return priorities.sort((a, b) => a.priority - b.priority);
+    }
+}

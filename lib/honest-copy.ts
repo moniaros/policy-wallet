@@ -76,7 +76,7 @@ export const honestCopy = {
             {
                 number: '01',
                 title: {
-                    el: 'Συγκέντρωση',
+                    el: 'Οργάνωση',
                     en: 'Centralize'
                 },
                 description: {
