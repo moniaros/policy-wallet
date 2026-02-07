@@ -19,12 +19,12 @@ export const honestCopy = {
             en: 'Clarity. Control. Confidence.'
         },
         subtitle: {
-            el: 'Το Λειτουργικό Σύστημα για το Προσωπικό σας Ρίσκο',
-            en: 'The Operating System for Personal Risk'
+            el: 'Το Λειτουργικό Σύστημα για την Προσωπική σας Ασφάλιση',
+            en: 'The Operating System for Personal Insurance'
         },
         mission: {
-            el: 'Η ασφάλιση εξηγείται, δεν εκτίθεται απλώς.',
-            en: 'Insurance explained, not just exposed.'
+            el: 'Να κάνουμε την ασφάλιση κατανοητή, χρήσιμη και υπό τον έλεγχό σας.',
+            en: 'Making insurance understandable, useful, and under your control.'
         }
     },
 
@@ -35,8 +35,8 @@ export const honestCopy = {
             en: 'Am I Properly Covered?'
         },
         subtitle: {
-            el: 'Το PolicyWallet μετατρέπει τα στατικά συμβόλαια σε ένα ζωντανό κέντρο ελέγχου. Λάβετε ξεκάθαρες, σίγουρες και πρακτικές απαντήσεις σε δευτερόλεπτα.',
-            en: 'PolicyWallet transforms static policies into a living control center. Get clear, confident, and actionable answers in seconds.'
+            el: 'Το PolicyWallet σας βοηθά να καταλάβετε τι καλύπτουν τα συμβόλαιά σας, τι όχι και πού υπάρχει περιθώριο βελτίωσης — όλα σε ένα σημείο.',
+            en: 'PolicyWallet helps you understand what your policies cover, what they don’t, and where there’s room for improvement — all in one place.'
         },
         cta: {
             primary: {
@@ -49,20 +49,20 @@ export const honestCopy = {
             }
         },
         badge: {
-            el: '✨ Η Νέα Εποχή της Ασφάλισης',
-            en: '✨ The New Era of Insurance'
+            el: '✨ Ένα Νέο Πρότυπο για την Ασφάλιση',
+            en: '✨ A New Standard for Insurance'
         }
     },
 
     // Value Proposition (The Problem & Solution)
     value: {
         title: {
-            el: 'Οι ασφαλισμένοι δεν στερούνται κάλυψης. Στερούνται σαφήνειας.',
-            en: 'Policyholders don\'t lack coverage. They lack clarity.'
+            el: 'Το πρόβλημα δεν είναι η έλλειψη ασφάλισης. Είναι η έλλειψη κατανόησης.',
+            en: 'The problem isn’t lack of insurance. It’s lack of understanding.'
         },
         description: {
-            el: 'Η ασφάλιση σήμερα είναι κατακερματισμένη και παθητική. Το PolicyWallet την κάνει κατανοητή, ελεγχόμενη και ενεργή.',
-            en: 'Insurance today is fragmented and passive. PolicyWallet makes it understandable, controllable, and active.'
+            el: 'Τα περισσότερα συμβόλαια είναι δύσκολα, αποσπασματικά και παθητικά. Το PolicyWallet τα συγκεντρώνει και τα κάνει ουσιαστικά χρήσιμα.',
+            en: 'Most policies are complex, fragmented, and passive. PolicyWallet brings them together and makes them genuinely useful.'
         }
     },
 
@@ -80,8 +80,8 @@ export const honestCopy = {
                     en: 'Centralize'
                 },
                 description: {
-                    el: 'Όλα τα συμβόλαια και έγγραφα σε ένα ασφαλές, ψηφιακό πορτοφόλι. Τέλος στα χαμένα email και φακέλους.',
-                    en: 'All policies and documents in one secure digital wallet. No more lost emails or physical folders.'
+                    el: 'Συγκεντρώστε όλα τα ασφαλιστήρια και τα έγγραφά σας σε ένα ασφαλές ψηφιακό περιβάλλον.',
+                    en: 'Bring all your insurance policies and documents into one secure digital space.'
                 }
             },
             {
@@ -91,19 +91,19 @@ export const honestCopy = {
                     en: 'Understand'
                 },
                 description: {
-                    el: 'Η AI μεταφράζει την πολυπλοκότητα σε απλή γλώσσα. Μάθετε τι πραγματικά καλύπτεστε (και τι όχι).',
-                    en: 'AI translates complexity into plain language. Know exactly what you are covered for (and what you aren\'t).'
+                    el: 'Η τεχνολογία απλοποιεί την ασφαλιστική γλώσσα και σας δείχνει τι ισχύει στην πράξη.',
+                    en: 'Technology simplifies insurance language and shows what actually applies in real life.'
                 }
             },
             {
                 number: '03',
                 title: {
-                    el: 'Βελτιστοποίηση',
-                    en: 'Optimize'
+                    el: 'Βελτίωση',
+                    en: 'Improve'
                 },
                 description: {
-                    el: 'Εντοπίζουμε κενά, επικαλύψεις και ευκαιρίες. Προληπτική φροντίδα πριν προκύψει το πρόβλημα.',
-                    en: 'We identify gaps, overlaps, and opportunities. Proactive care before problems arise.'
+                    el: 'Αναδείξτε κενά ή επικαλύψεις και πάρτε πιο συνειδητές αποφάσεις για την κάλυψή σας.',
+                    en: 'Identify gaps or overlaps and make more informed decisions about your coverage.'
                 }
             }
         ]
@@ -116,74 +116,74 @@ export const honestCopy = {
             en: 'More Than Just an App'
         },
         subtitle: {
-            el: 'Μια πλατφόρμα υποστήριξης αποφάσεων που μετατρέπει την ασφάλιση από προϊόν σε υπηρεσία.',
-            en: 'A decision-support platform that turns insurance from a static product into an ongoing service.'
+            el: 'Ένα εργαλείο κατανόησης και υποστήριξης αποφάσεων γύρω από την ασφάλισή σας.',
+            en: 'A tool designed to help you understand and make better insurance decisions.'
         },
         items: [
             {
                 icon: 'brain',
                 title: {
-                    el: 'Μετάφραση Κάλυψης',
-                    en: 'Coverage Translation'
+                    el: 'Κατανόηση Κάλυψης',
+                    en: 'Coverage Understanding'
                 },
                 description: {
-                    el: 'Μετατρέπουμε τους νομικούς όρους σε πραγματικά σενάρια ζωής. Ξεκάθαρες απαντήσεις, χωρίς ψιλά γράμματα.',
-                    en: 'We translate legal terms into real-world scenarios. Clear answers, no fine print.'
+                    el: 'Απλή αποτύπωση του τι καλύπτει κάθε συμβόλαιο, χωρίς νομική ορολογία.',
+                    en: 'A clear view of what each policy covers, without legal jargon.'
                 }
             },
             {
                 icon: 'chart',
                 title: {
                     el: 'Εντοπισμός Κενών',
-                    en: 'Gap Analysis'
+                    en: 'Gap Awareness'
                 },
                 description: {
-                    el: 'Αυτόματος έλεγχος για υποασφάλιση ή διπλές χρεώσεις. Πληρώστε μόνο για ό,τι χρειάζεστε.',
-                    en: 'Automatic checks for underinsurance or double charges. Pay only for what you need.'
+                    el: 'Ορατότητα σε πιθανά κενά ή επικαλύψεις στην κάλυψή σας.',
+                    en: 'Visibility into potential gaps or overlaps in your coverage.'
                 }
             },
             {
                 icon: 'share',
                 title: {
-                    el: 'Συνεργασία & Οικογένεια',
-                    en: 'Collaboration'
+                    el: 'Κοινή Πρόσβαση',
+                    en: 'Shared Access'
                 },
                 description: {
-                    el: 'Μοιραστείτε με ασφάλεια την πρόσβαση με την οικογένεια ή τον πράκτορά σας. Εσείς έχετε τον έλεγχο των δεδομένων.',
-                    en: 'Securely share access with family or your agent. You own and control your data.'
+                    el: 'Ασφαλής κοινή χρήση εγγράφων με μέλη της οικογένειας ή τον ασφαλιστικό σας σύμβουλο.',
+                    en: 'Secure document sharing with family members or your insurance advisor.'
                 }
             },
             {
                 icon: 'bell',
                 title: {
-                    el: 'Προληπτική Φροντίδα',
-                    en: 'Proactive Care'
+                    el: 'Υπενθυμίσεις',
+                    en: 'Reminders'
                 },
                 description: {
-                    el: 'Ειδοποιήσεις πριν λήξουν τα συμβόλαια. Insights πριν συμβεί το ατύχημα.',
-                    en: 'Alerts before policies expire. Insights before accidents happen.'
+                    el: 'Ειδοποιήσεις για λήξεις και βασικά σημεία προσοχής στα συμβόλαιά σας.',
+                    en: 'Notifications for expirations and important policy milestones.'
                 }
             },
             {
                 icon: 'shield',
                 title: {
-                    el: 'Απόλυτη Ιδιωτικότητα',
-                    en: 'User Ownership'
+                    el: 'Ιδιωτικότητα Πρώτα',
+                    en: 'Privacy First'
                 },
                 description: {
-                    el: 'Τα δεδομένα ανήκουν σε εσάς. Δεν τα πουλάμε. Κρυπτογράφηση και ασφάλεια τραπεζικού επιπέδου.',
-                    en: 'Data belongs to you. We don\'t sell it. Bank-grade encryption and security.'
+                    el: 'Τα δεδομένα σας παραμένουν δικά σας και χρησιμοποιούνται μόνο για τη δική σας εξυπηρέτηση.',
+                    en: 'Your data stays yours and is used solely to serve you.'
                 }
             },
             {
                 icon: 'wallet',
                 title: {
-                    el: 'Όλα Σε Ένα',
-                    en: 'All-in-One'
+                    el: 'Ένα Σημείο Ελέγχου',
+                    en: 'Single Control Point'
                 },
                 description: {
-                    el: 'Υγεία, Αυτοκίνητο, Σπίτι, Ζωή. Όλοι οι πάροχοι σε ένα ταμπλό ελέγχου.',
-                    en: 'Health, Auto, Home, Life. All carriers in one dashboard.'
+                    el: 'Όλες οι βασικές σας ασφαλίσεις συγκεντρωμένες σε ένα ταμπλό.',
+                    en: 'All your core insurance policies brought together in one dashboard.'
                 }
             }
         ]
@@ -192,34 +192,34 @@ export const honestCopy = {
     // Early Access
     earlyAccess: {
         title: {
-            el: 'Ανακτήστε τον Έλεγχο της Ασφάλειάς σας',
-            en: 'Reclaim Control of Your Safety'
+            el: 'Πάρτε τον Έλεγχο της Ασφάλισής σας',
+            en: 'Take Control of Your Insurance'
         },
         subtitle: {
-            el: 'Γίνετε από τους πρώτους που θα ζήσουν την εμπειρία του PolicyWallet. Χωρίς δεσμεύσεις.',
-            en: 'Be among the first to experience PolicyWallet. No strings attached.'
+            el: 'Το PolicyWallet βρίσκεται σε αρχικό στάδιο. Δοκιμάστε το και βοηθήστε μας να το βελτιώσουμε.',
+            en: 'PolicyWallet is in its early stage. Try it out and help us improve it.'
         },
         benefits: {
             title: {
-                el: 'Γιατί να εγγραφείτε',
-                en: 'Why join'
+                el: 'Τι θα κερδίσετε',
+                en: 'What you get'
             },
             items: [
                 {
-                    el: '✨ Έξυπνη ανάλυση υφιστάμενων συμβολαίων',
-                    en: '✨ Smart analysis of existing policies'
+                    el: '✨ Καθαρή εικόνα των υφιστάμενων συμβολαίων σας',
+                    en: '✨ A clear view of your existing policies'
                 },
                 {
-                    el: '🎯 Προσωποποιημένες προτάσεις βελτιστοποίησης',
-                    en: '🎯 Personalized optimization suggestions'
+                    el: '🎯 Πρώιμα insights για καλύτερες αποφάσεις',
+                    en: '🎯 Early insights for better decisions'
                 },
                 {
-                    el: '👨‍👩‍👧‍👦 Εργαλεία συνεργασίας για οικογένειες',
-                    en: '👨‍👩‍👧‍👦 Collaboration tools for families'
+                    el: '👨‍👩‍👧‍👦 Καλύτερη οργάνωση για όλη την οικογένεια',
+                    en: '👨‍👩‍👧‍👦 Better organization for the whole family'
                 },
                 {
-                    el: '🔒 Πλήρης έλεγχος των δεδομένων σας',
-                    en: '🔒 Full control over your data'
+                    el: '🔒 Έλεγχο και διαφάνεια στα δεδομένα σας',
+                    en: '🔒 Control and transparency over your data'
                 }
             ]
         },
@@ -237,8 +237,8 @@ export const honestCopy = {
                 en: 'Mobile (Optional)'
             },
             consent: {
-                el: 'Σέβομαι την ιδιωτικότητά σας. Διαβάστε την Πολιτική Απορρήτου.',
-                en: 'We respect your privacy. Read our Privacy Policy.'
+                el: 'Τα στοιχεία σας χρησιμοποιούνται μόνο για την επικοινωνία σχετικά με το PolicyWallet.',
+                en: 'Your details are used only to communicate about PolicyWallet.'
             },
             submit: {
                 el: 'Αίτηση Πρόσβασης',
@@ -250,19 +250,19 @@ export const honestCopy = {
     // Trust Signals
     trust: {
         title: {
-            el: 'Χτισμένο στην Εμπιστοσύνη',
-            en: 'Built on Trust'
+            el: 'Χτισμένο με Σεβασμό στον Χρήστη',
+            en: 'Built with Respect for the User'
         },
         items: [
             {
                 icon: 'lock',
                 title: {
-                    el: 'Κρυπτογράφηση',
-                    en: 'Encryption'
+                    el: 'Ασφάλεια',
+                    en: 'Security'
                 },
                 description: {
-                    el: 'AES-256 για όλα τα έγγραφα',
-                    en: 'AES-256 for all documents'
+                    el: 'Κρυπτογράφηση για την προστασία των εγγράφων σας',
+                    en: 'Encryption to protect your documents'
                 }
             },
             {
@@ -272,19 +272,19 @@ export const honestCopy = {
                     en: 'Independence'
                 },
                 description: {
-                    el: 'Εργαζόμαστε για εσάς, όχι για τις ασφαλιστικές',
-                    en: 'We work for you, not the carriers'
+                    el: 'Καμία σύνδεση με ασφαλιστικές εταιρείες',
+                    en: 'No affiliation with insurance carriers'
                 }
             },
             {
                 icon: 'code',
                 title: {
-                    el: 'Ανθρωποκεντρικό AI',
-                    en: 'Human-Centric AI'
+                    el: 'Υπεύθυνη Τεχνολογία',
+                    en: 'Responsible Technology'
                 },
                 description: {
-                    el: 'Τεχνολογία που ενδυναμώνει, δεν αντικαθιστά',
-                    en: 'Technology that empowers, not replaces'
+                    el: 'Η τεχνολογία λειτουργεί υποστηρικτικά, όχι αυτόνομα',
+                    en: 'Technology supports decisions, it doesn’t replace them'
                 }
             }
         ]
@@ -297,8 +297,8 @@ export const honestCopy = {
             en: 'From our Blog'
         },
         subtitle: {
-            el: 'Οδηγοί για καλύτερη ασφάλιση',
-            en: 'Guides for better insurance'
+            el: 'Σκέψεις και οδηγοί γύρω από την ασφάλιση',
+            en: 'Thoughts and guides about insurance'
         },
         viewAll: {
             el: 'Διαβάστε Περισσότερα',
@@ -367,32 +367,16 @@ export const honestCopy = {
     // Meta/SEO
     meta: {
         title: {
-            el: 'PolicyWallet - Είμαι Σωστά Καλυμμένος;',
-            en: 'PolicyWallet - Am I Properly Covered?'
+            el: 'PolicyWallet – Κατανοήστε την Ασφάλισή σας',
+            en: 'PolicyWallet – Understand Your Insurance'
         },
         description: {
-            el: 'Η πρώτη πλατφόρμα που μετατρέπει τα ασφαλιστήριά σας σε έξυπνες, κατανοητές πληροφορίες. Σαφήνεια, έλεγχος και βελτιστοποίηση σε ένα μέρος.',
-            en: 'The first platform that turns your insurance policies into smart, understandable insights. Clarity, control, and optimization in one place.'
+            el: 'Το PolicyWallet σας βοηθά να συγκεντρώσετε και να κατανοήσετε τα ασφαλιστήριά σας, ώστε να παίρνετε καλύτερες αποφάσεις.',
+            en: 'PolicyWallet helps you bring together and understand your insurance policies so you can make better decisions.'
         },
         keywords: {
-            el: 'ασφάλιση, πορτοφόλι, AI, έλεγχος, κάλυψη, Ελλάδα',
-            en: 'insurance, wallet, AI, control, coverage, Greece'
+            el: 'ασφάλιση, συμβόλαια, έλεγχος, κάλυψη, οργάνωση, Ελλάδα',
+            en: 'insurance, policies, control, coverage, organization, Greece'
         }
     }
-}
-
-// Helper function
-export function getHonestCopy(path: string, language: 'el' | 'en' = 'el') {
-    const keys = path.split('.')
-    let value: any = honestCopy
-
-    for (const key of keys) {
-        value = value?.[key]
-    }
-
-    if (typeof value === 'object' && value !== null && (language in value)) {
-        return value[language]
-    }
-
-    return value
 }
