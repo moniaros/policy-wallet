@@ -83,144 +83,66 @@ export function StatusSummary({
 
     return (
         <div className="mb-8 animate-in slide-in-from-top-4 duration-500 fade-in">
-            {/* Stats Cards Grid - 3 columns */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Card 1: Total Premium */}
-                {/* Card 1: Total Premium */}
-                <div className="relative overflow-hidden rounded-[2rem] p-6 bg-white/60 dark:bg-stone-900/60 backdrop-blur-xl border border-white/40 dark:border-stone-700/40 shadow-xl shadow-indigo-500/5 hover:shadow-indigo-500/10 group hover:-translate-y-1 transition-all duration-300">
-                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                        <Euro className="w-32 h-32 text-indigo-500" />
-                    </div>
+            {/* Stats Micro-Widgets Grid - Compact Row */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
 
-                    <div className="flex items-center gap-3 mb-6 relative z-10">
-                        <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/20 group-hover:scale-110 transition-transform duration-300">
-                            <Euro className="w-6 h-6" />
+                {/* Widget 1: Total Premium (Compact) */}
+                <div className="col-span-2 relative overflow-hidden rounded-2xl p-4 bg-white/60 dark:bg-stone-900/60 backdrop-blur-xl border border-white/40 dark:border-stone-700/40 shadow-sm flex items-center justify-between group hover:-translate-y-0.5 transition-all duration-300">
+                    <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-500/20 group-hover:scale-105 transition-transform duration-300">
+                            <Euro className="w-5 h-5" />
                         </div>
-                        <h3 className="text-sm font-black uppercase tracking-widest text-stone-500 dark:text-stone-400">{t.status.totalPremium}</h3>
-                    </div>
-
-                    <div className="relative z-10">
-                        <div className="text-4xl sm:text-5xl font-black text-stone-900 dark:text-white tracking-tight mb-2 tabular-nums">
-                            {formatCurrency(totalPremium)}
-                        </div>
-                        {premiumChange !== 0 && (
-                            <div className="flex items-center gap-2 text-sm font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 w-fit px-3 py-1 rounded-full border border-emerald-100 dark:border-emerald-800">
-                                <TrendingUp className="w-4 h-4" />
-                                <span>{premiumChange > 0 ? '+' : ''}{formatCurrency(premiumChange)} {t.status.fromLastMonth}</span>
-                            </div>
-                        )}
-                        {/* Sparkline Overlay */}
-                        {premiumTrend.length > 1 && (
-                            <div className="absolute bottom-4 right-4 text-indigo-500 w-24">
-                                <Sparkline data={premiumTrend} />
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* Card 2: Active Policies */}
-                {/* Card 2: Active Policies */}
-                <div className="relative overflow-hidden rounded-[2rem] p-6 bg-white/60 dark:bg-stone-900/60 backdrop-blur-xl border border-white/40 dark:border-stone-700/40 shadow-xl shadow-blue-500/5 hover:shadow-blue-500/10 group hover:-translate-y-1 transition-all duration-300">
-                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                        <Shield className="w-32 h-32 text-blue-500" />
-                    </div>
-
-                    <div className="flex items-center gap-3 mb-6 relative z-10">
-                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-sky-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform duration-300">
-                            <Shield className="w-6 h-6" />
-                        </div>
-                        <h3 className="text-sm font-black uppercase tracking-widest text-stone-500 dark:text-stone-400">{t.status.activePolicies}</h3>
-                    </div>
-
-                    <div className="flex items-end justify-between relative z-10">
                         <div>
-                            <div className="text-4xl sm:text-5xl font-black text-stone-900 dark:text-white tracking-tight mb-2 tabular-nums">
-                                {totalPolicies}
-                            </div>
-                            <div className="text-xs font-bold text-stone-500 dark:text-stone-400 max-w-[150px] leading-relaxed">
-                                {breakdownText || t.status.noPoliciesYet}
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-0.5">{t.status.totalPremium}</h3>
+                            <div className="text-2xl font-black text-stone-900 dark:text-white tracking-tight tabular-nums flex items-end gap-2">
+                                {formatCurrency(totalPremium)}
+                                {premiumChange !== 0 && (
+                                    <span className={`text-[10px] font-bold mb-1 px-1.5 py-0.5 rounded-full ${premiumChange > 0 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400' : 'bg-stone-100 text-stone-600'}`}>
+                                        {premiumChange > 0 ? '+' : ''}{Math.round((premiumChange / (totalPremium - premiumChange)) * 100)}%
+                                    </span>
+                                )}
                             </div>
                         </div>
+                    </div>
+                    {/* Compact Sparkline */}
+                    <div className="w-24 h-8 text-indigo-500 opacity-50">
+                        <Sparkline data={premiumTrend.length > 1 ? premiumTrend : [0, 0]} />
+                    </div>
+                </div>
 
-                        {/* Circular Progress */}
-                        <div className="relative w-20 h-20 flex-shrink-0 group-hover:scale-110 transition-transform duration-500">
-                            <svg className="w-20 h-20 transform -rotate-90">
-                                {/* Background circle */}
-                                <circle
-                                    cx="40"
-                                    cy="40"
-                                    r="32"
-                                    stroke="currentColor"
-                                    strokeWidth="6"
-                                    fill="none"
-                                    className="text-stone-200 dark:text-stone-800"
-                                />
-                                {/* Progress circle */}
-                                <circle
-                                    cx="40"
-                                    cy="40"
-                                    r="32"
-                                    stroke="currentColor"
-                                    strokeWidth="6"
-                                    fill="none"
-                                    strokeDasharray={`${2 * Math.PI * 32}`}
-                                    strokeDashoffset={`${2 * Math.PI * 32 * (1 - activeCount / (totalPolicies || 1))}`}
-                                    className="text-blue-500 transition-all duration-1000 ease-out drop-shadow-lg"
-                                    strokeLinecap="round"
-                                />
-                            </svg>
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-sm font-black text-stone-900 dark:text-white">
-                                    {Math.round((activeCount / (totalPolicies || 1)) * 100)}%
-                                </span>
-                            </div>
+                {/* Widget 2: Active Policies (Compact) */}
+                <div className="relative overflow-hidden rounded-2xl p-4 bg-white/60 dark:bg-stone-900/60 backdrop-blur-xl border border-white/40 dark:border-stone-700/40 shadow-sm flex items-center gap-3 group hover:-translate-y-0.5 transition-all duration-300">
+                    <div className="relative w-10 h-10 flex-shrink-0">
+                        {/* Mini Circle Progress */}
+                        <svg className="w-10 h-10 transform -rotate-90">
+                            <circle cx="20" cy="20" r="16" stroke="currentColor" strokeWidth="3" fill="none" className="text-stone-200 dark:text-stone-800" />
+                            <circle cx="20" cy="20" r="16" stroke="currentColor" strokeWidth="3" fill="none" strokeDasharray={`${2 * Math.PI * 16}`} strokeDashoffset={`${2 * Math.PI * 16 * (1 - activeCount / (totalPolicies || 1))}`} className="text-blue-500 transition-all duration-1000 ease-out" strokeLinecap="round" />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <Shield className="w-4 h-4 text-blue-500" />
+                        </div>
+                    </div>
+                    <div>
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-0.5">{t.status.activePolicies}</h3>
+                        <div className="text-xl font-black text-stone-900 dark:text-white tracking-tight leading-none">
+                            {activeCount} <span className="text-xs text-stone-400 font-bold">/ {totalPolicies}</span>
                         </div>
                     </div>
                 </div>
 
-                {/* Card 3: Upcoming Renewals */}
-                {/* Card 3: Upcoming Renewals */}
-                <div className="relative overflow-hidden rounded-[2rem] p-6 bg-white/60 dark:bg-stone-900/60 backdrop-blur-xl border border-white/40 dark:border-stone-700/40 shadow-xl shadow-amber-500/5 hover:shadow-amber-500/10 group hover:-translate-y-1 transition-all duration-300">
-                    <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                        <Calendar className="w-32 h-32 text-amber-500" />
+                {/* Widget 3: Renewals (Compact) */}
+                <div className="relative overflow-hidden rounded-2xl p-4 bg-white/60 dark:bg-stone-900/60 backdrop-blur-xl border border-white/40 dark:border-stone-700/40 shadow-sm flex items-center gap-3 group hover:-translate-y-0.5 transition-all duration-300">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg transition-transform duration-300 ${expiringCount > 0 ? 'bg-gradient-to-br from-amber-400 to-orange-500 shadow-amber-500/20 animate-pulse-slow' : 'bg-stone-200 dark:bg-stone-800 text-stone-400'}`}>
+                        <Calendar className="w-5 h-5" />
                     </div>
-
-                    <div className="flex items-center gap-3 mb-6 relative z-10">
-                        <div className="w-12 h-12 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-amber-500/20 group-hover:scale-110 transition-transform duration-300">
-                            <Calendar className="w-6 h-6" />
-                        </div>
-                        <h3 className="text-sm font-black uppercase tracking-widest text-stone-500 dark:text-stone-400">{t.status.upcomingRenewals}</h3>
-                    </div>
-
-                    <div className="relative z-10">
-                        <div className="text-4xl sm:text-5xl font-black text-stone-900 dark:text-white tracking-tight mb-2 tabular-nums">
+                    <div>
+                        <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-0.5">{t.status.upcomingRenewals}</h3>
+                        <div className="text-xl font-black text-stone-900 dark:text-white tracking-tight leading-none">
                             {expiringCount}
                         </div>
-                        <div className="text-xs font-bold text-stone-500 dark:text-stone-400 mb-4">
-                            {t.status.expiringWithin30Days}
-                        </div>
-
-                        {/* Renewal List */}
-                        {expiringPolicies.length > 0 ? (
-                            <div className="space-y-3">
-                                {expiringPolicies.slice(0, 2).map((policy, index) => (
-                                    <div key={index} className="flex items-center gap-3 p-2 bg-white/50 dark:bg-stone-800/50 rounded-xl border border-stone-200/50 dark:border-stone-700/50 backdrop-blur-sm">
-                                        <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-                                        <div className="flex-1 min-w-0">
-                                            <div className="text-xs font-bold text-stone-900 dark:text-white truncate">{policy.name}</div>
-                                            <div className="text-[10px] font-medium text-stone-500 dark:text-stone-400">{policy.expiryDate}</div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-sm font-bold bg-emerald-50/50 dark:bg-emerald-900/20 p-3 rounded-xl border border-emerald-100/50 dark:border-emerald-800/30">
-                                <Shield className="w-4 h-4" />
-                                {t.status.allClear30Days}
-                            </div>
-                        )}
                     </div>
                 </div>
+
             </div>
         </div>
     )

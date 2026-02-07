@@ -35,7 +35,7 @@ export function PolicyWallet({
     const { t, language } = useLanguage()
     const [searchQuery, setSearchQuery] = useState('')
     const [activeFilter, setActiveFilter] = useState<'all' | 'motor' | 'health' | 'home' | 'life' | 'travel'>('all')
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+    const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
 
     // Filter policies based on search and category
     const filteredPolicies = useMemo(() => {
@@ -172,51 +172,59 @@ export function PolicyWallet({
         <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12 sm:px-6 lg:px-8 bg-transparent">
 
             {/* Greeting & Header */}
-            <div className="mb-10 animate-in fade-in slide-in-from-left-4 duration-700">
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                    <div>
-                        <h1 className="text-3xl sm:text-4xl font-black text-stone-900 dark:text-white tracking-tight leading-tight">
-                            {getGreeting()}, <span className="text-teal-600 dark:text-teal-400">{user?.name?.split(' ')[0] || 'User'}</span>
-                        </h1>
-                        <p className="mt-2 text-base text-stone-500 dark:text-stone-400 font-medium">
-                            {policies.length > 0
-                                ? (language === 'el' ? `Έχετε ${policies.length} ενεργά συμβόλαια στο πορτοφόλι σας.` : `You have ${policies.length} active insurance assets in your wallet.`)
-                                : t.wallet.noPoliciesYetDesc
-                            }
-                        </p>
+            {/* Toolbar: Search & Filter */}
+            <div className="mb-6 animate-in fade-in slide-in-from-top-2 duration-500">
+                <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white/40 dark:bg-stone-900/40 backdrop-blur-md p-2 rounded-2xl border border-white/40 dark:border-stone-700/40 shadow-sm">
+
+                    {/* Search Input */}
+                    <div className="relative group w-full sm:max-w-md">
+                        <input
+                            type="text"
+                            placeholder={t.wallet.searchPlaceholder}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            id="tour-search"
+                            className="pl-10 pr-4 py-2 bg-white/60 dark:bg-stone-900/60 backdrop-blur-xl border border-white/40 dark:border-stone-700/40 rounded-xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all w-full placeholder:text-stone-400 dark:placeholder:text-stone-600 shadow-sm hover:bg-white/80 dark:hover:bg-stone-900/80"
+                        />
+                        <svg className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-teal-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
                     </div>
 
-                    {/* Search and Filter Bar */}
-                    <div className="flex items-center gap-3">
-                        <div className="relative group">
-                            <input
-                                type="text"
-                                placeholder={t.wallet.searchPlaceholder}
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                id="tour-search"
-                                className="pl-10 pr-4 py-3 bg-white/60 dark:bg-stone-900/60 backdrop-blur-xl border border-white/40 dark:border-stone-700/40 rounded-2xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all w-full sm:w-64 placeholder:text-stone-400 dark:placeholder:text-stone-600 shadow-sm hover:bg-white/80 dark:hover:bg-stone-900/80"
-                            />
-                            <svg className="w-5 h-5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-teal-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
+                    {/* Right Side Actions */}
+                    <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+
+                        {/* Filter Tabs (Simplified for compact view) */}
+                        <div className="flex bg-stone-100/50 dark:bg-stone-800/50 p-1 rounded-lg border border-stone-200/50 dark:border-stone-700/50 overflow-x-auto max-w-[200px] sm:max-w-none">
+                            {['all', 'motor', 'health', 'home'].map((filter) => (
+                                <button
+                                    key={filter}
+                                    onClick={() => setActiveFilter(filter as any)}
+                                    className={`px-3 py-1.5 rounded-md text-xs font-bold capitalize transition-all whitespace-nowrap ${activeFilter === filter
+                                            ? 'bg-white dark:bg-stone-700 shadow-sm text-teal-700 dark:text-teal-400'
+                                            : 'text-stone-500 hover:text-stone-700 dark:hover:text-stone-300'
+                                        }`}
+                                >
+                                    {filter === 'all' ? t.common?.all || 'All' : filter}
+                                </button>
+                            ))}
                         </div>
 
                         {/* View Switcher */}
-                        <div className="hidden sm:flex bg-white/40 dark:bg-stone-900/40 backdrop-blur-md p-1 rounded-xl border border-white/40 dark:border-stone-700/40">
+                        <div className="hidden sm:flex bg-stone-100/50 dark:bg-stone-800/50 p-1 rounded-lg border border-stone-200/50 dark:border-stone-700/50">
                             <button
                                 onClick={() => setViewMode('grid')}
-                                className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-stone-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-stone-500'}`}
+                                className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-stone-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-stone-500'}`}
                             >
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                                 </svg>
                             </button>
                             <button
                                 onClick={() => setViewMode('list')}
-                                className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white dark:bg-stone-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-stone-500'}`}
+                                className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white dark:bg-stone-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-stone-500'}`}
                             >
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                                 </svg>
                             </button>
