@@ -157,8 +157,8 @@ export async function canUserUseTokens(
     // Monthly limits by tier
     const limits = {
         free: 250_000, // 250K tokens/month
-        essential: 1_000_000, // 1M tokens/month
-        professional: 5_000_000, // 5M tokens/month
+        plus: 1_000_000, // 1M tokens/month
+        pro: 5_000_000, // 5M tokens/month
     }
 
     const limit = limits[tier]

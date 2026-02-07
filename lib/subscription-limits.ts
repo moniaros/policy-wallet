@@ -51,7 +51,13 @@ export async function getUserSubscription(userId: string) {
         orderBy: { createdAt: 'desc' }
     })
 
-    const tier = (subscription?.plan?.name?.toLowerCase() || 'free') as SubscriptionTier
+    let tierRaw = (subscription?.plan?.name?.toLowerCase() || 'free')
+
+    // Normalize legacy/different plan names to standard tiers
+    if (tierRaw === 'essential') tierRaw = 'plus'
+    if (tierRaw === 'professional') tierRaw = 'pro'
+
+    const tier = tierRaw as SubscriptionTier
 
     return {
         tier: tier,

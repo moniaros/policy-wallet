@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { subscriptionCopy, formatMessage } from '@/lib/subscription-copy'
 import { Crown, Calendar, CreditCard, AlertCircle, CheckCircle2 } from 'lucide-react'
 
-export type SubscriptionTier = 'free' | 'essential' | 'professional'
+import { SubscriptionTier } from '@/lib/subscription-limits'
 
 export interface CurrentPlanCardProps {
     subscription: {
