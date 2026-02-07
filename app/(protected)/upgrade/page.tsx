@@ -8,34 +8,43 @@ import { motion } from 'framer-motion'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { PricingComparison } from '@/components/account/PricingComparison'
 import { getSubscriptionCopy } from '@/lib/subscription-copy'
+import { upgradeSubscription } from '../account/actions'
 
 export default function PricingPage() {
     const router = useRouter()
     const { language } = useLanguage()
-    const [isLoading, setIsLoading] = useState(false)
+    const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null)
 
     // In a real app, we would fetch the current plan from an API or Context
-    const currentPlanId = 'free'
+    const currentPlanId = 'ph-free'
 
     const handleSubscribe = async (planId: string) => {
         if (planId === currentPlanId) return
 
-        setIsLoading(true)
+        setLoadingPlanId(planId)
         try {
-            // Simulate Stripe processing delay
-            await new Promise(r => setTimeout(r, 1500))
+            const result = await upgradeSubscription(planId)
 
-            toast.success(language === 'el' ? 'Μεταφορά στο Stripe...' : 'Redirecting to Stripe...')
+            if (result.error) {
+                toast.error(result.error)
+                return
+            }
 
-            setTimeout(() => {
-                toast.success(language === 'el' ? 'Η πληρωμή ολοκληρώθηκε! (Προσομοίωση)' : 'Payment Successful! (Simulation)')
+            if (result.url) {
+                toast.success(language === 'el' ? 'Μεταφορά στο Stripe...' : 'Redirecting to Stripe...')
+                // Wait a moment for the toast
+                setTimeout(() => {
+                    window.location.href = result.url!
+                }, 800)
+            } else if (result.success) {
+                toast.success(language === 'el' ? 'Το πλάνο ενημερώθηκε!' : 'Plan updated successfully!')
+                router.refresh()
                 router.back()
-            }, 1000)
-
+            }
         } catch (error) {
-            toast.error("Something went wrong. Please try again.")
+            toast.error(language === 'el' ? 'Κάτι πήγε στραβά. Δοκιμάστε ξανά.' : "Something went wrong. Please try again.")
         } finally {
-            setIsLoading(false)
+            setLoadingPlanId(null)
         }
     }
 
@@ -102,7 +111,7 @@ export default function PricingPage() {
                 <PricingComparison
                     currentPlanId={currentPlanId}
                     onSelectPlan={handleSubscribe}
-                    isLoading={isLoading}
+                    loadingPlanId={loadingPlanId}
                 />
             </div>
 

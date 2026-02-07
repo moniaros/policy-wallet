@@ -5,11 +5,11 @@ import { Check, X, Sparkles } from 'lucide-react'
 import { subscriptionCopy } from '@/lib/subscription-copy'
 
 export interface PricingCardProps {
-    tier: 'free' | 'essential' | 'professional'
+    tier: 'free' | 'plus' | 'pro'
     language: 'el' | 'en'
     isHighlighted?: boolean
-    currentTier?: 'free' | 'essential' | 'professional' | null
-    onSelectPlan: (tier: 'free' | 'essential' | 'professional') => void
+    currentTier?: 'free' | 'plus' | 'pro' | null
+    onSelectPlan: (tier: 'free' | 'plus' | 'pro') => void
     className?: string
 }
 
@@ -43,7 +43,7 @@ export function PricingCard({
             { label: copy.features.interactiveQA, included: false },
             { label: copy.features.prioritySupport, included: false },
         ]
-        : tier === 'essential'
+        : tier === 'plus'
             ? [
                 { label: { el: 'Μέχρι 10 συμβόλαια', en: 'Up to 10 policies' }, included: true, highlight: true },
                 { label: copy.features.advancedAI, included: true, highlight: true },
@@ -154,10 +154,10 @@ export function PricingCard({
             >
                 {isCurrentPlan
                     ? copy.cta.currentPlan[language]
-                    : tier === 'essential'
-                        ? copy.cta.startEssential[language]
-                        : tier === 'professional'
-                            ? copy.cta.startProfessional[language]
+                    : tier === 'plus'
+                        ? copy.cta.startPlus[language]
+                        : tier === 'pro'
+                            ? copy.cta.startPro[language]
                             : copy.cta.getStarted[language]
                 }
             </button>

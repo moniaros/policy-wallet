@@ -7,12 +7,16 @@ import { redirect } from "next/navigation"
 import { logger } from "@/lib/logger"
 import { stripe } from "@/lib/stripe"
 import { env } from "@/lib/env"
+import { syncRevenueCatSubscription } from "@/lib/services/revenuecat.service"
 
 export async function getAccountData() {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return null
 
     const userId = authResult.dbUser.id
+
+    // Sync RevenueCat subscription for mobile users
+    await syncRevenueCatSubscription(userId)
 
     // 1. Fetch User & Current Subscription
     const user = await db.user.findUnique({
@@ -38,7 +42,7 @@ export async function getAccountData() {
 
     if (!user) return null
 
-    const currentSubscription = user.subscriptions[0]
+    const currentSubscription = user.subscriptions[0] as any
     const currentPlan = currentSubscription?.plan
 
     // 2. Fetch Available Plans (for the user's current role context)
@@ -93,6 +97,7 @@ export async function getAccountData() {
         current_period_start: currentSubscription.currentPeriodStart.toISOString(),
         current_period_end: currentSubscription.currentPeriodEnd.toISOString(),
         next_billing_date: currentSubscription.autoRenew ? currentSubscription.currentPeriodEnd.toISOString() : null,
+        provider: currentSubscription.provider as 'stripe' | 'revenue_cat',
         created_at: currentSubscription.createdAt.toISOString()
     } : null
 

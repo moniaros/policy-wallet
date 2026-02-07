@@ -14,7 +14,7 @@ export function AccountOverview({
     onUpgrade,
     onSwitchRole
 }: AccountOverviewProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString)
@@ -51,15 +51,15 @@ export function AccountOverview({
         const label = labels[key] || key
         let displayValue = value
 
-        if (value === 'unlimited') displayValue = 'Απεριόριστο'
+        if (value === 'unlimited') displayValue = t.account.unlimited
         if (value === true) displayValue = '✓'
         if (value === false) return null
-        if (value === 'basic') displayValue = 'Βασικό'
-        if (value === 'advanced') displayValue = 'Προηγμένο'
+        if (value === 'basic') displayValue = t.account.basic
+        if (value === 'advanced') displayValue = t.account.advanced
 
         return (
             <div key={key} className="flex items-center justify-between py-3 border-b border-stone-100 dark:border-stone-800/50 last:border-0">
-                <span className="text-xs font-black uppercase tracking-widest text-stone-400">{label}</span>
+                <span className="text-xs font-black uppercase tracking-widest text-stone-400">{t.account.entitlements[key as keyof typeof t.account.entitlements] || label}</span>
                 <span className="text-sm font-black text-stone-900 dark:text-stone-100">{displayValue}</span>
             </div>
         )
@@ -95,11 +95,11 @@ export function AccountOverview({
                 <div className="flex-1 text-center md:text-left relative z-10">
                     <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
                         <span className="px-3 py-1 bg-stone-100 dark:bg-stone-800 rounded-full text-[10px] font-black uppercase tracking-widest text-stone-500">
-                            {currentPlan.name} Tier
+                            {currentPlan.name} {t.account.tier}
                         </span>
                         {isDualRole && (
                             <span className="px-3 py-1 bg-teal-50 dark:bg-teal-900/20 rounded-full text-[10px] font-black uppercase tracking-widest text-teal-600 dark:text-teal-400 border border-teal-100 dark:border-teal-900/30">
-                                Dual-Role Account
+                                {t.account.dualRoleAccount}
                             </span>
                         )}
                     </div>
@@ -124,13 +124,13 @@ export function AccountOverview({
                         <div>
                             <div className="flex items-center gap-3 mb-2">
                                 <span className="w-8 h-px bg-teal-500" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-teal-500">Dual-Role Context</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-teal-500">{t.account.dualRoleContext}</span>
                             </div>
                             <h3 className="text-2xl font-black tracking-tight mb-2">
-                                Διαχείριση για <span className="text-stone-400 italic">τον Ρόλο σας</span>
+                                {t.account.manageFor} <span className="text-stone-400 italic">{t.account.yourRole}</span>
                             </h3>
                             <p className="text-stone-500 text-xs font-medium max-w-sm">
-                                Τα πλάνα και η χρήση είναι ξεχωριστά για κάθε ρόλο. Επιλέξτε τον ρόλο που θέλετε να διαχειριστείτε.
+                                {t.account.dualRoleDesc}
                             </p>
                         </div>
                         <div className="flex p-2 bg-stone-800/50 backdrop-blur-md rounded-2xl border border-white/5">
@@ -141,7 +141,7 @@ export function AccountOverview({
                                     : 'text-stone-400 hover:text-white'
                                     }`}
                             >
-                                Ασφαλισμένος
+                                {t.account.policyholder}
                             </button>
                             <button
                                 onClick={() => onSwitchRole?.('agent')}
@@ -150,7 +150,7 @@ export function AccountOverview({
                                     : 'text-stone-400 hover:text-white'
                                     }`}
                             >
-                                Πράκτορας
+                                {t.account.agent}
                             </button>
                         </div>
                     </div>
@@ -167,7 +167,7 @@ export function AccountOverview({
                                 <div>
                                     <div className="flex items-center gap-3 mb-2">
                                         <span className="w-6 h-px bg-teal-500" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-teal-600 dark:text-teal-400">Current Plan</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-teal-600 dark:text-teal-400">{t.account.currentPlan}</span>
                                     </div>
                                     <h2 className="text-4xl font-black text-stone-900 dark:text-white tracking-tighter">
                                         {currentPlan.name}
@@ -178,7 +178,7 @@ export function AccountOverview({
                                         {formatPrice(currentPlan.price)}
                                     </div>
                                     <div className="text-[10px] font-black text-stone-400 uppercase tracking-widest mt-1">
-                                        {currentPlan.billing_interval === 'month' ? 'Per Month' : 'Per Year'}
+                                        {currentPlan.billing_interval === 'month' ? t.account.perMonth : t.account.perYear}
                                     </div>
                                 </div>
                             </div>
@@ -186,7 +186,7 @@ export function AccountOverview({
 
                         <div className="p-10">
                             <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-6">
-                                Included Privileges
+                                {t.account.includedPrivileges}
                             </h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12">
                                 {Object.entries(currentPlan.entitlements).map(([key, value]) =>
@@ -207,13 +207,13 @@ export function AccountOverview({
                                 <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" strokeWidth="2.5" /></svg>
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-teal-100">Wallet Credits</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-teal-100">{t.account.walletCredits}</span>
                             </div>
                             <div className="text-5xl font-black tracking-tighter mb-4">
                                 {formatPrice(creditBalance)}
                             </div>
                             <p className="text-teal-50/70 text-xs font-medium leading-relaxed italic">
-                                Apply these credits during checkout for AI analysis upgrades or subscription maintenance.
+                                {t.account.creditsDesc}
                             </p>
                         </div>
                     </div>
@@ -221,7 +221,7 @@ export function AccountOverview({
                     {/* Metrics Card */}
                     <div className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[40px] p-10 shadow-sm">
                         <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-8">
-                            Cycle Metrics
+                            {t.account.cycleMetrics}
                         </h3>
                         <div className="space-y-8">
                             {usageMetrics.map((metric) => {
@@ -232,9 +232,9 @@ export function AccountOverview({
                                     <div key={metric.usage_id} className="group/metric">
                                         <div className="flex items-end justify-between mb-3 px-1">
                                             <span className="text-xs font-black uppercase tracking-widest text-stone-900 dark:text-white">
-                                                {metric.usage_type === 'ai_analysis' && 'AI Insight usage'}
-                                                {metric.usage_type === 'customer_count' && 'Active relationships'}
-                                                {metric.usage_type === 'customer_invite' && 'Network growth'}
+                                                {metric.usage_type === 'ai_analysis' && t.account.aiUsage}
+                                                {metric.usage_type === 'customer_count' && t.account.activeRelationships}
+                                                {metric.usage_type === 'customer_invite' && t.account.networkGrowth}
                                             </span>
                                             <span className="text-[10px] font-bold text-stone-400">
                                                 {metric.amount_used} / {isUnlimited ? '∞' : metric.amount_limit}
@@ -268,10 +268,10 @@ export function AccountOverview({
                         <div>
                             <div className="flex items-center gap-3 mb-3">
                                 <div className="w-8 h-px bg-teal-500" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400">Expand Capabilities</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-teal-600 dark:text-teal-400">{t.account.expandCapabilities}</span>
                             </div>
                             <h2 className="text-4xl font-black text-stone-900 dark:text-white tracking-tighter">
-                                Scaling Your <span className="text-stone-400 italic">Insurance Intelligence.</span>
+                                {t.account.scalingTitle} <span className="text-stone-400 italic">{t.account.scalingSubtitle}</span>
                             </h2>
                         </div>
                     </div>
@@ -300,7 +300,7 @@ export function AccountOverview({
                                             .map(([key, value]) => (
                                                 <div key={key} className="flex items-center gap-3 text-xs font-medium text-stone-500 dark:text-stone-400">
                                                     <div className="w-1.5 h-1.5 rounded-full bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.5)]" />
-                                                    <span>{value === 'unlimited' ? 'Unlimited' : value} {key.replace(/_/g, ' ')}</span>
+                                                    <span>{value === 'unlimited' ? t.account.unlimited : value} {t.account.entitlements[key as keyof typeof t.account.entitlements] || key.replace(/_/g, ' ')}</span>
                                                 </div>
                                             ))}
                                     </div>
@@ -309,7 +309,7 @@ export function AccountOverview({
                                         onClick={() => onUpgrade?.(plan.plan_id)}
                                         className="w-full py-5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-3xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-stone-900/10 hover:bg-teal-600 hover:dark:bg-teal-500 transition-all active:scale-95"
                                     >
-                                        Select Plan
+                                        {t.account.selectPlan}
                                     </button>
                                 </div>
                             ))}

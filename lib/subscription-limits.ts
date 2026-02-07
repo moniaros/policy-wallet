@@ -16,17 +16,17 @@ export const SUBSCRIPTION_LIMITS = {
         agentCollaboration: false,
         interactiveQA: true,
     },
-    essential: {
+    plus: {
         policies: 10,
-        aiAnalysisPerMonth: null, // unlimited
-        questionsPerDay: null, // unlimited
-        gapAnalysisPerDay: null, // unlimited
+        aiAnalysisPerMonth: 10,
+        questionsPerDay: 5,
+        gapAnalysisPerDay: 5,
         notifications: true,
         advancedAnalytics: false,
         agentCollaboration: false,
         interactiveQA: true,
     },
-    professional: {
+    pro: {
         policies: null, // unlimited
         aiAnalysisPerMonth: null, // unlimited
         questionsPerDay: null, // unlimited
@@ -38,7 +38,7 @@ export const SUBSCRIPTION_LIMITS = {
     },
 } as const
 
-export type SubscriptionTier = 'free' | 'essential' | 'professional'
+export type SubscriptionTier = 'free' | 'plus' | 'pro'
 export type FeatureKey = keyof typeof SUBSCRIPTION_LIMITS.free
 
 /**

@@ -3,6 +3,7 @@
 import React from 'react'
 import { DashboardSummary, Priority, DashboardProps } from './types'
 import { TrendingUp, Users, Mail, Zap, ArrowRight, Phone, MessageCircle } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export function Dashboard({
     summary,
@@ -10,11 +11,13 @@ export function Dashboard({
     onPriorityClick,
     onInviteCustomer
 }: DashboardProps) {
+    const { t } = useLanguage()
+
     const getGreeting = () => {
         const hour = new Date().getHours()
-        if (hour < 12) return 'Good morning'
-        if (hour < 18) return 'Good afternoon'
-        return 'Good evening'
+        if (hour < 12) return t.dashboard.greeting.morning
+        if (hour < 18) return t.dashboard.greeting.afternoon
+        return t.dashboard.greeting.evening
     }
 
     const getPriorityIcon = (type: string) => {
@@ -58,12 +61,12 @@ export function Dashboard({
 
                             {/* Title */}
                             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-3 sm:mb-4 leading-tight">
-                                Today's <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">Command Center</span>
+                                {t.dashboard.today} <span className="bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">{t.dashboard.commandCenter}</span>
                             </h1>
 
                             {/* Subtitle */}
                             <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed">
-                                Focus on activated customers and open opportunities that need your attention.
+                                {t.dashboard.focusText}
                             </p>
                         </div>
 
@@ -75,8 +78,8 @@ export function Dashboard({
                             <svg className="w-5 h-5 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M12 4v16m8-8H4" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
-                            <span className="hidden sm:inline">Invite Customer</span>
-                            <span className="sm:hidden">Invite</span>
+                            <span className="hidden sm:inline">{t.dashboard.inviteCustomer}</span>
+                            <span className="sm:hidden">{t.dashboard.inviteCustomer}</span>
                         </button>
                     </div>
                 </header>
@@ -88,7 +91,7 @@ export function Dashboard({
                         <div className="flex items-center gap-2 mb-2 sm:mb-3">
                             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                             <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                Active
+                                {t.dashboard.active}
                             </span>
                         </div>
                         <div className="flex items-baseline gap-2">
@@ -103,7 +106,7 @@ export function Dashboard({
                         <div className="flex items-center gap-2 mb-2 sm:mb-3">
                             <div className="w-2 h-2 rounded-full bg-amber-500" />
                             <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                Invited
+                                {t.dashboard.invited}
                             </span>
                         </div>
                         <div className="flex items-baseline gap-2">
@@ -118,7 +121,7 @@ export function Dashboard({
                         <div className="flex items-center gap-2 mb-2 sm:mb-3">
                             <div className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-700" />
                             <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                                Inactive
+                                {t.dashboard.inactive}
                             </span>
                         </div>
                         <div className="flex items-baseline gap-2">
@@ -133,11 +136,11 @@ export function Dashboard({
                 <div>
                     <div className="flex items-center justify-between mb-6 sm:mb-8">
                         <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                            Priority Queue
+                            {t.dashboard.priorityQueue}
                         </h2>
                         {priorities.length > 0 && (
                             <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">
-                                {priorities.length} {priorities.length === 1 ? 'item' : 'items'}
+                                {priorities.length} {priorities.length === 1 ? t.dashboard.item : t.dashboard.items}
                             </span>
                         )}
                     </div>
@@ -189,10 +192,10 @@ export function Dashboard({
                                 </svg>
                             </div>
                             <h3 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white mb-2 tracking-tight">
-                                All Clear!
+                                {t.dashboard.allClear}
                             </h3>
                             <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 max-w-md mx-auto px-4">
-                                No priorities at the moment. Great work staying on top of everything!
+                                {t.dashboard.noPriorities}
                             </p>
                         </div>
                     )}

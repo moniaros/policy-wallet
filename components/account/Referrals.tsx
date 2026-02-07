@@ -15,7 +15,7 @@ export function Referrals({
     onCopyLink
 }: ReferralsProps) {
     const [copied, setCopied] = useState(false)
-    const { language } = useLanguage()
+    const { t, language } = useLanguage()
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString)
@@ -39,12 +39,12 @@ export function Referrals({
         switch (status) {
             case 'credited':
                 return {
-                    label: 'Πιστώθηκε',
+                    label: t.referrals.status.credited,
                     color: 'bg-teal-50 dark:bg-teal-950/20 text-teal-600 dark:text-teal-400 border-teal-100 dark:border-teal-900/50'
                 }
             case 'pending':
                 return {
-                    label: 'Εκκρεμεί',
+                    label: t.referrals.status.pending,
                     color: 'bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-900/50'
                 }
             default:
@@ -65,19 +65,19 @@ export function Referrals({
                         <div>
                             <div className="flex items-center gap-3 mb-8">
                                 <span className="w-8 h-px bg-teal-500" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-teal-600 dark:text-teal-400">Growth Network</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-teal-600 dark:text-teal-400">{t.referrals.growthNetwork}</span>
                             </div>
 
                             <h2 className="text-4xl font-black text-stone-900 dark:text-white tracking-tighter mb-6">
-                                Help Someone <span className="text-stone-400 italic">Understand Risk.</span>
+                                {t.referrals.helpSomeone} <span className="text-stone-400 italic">{t.referrals.helpSomeoneSubtitle}</span>
                             </h2>
                             <p className="text-stone-500 text-sm font-medium mb-10 max-w-xl italic">
-                                Μοιραστείτε το PolicyWallet με φίλους ή πελάτες. Όταν αναβαθμίσουν σε πληρωμένο πλάνο, κερδίζετε πιστώσεις για AI αναλύσεις.
+                                {t.referrals.shareDesc}
                             </p>
                         </div>
 
                         <div className="space-y-6">
-                            <label className="text-[10px] font-black text-stone-400 uppercase tracking-widest block px-1">Your Personal Invitation Link</label>
+                            <label className="text-[10px] font-black text-stone-400 uppercase tracking-widest block px-1">{t.referrals.yourLink}</label>
                             <div className="flex flex-col sm:flex-row items-stretch gap-4">
                                 <div className="flex-1 px-6 py-4 bg-stone-50 dark:bg-stone-800/50 border border-stone-100 dark:border-stone-800 rounded-3xl text-xs text-stone-600 dark:text-stone-300 font-black tracking-tight overflow-hidden text-ellipsis flex items-center">
                                     {referralLink}
@@ -86,7 +86,7 @@ export function Referrals({
                                     onClick={handleCopyLink}
                                     className="px-8 py-4 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-3xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-600 hover:dark:bg-teal-500 transition-all shadow-xl shadow-stone-900/10 active:scale-95"
                                 >
-                                    {copied ? '✓ Copied' : 'Copy Link'}
+                                    {copied ? t.referrals.copied : t.referrals.copyLink}
                                 </button>
                             </div>
 
@@ -106,7 +106,7 @@ export function Referrals({
                                     className="flex-1 flex items-center justify-center gap-3 px-6 py-4 bg-teal-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-700 transition-all shadow-lg shadow-teal-600/20"
                                 >
                                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                                    Share Invite
+                                    {t.referrals.shareInvite}
                                 </button>
                             </div>
                         </div>
@@ -122,7 +122,7 @@ export function Referrals({
                                 <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M13 10V3L4 14h7v7l9-11h-7z" strokeWidth="2.5" /></svg>
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-amber-100">Credit Balance</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-amber-100">{t.referrals.creditBalance}</span>
                             </div>
                             <div className="text-5xl font-black tracking-tighter mb-4">
                                 {formatPrice(creditBalance)}
@@ -130,9 +130,9 @@ export function Referrals({
                         </div>
 
                         <div className="p-6 bg-white/10 backdrop-blur-md rounded-3xl border border-white/10">
-                            <p className="text-[10px] font-black uppercase tracking-widest mb-3 text-amber-200">Value Proposition</p>
+                            <p className="text-[10px] font-black uppercase tracking-widest mb-3 text-amber-200">{t.referrals.valueProp}</p>
                             <p className="text-xs font-medium italic leading-relaxed text-amber-50/80">
-                                "Βοηθήσατε κάποιον — εδώ είναι η αξία πίσω. Οι πιστώσεις δεν λήγουν ποτέ."
+                                {t.referrals.valuePropDesc}
                             </p>
                         </div>
                     </div>
@@ -145,13 +145,13 @@ export function Referrals({
                     <div className="px-10 py-8 border-b border-stone-50 dark:border-stone-800">
                         <div className="flex items-center gap-3">
                             <span className="w-8 h-px bg-stone-200" />
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">Success Registry</h3>
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">{t.referrals.successRegistry}</h3>
                         </div>
                     </div>
 
                     {referrals.length === 0 ? (
                         <div className="flex-1 flex items-center justify-center p-20 text-center">
-                            <p className="text-stone-400 text-sm italic font-medium">No conversion events logged yet.</p>
+                            <p className="text-stone-400 text-sm italic font-medium">{t.referrals.noConversions}</p>
                         </div>
                     ) : (
                         <div className="divide-y divide-stone-50 dark:divide-stone-800">
@@ -165,8 +165,8 @@ export function Referrals({
                                                     {referral.referred_email}
                                                 </div>
                                                 <div className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">
-                                                    Added: {formatDate(referral.created_at)}
-                                                    {referral.credited_at && ` • Earned: ${formatDate(referral.credited_at)}`}
+                                                    {t.referrals.added}: {formatDate(referral.created_at)}
+                                                    {referral.credited_at && ` • ${t.referrals.earned}: ${formatDate(referral.credited_at)}`}
                                                 </div>
                                             </div>
                                             <span className={`inline-flex px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${statusBadge.color}`}>
@@ -185,23 +185,23 @@ export function Referrals({
                     <div className="px-10 py-8 border-b border-stone-50 dark:border-stone-800">
                         <div className="flex items-center gap-3">
                             <span className="w-8 h-px bg-stone-200" />
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">Transaction Ledger</h3>
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">{t.referrals.ledger}</h3>
                         </div>
                     </div>
 
                     {creditTransactions.length === 0 ? (
                         <div className="p-20 text-center">
-                            <p className="text-stone-400 text-sm italic font-medium">No transactional activity found.</p>
+                            <p className="text-stone-400 text-sm italic font-medium">{t.referrals.noActivity}</p>
                         </div>
                     ) : (
                         <div className="overflow-x-auto">
                             <table className="w-full">
                                 <thead className="bg-stone-50/50 dark:bg-stone-800/30">
                                     <tr>
-                                        <th className="px-10 py-5 text-left text-[10px] font-black text-stone-400 uppercase tracking-widest">Timestamp</th>
-                                        <th className="px-10 py-5 text-left text-[10px] font-black text-stone-400 uppercase tracking-widest">Event Description</th>
-                                        <th className="px-10 py-5 text-right text-[10px] font-black text-stone-400 uppercase tracking-widest">Delta</th>
-                                        <th className="px-10 py-5 text-right text-[10px] font-black text-stone-400 uppercase tracking-widest">Final</th>
+                                        <th className="px-10 py-5 text-left text-[10px] font-black text-stone-400 uppercase tracking-widest">{t.referrals.timestamp}</th>
+                                        <th className="px-10 py-5 text-left text-[10px] font-black text-stone-400 uppercase tracking-widest">{t.referrals.event}</th>
+                                        <th className="px-10 py-5 text-right text-[10px] font-black text-stone-400 uppercase tracking-widest">{t.referrals.delta}</th>
+                                        <th className="px-10 py-5 text-right text-[10px] font-black text-stone-400 uppercase tracking-widest">{t.referrals.final}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-stone-50 dark:divide-stone-800">

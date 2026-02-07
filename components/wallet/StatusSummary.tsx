@@ -49,11 +49,11 @@ export function StatusSummary({
 
     // Build breakdown text
     const breakdownParts = []
-    if (policyBreakdown.health > 0) breakdownParts.push(`${policyBreakdown.health} Health`)
-    if (policyBreakdown.auto > 0) breakdownParts.push(`${policyBreakdown.auto} Auto`)
-    if (policyBreakdown.home > 0) breakdownParts.push(`${policyBreakdown.home} Home`)
-    if (policyBreakdown.life > 0) breakdownParts.push(`${policyBreakdown.life} Life`)
-    if (policyBreakdown.travel > 0) breakdownParts.push(`${policyBreakdown.travel} Travel`)
+    if (policyBreakdown.health > 0) breakdownParts.push(`${policyBreakdown.health} ${t.status.health}`)
+    if (policyBreakdown.auto > 0) breakdownParts.push(`${policyBreakdown.auto} ${t.status.auto}`)
+    if (policyBreakdown.home > 0) breakdownParts.push(`${policyBreakdown.home} ${t.status.home}`)
+    if (policyBreakdown.life > 0) breakdownParts.push(`${policyBreakdown.life} ${t.status.life}`)
+    if (policyBreakdown.travel > 0) breakdownParts.push(`${policyBreakdown.travel} ${t.status.travel}`)
     const breakdownText = breakdownParts.join(', ')
 
     return (
@@ -66,7 +66,7 @@ export function StatusSummary({
                         <div className="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
                             <Euro className="w-5 h-5 text-teal-600" />
                         </div>
-                        <h3 className="text-sm font-semibold text-gray-700">Total Premium</h3>
+                        <h3 className="text-sm font-semibold text-gray-700">{t.status.totalPremium}</h3>
                     </div>
 
                     <div className="mb-4">
@@ -76,7 +76,7 @@ export function StatusSummary({
                         {premiumChange !== 0 && (
                             <div className="flex items-center gap-1 mt-2 text-sm text-teal-600">
                                 <TrendingUp className="w-4 h-4" />
-                                <span>{premiumChange > 0 ? '+' : ''}{formatCurrency(premiumChange)} from last month</span>
+                                <span>{premiumChange > 0 ? '+' : ''}{formatCurrency(premiumChange)} {t.status.fromLastMonth}</span>
                             </div>
                         )}
                     </div>
@@ -102,7 +102,7 @@ export function StatusSummary({
                         </div>
                     ) : (
                         <div className="h-16 flex items-center justify-center text-xs text-gray-400 italic">
-                            No history available
+                            {t.status.noHistory}
                         </div>
                     )}
                 </div>
@@ -113,7 +113,7 @@ export function StatusSummary({
                         <div className="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
                             <Shield className="w-5 h-5 text-teal-600" />
                         </div>
-                        <h3 className="text-sm font-semibold text-gray-700">Active Policies</h3>
+                        <h3 className="text-sm font-semibold text-gray-700">{t.status.activePolicies}</h3>
                     </div>
 
                     <div className="flex items-center justify-between mb-4">
@@ -168,7 +168,7 @@ export function StatusSummary({
                         <div className="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
                             <Calendar className="w-5 h-5 text-teal-600" />
                         </div>
-                        <h3 className="text-sm font-semibold text-gray-700">Upcoming Renewals</h3>
+                        <h3 className="text-sm font-semibold text-gray-700">{t.status.upcomingRenewals}</h3>
                     </div>
 
                     <div className="mb-4">
@@ -176,7 +176,7 @@ export function StatusSummary({
                             {expiringCount}
                         </div>
                         <div className="text-sm text-gray-600 mt-1">
-                            Policies expiring within 30 days
+                            {t.status.expiringWithin30Days}
                         </div>
                     </div>
 

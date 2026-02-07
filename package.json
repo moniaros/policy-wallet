@@ -24,6 +24,7 @@
     "@google/generative-ai": "^0.24.1",
     "@prisma/client": "^5.22.0",
     "@radix-ui/react-slot": "^1.2.4",
+    "@revenuecat/purchases-js": "^1.25.0",
     "@sentry/nextjs": "^10.36.0",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.93.2",

@@ -1,6 +1,6 @@
 "use client"
 
-import { MoreVertical, Eye, RefreshCw, History, AlertCircle } from 'lucide-react'
+import { MoreVertical, Eye, RefreshCw, History, AlertCircle, Sparkles, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import type { Policy } from './types'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -10,6 +10,8 @@ interface PolicyTableProps {
     onViewPolicy?: (policyId: string) => void
     onRenewPolicy?: (policyId: string) => void
     onViewHistory?: (policyId: string) => void
+    onRunAnalysis?: (policyId: string) => void
+    onDelete?: (policyId: string) => void
 }
 
 // Insurance type icons mapping
@@ -49,9 +51,11 @@ export function PolicyTable({
     policies,
     onViewPolicy,
     onRenewPolicy,
-    onViewHistory
+    onViewHistory,
+    onRunAnalysis,
+    onDelete
 }: PolicyTableProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
     const [currentPage, setCurrentPage] = useState(1)
     const [openMenuId, setOpenMenuId] = useState<string | null>(null)
     const policiesPerPage = 5
@@ -63,32 +67,33 @@ export function PolicyTable({
     const currentPolicies = policies.slice(startIndex, endIndex)
 
     // Status badge styling
+    // Status badge styling
     const getStatusBadge = (status: Policy['status']) => {
         const badges = {
             active: {
                 bg: 'bg-emerald-50',
                 text: 'text-emerald-700',
-                label: language === 'el' ? 'Ενεργό' : 'Active'
+                label: t.dashboard.statusLabels.active
             },
             expiring_soon: {
                 bg: 'bg-amber-50',
                 text: 'text-amber-700',
-                label: language === 'el' ? 'Λήγει Σύντομα' : 'Renewal Pending'
+                label: t.dashboard.statusLabels.expiring_soon
             },
             incomplete: {
                 bg: 'bg-gray-50',
                 text: 'text-gray-700',
-                label: language === 'el' ? 'Ημιτελές' : 'Incomplete'
+                label: t.dashboard.statusLabels.incomplete
             },
             action_needed: {
                 bg: 'bg-red-50',
                 text: 'text-red-700',
-                label: language === 'el' ? 'Απαιτείται Ενέργεια' : 'Action Needed'
+                label: t.dashboard.statusLabels.action_needed
             },
             analyzing: {
                 bg: 'bg-blue-50',
                 text: 'text-blue-700',
-                label: language === 'el' ? 'Ανάλυση...' : 'Analyzing...'
+                label: t.dashboard.statusLabels.analyzing
             }
         }
         return badges[status] || badges.active
@@ -115,7 +120,7 @@ export function PolicyTable({
             {/* Header */}
             <div className="px-6 py-5 border-b border-gray-100">
                 <h2 className="text-xl font-bold text-gray-900">
-                    {language === 'el' ? 'Τα Ασφαλιστήρια Μου' : 'My Insurance Policies'}
+                    {t.dashboard.myPolicies}
                 </h2>
             </div>
 
@@ -125,19 +130,19 @@ export function PolicyTable({
                     <thead>
                         <tr className="bg-gray-50 border-b border-gray-100">
                             <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                                {language === 'el' ? 'Ασφαλιστής' : 'Insurer'}
+                                {t.dashboard.insurer}
                             </th>
                             <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                                {language === 'el' ? 'Αριθμός Συμβολαίου' : 'Policy Number'}
+                                {t.dashboard.policyNumber}
                             </th>
                             <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                                {language === 'el' ? 'Τύπος' : 'Type'}
+                                {t.dashboard.type}
                             </th>
                             <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                                {language === 'el' ? 'Κατάσταση' : 'Status'}
+                                {t.dashboard.status}
                             </th>
                             <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700">
-                                {language === 'el' ? 'Ενέργειες' : 'Actions'}
+                                {t.dashboard.actions}
                             </th>
                         </tr>
                     </thead>
@@ -215,7 +220,7 @@ export function PolicyTable({
                                                     className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
                                                 >
                                                     <RefreshCw className="w-4 h-4" />
-                                                    {language === 'el' ? 'Ανανέωση' : 'Renew Now'}
+                                                    {t.dashboard.renewNow}
                                                 </button>
                                             )}
 
@@ -224,7 +229,7 @@ export function PolicyTable({
                                                 onClick={() => onViewPolicy?.(policy.id)}
                                                 className="px-4 py-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors"
                                             >
-                                                {language === 'el' ? 'Προβολή' : 'View Details'}
+                                                {t.dashboard.viewDetails}
                                             </button>
 
                                             {/* More Actions Menu */}
@@ -252,7 +257,7 @@ export function PolicyTable({
                                                                 className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
                                                             >
                                                                 <History className="w-4 h-4" />
-                                                                {language === 'el' ? 'Ιστορικό' : 'View History'}
+                                                                {t.dashboard.viewHistory}
                                                             </button>
                                                             {policy.status === 'expiring_soon' && (
                                                                 <button
@@ -263,9 +268,30 @@ export function PolicyTable({
                                                                     className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
                                                                 >
                                                                     <RefreshCw className="w-4 h-4" />
-                                                                    {language === 'el' ? 'Ανανέωση' : 'Renew Policy'}
+                                                                    {t.dashboard.renewPolicy}
                                                                 </button>
                                                             )}
+                                                            <button
+                                                                onClick={() => {
+                                                                    onRunAnalysis?.(policy.id)
+                                                                    setOpenMenuId(null)
+                                                                }}
+                                                                className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3"
+                                                            >
+                                                                <Sparkles className="w-4 h-4 text-purple-500" />
+                                                                {t.dashboard.runAnalysis}
+                                                            </button>
+                                                            <div className="border-t border-gray-100 my-1"></div>
+                                                            <button
+                                                                onClick={() => {
+                                                                    onDelete?.(policy.id)
+                                                                    setOpenMenuId(null)
+                                                                }}
+                                                                className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-3"
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                                {t.dashboard.delete}
+                                                            </button>
                                                         </div>
                                                     </>
                                                 )}
@@ -286,13 +312,10 @@ export function PolicyTable({
                         <AlertCircle className="w-8 h-8 text-gray-400" />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        {language === 'el' ? 'Δεν βρέθηκαν ασφαλιστήρια' : 'No policies found'}
+                        {t.dashboard.noPolicies}
                     </h3>
                     <p className="text-gray-600">
-                        {language === 'el'
-                            ? 'Προσθέστε το πρώτο σας ασφαλιστήριο για να ξεκινήσετε'
-                            : 'Add your first policy to get started'
-                        }
+                        {t.dashboard.addFirstPolicy}
                     </p>
                 </div>
             )}
@@ -305,7 +328,7 @@ export function PolicyTable({
                         disabled={currentPage === 1}
                         className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                        {language === 'el' ? 'Προηγούμενο' : 'Previous'}
+                        {t.dashboard.previous}
                     </button>
 
                     <div className="flex items-center gap-2">
@@ -331,7 +354,7 @@ export function PolicyTable({
                         disabled={currentPage === totalPages}
                         className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
-                        {language === 'el' ? 'Επόμενο' : 'Next'}
+                        {t.dashboard.next}
                     </button>
                 </div>
             )}

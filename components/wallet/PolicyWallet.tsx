@@ -21,8 +21,14 @@ export function PolicyWallet({
     onShareWithAgent,
     onAddToWallet,
     onViewDocuments,
+    onRunAnalysis,
+    onDeletePolicy,
     user,
-}: PolicyWalletProps & { isLoading?: boolean }) {
+}: PolicyWalletProps & {
+    isLoading?: boolean,
+    onRunAnalysis?: (policyId: string) => void,
+    onDeletePolicy?: (policyId: string) => void
+}) {
     const [showAddMenu, setShowAddMenu] = useState(false)
     const { t, language } = useLanguage()
     const [searchQuery, setSearchQuery] = useState('')
@@ -172,8 +178,8 @@ export function PolicyWallet({
                 expiringPolicies={policies
                     .filter(p => p.status === 'expiring_soon')
                     .map(p => ({
-                        name: `${p.lineOfBusiness?.charAt(0).toUpperCase()}${p.lineOfBusiness?.slice(1)} Insurance`,
-                        expiryDate: p.endDate ? new Date(p.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown'
+                        name: `${t.policyTypes[p.lineOfBusiness as keyof typeof t.policyTypes] || p.lineOfBusiness}`,
+                        expiryDate: p.endDate ? new Date(p.endDate).toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown'
                     }))
                 }
                 premiumTrend={[]} // Disable trend for now as we don't have history
@@ -190,7 +196,10 @@ export function PolicyWallet({
                 onViewHistory={(policyId: string) => {
                     // Handle history view
                     console.log('View history:', policyId)
+                    onViewPolicy?.(policyId) // Re-route to policy details for now
                 }}
+                onRunAnalysis={onRunAnalysis}
+                onDelete={onDeletePolicy}
             />
 
             {/* Add Policy FAB - Visible on all screens */}
@@ -199,7 +208,7 @@ export function PolicyWallet({
                     onClick={onAddManually}
                     className="w-14 h-14 bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-xl shadow-teal-600/30 flex items-center justify-center hover:scale-110 active:scale-95 transition-all"
                     aria-label="Add Policy"
-                    title="Add New Policy"
+                    title={t.wallet.addPolicy}
                 >
                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />

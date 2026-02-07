@@ -397,6 +397,8 @@ model Subscription {
   currentPeriodStart DateTime           @map("current_period_start")
   currentPeriodEnd   DateTime           @map("current_period_end")
   autoRenew          Boolean            @default(true) @map("auto_renew")
+  provider           String             @default("stripe") // 'stripe', 'revenue_cat'
+  revenueCatIdentifier String?          @unique @map("revenue_cat_identifier")
   stripeSubscriptionId String?          @unique @map("stripe_subscription_id")
   stripePriceId      String?            @map("stripe_price_id")
   stripeStatus       String?            @map("stripe_status")

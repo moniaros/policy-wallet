@@ -3,7 +3,7 @@
 import { useIsMobile } from "@/hooks/useResponsive"
 import { MobilePolicyDetails } from "@/components/wallet/MobilePolicyDetails"
 import { AddToWallet } from "./AddToWallet"
-import { SharePolicy } from "./SharePolicy"
+import { CollaborationPanel } from "@/components/wallet/CollaborationPanel"
 import { DeletePolicy } from "@/components/wallet/DeletePolicy"
 import { PolicyAnalysisTabs } from "./PolicyAnalysisTabs"
 import { PolicyQA } from "@/components/wallet/PolicyQA"
@@ -99,19 +99,18 @@ export function PolicyDetailsClient({
                             url: shareUrl
                         }
 
-                        // Try native share first (mobile)
-                        if (typeof navigator !== 'undefined' && navigator.share) {
+                        if (navigator.share && isMobile) { // Changed useIsMobile to isMobile
                             try {
                                 await navigator.share(shareData)
                             } catch (err) {
-                                // User cancelled or error - ignore
-                                console.log('Share cancelled or failed:', err)
+                                // User cancelled or failed
+                                console.log('Share cancelled or failed:', err) // Keep original console.log for debugging
                             }
                         } else {
-                            // Fallback to clipboard (desktop)
+                            // Fallback to clipboard or simple alert
                             try {
                                 await navigator.clipboard.writeText(shareUrl)
-                                // Show success toast
+                                // Show success toast (simplified from original)
                                 const toast = document.createElement('div')
                                 toast.className = 'fixed bottom-4 right-4 bg-emerald-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-up'
                                 toast.innerHTML = `
@@ -135,6 +134,8 @@ export function PolicyDetailsClient({
                         }
                     }}
                     onAddToWallet={() => setShowMobileWalletModal(true)}
+                    initialShares={serializedShares || []}
+                    isOwner={isOwner}
                 />
 
                 <AddToWallet
@@ -526,12 +527,17 @@ export function PolicyDetailsClient({
                             plateNumber={policy.acordData?.vehicle?.plateNumber}
                         />
 
-                        {/* Share & Delete */}
+                        {/* Collaboration Panel */}
+                        <CollaborationPanel
+                            policyId={policy.id}
+                            policyNumber={getPolicyNumber()}
+                            initialShares={serializedShares || []}
+                            isOwner={isOwner}
+                        />
+
+                        {/* Delete Policy */}
                         {isOwner && (
-                            <div className="space-y-3">
-                                <SharePolicy policyId={policy.id} initialShares={serializedShares || []} />
-                                <DeletePolicy policyId={policy.id} />
-                            </div>
+                            <DeletePolicy policyId={policy.id} />
                         )}
                     </div>
                 </div>

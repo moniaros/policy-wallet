@@ -16,35 +16,35 @@ export const subscriptionCopy = {
             price: { el: '€0', en: '€0' },
             period: { el: '/μήνα', en: '/month' },
         },
-        essential: {
-            name: { el: 'Βασικό', en: 'Essential' },
+        plus: {
+            name: { el: 'PolicyWallet Plus', en: 'PolicyWallet Plus' },
             description: {
-                el: 'Λιγότερο από έναν καφέ τον μήνα',
-                en: 'Less than a coffee per month'
+                el: 'Για αυξημένες ανάγκες',
+                en: 'For increased needs'
             },
             price: { el: '€2.99', en: '€2.99' },
             period: { el: '/μήνα', en: '/month' },
-            badge: { el: 'Πιο Δημοφιλές', en: 'Most Popular' },
-            savings: { el: 'Καλύτερη Αξία', en: 'Best Value' },
+            badge: { el: 'Δημοφιλές', en: 'Popular' },
+            savings: { el: 'Καλύτερη Τιμή', en: 'Best Price' },
             annual: {
                 price: { el: '€29', en: '€29' },
                 period: { el: '/έτος', en: '/year' },
-                savings: { el: 'Εξοικονομήστε €6.88', en: 'Save €6.88' },
+                savings: { el: 'Εξοικονομήστε 2 μήνες', en: 'Save 2 months' },
             },
         },
-        professional: {
-            name: { el: 'Επαγγελματικό', en: 'Professional' },
+        pro: {
+            name: { el: 'PolicyWallet Pro', en: 'PolicyWallet Pro' },
             description: {
-                el: 'Για ασφαλιστικούς συμβούλους',
-                en: 'For insurance professionals'
+                el: 'Απεριόριστη χρήση & AI',
+                en: 'Unlimited usage & AI'
             },
-            price: { el: '€19.99', en: '€19.99' },
+            price: { el: '€9.99', en: '€9.99' },
             period: { el: '/μήνα', en: '/month' },
-            badge: { el: 'Για Επαγγελματίες', en: 'For Professionals' },
+            badge: { el: 'Για Επαγγελματίες', en: 'For Pros' },
             annual: {
-                price: { el: '€199', en: '€199' },
+                price: { el: '€99', en: '€99' },
                 period: { el: '/έτος', en: '/year' },
-                savings: { el: 'Εξοικονομήστε €40', en: 'Save €40' },
+                savings: { el: 'Εξοικονομήστε €20', en: 'Save €20' },
             },
         },
     },
@@ -113,11 +113,11 @@ export const subscriptionCopy = {
     // Call-to-Action Buttons
     cta: {
         upgrade: { el: 'Αναβάθμιση', en: 'Upgrade' },
-        upgradeToEssential: { el: 'Αναβάθμιση σε Βασικό', en: 'Upgrade to Essential' },
-        upgradeToProfessional: { el: 'Αναβάθμιση σε Επαγγελματικό', en: 'Upgrade to Professional' },
+        upgradeToPlus: { el: 'Αναβάθμιση σε Plus', en: 'Upgrade to Plus' },
+        upgradeToPro: { el: 'Αναβάθμιση σε Pro', en: 'Upgrade to Pro' },
         getStarted: { el: 'Ξεκινήστε Δωρεάν', en: 'Get Started Free' },
-        startEssential: { el: 'Ξεκινήστε Βασικό', en: 'Start Essential' },
-        startProfessional: { el: 'Ξεκινήστε Επαγγελματικό', en: 'Start Professional' },
+        startPlus: { el: 'Ξεκινήστε Plus', en: 'Start Plus' },
+        startPro: { el: 'Ξεκινήστε Pro', en: 'Start Pro' },
         currentPlan: { el: 'Τρέχον Πλάνο', en: 'Current Plan' },
         manage: { el: 'Διαχείριση Συνδρομής', en: 'Manage Subscription' },
         cancel: { el: 'Ακύρωση', en: 'Cancel' },

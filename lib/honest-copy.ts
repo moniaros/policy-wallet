@@ -15,211 +15,211 @@ export const honestCopy = {
     brand: {
         name: 'PolicyWallet',
         tagline: {
-            el: 'Το Έξυπνο Ασφαλιστικό σας Πορτοφόλι',
-            en: 'Your Smart Insurance Wallet'
+            el: 'Σαφήνεια. Έλεγχος. Εμπιστοσύνη.',
+            en: 'Clarity. Control. Confidence.'
         },
         subtitle: {
-            el: 'Με την Δύναμη της Τεχνητής Νοημοσύνης',
-            en: 'Powered by AI'
+            el: 'Το Λειτουργικό Σύστημα για το Προσωπικό σας Ρίσκο',
+            en: 'The Operating System for Personal Risk'
         },
         mission: {
-            el: 'Κάνουμε την ασφάλιση να λειτουργεί για εσάς',
-            en: 'We make insurance work for you'
+            el: 'Η ασφάλιση εξηγείται, δεν εκτίθεται απλώς.',
+            en: 'Insurance explained, not just exposed.'
         }
     },
 
     // Landing Page Hero
     hero: {
         title: {
-            el: 'Το Έξυπνο Ασφαλιστικό σας Πορτοφόλι',
-            en: 'Your Smart Insurance Wallet'
+            el: 'Είμαι Σωστά Καλυμμένος;',
+            en: 'Am I Properly Covered?'
         },
         subtitle: {
-            el: 'Μεγιστοποιήστε τα οφέλη της ασφάλισής σας με έξυπνες πληροφορίες και υπενθυμίσεις προληπτικής φροντίδας—όλα σε ένα μέρος.',
-            en: 'Maximize your insurance benefits with intelligent insights and preventive care reminders—all in one place.'
+            el: 'Το PolicyWallet μετατρέπει τα στατικά συμβόλαια σε ένα ζωντανό κέντρο ελέγχου. Λάβετε ξεκάθαρες, σίγουρες και πρακτικές απαντήσεις σε δευτερόλεπτα.',
+            en: 'PolicyWallet transforms static policies into a living control center. Get clear, confident, and actionable answers in seconds.'
         },
         cta: {
             primary: {
-                el: 'Αποκτήστε Πρόωρη Πρόσβαση',
-                en: 'Get Early Access'
+                el: 'Ξεκινήστε Δωρεάν',
+                en: 'Start for Free'
             },
             secondary: {
-                el: 'Μάθετε Περισσότερα',
-                en: 'Learn More'
+                el: 'Πώς Λειτουργεί',
+                en: 'How It Works'
             }
         },
         badge: {
-            el: '🚀 Τώρα σε Beta',
-            en: '🚀 Now in Beta'
+            el: '✨ Η Νέα Εποχή της Ασφάλισης',
+            en: '✨ The New Era of Insurance'
         }
     },
 
-    // Value Proposition
+    // Value Proposition (The Problem & Solution)
     value: {
         title: {
-            el: 'Λάβετε εξατομικευμένες συστάσεις για να βελτιστοποιήσετε την κάλυψή σας, να κλείσετε κενά και να εξοικονομήσετε χρήματα.',
-            en: 'Get personalized recommendations to optimize your coverage, close gaps, and save money.'
+            el: 'Οι ασφαλισμένοι δεν στερούνται κάλυψης. Στερούνται σαφήνειας.',
+            en: 'Policyholders don\'t lack coverage. They lack clarity.'
         },
         description: {
-            el: 'Βεβαιωθείτε ότι αξιοποιείτε πλήρως την ασφάλισή σας για να προστατεύσετε την ευημερία σας.',
-            en: 'Ensure you\'re fully leveraging your insurance to safeguard your well-being.'
+            el: 'Η ασφάλιση σήμερα είναι κατακερματισμένη και παθητική. Το PolicyWallet την κάνει κατανοητή, ελεγχόμενη και ενεργή.',
+            en: 'Insurance today is fragmented and passive. PolicyWallet makes it understandable, controllable, and active.'
         }
     },
 
     // How It Works
     howItWorks: {
         title: {
-            el: 'Πώς Λειτουργεί',
-            en: 'How It Works'
+            el: 'Από το Χάος στον Έλεγχο',
+            en: 'From Chaos to Control'
         },
         steps: [
             {
                 number: '01',
                 title: {
-                    el: 'Ανεβάστε τα Έγγραφά σας',
-                    en: 'Upload Your Documents'
+                    el: 'Συγκέντρωση',
+                    en: 'Centralize'
                 },
                 description: {
-                    el: 'Ανεβάστε με ασφάλεια τα ασφαλιστήρια συμβόλαιά σας σε μορφή PDF ή εικόνας. Η πλατφόρμα μας χρησιμοποιεί κρυπτογράφηση τραπεζικού επιπέδου.',
-                    en: 'Securely upload your insurance policies in PDF or image format. Our platform uses bank-grade encryption.'
+                    el: 'Όλα τα συμβόλαια και έγγραφα σε ένα ασφαλές, ψηφιακό πορτοφόλι. Τέλος στα χαμένα email και φακέλους.',
+                    en: 'All policies and documents in one secure digital wallet. No more lost emails or physical folders.'
                 }
             },
             {
                 number: '02',
                 title: {
-                    el: 'Αφήστε την AI να Εργαστεί για Εσάς',
-                    en: 'Let AI Work for You'
+                    el: 'Κατανόηση',
+                    en: 'Understand'
                 },
                 description: {
-                    el: 'Η τεχνητή νοημοσύνη μας αναλύει τα συμβόλαιά σας, εντοπίζει κενά κάλυψης και προτείνει βελτιστοποιήσεις προσαρμοσμένες στις ανάγκες σας.',
-                    en: 'Our AI analyzes your policies, identifies coverage gaps, and suggests optimizations tailored to your needs.'
+                    el: 'Η AI μεταφράζει την πολυπλοκότητα σε απλή γλώσσα. Μάθετε τι πραγματικά καλύπτεστε (και τι όχι).',
+                    en: 'AI translates complexity into plain language. Know exactly what you are covered for (and what you aren\'t).'
                 }
             },
             {
                 number: '03',
                 title: {
-                    el: 'Μείνετε Προληπτικοί',
-                    en: 'Stay Proactive'
+                    el: 'Βελτιστοποίηση',
+                    en: 'Optimize'
                 },
                 description: {
-                    el: 'Λάβετε έγκαιρες υπενθυμίσεις για ανανεώσεις, προληπτικούς ελέγχους και ευκαιρίες εξοικονόμησης. Μην χάσετε ποτέ σημαντικές προθεσμίες.',
-                    en: 'Receive timely reminders for renewals, preventive checkups, and savings opportunities. Never miss important deadlines.'
+                    el: 'Εντοπίζουμε κενά, επικαλύψεις και ευκαιρίες. Προληπτική φροντίδα πριν προκύψει το πρόβλημα.',
+                    en: 'We identify gaps, overlaps, and opportunities. Proactive care before problems arise.'
                 }
             }
         ]
     },
 
-    // Features
+    // Features (Core Capabilities)
     features: {
         title: {
-            el: 'Ξεκλειδώστε τις Δυνατότητες της Ασφάλισής σας',
-            en: 'Unlock Your Insurance Potential'
+            el: 'Περισσότερα από μια Εφαρμογή',
+            en: 'More Than Just an App'
         },
         subtitle: {
-            el: 'Η πλατφόρμα μας με τεχνητή νοημοσύνη αναλύει τα συμβόλαιά σας για να παρέχει εξατομικευμένες πληροφορίες, προληπτικές υπενθυμίσεις φροντίδας και απρόσκοπτη ενσωμάτωση.',
-            en: 'Our AI-powered platform analyzes your policies to provide personalized insights, proactive preventive care reminders, and seamless integration.'
+            el: 'Μια πλατφόρμα υποστήριξης αποφάσεων που μετατρέπει την ασφάλιση από προϊόν σε υπηρεσία.',
+            en: 'A decision-support platform that turns insurance from a static product into an ongoing service.'
         },
         items: [
             {
                 icon: 'brain',
                 title: {
-                    el: 'Ανάλυση με AI',
-                    en: 'AI Analysis'
+                    el: 'Μετάφραση Κάλυψης',
+                    en: 'Coverage Translation'
                 },
                 description: {
-                    el: 'Προηγμένοι αλγόριθμοι εντοπίζουν αυτόματα κενά κάλυψης και προτείνουν βελτιστοποιήσεις βασισμένες στο προφίλ σας.',
-                    en: 'Advanced algorithms automatically detect coverage gaps and suggest optimizations based on your profile.'
-                }
-            },
-            {
-                icon: 'shield',
-                title: {
-                    el: 'Ασφάλεια Πρώτα',
-                    en: 'Security First'
-                },
-                description: {
-                    el: 'Κρυπτογράφηση AES-256, αποθήκευση σύμφωνα με GDPR και έλεγχοι ασφαλείας για την προστασία των ευαίσθητων δεδομένων σας.',
-                    en: 'AES-256 encryption, GDPR-compliant storage, and security audits to protect your sensitive data.'
-                }
-            },
-            {
-                icon: 'bell',
-                title: {
-                    el: 'Έξυπνες Υπενθυμίσεις',
-                    en: 'Smart Reminders'
-                },
-                description: {
-                    el: 'Μην χάσετε ποτέ ανανεώσεις, προληπτικούς ελέγχους ή σημαντικές προθεσμίες με τις αυτόματες ειδοποιήσεις μας.',
-                    en: 'Never miss renewals, preventive checkups, or important deadlines with our automated notifications.'
+                    el: 'Μετατρέπουμε τους νομικούς όρους σε πραγματικά σενάρια ζωής. Ξεκάθαρες απαντήσεις, χωρίς ψιλά γράμματα.',
+                    en: 'We translate legal terms into real-world scenarios. Clear answers, no fine print.'
                 }
             },
             {
                 icon: 'chart',
                 title: {
-                    el: 'Οπτικοποίηση Κάλυψης',
-                    en: 'Coverage Visualization'
+                    el: 'Εντοπισμός Κενών',
+                    en: 'Gap Analysis'
                 },
                 description: {
-                    el: 'Κατανοήστε την κάλυψή σας με διαδραστικά γραφήματα και αναφορές που είναι εύκολο να διαβαστούν.',
-                    en: 'Understand your coverage with interactive charts and easy-to-read reports.'
-                }
-            },
-            {
-                icon: 'wallet',
-                title: {
-                    el: 'Ψηφιακό Πορτοφόλι',
-                    en: 'Digital Wallet'
-                },
-                description: {
-                    el: 'Προσθέστε συμβόλαια στο Apple Wallet και Google Wallet για άμεση πρόσβαση όπου κι αν βρίσκεστε.',
-                    en: 'Add policies to Apple Wallet and Google Wallet for instant access wherever you are.'
+                    el: 'Αυτόματος έλεγχος για υποασφάλιση ή διπλές χρεώσεις. Πληρώστε μόνο για ό,τι χρειάζεστε.',
+                    en: 'Automatic checks for underinsurance or double charges. Pay only for what you need.'
                 }
             },
             {
                 icon: 'share',
                 title: {
-                    el: 'Ασφαλής Κοινοποίηση',
-                    en: 'Secure Sharing'
+                    el: 'Συνεργασία & Οικογένεια',
+                    en: 'Collaboration'
                 },
                 description: {
-                    el: 'Μοιραστείτε συμβόλαια με γιατρούς ή συμβούλους μέσω κρυπτογραφημένων συνδέσμων με έλεγχο πρόσβασης.',
-                    en: 'Share policies with doctors or advisors via encrypted links with access control.'
+                    el: 'Μοιραστείτε με ασφάλεια την πρόσβαση με την οικογένεια ή τον πράκτορά σας. Εσείς έχετε τον έλεγχο των δεδομένων.',
+                    en: 'Securely share access with family or your agent. You own and control your data.'
+                }
+            },
+            {
+                icon: 'bell',
+                title: {
+                    el: 'Προληπτική Φροντίδα',
+                    en: 'Proactive Care'
+                },
+                description: {
+                    el: 'Ειδοποιήσεις πριν λήξουν τα συμβόλαια. Insights πριν συμβεί το ατύχημα.',
+                    en: 'Alerts before policies expire. Insights before accidents happen.'
+                }
+            },
+            {
+                icon: 'shield',
+                title: {
+                    el: 'Απόλυτη Ιδιωτικότητα',
+                    en: 'User Ownership'
+                },
+                description: {
+                    el: 'Τα δεδομένα ανήκουν σε εσάς. Δεν τα πουλάμε. Κρυπτογράφηση και ασφάλεια τραπεζικού επιπέδου.',
+                    en: 'Data belongs to you. We don\'t sell it. Bank-grade encryption and security.'
+                }
+            },
+            {
+                icon: 'wallet',
+                title: {
+                    el: 'Όλα Σε Ένα',
+                    en: 'All-in-One'
+                },
+                description: {
+                    el: 'Υγεία, Αυτοκίνητο, Σπίτι, Ζωή. Όλοι οι πάροχοι σε ένα ταμπλό ελέγχου.',
+                    en: 'Health, Auto, Home, Life. All carriers in one dashboard.'
                 }
             }
         ]
     },
 
-    // Early Access / Beta
+    // Early Access
     earlyAccess: {
         title: {
-            el: 'Γίνετε Μέλος του Μέλλοντος της Ασφάλισης',
-            en: 'Join the Future of Insurance'
+            el: 'Ανακτήστε τον Έλεγχο της Ασφάλειάς σας',
+            en: 'Reclaim Control of Your Safety'
         },
         subtitle: {
-            el: 'Ξεκινάμε με περιορισμένη πρόσβαση. Υποβάλετε τα στοιχεία σας παρακάτω για να αποκτήσετε πρόωρη πρόσβαση και να μείνετε μπροστά.',
-            en: 'We\'re launching with limited access. Submit your details below to get early access and stay ahead.'
+            el: 'Γίνετε από τους πρώτους που θα ζήσουν την εμπειρία του PolicyWallet. Χωρίς δεσμεύσεις.',
+            en: 'Be among the first to experience PolicyWallet. No strings attached.'
         },
         benefits: {
             title: {
-                el: 'Οφέλη Πρώιμων Χρηστών',
-                en: 'Early User Benefits'
+                el: 'Γιατί να εγγραφείτε',
+                en: 'Why join'
             },
             items: [
                 {
-                    el: '✨ Δωρεάν πρόσβαση στη Beta έκδοση',
-                    en: '✨ Free access to Beta version'
+                    el: '✨ Έξυπνη ανάλυση υφιστάμενων συμβολαίων',
+                    en: '✨ Smart analysis of existing policies'
                 },
                 {
-                    el: '🎯 Επιρροή στην ανάπτυξη χαρακτηριστικών',
-                    en: '🎯 Influence feature development'
+                    el: '🎯 Προσωποποιημένες προτάσεις βελτιστοποίησης',
+                    en: '🎯 Personalized optimization suggestions'
                 },
                 {
-                    el: '🎁 Ειδικές προσφορές για πρώιμους υιοθετητές',
-                    en: '🎁 Special early adopter offers'
+                    el: '👨‍👩‍👧‍👦 Εργαλεία συνεργασίας για οικογένειες',
+                    en: '👨‍👩‍👧‍👦 Collaboration tools for families'
                 },
                 {
-                    el: '💬 Άμεση υποστήριξη από την ομάδα μας',
-                    en: '💬 Direct support from our team'
+                    el: '🔒 Πλήρης έλεγχος των δεδομένων σας',
+                    en: '🔒 Full control over your data'
                 }
             ]
         },
@@ -229,62 +229,62 @@ export const honestCopy = {
                 en: 'Full Name'
             },
             email: {
-                el: 'Email',
-                en: 'Email'
+                el: 'Διεύθυνση Email',
+                en: 'Email Address'
             },
             phone: {
-                el: 'Τηλέφωνο (προαιρετικό)',
-                en: 'Phone (optional)'
+                el: 'Κινητό (Προαιρετικό)',
+                en: 'Mobile (Optional)'
             },
             consent: {
-                el: 'Συμφωνώ ότι τα δεδομένα μου συλλέγονται και αποθηκεύονται σύμφωνα με την Πολιτική Απορρήτου.',
-                en: 'I agree that my data is collected and stored according to the Privacy Policy.'
+                el: 'Σέβομαι την ιδιωτικότητά σας. Διαβάστε την Πολιτική Απορρήτου.',
+                en: 'We respect your privacy. Read our Privacy Policy.'
             },
             submit: {
-                el: 'Αποκτήστε Πρόσβαση',
-                en: 'Get Access'
+                el: 'Αίτηση Πρόσβασης',
+                en: 'Request Access'
             }
         }
     },
 
-    // Trust Signals (Honest)
+    // Trust Signals
     trust: {
         title: {
-            el: 'Γιατί να Εμπιστευτείτε το PolicyWallet',
-            en: 'Why Trust PolicyWallet'
+            el: 'Χτισμένο στην Εμπιστοσύνη',
+            en: 'Built on Trust'
         },
         items: [
             {
                 icon: 'lock',
                 title: {
-                    el: 'Ασφάλεια Δεδομένων',
-                    en: 'Data Security'
+                    el: 'Κρυπτογράφηση',
+                    en: 'Encryption'
                 },
                 description: {
-                    el: 'Κρυπτογράφηση τραπεζικού επιπέδου και συμμόρφωση με GDPR',
-                    en: 'Bank-grade encryption and GDPR compliance'
-                }
-            },
-            {
-                icon: 'code',
-                title: {
-                    el: 'Ελληνική Ανάπτυξη',
-                    en: 'Greek Development'
-                },
-                description: {
-                    el: 'Χτισμένο στην Ελλάδα για την ελληνική αγορά',
-                    en: 'Built in Greece for the Greek market'
+                    el: 'AES-256 για όλα τα έγγραφα',
+                    en: 'AES-256 for all documents'
                 }
             },
             {
                 icon: 'heart',
                 title: {
-                    el: 'Επικεντρωμένοι στον Χρήστη',
-                    en: 'User-Focused'
+                    el: 'Ανεξαρτησία',
+                    en: 'Independence'
                 },
                 description: {
-                    el: 'Ακούμε τα σχόλιά σας και βελτιώνουμε συνεχώς',
-                    en: 'We listen to your feedback and continuously improve'
+                    el: 'Εργαζόμαστε για εσάς, όχι για τις ασφαλιστικές',
+                    en: 'We work for you, not the carriers'
+                }
+            },
+            {
+                icon: 'code',
+                title: {
+                    el: 'Ανθρωποκεντρικό AI',
+                    en: 'Human-Centric AI'
+                },
+                description: {
+                    el: 'Τεχνολογία που ενδυναμώνει, δεν αντικαθιστά',
+                    en: 'Technology that empowers, not replaces'
                 }
             }
         ]
@@ -293,24 +293,24 @@ export const honestCopy = {
     // Blog/News Section
     news: {
         title: {
-            el: 'Τελευταία Νέα',
-            en: 'Latest News'
+            el: 'Από το Blog μας',
+            en: 'From our Blog'
         },
         subtitle: {
-            el: 'Μάθετε για το μέλλον της ασφάλισης και της τεχνητής νοημοσύνης',
-            en: 'Learn about the future of insurance and AI'
+            el: 'Οδηγοί για καλύτερη ασφάλιση',
+            en: 'Guides for better insurance'
         },
         viewAll: {
-            el: 'Δείτε Όλα τα Άρθρα',
-            en: 'View All Articles'
+            el: 'Διαβάστε Περισσότερα',
+            en: 'Read More'
         }
     },
 
     // Footer
     footer: {
         tagline: {
-            el: 'Κάνουμε την ασφάλιση να λειτουργεί για εσάς',
-            en: 'We make insurance work for you'
+            el: 'Σαφήνεια. Έλεγχος. Εμπιστοσύνη.',
+            en: 'Clarity. Control. Confidence.'
         },
         contact: {
             title: {
@@ -322,7 +322,7 @@ export const honestCopy = {
                 en: 'Athens, Greece'
             },
             email: 'hello@policywallet.gr',
-            phone: '+30 XXX XXX XXXX' // Replace with real number
+            phone: ''
         },
         legal: {
             privacy: {
@@ -334,49 +334,49 @@ export const honestCopy = {
                 en: 'Terms of Service'
             },
             cookies: {
-                el: 'Πολιτική Cookies',
-                en: 'Cookie Policy'
+                el: 'Cookies',
+                en: 'Cookies'
             }
         },
         social: {
             title: {
-                el: 'Ακολουθήστε μας',
-                en: 'Follow Us'
+                el: 'Social',
+                en: 'Social'
             }
         },
         newsletter: {
             title: {
-                el: 'Εγγραφείτε για Ενημερώσεις',
-                en: 'Subscribe for Updates'
+                el: 'Ενημερώσεις',
+                en: 'Updates'
             },
             placeholder: {
-                el: 'Το email σας',
-                en: 'Your email'
+                el: 'Email...',
+                en: 'Email...'
             },
             button: {
-                el: 'Εγγραφή',
-                en: 'Subscribe'
+                el: 'OK',
+                en: 'OK'
             }
         },
         copyright: {
-            el: '© 2024 PolicyWallet. Με επιφύλαξη παντός δικαιώματος.',
-            en: '© 2024 PolicyWallet. All rights reserved.'
+            el: '© 2024 PolicyWallet.',
+            en: '© 2024 PolicyWallet.'
         }
     },
 
     // Meta/SEO
     meta: {
         title: {
-            el: 'PolicyWallet - Το Έξυπνο Ασφαλιστικό σας Πορτοφόλι με AI',
-            en: 'PolicyWallet - Your Smart Insurance Wallet Powered by AI'
+            el: 'PolicyWallet - Είμαι Σωστά Καλυμμένος;',
+            en: 'PolicyWallet - Am I Properly Covered?'
         },
         description: {
-            el: 'Μεγιστοποιήστε τα οφέλη της ασφάλισής σας με έξυπνες πληροφορίες και υπενθυμίσεις προληπτικής φροντίδας. Αποκτήστε πρόωρη πρόσβαση στην πλατφόρμα μας.',
-            en: 'Maximize your insurance benefits with intelligent insights and preventive care reminders. Get early access to our platform.'
+            el: 'Η πρώτη πλατφόρμα που μετατρέπει τα ασφαλιστήριά σας σε έξυπνες, κατανοητές πληροφορίες. Σαφήνεια, έλεγχος και βελτιστοποίηση σε ένα μέρος.',
+            en: 'The first platform that turns your insurance policies into smart, understandable insights. Clarity, control, and optimization in one place.'
         },
         keywords: {
-            el: 'ασφάλιση, πορτοφόλι, AI, τεχνητή νοημοσύνη, ασφαλιστήρια συμβόλαια, Ελλάδα',
-            en: 'insurance, wallet, AI, artificial intelligence, insurance policies, Greece'
+            el: 'ασφάλιση, πορτοφόλι, AI, έλεγχος, κάλυψη, Ελλάδα',
+            en: 'insurance, wallet, AI, control, coverage, Greece'
         }
     }
 }

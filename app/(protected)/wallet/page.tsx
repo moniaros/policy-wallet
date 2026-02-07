@@ -49,40 +49,52 @@ export default async function WalletPage() {
         isOnline: true
     }
 
+    // Fetch active access grants
+    const allGrants = await db.accessGrant.findMany({
+        where: {
+            granterUserId: dbUser.id,
+            status: 'active',
+            scope: { startsWith: 'policy:' }
+        },
+        include: {
+            grantee: true
+        }
+    })
+
     // Map Prisma types to UI types
-    const mappedPolicies: Policy[] = policies.map(p => ({
-        id: p.id,
-        policyNumber: p.policyNumber,
-        insurerName: p.insurerName,
-        insurerLogo: null, // Placeholder
-        lineOfBusiness: p.lineOfBusiness as any,
-        status: mapStatus(p.status, p.endDate),
-        startDate: p.startDate.toISOString(),
-        endDate: p.endDate.toISOString(),
-        lastUpdated: p.updatedAt.toISOString(),
-        premiumAmount: p.premiumAmount ? Number(p.premiumAmount) : undefined,
-        premiumCurrency: p.premiumCurrency || 'EUR',
-        sharedWithAgents: [], // Mock for now
-        coverageHighlights: [], // Mock or parse from summary
-        documents: p.documents.map((d: any) => ({
-            id: d.id,
-            fileName: d.fileName,
-            uploadedAt: d.uploadedAt.toISOString(),
-            uploadedBy: d.source as any
-        }))
-    }))
+    const mappedPolicies: Policy[] = policies.map(p => {
+        // Find grants for this policy
+        const policyGrants = allGrants.filter(g => g.scope === `policy:${p.id}`)
+
+        return {
+            id: p.id,
+            policyNumber: p.policyNumber,
+            insurerName: p.insurerName,
+            insurerLogo: null, // Placeholder
+            lineOfBusiness: p.lineOfBusiness as any,
+            status: mapStatus(p.status, p.endDate),
+            startDate: p.startDate.toISOString(),
+            endDate: p.endDate.toISOString(),
+            lastUpdated: p.updatedAt.toISOString(),
+            premiumAmount: p.premiumAmount ? Number(p.premiumAmount) : undefined,
+            premiumCurrency: p.premiumCurrency || 'EUR',
+            sharedWithAgents: policyGrants.map(g => ({
+                agentName: g.grantee.name || 'Agent',
+                agentId: g.grantee.id,
+                permissions: g.permissions
+            })),
+            coverageHighlights: [], // Mock or parse from summary
+            documents: p.documents.map((d: any) => ({
+                id: d.id,
+                fileName: d.fileName,
+                uploadedAt: d.uploadedAt.toISOString(),
+                uploadedBy: d.source as any
+            }))
+        }
+    })
 
     return (
         <div className="min-h-screen bg-transparent">
-            <PageHeader
-                title={`Welcome back, ${user.name.split(' ')[0]}!`}
-                subtitle="Here's an overview of your insurance portfolio and key metrics."
-                actions={
-                    <div className="flex items-center gap-3">
-                        {/* Add Policy Actions */}
-                    </div>
-                }
-            />
             <PolicyWalletClient policies={mappedPolicies} user={user} />
         </div>
     )

@@ -49,6 +49,7 @@ export interface Subscription {
     user_id: string
     plan_id: string
     status: 'active' | 'cancelled' | 'expired'
+    provider?: 'stripe' | 'revenue_cat'
     current_period_start: string
     current_period_end: string
     next_billing_date: string | null

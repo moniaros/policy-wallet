@@ -37,6 +37,8 @@ interface MobilePolicyDetailsProps {
     onDownloadDocument: (url: string) => void
     onShare: () => void
     onAddToWallet: () => void
+    initialShares?: Share[]
+    isOwner?: boolean
 }
 
 import { PolicyQA } from "@/components/wallet/PolicyQA"
@@ -45,17 +47,20 @@ import { analyzeGaps } from '@/app/(protected)/wallet/actions'
 import { UpgradePrompt } from '@/components/account/UpgradePrompt'
 import { LimitReachedModal } from '@/components/account/LimitReachedModal'
 import { toast } from 'sonner'
-import { Sparkles, Loader2, RefreshCw } from 'lucide-react'
+import { Sparkles, Loader2, RefreshCw, Users } from 'lucide-react'
+import { CollaborationPanel, Share } from "@/components/wallet/CollaborationPanel"
 
 export function MobilePolicyDetails({
     policy,
     t,
     onDownloadDocument,
     onShare,
-    onAddToWallet
+    onAddToWallet,
+    initialShares,
+    isOwner
 }: MobilePolicyDetailsProps) {
     const router = useRouter()
-    const [activeTab, setActiveTab] = useState<'overview' | 'coverage' | 'documents' | 'assistant'>('overview')
+    const [activeTab, setActiveTab] = useState<'overview' | 'coverage' | 'documents' | 'assistant' | 'team'>('overview')
     const [isAnalyzing, setIsAnalyzing] = useState(false)
     const [gapLimitReached, setGapLimitReached] = useState(false)
 
@@ -165,6 +170,15 @@ export function MobilePolicyDetails({
                             }`}
                     >
                         {t.wallet.documents || 'Docs'}
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('team')}
+                        className={`flex-1 min-w-[24%] pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'team'
+                            ? 'border-teal-600 text-teal-600 dark:text-teal-400'
+                            : 'border-transparent text-stone-500 hover:text-stone-700 dark:text-stone-400'
+                            }`}
+                    >
+                        {t.wallet.team || 'Team'}
                     </button>
                     <button
                         onClick={() => setActiveTab('assistant')}
@@ -341,6 +355,17 @@ export function MobilePolicyDetails({
                                 </button>
                             ))
                         )}
+                    </div>
+                )}
+
+                {activeTab === 'team' && (
+                    <div className="space-y-4 animate-in slide-in-from-right-4 duration-300">
+                        <CollaborationPanel
+                            policyId={policy.id}
+                            policyNumber={policy.policyNumber}
+                            initialShares={initialShares || []}
+                            isOwner={!!isOwner}
+                        />
                     </div>
                 )}
 

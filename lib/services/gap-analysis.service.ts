@@ -271,8 +271,14 @@ export class GapAnalysisService extends BaseService {
             })
 
             // 8. Create Gap Instances
+            const uniqueGapResults = gapResults.filter((gap, index, self) =>
+                index === self.findIndex((t) => (
+                    t.slug === gap.slug
+                ))
+            )
+
             let detectedCount = 0
-            for (const item of gapResults) {
+            for (const item of uniqueGapResults) {
                 if (item.isDetected) {
                     const def = gaps.find(g => g.slug === item.slug)
                     if (def) {

@@ -20,6 +20,7 @@ import {
 } from "./actions"
 import { useRouter } from "next/navigation"
 import { useIsMobile } from "@/hooks/useResponsive"
+import { useLanguage } from "@/contexts/LanguageContext"
 import type { Policy } from "@/components/wallet/types"
 import { PageHeader } from '@/components/ui/PageHeader'
 import { User, CreditCard, Gift, Settings as SettingsIcon, LogOut } from 'lucide-react'
@@ -48,6 +49,7 @@ interface Props {
 export function AccountClientPage({ initialData, mobileProps }: Props) {
     const isMobile = useIsMobile()
     const router = useRouter()
+    const { t } = useLanguage()
     const [activeTab, setActiveTab] = useState<'overview' | 'billing' | 'referrals' | 'settings'>('overview')
 
     const handleSwitchRole = (role: 'policyholder' | 'agent') => {
@@ -100,8 +102,8 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
     return (
         <div className="min-h-screen bg-transparent">
             <PageHeader
-                title="Account"
-                subtitle="Manage your professional profile, billing, and system preferences."
+                title={t.account.pageTitle}
+                subtitle={t.account.pageSubtitle}
                 actions={
                     <div className="flex p-1 bg-stone-100 dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 overflow-x-auto no-scrollbar">
                         <button
@@ -109,28 +111,28 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === 'overview' ? 'bg-white dark:bg-stone-900 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
                         >
                             <User className="w-3.5 h-3.5" />
-                            Overview
+                            {t.account.overview}
                         </button>
                         <button
                             onClick={() => setActiveTab('billing')}
                             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === 'billing' ? 'bg-white dark:bg-stone-900 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
                         >
                             <CreditCard className="w-3.5 h-3.5" />
-                            Billing
+                            {t.account.billing}
                         </button>
                         <button
                             onClick={() => setActiveTab('referrals')}
                             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === 'referrals' ? 'bg-white dark:bg-stone-900 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
                         >
                             <Gift className="w-3.5 h-3.5" />
-                            Referrals
+                            {t.account.referrals}
                         </button>
                         <button
                             onClick={() => setActiveTab('settings')}
                             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === 'settings' ? 'bg-white dark:bg-stone-900 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
                         >
                             <SettingsIcon className="w-3.5 h-3.5" />
-                            Settings
+                            {t.account.settings}
                         </button>
                     </div>
                 }

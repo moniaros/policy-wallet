@@ -208,7 +208,7 @@ export async function getInsuranceTypes() {
     return types.map(t => ({ id: t.slug, ...t, isActive: true }));
 }
 
-export async function sharePolicy(policyId: string, agentEmail: string) {
+export async function sharePolicy(policyId: string, agentEmail: string, permissions: 'view' | 'edit' = 'view') {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
@@ -226,6 +226,7 @@ export async function sharePolicy(policyId: string, agentEmail: string) {
                 token: Math.random().toString(36).substring(7),
                 inviteType: 'share',
                 scope: `policy:${policyId}`,
+                requestedPermissions: permissions,
                 expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
             }
         })
@@ -239,8 +240,8 @@ export async function sharePolicy(policyId: string, agentEmail: string) {
                 adminUserId: authResult.dbUser.id,
                 adminEmail: authResult.dbUser.email || "unknown",
                 actionType: "POLICY_SHARE_INVITE",
-                description: `Invited ${agentEmail} to share policy ${policyId}`,
-                metadata: { policyId, agentEmail }
+                description: `Invited ${agentEmail} to share policy ${policyId} with ${permissions} access`,
+                metadata: { policyId, agentEmail, permissions }
             }
         })
 
@@ -258,7 +259,7 @@ export async function sharePolicy(policyId: string, agentEmail: string) {
             granterUserId: authResult.dbUser.id,
             granteeUserId: agent.id,
             scope: `policy:${policyId}`,
-            permissions: "read",
+            permissions: permissions,
             status: "active"
         }
     })
@@ -300,7 +301,7 @@ export async function sharePolicy(policyId: string, agentEmail: string) {
             eventType: 'policy_shared',
             channel: 'in_app',
             title: 'New Policy Shared With You',
-            message: `${authResult.dbUser.name || 'A customer'} has shared their ${policy?.lineOfBusiness || 'insurance'} policy from ${policy?.insurerName || 'an insurer'} with you.`,
+            message: `${authResult.dbUser.name || 'A customer'} has shared their ${policy?.lineOfBusiness || 'insurance'} policy (${policy?.insurerName}) with you with ${permissions} access.`,
             relatedObjectType: 'policy',
             relatedObjectId: policyId
         }
@@ -312,8 +313,8 @@ export async function sharePolicy(policyId: string, agentEmail: string) {
             adminUserId: authResult.dbUser.id,
             adminEmail: authResult.dbUser.email || "unknown",
             actionType: "POLICY_SHARED",
-            description: `Shared policy ${policyId} with ${agentEmail}`,
-            metadata: { policyId, agentEmail }
+            description: `Shared policy ${policyId} with ${agentEmail} (${permissions})`,
+            metadata: { policyId, agentEmail, permissions }
         }
     })
 
@@ -344,7 +345,8 @@ export async function getPolicyShares(policyId: string) {
         email: g.grantee.email,
         name: g.grantee.name,
         image: g.grantee.image,
-        grantedAt: g.grantedAt
+        grantedAt: g.grantedAt,
+        permissions: g.permissions as 'view' | 'edit'
     }))
 }
 
@@ -619,4 +621,113 @@ export async function askPolicyQuestion(policyId: string, question: string) {
         })
         return { error: "Failed to process your question. Please try again." }
     }
+}
+
+export async function runPolicyAnalysis(policyId: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    const policy = await db.policy.findUnique({
+        where: { id: policyId }
+    })
+
+    if (!policy) return { error: "Policy not found" }
+
+    // Check ownership or access grant
+    const isOwner = policy.ownerUserId === authResult.dbUser.id
+    if (!isOwner) {
+        const grant = await db.accessGrant.findFirst({
+            where: {
+                granterUserId: policy.ownerUserId,
+                granteeUserId: authResult.dbUser.id,
+                scope: `policy:${policyId}`,
+                status: 'active'
+            }
+        })
+        if (!grant) return { error: "Unauthorized" }
+    }
+
+    const policyService = new PolicyService()
+    const language = (authResult.dbUser.preferredLanguage as 'en' | 'el') || 'en'
+
+    try {
+        // Trigger background analysis
+        await policyService.runBackgroundAnalysis(policyId, authResult.dbUser.id, language)
+        revalidatePath(`/wallet`)
+        revalidatePath(`/wallet/${policyId}`)
+        return { success: true, message: "Analysis started" }
+    } catch (e: any) {
+        logger('error', 'Manual policy analysis failed', { policyId, error: e.message })
+        return { error: e.message || "Analysis failed" }
+    }
+}
+
+export async function ignoreGap(gapId: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    await db.gapInstance.update({
+        where: { id: gapId },
+        data: { status: 'ignored' }
+    })
+
+    revalidatePath("/wallet")
+    return { success: true }
+}
+
+export async function notifyAgentAboutGap(gapId: string, policyId: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    // Find active relationship
+    const relationship = await db.customerRelationship.findFirst({
+        where: {
+            policyholderUserId: authResult.dbUser.id,
+            status: 'active'
+        }
+    })
+
+    if (!relationship) {
+        return { error: "No active agent found to notify." }
+    }
+
+    // Check if opportunity already exists
+    const existing = await db.opportunity.findFirst({
+        where: {
+            gapInstanceId: gapId,
+            relationshipId: relationship.id
+        }
+    })
+
+    if (existing) {
+        return { success: true, message: "Agent already notified." }
+    }
+
+    // Create Opportunity
+    const opportunity = await db.opportunity.create({
+        data: {
+            relationshipId: relationship.id,
+            policyId: policyId,
+            gapInstanceId: gapId,
+            ownerAgentUserId: relationship.agentUserId,
+            status: 'open',
+            notes: 'Customer requested more details on this gap.'
+        }
+    })
+
+    // Notify Agent
+    await db.notificationEvent.create({
+        data: {
+            userId: relationship.agentUserId,
+            eventType: 'opportunity_created',
+            channel: 'in_app',
+            title: 'New Opportunity Detected',
+            message: `${authResult.dbUser.name || 'Customer'} requested details on a coverage gap.`,
+            relatedObjectType: 'opportunity',
+            relatedObjectId: opportunity.id
+        }
+    })
+
+    revalidatePath("/wallet")
+    return { success: true, message: "Agent notified." }
 }

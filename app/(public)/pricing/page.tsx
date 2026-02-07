@@ -36,7 +36,7 @@ export default function PricingPage() {
         return () => subscription.unsubscribe()
     }, [supabase])
 
-    const handleSelectPlan = async (tier: 'free' | 'essential' | 'professional') => {
+    const handleSelectPlan = async (tier: 'free' | 'plus' | 'pro') => {
         if (!session) {
             // Redirect to signup with plan parameter
             router.push(`/auth/signup?plan=${tier}`)
@@ -49,7 +49,7 @@ export default function PricingPage() {
             return
         }
 
-        if (tier === 'essential' || tier === 'professional') {
+        if (tier === 'plus' || tier === 'pro') {
             // Redirect to checkout
             try {
                 const response = await fetch('/api/stripe/checkout', {
@@ -160,13 +160,13 @@ export default function PricingPage() {
                             onSelectPlan={handleSelectPlan}
                         />
                         <PricingCard
-                            tier="essential"
+                            tier="plus"
                             language={language}
                             isHighlighted={true}
                             onSelectPlan={handleSelectPlan}
                         />
                         <PricingCard
-                            tier="professional"
+                            tier="pro"
                             language={language}
                             onSelectPlan={handleSelectPlan}
                         />

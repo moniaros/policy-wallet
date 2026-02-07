@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Shield, Smartphone, Globe, Bell, Lock, AlertTriangle, CheckCircle2, Zap, Loader2, ChevronRight } from 'lucide-react'
 import { ProcessingHUD } from '@/components/ui/ProcessingHUD'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export function Settings({
     currentUser,
@@ -21,6 +22,7 @@ export function Settings({
     onLogoutSession,
     onLogoutAllSessions
 }: SettingsProps) {
+    const { t } = useLanguage()
     const [isEditingName, setIsEditingName] = useState(false)
     const [nameDraft, setNameDraft] = useState(currentUser.name || '')
 
@@ -54,14 +56,14 @@ export function Settings({
     }
 
     const handleSaveName = () => {
-        withProcessing("Updating profile name...", async () => {
+        withProcessing(t.settings.updatingProfile, async () => {
             await onUpdateProfile?.({ name: nameDraft })
             setIsEditingName(false)
         })
     }
 
     const handleSavePhone = () => {
-        withProcessing("Updating phone number...", async () => {
+        withProcessing(t.settings.updatingPhone, async () => {
             await onUpdateProfile?.({ phone: phoneDraft })
             setIsEditingPhone(false)
         })
@@ -69,7 +71,7 @@ export function Settings({
 
     const handleSaveEmail = () => {
         if (emailDraft && emailDraft !== currentUser.email) {
-            withProcessing("Updating email address...", async () => {
+            withProcessing(t.settings.updatingEmail, async () => {
                 await onUpdateEmail?.(emailDraft)
                 setIsEditingEmail(false)
             })
@@ -80,7 +82,7 @@ export function Settings({
 
     const handleSavePassword = () => {
         if (passwordDraft) {
-            withProcessing("Securing new password...", async () => {
+            withProcessing(t.settings.securingPassword, async () => {
                 await (onChangePassword as any)?.(passwordDraft)
                 setIsEditingPassword(false)
                 setPasswordDraft('')
@@ -91,7 +93,7 @@ export function Settings({
     }
 
     const handleLanguageUpdate = (lang: 'el' | 'en') => {
-        withProcessing(lang === 'el' ? "Αλλαγή γλώσσας..." : "Switching language...", async () => {
+        withProcessing(t.settings.switchingLanguage, async () => {
             await onUpdateLanguage?.(lang)
         })
     }
@@ -99,7 +101,7 @@ export function Settings({
     const handleDeleteAccount = async () => {
         if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
             setIsDeleting(true)
-            setProcessingMessage("Finalizing account deletion...")
+            setProcessingMessage(t.settings.finalizingDeletion)
             setIsProcessing(true)
             const res = await deleteAccount()
             if (res.success) {
@@ -150,11 +152,11 @@ export function Settings({
 
     const getEventLabel = (eventType: string) => {
         const labels: Record<string, string> = {
-            login: 'Successful Login',
-            login_failed: 'Login Attempt Failed',
-            logout: 'System Sign-out',
-            password_change: 'Credential Update',
-            email_change: 'Primary Email Update'
+            login: t.settings.successfulLogin,
+            login_failed: t.settings.loginFailed,
+            logout: t.settings.systemSignOut,
+            password_change: t.settings.credentialUpdate,
+            email_change: t.settings.emailUpdate
         }
         return labels[eventType] || eventType
     }
@@ -172,13 +174,13 @@ export function Settings({
                     >
                         <div className="flex items-center gap-3 mb-8">
                             <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">Identity Matrix</h3>
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">{t.settings.identityMatrix}</h3>
                         </div>
 
                         <div className="space-y-8">
                             {/* Name Edit */}
                             <div className="group">
-                                <label className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] block mb-3">Full Name</label>
+                                <label className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] block mb-3">{t.settings.fullName}</label>
                                 {isEditingName ? (
                                     <div className="flex items-center gap-2">
                                         <input
@@ -197,15 +199,15 @@ export function Settings({
                                     </div>
                                 ) : (
                                     <div className="flex items-center justify-between p-4 bg-stone-50 dark:bg-stone-900 border border-stone-50 dark:border-stone-800 rounded-2xl group/item hover:border-teal-500/30 transition-all">
-                                        <span className="text-sm font-black text-stone-900 dark:text-white tracking-tight">{currentUser.name || 'Set your name'}</span>
-                                        <button onClick={() => setIsEditingName(true)} className="opacity-0 group-hover/item:opacity-100 text-[10px] font-black uppercase tracking-widest text-teal-600 dark:text-teal-400 transition-all">Edit</button>
+                                        <span className="text-sm font-black text-stone-900 dark:text-white tracking-tight">{currentUser.name || t.settings.setYourName}</span>
+                                        <button onClick={() => setIsEditingName(true)} className="opacity-0 group-hover/item:opacity-100 text-[10px] font-black uppercase tracking-widest text-teal-600 dark:text-teal-400 transition-all">{t.billing.edit}</button>
                                     </div>
                                 )}
                             </div>
 
                             {/* Email Edit */}
                             <div className="group">
-                                <label className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] block mb-3">Registered Email</label>
+                                <label className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] block mb-3">{t.settings.registeredEmail}</label>
                                 {isEditingEmail ? (
                                     <div className="flex items-center gap-2">
                                         <input
@@ -224,26 +226,26 @@ export function Settings({
                                 ) : (
                                     <div className="flex items-center justify-between p-4 bg-stone-50 dark:bg-stone-900 border border-stone-50 dark:border-stone-800 rounded-2xl group/item hover:border-teal-500/30 transition-all">
                                         <span className="text-sm font-black text-stone-900 dark:text-white tracking-tight">{currentUser.email}</span>
-                                        <button onClick={() => setIsEditingEmail(true)} className="opacity-0 group-hover/item:opacity-100 text-[10px] font-black uppercase tracking-widest text-teal-600 dark:text-teal-400 transition-all">Edit</button>
+                                        <button onClick={() => setIsEditingEmail(true)} className="opacity-0 group-hover/item:opacity-100 text-[10px] font-black uppercase tracking-widest text-teal-600 dark:text-teal-400 transition-all">{t.billing.edit}</button>
                                     </div>
                                 )}
                             </div>
 
                             {/* Language Matrix */}
                             <div className="group pt-8 border-t border-stone-50 dark:border-stone-800">
-                                <label className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] block mb-4">Preferred Language</label>
+                                <label className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] block mb-4">{t.settings.preferredLanguage}</label>
                                 <div className="grid grid-cols-2 gap-2 p-1.5 bg-stone-100 dark:bg-stone-900 border border-stone-50 dark:border-stone-800 rounded-2xl">
                                     <button
                                         onClick={() => handleLanguageUpdate('el')}
                                         className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentUser.preferred_language === 'el' ? 'bg-white dark:bg-stone-800 text-teal-600 dark:text-teal-400 shadow-md transform scale-[1.02]' : 'text-stone-400 hover:text-stone-600'}`}
                                     >
-                                        Greek
+                                        {t.settings.greek}
                                     </button>
                                     <button
                                         onClick={() => handleLanguageUpdate('en')}
                                         className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentUser.preferred_language === 'en' ? 'bg-white dark:bg-stone-800 text-teal-600 dark:text-teal-400 shadow-md transform scale-[1.02]' : 'text-stone-400 hover:text-stone-600'}`}
                                     >
-                                        English
+                                        {t.settings.english}
                                     </button>
                                 </div>
                             </div>
@@ -259,14 +261,14 @@ export function Settings({
                     >
                         <div className="flex items-center gap-3 mb-8">
                             <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">Communication Control</h3>
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">{t.settings.communicationControl}</h3>
                         </div>
 
                         <div className="space-y-6">
                             {[
-                                { id: 'policy_expiry', label: 'Policy Expiry Warnings', icon: AlertTriangle },
-                                { id: 'security_alert', label: 'Security Access Alerts', icon: Shield },
-                                { id: 'marketing', label: 'Innovation Updates', icon: Zap }
+                                { id: 'policy_expiry', label: t.settings.policyExpiry, icon: AlertTriangle },
+                                { id: 'security_alert', label: t.settings.securityAlert, icon: Shield },
+                                { id: 'marketing', label: t.settings.innovationUpdates, icon: Zap }
                             ].map(pref => (
                                 <div key={pref.id} className="flex items-center justify-between group p-3 hover:bg-stone-50 dark:hover:bg-stone-800 rounded-2xl transition-all">
                                     <div className="flex items-center gap-3">
@@ -293,15 +295,15 @@ export function Settings({
                     <div className="space-y-4">
                         <div className="p-8 bg-stone-900 rounded-[32px] text-white shadow-2xl relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 blur-3xl"></div>
-                            <h4 className="text-xl font-black tracking-tight mb-4">Security <span className="text-stone-400 italic">First.</span></h4>
+                            <h4 className="text-xl font-black tracking-tight mb-4">{t.settings.securityFirst} <span className="text-stone-400 italic">{t.settings.securityFirstSubtitle}</span></h4>
                             <p className="text-stone-400 text-[10px] font-bold leading-relaxed mb-8 italic">
-                                We monitor every access point specifically to protect your insurance data portfolio.
+                                {t.settings.securityFirstDesc}
                             </p>
                             <button
                                 onClick={() => withProcessing("Terminating all sessions...", async () => { await onLogoutAllSessions?.() })}
                                 className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:border-red-500 transition-all text-stone-400 hover:text-white"
                             >
-                                Master Sign-out (All Devices)
+                                {t.settings.masterSignOut}
                             </button>
                         </div>
                     </div>
@@ -331,22 +333,22 @@ export function Settings({
                                 </svg>
                                 <div className="absolute flex flex-col items-center">
                                     <span className="text-3xl font-black">85</span>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-stone-400">Score</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-stone-400">{t.settings.score}</span>
                                 </div>
                             </div>
 
                             <div className="flex-1 text-center md:text-left">
                                 <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
                                     <CheckCircle2 className="w-5 h-5 text-teal-500" />
-                                    <h3 className="text-2xl font-black tracking-tight">Account Shield Active</h3>
+                                    <h3 className="text-2xl font-black tracking-tight">{t.settings.accountShield}</h3>
                                 </div>
                                 <p className="text-stone-400 text-sm font-medium leading-relaxed max-w-md">
-                                    Your security posture is <span className="text-white font-black">excellent</span>. We found <span className="text-teal-500 underline decoration-teal-500/30">three minor optimizations</span> to reach 100%.
+                                    {t.settings.securityPosture} <span className="text-white font-black">{t.settings.excellent}</span>. We found <span className="text-teal-500 underline decoration-teal-500/30">{t.settings.optimizations}</span> {t.settings.securityPostureDesc}
                                 </p>
                                 <div className="flex flex-wrap gap-2 mt-6">
-                                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest">2FA Verified</span>
-                                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest">Safe IP Tracked</span>
-                                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest text-teal-400">Encryption Active</span>
+                                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest">{t.settings.verified2FA}</span>
+                                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest">{t.settings.safeIP}</span>
+                                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest text-teal-400">{t.settings.encryptionActive}</span>
                                 </div>
                             </div>
                         </div>
@@ -362,9 +364,9 @@ export function Settings({
                         <div className="px-8 py-6 border-b border-stone-50 dark:border-stone-800 flex items-center justify-between bg-stone-50/50 dark:bg-stone-900/50">
                             <div className="flex items-center gap-3">
                                 <Smartphone className="w-4 h-4 text-stone-400" />
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">Active Sessions</h3>
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">{t.settings.activeSessions}</h3>
                             </div>
-                            <span className="px-3 py-1 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 text-[10px] font-black uppercase tracking-widest rounded-full">{activeSessions.length} total</span>
+                            <span className="px-3 py-1 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 text-[10px] font-black uppercase tracking-widest rounded-full">{activeSessions.length} {t.settings.total}</span>
                         </div>
 
                         <div className="divide-y divide-stone-50 dark:divide-stone-800">
@@ -381,7 +383,7 @@ export function Settings({
                                                 </span>
                                                 {session.is_current && (
                                                     <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-teal-500 text-white rounded shadow-sm">
-                                                        Active Now
+                                                        {t.settings.activeNow}
                                                     </span>
                                                 )}
                                             </div>
@@ -392,15 +394,15 @@ export function Settings({
                                             </div>
                                             <div className="text-[9px] font-medium text-stone-400 mt-2 italic flex items-center gap-1.5">
                                                 <Globe className="w-3 h-3" />
-                                                Since {formatDateTime(session.last_active_at)}
+                                                {t.settings.since} {formatDateTime(session.last_active_at)}
                                             </div>
                                         </div>
                                         {!session.is_current && (
                                             <button
-                                                onClick={() => withProcessing("Revoking access...", async () => { await onLogoutSession?.(session.session_id) })}
+                                                onClick={() => withProcessing(t.settings.revokeAccess + "...", async () => { await onLogoutSession?.(session.session_id) })}
                                                 className="text-[9px] font-black uppercase tracking-widest text-stone-400 hover:text-red-500 hover:scale-105 transition-all pt-2"
                                             >
-                                                Revoke Access
+                                                {t.settings.revokeAccess}
                                             </button>
                                         )}
                                     </div>
@@ -419,9 +421,9 @@ export function Settings({
                         <div className="px-8 py-6 border-b border-stone-50 dark:border-stone-800 flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <Lock className="w-4 h-4 text-stone-400" />
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">Audit Trail</h3>
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">{t.settings.auditTrail}</h3>
                             </div>
-                            <button className="text-[9px] font-black text-teal-600 uppercase tracking-widest hover:underline">Download Report</button>
+                            <button className="text-[9px] font-black text-teal-600 uppercase tracking-widest hover:underline">{t.settings.downloadReport}</button>
                         </div>
 
                         <div className="divide-y divide-stone-50 dark:divide-stone-800">
@@ -464,9 +466,9 @@ export function Settings({
                     {/* Danger Zone */}
                     <div className="p-8 border-2 border-dashed border-red-500/10 bg-red-50/20 dark:bg-red-900/5 rounded-[32px] flex flex-col md:flex-row items-center justify-between gap-8 group">
                         <div className="max-w-md text-center md:text-left">
-                            <h4 className="text-xs font-black text-red-600 uppercase tracking-[0.2em] mb-3">Nuclear Deletion</h4>
+                            <h4 className="text-xs font-black text-red-600 uppercase tracking-[0.2em] mb-3">{t.settings.nuclearDeletion}</h4>
                             <p className="text-[11px] text-stone-500 dark:text-stone-400 font-bold leading-relaxed">
-                                Proceed with extreme caution. Deleting your account will <span className="text-red-600 group-hover:underline">irrevocably destroy</span> all policies, analytical data, and shared access models.
+                                {t.settings.nuclearDesc}
                             </p>
                         </div>
                         <button
@@ -474,7 +476,7 @@ export function Settings({
                             disabled={isDeleting}
                             className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-red-600/20 hover:shadow-red-600/40 active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
                         >
-                            {isDeleting ? "Processing..." : "Delete Permanently"}
+                            {isDeleting ? t.settings.processing : t.settings.deletePermanently}
                         </button>
                     </div>
                 </div>

@@ -26,6 +26,7 @@ export default async function PolicyDetailPage({
             include: {
                 documents: true,
                 gapInstances: {
+                    where: { status: 'open' },
                     include: { definition: true }
                 }
             }

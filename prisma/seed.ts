@@ -173,7 +173,7 @@ async function main() {
             price: 0,
             billingPeriod: 'monthly',
             entitlements: {
-                policy_storage: 'unlimited',
+                policy_storage: 3,
                 ai_analyses_per_month: 2,
                 notifications: 'basic',
                 priority_processing: false
@@ -184,11 +184,26 @@ async function main() {
             planType: 'policyholder',
             name: 'Plus',
             displayName: 'PolicyWallet Plus',
+            price: 2.99,
+            billingPeriod: 'monthly',
+            entitlements: {
+                policy_storage: 10,
+                ai_analyses_per_month: 5,
+                notifications: 'basic', // or advanced?
+                priority_processing: false,
+                full_history: true
+            }
+        },
+        {
+            id: 'ph-pro',
+            planType: 'policyholder',
+            name: 'Pro',
+            displayName: 'PolicyWallet Pro',
             price: 9.99,
             billingPeriod: 'monthly',
             entitlements: {
                 policy_storage: 'unlimited',
-                ai_analyses_per_month: 10,
+                ai_analyses_per_month: 50,
                 notifications: 'advanced',
                 priority_processing: true,
                 full_history: true

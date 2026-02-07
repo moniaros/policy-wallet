@@ -1,9 +1,9 @@
 "use client"
-import { useState } from "react"
-import { analyzeGaps } from "../actions"
+import { useState, useMemo } from "react"
+import { analyzeGaps, ignoreGap, notifyAgentAboutGap } from "../actions"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { Sparkles, AlertTriangle, Lightbulb } from "lucide-react"
+import { Sparkles, AlertTriangle, Lightbulb, EyeOff, MessageSquare } from "lucide-react"
 
 import { useLanguage } from "@/contexts/LanguageContext"
 
@@ -21,8 +21,27 @@ interface Gap {
 
 export function AnalysisCard({ policyId, gaps }: { policyId: string, gaps: Gap[] }) {
     const [analyzing, setAnalyzing] = useState(false)
+    const [ignoring, setIgnoring] = useState<string | null>(null)
+    const [notifying, setNotifying] = useState<string | null>(null)
     const router = useRouter()
     const { t, language } = useLanguage()
+
+    // Deduplicate gaps based on content
+    const uniqueGaps = useMemo(() => {
+        const seen = new Set();
+        return gaps.filter(gap => {
+            // Determine content based on language to ensure visual duplication is caught
+            // But fundamentally duplication is about the gap concept, so title + explanation is a good key.
+            // We use English explanation as fallback key if available to be stable across lang switches, 
+            // but finding itself might be duplicated in DB.
+            const explanation = gap.aiExplanation || gap.aiExplanationEl || '';
+            const key = `${gap.definition.title}|${explanation}`;
+
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+    }, [gaps]);
 
     const handleAnalyze = async () => {
         setAnalyzing(true)
@@ -34,6 +53,31 @@ export function AnalysisCard({ policyId, gaps }: { policyId: string, gaps: Gap[]
         } else if ('count' in res) {
             toast.success(`${t.analysis.analysisComplete}${res.count}${t.analysis.issues}`, { id: toastId })
             router.refresh()
+        }
+    }
+
+    const handleIgnore = async (gapId: string) => {
+        setIgnoring(gapId)
+        const res = await ignoreGap(gapId)
+        setIgnoring(null)
+
+        if (res.error) {
+            toast.error(res.error)
+        } else {
+            toast.success(language === 'el' ? 'Η ειδοποίηση αποκρύφθηκε' : 'Alert hidden')
+            router.refresh()
+        }
+    }
+
+    const handleNotify = async (gapId: string) => {
+        setNotifying(gapId)
+        const res = await notifyAgentAboutGap(gapId, policyId)
+        setNotifying(null)
+
+        if (res.error) {
+            toast.error(res.error)
+        } else {
+            toast.success(res.message || (language === 'el' ? 'Ο ασφαλιστής ενημερώθηκε' : 'Agent notified'))
         }
     }
 
@@ -58,7 +102,7 @@ export function AnalysisCard({ policyId, gaps }: { policyId: string, gaps: Gap[]
                 </button>
             </div>
             <div className="p-6">
-                {gaps.length === 0 ? (
+                {uniqueGaps.length === 0 ? (
                     <div className="text-center py-8">
                         <div className="w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mx-auto mb-4">
                             <Sparkles className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
@@ -72,7 +116,7 @@ export function AnalysisCard({ policyId, gaps }: { policyId: string, gaps: Gap[]
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        {gaps.map((gap) => {
+                        {uniqueGaps.map((gap) => {
                             const explanation = language === 'el' ? (gap.aiExplanationEl || gap.aiExplanation) : gap.aiExplanation
                             const suggestion = language === 'el' ? (gap.aiSuggestionEl || gap.aiSuggestion) : gap.aiSuggestion
 
@@ -85,13 +129,29 @@ export function AnalysisCard({ policyId, gaps }: { policyId: string, gaps: Gap[]
                                             </div>
                                         </div>
                                         <div className="flex-1">
-                                            <h4 className="font-bold text-red-900 dark:text-red-100 text-sm mb-2">
-                                                {gap.definition.title || t.analysis.gapDetected}
-                                            </h4>
+                                            <div className="flex justify-between items-start">
+                                                <h4 className="font-bold text-red-900 dark:text-red-100 text-sm mb-2">
+                                                    {gap.definition.title || t.analysis.gapDetected}
+                                                </h4>
+
+                                                <div className="flex gap-2">
+                                                    {/* Ignore Button */}
+                                                    <button
+                                                        onClick={() => handleIgnore(gap.id)}
+                                                        disabled={ignoring === gap.id}
+                                                        className="p-1.5 rounded-lg text-slate-400 hover:bg-white/50 hover:text-slate-600 dark:hover:bg-slate-800/50 dark:hover:text-slate-300 transition-colors"
+                                                        title={language === 'el' ? 'Απόκρυψη' : 'Hide'}
+                                                    >
+                                                        <EyeOff className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </div>
+
                                             <p className="text-sm text-red-700 dark:text-red-300 leading-relaxed mb-3">
                                                 {explanation}
                                             </p>
-                                            <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 p-3 rounded-lg">
+
+                                            <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 p-3 rounded-lg mb-4">
                                                 <div className="flex items-start gap-2">
                                                     <Lightbulb className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
                                                     <div>
@@ -103,6 +163,20 @@ export function AnalysisCard({ policyId, gaps }: { policyId: string, gaps: Gap[]
                                                         </p>
                                                     </div>
                                                 </div>
+                                            </div>
+
+                                            {/* Action Buttons */}
+                                            <div className="flex justify-end gap-3">
+                                                <button
+                                                    onClick={() => handleNotify(gap.id)}
+                                                    disabled={notifying === gap.id}
+                                                    className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 border border-red-200 dark:border-red-800/50 rounded-lg text-xs font-bold text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors shadow-sm"
+                                                >
+                                                    <MessageSquare className="w-3.5 h-3.5" />
+                                                    {notifying === gap.id
+                                                        ? (language === 'el' ? 'Αποστολή...' : 'Sending...')
+                                                        : (language === 'el' ? 'Περισσότερες λεπτομέρειες' : 'View more details')}
+                                                </button>
                                             </div>
                                         </div>
                                     </div>

@@ -9,7 +9,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 interface PricingComparisonProps {
     currentPlanId?: string
     onSelectPlan: (planId: string) => void
-    isLoading?: boolean
+    loadingPlanId?: string | null
 }
 
 interface PlanTier {
@@ -29,65 +29,61 @@ interface PlanTier {
     features: Array<{ name: string; included: boolean }>
 }
 
-export function PricingComparison({ currentPlanId, onSelectPlan, isLoading }: PricingComparisonProps) {
+export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }: PricingComparisonProps) {
     const { language } = useLanguage()
     const copy = subscriptionCopy
     const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly')
 
     const tiers: PlanTier[] = [
         {
-            id: 'free',
+            id: 'ph-free',
             ...copy.tiers.free,
             icon: Shield,
             features: [
-                { name: copy.features.policyLimit[language].replace('{count}', '3'), included: true },
+                { name: { el: 'Μέχρι 3 συμβόλαια', en: 'Up to 3 policies' }[language], included: true },
                 { name: copy.features.basicAI[language], included: true },
                 { name: copy.features.documentStorage[language], included: true },
                 { name: copy.features.advancedAI[language], included: false },
                 { name: copy.features.emailNotifications[language], included: false },
-                { name: copy.features.interactiveQA[language], included: false },
             ]
         },
         {
-            id: 'essential',
-            ...copy.tiers.essential,
+            id: 'ph-plus',
+            ...copy.tiers.plus,
             icon: Zap,
             popular: true,
             features: [
-                { name: copy.features.unlimitedPolicies[language], included: true },
+                { name: { el: 'Μέχρι 10 συμβόλαια', en: 'Up to 10 policies' }[language], included: true },
                 { name: copy.features.advancedAI[language], included: true },
                 { name: copy.features.documentStorage[language], included: true },
                 { name: copy.features.emailNotifications[language], included: true },
                 { name: copy.features.interactiveQA[language], included: true },
-                { name: copy.features.prioritySupport[language], included: false },
+                { name: copy.features.automaticGapDetection[language], included: true },
             ]
         },
         {
-            id: 'professional',
-            ...copy.tiers.professional,
+            id: 'ph-pro',
+            ...copy.tiers.pro,
             icon: Star,
             features: [
                 { name: copy.features.unlimitedPolicies[language], included: true },
                 { name: copy.features.advancedAnalytics[language], included: true },
-                { name: copy.features.agentCollaboration[language], included: true },
                 { name: copy.features.prioritySupport[language], included: true },
+                { name: copy.features.agentCollaboration[language], included: true },
                 { name: copy.features.digitalWallet[language], included: true },
-                { name: copy.features.automaticGapDetection[language], included: true },
-                { name: language === 'el' ? 'Προσαρμοσμένη Αναφορά' : 'Custom Reporting', included: true },
-                { name: language === 'el' ? 'Premium Υποστήριξη' : '24/7 Premium Support', included: true },
             ]
         }
     ]
 
     const comparisonFeatures = [
-        { name: copy.features.policyLimit[language].replace('{count}', '∞'), free: "3", essential: "Unlimited", professional: "Unlimited" },
-        { name: copy.features.advancedAI[language], free: false, essential: true, professional: true },
-        { name: copy.features.emailNotifications[language], free: false, essential: true, professional: true },
-        { name: copy.features.interactiveQA[language], free: false, essential: true, professional: true },
-        { name: copy.features.prioritySupport[language], free: false, essential: false, professional: true },
-        { name: copy.features.digitalWallet[language], free: false, essential: false, professional: true },
-        { name: copy.features.agentCollaboration[language], free: false, essential: false, professional: true },
-        { name: copy.features.automaticGapDetection[language], free: false, essential: false, professional: true },
+        { name: copy.features.policyLimit[language].replace('{count}', language === 'el' ? 'Συμβόλαια' : 'Policies'), free: "3", plus: "10", pro: "∞" },
+        { name: copy.features.advancedAI[language], free: false, plus: true, pro: true },
+        { name: copy.features.automaticGapDetection[language], free: false, plus: true, pro: true },
+        { name: copy.features.interactiveQA[language], free: false, plus: true, pro: true },
+        { name: copy.features.digitalWallet[language], free: false, plus: true, pro: true },
+        { name: copy.features.prioritySupport[language], free: false, plus: false, pro: true },
+        { name: copy.features.advancedAnalytics[language], free: false, plus: false, pro: true },
+        { name: copy.features.agentCollaboration[language], free: false, plus: false, pro: true },
     ]
 
     return (
@@ -132,7 +128,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, isLoading }: Pr
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
                 {tiers.map((tier, index) => {
                     const isCurrent = currentPlanId === tier.id
                     const isPopular = tier.popular
@@ -143,7 +139,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, isLoading }: Pr
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
-                            className={`relative rounded-[32px] p-8 border hover:shadow-2xl transition-all duration-300 group flex flex-col ${isPopular
+                            className={`relative rounded-[32px] p-6 border hover:shadow-2xl transition-all duration-300 group flex flex-col ${isPopular
                                 ? 'bg-white dark:bg-stone-900 border-teal-500 dark:border-teal-500 shadow-xl shadow-teal-500/10 scale-105 z-10'
                                 : 'bg-stone-50 dark:bg-stone-900/50 border-stone-200 dark:border-stone-800 hover:border-teal-200 dark:hover:border-teal-900'
                                 }`}
@@ -202,18 +198,20 @@ export function PricingComparison({ currentPlanId, onSelectPlan, isLoading }: Pr
 
                             <button
                                 onClick={() => onSelectPlan(tier.id)}
-                                disabled={isCurrent || isLoading}
+                                disabled={isCurrent || !!loadingPlanId}
                                 className={`w-full py-4 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer ${isCurrent
                                     ? 'bg-stone-100 dark:bg-stone-800 text-stone-400 cursor-default'
-                                    : isPopular
-                                        ? 'bg-teal-600 dark:bg-teal-500 text-white hover:bg-teal-700 dark:hover:bg-teal-400 shadow-lg shadow-teal-500/25 hover:shadow-teal-500/40 active:scale-95'
-                                        : 'bg-white dark:bg-stone-800 border-2 border-stone-100 dark:border-stone-700 text-stone-900 dark:text-white hover:border-teal-500 dark:hover:border-teal-500 active:scale-95'
+                                    : loadingPlanId === tier.id
+                                        ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-none animate-pulse'
+                                        : isPopular
+                                            ? 'bg-teal-600 dark:bg-teal-500 text-white hover:bg-teal-700 dark:hover:bg-teal-400 shadow-lg shadow-teal-500/25 hover:shadow-teal-500/40 active:scale-95'
+                                            : 'bg-white dark:bg-stone-800 border-2 border-stone-100 dark:border-stone-700 text-stone-900 dark:text-white hover:border-teal-500 dark:hover:border-teal-500 active:scale-95'
                                     }`}
                             >
                                 {isCurrent
                                     ? copy.cta.currentPlan[language]
-                                    : isLoading
-                                        ? copy.cta.upgrade[language] + '...'
+                                    : loadingPlanId === tier.id
+                                        ? (language === 'el' ? 'ΠΕΡΙΜΈΝΕΤΕ...' : 'PROCESSING...')
                                         : copy.cta.upgrade[language]}
                             </button>
                         </motion.div>
@@ -235,8 +233,8 @@ export function PricingComparison({ currentPlanId, onSelectPlan, isLoading }: Pr
                             <tr className="bg-stone-50 dark:bg-stone-900/50">
                                 <th className="px-8 py-6 text-sm font-black text-stone-400 uppercase tracking-widest">Feature</th>
                                 <th className="px-8 py-6 text-sm font-black text-stone-900 dark:text-white uppercase tracking-widest">Free</th>
-                                <th className="px-8 py-6 text-sm font-black text-teal-600 dark:text-teal-400 uppercase tracking-widest">Essential</th>
-                                <th className="px-8 py-6 text-sm font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest">Professional</th>
+                                <th className="px-8 py-6 text-sm font-black text-teal-600 dark:text-teal-400 uppercase tracking-widest">Plus</th>
+                                <th className="px-8 py-6 text-sm font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest">Pro</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-stone-50 dark:divide-stone-800">
@@ -253,18 +251,18 @@ export function PricingComparison({ currentPlanId, onSelectPlan, isLoading }: Pr
                                         )}
                                     </td>
                                     <td className="px-8 py-5">
-                                        {typeof feat.essential === 'string' ? (
-                                            <span className="text-sm font-bold text-teal-600">{feat.essential}</span>
-                                        ) : feat.essential ? (
+                                        {typeof feat.plus === 'string' ? (
+                                            <span className="text-sm font-bold text-teal-600">{feat.plus}</span>
+                                        ) : feat.plus ? (
                                             <Check className="w-5 h-5 text-teal-500" />
                                         ) : (
                                             <X className="w-5 h-5 text-stone-200" />
                                         )}
                                     </td>
                                     <td className="px-8 py-5">
-                                        {typeof feat.professional === 'string' ? (
-                                            <span className="text-sm font-bold text-purple-600">{feat.professional}</span>
-                                        ) : feat.professional ? (
+                                        {typeof feat.pro === 'string' ? (
+                                            <span className="text-sm font-bold text-purple-600">{feat.pro}</span>
+                                        ) : feat.pro ? (
                                             <Check className="w-5 h-5 text-purple-500" />
                                         ) : (
                                             <X className="w-5 h-5 text-stone-200" />
@@ -291,6 +289,6 @@ export function PricingComparison({ currentPlanId, onSelectPlan, isLoading }: Pr
                     ))}
                 </div>
             </div>
-        </div>
+        </div >
     )
 }

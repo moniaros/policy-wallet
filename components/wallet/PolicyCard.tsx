@@ -133,16 +133,38 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
                 </div>
             )}
 
-            {/* Shared with agent indicator */}
+            {/* Shared with collaborators indicator */}
             {policy.sharedWithAgents.length > 0 && (
-                <div className="absolute top-4 right-4 group/tooltip">
-                    <div className="p-2 bg-teal-50 dark:bg-teal-900/30 rounded-full text-teal-600 dark:text-teal-400">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
-                        </svg>
+                <div className="absolute top-4 right-4 group/tooltip cursor-pointer">
+                    <div className="relative">
+                        <div className="p-2.5 bg-gradient-to-br from-teal-500 to-blue-600 rounded-xl text-white shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110">
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                            </svg>
+                        </div>
+                        {policy.sharedWithAgents.length > 1 && (
+                            <div className="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 rounded-full border-2 border-white dark:border-stone-900 flex items-center justify-center">
+                                <span className="text-[10px] font-black text-white">{policy.sharedWithAgents.length}</span>
+                            </div>
+                        )}
                     </div>
-                    <div className="absolute top-10 right-0 hidden group-hover/tooltip:block z-10 px-3 py-2 text-xs font-medium bg-stone-900 dark:bg-stone-700 text-white rounded-xl shadow-xl whitespace-nowrap">
-                        Shared with {policy.sharedWithAgents[0].agentName}
+                    <div className="absolute top-12 right-0 hidden group-hover/tooltip:block z-20 min-w-[200px] animate-in fade-in slide-in-from-top-1 duration-200">
+                        <div className="bg-slate-900 dark:bg-slate-800 text-white rounded-xl shadow-2xl p-3 border border-slate-700">
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Shared with</p>
+                            <div className="space-y-1.5">
+                                {policy.sharedWithAgents.slice(0, 3).map((agent: any, idx: number) => (
+                                    <div key={idx} className="flex items-center gap-2">
+                                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-teal-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold">
+                                            {agent.agentName?.[0] || 'A'}
+                                        </div>
+                                        <span className="text-xs font-medium truncate">{agent.agentName || 'Agent'}</span>
+                                    </div>
+                                ))}
+                                {policy.sharedWithAgents.length > 3 && (
+                                    <p className="text-[10px] text-slate-400 mt-1">+{policy.sharedWithAgents.length - 3} more</p>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
