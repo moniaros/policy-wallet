@@ -71,7 +71,7 @@ function VerifyEmailContent() {
                             Your email has been successfully verified. You can now access all features.
                         </p>
                         <Link href="/auth/signin" className="block w-full rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 transition-all hover:-translate-y-0.5">
-                            Sign In Now
+                            Continue to App
                         </Link>
                     </div>
                 )}

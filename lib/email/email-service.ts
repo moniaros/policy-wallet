@@ -6,6 +6,7 @@ export interface EmailOptions {
     subject: string
     html: string
     text?: string
+    from?: string
 }
 
 export interface EmailResult {
@@ -27,6 +28,7 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
     // In development without SMTP, log to console
     if (process.env.NODE_ENV === 'development' && !smtpConfigured) {
         console.log('📧 Email (Dev Mode - Not Sent):')
+        console.log('From:', options.from || 'default')
         console.log('To:', options.to)
         console.log('Subject:', options.subject)
         console.log('Text:', options.text)
@@ -47,7 +49,7 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
 
     try {
         const info = await transporter.sendMail({
-            from: `"PolicyWallet" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
+            from: options.from || `"PolicyWallet" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
             to: options.to,
             subject: options.subject,
             html: options.html,

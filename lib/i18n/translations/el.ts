@@ -219,7 +219,7 @@ export const el = {
         tapToUpload: 'Πατήστε για μεταφόρτωση PDF',
         dragDrop: 'ή σύρετε τα αρχεία σας εδώ',
         aiExtraction: 'Η AI θα εξαγάγει αυτόματα τα στοιχεία.',
-        coverageType: 'Τύπος Κάλυψης',
+        coverageType: 'Είδος Ασφαλιστηρίου',
         insurerProvider: 'Ασφαλιστικός Πάροχος',
         optional: 'Προαιρετικό',
         addToWalletAction: 'Προσθήκη στο Πορτοφόλι',
@@ -617,7 +617,9 @@ export const el = {
         auto: 'Αυτοκίνητο',
         home: 'Σπίτι',
         life: 'Ζωή',
-        travel: 'Ταξίδι'
+        travel: 'Ταξίδι',
+        noPoliciesYet: 'Δεν υπάρχουν ενεργά συμβόλαια',
+        allClear30Days: 'Όλα καθαρά για τις επόμενες 30 ημέρες!'
     },
 
 

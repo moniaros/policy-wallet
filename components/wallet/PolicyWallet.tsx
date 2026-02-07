@@ -23,11 +23,13 @@ export function PolicyWallet({
     onViewDocuments,
     onRunAnalysis,
     onDeletePolicy,
+    onViewHistory,
     user,
 }: PolicyWalletProps & {
     isLoading?: boolean,
     onRunAnalysis?: (policyId: string) => void,
-    onDeletePolicy?: (policyId: string) => void
+    onDeletePolicy?: (policyId: string) => void,
+    onViewHistory?: (policyId: string) => void
 }) {
     const [showAddMenu, setShowAddMenu] = useState(false)
     const { t, language } = useLanguage()
@@ -159,8 +161,69 @@ export function PolicyWallet({
         )
     }
 
+    const getGreeting = () => {
+        const hour = new Date().getHours()
+        if (hour < 12) return t.dashboard.greeting.morning
+        if (hour < 17) return t.dashboard.greeting.afternoon
+        return t.dashboard.greeting.evening
+    }
+
     return (
-        <div className="max-w-7xl mx-auto px-4 py-6 sm:py-10 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12 sm:px-6 lg:px-8 bg-transparent">
+
+            {/* Greeting & Header */}
+            <div className="mb-10 animate-in fade-in slide-in-from-left-4 duration-700">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div>
+                        <h1 className="text-3xl sm:text-4xl font-black text-stone-900 dark:text-white tracking-tight leading-tight">
+                            {getGreeting()}, <span className="text-teal-600 dark:text-teal-400">{user?.name?.split(' ')[0] || 'User'}</span>
+                        </h1>
+                        <p className="mt-2 text-base text-stone-500 dark:text-stone-400 font-medium">
+                            {policies.length > 0
+                                ? (language === 'el' ? `Έχετε ${policies.length} ενεργά συμβόλαια στο πορτοφόλι σας.` : `You have ${policies.length} active insurance assets in your wallet.`)
+                                : t.wallet.noPoliciesYetDesc
+                            }
+                        </p>
+                    </div>
+
+                    {/* Search and Filter Bar */}
+                    <div className="flex items-center gap-3">
+                        <div className="relative group">
+                            <input
+                                type="text"
+                                placeholder={t.wallet.searchPlaceholder}
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                id="tour-search"
+                                className="pl-10 pr-4 py-3 bg-white/60 dark:bg-stone-900/60 backdrop-blur-xl border border-white/40 dark:border-stone-700/40 rounded-2xl text-sm font-bold focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 transition-all w-full sm:w-64 placeholder:text-stone-400 dark:placeholder:text-stone-600 shadow-sm hover:bg-white/80 dark:hover:bg-stone-900/80"
+                            />
+                            <svg className="w-5 h-5 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-teal-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+
+                        {/* View Switcher */}
+                        <div className="hidden sm:flex bg-white/40 dark:bg-stone-900/40 backdrop-blur-md p-1 rounded-xl border border-white/40 dark:border-stone-700/40">
+                            <button
+                                onClick={() => setViewMode('grid')}
+                                className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-stone-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-stone-500'}`}
+                            >
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                </svg>
+                            </button>
+                            <button
+                                onClick={() => setViewMode('list')}
+                                className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-white dark:bg-stone-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-stone-500'}`}
+                            >
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             {/* Status Summary */}
             <StatusSummary
@@ -182,35 +245,65 @@ export function PolicyWallet({
                         expiryDate: p.endDate ? new Date(p.endDate).toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown'
                     }))
                 }
-                premiumTrend={[]} // Disable trend for now as we don't have history
+                premiumTrend={[]}
             />
 
-            {/* Policy Table */}
-            <PolicyTable
-                policies={policies}
-                onViewPolicy={onViewPolicy}
-                onRenewPolicy={(policyId: string) => {
-                    // Handle renewal - could navigate to renewal page or modal
-                    console.log('Renew policy:', policyId)
-                }}
-                onViewHistory={(policyId: string) => {
-                    // Handle history view
-                    console.log('View history:', policyId)
-                    onViewPolicy?.(policyId) // Re-route to policy details for now
-                }}
-                onRunAnalysis={onRunAnalysis}
-                onDelete={onDeletePolicy}
-            />
+            {/* Main Content Area */}
+            <div className={`animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200`}>
+                {viewMode === 'list' ? (
+                    <PolicyTable
+                        policies={filteredPolicies}
+                        onViewPolicy={onViewPolicy}
+                        onRenewPolicy={(policyId: string) => console.log('Renew:', policyId)}
+                        onViewHistory={onViewHistory}
+                        onRunAnalysis={onRunAnalysis}
+                        onDelete={onDeletePolicy}
+                    />
+                ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                        {filteredPolicies.map((policy, index) => (
+                            <PolicyCard
+                                key={policy.id}
+                                policy={policy}
+                                onView={() => onViewPolicy?.(policy.id)}
+                                onShare={() => onShareWithAgent?.(policy.id)}
+                                onAddToWallet={() => onAddToWallet?.(policy.id)}
+                                onViewDocuments={() => onViewDocuments?.(policy.id)}
+                                id={index === 0 ? "tour-policy-card-0" : undefined}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* No search results empty state */}
+            {filteredPolicies.length === 0 && policies.length > 0 && (
+                <div className="py-20 text-center">
+                    <div className="w-20 h-20 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-10 h-10 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <h3 className="text-xl font-black text-stone-900 dark:text-white capitalize">{t.wallet.noPoliciesFound}</h3>
+                    <p className="text-stone-500 dark:text-stone-400 mt-2 font-medium">{t.wallet.noPoliciesFoundDesc}</p>
+                    <button
+                        onClick={() => { setSearchQuery(''); setActiveFilter('all'); }}
+                        className="mt-6 text-teal-600 dark:text-teal-400 font-black uppercase text-xs tracking-widest hover:underline"
+                    >
+                        Clear all filters
+                    </button>
+                </div>
+            )}
 
             {/* Add Policy FAB - Visible on all screens */}
-            <div className="fixed bottom-6 right-6 z-40">
+            <div className="fixed bottom-8 right-8 z-40">
                 <button
                     onClick={onAddManually}
-                    className="w-14 h-14 bg-teal-600 hover:bg-teal-700 text-white rounded-full shadow-xl shadow-teal-600/30 flex items-center justify-center hover:scale-110 active:scale-95 transition-all"
+                    id="tour-fab"
+                    className="group relative flex items-center justify-center w-16 h-16 bg-gradient-to-br from-stone-900 to-stone-800 dark:from-white dark:to-stone-200 text-white dark:text-stone-900 rounded-2xl shadow-2xl shadow-teal-500/20 dark:shadow-teal-400/20 hover:scale-110 active:scale-95 transition-all duration-300 border border-white/10 dark:border-stone-900/10"
                     aria-label="Add Policy"
-                    title={t.wallet.addPolicy}
                 >
-                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-8 h-8 group-hover:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
                     </svg>
                 </button>

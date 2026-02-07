@@ -62,7 +62,7 @@ export async function middleware(request: NextRequest) {
     const isLoggedIn = !!user
 
     const isApiAuthRoute = nextUrl.pathname.startsWith("/api/auth")
-    const isPublicRoute = ["/", "/auth/signin", "/auth/signup", "/auth/verify", "/auth/signup/confirmation", "/auth/handover", "/terms", "/privacy"].includes(nextUrl.pathname)
+    const isPublicRoute = ["/", "/auth/signin", "/auth/signup", "/auth/verify", "/auth/verify-email", "/auth/signup/confirmation", "/auth/handover", "/terms", "/privacy"].includes(nextUrl.pathname)
     const isAuthRoute = nextUrl.pathname.startsWith("/auth")
 
     // Allow API routes
@@ -70,8 +70,8 @@ export async function middleware(request: NextRequest) {
         return response
     }
 
-    // If logged in and trying to access auth pages, redirect to wallet
-    if (isAuthRoute && isLoggedIn) {
+    // If logged in and trying to access auth pages (except verify-email), redirect to wallet
+    if (isAuthRoute && isLoggedIn && !nextUrl.pathname.startsWith('/auth/verify-email')) {
         return NextResponse.redirect(new URL("/wallet", nextUrl))
     }
 

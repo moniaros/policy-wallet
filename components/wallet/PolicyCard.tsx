@@ -10,9 +10,10 @@ interface PolicyCardProps {
     onShare?: () => void
     onAddToWallet?: () => void
     onViewDocuments?: () => void
+    id?: string
 }
 
-export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocuments }: PolicyCardProps) {
+export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocuments, id }: PolicyCardProps) {
     const [menuOpen, setMenuOpen] = useState(false)
     const [showInsights, setShowInsights] = useState(false)
     const { t, language } = useLanguage()
@@ -112,9 +113,15 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
 
     return (
         <div
+            id={id}
             onClick={onView}
-            className="relative bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-3xl p-5 sm:p-6 hover:shadow-xl hover:border-teal-200 dark:hover:border-teal-900/50 transition-all cursor-pointer group active:scale-[0.98]"
+            className="group relative bg-white/70 dark:bg-stone-800/70 backdrop-blur-xl border border-stone-200/60 dark:border-stone-700/60 rounded-[2rem] p-6 lg:p-7 shadow-sm hover:shadow-2xl hover:shadow-teal-500/10 dark:hover:shadow-teal-400/5 hover:-translate-y-1.5 transition-all duration-500 cursor-pointer overflow-hidden active:scale-[0.98]"
         >
+            {/* Glossy overlay effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent dark:from-white/5 pointer-events-none" />
+
+            {/* Spotlight effect on hover */}
+            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-[radial-gradient(circle_at_var(--mouse-x,50%)_var(--mouse-y,50%),rgba(20,184,166,0.06),transparent_70%)] transition-opacity duration-700 pointer-events-none" />
             {/* Status indicator line at top */}
             <div className={`absolute top-0 left-6 right-6 h-1 rounded-b-full ${policy.status === 'active' ? 'bg-teal-500' :
                 policy.status === 'expiring_soon' ? 'bg-amber-500' :
@@ -171,24 +178,33 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
 
             {/* Policy info */}
             <div className="pr-10 sm:pr-12">
-                {/* Mobile: Icon + Insurer row */}
-                <div className="flex items-start gap-3 mb-3">
-                    <span className="text-2xl flex-shrink-0 mt-0.5">
+                {/* Header Section: Icon + Insurer */}
+                <div className="flex items-center gap-4 mb-5 relative z-10">
+                    <div className="w-14 h-14 bg-stone-100 dark:bg-stone-800 rounded-2xl flex items-center justify-center text-3xl shadow-inner group-hover:scale-110 transition-transform duration-500">
                         {policy.status === 'analyzing' ? '🧠' : getPolicyIcon()}
-                    </span>
+                    </div>
                     <div className="min-w-0 flex-1">
-                        <h3 className={`text-lg sm:text-xl font-black text-stone-900 dark:text-white tracking-tight leading-tight truncate ${policy.status === 'analyzing' ? 'animate-pulse opacity-70' : ''}`}>
-                            {policy.insurerName}
-                        </h3>
-                        <p className={`text-sm font-mono text-stone-500 dark:text-stone-400 truncate ${policy.status === 'analyzing' ? 'animate-pulse' : ''}`}>
-                            {policy.policyNumber}
+                        <div className="flex items-center gap-2">
+                            <h3 className={`text-xl font-black text-stone-900 dark:text-white tracking-tight leading-tight truncate ${policy.status === 'analyzing' ? 'animate-pulse opacity-70' : ''}`}>
+                                {policy.insurerName}
+                            </h3>
+                            {policy.verified && (
+                                <svg className="w-4 h-4 text-teal-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                            )}
+                        </div>
+                        <p className={`text-sm font-bold text-stone-400 dark:text-stone-500 mt-0.5 tracking-wider uppercase flex items-center gap-2 ${policy.status === 'analyzing' ? 'animate-pulse' : ''}`}>
+                            {policy.lineOfBusiness}
+                            <span className="w-1 h-1 bg-stone-300 dark:bg-stone-600 rounded-full" />
+                            <span className="font-mono text-[10px]">{policy.policyNumber}</span>
                         </p>
                         {/* Display plate number for motor policies */}
                         {policy.lineOfBusiness === 'motor' && policy.acordData?.vehicle?.plateNumber && (
-                            <p className="text-xs font-bold text-teal-600 dark:text-teal-400 mt-1 flex items-center gap-1.5">
-                                <span>🚗</span>
+                            <div className="mt-2 flex items-center gap-1.5 px-2 py-0.5 bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded text-[10px] font-black w-fit">
+                                <span className="opacity-50">GR</span>
                                 {policy.acordData.vehicle.plateNumber}
-                            </p>
+                            </div>
                         )}
                     </div>
                 </div>

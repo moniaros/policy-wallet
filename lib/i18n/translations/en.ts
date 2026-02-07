@@ -619,7 +619,9 @@ export const en: TranslationKeys = {
         auto: 'Auto',
         home: 'Home',
         life: 'Life',
-        travel: 'Travel'
+        travel: 'Travel',
+        noPoliciesYet: 'No active policies yet',
+        allClear30Days: 'All clear for the next 30 days!'
     },
 
 

@@ -8,6 +8,12 @@ import { Plus, Upload } from "lucide-react"
 export default async function WalletPage() {
     const { dbUser } = await getAuthenticatedUser()
 
+    const profile = await db.policyholderProfile.findUnique({
+        where: { userId: dbUser.id }
+    })
+    const showTour = (profile?.preferences as any)?.showTour || false
+
+
     const policies = await db.policy.findMany({
         where: {
             ownerUserId: dbUser.id
@@ -95,7 +101,7 @@ export default async function WalletPage() {
 
     return (
         <div className="min-h-screen bg-transparent">
-            <PolicyWalletClient policies={mappedPolicies} user={user} />
+            <PolicyWalletClient policies={mappedPolicies} user={user} showTour={showTour} />
         </div>
     )
 }

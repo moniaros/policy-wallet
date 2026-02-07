@@ -180,18 +180,23 @@ export async function registerUser(formData: FormData) {
             const html = language === 'el'
                 ? `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2>Καλώς ήρθατε στο PolicyWallet!</h2>
-                    <p>Παρακαλώ κάντε κλικ στον παρακάτω σύνδεσμο για να επιβεβαιώσετε το email σας:</p>
+                    <p>Σας ευχαριστούμε για την εγγραφή σας. Για να ολοκληρώσετε τη διαδικασία και να επαληθεύσετε το email σας, κάντε κλικ στον παρακάτω σύνδεσμο:</p>
                     <a href="${confirmLink}" style="display: inline-block; padding: 12px 24px; background-color: #10b981; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Επιβεβαίωση Email</a>
-                    <p>Αν δεν εγγραφήκατε εσείς, αγνοήστε αυτό το email.</p>
+                    <p style="margin-top: 24px; font-size: 12px; color: #666;">Αν δεν εγγραφήκατε εσείς, αγνοήστε αυτό το email.</p>
                    </div>`
                 : `<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
                     <h2>Welcome to PolicyWallet!</h2>
-                    <p>Please click the link below to confirm your email address:</p>
+                    <p>Thank you for signing up. To complete the process and verify your email address, please click the link below:</p>
                     <a href="${confirmLink}" style="display: inline-block; padding: 12px 24px; background-color: #10b981; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">Verify Email</a>
-                    <p>If you didn't sign up, please ignore this email.</p>
+                    <p style="margin-top: 24px; font-size: 12px; color: #666;">If you didn't sign up, please ignore this email.</p>
                    </div>`
 
-            await sendEmail({ to: email, subject, html })
+            await sendEmail({
+                to: email,
+                subject,
+                html,
+                from: '"PolicyWallet" <noreply@policyholder.gr>' // Custom sender
+            })
         } catch (emailError) {
             console.error("Failed to send manual verification email:", emailError)
             // Continue flow, user can resend later
@@ -208,7 +213,7 @@ export async function registerUser(formData: FormData) {
             return { success: true, warning: "Account created but auto-login failed. Please check email." }
         }
 
-        return { success: true, redirect: "/wallet" }
+        return { success: true, redirect: "/onboarding" }
 
     } catch (error) {
         console.error("Registration failed:", error)

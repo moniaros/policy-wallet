@@ -8,15 +8,18 @@ import { PageHeader } from "@/components/ui/PageHeader"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { toast } from "sonner"
 import { deletePolicy, runPolicyAnalysis } from "@/app/(protected)/wallet/actions"
+import DashboardTour from '@/components/onboarding/DashboardTour'
+import { dismissTour } from '@/app/onboarding/actions'
 
 interface PolicyWalletClientProps {
     policies: Policy[]
     user?: {
         name: string
     }
+    showTour?: boolean
 }
 
-export function PolicyWalletClient({ policies, user }: PolicyWalletClientProps) {
+export function PolicyWalletClient({ policies, user, showTour = false }: PolicyWalletClientProps) {
     const router = useRouter()
 
     const { t } = useLanguage()
@@ -52,7 +55,14 @@ export function PolicyWalletClient({ policies, user }: PolicyWalletClientProps) 
     }, [policies, router])
 
     return (
-        <div className="min-h-screen bg-transparent">
+        <div className="min-h-screen bg-transparent relative isolate">
+            {/* Background Blobs for Liquid Glass Effect */}
+            <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+                <div className="absolute top-1/4 -right-20 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[100px] opacity-40 mix-blend-multiply dark:mix-blend-normal animate-blob" />
+                <div className="absolute -bottom-20 -left-20 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-[100px] opacity-40 mix-blend-multiply dark:mix-blend-normal animate-blob animation-delay-2000" />
+                <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] opacity-30 animate-pulse delay-700" />
+            </div>
+
             <PageHeader
                 title={user?.name ? `${t.auth.welcomeBack}, ${user.name.split(' ')[0]}!` : t.wallet.title}
                 subtitle={t.wallet.manageTrack}
@@ -94,6 +104,7 @@ export function PolicyWalletClient({ policies, user }: PolicyWalletClientProps) 
                     }
                 }}
             />
+            {showTour && <DashboardTour onComplete={() => dismissTour()} />}
         </div>
     )
 }
