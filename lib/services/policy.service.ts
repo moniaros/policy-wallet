@@ -330,6 +330,27 @@ export class PolicyService extends BaseService {
                 data: { status: 'active' }
             })
 
+            // 5. Notify User
+            // Fetch updated details for the message
+            const updatedPolicy = await this.db.policy.findUnique({
+                where: { id: policyId },
+                select: { policyNumber: true, insurerName: true }
+            })
+
+            await this.db.notificationEvent.create({
+                data: {
+                    userId,
+                    eventType: 'policy_analyzed',
+                    channel: 'in_app',
+                    title: language === 'el' ? 'Η ανάλυση ολοκληρώθηκε' : 'Policy Analysis Complete',
+                    message: language === 'el'
+                        ? `Το ασφαλιστήριο συμβόλαιο ${updatedPolicy?.policyNumber} (${updatedPolicy?.insurerName}) αναλύθηκε επιτυχώς.`
+                        : `Policy ${updatedPolicy?.policyNumber} (${updatedPolicy?.insurerName}) has been successfully analyzed.`,
+                    relatedObjectType: 'policy',
+                    relatedObjectId: policyId
+                }
+            })
+
             logger('info', 'Background policy analysis completed successfully', {
                 policyId,
                 durationMs: Date.now() - startTime

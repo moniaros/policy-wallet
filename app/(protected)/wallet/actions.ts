@@ -65,6 +65,9 @@ export async function createPolicy(formData: FormData) {
 
     const validatedData = PolicySchema.parse(rawData)
 
+    // Determine default status based on uploads
+    const initialStatus = documentUrls.length > 0 ? 'analyzing' : 'active'
+
     const policy = await db.policy.create({
         data: {
             ownerUserId: userId,
@@ -75,7 +78,7 @@ export async function createPolicy(formData: FormData) {
             startDate: new Date(validatedData.startDate),
             endDate: new Date(validatedData.endDate),
             premiumAmount: validatedData.premiumAmount,
-            status: "active",
+            status: initialStatus,
         }
     })
 
@@ -113,10 +116,24 @@ export async function createPolicy(formData: FormData) {
                     fileSize: fileSize,
                     source: "policyholder",
                     uploadedByUserId: userId,
-                    processingStatus: "completed"
+                    processingStatus: initialStatus === 'analyzing' ? 'processing' : 'completed'
                 }
             })
         }
+    }
+
+    // Trigger analysis if needed
+    if (initialStatus === 'analyzing') {
+        const policyService = new PolicyService()
+        const language = (user.user_metadata?.language as 'en' | 'el') || 'en' // Get from metadata or default
+
+        after(async () => {
+            try {
+                await policyService.runBackgroundAnalysis(policy.id, userId, language)
+            } catch (e) {
+                logger('error', 'Deferred analysis failed', { policyId: policy.id, error: e })
+            }
+        })
     }
 
     // Log Activity
@@ -134,7 +151,6 @@ export async function createPolicy(formData: FormData) {
         }
     })
 
-    revalidatePath("/wallet")
     revalidatePath("/wallet")
     return { success: true }
 }

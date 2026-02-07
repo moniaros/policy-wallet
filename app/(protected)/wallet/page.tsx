@@ -104,6 +104,7 @@ function mapStatus(dbStatus: string, endDate: Date): 'active' | 'expiring_soon' 
     const now = new Date()
     const daysUntilExpiry = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
 
+    if (dbStatus === 'analyzing') return 'analyzing'
     if (dbStatus === 'cancelled') return 'action_needed'
     if (daysUntilExpiry < 0) return 'action_needed' // Expired
     if (daysUntilExpiry < 30) return 'expiring_soon'

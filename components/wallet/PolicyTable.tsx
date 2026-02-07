@@ -206,6 +206,9 @@ export function PolicyTable({
                                             rounded-lg text-sm font-medium
                                             ${statusBadge.bg} ${statusBadge.text}
                                         `}>
+                                            {policy.status === 'analyzing' && (
+                                                <RefreshCw className="w-3 h-3 mr-1.5 animate-spin" />
+                                            )}
                                             {statusBadge.label}
                                         </span>
                                     </td>

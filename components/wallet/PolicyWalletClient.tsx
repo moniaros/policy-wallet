@@ -1,6 +1,7 @@
 "use client"
 
 import { PolicyWallet } from "@/components/wallet/PolicyWallet"
+import React, { useEffect } from "react"
 import type { Policy } from "@/components/wallet/types"
 import { useRouter } from "next/navigation"
 import { PageHeader } from "@/components/ui/PageHeader"
@@ -19,6 +20,36 @@ export function PolicyWalletClient({ policies, user }: PolicyWalletClientProps) 
     const router = useRouter()
 
     const { t } = useLanguage()
+
+    // Auto-refresh when policies are analyzing
+    React.useEffect(() => {
+        const hasAnalyzing = policies.some(p => p.status === 'analyzing')
+        if (hasAnalyzing) {
+            const interval = setInterval(() => {
+                router.refresh()
+            }, 3000)
+
+            // Prompt for notifications if supported
+            if ('Notification' in window && Notification.permission === 'default') {
+                toast("Policy analysis in progress", {
+                    description: "Would you like to be notified when it's ready?",
+                    action: {
+                        label: "Notify Me",
+                        onClick: () => {
+                            Notification.requestPermission().then(permission => {
+                                if (permission === 'granted') {
+                                    toast.success("Notifications enabled!")
+                                }
+                            })
+                        }
+                    },
+                    duration: 8000
+                })
+            }
+
+            return () => clearInterval(interval)
+        }
+    }, [policies, router])
 
     return (
         <div className="min-h-screen bg-transparent">
