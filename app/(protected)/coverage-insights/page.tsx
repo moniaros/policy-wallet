@@ -1,6 +1,5 @@
 import { requirePayingUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
-import { GapList } from "@/components/gaps/GapList"
 import { detectGapsForUser, createGapInstances } from "@/lib/gap-detection"
 import { CoverageInsightsClient } from "@/components/coverage/CoverageInsightsClient"
 
@@ -8,6 +7,7 @@ export default async function CoverageInsightsPage() {
     const { dbUser } = await requirePayingUser()
 
     // 1. Detect gaps for the user
+    // This runs the detection engine to see if new gaps exist
     const detectedGaps = await detectGapsForUser(dbUser.id)
 
     // 2. Create gap instances in the DB (won't duplicate existing ones)
@@ -16,6 +16,7 @@ export default async function CoverageInsightsPage() {
     }
 
     // 3. Fetch all current gap instances for this user's policies
+    // We include policy details to display context in the insight cards
     const gapInstances = await db.gapInstance.findMany({
         where: {
             policy: {
@@ -31,7 +32,9 @@ export default async function CoverageInsightsPage() {
                 select: {
                     id: true,
                     policyNumber: true,
-                    acordData: true
+                    acordData: true,
+                    lineOfBusiness: true,
+                    insurerName: true
                 }
             }
         },
@@ -40,7 +43,7 @@ export default async function CoverageInsightsPage() {
         }
     })
 
-    // Get user's policies for coverage breakdown
+    // 4. Get user's policies for "What's OK" calculation
     const policies = await db.policy.findMany({
         where: {
             ownerUserId: dbUser.id
@@ -49,43 +52,23 @@ export default async function CoverageInsightsPage() {
             id: true,
             policyNumber: true,
             acordData: true,
-            createdAt: true
+            createdAt: true,
+            insurerName: true,
+            lineOfBusiness: true // Select simple field
         }
     })
 
-    // Calculate statistics
+    // 5. Calculate statistics for the dashboard
     const criticalGaps = gapInstances.filter(g => g.severity === 'critical').length
     const highGaps = gapInstances.filter(g => g.severity === 'high').length
     const mediumGaps = gapInstances.filter(g => g.severity === 'medium').length
     const lowGaps = gapInstances.filter(g => g.severity === 'low').length
 
     // Calculate health score (0-100)
+    // Rule: Critical hits hard (-25), High (-15), Medium (-8), Low (-3)
     const healthScore = Math.max(0, Math.min(100,
         100 - (criticalGaps * 25 + highGaps * 15 + mediumGaps * 8 + lowGaps * 3)
     ))
-
-    // Group policies by type for coverage breakdown
-    const coverageByType: Record<string, number> = {}
-    let totalCoverage = 0
-
-    policies.forEach(policy => {
-        const acordData = policy.acordData as any
-        const policyType = acordData?.policy?.lineOfBusiness?.code || 'Other'
-        const coverageAmount = parseFloat(acordData?.policy?.premium?.amount?.toString() || '0')
-
-        if (!coverageByType[policyType]) {
-            coverageByType[policyType] = 0
-        }
-        coverageByType[policyType] += coverageAmount
-        totalCoverage += coverageAmount
-    })
-
-
-    const coverageBreakdown = Object.entries(coverageByType).map(([type, amount]) => ({
-        type,
-        amount,
-        percentage: totalCoverage > 0 ? (amount / totalCoverage) * 100 : 0
-    }))
 
     return (
         <CoverageInsightsClient
@@ -98,10 +81,18 @@ export default async function CoverageInsightsPage() {
                 healthScore,
                 totalGaps: gapInstances.length,
                 totalPolicies: policies.length,
-                totalCoverage
+                totalCoverage: 0 // Not prioritized in new design
             }}
-            coverageBreakdown={coverageBreakdown}
             userLanguage={dbUser.preferredLanguage || 'en'}
+            policies={policies.map(p => ({
+                id: p.id,
+                insurerName: (p as any).insurerName || 'Unknown Insurer',
+                lineOfBusiness: {
+                    // Try to get from acordData first (more specific), then fallback to top-level field
+                    code: (p.acordData as any)?.policy?.lineOfBusiness?.code || p.lineOfBusiness || 'other',
+                    name: (p.acordData as any)?.policy?.lineOfBusiness?.Description || p.lineOfBusiness || 'Other Policy'
+                }
+            }))}
         />
     )
 }

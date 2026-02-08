@@ -23,6 +23,30 @@ interface StatusSummaryProps {
     premiumTrend?: number[]
 }
 
+// Simple Sparkline SVG
+const Sparkline = ({ data }: { data: number[] }) => {
+    if (data.length < 2) return null
+    const min = Math.min(...data)
+    const max = Math.max(...data)
+    const range = max - min || 1
+    const points = data.map((val, i) => {
+        const x = (i / (data.length - 1)) * 100
+        const y = 100 - ((val - min) / range) * 100
+        return `${x},${y}`
+    }).join(' ')
+
+    return (
+        <svg viewBox="0 0 100 100" className="w-full h-12 opacity-30" preserveAspectRatio="none">
+            <polyline points={points} fill="none" stroke="currentColor" strokeWidth="4" />
+            <linearGradient id="gradient" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stopColor="currentColor" stopOpacity="0.5" />
+                <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
+            </linearGradient>
+            <polygon points={`${points} 100,100 0,100`} fill="url(#gradient)" stroke="none" />
+        </svg>
+    )
+}
+
 export function StatusSummary({
     activeCount,
     expiringCount,
@@ -48,32 +72,7 @@ export function StatusSummary({
         }).format(amount)
     }
 
-    // Simple Sparkline SVG
-    const Sparkline = ({ data }: { data: number[] }) => {
-        if (data.length < 2) return null
-        const min = Math.min(...data)
-        const max = Math.max(...data)
-        const range = max - min || 1
-        const points = data.map((val, i) => {
-            const x = (i / (data.length - 1)) * 100
-            const y = 100 - ((val - min) / range) * 100
-            return `${x},${y}`
-        }).join(' ')
-
-        return (
-            <svg viewBox="0 0 100 100" className="w-full h-12 opacity-30" preserveAspectRatio="none">
-                <polyline points={points} fill="none" stroke="currentColor" strokeWidth="4" />
-                <linearGradient id="gradient" x1="0" x2="0" y1="0" y2="1">
-                    <stop offset="0%" stopColor="currentColor" stopOpacity="0.5" />
-                    <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
-                </linearGradient>
-                <polygon points={`${points} 100,100 0,100`} fill="url(#gradient)" stroke="none" />
-            </svg>
-        )
-    }
-
     // Build breakdown text
-    const breakdownParts = []
     if (policyBreakdown.health > 0) breakdownParts.push(`${policyBreakdown.health} ${t.status.health}`)
     if (policyBreakdown.auto > 0) breakdownParts.push(`${policyBreakdown.auto} ${t.status.auto}`)
     if (policyBreakdown.home > 0) breakdownParts.push(`${policyBreakdown.home} ${t.status.home}`)
@@ -151,8 +150,8 @@ export function StatusSummary({
                         return (
                             <>
                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300 ${urgency === 'critical' ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 animate-pulse' :
-                                        urgency === 'warning' ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400' :
-                                            'bg-stone-100 dark:bg-stone-800 text-stone-400'
+                                    urgency === 'warning' ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400' :
+                                        'bg-stone-100 dark:bg-stone-800 text-stone-400'
                                     }`}>
                                     <Calendar className="w-5 h-5" />
                                 </div>
@@ -162,7 +161,7 @@ export function StatusSummary({
                                         {expiringCount}
                                         {expiringCount > 0 && (
                                             <span className={`text-[10px] font-normal ${urgency === 'critical' ? 'text-red-600 dark:text-red-500 font-bold' :
-                                                    'text-amber-600 dark:text-amber-500'
+                                                'text-amber-600 dark:text-amber-500'
                                                 }`}>
                                                 {urgency === 'critical' ? (t.policyStatus || {}).actionNeeded || 'Act Now' : (t.status as any).attentionNeeded || 'Attention'}
                                             </span>

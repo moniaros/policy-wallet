@@ -37,7 +37,7 @@ test.describe('UX Audit - Landing Page & First Impressions', () => {
 
     test('should show social proof or user count', async ({ page }) => {
         // Look for testimonials, user counts, or beta tester mentions
-        const socialProof = page.locator('text=/users|customers|testimonial|χρήστες|πελάτες/i, text=/join.*\d+/i');
+        const socialProof = page.locator('text=/users|customers|testimonial|χρήστες|πελάτες/i, text=/join.*[0-9]+/i');
         const count = await socialProof.count();
 
         // This should exist but might not yet - log for reporting

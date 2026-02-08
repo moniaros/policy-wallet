@@ -2,6 +2,7 @@
 
 import { useEffect } from "react"
 import { AlertCircle, RefreshCw } from "lucide-react"
+import Link from "next/link"
 
 export default function Error({
     error,
@@ -37,12 +38,12 @@ export default function Error({
                     Try Again
                 </button>
 
-                <a
+                <Link
                     href="/"
                     className="px-6 py-3 border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 font-semibold rounded-lg transition-all hover:bg-neutral-100 dark:hover:bg-neutral-800 active:scale-95"
                 >
                     Go Home
-                </a>
+                </Link>
             </div>
 
             {error.digest && (

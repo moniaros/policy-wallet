@@ -2,6 +2,7 @@ import { requirePayingUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { WalletSummary } from "@/components/coverage/WalletSummary"
 import { calculatePortfolioSummary } from "@/lib/policy-status"
+import Link from "next/link"
 
 export default async function CoveragePage() {
     const { dbUser } = await requirePayingUser()
@@ -163,12 +164,12 @@ export default async function CoveragePage() {
                         <p className="text-stone-600 dark:text-stone-400 mb-4">
                             Add your first policy to start tracking your coverage.
                         </p>
-                        <a
+                        <Link
                             href="/wallet/add"
                             className="inline-block bg-teal-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-teal-700 transition-colors"
                         >
                             Add Policy
-                        </a>
+                        </Link>
                     </div>
                 )}
             </div>
