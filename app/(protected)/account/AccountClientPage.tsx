@@ -24,6 +24,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import type { Policy } from "@/components/wallet/types"
 import { PageHeader } from '@/components/ui/PageHeader'
 import { User, CreditCard, Gift, Settings as SettingsIcon, LogOut } from 'lucide-react'
+import { motion } from 'framer-motion'
 
 interface Props {
     initialData: any
@@ -105,35 +106,36 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                 title={t.account.pageTitle}
                 subtitle={t.account.pageSubtitle}
                 actions={
-                    <div className="flex p-1 bg-stone-100 dark:bg-stone-800 rounded-xl border border-stone-200 dark:border-stone-700 overflow-x-auto no-scrollbar">
-                        <button
-                            onClick={() => setActiveTab('overview')}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === 'overview' ? 'bg-white dark:bg-stone-900 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
-                        >
-                            <User className="w-3.5 h-3.5" />
-                            {t.account.overview}
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('billing')}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === 'billing' ? 'bg-white dark:bg-stone-900 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
-                        >
-                            <CreditCard className="w-3.5 h-3.5" />
-                            {t.account.billing}
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('referrals')}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === 'referrals' ? 'bg-white dark:bg-stone-900 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
-                        >
-                            <Gift className="w-3.5 h-3.5" />
-                            {t.account.referrals}
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('settings')}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all whitespace-nowrap ${activeTab === 'settings' ? 'bg-white dark:bg-stone-900 text-teal-600 dark:text-teal-400 shadow-sm' : 'text-stone-400 hover:text-stone-600'}`}
-                        >
-                            <SettingsIcon className="w-3.5 h-3.5" />
-                            {t.account.settings}
-                        </button>
+                    <div className="flex p-1.5 bg-stone-100/50 dark:bg-stone-900/50 backdrop-blur-md rounded-2xl border border-stone-200/50 dark:border-stone-700/50 overflow-x-auto no-scrollbar relative isolate">
+                        {[
+                            { id: 'overview', label: t.account.overview, icon: User },
+                            { id: 'billing', label: t.account.billing, icon: CreditCard },
+                            { id: 'referrals', label: t.account.referrals, icon: Gift },
+                            { id: 'settings', label: t.account.settings, icon: SettingsIcon },
+                        ].map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id as any)}
+                                className={`
+                                    flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest 
+                                    transition-all duration-300 relative isolate whitespace-nowrap
+                                    ${activeTab === tab.id
+                                        ? 'text-teal-600 dark:text-teal-400'
+                                        : 'text-stone-400 hover:text-stone-600 dark:hover:text-stone-200'
+                                    }
+                                `}
+                            >
+                                {activeTab === tab.id && (
+                                    <motion.div
+                                        layoutId="activeAccountTab"
+                                        className="absolute inset-0 bg-white dark:bg-stone-800 rounded-xl shadow-sm -z-10"
+                                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                    />
+                                )}
+                                <tab.icon className="w-3.5 h-3.5" />
+                                {tab.label}
+                            </button>
+                        ))}
                     </div>
                 }
             />

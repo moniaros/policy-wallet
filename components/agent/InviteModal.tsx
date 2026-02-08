@@ -12,6 +12,7 @@ export function InviteModal({
     onClose,
     onSendInvite
 }: InviteModalProps) {
+    const { t } = useLanguage()
     const [email, setEmail] = useState('')
     const [scope, setScope] = useState<AccessScope>('upload_only')
     const [sending, setSending] = useState(false)
@@ -25,8 +26,6 @@ export function InviteModal({
         setSending(false)
         onClose?.()
     }
-
-    const { t } = useLanguage()
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">

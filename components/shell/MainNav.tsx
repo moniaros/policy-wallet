@@ -2,6 +2,7 @@
 
 import React from 'react'
 import type { NavigationGroup } from './AppShell'
+import { motion } from 'framer-motion'
 
 export interface MainNavProps {
     navigation: NavigationGroup[]
@@ -24,22 +25,34 @@ export function MainNav({ navigation, onNavigate }: MainNavProps) {
                                 <button
                                     onClick={() => onNavigate?.(item.href)}
                                     className={`
-                    w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium
-                    transition-all duration-200 group relative
+                    w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold
+                    transition-all duration-300 group relative isolate
                     ${item.isActive
-                                            ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/20'
-                                            : 'text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800'
+                                            ? 'text-white'
+                                            : 'text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-200'
                                         }
                     ${item.isLocked ? 'opacity-70 grayscale-[0.5]' : ''}
                   `}
                                 >
+                                    {/* Liquid Background for Active Item */}
+                                    {item.isActive && (
+                                        <motion.div
+                                            layoutId="activeNav"
+                                            className="absolute inset-0 bg-teal-600 rounded-2xl shadow-xl shadow-teal-600/20 -z-10"
+                                            transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                                        />
+                                    )}
+
+                                    {/* Hover State Background */}
+                                    <div className="absolute inset-0 bg-stone-100 dark:bg-stone-800 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity -z-20" />
+
                                     {item.icon && (
-                                        <span className={`flex-shrink-0 w-5 h-5 transition-transform group-hover:scale-110 ${item.isActive ? 'text-white' : 'text-stone-400 dark:text-stone-500 group-hover:text-teal-600 dark:group-hover:text-teal-400'}`}>
+                                        <span className={`flex-shrink-0 w-5 h-5 transition-all duration-300 group-hover:scale-110 ${item.isActive ? 'text-white' : 'text-stone-400 dark:text-stone-500 group-hover:text-teal-600 dark:group-hover:text-teal-400'}`}>
                                             {item.icon}
                                         </span>
                                     )}
 
-                                    <span className="flex-1 text-left truncate">{item.label}</span>
+                                    <span className="flex-1 text-left truncate tracking-tight">{item.label}</span>
 
                                     {/* Badges */}
                                     {item.variant === 'pro' && !item.isLocked && (

@@ -104,7 +104,7 @@ export function UserMenu({
                         className="fixed inset-0 z-10"
                         onClick={() => setIsOpen(false)}
                     />
-                    <div className="absolute bottom-full left-0 right-0 mb-1 z-20 bg-white dark:bg-stone-800 rounded-lg shadow-lg border border-stone-200 dark:border-stone-700 overflow-hidden">
+                    <div className="absolute bottom-full left-0 right-0 mb-3 z-20 bg-white/90 dark:bg-stone-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-stone-200/50 dark:border-stone-700/50 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
                         {/* Notifications */}
                         <button
                             className="w-full px-4 py-2 text-left text-sm text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 flex items-center justify-between"
@@ -158,8 +158,11 @@ export function UserMenu({
 
                         {/* Settings */}
                         <button
-                            className="w-full px-4 py-2 text-left text-sm text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 border-t border-stone-200 dark:border-stone-700"
-                            onClick={() => setIsOpen(false)}
+                            className="w-full px-4 py-2 text-left text-sm text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 border-t border-stone-200 dark:border-stone-700 font-medium"
+                            onClick={() => {
+                                setIsOpen(false)
+                                router.push('/account')
+                            }}
                         >
                             {t.userMenu.settings}
                         </button>

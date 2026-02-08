@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import type { UserRole } from './AppShell'
+import { CheckCircle2 } from 'lucide-react'
 
 export interface RoleSwitcherProps {
     currentRole: UserRole
@@ -16,24 +17,21 @@ export function RoleSwitcher({ currentRole, availableRoles, onRoleSwitch }: Role
         <div className="relative">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-stone-100 dark:bg-stone-700 hover:bg-stone-200 dark:hover:bg-stone-600 transition-colors"
+                className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-stone-100 dark:bg-stone-800 border border-stone-200/50 dark:border-stone-700/50 hover:bg-stone-200 dark:hover:bg-stone-700 transition-all group"
             >
                 <div className="flex flex-col items-start min-w-0">
-                    <span className="text-xs text-stone-500 dark:text-stone-400">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-stone-400 group-hover:text-stone-500 transition-colors">
                         Viewing as
                     </span>
-                    <span className="text-sm font-medium text-stone-900 dark:text-stone-100 truncate">
+                    <span className="text-xs font-black text-stone-900 dark:text-stone-100 truncate tracking-tight">
                         {currentRole.label}
                     </span>
                 </div>
-                <svg
-                    className={`w-4 h-4 text-stone-500 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <div className={`p-1 rounded-lg bg-stone-200/50 dark:bg-stone-700/50 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+                    <svg className="w-3.5 h-3.5 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
             </button>
 
             {isOpen && (
@@ -42,7 +40,7 @@ export function RoleSwitcher({ currentRole, availableRoles, onRoleSwitch }: Role
                         className="fixed inset-0 z-10"
                         onClick={() => setIsOpen(false)}
                     />
-                    <div className="absolute top-full left-0 right-0 mt-1 z-20 bg-white dark:bg-stone-800 rounded-lg shadow-lg border border-stone-200 dark:border-stone-700 overflow-hidden">
+                    <div className="absolute top-full left-0 right-0 mt-3 z-20 bg-white/90 dark:bg-stone-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-stone-200/50 dark:border-stone-700/50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300">
                         {availableRoles.map((role) => (
                             <button
                                 key={role.role}
@@ -51,19 +49,19 @@ export function RoleSwitcher({ currentRole, availableRoles, onRoleSwitch }: Role
                                     setIsOpen(false)
                                 }}
                                 className={`
-                  w-full px-3 py-2 text-left text-sm font-medium transition-colors
-                  ${role.role === currentRole.role
-                                        ? 'bg-teal-50 dark:bg-teal-900/20 text-teal-700 dark:text-teal-400'
-                                        : 'text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700'
+                                    w-full px-5 py-3 text-left text-[11px] font-black uppercase tracking-widest transition-all
+                                    ${role.role === currentRole.role
+                                        ? 'bg-teal-500 text-white'
+                                        : 'text-stone-500 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-800'
                                     }
-                `}
+                                `}
                             >
-                                {role.label}
-                                {role.role === currentRole.role && (
-                                    <svg className="inline-block w-4 h-4 ml-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                )}
+                                <div className="flex items-center justify-between">
+                                    <span>{role.label}</span>
+                                    {role.role === currentRole.role && (
+                                        <CheckCircle2 className="w-3.5 h-3.5" />
+                                    )}
+                                </div>
                             </button>
                         ))}
                     </div>

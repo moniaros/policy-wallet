@@ -260,6 +260,22 @@ export const en: TranslationKeys = {
         },
         view: 'View',
         manageTasks: 'Review and complete your pending insurance requirements',
+        completion: 'Completion',
+        questions: 'Questions',
+        actionRequired: 'Action Required',
+        assessingRisk: 'Assessing your',
+        riskProfile: 'Risk Profile',
+        helpDetectGaps: 'By providing these details, you help {name} detect hidden insurance gaps and optimize your coverage.',
+        saveForLater: 'Save for later',
+        completeSubmission: 'COMPLETE SUBMISSION',
+        submitting: 'SUBMITTING...',
+        typeAnswer: 'Type your answer here...',
+        everythingPerfect: 'Everything is Perfect!',
+        completedAllTasks: "You've completed all outstanding requests. We'll notify you when new insights are available.",
+        startAssessment: 'Start Assessment',
+        markAsDone: 'Mark as Done',
+        review: 'Review',
+        daily: 'Daily'
     },
 
     // Policy Types

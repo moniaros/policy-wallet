@@ -135,7 +135,6 @@ export function PolicyWallet({
             <EmptyState
                 onAddManually={onAddManually}
                 onUploadDocument={onUploadDocument}
-                userName={user?.name}
             />
         )
     }

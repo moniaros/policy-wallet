@@ -9,7 +9,10 @@ import {
     ArrowRight,
     Lock
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { InsightCard, InsightData } from './InsightCard'
+import { updateGapStatus } from '@/app/(protected)/coverage-insights/actions'
+import { toast } from 'sonner'
 
 interface CoverageInsightsClientProps {
     gaps: any[]
@@ -38,6 +41,7 @@ export function CoverageInsightsClient({
     policies = []
 }: CoverageInsightsClientProps) {
     const lang = userLanguage === 'el' ? 'el' : 'en'
+    const router = useRouter()
     const [hiddenInsights, setHiddenInsights] = useState<Set<string>>(new Set())
 
     // --- 1. Confidence Logic ---
@@ -70,8 +74,12 @@ export function CoverageInsightsClient({
     // Dynamic Summary Construction
     const visibleGaps = gaps.filter(g => !hiddenInsights.has(g.id))
     const summaryText = visibleGaps.length > 0
-        ? `${confidence.summary.el} Υπάρχουν ${visibleGaps.length} σημεία που αξίζει να γνωρίζετε.`
-        : `${confidence.summary.el} Δεν εντοπίστηκαν κενά.`
+        ? (lang === 'el'
+            ? `${confidence.summary.el} Υπάρχουν ${visibleGaps.length} σημεία που αξίζει να γνωρίζετε.`
+            : `${confidence.summary.en} There are ${visibleGaps.length} points worth knowing.`)
+        : (lang === 'el'
+            ? `${confidence.summary.el} Δεν εντοπίστηκαν κενά.`
+            : `${confidence.summary.en} No gaps detected.`)
 
     // --- 2. Data Transformation ---
     const insights: InsightData[] = visibleGaps.map(gap => ({
@@ -80,34 +88,62 @@ export function CoverageInsightsClient({
         title: gap.title || 'Gap Detected',
         whyItMatters: gap.description || 'This gap affects your coverage.',
         severity: (gap.severity || 'medium') as any,
-        checkedItems: [
-            'Όρια κάλυψης συμβολαίου',
-            'Νομικές απαιτήσεις',
-            'Σενάρια υψηλού κινδύνου'
-        ],
+        checkedItems: lang === 'el'
+            ? ['Όρια κάλυψης συμβολαίου', 'Νομικές απαιτήσεις', 'Σενάρια υψηλού κινδύνου']
+            : ['Coverage limits', 'Legal requirements', 'High-risk scenarios'],
         primaryAction: {
-            label: 'Κατανόηση επιλογών',
+            label: lang === 'el' ? 'Εξέταση συμβολαίου' : 'Review Policy',
             type: 'primary'
         },
         secondaryActions: [
-            { label: 'Συζήτηση με σύμβουλο', type: 'secondary' },
-            { label: 'Αγνόηση', type: 'secondary' }
+            { label: lang === 'el' ? 'Συζήτηση με σύμβουλο' : 'Talk to Advisor', type: 'secondary' },
+            { label: lang === 'el' ? 'Αγνόηση' : 'Ignore', type: 'secondary' }
         ],
-        microcopy: gap.severity === 'critical' ? 'Συνιστάται άμεση εξέταση' : 'Δεν απαιτείται άμεση ενέργεια',
+        microcopy: gap.severity === 'critical'
+            ? (lang === 'el' ? 'Συνιστάται άμεση εξέταση' : 'Immediate review recommended')
+            : (lang === 'el' ? 'Δεν απαιτείται άμεση ενέργεια' : 'No immediate action required'),
         isPlusFeature: true // Demo: highlight premium analysis
     }))
 
     // Handlers
-    const handleAction = (type: string, id: string, label: string) => {
-        if (label === 'Αγνόηση') {
+    const handleAction = async (type: string, id: string, label: string) => {
+        const isIgnore = label === 'Αγνόηση' || label === 'Ignore'
+        const isReview = label === 'Εξέταση συμβολαίου' || label === 'Review Policy'
+        const isAdvisor = label === 'Συζήτηση με σύμβουλο' || label === 'Talk to Advisor'
+
+        if (isIgnore) {
             setHiddenInsights(prev => new Set(prev).add(id))
+            try {
+                await updateGapStatus(id, 'dismissed')
+                toast.success(lang === 'el' ? 'Η σύσταση αρχειοθετήθηκε' : 'Insight dismissed')
+            } catch (err) {
+                console.error('Failed to dismiss gap:', err)
+            }
             return
         }
+
+        if (isReview) {
+            const gap = gaps.find(g => g.id === id)
+            if (gap?.policyId) {
+                router.push(`/wallet/${gap.policyId}`)
+                return
+            }
+        }
+
+        if (isAdvisor) {
+            router.push('/advisor')
+            return
+        }
+
         if (type === 'primary') {
-            // In a real app, this would perform navigation
-            alert(`Opening details for insight: ${id}`)
+            const gap = gaps.find(g => g.id === id)
+            if (gap?.policyId) {
+                router.push(`/wallet/${gap.policyId}?tab=insights&highlight=${id}`)
+            } else {
+                toast.info(lang === 'el' ? 'Λεπτομέρειες προσεχώς' : 'Details coming soon')
+            }
         } else {
-            alert(`Action: ${label} for insight ${id}`)
+            toast.info(`${label}: ${lang === 'el' ? 'Μη διαθέσιμο' : 'Unavailable'}`)
         }
     }
 
@@ -158,8 +194,8 @@ export function CoverageInsightsClient({
                         ) : (
                             <div className="text-center py-12 bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800">
                                 <Sparkles className="w-8 h-8 text-teal-500 mx-auto mb-3" />
-                                <p className="text-stone-900 font-bold">Όλα φαίνονται εντάξει!</p>
-                                <p className="text-stone-500 text-sm">Δεν βρέθηκαν σημεία που χρειάζονται την προσοχή σας.</p>
+                                <p className="text-stone-900 font-bold">{lang === 'el' ? 'Όλα φαίνονται εντάξει!' : 'Everything looks good!'}</p>
+                                <p className="text-stone-500 text-sm">{lang === 'el' ? 'Δεν βρέθηκαν σημεία που χρειάζονται την προσοχή σας.' : 'No points found that need your attention.'}</p>
                             </div>
                         )}
                     </div>
@@ -203,21 +239,23 @@ export function CoverageInsightsClient({
                     </h3>
                     <div className="flex flex-col gap-3 max-w-sm mx-auto">
                         <button
-                            onClick={() => alert('Flow: Understand All Options')}
+                            onClick={() => router.push('/wallet')}
                             className="w-full py-4 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl font-bold shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2 group"
                         >
-                            <span>Κατανόηση επιλογών</span>
+                            <span>{lang === 'el' ? 'Επιστροφή στο Wallet' : 'Back to Wallet'}</span>
                             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                         </button>
                         <button
-                            onClick={() => alert('Flow: Connect with Advisor')}
+                            onClick={() => router.push('/advisor')}
                             className="w-full py-4 bg-transparent border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 rounded-xl font-bold hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
                         >
-                            Μιλήστε με σύμβουλο
+                            {lang === 'el' ? 'Μιλήστε με σύμβουλο' : 'Talk to an advisor'}
                         </button>
                     </div>
                     <p className="text-xs text-stone-400 mt-6 max-w-xs mx-auto leading-relaxed">
-                        Η PolicyWallet δεν λαμβάνει προμήθειες. Οι συμβουλές μας είναι 100% αμερόληπτες.
+                        {lang === 'el'
+                            ? 'Η PolicyWallet δεν λαμβάνει προμήθειες. Οι συμβουλές μας είναι 100% αμερόληπτες.'
+                            : 'PolicyWallet does not receive commissions. Our advice is 100% unbiased.'}
                     </p>
                 </div>
 

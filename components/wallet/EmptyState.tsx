@@ -7,10 +7,9 @@ interface EmptyStateProps {
     onAddManually?: () => void
     onUploadDocument?: () => void
     viaAgentInvite?: boolean
-    userName?: string
 }
 
-export function EmptyState({ onAddManually, userName }: EmptyStateProps) {
+export function EmptyState({ onAddManually }: EmptyStateProps) {
     const { t, language } = useLanguage()
 
     return (
@@ -22,12 +21,7 @@ export function EmptyState({ onAddManually, userName }: EmptyStateProps) {
                 className="max-w-lg w-full"
             >
                 {/* Lobby Welcome */}
-                <h1 className="text-4xl md:text-5xl font-black text-stone-900 dark:text-white mb-6 tracking-tight leading-tight">
-                    {language === 'el' ? 'Καλώς ορίσατε' : 'Welcome'}, <br />
-                    <span className="text-teal-600 dark:text-teal-400">
-                        {userName || (language === 'el' ? 'στο PolicyWallet' : 'to PolicyWallet')}
-                    </span>
-                </h1>
+
 
                 <p className="text-lg text-stone-500 dark:text-stone-400 mb-12 font-medium">
                     {language === 'el'

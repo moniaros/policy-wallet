@@ -154,11 +154,11 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                     </div>
 
                     <h1 className="text-5xl font-black text-stone-900 dark:text-white tracking-tighter mb-4 leading-tight">
-                        {lang === 'el' ? 'Καθημερινή' : 'Daily'} <span className="text-stone-400 dark:text-stone-500 italic">Review.</span>
+                        {t.tasks.daily} <span className="text-stone-400 dark:text-stone-500 italic">{t.tasks.review}.</span>
                     </h1>
 
                     <p className="text-stone-500 text-lg max-w-xl mb-12">
-                        {lang === 'el' ? 'Βελτιώστε τη βαθμολογία κάλυψής σας ολοκληρώνοντας αυτές τις εργασίες' : 'Improve your coverage score by completing these tasks'}
+                        {t.tasks.manageTasks}
                     </p>
 
                     {/* Stats Slider */}
@@ -253,16 +253,16 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
 
                 {/* Tasks List */}
                 {sortedTasks.length === 0 ? (
-                    <div className="bg-white dark:bg-slate-900 rounded-3xl p-16 text-center shadow-xl border border-slate-200 dark:border-slate-800">
-                        <div className="w-24 h-24 bg-emerald-50 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mx-auto mb-6 relative">
-                            <div className="absolute inset-0 bg-emerald-500/10 blur-xl rounded-full" />
-                            <CheckCircle2 className="w-12 h-12 text-emerald-600 dark:text-emerald-400 relative z-10" />
+                    <div className="bg-white/50 dark:bg-stone-900/50 backdrop-blur-xl rounded-[48px] p-24 text-center border border-stone-200 dark:border-stone-800 shadow-2xl shadow-stone-200/50 dark:shadow-none">
+                        <div className="w-32 h-32 bg-teal-500/10 dark:bg-teal-400/10 rounded-full flex items-center justify-center mx-auto mb-10 relative group">
+                            <div className="absolute inset-0 bg-teal-500/20 blur-2xl rounded-full scale-110 group-hover:scale-125 transition-transform duration-700" />
+                            <CheckCircle2 className="w-16 h-16 text-teal-600 dark:text-teal-400 relative z-10" />
                         </div>
-                        <h2 className="text-3xl font-black text-slate-900 dark:text-white mb-3">
-                            {lang === 'el' ? 'Όλα Τέλεια!' : 'Everything is Perfect!'}
+                        <h2 className="text-4xl font-black text-stone-900 dark:text-white mb-4 tracking-tight">
+                            {t.tasks.everythingPerfect}
                         </h2>
-                        <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto">
-                            {lang === 'el' ? 'Έχετε ολοκληρώσει όλες τις εκκρεμείς αιτήσεις. Θα σας ειδοποιήσουμε όταν υπάρχουν νέες πληροφορίες.' : "You've completed all outstanding requests. We'll notify you when new insights are available."}
+                        <p className="text-stone-500 dark:text-stone-400 text-lg max-w-md mx-auto leading-relaxed">
+                            {t.tasks.completedAllTasks}
                         </p>
                     </div>
                 ) : (
@@ -284,8 +284,15 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                                         <h3 className="text-base font-black text-stone-900 dark:text-white tracking-tight truncate">{task.title}</h3>
                                         <p className="text-xs font-bold text-stone-400">{task.type.toUpperCase()}</p>
                                     </div>
-                                    <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${task.priority === 'high' ? 'bg-teal-600 text-white' : 'bg-amber-400 text-stone-900'}`}>
-                                        {task.priority === 'high' ? 'PRIORITY' : task.priority}
+                                    <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${task.priority === 'high'
+                                        ? 'bg-teal-600 text-white'
+                                        : task.priority === 'medium'
+                                            ? 'bg-amber-400 text-stone-900'
+                                            : 'bg-stone-100 dark:bg-stone-800 text-stone-500'
+                                        }`}>
+                                        {task.priority === 'high'
+                                            ? (t.tasks.priorities.high.toUpperCase())
+                                            : (t.tasks.priorities[task.priority] || task.priority).toUpperCase()}
                                     </div>
                                 </Link>
                             )

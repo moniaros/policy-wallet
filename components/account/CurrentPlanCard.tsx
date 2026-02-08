@@ -42,7 +42,7 @@ export function CurrentPlanCard({
         : 0
 
     return (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border-2 border-slate-200 dark:border-slate-700 p-6">
+        <div className="bg-white dark:bg-stone-900 rounded-[32px] border border-stone-100 dark:border-stone-800 p-8 shadow-sm group relative overflow-hidden">
             {/* Header */}
             <div className="flex items-start justify-between mb-6">
                 <div>
@@ -68,10 +68,10 @@ export function CurrentPlanCard({
                 </div>
                 {isPremium && (
                     <div className="text-right">
-                        <div className="text-2xl font-black text-slate-900 dark:text-white">
+                        <div className="text-3xl font-black text-stone-900 dark:text-white tracking-tighter">
                             {copy.tiers[tier].price[language]}
                         </div>
-                        <div className="text-sm text-slate-600 dark:text-slate-400">
+                        <div className="text-[10px] font-black text-stone-400 uppercase tracking-widest mt-1">
                             {copy.tiers[tier].period[language]}
                         </div>
                     </div>
@@ -80,7 +80,7 @@ export function CurrentPlanCard({
 
             {/* Status Messages */}
             {isPastDue && (
-                <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3">
+                <div className="mb-8 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3 relative z-10">
                     <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
                     <div>
                         <p className="text-sm font-semibold text-red-900 dark:text-red-200 mb-1">
@@ -97,7 +97,7 @@ export function CurrentPlanCard({
             )}
 
             {isCanceled && currentPeriodEnd && (
-                <div className="mb-6 p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl flex items-start gap-3">
+                <div className="mb-8 p-4 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl flex items-start gap-3 relative z-10">
                     <AlertCircle className="w-5 h-5 text-orange-600 dark:text-orange-400 flex-shrink-0 mt-0.5" />
                     <p className="text-sm text-orange-900 dark:text-orange-200">
                         {formatMessage(copy.messages.canceledAccess[language], {
@@ -108,12 +108,12 @@ export function CurrentPlanCard({
             )}
 
             {/* Usage Stats */}
-            <div className="mb-6">
-                <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+            <div className="mb-8 relative z-10">
+                <div className="flex items-center justify-between mb-3 px-1">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-stone-400">
                         {language === 'el' ? 'Χρήση Συμβολαίων' : 'Policy Usage'}
                     </span>
-                    <span className="text-sm font-bold text-slate-900 dark:text-white">
+                    <span className="text-sm font-black text-stone-900 dark:text-white mt-1">
                         {policiesLimit
                             ? formatMessage(copy.messages.policiesUsed[language], {
                                 used: policiesUsed,
@@ -123,13 +123,13 @@ export function CurrentPlanCard({
                     </span>
                 </div>
                 {policiesLimit && (
-                    <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
+                    <div className="w-full bg-stone-50 dark:bg-stone-800 rounded-full h-2 overflow-hidden">
                         <div
-                            className={`h-full rounded-full transition-all duration-300 ${usagePercentage >= 100
-                                ? 'bg-red-600'
+                            className={`h-full rounded-full transition-all duration-1000 ${usagePercentage >= 90
+                                ? 'bg-red-500'
                                 : usagePercentage >= 75
-                                    ? 'bg-orange-500'
-                                    : 'bg-blue-600'
+                                    ? 'bg-amber-500'
+                                    : 'bg-teal-500'
                                 }`}
                             style={{ width: `${usagePercentage}%` }}
                         />
@@ -139,7 +139,7 @@ export function CurrentPlanCard({
 
             {/* Next Billing (Premium only) */}
             {isPremium && currentPeriodEnd && !isCanceled && (
-                <div className="mb-6 flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                <div className="mb-8 flex items-center gap-2 text-sm font-medium text-stone-500 dark:text-stone-400 relative z-10">
                     <Calendar className="w-4 h-4" />
                     <span>
                         {formatMessage(copy.messages.nextBilling[language], {
@@ -150,11 +150,11 @@ export function CurrentPlanCard({
             )}
 
             {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row gap-4 relative z-10">
                 {!isPremium && (
                     <button
                         onClick={onUpgrade}
-                        className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-xl transition-all duration-200"
+                        className="flex-1 px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-teal-600/20 active:scale-95 transition-all"
                     >
                         {copy.cta.upgrade[language]}
                     </button>
@@ -164,13 +164,13 @@ export function CurrentPlanCard({
                     <>
                         <button
                             onClick={onManage}
-                            className="flex-1 px-6 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-semibold rounded-xl transition-all duration-200"
+                            className="flex-1 px-8 py-4 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-900 dark:text-white text-[10px] font-black uppercase tracking-widest rounded-2xl active:scale-95 transition-all"
                         >
                             {copy.cta.manage[language]}
                         </button>
                         <button
                             onClick={onCancel}
-                            className="px-6 py-3 text-slate-600 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 font-semibold transition-colors"
+                            className="px-8 py-4 text-stone-400 hover:text-red-500 text-[10px] font-black uppercase tracking-widest transition-colors"
                         >
                             {copy.cta.cancel[language]}
                         </button>
@@ -180,7 +180,7 @@ export function CurrentPlanCard({
                 {isCanceled && (
                     <button
                         onClick={onUpgrade}
-                        className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-xl transition-all duration-200"
+                        className="flex-1 px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-teal-600/20 active:scale-95 transition-all"
                     >
                         {copy.cta.reactivate[language]}
                     </button>
@@ -189,19 +189,19 @@ export function CurrentPlanCard({
 
             {/* Premium Benefits (Free tier only) */}
             {!isPremium && (
-                <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
-                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">
+                <div className="mt-8 pt-8 border-t border-stone-50 dark:border-stone-800 relative z-10">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-4">
                         {language === 'el' ? 'Αναβαθμίστε για:' : 'Upgrade for:'}
                     </p>
-                    <ul className="space-y-2">
+                    <ul className="space-y-3">
                         {[
                             copy.features.unlimitedPolicies,
                             copy.features.advancedAI,
                             copy.features.emailNotifications,
                             copy.features.interactiveQA,
                         ].map((feature, idx) => (
-                            <li key={idx} className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
-                                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                            <li key={idx} className="flex items-center gap-3 text-sm font-bold text-stone-700 dark:text-stone-300">
+                                <CheckCircle2 className="w-4 h-4 text-teal-500 flex-shrink-0" />
                                 <span>{feature[language]}</span>
                             </li>
                         ))}
