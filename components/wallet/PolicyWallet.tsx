@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import type { PolicyWalletProps, Policy } from './types'
 import { StatusSummary } from './StatusSummary'
 import { PolicyCard } from './PolicyCard'
@@ -8,6 +8,7 @@ import { PolicyTable } from './PolicyTable'
 import { EmptyState } from './EmptyState'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { Skeleton } from '@/components/ui/skeleton'
+import { AlertCircle, Sparkles } from 'lucide-react'
 
 // Design tokens: teal (primary), amber (secondary), stone (neutral), Inter typography
 
@@ -36,6 +37,17 @@ export function PolicyWallet({
     const [searchQuery, setSearchQuery] = useState('')
     const [activeFilter, setActiveFilter] = useState<'all' | 'motor' | 'health' | 'home' | 'life' | 'travel'>('all')
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
+
+    // Persist View Mode
+    useEffect(() => {
+        const savedMode = localStorage.getItem('wallet_view_mode') as 'grid' | 'list'
+        if (savedMode) setViewMode(savedMode)
+    }, [])
+
+    const handleViewModeChange = (mode: 'grid' | 'list') => {
+        setViewMode(mode)
+        localStorage.setItem('wallet_view_mode', mode)
+    }
 
     // Filter policies based on search and category
     const filteredPolicies = useMemo(() => {
@@ -172,6 +184,69 @@ export function PolicyWallet({
         <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12 sm:px-6 lg:px-8 bg-transparent">
 
             {/* Greeting & Header */}
+            {/* Portfolio Insight Strip (Fix #6) */}
+            <div className="mb-8 animate-in fade-in slide-in-from-top-4 duration-700 delay-100">
+                {policies.some(p => p.status === 'action_needed' || p.status === 'expiring_soon') ? (
+                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded-2xl p-4 flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center flex-shrink-0 text-amber-600">
+                            <AlertCircle className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-bold text-amber-900 dark:text-amber-100">
+                                {policies.filter(p => p.status === 'action_needed' || p.status === 'expiring_soon').length === 1
+                                    ? (t.dashboard as any).portfolioInsights?.oneNeedsAttention
+                                    : (t.dashboard as any).portfolioInsights?.multipleNeedAttention?.replace('{count}', policies.filter(p => p.status === 'action_needed' || p.status === 'expiring_soon').length)}
+                            </h3>
+                            <p className="text-xs text-amber-700 dark:text-amber-300">
+                                Check expirations and coverage gaps.
+                            </p>
+                        </div>
+                    </div>
+                ) : !policies.some(p => p.lineOfBusiness === 'health') ? (
+                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-2xl p-4 flex items-center gap-4 cursor-pointer hover:bg-blue-100/50 transition-colors">
+                        <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center flex-shrink-0 text-blue-600">
+                            <Sparkles className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-bold text-blue-900 dark:text-blue-100">
+                                {(t.dashboard as any).portfolioInsights?.missingCoverage?.health || 'Looking to protect your health?'}
+                            </h3>
+                            <p className="text-xs text-blue-700 dark:text-blue-300">
+                                Explore health insurance options tailored for you.
+                            </p>
+                        </div>
+                    </div>
+                ) : !policies.some(p => p.lineOfBusiness === 'home' || p.lineOfBusiness === 'renters') ? (
+                    <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-2xl p-4 flex items-center gap-4 cursor-pointer hover:bg-purple-100/50 transition-colors">
+                        <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center flex-shrink-0 text-purple-600">
+                            <Sparkles className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-bold text-purple-900 dark:text-purple-100">
+                                {(t.dashboard as any).portfolioInsights?.missingCoverage?.home || 'Secure your home.'}
+                            </h3>
+                            <p className="text-xs text-purple-700 dark:text-purple-300">
+                                Find the best home insurance coverage.
+                            </p>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800 rounded-2xl p-4 flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center flex-shrink-0 text-emerald-600">
+                            <div className="text-xl">✨</div>
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-bold text-emerald-900 dark:text-emerald-100">
+                                {(t.dashboard as any).portfolioInsights?.allGood || 'All policies are active and verified'}
+                            </h3>
+                            <p className="text-xs text-emerald-700 dark:text-emerald-300">
+                                Your coverage is up to date.
+                            </p>
+                        </div>
+                    </div>
+                )}
+            </div>
+
             {/* Toolbar: Search & Filter */}
             <div className="mb-6 animate-in fade-in slide-in-from-top-2 duration-500">
                 <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white/40 dark:bg-stone-900/40 backdrop-blur-md p-2 rounded-2xl border border-white/40 dark:border-stone-700/40 shadow-sm">
@@ -195,25 +270,29 @@ export function PolicyWallet({
                     <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
 
                         {/* Filter Tabs (Simplified for compact view) */}
+                        {/* Filter Tabs (Simplified for compact view) */}
                         <div className="flex bg-stone-100/50 dark:bg-stone-800/50 p-1 rounded-lg border border-stone-200/50 dark:border-stone-700/50 overflow-x-auto max-w-[200px] sm:max-w-none">
-                            {['all', 'motor', 'health', 'home'].map((filter) => (
-                                <button
-                                    key={filter}
-                                    onClick={() => setActiveFilter(filter as any)}
-                                    className={`px-3 py-1.5 rounded-md text-xs font-bold capitalize transition-all whitespace-nowrap ${activeFilter === filter
+                            {['all', 'recommended', 'motor', 'health', 'home'].map((filter) => {
+                                if (filter === 'recommended' && policies.length < 3) return null; // Hide recommended until meaningful
+                                return (
+                                    <button
+                                        key={filter}
+                                        onClick={() => setActiveFilter(filter as any)}
+                                        className={`px-3 py-1.5 rounded-md text-xs font-bold capitalize transition-all whitespace-nowrap ${activeFilter === filter
                                             ? 'bg-white dark:bg-stone-700 shadow-sm text-teal-700 dark:text-teal-400'
                                             : 'text-stone-500 hover:text-stone-700 dark:hover:text-stone-300'
-                                        }`}
-                                >
-                                    {filter === 'all' ? t.common?.all || 'All' : filter}
-                                </button>
-                            ))}
+                                            }`}
+                                    >
+                                        {filter === 'all' ? t.common?.all || 'All' : filter}
+                                    </button>
+                                )
+                            })}
                         </div>
 
                         {/* View Switcher */}
                         <div className="hidden sm:flex bg-stone-100/50 dark:bg-stone-800/50 p-1 rounded-lg border border-stone-200/50 dark:border-stone-700/50">
                             <button
-                                onClick={() => setViewMode('grid')}
+                                onClick={() => handleViewModeChange('grid')}
                                 className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-stone-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-stone-500'}`}
                             >
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -221,7 +300,7 @@ export function PolicyWallet({
                                 </svg>
                             </button>
                             <button
-                                onClick={() => setViewMode('list')}
+                                onClick={() => handleViewModeChange('list')}
                                 className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white dark:bg-stone-700 shadow-sm text-teal-600 dark:text-teal-400' : 'text-stone-500'}`}
                             >
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -266,6 +345,9 @@ export function PolicyWallet({
                         onViewHistory={onViewHistory}
                         onRunAnalysis={onRunAnalysis}
                         onDelete={onDeletePolicy}
+                        onShare={onShareWithAgent}
+                        onAddToWallet={onAddToWallet}
+                        onViewDocuments={onViewDocuments}
                     />
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
@@ -277,6 +359,9 @@ export function PolicyWallet({
                                 onShare={() => onShareWithAgent?.(policy.id)}
                                 onAddToWallet={() => onAddToWallet?.(policy.id)}
                                 onViewDocuments={() => onViewDocuments?.(policy.id)}
+                                onRunAnalysis={() => onRunAnalysis?.(policy.id)}
+                                onDelete={() => onDeletePolicy?.(policy.id)}
+                                onViewHistory={() => onViewHistory?.(policy.id)}
                                 id={index === 0 ? "tour-policy-card-0" : undefined}
                             />
                         ))}
@@ -304,17 +389,42 @@ export function PolicyWallet({
             )}
 
             {/* Add Policy FAB - Visible on all screens */}
+            {/* Add Policy FAB - Visible on all screens */}
             <div className="fixed bottom-8 right-8 z-40">
-                <button
-                    onClick={onAddManually}
-                    id="tour-fab"
-                    className="group relative flex items-center justify-center w-16 h-16 bg-gradient-to-br from-stone-900 to-stone-800 dark:from-white dark:to-stone-200 text-white dark:text-stone-900 rounded-2xl shadow-2xl shadow-teal-500/20 dark:shadow-teal-400/20 hover:scale-110 active:scale-95 transition-all duration-300 border border-white/10 dark:border-stone-900/10"
-                    aria-label="Add Policy"
-                >
-                    <svg className="w-8 h-8 group-hover:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
-                    </svg>
-                </button>
+                {policies.length > 0 ? (
+                    /* Tiered FAB for returning users */
+                    <div className="relative group">
+                        <div className="absolute bottom-full right-0 mb-4 flex flex-col gap-2 opacity-0 scale-90 translate-y-4 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 origin-bottom-right">
+                            <button onClick={onAddManually} className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-stone-800 rounded-xl shadow-xl text-xs font-bold text-stone-600 dark:text-stone-300 whitespace-nowrap hover:bg-stone-50 dark:hover:bg-stone-700">
+                                Add details manually
+                                <span className="w-8 h-8 flex items-center justify-center bg-stone-100 dark:bg-stone-900 rounded-lg">✍️</span>
+                            </button>
+                            <button onClick={onUploadDocument} className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-stone-800 rounded-xl shadow-xl text-xs font-bold text-stone-600 dark:text-stone-300 whitespace-nowrap hover:bg-stone-50 dark:hover:bg-stone-700">
+                                Upload document
+                                <span className="w-8 h-8 flex items-center justify-center bg-stone-100 dark:bg-stone-900 rounded-lg">📄</span>
+                            </button>
+                        </div>
+                        <button
+                            id="tour-fab"
+                            className="flex items-center justify-center w-16 h-16 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300"
+                            aria-label="Add Policy"
+                        >
+                            <span className="text-2xl font-light">+</span>
+                        </button>
+                    </div>
+                ) : (
+                    /* Simple FAB for new users */
+                    <button
+                        onClick={onAddManually}
+                        id="tour-fab"
+                        className="group relative flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-teal-600 text-white rounded-2xl shadow-2xl shadow-teal-500/20 hover:scale-110 active:scale-95 transition-all duration-300 border border-white/10"
+                        aria-label="Add Policy"
+                    >
+                        <svg className="w-8 h-8 group-hover:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
+                        </svg>
+                    </button>
+                )}
             </div>
         </div>
     )

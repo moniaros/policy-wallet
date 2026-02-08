@@ -72,6 +72,27 @@ export default async function WalletPage() {
         // Find grants for this policy
         const policyGrants = allGrants.filter(g => g.scope === `policy:${p.id}`)
 
+        const insuredItem = (() => {
+            if (p.lineOfBusiness === 'motor' && (p.acordData as any)?.vehicle) {
+                const v = (p.acordData as any).vehicle
+                return {
+                    type: 'vehicle' as const,
+                    title: `${v.make || ''} ${v.model || ''}`.trim() || 'Vehicle',
+                    subtitle: v.plateNumber || undefined
+                }
+            }
+            if (p.lineOfBusiness === 'home' && (p.acordData as any)?.property) {
+                const prop = (p.acordData as any).property
+                return {
+                    type: 'property' as const,
+                    title: prop.address || 'Property',
+                    subtitle: prop.postalCode || undefined
+                }
+            }
+            // Default fallback
+            return undefined
+        })()
+
         return {
             id: p.id,
             policyNumber: p.policyNumber,
@@ -95,7 +116,8 @@ export default async function WalletPage() {
                 fileName: d.fileName,
                 uploadedAt: d.uploadedAt.toISOString(),
                 uploadedBy: d.source as any
-            }))
+            })),
+            insuredItem
         }
     })
 

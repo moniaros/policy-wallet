@@ -134,7 +134,7 @@ export const el = {
         dangerZone: 'Περιοχή Κινδύνου',
         deletePolicy: 'Διαγραφή Ασφάλισης',
         aiPolicyInsights: 'Ανάλυση Συμβολαίου',
-        aiAnalysis: 'Ανάλυση Κενών',
+        aiAnalysis: "Κατανόηση Συμβολαίου",
         acordVerified: 'Επαληθεύτηκε',
         verificationOverview: 'Επισκόπηση',
         verificationDesc: 'Η AI έχει διασταυρώσει το ασφαλιστήριο συμβόλαιο με τα δεδομένα του ψηφιακού πορτοφολιού. Οι παρακάτω λεπτομέρειες έχουν εξαχθεί απευθείας από το επίσημο έγγραφο.',
@@ -164,8 +164,8 @@ export const el = {
         standardCoverage: 'Τυπική Κάλυψη',
         standardCoverageDesc: 'Πλήρης προστασία βάσει των προδιαγραφών του ασφαλιστηρίου.',
         emergencyAssistance: '24/7 βοήθεια έκτακτης ανάγκης μέσω της ασφαλιστικής.',
-        analysisSubtitle: 'Ανάλυση κενών κάλυψης κατά παραγγελία',
-        runAnalysisDesc: 'Κάντε κλικ στο "Εκτέλεση Ανάλυσης" για να ελέγξετε για κενά στην κάλυψη',
+        analysisSubtitle: 'Σαφής επεξήγηση της κάλυψής σας',
+        runAnalysisDesc: 'Κάντε κλικ στο "Κατανόηση" για να δείτε τι καλύπτεται',
         askAiTitle: 'Ρωτήστε το AI για το Ασφαλιστήριο',
         askAiSubtitle: 'Λάβετε άμεσες απαντήσεις στις ερωτήσεις σας',
         tryAsking: 'Δοκιμάστε να ρωτήσετε:',
@@ -338,7 +338,7 @@ export const el = {
 
     analysis: {
         title: 'ΑΝΑΛΥΣΗ ΑΣΦΑΛΙΣΤΙΚΩΝ ΚΕΝΩΝ',
-        runAnalysis: 'Εκτέλεση Ανάλυσης AI',
+        runAnalysis: 'Κατανόηση συμβολαίου',
         analyzing: 'Ανάλυση...',
         noGaps: 'Δεν εντοπίστηκαν ασφαλιστικά κενά. Εκτελέστε ανάλυση για έλεγχο κάλυψης.',
         gapDetected: 'Εντοπίστηκε Ασφαλιστικό Κενό',
@@ -437,7 +437,7 @@ export const el = {
             afternoon: 'Καλησπέρα',
             evening: 'Καλησπέρα'
         },
-        commandCenter: 'Κέντρο Εντολών',
+        commandCenter: 'Επισκόπηση',
         focusText: 'Εστιάστε σε ενεργοποιημένους πελάτες και ανοιχτές ευκαιρίες που χρειάζονται την προσοχή σας.',
         inviteCustomer: 'Πρόσκληση Πελάτη',
         active: 'Ενεργό',
@@ -461,7 +461,7 @@ export const el = {
         viewDetails: 'Προβολή',
         viewHistory: 'Ιστορικό',
         renewPolicy: 'Ανανέωση',
-        runAnalysis: 'Εκτέλεση AI Ανάλυσης',
+        runAnalysis: 'Κατανόηση συμβολαίου',
         delete: 'Διαγραφή',
         noPolicies: 'Δεν βρέθηκαν ασφαλιστήρια',
         addFirstPolicy: 'Προσθέστε το πρώτο σας ασφαλιστήριο για να ξεκινήσετε',
@@ -473,7 +473,26 @@ export const el = {
             incomplete: 'Ημιτελές',
             action_needed: 'Απαιτείται Ενέργεια',
             analyzing: 'Ανάλυση...'
-        }
+        },
+        actionGroups: {
+            understand: 'Κατανόηση',
+            act: 'Ενέργειες',
+            review: 'Επισκόπηση',
+            danger: 'Διαχείριση'
+        },
+        portfolioInsights: {
+            oneNeedsAttention: '1 συμβόλαιο χρειάζεται έλεγχο',
+            multipleNeedAttention: '{count} συμβόλαια χρειάζονται έλεγχο',
+            oneExpired: '1 συμβόλαιο έχει λήξει',
+            multipleExpired: '{count} συμβόλαια έχουν λήξει',
+            allGood: 'Όλα τα ενεργά συμβόλαια είναι εντάξει',
+            missingCoverage: {
+                health: 'Δεν εντοπίστηκε κάλυψη υγείας',
+                home: 'Δεν εντοπίστηκε ασφάλεια κατοικίας',
+                life: 'Δεν έχει οριστεί δικαιούχος ζωής'
+            }
+        },
+        insuredItem: 'Αντικείμενο Ασφάλισης'
 
     },
 
@@ -607,8 +626,10 @@ export const el = {
     },
 
     status: {
-        totalPremium: 'Συνολικά Ασφάλιστρα',
-        activePolicies: 'Ενεργά Συμβόλαια',
+        totalPremium: 'Ασφαλιστικό Αποτύπωμα',
+        activePolicies: 'Ενεργή Προστασία',
+        added: 'προστεθέντα',
+        attentionNeeded: 'Χρειάζεται Προσοχή',
         upcomingRenewals: 'Επερχόμενες Ανανεώσεις',
         fromLastMonth: 'από τον προηγούμενο μήνα',
         noHistory: 'Δεν υπάρχει ιστορικό',

@@ -136,7 +136,7 @@ export const en: TranslationKeys = {
         dangerZone: 'Danger Zone',
         deletePolicy: 'Delete Policy',
         aiPolicyInsights: 'AI Policy Insights',
-        aiAnalysis: "AI Analysis",
+        aiAnalysis: "Understand Policy",
         acordVerified: "ACORD Verified",
         verificationOverview: "Verification Overview",
         verificationDesc: "Our AI has verified this policy against ACORD standards. The data below is extracted directly from your document.",
@@ -166,8 +166,8 @@ export const en: TranslationKeys = {
         standardCoverage: "Standard Coverage",
         standardCoverageDesc: "Full protection based on policy specifications.",
         emergencyAssistance: "24/7 emergency assistance via insurer.",
-        analysisSubtitle: "On-demand coverage gap analysis",
-        runAnalysisDesc: 'Click "Run Analysis" to check for coverage gaps',
+        analysisSubtitle: "Clear explanation of your coverage",
+        runAnalysisDesc: 'Click "Understand Policy" to see what is covered',
         askAiTitle: "Ask AI About Your Policy",
         askAiSubtitle: "Get instant answers to your questions",
         tryAsking: "Try asking:",
@@ -340,7 +340,7 @@ export const en: TranslationKeys = {
 
     analysis: {
         title: 'GAP ANALYSIS',
-        runAnalysis: 'Run AI Analysis',
+        runAnalysis: 'Understand this policy',
         analyzing: 'Analyzing...',
         noGaps: 'No gaps detected yet. Run analysis to check coverage.',
         gapDetected: 'Coverage Gap Detected',
@@ -439,7 +439,7 @@ export const en: TranslationKeys = {
             afternoon: 'Good afternoon',
             evening: 'Good evening'
         },
-        commandCenter: 'Command Center',
+        commandCenter: 'Dashboard',
         focusText: 'Focus on activated customers and open opportunities that need your attention.',
         inviteCustomer: 'Invite Customer',
         active: 'Active',
@@ -463,7 +463,7 @@ export const en: TranslationKeys = {
         viewDetails: 'View Details',
         viewHistory: 'View History',
         renewPolicy: 'Renew Policy',
-        runAnalysis: 'Run AI Analysis',
+        runAnalysis: 'Understand this policy',
         delete: 'Delete',
         noPolicies: 'No policies found',
         addFirstPolicy: 'Add your first policy to get started',
@@ -475,7 +475,26 @@ export const en: TranslationKeys = {
             incomplete: 'Incomplete',
             action_needed: 'Action Needed',
             analyzing: 'Analyzing...'
-        }
+        },
+        actionGroups: {
+            understand: 'Understand',
+            act: 'Act',
+            review: 'Review',
+            danger: 'Danger Zone'
+        },
+        portfolioInsights: {
+            oneNeedsAttention: 'One policy needs review',
+            multipleNeedAttention: '{count} policies need review',
+            oneExpired: 'One policy has expired',
+            multipleExpired: '{count} policies have expired',
+            allGood: 'All policies are active and verified',
+            missingCoverage: {
+                health: 'No health coverage found',
+                home: 'No home insurance linked',
+                life: 'No life insurance beneficiary set'
+            }
+        },
+        insuredItem: 'Insured Item'
 
     },
 
@@ -609,8 +628,10 @@ export const en: TranslationKeys = {
     },
 
     status: {
-        totalPremium: 'Total Premium',
-        activePolicies: 'Active Policies',
+        totalPremium: 'Insurance Footprint',
+        activePolicies: 'Active Protection',
+        added: 'added',
+        attentionNeeded: 'Needs Attention',
         upcomingRenewals: 'Upcoming Renewals',
         fromLastMonth: 'from last month',
         noHistory: 'No history available',

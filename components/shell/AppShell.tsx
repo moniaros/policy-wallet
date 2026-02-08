@@ -157,19 +157,27 @@ export function AppShell({
                 >
                     <div className="flex flex-col h-full">
                         {/* Enhanced Logo Section */}
-                        <div className="flex items-center justify-between px-6 h-20 border-b border-stone-200 dark:border-stone-800 bg-gradient-to-br from-stone-50 to-white dark:from-stone-900 dark:to-stone-950">
-                            <button onClick={() => handleNavigate('/wallet')} className="hover:opacity-80 transition-opacity">
-                                <PolicyWalletLogo size="md" language={user.preferred_language || 'en'} />
-                            </button>
-                            <button
-                                onClick={() => setSidebarOpen(false)}
-                                className="lg:hidden p-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 transition-colors"
-                                aria-label="Close menu"
-                            >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+                        <div className="flex flex-col border-b border-stone-200 dark:border-stone-800 bg-gradient-to-br from-stone-50 to-white dark:from-stone-900 dark:to-stone-950">
+                            <div className="flex items-center justify-between px-6 h-16">
+                                <button onClick={() => handleNavigate('/wallet')} className="hover:opacity-80 transition-opacity">
+                                    <PolicyWalletLogo size="md" language={user.preferred_language || 'en'} />
+                                </button>
+                                <button
+                                    onClick={() => setSidebarOpen(false)}
+                                    className="lg:hidden p-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 transition-colors"
+                                    aria-label="Close menu"
+                                >
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            {/* Context Indicator */}
+                            <div className="px-6 pb-3">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400 dark:text-stone-500">
+                                    {currentRole.role === 'policyholder' ? t.userMenu.viewingAs + ': Personal Wallet' : 'Workspace: ' + currentRole.label}
+                                </span>
+                            </div>
                         </div>
 
                         {/* Role switcher */}

@@ -16,7 +16,7 @@ export interface Policy {
     insurerName: string
     insurerLogo: string | null
     lineOfBusiness: 'motor' | 'health' | 'home' | 'life' | 'travel' | 'liability' | 'pet' | 'professional' | 'other' | 'breakdown' | 'legal_expenses' | 'income_protection' | 'gadget' | 'bicycle' | 'business' | 'cyber' | 'motorbike' | 'public_liability' | 'renters'
-    status: 'active' | 'expiring_soon' | 'incomplete' | 'action_needed' | 'analyzing'
+    status: 'active' | 'expiring_soon' | 'incomplete' | 'action_needed' | 'analyzing' | 'cancelled'
     startDate: string | null
     endDate: string | null
     lastUpdated: string
@@ -35,6 +35,11 @@ export interface Policy {
             localAverage: number
             savingsPotential: number
         }
+    }
+    insuredItem?: {
+        type: 'vehicle' | 'property' | 'person' | 'business' | 'other'
+        title: string
+        subtitle?: string
     }
 }
 

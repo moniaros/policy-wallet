@@ -27,18 +27,11 @@ export default async function ProtectedLayout({
             items: [
                 { label: t.nav.wallet, href: "/wallet", icon: <Wallet className="w-5 h-5" /> },
                 {
-                    label: t.nav.coverage,
-                    href: "/coverage",
-                    variant: 'pro',
-                    isLocked: !isPayingUser,
-                    icon: <Shield className="w-5 h-5" />
-                },
-                {
-                    label: t.nav.coverageInsights,
-                    href: "/coverage-insights",
+                    label: t.nav.insights,
+                    href: "/coverage-insights", // Directing to the main insights page
                     variant: 'plus',
-                    isLocked: !isPayingUser,
-                    icon: <PieChart className="w-5 h-5" />
+                    isLocked: false, // Unlocking for visibility, specific features can be locked inside
+                    icon: <Shield className="w-5 h-5" />
                 },
                 { label: t.nav.notifications, href: "/notifications", icon: <Bell className="w-5 h-5" /> },
             ]

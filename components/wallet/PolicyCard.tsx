@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import type { Policy } from './types'
 import { useLanguage } from '@/contexts/LanguageContext'
 
@@ -10,12 +11,26 @@ interface PolicyCardProps {
     onShare?: () => void
     onAddToWallet?: () => void
     onViewDocuments?: () => void
+    onRunAnalysis?: () => void
+    onDelete?: () => void
+    onViewHistory?: () => void
     id?: string
 }
 
-export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocuments, id }: PolicyCardProps) {
+export function PolicyCard({
+    policy,
+    onView,
+    onShare,
+    onAddToWallet,
+    onViewDocuments,
+    onRunAnalysis,
+    onDelete,
+    onViewHistory,
+    id
+}: PolicyCardProps) {
     const [menuOpen, setMenuOpen] = useState(false)
     const [showInsights, setShowInsights] = useState(false)
+    const [menuPosition, setMenuPosition] = useState<{ top: number, right: number } | null>(null)
     const { t, language } = useLanguage()
 
     const formatCurrency = (amount: number) => {
@@ -46,6 +61,42 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
     }
 
     const daysLeft = getDaysUntilExpiry()
+
+    const handleMenuOpen = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        if (menuOpen) {
+            setMenuOpen(false)
+            setMenuPosition(null)
+        } else {
+            const rect = e.currentTarget.getBoundingClientRect()
+            setMenuPosition({
+                top: rect.bottom + window.scrollY,
+                right: window.innerWidth - rect.right
+            })
+            setMenuOpen(true)
+        }
+    }
+
+    const closeMenu = () => {
+        setMenuOpen(false)
+        setMenuPosition(null)
+    }
+
+    // Close menu on scroll or resize
+    useEffect(() => {
+        const handleScroll = () => {
+            if (menuOpen) {
+                setMenuOpen(false)
+                setMenuPosition(null)
+            }
+        }
+        window.addEventListener('scroll', handleScroll, true)
+        window.addEventListener('resize', handleScroll)
+        return () => {
+            window.removeEventListener('scroll', handleScroll, true)
+            window.removeEventListener('resize', handleScroll)
+        }
+    }, [menuOpen])
 
     // Status badge styling
     const getStatusBadge = () => {
@@ -90,26 +141,20 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
         }
     }
 
-    // Get policy type icon
-    const getPolicyIcon = () => {
+    // Get policy type icon and color
+    const getPolicyVisuals = () => {
         const lob = policy.lineOfBusiness as string
         switch (lob) {
-            case 'motor':
-                return '🚗'
-            case 'health':
-                return '❤️'
-            case 'home':
-                return '🏠'
-            case 'life':
-                return '🛡️'
-            case 'travel':
-                return '✈️'
-            case 'liability':
-                return '⚖️'
-            default:
-                return '📋'
+            case 'motor': return { icon: '🚗', color: 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400' }
+            case 'health': return { icon: '❤️', color: 'bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400' }
+            case 'home': return { icon: '🏠', color: 'bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400' }
+            case 'life': return { icon: '🛡️', color: 'bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400' }
+            case 'travel': return { icon: '✈️', color: 'bg-sky-50 text-sky-600 dark:bg-sky-900/20 dark:text-sky-400' }
+            default: return { icon: '📄', color: 'bg-stone-50 text-stone-600 dark:bg-stone-800 dark:text-stone-400' }
         }
     }
+
+    const visuals = getPolicyVisuals()
 
     return (
         <div
@@ -122,6 +167,7 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
 
             {/* Spotlight effect on hover */}
             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-[radial-gradient(circle_at_var(--mouse-x,50%)_var(--mouse-y,50%),rgba(20,184,166,0.06),transparent_70%)] transition-opacity duration-700 pointer-events-none" />
+
             {/* Status indicator line at top */}
             <div className={`absolute top-0 left-6 right-6 h-1 rounded-b-full ${policy.status === 'active' ? 'bg-teal-500' :
                 policy.status === 'expiring_soon' ? 'bg-amber-500' :
@@ -155,37 +201,19 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
                             </div>
                         )}
                     </div>
-                    <div className="absolute top-12 right-0 hidden group-hover/tooltip:block z-20 min-w-[200px] animate-in fade-in slide-in-from-top-1 duration-200">
-                        <div className="bg-slate-900 dark:bg-slate-800 text-white rounded-xl shadow-2xl p-3 border border-slate-700">
-                            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Shared with</p>
-                            <div className="space-y-1.5">
-                                {policy.sharedWithAgents.slice(0, 3).map((agent: any, idx: number) => (
-                                    <div key={idx} className="flex items-center gap-2">
-                                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-teal-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold">
-                                            {agent.agentName?.[0] || 'A'}
-                                        </div>
-                                        <span className="text-xs font-medium truncate">{agent.agentName || 'Agent'}</span>
-                                    </div>
-                                ))}
-                                {policy.sharedWithAgents.length > 3 && (
-                                    <p className="text-[10px] text-slate-400 mt-1">+{policy.sharedWithAgents.length - 3} more</p>
-                                )}
-                            </div>
-                        </div>
-                    </div>
                 </div>
             )}
 
             {/* Policy info */}
             <div className="pr-10 sm:pr-12">
-                {/* Header Section: Icon + Insurer */}
-                <div className="flex items-center gap-4 mb-5 relative z-10">
-                    <div className="w-14 h-14 bg-stone-100 dark:bg-stone-800 rounded-2xl flex items-center justify-center text-3xl shadow-inner group-hover:scale-110 transition-transform duration-500">
-                        {policy.status === 'analyzing' ? '🧠' : getPolicyIcon()}
+                {/* Header Section: Icon + Insurer + Insured Item */}
+                <div className="flex items-start gap-4 mb-5 relative z-10">
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-3xl shadow-inner group-hover:scale-110 transition-transform duration-500 ${policy.status === 'analyzing' ? 'bg-stone-100 dark:bg-stone-800' : visuals.color}`}>
+                        {policy.status === 'analyzing' ? '🧠' : visuals.icon}
                     </div>
                     <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2">
-                            <h3 className={`text-xl font-black text-stone-900 dark:text-white tracking-tight leading-tight truncate ${policy.status === 'analyzing' ? 'animate-pulse opacity-70' : ''}`}>
+                            <h3 className={`text-sm font-bold text-stone-500 uppercase tracking-widest ${policy.status === 'analyzing' ? 'animate-pulse opacity-70' : ''}`}>
                                 {policy.insurerName}
                             </h3>
                             {policy.verified && (
@@ -194,18 +222,25 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
                                 </svg>
                             )}
                         </div>
-                        <p className={`text-sm font-bold text-stone-400 dark:text-stone-500 mt-0.5 tracking-wider uppercase flex items-center gap-2 ${policy.status === 'analyzing' ? 'animate-pulse' : ''}`}>
-                            {policy.lineOfBusiness}
-                            <span className="w-1 h-1 bg-stone-300 dark:bg-stone-600 rounded-full" />
-                            <span className="font-mono text-[10px]">{policy.policyNumber}</span>
-                        </p>
-                        {/* Display plate number for motor policies */}
-                        {policy.lineOfBusiness === 'motor' && policy.acordData?.vehicle?.plateNumber && (
-                            <div className="mt-2 flex items-center gap-1.5 px-2 py-0.5 bg-stone-100 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded text-[10px] font-black w-fit">
-                                <span className="opacity-50">GR</span>
-                                {policy.acordData.vehicle.plateNumber}
+
+                        {/* Insured Item - Critical Fix #1 */}
+                        {policy.insuredItem ? (
+                            <div className="mt-1">
+                                <h2 className="text-xl font-black text-stone-900 dark:text-white leading-tight">
+                                    {policy.insuredItem.title}
+                                </h2>
+                                {policy.insuredItem.subtitle && (
+                                    <p className="text-xs font-medium text-stone-400 mt-0.5 font-mono">
+                                        {policy.insuredItem.subtitle}
+                                    </p>
+                                )}
                             </div>
+                        ) : (
+                            <h2 className="text-xl font-black text-stone-900 dark:text-white leading-tight mt-1 capitalize">
+                                {policy.lineOfBusiness} Policy
+                            </h2>
                         )}
+
                     </div>
                 </div>
 
@@ -253,7 +288,7 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                                 </svg>
-                                {showInsights ? 'Hide Insights' : 'AI Analysis'}
+                                {showInsights ? 'Hide Insights' : t.dashboard.runAnalysis}
                             </button>
                         )}
                     </div>
@@ -262,7 +297,6 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
                 {/* AI Insights Section (Expanded) */}
                 {showInsights && policy.aiInsights && (
                     <div className="mt-4 p-4 bg-stone-50 dark:bg-stone-900/50 rounded-2xl border border-stone-100 dark:border-stone-700 animate-in slide-in-from-top-2">
-
                         {/* Exclusions */}
                         {policy.aiInsights.exclusions && policy.aiInsights.exclusions.length > 0 && (
                             <div className="mb-4">
@@ -313,7 +347,7 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
                 )}
             </div>
 
-            {/* Quick Actions - Mobile: Bottom row, Desktop: Overflow menu */}
+            {/* Quick Actions - Mobile: Bottom row, Desktop: Keep Overflow menu */}
             <div className="sm:hidden mt-4 pt-3 border-t border-stone-100 dark:border-stone-700 flex items-center gap-2">
                 <button
                     onClick={(e) => {
@@ -340,78 +374,138 @@ export function PolicyCard({ policy, onView, onShare, onAddToWallet, onViewDocum
                     Share
                 </button>
                 <button
-                    onClick={(e) => {
-                        e.stopPropagation()
-                        onView?.()
-                    }}
+                    onClick={(e) => handleMenuOpen(e)}
                     className="flex items-center justify-center px-4 py-2 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl text-xs font-bold hover:bg-stone-800 dark:hover:bg-stone-100 transition-colors"
                 >
-                    View
-                    <svg className="w-4 h-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                     </svg>
                 </button>
             </div>
 
-            {/* Desktop: Overflow menu */}
-            <div className="hidden sm:block absolute bottom-6 right-6">
-                <div className="relative" onClick={(e) => e.stopPropagation()}>
+            {/* Desktop: Overflow menu - Also used by mobile portal now */}
+            <div className={`absolute bottom-6 right-6 ${menuOpen ? 'z-30' : 'z-20'}`}>
+                {/* On Desktop we use the absolute positioned button */}
+                <div className="relative hidden sm:block" onClick={(e) => e.stopPropagation()}>
                     <button
-                        onClick={() => setMenuOpen(!menuOpen)}
+                        onClick={(e) => handleMenuOpen(e)}
                         className="p-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-400 hover:text-stone-600 dark:text-stone-500 dark:hover:text-stone-300 transition-colors"
                     >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
                         </svg>
                     </button>
-
-                    {menuOpen && (
-                        <>
-                            <div
-                                className="fixed inset-0 z-10"
-                                onClick={() => setMenuOpen(false)}
-                            />
-                            <div className="absolute right-0 bottom-full mb-2 z-20 w-56 bg-white dark:bg-stone-800 rounded-2xl shadow-xl border border-stone-200 dark:border-stone-700 py-2 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                                <button
-                                    onClick={() => {
-                                        onShare?.()
-                                        setMenuOpen(false)
-                                    }}
-                                    className="w-full px-4 py-3 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors flex items-center gap-3"
-                                >
-                                    <div className="w-8 h-8 bg-teal-50 dark:bg-teal-900/30 rounded-lg flex items-center justify-center text-teal-600 dark:text-teal-400">
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                                    </div>
-                                    {t.wallet.shareWithAgent}
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        onAddToWallet?.()
-                                        setMenuOpen(false)
-                                    }}
-                                    className="w-full px-4 py-3 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors flex items-center gap-3"
-                                >
-                                    <div className="w-8 h-8 bg-purple-50 dark:bg-purple-900/30 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-400">
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
-                                    </div>
-                                    Add to Wallet
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        onViewDocuments?.()
-                                        setMenuOpen(false)
-                                    }}
-                                    className="w-full px-4 py-3 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors flex items-center gap-3"
-                                >
-                                    <div className="w-8 h-8 bg-amber-50 dark:bg-amber-900/30 rounded-lg flex items-center justify-center text-amber-600 dark:text-amber-400">
-                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                                    </div>
-                                    {t.wallet.documents}
-                                </button>
-                            </div>
-                        </>
-                    )}
                 </div>
+
+                {menuOpen && typeof document !== 'undefined' && createPortal(
+                    <>
+                        <div
+                            className="fixed inset-0 z-[9998]"
+                            onClick={closeMenu}
+                        />
+                        <div
+                            className="fixed z-[9999] w-64 bg-white dark:bg-stone-800 rounded-2xl shadow-xl border border-stone-200 dark:border-stone-700 py-2 overflow-hidden animate-in fade-in zoom-in-95 duration-200 divide-y divide-stone-100 dark:divide-stone-700"
+                            style={{
+                                top: `${menuPosition?.top ?? 0}px`,
+                                right: `${menuPosition?.right ?? 0}px`,
+                                marginTop: '8px'
+                            }}
+                        >
+                            {/* Understand */}
+                            <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-stone-400">
+                                {(t.dashboard as any).actionGroups?.understand || 'Understand'}
+                            </div>
+                            <button
+                                onClick={() => {
+                                    onRunAnalysis?.()
+                                    closeMenu()
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors flex items-center gap-3"
+                            >
+                                <div className="w-8 h-8 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400">
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                </div>
+                                {t.dashboard.runAnalysis}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    onViewDocuments?.()
+                                    closeMenu()
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors flex items-center gap-3"
+                            >
+                                <div className="w-8 h-8 bg-amber-50 dark:bg-amber-900/30 rounded-lg flex items-center justify-center text-amber-600 dark:text-amber-400">
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                </div>
+                                {t.wallet.documents}
+                            </button>
+
+                            {/* Act */}
+                            <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-stone-400 mt-1">
+                                {(t.dashboard as any).actionGroups?.act || 'Act'}
+                            </div>
+                            <button
+                                onClick={() => {
+                                    onShare?.()
+                                    closeMenu()
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors flex items-center gap-3"
+                            >
+                                <div className="w-8 h-8 bg-teal-50 dark:bg-teal-900/30 rounded-lg flex items-center justify-center text-teal-600 dark:text-teal-400">
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                                </div>
+                                {t.wallet.shareWithAgent}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    onAddToWallet?.()
+                                    closeMenu()
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors flex items-center gap-3"
+                            >
+                                <div className="w-8 h-8 bg-purple-50 dark:bg-purple-900/30 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-400">
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+                                </div>
+                                Add to Wallet
+                            </button>
+
+                            {/* Review */}
+                            <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-stone-400 mt-1">
+                                {(t.dashboard as any).actionGroups?.review || 'Review'}
+                            </div>
+                            <button
+                                onClick={() => {
+                                    onViewHistory?.()
+                                    closeMenu()
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors flex items-center gap-3"
+                            >
+                                <div className="w-8 h-8 bg-stone-100 dark:bg-stone-700 rounded-lg flex items-center justify-center text-stone-500 dark:text-stone-400">
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                </div>
+                                {t.dashboard.viewHistory}
+                            </button>
+
+                            {/* Danger */}
+                            <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-red-300 mt-1">
+                                {(t.dashboard as any).actionGroups?.danger || 'Danger Zone'}
+                            </div>
+                            <button
+                                onClick={() => {
+                                    onDelete?.()
+                                    closeMenu()
+                                }}
+                                className="w-full px-4 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-3"
+                            >
+                                <div className="w-8 h-8 bg-red-50 dark:bg-red-900/30 rounded-lg flex items-center justify-center text-red-600 dark:text-red-400">
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                </div>
+                                {t.dashboard.delete}
+                            </button>
+                        </div>
+                    </>,
+                    document.body
+                )}
             </div>
 
             {/* Hover arrow indicator - Desktop only */}
