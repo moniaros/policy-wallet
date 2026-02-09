@@ -1,4 +1,4 @@
-import { CheckCircle2, ChevronRight, Info, Shield, Car, HeartPulse, Home, Briefcase, Lock } from 'lucide-react'
+ï»¿import { CheckCircle2, ChevronRight, Info, Shield, Car, HeartPulse, Home, Briefcase, Lock } from 'lucide-react'
 
 export type InsightSeverity = 'low' | 'medium' | 'high' | 'critical'
 
@@ -38,7 +38,7 @@ const TYPE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = 
 
 const SEVERITY_CONFIG = {
     low: {
-        label: { en: 'Low Risk', el: '?aµ???? ???d????' },
+        label: { en: 'Low Risk', el: '?aÂµ???? ???d????' },
         color: 'text-blue-700 dark:text-blue-300',
         bg: 'bg-blue-50 dark:bg-blue-900/30',
         border: 'border-blue-100 dark:border-blue-800',
@@ -59,7 +59,7 @@ const SEVERITY_CONFIG = {
         accent: 'bg-orange-500'
     },
     critical: {
-        label: { en: 'Critical Gap', el: '???s?µ? ?e??' },
+        label: { en: 'Critical Gap', el: '???s?Âµ? ?e??' },
         color: 'text-rose-700 dark:text-rose-300',
         bg: 'bg-rose-50 dark:bg-rose-900/30',
         border: 'border-rose-100 dark:border-rose-800',
@@ -108,7 +108,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                             <Info className="w-5 h-5 text-stone-400 mt-0.5 flex-shrink-0" />
                             <div>
                                 <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest block mb-1">
-                                    {language === 'el' ? 'G?at? ??e? s?µas?a' : 'Why this matters'}
+                                    {language === 'el' ? 'G?at? ??e? s?Âµas?a' : 'Why this matters'}
                                 </span>
                                 <p className="text-stone-700 dark:text-stone-300 text-sm leading-relaxed font-medium">
                                     {insight.whyItMatters}
@@ -119,7 +119,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
 
                     <div>
                         <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest block mb-3">
-                            {language === 'el' ? '?? e????aµe' : 'What we checked'}
+                            {language === 'el' ? '?? e????aÂµe' : 'What we checked'}
                         </span>
                         <div className="space-y-2">
                             {insight.checkedItems.slice(0, 3).map((item, idx) => (
@@ -178,10 +178,11 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
             {insight.isPlusFeature && (
                 <div className="bg-stone-50 dark:bg-stone-800/30 px-6 py-2 border-t border-stone-100 dark:border-stone-800 flex justify-center">
                     <span className="text-[10px] font-bold text-stone-400">
-                        {language === 'el' ? '?????µ??? a????s? d?a??s?µ? se Plus/Pro' : 'Advanced analysis available on Plus/Pro'}
+                        {language === 'el' ? '?????Âµ??? a????s? d?a??s?Âµ? se Plus/Pro' : 'Advanced analysis available on Plus/Pro'}
                     </span>
                 </div>
             )}
         </div>
     )
 }
+
