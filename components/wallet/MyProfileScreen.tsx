@@ -1,7 +1,8 @@
-"use client"
+﻿"use client"
 
 import { useLanguage } from '@/contexts/LanguageContext'
 import { ChevronRightIcon } from '@/components/icons/PolicyIcons'
+import { PolicyWalletLogo } from '@/components/branding/Logo'
 import Image from 'next/image'
 import { User, CreditCard, Settings, HelpCircle, LogOut } from 'lucide-react'
 
@@ -34,32 +35,32 @@ export function MyProfileScreen({
 
     const menuItems = [
         {
-            icon: <User className="w-6 h-6" />,
-            label: language === 'el' ? 'Προσωπικά Στοιχεία' : 'Personal Profile',
+            icon: <User className="w-5 h-5" />,
+            label: language === 'el' ? 'Προσωπικά στοιχεία' : 'Personal profile',
             sublabel: user?.name || '',
             onClick: onEditProfile
         },
         {
-            icon: <CreditCard className="w-6 h-6" />,
-            label: language === 'el' ? 'Μέθοδοι Πληρωμής' : 'Payment Methods',
-            sublabel: language === 'el' ? 'Διαχείριση καρτών' : 'Manage cards',
+            icon: <CreditCard className="w-5 h-5" />,
+            label: language === 'el' ? 'Μέθοδοι πληρωμής' : 'Payment methods',
+            sublabel: language === 'el' ? 'Κάρτες και χρεώσεις' : 'Cards and billing',
             onClick: onPaymentMethods
         },
         {
-            icon: <Settings className="w-6 h-6" />,
-            label: language === 'el' ? 'Ρυθμίσεις' : 'System Settings',
-            sublabel: language === 'el' ? 'Γλώσσα & Ειδοποιήσεις' : 'Language & Notifications',
+            icon: <Settings className="w-5 h-5" />,
+            label: language === 'el' ? 'Ρυθμίσεις' : 'Settings',
+            sublabel: language === 'el' ? 'Γλώσσα και ειδοποιήσεις' : 'Language and notifications',
             onClick: onSettings
         },
         {
-            icon: <HelpCircle className="w-6 h-6" />,
-            label: language === 'el' ? 'Βοήθεια' : 'Support Center',
-            sublabel: language === 'el' ? 'Επικοινωνία με υποστήριξη' : 'Contact support',
+            icon: <HelpCircle className="w-5 h-5" />,
+            label: language === 'el' ? 'Βοήθεια' : 'Help',
+            sublabel: language === 'el' ? 'Υποστήριξη και οδηγοί' : 'Support and guides',
             onClick: onHelp
         },
         {
-            icon: <LogOut className="w-6 h-6" />,
-            label: language === 'el' ? 'Αποσύνδεση' : 'Sign Out',
+            icon: <LogOut className="w-5 h-5" />,
+            label: language === 'el' ? 'Αποσύνδεση' : 'Sign out',
             sublabel: language === 'el' ? 'Τερματισμός συνεδρίας' : 'End session',
             onClick: onLogout,
             danger: true
@@ -67,42 +68,39 @@ export function MyProfileScreen({
     ]
 
     return (
-        <div className="min-h-screen bg-stone-50 dark:bg-stone-900">
-            {/* Branded Header */}
-            <div className="px-6 pt-12 pb-8 flex items-center justify-between sticky top-0 z-20 bg-stone-50/95 dark:bg-stone-900/95 backdrop-blur-md">
-                <div className="flex items-center gap-0.5">
-                    <span className="text-2xl font-black tracking-tight text-stone-900 dark:text-white">Policy</span>
-                    <span className="text-2xl font-black tracking-tight text-teal-600">Wallet</span>
-                </div>
+        <div className="min-h-screen bg-stone-50 dark:bg-stone-950 pb-28">
+            <div className="px-5 pt-6 pb-6 sticky top-0 z-20 bg-stone-50/95 dark:bg-stone-950/95 backdrop-blur-md border-b border-stone-200 dark:border-stone-800">
+                <PolicyWalletLogo size="sm" language={language} />
             </div>
 
-            <div className="px-6 pb-12">
-                <div className="flex items-center gap-6 mb-8">
-                    <div className="relative group">
-                        <div className="w-24 h-24 rounded-[32px] overflow-hidden bg-white dark:bg-stone-800 border-4 border-white dark:border-stone-800 shadow-2xl transition-transform active:scale-95">
+            <div className="px-5 pb-10">
+                <div className="flex items-center gap-4 mb-6 mt-2">
+                    <div className="relative">
+                        <div className="w-20 h-20 rounded-3xl overflow-hidden bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800">
                             {user?.photoUrl ? (
                                 <Image
                                     src={user.photoUrl}
                                     alt={user.name}
-                                    width={96}
-                                    height={96}
+                                    width={80}
+                                    height={80}
                                     className="w-full h-full object-cover"
                                 />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-teal-600 text-white">
-                                    <span className="text-3xl font-black">{(user?.name || 'U')[0]}</span>
+                                    <span className="text-2xl font-black">{(user?.name || 'U')[0]}</span>
                                 </div>
                             )}
                         </div>
                         {user?.isOnline && (
-                            <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 border-4 border-stone-50 dark:border-stone-900 rounded-full"></div>
+                            <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-emerald-500 border-2 border-stone-50 dark:border-stone-950 rounded-full" />
                         )}
                     </div>
-                    <div>
-                        <h1 className="text-3xl font-black text-stone-900 dark:text-white tracking-tighter leading-tight">
+
+                    <div className="min-w-0">
+                        <h1 className="text-2xl font-black text-stone-900 dark:text-white tracking-tight truncate">
                             {user?.name || (language === 'el' ? 'Χρήστης' : 'User')}
                         </h1>
-                        <p className="text-stone-500 font-bold text-sm tracking-tight">{user?.email}</p>
+                        <p className="text-stone-500 dark:text-stone-400 text-sm truncate">{user?.email}</p>
                     </div>
                 </div>
 
@@ -111,24 +109,18 @@ export function MyProfileScreen({
                         <button
                             key={index}
                             onClick={item.onClick}
-                            className={`w-full flex items-center gap-4 p-5 bg-white dark:bg-stone-900 rounded-[28px] border border-stone-50 dark:border-stone-800/50 shadow-sm transition-all active:scale-[0.98] group ${item.danger ? 'hover:border-red-100 dark:hover:border-red-900/30' : 'hover:border-teal-100 dark:hover:border-teal-900/30'
-                                }`}
+                            className={`w-full flex items-center gap-4 p-4 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 transition-all active:scale-[0.98] text-left cursor-pointer ${item.danger ? 'hover:border-red-300 dark:hover:border-red-800' : 'hover:border-teal-300 dark:hover:border-teal-700'}`}
                         >
-                            <div className={`flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${item.danger
-                                ? 'bg-red-50 dark:bg-red-900/20 text-red-600'
-                                : 'bg-stone-50 dark:bg-stone-800 text-stone-400 group-hover:bg-teal-50 group-hover:text-teal-600'
-                                }`}>
+                            <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${item.danger ? 'bg-red-50 dark:bg-red-900/20 text-red-600' : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300'}`}>
                                 {item.icon}
                             </div>
-                            <div className="flex-1 text-left">
-                                <h3 className={`text-base font-black tracking-tight ${item.danger ? 'text-red-600' : 'text-stone-900 dark:text-white'}`}>
+                            <div className="flex-1 min-w-0">
+                                <h3 className={`text-sm font-black tracking-tight ${item.danger ? 'text-red-600 dark:text-red-400' : 'text-stone-900 dark:text-white'}`}>
                                     {item.label}
                                 </h3>
-                                <p className="text-xs font-bold text-stone-400">
-                                    {item.sublabel}
-                                </p>
+                                <p className="text-xs text-stone-500 dark:text-stone-400 truncate">{item.sublabel}</p>
                             </div>
-                            <ChevronRightIcon className={`w-5 h-5 transition-transform group-hover:translate-x-1 ${item.danger ? 'text-red-300' : 'text-stone-300'}`} />
+                            <ChevronRightIcon className={`w-4 h-4 ${item.danger ? 'text-red-300' : 'text-stone-400'}`} />
                         </button>
                     ))}
                 </div>

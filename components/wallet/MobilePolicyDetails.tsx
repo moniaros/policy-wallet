@@ -1,38 +1,43 @@
-"use client"
+﻿"use client"
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSwipe } from '@/hooks/useSwipe'
 import { hapticFeedback } from '@/utils/haptic'
-import type { Policy } from './types'
+import { PolicyQA } from '@/components/wallet/PolicyQA'
+import { DeletePolicy } from '@/components/wallet/DeletePolicy'
+import { analyzeGaps } from '@/app/(protected)/wallet/actions'
+import { LimitReachedModal } from '@/components/account/LimitReachedModal'
+import { toast } from 'sonner'
+import { Sparkles, Loader2 } from 'lucide-react'
+import { CollaborationPanel, Share } from '@/components/wallet/CollaborationPanel'
 import {
-    CarIcon, HeartIcon, HomeIcon, ShieldIcon, PlaneIcon, ScaleIcon, DocumentIcon, PawIcon, BriefcaseIcon
+    CarIcon,
+    HeartIcon,
+    HomeIcon,
+    ShieldIcon,
+    PlaneIcon,
+    ScaleIcon,
+    PawIcon,
+    BriefcaseIcon,
+    DocumentIcon,
 } from '@/components/icons/PolicyIcons'
 
-const PolicyIcons: Record<string, any> = {
+const POLICY_ICONS: Record<string, any> = {
+    motor: CarIcon,
     vehicle: CarIcon,
-    life: HeartIcon,
+    life: ShieldIcon,
     home: HomeIcon,
     health: HeartIcon,
     travel: PlaneIcon,
     liability: ScaleIcon,
     pet: PawIcon,
     professional: BriefcaseIcon,
-    other: ShieldIcon
-}
-
-// Helper for status colors
-const getStatusColor = (status: string) => {
-    switch (status) {
-        case 'active': return 'bg-teal-100 text-teal-700 border-teal-200 dark:bg-teal-900/30 dark:text-teal-300 dark:border-teal-800'
-        case 'expiring_soon': return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800'
-        case 'expired': return 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800'
-        default: return 'bg-stone-100 text-stone-700 border-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:border-stone-700'
-    }
+    other: DocumentIcon,
 }
 
 interface MobilePolicyDetailsProps {
-    policy: any // Using specific type would be better but for implementation speed we match the page data structure
+    policy: any
     t: any
     onDownloadDocument: (url: string) => void
     onShare: () => void
@@ -40,15 +45,6 @@ interface MobilePolicyDetailsProps {
     initialShares?: Share[]
     isOwner?: boolean
 }
-
-import { PolicyQA } from "@/components/wallet/PolicyQA"
-import { DeletePolicy } from "@/components/wallet/DeletePolicy"
-import { analyzeGaps } from '@/app/(protected)/wallet/actions'
-import { UpgradePrompt } from '@/components/account/UpgradePrompt'
-import { LimitReachedModal } from '@/components/account/LimitReachedModal'
-import { toast } from 'sonner'
-import { Sparkles, Loader2, RefreshCw, Users } from 'lucide-react'
-import { CollaborationPanel, Share } from "@/components/wallet/CollaborationPanel"
 
 export function MobilePolicyDetails({
     policy,
@@ -64,16 +60,28 @@ export function MobilePolicyDetails({
     const [isAnalyzing, setIsAnalyzing] = useState(false)
     const [gapLimitReached, setGapLimitReached] = useState(false)
 
+    const lang = t?.lang === 'el' ? 'el' : 'en'
+    const locale = lang === 'el' ? 'el-GR' : 'en-US'
+
+    const copy = useMemo(() => ({
+        assistant: lang === 'el' ? 'AI Βοηθός' : 'AI Assistant',
+        runAnalysis: lang === 'el' ? 'Ανάλυση τώρα' : 'Analyze now',
+        analyzing: lang === 'el' ? 'Ανάλυση...' : 'Analyzing...',
+        noGaps: lang === 'el' ? 'Δεν εντοπίστηκαν κενά ακόμη.' : 'No gaps detected yet.',
+        noDocs: lang === 'el' ? 'Δεν υπάρχουν έγγραφα.' : 'No documents found.',
+        runAnalysisHint: lang === 'el' ? 'Τρέξε ανάλυση για να ελέγξεις την κάλυψη.' : 'Run analysis to check your coverage.',
+        shareAria: lang === 'el' ? 'Κοινοποίηση συμβολαίου' : 'Share policy',
+    }), [lang])
+
     const handleAnalyzeGaps = async () => {
         setIsAnalyzing(true)
         try {
             const result = await analyzeGaps(policy.id)
-
             if ('error' in result) {
                 if (result.error === 'LIMIT_REACHED') {
                     setGapLimitReached(true)
                 } else {
-                    toast.error(result.error || 'Analysis failed')
+                    toast.error(result.error || (lang === 'el' ? 'Η ανάλυση απέτυχε' : 'Analysis failed'))
                     hapticFeedback.error()
                 }
             } else if (result.success) {
@@ -81,60 +89,68 @@ export function MobilePolicyDetails({
                 hapticFeedback.success()
                 router.refresh()
             } else {
-                // Handle case where success is false in GapAnalysisResult (if possible)
-                toast.error(result.message || 'Analysis completed with issues')
+                toast.error(result.message || (lang === 'el' ? 'Η ανάλυση ολοκληρώθηκε με θέματα' : 'Analysis completed with issues'))
             }
-        } catch (error) {
-            toast.error('Something went wrong')
+        } catch {
+            toast.error(lang === 'el' ? 'Προέκυψε πρόβλημα' : 'Something went wrong')
         } finally {
             setIsAnalyzing(false)
         }
     }
 
-    // Swipe between tabs
-    const swipeRef = useSwipe({
-        onSwipeLeft: () => {
-            if (activeTab === 'overview') setActiveTab('coverage')
-            else if (activeTab === 'coverage') setActiveTab('documents')
-            else if (activeTab === 'documents') setActiveTab('assistant')
-            hapticFeedback.selection()
-        },
-        onSwipeRight: () => {
-            if (activeTab === 'assistant') setActiveTab('documents')
-            else if (activeTab === 'documents') setActiveTab('coverage')
-            else if (activeTab === 'coverage') setActiveTab('overview')
-            hapticFeedback.selection()
-        }
-    })
+    const tabs: Array<{ id: 'overview' | 'coverage' | 'documents' | 'team' | 'assistant'; label: string }> = [
+        { id: 'overview', label: t.wallet.verificationOverview || (lang === 'el' ? 'Επισκόπηση' : 'Overview') },
+        { id: 'coverage', label: t.wallet.coverageHighlights || (lang === 'el' ? 'Καλύψεις' : 'Coverage') },
+        { id: 'documents', label: t.wallet.documents || (lang === 'el' ? 'Έγγραφα' : 'Documents') },
+        { id: 'team', label: t.wallet.team || (lang === 'el' ? 'Συνεργασία' : 'Collaboration') },
+        { id: 'assistant', label: copy.assistant },
+    ]
 
-    const statusColor = getStatusColor(policy.status)
-    const Icon = PolicyIcons[policy.lineOfBusiness as keyof typeof PolicyIcons] || PolicyIcons.other
+    const swipeRef = useSwipe(
+        {
+            onSwipeLeft: () => {
+                const i = tabs.findIndex((tab) => tab.id === activeTab)
+                if (i < tabs.length - 1) {
+                    setActiveTab(tabs[i + 1].id)
+                    hapticFeedback.selection()
+                }
+            },
+            onSwipeRight: () => {
+                const i = tabs.findIndex((tab) => tab.id === activeTab)
+                if (i > 0) {
+                    setActiveTab(tabs[i - 1].id)
+                    hapticFeedback.selection()
+                }
+            }
+        },
+        { minSwipeDistance: 40 }
+    )
+
+    const Icon = POLICY_ICONS[policy.lineOfBusiness as string] || POLICY_ICONS.other
 
     return (
-        <div className="min-h-screen bg-stone-50 dark:bg-stone-900 pb-20" ref={swipeRef}>
-            {/* Header */}
-            <div className="bg-white dark:bg-stone-800 sticky top-0 z-10 border-b border-stone-200 dark:border-stone-700 shadow-sm">
+        <div className="min-h-screen bg-stone-50 dark:bg-stone-950 pb-28" ref={swipeRef}>
+            <div className="bg-white/95 dark:bg-stone-900/95 sticky top-0 z-20 border-b border-stone-200 dark:border-stone-800 backdrop-blur-md">
                 <div className="px-4 py-3 flex items-center justify-between">
                     <button
                         onClick={() => {
                             hapticFeedback.tap()
                             router.back()
                         }}
-                        className="p-2 -ml-2 text-stone-600 dark:text-stone-400"
+                        className="p-2 -ml-2 text-stone-600 dark:text-stone-400 cursor-pointer"
                     >
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
-                    <h1 className="text-lg font-bold text-stone-900 dark:text-white truncate max-w-[200px]">
-                        {policy.insurerName}
-                    </h1>
+                    <h1 className="text-base font-bold text-stone-900 dark:text-white truncate max-w-[200px]">{policy.insurerName}</h1>
                     <button
                         onClick={() => {
                             hapticFeedback.impact()
                             onShare()
                         }}
-                        className="p-2 -mr-2 text-teal-600 dark:text-teal-400"
+                        className="p-2 -mr-2 text-teal-600 dark:text-teal-400 cursor-pointer"
+                        aria-label={copy.shareAria}
                     >
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
@@ -142,181 +158,95 @@ export function MobilePolicyDetails({
                     </button>
                 </div>
 
-                {/* Tabs */}
-                <div className="flex px-4 overflow-x-auto hide-scrollbar">
-                    <button
-                        onClick={() => setActiveTab('overview')}
-                        className={`flex-1 min-w-[24%] pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'overview'
-                            ? 'border-teal-600 text-teal-600 dark:text-teal-400'
-                            : 'border-transparent text-stone-500 hover:text-stone-700 dark:text-stone-400'
-                            }`}
-                    >
-                        {t.wallet.verificationOverview || 'Overview'}
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('coverage')}
-                        className={`flex-1 min-w-[24%] pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'coverage'
-                            ? 'border-teal-600 text-teal-600 dark:text-teal-400'
-                            : 'border-transparent text-stone-500 hover:text-stone-700 dark:text-stone-400'
-                            }`}
-                    >
-                        {t.wallet.coverageHighlights || 'Coverage'}
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('documents')}
-                        className={`flex-1 min-w-[24%] pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'documents'
-                            ? 'border-teal-600 text-teal-600 dark:text-teal-400'
-                            : 'border-transparent text-stone-500 hover:text-stone-700 dark:text-stone-400'
-                            }`}
-                    >
-                        {t.wallet.documents || 'Docs'}
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('team')}
-                        className={`flex-1 min-w-[24%] pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'team'
-                            ? 'border-teal-600 text-teal-600 dark:text-teal-400'
-                            : 'border-transparent text-stone-500 hover:text-stone-700 dark:text-stone-400'
-                            }`}
-                    >
-                        {t.wallet.team || 'Team'}
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('assistant')}
-                        className={`flex-1 min-w-[24%] pb-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'assistant'
-                            ? 'border-teal-600 text-teal-600 dark:text-teal-400'
-                            : 'border-transparent text-stone-500 hover:text-stone-700 dark:text-stone-400'
-                            }`}
-                    >
-                        AI Help
-                    </button>
+                <div className="flex px-4 overflow-x-auto hide-scrollbar gap-4">
+                    {tabs.map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`pb-3 text-sm font-bold border-b-2 transition-colors whitespace-nowrap cursor-pointer ${activeTab === tab.id
+                                ? 'border-teal-600 text-teal-600 dark:text-teal-400'
+                                : 'border-transparent text-stone-500 dark:text-stone-400'
+                                }`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
                 </div>
             </div>
 
-            {/* Content */}
-            <div className="p-4 space-y-6">
+            <div className="p-4 space-y-5">
                 {activeTab === 'overview' && (
-                    <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                        {/* Policy Card */}
-                        <div className={`p-6 rounded-3xl bg-gradient-to-br ${policy.lineOfBusiness === 'vehicle' ? 'from-teal-500 to-emerald-600' :
-                            policy.lineOfBusiness === 'health' ? 'from-rose-500 to-pink-600' :
-                                policy.lineOfBusiness === 'home' ? 'from-blue-500 to-indigo-600' :
-                                    'from-stone-700 to-stone-900'
-                            } text-white shadow-lg`}>
+                    <div className="space-y-5">
+                        <div className="p-5 rounded-3xl bg-gradient-to-br from-stone-900 to-stone-700 text-white shadow-sm">
                             <div className="flex items-start justify-between">
-                                <Icon className="w-12 h-12 text-white/90" />
-                                <span className="bg-white/20 backdrop-blur px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                                    {policy.status}
-                                </span>
+                                <Icon className="w-10 h-10 text-white/90" />
+                                <span className="px-2.5 py-1 rounded-full text-[10px] uppercase tracking-wider font-bold bg-white/20">{policy.status}</span>
                             </div>
-                            <div className="mt-6">
-                                <p className="text-white/80 text-xs font-bold uppercase tracking-widest mb-1">{t.wallet.policyNumber}</p>
-                                <p className="text-2xl font-mono font-bold tracking-tight">{policy.policyNumber}</p>
+                            <div className="mt-5">
+                                <p className="text-xs uppercase tracking-wider text-white/80 mb-1">{t.wallet.policyNumber}</p>
+                                <p className="text-xl font-mono font-bold tracking-tight">{policy.policyNumber}</p>
                             </div>
-                            <div className="mt-6 pt-6 border-t border-white/20 flex justify-between items-end">
+                            <div className="mt-5 pt-5 border-t border-white/20 grid grid-cols-2 gap-3">
                                 <div>
-                                    <p className="text-white/80 text-xs font-bold uppercase tracking-widest mb-1">{t.wallet.premium}</p>
-                                    <p className="text-xl font-bold">
-                                        {Number(policy.premiumAmount || 0).toLocaleString('el-GR', {
+                                    <p className="text-xs uppercase tracking-wider text-white/80 mb-1">{t.wallet.premium}</p>
+                                    <p className="text-sm font-bold">
+                                        {Number(policy.premiumAmount || 0).toLocaleString(locale, {
                                             style: 'currency',
                                             currency: policy.premiumCurrency || 'EUR'
                                         })}
                                     </p>
                                 </div>
-                                <div className="text-right">
-                                    <p className="text-white/80 text-xs font-bold uppercase tracking-widest mb-1">{t.wallet.ends}</p>
-                                    <p className="text-sm font-bold">
-                                        {new Date(policy.endDate).toLocaleDateString()}
-                                    </p>
+                                <div>
+                                    <p className="text-xs uppercase tracking-wider text-white/80 mb-1">{t.wallet.ends}</p>
+                                    <p className="text-sm font-bold">{policy.endDate ? new Date(policy.endDate).toLocaleDateString(locale) : '-'}</p>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Quick Stats */}
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-white dark:bg-stone-800 p-4 rounded-2xl border border-stone-200 dark:border-stone-700">
-                                <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-1">{t.wallet.startDate}</p>
-                                <p className="font-bold text-stone-900 dark:text-white">
-                                    {new Date(policy.startDate).toLocaleDateString()}
-                                </p>
-                            </div>
-                            <div className="bg-white dark:bg-stone-800 p-4 rounded-2xl border border-stone-200 dark:border-stone-700">
-                                <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-1">{t.wallet.expiresIn}</p>
-                                <p className={`font-bold ${(Date.parse(policy.endDate) - Date.now()) / (86400000) < 30
-                                    ? 'text-amber-600'
-                                    : 'text-stone-900 dark:text-white'
-                                    }`}>
-                                    {Math.ceil((Date.parse(policy.endDate) - Date.now()) / (86400000))} {t.wallet.days}
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Add to Wallet Button */}
                         <button
                             onClick={onAddToWallet}
-                            className="w-full py-4 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-2xl font-bold text-sm uppercase tracking-wider shadow-lg active:scale-[0.98] transition-transform flex items-center justify-center gap-2"
+                            className="w-full py-3.5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-2xl font-bold text-sm transition-all active:scale-[0.98] cursor-pointer"
                         >
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                            </svg>
                             {t.wallet.addPolicy}
                         </button>
 
-                        {/* Delete Policy - Danger Zone */}
                         <DeletePolicy policyId={policy.id} />
                     </div>
                 )}
 
                 {activeTab === 'coverage' && (
-                    <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-                        <div className="bg-white dark:bg-stone-800 p-6 rounded-3xl border border-stone-200 dark:border-stone-700">
-                            <h3 className="text-sm font-black text-stone-400 uppercase tracking-widest mb-4">{t.wallet.summary}</h3>
-                            <p className="text-stone-600 dark:text-stone-300 leading-relaxed text-sm">
-                                {policy.coverageSummary || t.wallet.summaryFallback}
-                            </p>
+                    <div className="space-y-5">
+                        <div className="bg-white dark:bg-stone-900 p-5 rounded-3xl border border-stone-200 dark:border-stone-800">
+                            <h3 className="text-xs font-black text-stone-500 uppercase tracking-wider mb-3">{t.wallet.summary}</h3>
+                            <p className="text-sm text-stone-700 dark:text-stone-300 leading-relaxed">{policy.coverageSummary || t.wallet.summaryFallback}</p>
                         </div>
 
-                        {/* Gap Analysis Section */}
-                        <div>
-                            <div className="flex items-center justify-between mb-4 px-1">
-                                <h3 className="text-sm font-black text-stone-400 uppercase tracking-widest">{t.wallet.detectedGaps || 'Detected Gaps'}</h3>
+                        <div className="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 p-4">
+                            <div className="flex items-center justify-between mb-3">
+                                <h3 className="text-xs font-black text-stone-500 uppercase tracking-wider">{t.wallet.detectedGaps || 'Detected Gaps'}</h3>
                                 <button
                                     onClick={handleAnalyzeGaps}
                                     disabled={isAnalyzing}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors disabled:opacity-50"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg text-xs font-bold uppercase tracking-wider hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors disabled:opacity-50 cursor-pointer"
                                 >
-                                    {isAnalyzing ? (
-                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                    ) : (
-                                        <Sparkles className="w-3.5 h-3.5" />
-                                    )}
-                                    {isAnalyzing ? (t.common?.analyzing || 'Analyzing...') : (t.common?.analyze || 'Analyze Now')}
+                                    {isAnalyzing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                                    {isAnalyzing ? copy.analyzing : copy.runAnalysis}
                                 </button>
                             </div>
 
                             {policy.gapInstances?.length > 0 ? (
-                                <div className="space-y-4">
+                                <div className="space-y-3">
                                     {policy.gapInstances.map((gap: any) => (
-                                        <div key={gap.id} className="bg-amber-50 dark:bg-amber-900/20 p-5 rounded-2xl border border-amber-100 dark:border-amber-800/50">
-                                            <div className="flex items-center gap-2 mb-2">
-                                                <svg className="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                                </svg>
-                                                <span className="text-sm font-bold text-amber-800 dark:text-amber-200">
-                                                    {gap.definition?.title || t.analysis.gapDetected}
-                                                </span>
-                                            </div>
-                                            <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
-                                                {gap.aiExplanation}
-                                            </p>
+                                        <div key={gap.id} className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-2xl border border-amber-100 dark:border-amber-800/50">
+                                            <p className="text-sm font-bold text-amber-800 dark:text-amber-200 mb-1">{gap.definition?.title || t.analysis.gapDetected}</p>
+                                            <p className="text-xs text-amber-700 dark:text-amber-300">{gap.aiExplanation}</p>
                                         </div>
                                     ))}
                                 </div>
                             ) : (
-                                <div className="text-center py-8 bg-stone-50 dark:bg-stone-900/50 rounded-2xl border border-stone-100 dark:border-stone-800 border-dashed">
-                                    <p className="text-stone-400 text-sm mb-2">{t.wallet.noGapsFound || 'No gaps detected yet.'}</p>
-                                    <p className="text-xs text-stone-300 dark:text-stone-600">
-                                        Run analysis to check for missing coverage.
-                                    </p>
+                                <div className="text-center py-7 bg-stone-50 dark:bg-stone-900 rounded-2xl border border-dashed border-stone-200 dark:border-stone-700">
+                                    <p className="text-sm text-stone-500 dark:text-stone-400">{copy.noGaps}</p>
+                                    <p className="text-xs text-stone-400 mt-1">{copy.runAnalysisHint}</p>
                                 </div>
                             )}
                         </div>
@@ -324,34 +254,23 @@ export function MobilePolicyDetails({
                 )}
 
                 {activeTab === 'documents' && (
-                    <div className="space-y-4 animate-in slide-in-from-right-4 duration-300">
+                    <div className="space-y-3">
                         {policy.documents?.length === 0 ? (
-                            <div className="text-center py-12 text-stone-400">
-                                <p>{t.wallet.noDocuments}</p>
-                            </div>
+                            <div className="text-center py-10 text-stone-500 dark:text-stone-400 bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800">{copy.noDocs}</div>
                         ) : (
                             policy.documents?.map((doc: any) => (
                                 <button
                                     key={doc.id}
                                     onClick={() => onDownloadDocument(doc.fileUrl)}
-                                    className="w-full bg-white dark:bg-stone-800 p-4 rounded-2xl border border-stone-200 dark:border-stone-700 flex items-center gap-4 active:scale-[0.98] transition-all"
+                                    className="w-full bg-white dark:bg-stone-900 p-4 rounded-2xl border border-stone-200 dark:border-stone-800 flex items-center gap-3 active:scale-[0.98] transition-all text-left cursor-pointer"
                                 >
-                                    <div className="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-900/30 flex items-center justify-center text-teal-600">
-                                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg>
+                                    <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-900/30 flex items-center justify-center text-teal-600">
+                                        <DocumentIcon className="w-5 h-5" />
                                     </div>
-                                    <div className="text-left flex-1 min-w-0">
-                                        <p className="font-bold text-stone-900 dark:text-white truncate">
-                                            {doc.fileName}
-                                        </p>
-                                        <p className="text-xs text-stone-500 uppercase tracking-widest mt-1">
-                                            {new Date(doc.uploadedAt).toLocaleDateString()}
-                                        </p>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-bold text-stone-900 dark:text-white truncate text-sm">{doc.fileName}</p>
+                                        <p className="text-xs text-stone-500 mt-1">{new Date(doc.uploadedAt).toLocaleDateString(locale)}</p>
                                     </div>
-                                    <svg className="w-5 h-5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                    </svg>
                                 </button>
                             ))
                         )}
@@ -359,26 +278,21 @@ export function MobilePolicyDetails({
                 )}
 
                 {activeTab === 'team' && (
-                    <div className="space-y-4 animate-in slide-in-from-right-4 duration-300">
-                        <CollaborationPanel
-                            policyId={policy.id}
-                            policyNumber={policy.policyNumber}
-                            initialShares={initialShares || []}
-                            isOwner={!!isOwner}
-                        />
-                    </div>
+                    <CollaborationPanel
+                        policyId={policy.id}
+                        policyNumber={policy.policyNumber}
+                        initialShares={initialShares || []}
+                        isOwner={!!isOwner}
+                    />
                 )}
 
-                {activeTab === 'assistant' && (
-                    <div className="space-y-4 animate-in slide-in-from-right-4 duration-300">
-                        <PolicyQA policyId={policy.id} />
-                    </div>
-                )}
+                {activeTab === 'assistant' && <PolicyQA policyId={policy.id} />}
             </div>
+
             <LimitReachedModal
                 isOpen={gapLimitReached}
                 reason="gap_limit"
-                language={t.lang || 'en'}
+                language={lang}
                 onDismiss={() => setGapLimitReached(false)}
             />
         </div>
