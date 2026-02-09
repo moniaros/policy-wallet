@@ -3,6 +3,7 @@
 import React from 'react'
 import { Check, X } from 'lucide-react'
 import { subscriptionCopy } from '@/lib/subscription-copy'
+import { ENTITLEMENT_LIMITS } from '@/lib/subscription-entitlements'
 
 export interface FeatureComparisonProps {
     language: 'el' | 'en'
@@ -24,91 +25,54 @@ export function FeatureComparison({ language, className = '' }: FeatureCompariso
         {
             category: { el: 'Διαχείριση Συμβολαίων', en: 'Policy Management' },
             name: { el: 'Αριθμός Συμβολαίων', en: 'Number of Policies' },
-            free: '3',
-            plus: '10',
+            free: String(ENTITLEMENT_LIMITS.free.policies),
+            plus: String(ENTITLEMENT_LIMITS.plus.policies),
             pro: copy.messages.unlimited[language],
         },
         {
-            name: copy.features.documentStorage,
-            free: true,
-            plus: true,
-            pro: true,
-        },
-        {
             category: { el: 'Ανάλυση με AI', en: 'AI Analysis' },
-            name: { el: 'Εξαγωγή Δεδομένων', en: 'Data Extraction' },
-            free: true,
-            plus: true,
-            pro: true,
+            name: { el: 'AI Αναλύσεις ανά μήνα', en: 'AI analyses per month' },
+            free: String(ENTITLEMENT_LIMITS.free.aiAnalysisPerMonth),
+            plus: String(ENTITLEMENT_LIMITS.plus.aiAnalysisPerMonth),
+            pro: copy.messages.unlimited[language],
         },
         {
-            name: { el: 'Ποιότητα Ανάλυσης', en: 'Analysis Quality' },
-            free: copy.features.basicAI[language],
-            plus: copy.features.basicAI[language],
-            pro: copy.features.advancedAI[language],
+            name: { el: 'AI ερωτήσεις ανά ημέρα', en: 'AI questions per day' },
+            free: String(ENTITLEMENT_LIMITS.free.questionsPerDay),
+            plus: String(ENTITLEMENT_LIMITS.plus.questionsPerDay),
+            pro: copy.messages.unlimited[language],
         },
         {
-            name: { el: 'Εντοπισμός Κενών Κάλυψης', en: 'Gap Detection' },
-            free: copy.features.manualGapDetection[language],
-            plus: copy.features.manualGapDetection[language],
-            pro: copy.features.automaticGapDetection[language],
+            name: { el: 'Gap αναλύσεις ανά ημέρα', en: 'Gap analyses per day' },
+            free: String(ENTITLEMENT_LIMITS.free.gapAnalysisPerDay),
+            plus: String(ENTITLEMENT_LIMITS.plus.gapAnalysisPerDay),
+            pro: copy.messages.unlimited[language],
         },
         {
             name: copy.features.interactiveQA,
-            free: false,
-            plus: false,
-            pro: true,
+            free: ENTITLEMENT_LIMITS.free.interactiveQA,
+            plus: ENTITLEMENT_LIMITS.plus.interactiveQA,
+            pro: ENTITLEMENT_LIMITS.pro.interactiveQA,
         },
         {
-            category: { el: 'Ειδοποιήσεις & Υπενθυμίσεις', en: 'Notifications & Reminders' },
+            category: { el: 'Ειδοποιήσεις & Analytics', en: 'Notifications & Analytics' },
             name: copy.features.emailNotifications,
-            free: false,
-            plus: true,
-            pro: true,
-        },
-        {
-            name: { el: 'Υπενθυμίσεις Ανανέωσης', en: 'Renewal Reminders' },
-            free: false,
-            plus: true,
-            pro: true,
-        },
-        {
-            name: { el: 'Προληπτικές Ειδοποιήσεις', en: 'Proactive Alerts' },
-            free: false,
-            plus: false,
-            pro: true,
-        },
-        {
-            category: { el: 'Reports & Analytics', en: 'Reports & Analytics' },
-            name: copy.features.basicInsights,
-            free: true,
-            plus: true,
-            pro: true,
+            free: ENTITLEMENT_LIMITS.free.notifications,
+            plus: ENTITLEMENT_LIMITS.plus.notifications,
+            pro: ENTITLEMENT_LIMITS.pro.notifications,
         },
         {
             name: copy.features.advancedAnalytics,
-            free: false,
-            plus: false,
-            pro: true,
+            free: ENTITLEMENT_LIMITS.free.advancedAnalytics,
+            plus: ENTITLEMENT_LIMITS.plus.advancedAnalytics,
+            pro: ENTITLEMENT_LIMITS.pro.advancedAnalytics,
         },
         {
-            category: { el: 'Support & Collaboration', en: 'Support & Collaboration' },
-            name: { el: 'Email Support', en: 'Email Support' },
-            free: true,
-            plus: true,
-            pro: true,
-        },
-        {
-            name: copy.features.prioritySupport,
-            free: false,
-            plus: false,
-            pro: true,
-        },
-        {
+            category: { el: 'Συνεργασία', en: 'Collaboration' },
             name: copy.features.agentCollaboration,
-            free: false,
-            plus: true,
-            pro: true,
+            free: ENTITLEMENT_LIMITS.free.agentCollaboration,
+            plus: ENTITLEMENT_LIMITS.plus.agentCollaboration,
+            pro: ENTITLEMENT_LIMITS.pro.agentCollaboration,
         },
     ]
 
@@ -143,9 +107,7 @@ export function FeatureComparison({ language, className = '' }: FeatureCompariso
                 <tbody>
                     {features.map((feature, idx) => {
                         const showCategory = feature.category && feature.category[language] !== currentCategory
-                        if (showCategory && feature.category) {
-                            currentCategory = feature.category[language]
-                        }
+                        if (showCategory && feature.category) currentCategory = feature.category[language]
 
                         return (
                             <React.Fragment key={idx}>
@@ -164,13 +126,13 @@ export function FeatureComparison({ language, className = '' }: FeatureCompariso
                                         {feature.name[language]}
                                     </td>
                                     <td className="py-4 px-6 text-center">
-                                        {renderCell(feature.free, language)}
+                                        {renderCell(feature.free)}
                                     </td>
                                     <td className="py-4 px-6 text-center">
-                                        {renderCell(feature.plus, language)}
+                                        {renderCell(feature.plus)}
                                     </td>
                                     <td className="py-4 px-6 text-center bg-gradient-to-br from-blue-50/50 to-cyan-50/50 dark:from-blue-950/10 dark:to-cyan-950/10">
-                                        {renderCell(feature.pro, language)}
+                                        {renderCell(feature.pro)}
                                     </td>
                                 </tr>
                             </React.Fragment>
@@ -182,7 +144,7 @@ export function FeatureComparison({ language, className = '' }: FeatureCompariso
     )
 }
 
-function renderCell(value: boolean | string, language: 'el' | 'en') {
+function renderCell(value: boolean | string) {
     if (typeof value === 'boolean') {
         return value ? (
             <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mx-auto" />

@@ -5,6 +5,7 @@ import { db } from "@/lib/db"
 import { PolicyService } from "@/lib/services/policy.service"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
+import { canUserAddPolicy, getUpgradeMessage } from "@/lib/subscription-limits"
 
 export async function completeOnboardingStep(step: number, data?: any) {
     const { dbUser } = await getAuthenticatedUser()
@@ -56,6 +57,13 @@ export async function uploadOnboardingPolicy(formData: FormData) {
     const userId = dbUser.id
 
     const file = formData.get("file") as File
+    const canAdd = await canUserAddPolicy(userId)
+    if (!canAdd.allowed) {
+        return {
+            success: false,
+            error: getUpgradeMessage("policy_limit_reached", (dbUser.preferredLanguage as "el" | "en") || "en"),
+        }
+    }
 
     if (!file) {
         return { success: false, error: "No file provided" }

@@ -1,7 +1,7 @@
 "use client"
 
 import { PolicyWallet } from "@/components/wallet/PolicyWallet"
-import React, { useEffect } from "react"
+import React, { useEffect, useRef } from "react"
 import type { Policy } from "@/components/wallet/types"
 import { useRouter } from "next/navigation"
 import { PageHeader } from "@/components/ui/PageHeader"
@@ -23,6 +23,19 @@ export function PolicyWalletClient({ policies, user, showTour = false }: PolicyW
     const router = useRouter()
 
     const { t } = useLanguage()
+    const previousStatusesRef = useRef<Map<string, string>>(new Map())
+    const announcedRef = useRef<Set<string>>(new Set())
+
+    const fireBrowserNotification = (title: string, message: string, policyId: string) => {
+        if (typeof window === 'undefined' || !('Notification' in window)) return
+        if (Notification.permission !== 'granted') return
+
+        const notification = new Notification(title, { body: message })
+        notification.onclick = () => {
+            window.focus()
+            router.push(`/wallet/${policyId}`)
+        }
+    }
 
     // Auto-refresh when policies are analyzing
     React.useEffect(() => {
@@ -52,6 +65,64 @@ export function PolicyWalletClient({ policies, user, showTour = false }: PolicyW
 
             return () => clearInterval(interval)
         }
+    }, [policies, router])
+
+    React.useEffect(() => {
+        const previousStatuses = previousStatusesRef.current
+        const currentStatuses = new Map(policies.map((p) => [p.id, p.status]))
+
+        for (const policy of policies) {
+            const previousStatus = previousStatuses.get(policy.id)
+            if (previousStatus === 'analyzing' && policy.status !== 'analyzing') {
+                const key = `${policy.id}-${policy.status}`
+                if (announcedRef.current.has(key)) continue
+                announcedRef.current.add(key)
+
+                toast.success("Policy analysis completed", {
+                    description: `${policy.insurerName} • ${policy.policyNumber}`,
+                    action: {
+                        label: "View",
+                        onClick: () => router.push(`/wallet/${policy.id}`)
+                    }
+                })
+                fireBrowserNotification("Policy analysis completed", `${policy.insurerName} • ${policy.policyNumber}`, policy.id)
+            }
+        }
+
+        const disappearedAnalyzingIds = [...previousStatuses.entries()]
+            .filter(([id, status]) => status === 'analyzing' && !currentStatuses.has(id))
+            .map(([id]) => id)
+
+        if (disappearedAnalyzingIds.length > 0) {
+            fetch('/api/v1/notifications?limit=10')
+                .then(res => res.ok ? res.json() : null)
+                .then(data => {
+                    const notifications = data?.data?.notifications || []
+                    const completion = notifications.find((n: any) =>
+                        (n.event_type === 'policy_analyzed' || n.event_type === 'policy_merged') &&
+                        n.related_object_type === 'policy' &&
+                        n.related_object_id
+                    )
+                    if (!completion) return
+                    const key = `notif-${completion.id}`
+                    if (announcedRef.current.has(key)) return
+                    announcedRef.current.add(key)
+
+                    toast.success(completion.title || "Policy analysis completed", {
+                        description: completion.message,
+                        action: {
+                            label: "View",
+                            onClick: () => router.push(`/wallet/${completion.related_object_id}`)
+                        }
+                    })
+                    fireBrowserNotification(completion.title || "Policy analysis completed", completion.message || "", completion.related_object_id)
+                })
+                .catch(() => {
+                    // Silent fail: polling continues and user can still see status changes in wallet.
+                })
+        }
+
+        previousStatusesRef.current = currentStatuses
     }, [policies, router])
 
     return (

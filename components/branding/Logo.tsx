@@ -16,27 +16,18 @@ export function PolicyWalletLogo({
     language = 'en',
     className = ''
 }: LogoProps) {
-
     const sizeClasses = {
-        sm: { container: 'h-8', icon: 'w-6 h-6', iconBox: 'w-7 h-7', text: 'text-base', tagline: 'text-[9px]' },
-        md: { container: 'h-10', icon: 'w-6 h-6', iconBox: 'w-9 h-9', text: 'text-xl', tagline: 'text-[10px]' },
-        lg: { container: 'h-14', icon: 'w-8 h-8', iconBox: 'w-12 h-12', text: 'text-2xl', tagline: 'text-xs' },
-        xl: { container: 'h-20', icon: 'w-12 h-12', iconBox: 'w-16 h-16', text: 'text-4xl', tagline: 'text-sm' }
+        sm: { container: 'h-8', icon: 'w-6 h-6', iconBox: 'w-7 h-7', text: 'text-xl' },
+        md: { container: 'h-10', icon: 'w-6 h-6', iconBox: 'w-9 h-9', text: 'text-2xl' },
+        lg: { container: 'h-14', icon: 'w-8 h-8', iconBox: 'w-12 h-12', text: 'text-3xl' },
+        xl: { container: 'h-20', icon: 'w-12 h-12', iconBox: 'w-16 h-16', text: 'text-5xl' }
     }
 
     const sizes = sizeClasses[size]
 
-    const brandName = {
-        en: 'PolicyWallet',
-        el: 'PolicyWallet' // Keep English brand name but with Greek tagline option
-    }
+    // Keep prop for compatibility with existing call sites and future localization options
+    void language
 
-    const tagline = {
-        en: 'Insurance Intelligence',
-        el: 'Ασφαλιστική Νοημοσύνη'
-    }
-
-    // Icon only variant
     if (variant === 'icon-only') {
         return (
             <div className={`${sizes.iconBox} bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 ${className}`}>
@@ -45,37 +36,22 @@ export function PolicyWalletLogo({
         )
     }
 
-    // Color variants
-    const textColor = variant === 'light'
+    const policyTextColor = variant === 'light'
         ? 'text-white'
         : variant === 'dark'
             ? 'text-slate-900'
             : 'text-slate-900 dark:text-white'
 
-    const taglineColor = variant === 'light'
-        ? 'text-blue-100'
-        : variant === 'dark'
-            ? 'text-slate-600'
-            : 'text-slate-600 dark:text-slate-400'
+    const walletTextColor = variant === 'light'
+        ? 'text-emerald-400'
+        : 'text-emerald-500'
 
     return (
-        <div className={`flex items-center gap-3 ${sizes.container} ${className}`}>
-            {/* Icon */}
-            <div className={`${sizes.iconBox} bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 relative overflow-hidden group`}>
-                {/* Animated gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-cyan-400/0 via-white/20 to-blue-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <Shield className={`${sizes.icon} text-white relative z-10`} strokeWidth={2.5} />
-            </div>
-
-            {/* Text */}
-            <div className="flex flex-col justify-center leading-none">
-                <span className={`font-black tracking-tight ${sizes.text} ${textColor}`}>
-                    {brandName[language]}
-                </span>
-                <span className={`font-semibold ${sizes.tagline} ${taglineColor} tracking-wide uppercase mt-0.5`}>
-                    {tagline[language]}
-                </span>
-            </div>
+        <div className={`flex items-center ${sizes.container} ${className}`}>
+            <span className={`font-black tracking-tighter leading-none ${sizes.text} ${policyTextColor}`}>
+                Policy
+                <span className={`ml-0.5 ${walletTextColor}`}>Wallet</span>
+            </span>
         </div>
     )
 }
@@ -84,7 +60,6 @@ export function PolicyWalletLogo({
 export function PolicyWalletIcon({ size = 512 }: { size?: number }) {
     return (
         <svg width={size} height={size} viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Gradient background */}
             <defs>
                 <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#2563eb" />
@@ -97,10 +72,8 @@ export function PolicyWalletIcon({ size = 512 }: { size?: number }) {
                 </linearGradient>
             </defs>
 
-            {/* Rounded square background */}
             <rect width="512" height="512" rx="96" fill="url(#bgGradient)" />
 
-            {/* Shield icon */}
             <path
                 d="M256 96L144 144C144 144 144 240 144 288C144 368 256 416 256 416C256 416 368 368 368 288C368 240 368 144 368 144L256 96Z"
                 fill="url(#shieldGradient)"
@@ -110,7 +83,6 @@ export function PolicyWalletIcon({ size = 512 }: { size?: number }) {
                 strokeLinejoin="round"
             />
 
-            {/* Checkmark inside shield */}
             <path
                 d="M208 256L240 288L304 224"
                 stroke="#2563eb"

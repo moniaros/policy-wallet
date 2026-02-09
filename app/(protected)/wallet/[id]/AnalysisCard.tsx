@@ -4,8 +4,10 @@ import { analyzeGaps, ignoreGap, notifyAgentAboutGap } from "../actions"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { Sparkles, AlertTriangle, Lightbulb, EyeOff, MessageSquare } from "lucide-react"
+import { LimitReachedModal } from "@/components/account/LimitReachedModal"
 
 import { useLanguage } from "@/contexts/LanguageContext"
+import { toGreekUppercaseNoAccents } from "@/lib/i18n/text-format"
 
 interface Gap {
     id: string
@@ -23,8 +25,10 @@ export function AnalysisCard({ policyId, gaps }: { policyId: string, gaps: Gap[]
     const [analyzing, setAnalyzing] = useState(false)
     const [ignoring, setIgnoring] = useState<string | null>(null)
     const [notifying, setNotifying] = useState<string | null>(null)
+    const [gapLimitReached, setGapLimitReached] = useState(false)
     const router = useRouter()
     const { t, language } = useLanguage()
+    const analysisTitle = toGreekUppercaseNoAccents(t.analysis.title, t.common?.locale || 'el-GR')
 
     // Deduplicate gaps based on content
     const uniqueGaps = useMemo(() => {
@@ -49,7 +53,12 @@ export function AnalysisCard({ policyId, gaps }: { policyId: string, gaps: Gap[]
         const res = await analyzeGaps(policyId)
         setAnalyzing(false)
         if ('error' in res && res.error) {
-            toast.error(res.error, { id: toastId })
+            if (res.error === "LIMIT_REACHED") {
+                setGapLimitReached(true)
+                toast.dismiss(toastId)
+            } else {
+                toast.error(res.error, { id: toastId })
+            }
         } else if ('count' in res) {
             toast.success(`${t.analysis.analysisComplete}${res.count}${t.analysis.issues}`, { id: toastId })
             router.refresh()
@@ -89,7 +98,7 @@ export function AnalysisCard({ policyId, gaps }: { policyId: string, gaps: Gap[]
                         <Sparkles className="w-6 h-6" />
                     </div>
                     <div>
-                        <h2 className="text-lg font-black">{t.analysis.title}</h2>
+                        <h2 className="text-lg font-black">{analysisTitle}</h2>
                         <p className="text-sm text-emerald-100 mt-0.5">{t.wallet.analysisSubtitle}</p>
                     </div>
                 </div>
@@ -186,6 +195,12 @@ export function AnalysisCard({ policyId, gaps }: { policyId: string, gaps: Gap[]
                     </div>
                 )}
             </div>
+            <LimitReachedModal
+                isOpen={gapLimitReached}
+                reason="gap_limit"
+                language={language as 'el' | 'en'}
+                onDismiss={() => setGapLimitReached(false)}
+            />
         </div>
     )
 }

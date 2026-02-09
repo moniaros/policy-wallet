@@ -1,6 +1,7 @@
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
+import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 
 export async function GET() {
     const authResult = await getAuthenticatedUserOrNull()
@@ -21,29 +22,31 @@ export async function GET() {
 
         if (!user) return createApiError("NOT_FOUND", "User not found", 404)
 
-        // Default Free Plan Fallback
         const subscription = user.subscriptions[0]
         const plan = subscription?.plan
+        const entitlements = await resolveUserEntitlements(authResult.dbUser.id)
 
-        const finalPlan = plan ? {
+        const finalPlan = plan
+            ? {
             name: plan.name, // e.g., 'pro'
             display_name: plan.displayName,
             price: Number(plan.price),
             currency: plan.currency,
             billing_period: plan.billingPeriod
-        } : {
-            name: "free",
-            display_name: "Dwrean Paketo", // ASCII to avoid encoding issues if env varies
-            price: 0,
-            currency: "EUR",
-            billing_period: "monthly"
-        }
+            }
+            : {
+                name: entitlements.tier,
+                display_name: entitlements.tier === "free" ? "Free Plan" : entitlements.tier.toUpperCase(),
+                price: 0,
+                currency: "EUR",
+                billing_period: "monthly",
+            }
 
         const usage = {
             policies_created: await db.policy.count({ where: { ownerUserId: authResult.dbUser.id, status: { not: "deleted" } } }),
-            policies_limit: subscription ? 100 : 5, // Simple logic: Free=5, Paid=100
+            policies_limit: entitlements.limits.policies,
             ai_reviews_used: await db.policyDocument.count({ where: { uploadedByUserId: authResult.dbUser.id } }), // Approximate
-            ai_reviews_limit: subscription ? 50 : 3
+            ai_reviews_limit: entitlements.limits.aiAnalysisPerMonth
         }
 
         return createApiResponse({
@@ -51,9 +54,13 @@ export async function GET() {
                 subscription: {
                     id: subscription?.id || "sub_free_default",
                     plan: finalPlan,
-                    status: subscription?.status || "active",
+                    status: entitlements.status,
                     current_period_end: subscription?.currentPeriodEnd || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
                     auto_renew: subscription?.autoRenew ?? true
+                },
+                entitlements: {
+                    tier: entitlements.tier,
+                    limits: entitlements.limits,
                 },
                 usage,
                 credit_balance: (user as any).creditBalance || 0

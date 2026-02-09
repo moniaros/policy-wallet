@@ -26,6 +26,15 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         }
     }, [])
 
+    useEffect(() => {
+        const html = document.documentElement
+        const locale = language === 'el' ? 'el' : 'en'
+        const localeTag = language === 'el' ? 'el-GR' : 'en-US'
+
+        html.setAttribute('lang', locale)
+        html.setAttribute('data-locale', localeTag)
+    }, [language])
+
     const router = useRouter()
     const setLanguage = (lang: Language) => {
         setLanguageState(lang)

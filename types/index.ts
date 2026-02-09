@@ -12,3 +12,7 @@ export * from './domain'
 
 // API types
 export * from './api'
+
+// Growth and subscriptions
+export * from './subscription-entitlements'
+export * from './journey-events'

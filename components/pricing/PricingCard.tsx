@@ -3,6 +3,7 @@
 import React from 'react'
 import { Check, X, Sparkles } from 'lucide-react'
 import { subscriptionCopy } from '@/lib/subscription-copy'
+import { ENTITLEMENT_LIMITS } from '@/lib/subscription-entitlements'
 
 export interface PricingCardProps {
     tier: 'free' | 'plus' | 'pro'
@@ -30,41 +31,27 @@ export function PricingCard({
     const copy = subscriptionCopy
     const tierData = copy.tiers[tier]
     const isCurrentPlan = currentTier === tier
+    const limits = ENTITLEMENT_LIMITS[tier]
 
-    // Define features for each tier
-    const features: Feature[] = tier === 'free'
-        ? [
-            { label: { el: 'Μέχρι 3 συμβόλαια', en: 'Up to 3 policies' }, included: true },
-            { label: copy.features.basicAI, included: true },
-            { label: copy.features.manualGapDetection, included: true },
-            { label: copy.features.documentStorage, included: true },
-            { label: copy.features.basicInsights, included: true },
-            { label: copy.features.emailNotifications, included: false },
-            { label: copy.features.interactiveQA, included: false },
-            { label: copy.features.prioritySupport, included: false },
-        ]
-        : tier === 'plus'
-            ? [
-                { label: { el: 'Μέχρι 10 συμβόλαια', en: 'Up to 10 policies' }, included: true, highlight: true },
-                { label: copy.features.advancedAI, included: true, highlight: true },
-                { label: copy.features.automaticGapDetection, included: true, highlight: true },
-                { label: copy.features.documentStorage, included: true },
-                { label: copy.features.emailNotifications, included: true },
-                { label: copy.features.interactiveQA, included: true },
-                { label: copy.features.basicInsights, included: true },
-                { label: copy.features.advancedAnalytics, included: false },
-            ]
-            : [
-                { label: copy.features.unlimitedPolicies, included: true, highlight: true },
-                { label: copy.features.advancedAI, included: true, highlight: true },
-                { label: copy.features.automaticGapDetection, included: true, highlight: true },
-                { label: copy.features.documentStorage, included: true },
-                { label: copy.features.emailNotifications, included: true },
-                { label: copy.features.interactiveQA, included: true },
-                { label: copy.features.advancedAnalytics, included: true },
-                { label: copy.features.prioritySupport, included: true },
-                { label: copy.features.agentCollaboration, included: true },
-            ]
+    const features: Feature[] = [
+        limits.policies === null
+            ? { label: copy.features.unlimitedPolicies, included: true, highlight: true }
+            : {
+                label: {
+                    el: `Μέχρι ${limits.policies} συμβόλαια`,
+                    en: `Up to ${limits.policies} policies`,
+                },
+                included: true,
+                highlight: tier !== 'free',
+            },
+        { label: tier === 'free' ? copy.features.basicAI : copy.features.advancedAI, included: true, highlight: tier !== 'free' },
+        { label: tier === 'free' ? copy.features.manualGapDetection : copy.features.automaticGapDetection, included: true, highlight: tier !== 'free' },
+        { label: copy.features.documentStorage, included: true },
+        { label: copy.features.emailNotifications, included: limits.notifications },
+        { label: copy.features.interactiveQA, included: limits.interactiveQA },
+        { label: copy.features.advancedAnalytics, included: limits.advancedAnalytics },
+        { label: copy.features.agentCollaboration, included: limits.agentCollaboration },
+    ]
 
     return (
         <div
@@ -77,7 +64,6 @@ export function PricingCard({
         ${className}
       `}
         >
-            {/* Badge */}
             {isHighlighted && !isCurrentPlan && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-sm font-bold rounded-full shadow-lg flex items-center gap-1.5">
                     <Sparkles className="w-4 h-4" />
@@ -91,7 +77,6 @@ export function PricingCard({
                 </div>
             )}
 
-            {/* Header */}
             <div className="text-center mb-6">
                 <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-2">
                     {tierData.name[language]}
@@ -101,7 +86,6 @@ export function PricingCard({
                 </p>
             </div>
 
-            {/* Price */}
             <div className="text-center mb-8">
                 <div className="flex items-baseline justify-center gap-1">
                     <span className="text-5xl font-black text-slate-900 dark:text-white">
@@ -111,7 +95,6 @@ export function PricingCard({
                         {tierData.period[language]}
                     </span>
                 </div>
-                {/* Annual pricing hint */}
                 {tier !== 'free' && 'annual' in tierData && (
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
                         {language === 'el' ? 'ή ' : 'or '}{tierData.annual.price[language]}{tierData.annual.period[language]}
@@ -119,7 +102,6 @@ export function PricingCard({
                 )}
             </div>
 
-            {/* Features */}
             <ul className="space-y-3 mb-8">
                 {features.map((feature, idx) => (
                     <li
@@ -138,7 +120,6 @@ export function PricingCard({
                 ))}
             </ul>
 
-            {/* CTA Button */}
             <button
                 onClick={() => onSelectPlan(tier)}
                 disabled={isCurrentPlan}
@@ -162,7 +143,6 @@ export function PricingCard({
                 }
             </button>
 
-            {/* Trust Signal */}
             {tier !== 'free' && !isCurrentPlan && (
                 <p className="text-center text-xs text-slate-500 dark:text-slate-400 mt-4">
                     {copy.trust.cancelAnytime[language]}

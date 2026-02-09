@@ -5,6 +5,7 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { Loader2, Mail, Lock, AlertCircle, ArrowRight, CheckCircle } from "lucide-react"
+import { PolicyWalletLogo } from "@/components/branding/Logo"
 
 export default function SignInPage() {
     const router = useRouter()
@@ -82,14 +83,26 @@ export default function SignInPage() {
             <div className="w-full max-w-md bg-slate-900/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/50 p-8 sm:p-10 relative z-10 animate-in fade-in zoom-in duration-500 hover:shadow-emerald-500/5 transition-all">
                 <div className="text-center mb-8">
                     <Link href="/" className="inline-block group mb-6">
-                        <h1 className="text-3xl font-black tracking-tighter text-white">
-                            Policy<span className="text-emerald-500">Wallet</span>
-                        </h1>
+                        <PolicyWalletLogo size="md" variant="light" />
                     </Link>
                     <h2 className="text-xl font-bold text-white mb-2">Welcome Back</h2>
                     <p className="text-slate-400 text-sm">
                         Sign in to manage your insurance portfolio
                     </p>
+                    <div className="mt-4 inline-flex items-center gap-1 rounded-lg bg-slate-800/70 p-1 border border-slate-700">
+                        <Link
+                            href="/"
+                            className="px-2.5 py-1 text-xs font-bold rounded-md transition-colors text-slate-300 hover:text-white hover:bg-slate-700"
+                        >
+                            EL
+                        </Link>
+                        <Link
+                            href="/en"
+                            className="px-2.5 py-1 text-xs font-bold rounded-md transition-colors text-slate-300 hover:text-white hover:bg-slate-700"
+                        >
+                            EN
+                        </Link>
+                    </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">

@@ -71,6 +71,12 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
     const [searchQuery, setSearchQuery] = useState('')
     const router = useRouter()
     const lang = language || userLanguage || 'en'
+    const getRelatedRoute = (type?: string, id?: string) => {
+        if (!type || !id) return null
+        if (type === 'policy') return `/wallet/${id}`
+        if (type === 'customer') return `/customers/${id}`
+        return null
+    }
 
     // Filter notifications
     const filteredNotifications = initialData.history.filter(notif => {
@@ -234,8 +240,9 @@ export function NotificationsClient({ initialData, userLanguage = 'en' }: Notifi
                                             key={notif.id}
                                             className={`group bg-white/60 dark:bg-stone-900/60 backdrop-blur-xl rounded-2xl p-4 flex items-start gap-4 border border-white/50 dark:border-stone-800 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer ${notif.read_at ? 'opacity-60 grayscale-[0.5]' : ''}`}
                                             onClick={() => {
-                                                if (notif.related_object_type && notif.related_object_id) {
-                                                    router.push(`/${notif.related_object_type}/${notif.related_object_id}`)
+                                                const route = getRelatedRoute(notif.related_object_type, notif.related_object_id)
+                                                if (route) {
+                                                    router.push(route)
                                                 }
                                             }}
                                         >

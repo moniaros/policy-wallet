@@ -1,10 +1,12 @@
-import { requirePayingUser } from "@/lib/auth-helpers"
+import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { detectGapsForUser, createGapInstances } from "@/lib/gap-detection"
 import { CoverageInsightsClient } from "@/components/coverage/CoverageInsightsClient"
+import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 
 export default async function CoverageInsightsPage() {
-    const { dbUser } = await requirePayingUser()
+    const { dbUser } = await getAuthenticatedUser()
+    const entitlements = await resolveUserEntitlements(dbUser.id)
 
     // 1. Detect gaps for the user
     // This runs the detection engine to see if new gaps exist
@@ -84,6 +86,10 @@ export default async function CoverageInsightsPage() {
                 totalCoverage: 0 // Not prioritized in new design
             }}
             userLanguage={dbUser.preferredLanguage || 'en'}
+            tier={entitlements.tier}
+            isPaid={entitlements.isPaid}
+            canUseAdvancedAnalytics={entitlements.limits.advancedAnalytics}
+            canUseAgentCollaboration={entitlements.limits.agentCollaboration}
             policies={policies.map(p => ({
                 id: p.id,
                 insurerName: (p as any).insurerName || 'Unknown Insurer',

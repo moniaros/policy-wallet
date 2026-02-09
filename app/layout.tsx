@@ -10,6 +10,7 @@ import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
   title: "PolicyWallet",
   description: "Your neutral insurance wallet.",
   manifest: "/manifest.json",
@@ -25,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="el" suppressHydrationWarning>
       <body className="antialiased min-h-screen bg-background text-foreground">
         <NextTopLoader
           color="#0d9488"

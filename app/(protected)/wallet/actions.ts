@@ -15,7 +15,8 @@ import { getAIService } from "@/lib/services/ai"
 import { GapAnalysisService } from "@/lib/services/gap-analysis.service"
 import { PolicyService } from "@/lib/services/policy.service"
 import { trackTokenUsage } from "@/lib/token-tracking"
-import { canUserUseFeature, getUpgradeMessage, getUserSubscription, SUBSCRIPTION_LIMITS } from "@/lib/subscription-limits"
+import { canUserAddPolicy, canUserUseFeature, getUpgradeMessage, getUserSubscription, SUBSCRIPTION_LIMITS } from "@/lib/subscription-limits"
+import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { after } from 'next/server'
 
@@ -53,6 +54,10 @@ export async function createPolicy(formData: FormData) {
     if (!dbUser) throw new Error("User record not found")
 
     const userId = dbUser.id
+    const canAdd = await canUserAddPolicy(userId)
+    if (!canAdd.allowed) {
+        throw new Error(getUpgradeMessage("policy_limit_reached", (dbUser.preferredLanguage as "el" | "en") || "en"))
+    }
 
     const rawData = {
         insurerName: formData.get("insurerName"),
@@ -162,6 +167,10 @@ export async function uploadPolicyDocument(formData: FormData) {
     }
 
     const userId = authResult.dbUser.id
+    const canAdd = await canUserAddPolicy(userId)
+    if (!canAdd.allowed) {
+        return { error: getUpgradeMessage("policy_limit_reached", (authResult.dbUser.preferredLanguage as "el" | "en") || "en") }
+    }
     const file = formData.get("file") as File
 
     if (!file) {
@@ -496,11 +505,12 @@ export async function deletePolicy(policyId: string) {
 
 export async function getAIUsageStats() {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { count: 0, limit: 5 }
+    if (!authResult) return { count: 0, limit: 10 }
 
     const startOfMonth = new Date()
     startOfMonth.setDate(1)
     startOfMonth.setHours(0, 0, 0, 0)
+    const entitlements = await resolveUserEntitlements(authResult.dbUser.id)
 
     const count = await (db as any).activityLog.count({
         where: {
@@ -510,7 +520,7 @@ export async function getAIUsageStats() {
         }
     })
 
-    return { count, limit: 5 }
+    return { count, limit: entitlements.limits.aiAnalysisPerMonth }
 }
 
 /**

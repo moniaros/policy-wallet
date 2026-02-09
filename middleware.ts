@@ -62,7 +62,7 @@ export async function middleware(request: NextRequest) {
     const isLoggedIn = !!user
 
     const isApiAuthRoute = nextUrl.pathname.startsWith("/api/auth")
-    const isPublicRoute = ["/", "/auth/signin", "/auth/signup", "/auth/verify", "/auth/verify-email", "/auth/signup/confirmation", "/auth/handover", "/terms", "/privacy"].includes(nextUrl.pathname)
+    const isPublicRoute = ["/", "/en", "/auth/signin", "/auth/signup", "/auth/verify", "/auth/verify-email", "/auth/signup/confirmation", "/auth/handover", "/terms", "/privacy"].includes(nextUrl.pathname)
     const isAuthRoute = nextUrl.pathname.startsWith("/auth")
 
     // Allow API routes

@@ -5,8 +5,8 @@ import { askPolicyQuestion } from "@/app/(protected)/wallet/actions"
 import { toast } from "sonner"
 import { MessageCircle, Send, Sparkles, Loader2 } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { UpgradePrompt } from '@/components/account/UpgradePrompt'
 import { LimitReachedModal } from '@/components/account/LimitReachedModal'
+import { trackJourneyEvent } from "@/lib/journey/funnel"
 
 interface Message {
     role: 'user' | 'assistant'
@@ -54,7 +54,11 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                     content: result.answer,
                     timestamp: new Date()
                 }
+                const hasAssistantReply = messages.some((msg) => msg.role === "assistant")
                 setMessages(prev => [...prev, assistantMessage])
+                if (!hasAssistantReply) {
+                    trackJourneyEvent("first_ai_answer_received", { policy_id: policyId })
+                }
             }
         } catch (error) {
             toast.error(t.wallet.failedAnswer)

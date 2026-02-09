@@ -5,13 +5,16 @@ import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { registerUser } from "../actions"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { User, Mail, Lock, Building, FileBadge, ArrowRight, Loader2, CheckCircle, Shield, Briefcase } from "lucide-react"
+import { trackLandingEvent } from "@/lib/landing/analytics"
+import { User, Mail, Lock, Building, FileBadge, ArrowRight, Loader2, Briefcase } from "lucide-react"
+import { PolicyWalletLogo } from "@/components/branding/Logo"
 
 function SignUpForm() {
     const searchParams = useSearchParams()
     const router = useRouter()
     const { t, language } = useLanguage()
     const urlRole = searchParams.get("role")
+    const urlSource = searchParams.get("source") || "signup_direct"
     const urlEmail = searchParams.get("email")
     const urlToken = searchParams.get("token")
 
@@ -68,9 +71,21 @@ function SignUpForm() {
         if (urlToken) formData.append("token", urlToken)
 
         try {
+            trackLandingEvent("signup_start", {
+                role,
+                source: urlSource,
+                locale: language,
+            })
+
             const result = await registerUser(formData)
 
             if (result.success) {
+                trackLandingEvent("signup_complete", {
+                    role,
+                    source: urlSource,
+                    locale: language,
+                })
+
                 if (result.redirect) {
                     router.push(result.redirect)
                 } else {
@@ -105,9 +120,7 @@ function SignUpForm() {
             <div className="w-full max-w-xl bg-slate-900/50 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-700/50 p-8 sm:p-10 relative z-10 animate-in fade-in zoom-in duration-500 hover:shadow-emerald-500/5 transition-all">
                 <div className="text-center mb-8">
                     <Link href="/" className="inline-block group mb-6">
-                        <h1 className="text-3xl font-black tracking-tighter text-white">
-                            Policy<span className="text-emerald-500">Wallet</span>
-                        </h1>
+                        <PolicyWalletLogo size="md" variant="light" />
                     </Link>
                     <h2 className="text-2xl font-bold text-white mb-2">
                         Join as {role === 'agent' ? 'Agent' : 'Policyholder'}
@@ -115,35 +128,52 @@ function SignUpForm() {
                     <p className="text-slate-400 text-sm">
                         Create your {role === 'agent' ? 'professional' : 'personal'} account to get started
                     </p>
+                    <div className="mt-4 inline-flex items-center gap-1 rounded-lg bg-slate-800/70 p-1 border border-slate-700">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                localStorage.setItem("language", "el")
+                                window.location.href = "/"
+                            }}
+                            className={`px-2.5 py-1 text-xs font-bold rounded-md transition-colors ${language === "el" ? "bg-slate-700 text-emerald-300" : "text-slate-400 hover:text-white"}`}
+                        >
+                            EL
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                localStorage.setItem("language", "en")
+                                window.location.href = "/en"
+                            }}
+                            className={`px-2.5 py-1 text-xs font-bold rounded-md transition-colors ${language === "en" ? "bg-slate-700 text-emerald-300" : "text-slate-400 hover:text-white"}`}
+                        >
+                            EN
+                        </button>
+                    </div>
                 </div>
 
-                {/* Role Switcher */}
                 {!isRoleLocked && (
                     <div className="flex justify-center mb-8">
-                        <div className="bg-slate-800/50 p-1 rounded-xl flex gap-1 border border-slate-700/50">
+                        {role === "policyholder" ? (
+                            <div className="text-sm text-slate-400">
+                                <span>Policyholder signup selected. </span>
+                                <button
+                                    type="button"
+                                    onClick={() => setRole("agent")}
+                                    className="font-bold text-teal-400 hover:text-teal-300 underline underline-offset-2"
+                                >
+                                    I am an insurance agent
+                                </button>
+                            </div>
+                        ) : (
                             <button
                                 type="button"
-                                onClick={() => setRole('policyholder')}
-                                className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${role === 'policyholder'
-                                    ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/25'
-                                    : 'text-slate-400 hover:text-white hover:bg-slate-700'
-                                    }`}
+                                onClick={() => setRole("policyholder")}
+                                className="text-sm font-bold text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
                             >
-                                <Shield className="w-4 h-4" />
-                                Policyholder
+                                Continue as policyholder instead
                             </button>
-                            <button
-                                type="button"
-                                onClick={() => setRole('agent')}
-                                className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all flex items-center gap-2 ${role === 'agent'
-                                    ? 'bg-teal-600 text-white shadow-lg shadow-teal-600/25'
-                                    : 'text-slate-400 hover:text-white hover:bg-slate-700'
-                                    }`}
-                            >
-                                <Briefcase className="w-4 h-4" />
-                                Agent
-                            </button>
-                        </div>
+                        )}
                     </div>
                 )}
 

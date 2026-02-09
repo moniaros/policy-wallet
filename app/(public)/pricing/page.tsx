@@ -12,6 +12,7 @@ import { FeatureComparison } from '@/components/pricing/FeatureComparison'
 import { PricingFAQ } from '@/components/pricing/PricingFAQ'
 import { subscriptionCopy } from '@/lib/subscription-copy'
 import { Shield, Lock, CreditCard } from 'lucide-react'
+import { trackJourneyEvent } from '@/lib/journey/funnel'
 
 export default function PricingPage() {
     const router = useRouter()
@@ -36,6 +37,16 @@ export default function PricingPage() {
         return () => subscription.unsubscribe()
     }, [supabase])
 
+    useEffect(() => {
+        if (typeof window === "undefined") return
+        const params = new URLSearchParams(window.location.search)
+        if (params.get("success") === "true") {
+            trackJourneyEvent("upgrade_completed", {
+                source: "public_pricing_return",
+            })
+        }
+    }, [])
+
     const handleSelectPlan = async (tier: 'free' | 'plus' | 'pro') => {
         if (!session) {
             // Redirect to signup with plan parameter
@@ -50,6 +61,10 @@ export default function PricingPage() {
         }
 
         if (tier === 'plus' || tier === 'pro') {
+            trackJourneyEvent("upgrade_started", {
+                tier,
+                source: "public_pricing",
+            })
             // Redirect to checkout
             try {
                 const response = await fetch('/api/stripe/checkout', {
@@ -87,7 +102,7 @@ export default function PricingPage() {
                                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                                         }`}
                                 >
-                                    ΕΛ
+                                    EL
                                 </button>
                                 <button
                                     onClick={() => setLanguage('en')}

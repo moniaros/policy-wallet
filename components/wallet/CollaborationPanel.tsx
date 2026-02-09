@@ -5,6 +5,7 @@ import { sharePolicy, revokeShare } from "@/app/(protected)/wallet/actions"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { Users, UserPlus, Mail, Shield, Clock, CheckCircle2, XCircle, Copy, Trash2, Eye, Edit3, AlertCircle } from "lucide-react"
 
 export interface Share {
@@ -51,8 +52,16 @@ export function CollaborationPanel({ policyId, policyNumber, initialShares, isOw
             if (res.link) {
                 setInviteLink(res.link)
                 toast.success(t.wallet.invitationCreated || 'Invitation created')
+                trackJourneyEvent("first_policy_shared", {
+                    policy_id: policyId,
+                    share_type: "agent_invite",
+                })
             } else {
                 toast.success(t.wallet.policyShared || 'Policy shared successfully')
+                trackJourneyEvent("first_policy_shared", {
+                    policy_id: policyId,
+                    share_type: "agent_existing",
+                })
             }
             setEmail("")
             setShowInviteForm(false)

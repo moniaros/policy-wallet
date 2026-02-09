@@ -1,5 +1,4 @@
-import { CheckCircle2, ChevronRight, Info, AlertTriangle, XCircle, Shield, AlertCircle } from 'lucide-react'
-import { ReactNode } from 'react'
+import { CheckCircle2, ChevronRight, Info, Shield, Car, HeartPulse, Home, Briefcase, Lock } from 'lucide-react'
 
 export type InsightSeverity = 'low' | 'medium' | 'high' | 'critical'
 
@@ -25,41 +24,42 @@ export interface InsightData {
 interface InsightCardProps {
     insight: InsightData
     onAction: (actionType: string, insightId: string, actionLabel: string) => void
+    language?: 'el' | 'en'
     collapsed?: boolean
 }
 
-const TYPE_ICONS: Record<string, string> = {
-    motor: '🚗',
-    health: '❤️',
-    home: '🏠',
-    life: '🛡️',
-    other: '📄'
+const TYPE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+    motor: Car,
+    health: HeartPulse,
+    home: Home,
+    life: Shield,
+    other: Briefcase,
 }
 
 const SEVERITY_CONFIG = {
     low: {
-        label: { en: 'Low Risk', el: 'Χαμηλός Κίνδυνος' },
+        label: { en: 'Low Risk', el: '?a�???? ???d????' },
         color: 'text-blue-700 dark:text-blue-300',
         bg: 'bg-blue-50 dark:bg-blue-900/30',
         border: 'border-blue-100 dark:border-blue-800',
         accent: 'bg-blue-500'
     },
     medium: {
-        label: { en: 'Attention Needed', el: 'Χρήζει Προσοχής' },
+        label: { en: 'Attention Needed', el: '????e? ???s????' },
         color: 'text-amber-700 dark:text-amber-300',
         bg: 'bg-amber-50 dark:bg-amber-900/30',
         border: 'border-amber-100 dark:border-amber-800',
         accent: 'bg-amber-500'
     },
     high: {
-        label: { en: 'High Risk', el: 'Υψηλός Κίνδυνος' },
+        label: { en: 'High Risk', el: '?????? ???d????' },
         color: 'text-orange-700 dark:text-orange-300',
         bg: 'bg-orange-50 dark:bg-orange-900/30',
         border: 'border-orange-100 dark:border-orange-800',
         accent: 'bg-orange-500'
     },
     critical: {
-        label: { en: 'Critical Gap', el: 'Κρίσιμο Κενό' },
+        label: { en: 'Critical Gap', el: '???s?�? ?e??' },
         color: 'text-rose-700 dark:text-rose-300',
         bg: 'bg-rose-50 dark:bg-rose-900/30',
         border: 'border-rose-100 dark:border-rose-800',
@@ -67,20 +67,19 @@ const SEVERITY_CONFIG = {
     }
 }
 
-export function InsightCard({ insight, onAction, collapsed = false }: InsightCardProps) {
+export function InsightCard({ insight, onAction, language = 'el', collapsed = false }: InsightCardProps) {
+    void collapsed
     const config = SEVERITY_CONFIG[insight.severity] || SEVERITY_CONFIG.medium
-    const icon = TYPE_ICONS[insight.type] || TYPE_ICONS.other
+    const Icon = TYPE_ICONS[insight.type] || TYPE_ICONS.other
 
     return (
-        <div className={`relative bg-white dark:bg-stone-900 rounded-2xl border transition-all duration-300 hover:shadow-lg group overflow-hidden ${config.border} border-l-4`}>
-            {/* Left Accent Line (Visual Indicator of Severity) */}
+        <div className={`relative bg-white dark:bg-stone-900 rounded-2xl border transition-all duration-300 hover:shadow-lg group overflow-hidden ${config.border} border-l-4 cursor-pointer`}>
             <div className={`absolute left-0 top-0 bottom-0 w-1 ${config.accent}`} />
 
             <div className="p-6">
-                {/* 1. Header: Icon, Context, Title */}
                 <div className="flex items-start gap-4 mb-6">
-                    <div className="w-12 h-12 rounded-2xl bg-stone-50 dark:bg-stone-800 flex items-center justify-center text-2xl flex-shrink-0 shadow-sm border border-stone-100 dark:border-stone-700">
-                        {icon}
+                    <div className="w-12 h-12 rounded-2xl bg-stone-50 dark:bg-stone-800 flex items-center justify-center flex-shrink-0 shadow-sm border border-stone-100 dark:border-stone-700">
+                        <Icon className="w-6 h-6 text-stone-600 dark:text-stone-300" />
                     </div>
                     <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -88,8 +87,14 @@ export function InsightCard({ insight, onAction, collapsed = false }: InsightCar
                                 {insight.type.toUpperCase()}
                             </span>
                             <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${config.bg} ${config.color} border ${config.border}`}>
-                                {config.label.el}
+                                {config.label[language]}
                             </span>
+                            {insight.isPlusFeature && (
+                                <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300 border border-violet-100 dark:border-violet-800 flex items-center gap-1">
+                                    <Lock className="w-3 h-3" />
+                                    PLUS
+                                </span>
+                            )}
                         </div>
                         <h3 className="text-xl font-bold text-stone-900 dark:text-white leading-tight">
                             {insight.title}
@@ -98,13 +103,12 @@ export function InsightCard({ insight, onAction, collapsed = false }: InsightCar
                 </div>
 
                 <div className="space-y-6">
-                    {/* 2. Why it matters (Context Box) */}
                     <div className="relative overflow-hidden bg-stone-50/80 dark:bg-stone-800/50 rounded-xl p-4 border border-stone-100 dark:border-stone-800">
                         <div className="flex gap-3">
                             <Info className="w-5 h-5 text-stone-400 mt-0.5 flex-shrink-0" />
                             <div>
                                 <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest block mb-1">
-                                    Γιατί έχει σημασία
+                                    {language === 'el' ? 'G?at? ??e? s?�as?a' : 'Why this matters'}
                                 </span>
                                 <p className="text-stone-700 dark:text-stone-300 text-sm leading-relaxed font-medium">
                                     {insight.whyItMatters}
@@ -113,10 +117,9 @@ export function InsightCard({ insight, onAction, collapsed = false }: InsightCar
                         </div>
                     </div>
 
-                    {/* 3. What we checked (Checklist) */}
                     <div>
                         <span className="text-[10px] font-bold text-stone-400 uppercase tracking-widest block mb-3">
-                            Τι ελέγξαμε
+                            {language === 'el' ? '?? e????a�e' : 'What we checked'}
                         </span>
                         <div className="space-y-2">
                             {insight.checkedItems.slice(0, 3).map((item, idx) => (
@@ -132,10 +135,8 @@ export function InsightCard({ insight, onAction, collapsed = false }: InsightCar
                         </div>
                     </div>
 
-                    {/* 4. Actions Area */}
                     <div className="pt-2">
                         <div className="flex flex-col gap-3">
-                            {/* Primary Action - High Visibility */}
                             <button
                                 onClick={() => onAction('primary', insight.id, insight.primaryAction.label)}
                                 className="w-full flex items-center justify-between px-5 py-4 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl text-sm font-bold shadow-md hover:shadow-xl hover:-translate-y-0.5 active:translate-y-0 transition-all group/btn"
@@ -146,7 +147,6 @@ export function InsightCard({ insight, onAction, collapsed = false }: InsightCar
                                 </span>
                             </button>
 
-                            {/* Secondary Actions - Subtle Grid */}
                             <div className="grid grid-cols-2 gap-3">
                                 {insight.secondaryActions.map((action, idx) => (
                                     <button
@@ -163,7 +163,6 @@ export function InsightCard({ insight, onAction, collapsed = false }: InsightCar
                             </div>
                         </div>
 
-                        {/* Microcopy */}
                         {insight.microcopy && (
                             <div className="mt-4 flex justify-center">
                                 <span className="text-[10px] font-medium text-stone-400 bg-stone-50 dark:bg-stone-800/50 px-3 py-1 rounded-full flex items-center gap-1.5">
@@ -176,11 +175,10 @@ export function InsightCard({ insight, onAction, collapsed = false }: InsightCar
                 </div>
             </div>
 
-            {/* Optional: Subtle Bottom Brand Strip for PLUS Upsell context (non-intrusive) */}
             {insight.isPlusFeature && (
                 <div className="bg-stone-50 dark:bg-stone-800/30 px-6 py-2 border-t border-stone-100 dark:border-stone-800 flex justify-center">
                     <span className="text-[10px] font-bold text-stone-400">
-                        Premium Analysis Included
+                        {language === 'el' ? '?????�??? a????s? d?a??s?�? se Plus/Pro' : 'Advanced analysis available on Plus/Pro'}
                     </span>
                 </div>
             )}

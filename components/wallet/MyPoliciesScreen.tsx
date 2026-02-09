@@ -4,6 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { MobilePolicyCard } from './MobilePolicyCard'
 import type { Policy } from './types'
 import { CarIcon, HomeIcon, DocumentIcon } from '@/components/icons/PolicyIcons'
+import { calculatePremiumFootprint } from '@/lib/wallet/premium-footprint'
 
 interface MyPoliciesScreenProps {
     policies: Policy[]
@@ -13,6 +14,7 @@ interface MyPoliciesScreenProps {
 
 export function MyPoliciesScreen({ policies, onViewPolicy, onAddPolicy }: MyPoliciesScreenProps) {
     const { language } = useLanguage()
+    const totalPremium = calculatePremiumFootprint(policies)
 
     return (
         <div className="min-h-screen bg-stone-50 dark:bg-stone-900">
@@ -52,7 +54,7 @@ export function MyPoliciesScreen({ policies, onViewPolicy, onAddPolicy }: MyPoli
                     <div className="flex-shrink-0 w-[200px] bg-gradient-to-br from-teal-500 to-teal-300 rounded-[32px] p-6 text-white shadow-xl shadow-teal-500/20 snap-start">
                         <span className="text-[10px] font-black uppercase tracking-widest opacity-80 block mb-2">Yearly Premium:</span>
                         <div className="flex items-baseline gap-1">
-                            <span className="text-4xl font-black tracking-tighter">€{policies.reduce((sum, p) => sum + (p.premiumAmount || 0), 0).toFixed(2)}</span>
+                            <span className="text-4xl font-black tracking-tighter">€{totalPremium.toFixed(2)}</span>
                         </div>
                     </div>
                 </div>

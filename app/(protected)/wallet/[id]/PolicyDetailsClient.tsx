@@ -405,11 +405,36 @@ export function PolicyDetailsClient({
                         />
 
                         {/* Interactive Q&A */}
-                        <PolicyQA policyId={policy.id} />
+                        <div id="policy-qa">
+                            <PolicyQA policyId={policy.id} />
+                        </div>
                     </div>
 
                     {/* Right Column - Sidebar */}
                     <div className="space-y-6">
+                        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-white/20 dark:border-slate-700/50">
+                            <h3 className="text-sm font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">
+                                {language === "el" ? "Επόμενες Ενέργειες" : "Next Best Actions"}
+                            </h3>
+                            <div className="space-y-3">
+                                <a
+                                    href="#policy-qa"
+                                    className="block w-full p-3 rounded-xl border border-indigo-200 dark:border-indigo-800 text-sm font-semibold text-indigo-700 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors"
+                                >
+                                    {language === "el" ? "Κάντε 1 ερώτηση στο AI" : "Ask 1 starter question to AI"}
+                                </a>
+                                <button
+                                    onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" })}
+                                    className="block w-full p-3 rounded-xl border border-teal-200 dark:border-teal-800 text-sm font-semibold text-teal-700 dark:text-teal-300 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-colors text-left"
+                                >
+                                    {language === "el" ? "Μοιραστείτε με πράκτορα/οικογένεια" : "Share with agent/family"}
+                                </button>
+                                <div className="p-3 rounded-xl border border-amber-200 dark:border-amber-800 text-sm font-semibold text-amber-700 dark:text-amber-300">
+                                    {language === "el" ? "Ελέγξτε επόμενες λήξεις και ανανεώσεις" : "Review upcoming expiries and renewals"}
+                                </div>
+                            </div>
+                        </div>
+
                         {/* AI Usage Widget */}
                         <AIUsageWidget
                             count={aiUsageStats.count}

@@ -1,11 +1,11 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowRight, Check, Upload, Camera, FileText, Shield, Home, Heart, Briefcase, Car, X, Loader2 } from "lucide-react"
 import { toast } from "sonner"
-import { useRouter } from "next/navigation"
 import { completeOnboardingStep, uploadOnboardingPolicy } from "./actions"
+import { trackJourneyEvent } from "@/lib/journey/funnel"
 
 interface OnboardingFlowProps {
     initialState: {
@@ -36,11 +36,19 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
     const [step, setStep] = useState(initialState.step)
     const [direction, setDirection] = useState(0)
     const [loading, setLoading] = useState(false)
-    const router = useRouter()
+
+    useEffect(() => {
+        trackJourneyEvent("onboarding_started", {
+            source: initialState.step > 1 ? "resume" : "new_signup",
+        })
+    }, [initialState.step])
 
     const nextStep = useCallback(async (data?: any) => {
         setLoading(true)
         try {
+            if (step === 4) {
+                trackJourneyEvent("onboarding_completed", { steps_completed: 4 })
+            }
             await completeOnboardingStep(step + 1, data)
             setDirection(1)
             setStep(s => s + 1)
@@ -226,6 +234,10 @@ function UploadStep({ onNext, onSkip }: { onNext: (data?: any) => void, onSkip: 
         try {
             const result = await uploadOnboardingPolicy(formData)
             if (result.success) {
+                trackJourneyEvent("first_policy_uploaded", {
+                    policy_id: result.policyId,
+                    source: "onboarding_upload_step",
+                })
                 onNext({ policyId: result.policyId }) // Success step
             } else {
                 toast.error(result.error)
@@ -262,10 +274,10 @@ function UploadStep({ onNext, onSkip }: { onNext: (data?: any) => void, onSkip: 
             </div>
 
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-                Add your first policy 🎉
+                Add your first policy
             </h2>
             <p className="text-slate-500 dark:text-slate-400 mb-8">
-                We'll analyze it instantly for gaps and savings.
+                AI analysis starts immediately after upload.
             </p>
 
             <div
@@ -284,7 +296,7 @@ function UploadStep({ onNext, onSkip }: { onNext: (data?: any) => void, onSkip: 
                     <div className="flex flex-col items-center">
                         <Loader2 className="w-12 h-12 text-indigo-500 animate-spin mb-4" />
                         <p className="text-lg font-medium text-slate-700 dark:text-slate-300">Analyzing document...</p>
-                        <p className="text-sm text-slate-400 mt-2">This usually takes 3-5 seconds</p>
+                        <p className="text-sm text-slate-400 mt-2">Initial results usually appear within 1 minute.</p>
                     </div>
                 ) : (
                     <>
@@ -356,12 +368,12 @@ function SuccessStep({ onNext }: { onNext: () => void }) {
             </div>
 
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
-                You're all set! 🎉
+                You're all set!
             </h1>
 
             <p className="text-slate-600 dark:text-slate-300 mb-8 max-w-sm mx-auto">
-                Your account is created and your policy wallet is ready.
-                Let's explore your dashboard.
+                Your account is ready and your first policy has been uploaded.
+                Analysis may still be running in the background.
             </p>
 
             <div className="space-y-4 mb-8">
@@ -375,13 +387,13 @@ function SuccessStep({ onNext }: { onNext: () => void }) {
                     <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center shrink-0">
                         <Check className="w-4 h-4 text-green-600" />
                     </div>
-                    <span>Policy analysis complete</span>
+                    <span>Policy uploaded and analysis started</span>
                 </div>
                 <div className="flex items-center gap-3 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg">
                     <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center shrink-0">
                         <Check className="w-4 h-4 text-green-600" />
                     </div>
-                    <span>Dashboard ready</span>
+                    <span>Next: ask AI, share with your agent, and review renewals</span>
                 </div>
             </div>
 

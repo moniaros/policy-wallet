@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import type { PolicyWalletProps, Policy } from './types'
 import { StatusSummary } from './StatusSummary'
 import { PolicyCard } from './PolicyCard'
@@ -9,6 +9,7 @@ import { EmptyState } from './EmptyState'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AlertCircle, Sparkles } from 'lucide-react'
+import { calculatePremiumFootprint } from '@/lib/wallet/premium-footprint'
 
 // Design tokens: teal (primary), amber (secondary), stone (neutral), Inter typography
 
@@ -33,6 +34,7 @@ export function PolicyWallet({
     onViewHistory?: (policyId: string) => void
 }) {
     const [showAddMenu, setShowAddMenu] = useState(false)
+    const addMenuRef = useRef<HTMLDivElement | null>(null)
     const { t, language } = useLanguage()
     const [searchQuery, setSearchQuery] = useState('')
     const [activeFilter, setActiveFilter] = useState<'all' | 'motor' | 'health' | 'home' | 'life' | 'travel'>('all')
@@ -48,6 +50,26 @@ export function PolicyWallet({
         setViewMode(mode)
         localStorage.setItem('wallet_view_mode', mode)
     }
+
+    useEffect(() => {
+        if (!showAddMenu) return
+
+        const handleOutsideClick = (event: MouseEvent | TouchEvent) => {
+            if (!addMenuRef.current) return
+            const target = event.target as Node | null
+            if (target && !addMenuRef.current.contains(target)) {
+                setShowAddMenu(false)
+            }
+        }
+
+        document.addEventListener('mousedown', handleOutsideClick)
+        document.addEventListener('touchstart', handleOutsideClick)
+
+        return () => {
+            document.removeEventListener('mousedown', handleOutsideClick)
+            document.removeEventListener('touchstart', handleOutsideClick)
+        }
+    }, [showAddMenu])
 
     // Filter policies based on search and category
     const filteredPolicies = useMemo(() => {
@@ -96,11 +118,7 @@ export function PolicyWallet({
     const actionNeededCount = policies.filter(p => p.status === 'action_needed').length
 
     // Calculate total annual premium
-    const totalPremium = policies.reduce((sum, p) => {
-        // Only count active/processed policies for the total
-        if (p.status === 'analyzing') return sum
-        return sum + (p.premiumAmount || 0)
-    }, 0)
+    const totalPremium = calculatePremiumFootprint(policies)
 
     // Category filter counts
     const categoryCounts = {
@@ -392,21 +410,41 @@ export function PolicyWallet({
             <div className="fixed bottom-8 right-8 z-40">
                 {policies.length > 0 ? (
                     /* Tiered FAB for returning users */
-                    <div className="relative group">
-                        <div className="absolute bottom-full right-0 mb-4 flex flex-col gap-2 opacity-0 scale-90 translate-y-4 pointer-events-none group-hover:opacity-100 group-hover:scale-100 group-hover:translate-y-0 group-hover:pointer-events-auto transition-all duration-300 origin-bottom-right">
-                            <button onClick={onAddManually} className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-stone-800 rounded-xl shadow-xl text-xs font-bold text-stone-600 dark:text-stone-300 whitespace-nowrap hover:bg-stone-50 dark:hover:bg-stone-700">
+                    <div ref={addMenuRef} className="relative">
+                        <div
+                            className={`absolute bottom-full right-0 mb-4 flex flex-col gap-2 transition-all duration-200 origin-bottom-right ${showAddMenu
+                                ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto'
+                                : 'opacity-0 scale-95 translate-y-2 pointer-events-none'
+                                }`}
+                        >
+                            <button
+                                onClick={() => {
+                                    onAddManually?.()
+                                    setShowAddMenu(false)
+                                }}
+                                className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-stone-800 rounded-xl shadow-xl text-xs font-bold text-stone-600 dark:text-stone-300 whitespace-nowrap hover:bg-stone-50 dark:hover:bg-stone-700"
+                            >
                                 Add details manually
                                 <span className="w-8 h-8 flex items-center justify-center bg-stone-100 dark:bg-stone-900 rounded-lg">✍️</span>
                             </button>
-                            <button onClick={onUploadDocument} className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-stone-800 rounded-xl shadow-xl text-xs font-bold text-stone-600 dark:text-stone-300 whitespace-nowrap hover:bg-stone-50 dark:hover:bg-stone-700">
+                            <button
+                                onClick={() => {
+                                    onUploadDocument?.()
+                                    setShowAddMenu(false)
+                                }}
+                                className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-stone-800 rounded-xl shadow-xl text-xs font-bold text-stone-600 dark:text-stone-300 whitespace-nowrap hover:bg-stone-50 dark:hover:bg-stone-700"
+                            >
                                 Upload document
                                 <span className="w-8 h-8 flex items-center justify-center bg-stone-100 dark:bg-stone-900 rounded-lg">📄</span>
                             </button>
                         </div>
                         <button
                             id="tour-fab"
+                            onClick={() => setShowAddMenu(prev => !prev)}
                             className="flex items-center justify-center w-16 h-16 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300"
                             aria-label="Add Policy"
+                            aria-expanded={showAddMenu}
+                            aria-haspopup="menu"
                         >
                             <span className="text-2xl font-light">+</span>
                         </button>

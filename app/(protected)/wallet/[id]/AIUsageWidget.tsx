@@ -4,12 +4,15 @@ import React from 'react'
 
 interface AIUsageWidgetProps {
     count: number
-    limit: number
+    limit: number | null
     t: any
 }
 
 export function AIUsageWidget({ count, limit, t }: AIUsageWidgetProps) {
-    const percentage = Math.min((count / limit) * 100, 100)
+    const isUnlimited = limit === null
+    const safeLimit = limit ?? count
+    const percentage = isUnlimited ? 0 : Math.min((count / Math.max(safeLimit, 1)) * 100, 100)
+    const remaining = isUnlimited ? null : Math.max(safeLimit - count, 0)
 
     return (
         <div className="bg-gradient-to-br from-stone-900 to-stone-800 dark:from-stone-800 dark:to-stone-900 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden group">
@@ -21,20 +24,32 @@ export function AIUsageWidget({ count, limit, t }: AIUsageWidgetProps) {
 
             <div className="flex items-end justify-between mb-2">
                 <span className="text-3xl font-black">{count}</span>
-                <span className="text-sm opacity-60 mb-1">/ {limit} {t.wallet.analyses}</span>
+                <span className="text-sm opacity-60 mb-1">
+                    / {isUnlimited ? (t.common?.unlimited || "Unlimited") : safeLimit} {t.wallet.analyses}
+                </span>
             </div>
 
-            <div className="h-2 bg-white/20 rounded-full overflow-hidden mb-6">
-                <div
-                    className="h-full bg-teal-400 transition-all duration-500 ease-out"
-                    style={{ width: `${percentage}%` }}
-                />
-            </div>
+            {!isUnlimited && (
+                <>
+                    <div className="h-2 bg-white/20 rounded-full overflow-hidden mb-4">
+                        <div
+                            className="h-full bg-teal-400 transition-all duration-500 ease-out"
+                            style={{ width: `${percentage}%` }}
+                        />
+                    </div>
+                    <p className="text-xs opacity-80 mb-5">
+                        {remaining} {t.wallet.analysesRemaining || "analyses remaining this month"}
+                    </p>
+                </>
+            )}
 
-            <button className="w-full py-3 bg-white text-stone-900 rounded-xl font-bold hover:bg-stone-100 transition-colors flex items-center justify-center gap-2 text-sm">
+            <a
+                href="/upgrade?reason=ai_analysis_limit"
+                className="w-full py-3 bg-white text-stone-900 rounded-xl font-bold hover:bg-stone-100 transition-colors flex items-center justify-center gap-2 text-sm"
+            >
                 <svg className="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                 {t.wallet.upgradePlan}
-            </button>
+            </a>
         </div>
     )
 }

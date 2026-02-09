@@ -313,6 +313,20 @@ export class PolicyService extends BaseService {
                         }
                     )
 
+                    await this.db.notificationEvent.create({
+                        data: {
+                            userId,
+                            eventType: 'policy_merged',
+                            channel: 'in_app',
+                            title: language === 'el' ? 'Η ανάλυση ολοκληρώθηκε' : 'Policy Analysis Complete',
+                            message: language === 'el'
+                                ? `Η νέα μεταφόρτωση ενσωματώθηκε στο υπάρχον συμβόλαιο ${currentPolicy.policyNumber}.`
+                                : `Your upload was merged into existing policy ${currentPolicy.policyNumber}.`,
+                            relatedObjectType: 'policy',
+                            relatedObjectId: existingPolicy.id
+                        }
+                    })
+
                     logger('info', 'Deduplication merge complete', { policyId: existingPolicy.id })
                     return // Exit early since we deleted the current policy record
                 }

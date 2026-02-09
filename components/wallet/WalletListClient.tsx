@@ -28,6 +28,7 @@ import { useOffline } from '@/components/providers/OfflineProvider'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 import type { Policy } from './types'
+import { calculatePremiumFootprint } from '@/lib/wallet/premium-footprint'
 
 interface WalletListClientProps {
     policies: Policy[]
@@ -144,7 +145,7 @@ export function WalletListClient({ policies, user }: WalletListClientProps) {
     }
 
     const totalPremium = useMemo(() => {
-        return displayPolicies.reduce((sum, p) => sum + (p.premiumAmount || 0), 0)
+        return calculatePremiumFootprint(displayPolicies)
     }, [displayPolicies])
 
     return (
