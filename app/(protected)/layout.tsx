@@ -45,6 +45,7 @@ export default async function ProtectedLayout({
                 { label: t.nav.opportunities, href: "/opportunities", icon: <Lightbulb className="w-5 h-5" /> },
                 { label: t.nav.insights, href: "/insights", icon: <PieChart className="w-5 h-5" /> },
                 { label: t.nav.notifications, href: "/notifications", icon: <Bell className="w-5 h-5" /> },
+                { label: "Profile", href: "/agent/settings", icon: <Settings className="w-5 h-5" /> },
             ]
         })
     } else if (currentRole === "admin") {

@@ -25,6 +25,7 @@ export const en: TranslationKeys = {
         dueDate: 'Due Date',
         locale: 'en-GB',
         copy: 'Copy',
+        needHelp: 'Need help?',
     },
 
     // Navigation
@@ -661,5 +662,56 @@ export const en: TranslationKeys = {
         allClear30Days: 'All clear for the next 30 days!'
     },
 
+    help: {
+        pageTitle: 'Help Center',
+        pageSubtitle: "We're here to help you get the most out of your PolicyWallet.",
+        emailSupport: 'Email Support',
+        emailDesc: 'Get in touch with our support team for any technical issues.',
+        sendEmail: 'Send Email',
+        knowledgeBase: 'Knowledge Base',
+        knowledgeDesc: 'Browse our articles and tutorials for quick answers.',
+        visitDocs: 'Visit Docs',
+        communityChat: 'Community Chat',
+        communityDesc: 'Join our community for real-time help from other users.',
+        joinDiscord: 'Join Discord',
+        stillNeedHelp: 'Still need assistance?',
+        expertDesc: 'Our insurance experts are available Monday through Friday, 9:00 AM to 6:00 PM (EET) to assist you with policy-specific questions.',
+        contactExpert: 'Contact Expert',
+        searchPlaceholder: 'Search for articles, guides, or help topics...',
+        categories: {
+            gettingStarted: 'Getting Started',
+            policyManagement: 'Policy Management',
+            accountSecure: 'Account & Security',
+            billing: 'Billing & Subscriptions',
+            mobileApp: 'Mobile App & PWA'
+        },
+        articles: {
+            uploadPolicy: 'How to upload your first policy',
+            sharingAccess: 'Sharing policy access with family',
+            premiumFeatures: 'Understanding premium benefits',
+            resetPassword: 'How to reset your password',
+            notifications: 'Managing alert preferences',
+            installPWA: 'How to install the Mobile App',
+            updatePayment: 'Updating your payment method'
+        },
+        featuredGuides: 'Featured Tutorials',
+        instantSupport: 'Instant Support',
+        browseLibrary: 'Browse Library',
+        startLearning: 'Start Learning',
+        liveStatus: 'Live Status',
+        agentsOnline: 'Expert Agents Online',
+        startChat: 'Start Live Chat',
+        quickAnswers: 'Quick Answers',
+        viewAll: 'View all',
+        search: 'Search'
+    },
 
+
+    policyCard: {
+        whatsNotCovered: "What's NOT Covered",
+        premiumFairness: "Premium Fairness",
+        youPay: "You Pay",
+        localAvg: "Local Avg",
+        save: "Save"
+    }
 }

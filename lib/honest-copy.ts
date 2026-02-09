@@ -23,20 +23,20 @@ export const honestCopy = {
             en: 'The Operating System for Personal Insurance'
         },
         mission: {
-            el: 'Να κάνουμε την ασφάλιση κατανοητή, χρήσιμη και υπό τον έλεγχό σας.',
-            en: 'Making insurance understandable, useful, and under your control.'
+            el: 'Να μεγιστοποιήσουμε τα οφέλη της ασφάλισής σας με έξυπνη ανάλυση και προληπτική φροντίδα.',
+            en: 'Maximize your insurance benefits with intelligent insights and preventive care reminders.'
         }
     },
 
     // Landing Page Hero
     hero: {
         title: {
-            el: 'Είμαι Σωστά Καλυμμένος;',
-            en: 'Am I Properly Covered?'
+            el: 'Το Έξυπνο Ασφαλιστικό Πορτοφόλι σας με AI',
+            en: 'Your Smart Insurance Wallet Powered by AI'
         },
         subtitle: {
-            el: 'Το PolicyWallet σας βοηθά να καταλάβετε τι καλύπτουν τα συμβόλαιά σας, τι όχι και πού υπάρχει περιθώριο βελτίωσης — όλα σε ένα σημείο.',
-            en: 'PolicyWallet helps you understand what your policies cover, what they don’t, and where there’s room for improvement — all in one place.'
+            el: 'Μεγιστοποιήστε τα οφέλη της ασφάλισής σας με έξυπνες πληροφορίες και υπενθυμίσεις προληπτικής φροντίδας — όλα σε ένα σημείο.',
+            en: 'Maximize your insurance benefits with intelligent insights and preventive care reminders — all in one place.'
         },
         cta: {
             primary: {
@@ -57,27 +57,81 @@ export const honestCopy = {
     // Value Proposition (The Problem & Solution)
     value: {
         title: {
-            el: 'Το πρόβλημα δεν είναι η έλλειψη ασφάλισης. Είναι η έλλειψη κατανόησης.',
-            en: 'The problem isn’t lack of insurance. It’s lack of understanding.'
+            el: 'Ξεκλειδώστε τις Δυνατότητες της Ασφάλισής σας',
+            en: 'Unlock the Full Potential of Your Insurance'
         },
         description: {
-            el: 'Τα περισσότερα συμβόλαια είναι δύσκολα, αποσπασματικά και παθητικά. Το PolicyWallet τα συγκεντρώνει και τα κάνει ουσιαστικά χρήσιμα.',
-            en: 'Most policies are complex, fragmented, and passive. PolicyWallet brings them together and makes them genuinely useful.'
+            el: 'Η πλατφόρμα μας αναλύει τα συμβόλαιά σας για να παρέχει εξατομικευμένες προτάσεις, υπενθυμίσεις προληπτικής φροντίδας και απρόσκοπτη σύνδεση με παρόχους υγείας.',
+            en: 'Our AI-powered platform analyzes your policies to provide personalized insights, proactive preventive care reminders, and seamless integration with healthcare providers.'
         }
+    },
+
+    // The Problem Details
+    problem: {
+        items: [
+            {
+                title: { el: 'Πολυπλοκότητα', en: 'Complexity' },
+                description: { el: 'Δυσνόητοι όροι και νομική ορολογία που προκαλούν σύγχυση.', en: 'Confusing terms and legal jargon that create uncertainty.' }
+            },
+            {
+                title: { el: 'Διάσπαρτα Έγγραφα', en: 'Fragmented Info' },
+                description: { el: 'Συμβόλαια σε emails, φακέλους και portals διαφορετικών εταιρειών.', en: 'Policies scattered across emails, folders, and different provider portals.' }
+            },
+            {
+                title: { el: 'Άγνωστα Κενά', en: 'Unknown Gaps' },
+                description: { el: 'Δεν γνωρίζετε τι πραγματικά καλύπτεστε μέχρι να χρειαστείτε την αποζημίωση.', en: 'You don’t know what you’re actually covered for until you need a claim.' }
+            }
+        ]
+    },
+
+    // Product Showcase
+    showcase: {
+        title: {
+            el: 'Όλα όσα χρειάζεστε για την ασφάλισή σας',
+            en: 'Everything you need for your insurance'
+        },
+        benefits: [
+            { el: '✅ Αυτόματη ανάλυση συμβολαίων με AI', en: '✅ Automatic AI policy analysis' },
+            { el: '✅ Ενιαία προβολή κόστους και καλύψεων', en: '✅ Unified view of costs and coverage' },
+            { el: '✅ Έξυπνες ειδοποιήσεις ανανέωσης', en: '✅ Smart renewal notifications' },
+            { el: '✅ Άμεση πρόσβαση από παντού', en: '✅ Instant access from anywhere' }
+        ]
+    },
+
+    // FAQ
+    faq: {
+        title: {
+            el: 'Συχνές Ερωτήσεις',
+            en: 'Frequently Asked Questions'
+        },
+        items: [
+            {
+                question: { el: 'Είναι τα δεδομένα μου ασφαλή;', en: 'Is my data secure?' },
+                answer: { el: 'Ναι, χρησιμοποιούμε κρυπτογράφηση τραπεζικού επιπέδου και δεν μοιραζόμαστε ποτέ τα δεδομένα σας με τρίτους χωρίς την έγκρισή σας.', en: 'Yes, we use bank-level encryption and never share your data with third parties without your consent.' }
+            },
+            {
+                question: { el: 'Πόσο κοστίζει;', en: 'How much does it cost?' },
+                answer: { el: 'Το PolicyWallet είναι δωρεάν για ιδιώτες για την οργάνωση των συμβολαίων τους.', en: 'PolicyWallet is free for individuals to organize their policies.' }
+            },
+            {
+                question: { el: 'Συνεργάζεστε με ασφαλιστικές;', en: 'Do you work with insurance companies?' },
+                answer: { el: 'Λειτουργούμε ανεξάρτητα για να εξυπηρετούμε τα δικά σας συμφέροντα, όχι των εταιρειών.', en: 'We operate independently to serve your interests, not the insurance carriers.' }
+            }
+        ]
     },
 
     // How It Works
     howItWorks: {
         title: {
-            el: 'Από το Χάος στον Έλεγχο',
-            en: 'From Chaos to Control'
+            el: 'Πώς Λειτουργεί',
+            en: 'How It Works'
         },
         steps: [
             {
                 number: '01',
                 title: {
-                    el: 'Οργάνωση',
-                    en: 'Centralize'
+                    el: 'Ανεβάστε τα Έγγραφά σας',
+                    en: 'Upload your Documents'
                 },
                 description: {
                     el: 'Συγκεντρώστε όλα τα ασφαλιστήρια και τα έγγραφά σας σε ένα ασφαλές ψηφιακό περιβάλλον.',
@@ -87,23 +141,23 @@ export const honestCopy = {
             {
                 number: '02',
                 title: {
-                    el: 'Κατανόηση',
-                    en: 'Understand'
+                    el: 'Αφήστε το AI να Δουλέψει',
+                    en: 'Let AI Work for You'
                 },
                 description: {
-                    el: 'Η τεχνολογία απλοποιεί την ασφαλιστική γλώσσα και σας δείχνει τι ισχύει στην πράξη.',
-                    en: 'Technology simplifies insurance language and shows what actually applies in real life.'
+                    el: 'Λάβετε εξατομικευμένες προτάσεις για τη βελτιστοποίηση της κάλυψής σας και τον εντοπισμό κενών.',
+                    en: 'Get personalized recommendations to optimize your coverage, close gaps, and save money.'
                 }
             },
             {
                 number: '03',
                 title: {
-                    el: 'Βελτίωση',
-                    en: 'Improve'
+                    el: 'Μείνετε Προνοητικοί',
+                    en: 'Stay Proactive'
                 },
                 description: {
-                    el: 'Αναδείξτε κενά ή επικαλύψεις και πάρτε πιο συνειδητές αποφάσεις για την κάλυψή σας.',
-                    en: 'Identify gaps or overlaps and make more informed decisions about your coverage.'
+                    el: 'Διαχειριστείτε ραντεβού υγείας και λάβετε υπενθυμίσεις για προληπτικό έλεγχο.',
+                    en: 'Manage health appointments and receive reminders for preventive check-ups.'
                 }
             }
         ]
@@ -134,23 +188,23 @@ export const honestCopy = {
             {
                 icon: 'chart',
                 title: {
-                    el: 'Εντοπισμός Κενών',
-                    en: 'Gap Awareness'
+                    el: 'Εξατομικευμένες Προτάσεις',
+                    en: 'Personalized Recommendations'
                 },
                 description: {
-                    el: 'Ορατότητα σε πιθανά κενά ή επικαλύψεις στην κάλυψή σας.',
-                    en: 'Visibility into potential gaps or overlaps in your coverage.'
+                    el: 'Λάβετε προτάσεις για τη βελτιστοποίηση της κάλυψής σας και την εξοικονόμηση χρημάτων.',
+                    en: 'Get recommendations to optimize your coverage, close gaps, and save money.'
                 }
             },
             {
                 icon: 'share',
                 title: {
-                    el: 'Κοινή Πρόσβαση',
-                    en: 'Shared Access'
+                    el: 'Διαχείριση Ραντεβού',
+                    en: 'Appointment Management'
                 },
                 description: {
-                    el: 'Ασφαλής κοινή χρήση εγγράφων με μέλη της οικογένειας ή τον ασφαλιστικό σας σύμβουλο.',
-                    en: 'Secure document sharing with family members or your insurance advisor.'
+                    el: 'Κλείστε ραντεβού με γιατρούς και διαχειριστείτε το πρόγραμμα υγείας σας.',
+                    en: 'Book appointments with doctors and manage your health schedule seamlessly.'
                 }
             },
             {
@@ -250,8 +304,8 @@ export const honestCopy = {
     // Trust Signals
     trust: {
         title: {
-            el: 'Χτισμένο με Σεβασμό στον Χρήστη',
-            en: 'Built with Respect for the User'
+            el: 'Γίνετε μέλος των χιλιάδων που αλλάζουν την εμπειρία τους',
+            en: 'Join thousands of others transforming their insurance experience'
         },
         items: [
             {

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { calculatePolicyStatus, getStatusColor, getStatusLabel, getDaysUntilExpiry } from "@/lib/policy-status"
 import { AnalysisCard } from "@/app/(protected)/wallet/[id]/AnalysisCard"
+import { TrendingUp, MessageSquare, Plus, FileText } from "lucide-react"
 
 export default async function AgentPolicyDetailPage({ params }: { params: Promise<{ id: string, policyId: string }> }) {
     const { id: customerId, policyId } = await params
@@ -78,6 +79,27 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                 </svg>
                 <span className="text-stone-900 dark:text-stone-100">{policy.policyNumber}</span>
             </nav>
+
+            {/* Agent Action Banner */}
+            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-6 mb-8 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+                <div className="flex items-center gap-4">
+                    <div className="bg-amber-100 dark:bg-amber-800 p-3 rounded-2xl">
+                        <TrendingUp className="w-6 h-6 text-amber-700 dark:text-amber-400" />
+                    </div>
+                    <div>
+                        <p className="text-sm font-black text-amber-900 dark:text-amber-100 uppercase tracking-widest">Agent Portfolio Manager</p>
+                        <p className="text-xs text-amber-700 dark:text-amber-400 font-medium mt-0.5">You are currently managing this customer policy.</p>
+                    </div>
+                </div>
+                <div className="flex items-center gap-3 w-full md:w-auto">
+                    <button className="flex-1 md:flex-none px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-amber-500/20 transition-all active:scale-95">
+                        New Quote
+                    </button>
+                    <button className="flex-1 md:flex-none px-6 py-2.5 bg-white dark:bg-stone-800 text-stone-900 dark:text-white rounded-2xl text-xs font-black uppercase tracking-widest border border-amber-200 dark:border-amber-700 transition-all hover:bg-amber-100/50 active:scale-95">
+                        Add Note
+                    </button>
+                </div>
+            </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Main Content */}
@@ -248,7 +270,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                             </div>
                         ) : (
                             <ul className="space-y-4">
-                                {policy.documents.map(doc => (
+                                {policy.documents.map((doc: any) => (
                                     <li key={doc.id}>
                                         <a href={doc.fileUrl} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-3 rounded-2xl hover:bg-stone-50 dark:hover:bg-stone-700/50 group transition-all">
                                             <div className="w-10 h-10 rounded-xl bg-stone-100 dark:bg-stone-900 flex items-center justify-center text-stone-400 group-hover:text-teal-600 transition-colors">

@@ -23,6 +23,7 @@ export const el = {
         dueDate: 'Προθεσμία',
         locale: 'el-GR',
         copy: 'Αντιγραφή',
+        needHelp: 'Χρειάζεστε βοήθεια;',
     },
 
     // Navigation
@@ -659,7 +660,58 @@ export const el = {
         allClear30Days: 'Όλα καθαρά για τις επόμενες 30 ημέρες!'
     },
 
+    help: {
+        pageTitle: 'Κέντρο Βοήθειας',
+        pageSubtitle: 'Είμαστε εδώ για να σας βοηθήσουμε να αξιοποιήσετε στο έπακρο το PolicyWallet.',
+        emailSupport: 'Υποστήριξη μέσω Email',
+        emailDesc: 'Επικοινωνήστε με την ομάδα υποστήριξής μας για τυχόν τεχνικά προβλήματα.',
+        sendEmail: 'Αποστολή Email',
+        knowledgeBase: 'Βάση Γνώσης',
+        knowledgeDesc: 'Περιηγηθείτε στα άρθρα και τα σεμινάριά μας για γρήγορες απαντήσεις.',
+        visitDocs: 'Επίσκεψη στα Έγγραφα',
+        communityChat: 'Συνομιλία Κοινότητας',
+        communityDesc: 'Γίνετε μέλος της κοινότητάς μας για βοήθεια σε πραγματικό χρόνο.',
+        joinDiscord: 'Σύνδεση στο Discord',
+        stillNeedHelp: 'Χρειάζεστε ακόμα βοήθεια;',
+        expertDesc: 'Οι ειδικοί μας στις ασφάλειες είναι διαθέσιμοι Δευτέρα έως Παρασκευή, 9:00 π.μ. έως 6:00 μ.μ. (EET).',
+        contactExpert: 'Επικοινωνία με Ειδικό',
+        searchPlaceholder: 'Αναζήτηση για άρθρα, οδηγούς ή θέματα βοήθειας...',
+        categories: {
+            gettingStarted: 'Ξεκινώντας',
+            policyManagement: 'Διαχείριση Συμβολαίων',
+            accountSecure: 'Λογαριασμός & Ασφάλεια',
+            billing: 'Χρεώσεις & Συνδρομές',
+            mobileApp: 'Mobile App & PWA'
+        },
+        articles: {
+            uploadPolicy: 'Πώς να ανεβάσετε το πρώτο σας συμβόλαιο',
+            sharingAccess: 'Κοινοποίηση πρόσβασης με την οικογένεια',
+            premiumFeatures: 'Κατανόηση των premium προνομίων',
+            resetPassword: 'Πώς να επαναφέρετε τον κωδικό σας',
+            notifications: 'Διαχείριση ειδοποιήσεων',
+            installPWA: 'Πώς να εγκαταστήσετε την Εφαρμογή',
+            updatePayment: 'Ενημέρωση μεθόδου πληρωμής'
+        },
+        featuredGuides: 'Επιλεγμένα Σεμινάρια',
+        instantSupport: 'Άμεση Υποστήριξη',
+        browseLibrary: 'Βιβλιοθήκη',
+        startLearning: 'Έναρξη Εκμάθησης',
+        liveStatus: 'Κατάσταση',
+        agentsOnline: 'Ειδικοί Συνδεδεμένοι',
+        startChat: 'Έναρξη Συνομιλίας',
+        quickAnswers: 'Γρήγορες Απαντήσεις',
+        viewAll: 'Προβολή όλων',
+        search: 'Αναζήτηση'
+    },
 
+
+    policyCard: {
+        whatsNotCovered: 'Τι ΔΕΝ καλύπτεται',
+        premiumFairness: 'Δικαιοσύνη Ασφαλίστρου',
+        youPay: 'Πληρώνετε',
+        localAvg: 'Τοπικός Μ.Ο.',
+        save: 'Κέρδος'
+    }
 }
 
 export type TranslationKeys = typeof el

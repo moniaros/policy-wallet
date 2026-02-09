@@ -22,19 +22,29 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "File too large. Maximum 10MB." }, { status: 400 })
         }
 
+        // Validate MIME type
+        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/heic']
+        if (!allowedTypes.includes(file.type)) {
+            return NextResponse.json({
+                error: `Invalid file type. Allowed: ${allowedTypes.join(', ')}`
+            }, { status: 400 })
+        }
+
         if (!process.env.GEMINI_API_KEY) {
             return NextResponse.json({ error: "AI service unavailable" }, { status: 503 })
         }
 
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-        const model = genAI.getGenerativeModel({ model: env.GEMINI_MODEL_EXTRACTION })
+        const model = genAI.getGenerativeModel({
+            model: env.GEMINI_MODEL_EXTRACTION,
+            generationConfig: { responseMimeType: "application/json" }
+        })
 
         const arrayBuffer = await file.arrayBuffer()
         const base64Data = Buffer.from(arrayBuffer).toString("base64")
 
         const prompt = `
-        Analyze this insurance policy document and extract the following information as JSON.
-        Do not include Markdown formatting, just the raw JSON.
+        Analyze this insurance policy document and extract the following information.
         
         Fields:
         - insurerName (string): The insurance company name
@@ -46,7 +56,6 @@ export async function POST(request: NextRequest) {
         - coverageSummary (string): Brief summary of main coverages (max 200 chars)
         
         If a field cannot be determined, use null.
-        Return ONLY valid JSON.
         `
 
         const imagePart = {
@@ -60,15 +69,23 @@ export async function POST(request: NextRequest) {
         const response = await result.response
         const text = response.text()
 
-        // Extract JSON from response
-        const jsonMatch = text.match(/\{[\s\S]*\}/)
-        if (!jsonMatch) {
-            return NextResponse.json({
-                error: "Could not extract policy data from document"
-            }, { status: 422 })
-        }
+        // Clean up markdown code blocks if present (just in case model ignores responseMimeType)
+        const cleanText = text.replace(/```json\n?|\n?```/g, '').trim()
 
-        const extracted = JSON.parse(jsonMatch[0])
+        // Extract JSON
+        let extracted;
+        try {
+            extracted = JSON.parse(cleanText);
+        } catch (e) {
+            const jsonMatch = cleanText.match(/\{[\s\S]*\}/)
+            if (!jsonMatch) {
+                console.error("Failed to parse AI response:", text)
+                return NextResponse.json({
+                    error: "Could not extract policy data from document"
+                }, { status: 422 })
+            }
+            extracted = JSON.parse(jsonMatch[0])
+        }
 
         return NextResponse.json({
             success: true,

@@ -102,6 +102,9 @@ REQUIRED FIELDS:
   "premiumAmount": number,
   "premiumCurrency": "EUR|USD|GBP|CHF",
   "coverageSummary": "Brief summary of main coverages (max 200 chars)",
+  "customerName": "First name of the insured if visible",
+  "customerSurname": "Last name of the insured if visible",
+  "customerEmail": "Email of the insured if visible",
   
   "acordData": {
     "acordStandard": "V1.0",
@@ -244,6 +247,9 @@ Return ONLY the JSON object, nothing else.
         endDate: extracted.endDate || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         premiumAmount: extracted.premiumAmount || 0,
         coverageSummary: extracted.coverageSummary || 'Extracted from document',
+        customerName: extracted.customerName,
+        customerSurname: extracted.customerSurname,
+        customerEmail: extracted.customerEmail,
         acordData: extracted.acordData || null
       }
     } catch (error) {

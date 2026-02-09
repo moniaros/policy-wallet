@@ -1,0 +1,95 @@
+
+Running 1 test using 1 worker
+
+[1A[2K[1/1] [agent-setup] › tests\agent-auth.setup.ts:18:6 › authenticate as agent
+[1A[2K[agent-setup] › tests\agent-auth.setup.ts:18:6 › authenticate as agent
+🔐 Authenticating test agent...
+
+[1A[2K⚠️ Login failed or timed out. Attempting registration with new agent...
+
+[1A[2KError during login: page.waitForURL: Timeout 10000ms exceeded.
+=========================== logs ===========================
+waiting for navigation until "load"
+============================================================
+    at [90mC:\Users\admin\Documents\GitHub\PolicyWalletPlatform\New folder\product-plan\policy-wallet\[39mtests\agent-auth.setup.ts:38:20 {
+  name: [32m'TimeoutError'[39m,
+  [[32mSymbol(step)[39m]: {
+    location: {
+      file: [32m'C:\\Users\\admin\\Documents\\GitHub\\PolicyWalletPlatform\\New folder\\product-plan\\policy-wallet\\tests\\agent-auth.setup.ts'[39m,
+      line: [33m38[39m,
+      column: [33m20[39m
+    },
+    category: [32m'pw:api'[39m,
+    title: [32m'Wait for navigation'[39m,
+    apiName: [32m'page.waitForURL'[39m,
+    params: { info: [36m[Object][39m },
+    group: [90mundefined[39m,
+    stepId: [32m'pw:api@45'[39m,
+    boxedStack: [90mundefined[39m,
+    steps: [],
+    attachmentIndices: [],
+    info: TestStepInfoImpl {
+      annotations: [],
+      _testInfo: [36m[TestInfoImpl][39m,
+      _stepId: [32m'pw:api@45'[39m,
+      _title: [32m'Wait for navigation'[39m,
+      _parentStep: [90mundefined[39m,
+      skip: [36m[Function (anonymous)][39m
+    },
+    complete: [36m[Function: complete][39m,
+    endWallTime: [33m1770631442837[39m,
+    error: {
+      message: [32m'TimeoutError: page.waitForURL: Timeout 10000ms exceeded.\n'[39m +
+        [32m'=========================== logs ===========================\n'[39m +
+        [32m'waiting for navigation until "load"\n'[39m +
+        [32m'============================================================'[39m,
+      stack: [32m'TimeoutError: page.waitForURL: Timeout 10000ms exceeded.\n'[39m +
+        [32m'=========================== logs ===========================\n'[39m +
+        [32m'waiting for navigation until "load"\n'[39m +
+        [32m'============================================================\n'[39m +
+        [32m'    at C:\\Users\\admin\\Documents\\GitHub\\PolicyWalletPlatform\\New folder\\product-plan\\policy-wallet\\tests\\agent-auth.setup.ts:38:20'[39m,
+      cause: [90mundefined[39m
+    }
+  }
+}
+
+[1A[2K📝 Registering as Agent: agent_1770631444288@example.com...
+
+[1A[2KFilling agent specific fields...
+
+[1A[2KAccepting terms...
+
+[1A[2KTerms checked: true
+
+[1A[2K🚀 Clicking create account...
+
+[1A[2K  1) [agent-setup] › tests\agent-auth.setup.ts:18:6 › authenticate as agent ────────────────────────
+
+    Error: locator.isVisible: Error: strict mode violation: locator('.text-red-400, .bg-red-500') resolved to 2 elements:
+        1) <div class="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium flex items-center gap-3 animate-pulse">…</div> aka getByText('Password is known to be weak')
+        2) <div class="w-1.5 h-1.5 rounded-full bg-red-500"></div> aka locator('.w-1\\.5')
+
+    Call log:
+    [2m    - checking visibility of locator('.text-red-400, .bg-red-500')[22m
+
+
+      93 |         await page.waitForTimeout(2000);
+      94 |         const errorLocator = page.locator('.text-red-400, .bg-red-500');
+    > 95 |         if (await errorLocator.isVisible()) {
+         |                                ^
+      96 |             const errorMsg = await errorLocator.innerText();
+      97 |             console.error('❌ Page shows error:', errorMsg);
+      98 |         }
+        at C:\Users\admin\Documents\GitHub\PolicyWalletPlatform\New folder\product-plan\policy-wallet\tests\agent-auth.setup.ts:95:32
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\agent-auth.setup.ts-authenticate-as-agent-agent-setup\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\agent-auth.setup.ts-authenticate-as-agent-agent-setup\error-context.md
+
+
+[1A[2K  1 failed
+    [agent-setup] › tests\agent-auth.setup.ts:18:6 › authenticate as agent ─────────────────────────
+
+[36m  Serving HTML report at http://localhost:56900. Press Ctrl+C to quit.[39m

@@ -52,6 +52,7 @@ export function AddPolicyForCustomerModal({
 }: AddPolicyForCustomerModalProps) {
     const router = useRouter()
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isScanning, setIsScanning] = useState(false)
     const [step, setStep] = useState<'type' | 'details' | 'confirm'>('type')
     const [formData, setFormData] = useState<PolicyFormData>({
         insurerName: "",
@@ -63,6 +64,39 @@ export function AddPolicyForCustomerModal({
         premiumCurrency: "EUR",
         carPlate: ""
     })
+
+    const handleScan = async (file: File) => {
+        setIsScanning(true)
+        const formData = new FormData()
+        formData.append("file", file)
+
+        try {
+            const { parsePolicyPdfWithGemini } = await import("@/app/(protected)/agent/actions")
+            const result = await parsePolicyPdfWithGemini(formData)
+
+            if (result.success && result.data) {
+                const data = result.data
+                setFormData(prev => ({
+                    ...prev,
+                    insurerName: data.insurerName || "",
+                    policyNumber: data.policyNumber || "",
+                    lineOfBusiness: data.lineOfBusiness || prev.lineOfBusiness,
+                    startDate: data.startDate || "",
+                    endDate: data.endDate || "",
+                    premiumAmount: data.premiumAmount?.toString() || ""
+                }))
+                toast.success("Policy scanned successfully!")
+                setStep('details')
+            } else {
+                toast.error(result.error || "Failed to parse document")
+            }
+        } catch (e) {
+            console.error(e)
+            toast.error("An error occurred during scanning")
+        } finally {
+            setIsScanning(false)
+        }
+    }
 
     if (!isOpen) return null
 
@@ -163,24 +197,65 @@ export function AddPolicyForCustomerModal({
                         </button>
                     </div>
 
-                    {/* Info Banner */}
-                    <div className="bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-800 rounded-2xl p-4 mb-6">
-                        <div className="flex items-start gap-3">
-                            <div className="w-8 h-8 bg-teal-100 dark:bg-teal-900/50 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <svg className="w-4 h-4 text-teal-600 dark:text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
+                    {/* Info Banner or Scanner */}
+                    {!formData.lineOfBusiness && step === 'type' ? (
+                        <div className="bg-stone-900 border border-stone-800 rounded-2xl p-6 mb-6 group hover:border-teal-500/50 transition-all cursor-pointer relative overflow-hidden" onClick={() => document.getElementById('scan-upload')?.click()}>
+                            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                <svg className="w-16 h-16 text-teal-400" fill="currentColor" viewBox="0 0 24 24"><path d="M5 3C3.89 3 3 3.89 3 5V19C3 20.11 3.89 21 5 21H19C20.11 21 21 20.11 21 19V5C21 3.89 20.11 3 19 3H5M5 5H19V19H5V5M7 7V9H17V7H7M7 11V13H17V11H7M7 15V17H14V15H7Z" /></svg>
                             </div>
-                            <div>
-                                <p className="text-sm font-bold text-teal-800 dark:text-teal-200">
-                                    Adding on behalf of customer
-                                </p>
-                                <p className="text-xs text-teal-600 dark:text-teal-400 mt-1">
-                                    They will be notified and can manage this policy.
-                                </p>
+                            <div className="flex items-start gap-4">
+                                <div className="w-12 h-12 bg-teal-500/20 rounded-xl flex items-center justify-center flex-shrink-0 animate-pulse-slow">
+                                    <svg className="w-6 h-6 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </div>
+                                <div className="flex-1">
+                                    <h3 className="text-sm font-bold text-white group-hover:text-teal-400 transition-colors">
+                                        AI Policy Scanner
+                                    </h3>
+                                    <p className="text-xs text-stone-400 mt-1">
+                                        Upload a policy to auto-fill details instantly
+                                    </p>
+                                    {isScanning && (
+                                        <div className="mt-3 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-teal-400">
+                                            <span className="w-2 h-2 bg-teal-400 rounded-full animate-ping"></span>
+                                            Analyzing Document...
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <input
+                                id="scan-upload"
+                                type="file"
+                                className="hidden"
+                                accept=".pdf,.jpg,.jpeg,.png,.webp"
+                                onChange={(e) => {
+                                    const file = e.target.files?.[0]
+                                    if (file) handleScan(file)
+                                }}
+                                disabled={isScanning}
+                            />
+                        </div>
+                    ) : (
+                        <div className="bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-800 rounded-2xl p-4 mb-6">
+                            <div className="flex items-start gap-3">
+                                <div className="w-8 h-8 bg-teal-100 dark:bg-teal-900/50 rounded-lg flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-4 h-4 text-teal-600 dark:text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p className="text-sm font-bold text-teal-800 dark:text-teal-200">
+                                        Adding on behalf of customer
+                                    </p>
+                                    <p className="text-xs text-teal-600 dark:text-teal-400 mt-1">
+                                        They will be notified and can manage this policy.
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Step 1: Select Policy Type */}
                     {step === 'type' && (

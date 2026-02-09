@@ -1,325 +1,449 @@
 "use client"
 
-import React, { useState } from 'react'
-import Link from 'next/link'
-import { useLanguage } from '@/contexts/LanguageContext'
-import { PolicyWalletLogo } from '@/components/branding/Logo'
-import { honestCopy } from '@/lib/honest-copy'
-import { ThemeToggle } from '@/components/ThemeToggle'
+import React, { useMemo, useState } from "react"
+import Image from "next/image"
+import Link from "next/link"
+import { IBM_Plex_Sans } from "next/font/google"
+import { useLanguage } from "@/contexts/LanguageContext"
+import { PolicyWalletLogo } from "@/components/branding/Logo"
+import { honestCopy } from "@/lib/honest-copy"
+import { ThemeToggle } from "@/components/ThemeToggle"
 import {
-    Shield,
-    Brain,
-    Bell,
-    BarChart3,
-    Wallet,
-    Share2,
-    Lock,
-    Code,
-    Heart,
     ArrowRight,
+    Bell,
+    Brain,
     CheckCircle2,
-    Sparkles
-} from 'lucide-react'
+    ChevronDown,
+    Clock3,
+    FileText,
+    Lock,
+    Search,
+    Shield,
+    Sparkles,
+    Wallet,
+} from "lucide-react"
+
+const ibmPlexSans = IBM_Plex_Sans({
+    subsets: ["latin", "greek"],
+    weight: ["400", "500", "600", "700"],
+})
+
+type Locale = "el" | "en"
+
+const featureIcons = {
+    brain: Brain,
+    chart: Search,
+    share: Bell,
+    bell: Clock3,
+    shield: Shield,
+    wallet: Wallet,
+} as const
+
+const valueIcons = [FileText, Search, Shield]
 
 export function WorldClassLanding() {
     const { language, setLanguage } = useLanguage()
-    const [email, setEmail] = useState('')
+    const [email, setEmail] = useState("")
+    const [name, setName] = useState("")
     const [submitted, setSubmitted] = useState(false)
 
-    const copy = honestCopy
-    const lang = language
+    const copy = honestCopy as any
+    const lang = language as Locale
 
-    const featureIcons = {
-        brain: Brain,
-        shield: Shield,
-        bell: Bell,
-        chart: BarChart3,
-        wallet: Wallet,
-        share: Share2
-    }
+    const trustPills = useMemo(
+        () => [
+            {
+                icon: Lock,
+                text: {
+                    en: "Bank-level encryption",
+                    el: "Κρυπτογράφηση τραπεζικού επιπέδου",
+                },
+            },
+            {
+                icon: Shield,
+                text: {
+                    en: "Independent platform",
+                    el: "Ανεξάρτητη πλατφόρμα",
+                },
+            },
+            {
+                icon: Sparkles,
+                text: {
+                    en: "MVP in active development",
+                    el: "MVP σε ενεργή ανάπτυξη",
+                },
+            },
+        ],
+        []
+    )
+
+    const cleanBenefit = (value: string) => value.replace(/^[^\p{L}\p{N}]+/u, "").trim()
 
     const handleEarlyAccess = (e: React.FormEvent) => {
         e.preventDefault()
         setSubmitted(true)
-        // In production, this would call an API
         setTimeout(() => setSubmitted(false), 3000)
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-emerald-950">
-            {/* Header */}
-            <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border-b border-slate-200/60 dark:border-slate-700/60">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <PolicyWalletLogo size="sm" language={lang} />
+        <div
+            className={`${ibmPlexSans.className} min-h-screen bg-gradient-to-b from-sky-50 via-white to-slate-50 text-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-slate-100`}
+        >
+            <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:z-[70] focus:top-3 focus:left-3 focus:px-3 focus:py-2 focus:bg-slate-900 focus:text-white focus:rounded-md">
+                {lang === "el" ? "Μετάβαση στο περιεχόμενο" : "Skip to content"}
+            </a>
 
-                        <nav className="flex items-center gap-4">
-                            {/* Language Toggle */}
-                            <div className="hidden sm:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
-                                <button
-                                    onClick={() => setLanguage('el')}
-                                    className={`px-3 py-1.5 text-sm font-bold rounded transition-all ${lang === 'el'
-                                        ? 'bg-white dark:bg-slate-700 text-emerald-600 shadow-sm'
-                                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                                        }`}
-                                >
-                                    ΕΛ
-                                </button>
-                                <button
-                                    onClick={() => setLanguage('en')}
-                                    className={`px-3 py-1.5 text-sm font-bold rounded transition-all ${lang === 'en'
-                                        ? 'bg-white dark:bg-slate-700 text-emerald-600 shadow-sm'
-                                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                                        }`}
-                                >
-                                    EN
-                                </button>
-                            </div>
+            <header className="fixed top-4 left-4 right-4 z-50 mx-auto max-w-7xl">
+                <div className="h-16 px-4 sm:px-6 flex items-center justify-between rounded-2xl border border-sky-100/80 bg-white/90 backdrop-blur-xl shadow-xl shadow-sky-900/5 dark:border-slate-700 dark:bg-slate-900/90">
+                    <PolicyWalletLogo size="sm" language={lang} />
 
-                            <ThemeToggle />
+                    <nav aria-label="Primary" className="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                        <a href="#features" className="hover:text-sky-700 dark:hover:text-sky-300 transition-colors">
+                            {lang === "el" ? "Δυνατότητες" : "Features"}
+                        </a>
+                        <a href="#how-it-works" className="hover:text-sky-700 dark:hover:text-sky-300 transition-colors">
+                            {lang === "el" ? "Πώς Λειτουργεί" : "How it Works"}
+                        </a>
+                        <a href="#faq" className="hover:text-sky-700 dark:hover:text-sky-300 transition-colors">
+                            FAQ
+                        </a>
+                    </nav>
 
-                            <Link
-                                href="/auth/signin"
-                                className="px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="hidden sm:flex items-center gap-1 rounded-lg bg-slate-100 p-1 dark:bg-slate-800">
+                            <button
+                                type="button"
+                                onClick={() => setLanguage("el")}
+                                aria-pressed={lang === "el"}
+                                className={`px-2.5 py-1 text-xs font-bold rounded-md transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
+                                    lang === "el" ? "bg-white text-sky-700 shadow-sm dark:bg-slate-700 dark:text-sky-300" : "text-slate-600 dark:text-slate-400"
+                                }`}
                             >
-                                {lang === 'el' ? 'Σύνδεση' : 'Sign In'}
-                            </Link>
-
-                            <Link
-                                href="/auth/signup"
-                                className="px-5 py-2.5 text-sm font-bold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-1.5"
+                                ΕΛ
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setLanguage("en")}
+                                aria-pressed={lang === "en"}
+                                className={`px-2.5 py-1 text-xs font-bold rounded-md transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${
+                                    lang === "en" ? "bg-white text-sky-700 shadow-sm dark:bg-slate-700 dark:text-sky-300" : "text-slate-600 dark:text-slate-400"
+                                }`}
                             >
-                                {lang === 'el' ? 'Εγγραφή' : 'Get Started'}
-                                <ArrowRight className="w-4 h-4" />
-                            </Link>
-                        </nav>
+                                EN
+                            </button>
+                        </div>
+
+                        <ThemeToggle />
+
+                        <Link
+                            href="/auth/signin"
+                            className="hidden sm:block px-3 py-2 text-sm font-semibold text-slate-700 hover:text-sky-700 transition-colors dark:text-slate-300 dark:hover:text-sky-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 rounded-md"
+                        >
+                            {lang === "el" ? "Σύνδεση" : "Sign in"}
+                        </Link>
+
+                        <Link
+                            href="/auth/signup"
+                            className="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl bg-orange-500 text-white text-sm font-bold shadow-lg shadow-orange-500/30 hover:bg-orange-600 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300"
+                        >
+                            {lang === "el" ? "Ξεκινήστε" : "Get started"}
+                        </Link>
                     </div>
                 </div>
             </header>
 
-            {/* Hero Section */}
-            <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-7xl mx-auto">
-                    <div className="text-center max-w-4xl mx-auto">
-                        {/* Beta Badge */}
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-full text-sm font-semibold mb-6 animate-in fade-in slide-in-from-top-4 duration-700">
-                            <Sparkles className="w-4 h-4" />
-                            {copy.hero.badge[lang]}
-                        </div>
+            <main id="main-content" className="pt-28 sm:pt-32">
+                <section className="px-4 sm:px-6 lg:px-8 pb-14 sm:pb-20">
+                    <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-10 items-center">
+                        <div>
+                            <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-100/80 px-3 py-1.5 text-xs font-semibold text-sky-800 dark:border-sky-900 dark:bg-sky-950/50 dark:text-sky-300">
+                                <Sparkles className="w-3.5 h-3.5" />
+                                {copy.hero.badge[lang]}
+                            </div>
 
-                        <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-slate-900 dark:text-white mb-6 leading-tight animate-in fade-in slide-in-from-top-6 duration-700 delay-100">
-                            {copy.hero.title[lang]}
-                        </h1>
+                            <h1 className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                {copy.hero.title[lang]}
+                            </h1>
+                            <p className="mt-5 text-lg sm:text-xl leading-relaxed text-slate-600 dark:text-slate-300 max-w-2xl">
+                                {copy.hero.subtitle[lang]}
+                            </p>
 
-                        <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 mb-4 leading-relaxed animate-in fade-in slide-in-from-top-8 duration-700 delay-200">
-                            {copy.brand.subtitle[lang]}
-                        </p>
+                            <div className="mt-8 flex flex-wrap gap-3">
+                                {trustPills.map((pill, idx) => {
+                                    const Icon = pill.icon
+                                    return (
+                                        <div
+                                            key={idx}
+                                            className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+                                        >
+                                            <Icon className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
+                                            <span>{pill.text[lang]}</span>
+                                        </div>
+                                    )
+                                })}
+                            </div>
 
-                        <p className="text-xl md:text-2xl text-slate-700 dark:text-slate-200 mb-10 leading-relaxed animate-in fade-in slide-in-from-top-10 duration-700 delay-300">
-                            {copy.hero.subtitle[lang]}
-                        </p>
+                            <div className="mt-8 bg-white/90 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 sm:p-6 max-w-xl shadow-xl shadow-slate-900/5">
+                                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+                                    {copy.earlyAccess.title[lang]}
+                                </h2>
+                                <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                                    {copy.earlyAccess.subtitle[lang]}
+                                </p>
 
-                        <div className="flex flex-col sm:flex-row gap-4 justify-center animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500">
-                            <a
-                                href="#early-access"
-                                className="px-8 py-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold rounded-xl shadow-xl shadow-emerald-500/30 hover:shadow-2xl hover:shadow-emerald-500/40 transition-all duration-200 flex items-center justify-center gap-2 group"
-                            >
-                                {copy.hero.cta.primary[lang]}
-                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                            </a>
-                            <a
-                                href="#how-it-works"
-                                className="px-8 py-4 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold rounded-xl border-2 border-slate-200 dark:border-slate-700 transition-all duration-200"
-                            >
-                                {copy.hero.cta.secondary[lang]}
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </section>
+                                <form onSubmit={handleEarlyAccess} className="mt-5 space-y-3" noValidate>
+                                    <div>
+                                        <label htmlFor="landing-name" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                                            {copy.earlyAccess.form.name[lang]}
+                                        </label>
+                                        <input
+                                            id="landing-name"
+                                            type="text"
+                                            autoComplete="name"
+                                            value={name}
+                                            onChange={(e) => setName(e.target.value)}
+                                            className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+                                            placeholder="John Doe"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="landing-email" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                                            {copy.earlyAccess.form.email[lang]}
+                                        </label>
+                                        <input
+                                            id="landing-email"
+                                            type="email"
+                                            autoComplete="email"
+                                            value={email}
+                                            onChange={(e) => setEmail(e.target.value)}
+                                            className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+                                            placeholder="john@example.com"
+                                            required
+                                        />
+                                    </div>
 
-            {/* How It Works */}
-            <section id="how-it-works" className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900/50">
-                <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4">
-                            {copy.howItWorks.title[lang]}
-                        </h2>
-                        <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
-                            {copy.value.title[lang]}
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {copy.howItWorks.steps.map((step, idx) => (
-                            <div
-                                key={idx}
-                                className="relative p-8 bg-gradient-to-br from-slate-50 to-emerald-50 dark:from-slate-800 dark:to-emerald-900/20 rounded-2xl border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all duration-300 group"
-                            >
-                                <div className="absolute -top-6 left-8 w-12 h-12 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-lg">
-                                    {step.number}
-                                </div>
-                                <div className="mt-6">
-                                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
-                                        {step.title[lang]}
-                                    </h3>
-                                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                                        {step.description[lang]}
+                                    <button
+                                        type="submit"
+                                        disabled={submitted}
+                                        className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 py-3 font-semibold text-white hover:bg-orange-600 transition-colors disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300"
+                                    >
+                                        <span>
+                                            {submitted
+                                                ? lang === "el"
+                                                    ? "Επιτυχής αποστολή"
+                                                    : "Submitted successfully"
+                                                : copy.earlyAccess.form.submit[lang]}
+                                        </span>
+                                        {!submitted && <ArrowRight className="w-4 h-4" />}
+                                    </button>
+                                    <p aria-live="polite" className="text-xs text-slate-500 dark:text-slate-400">
+                                        {copy.earlyAccess.form.consent[lang]}
                                     </p>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div className="relative">
+                            <div className="absolute -inset-8 -z-10 rounded-full bg-gradient-to-tr from-sky-400/25 to-cyan-200/25 blur-3xl dark:from-sky-800/30 dark:to-cyan-900/20" />
+                            <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl shadow-slate-900/10 dark:border-slate-700 dark:bg-slate-900">
+                                <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800">
+                                    <Image
+                                        src="/screenshots/desktop-dashboard.png"
+                                        alt={lang === "el" ? "Προεπισκόπηση πλατφόρμας PolicyWallet" : "PolicyWallet platform preview"}
+                                        fill
+                                        className="object-cover"
+                                        priority
+                                    />
+                                </div>
+                                <div className="mt-3 grid grid-cols-3 gap-2">
+                                    <div className="rounded-lg bg-sky-50 border border-sky-100 px-3 py-2 text-xs text-sky-800 dark:bg-slate-800 dark:border-slate-700 dark:text-sky-300">
+                                        {lang === "el" ? "Κενά κάλυψης" : "Coverage gaps"}
+                                    </div>
+                                    <div className="rounded-lg bg-emerald-50 border border-emerald-100 px-3 py-2 text-xs text-emerald-800 dark:bg-slate-800 dark:border-slate-700 dark:text-emerald-300">
+                                        {lang === "el" ? "Ανανεώσεις" : "Renewals"}
+                                    </div>
+                                    <div className="rounded-lg bg-orange-50 border border-orange-100 px-3 py-2 text-xs text-orange-800 dark:bg-slate-800 dark:border-slate-700 dark:text-orange-300">
+                                        {lang === "el" ? "Συστάσεις AI" : "AI insights"}
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section className="px-4 sm:px-6 lg:px-8 pb-16">
+                    <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {(copy.trust?.items || []).slice(0, 3).map((item: any, idx: number) => (
+                            <article
+                                key={idx}
+                                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+                            >
+                                <h3 className="text-base font-semibold text-slate-900 dark:text-white">{item.title[lang]}</h3>
+                                <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{item.description[lang]}</p>
+                            </article>
                         ))}
                     </div>
-                </div>
-            </section>
+                </section>
 
-            {/* Features */}
-            <section className="py-20 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-7xl mx-auto">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4">
-                            {copy.features.title[lang]}
-                        </h2>
-                        <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
-                            {copy.features.subtitle[lang]}
-                        </p>
+                <section id="features" className="px-4 sm:px-6 lg:px-8 py-16 bg-slate-50/80 dark:bg-slate-900/50">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="max-w-2xl">
+                            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">{copy.features.title[lang]}</h2>
+                            <p className="mt-3 text-slate-600 dark:text-slate-300">{copy.features.subtitle[lang]}</p>
+                        </div>
+
+                        <div className="mt-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {copy.features.items.map((feature: any, idx: number) => {
+                                const Icon = featureIcons[feature.icon as keyof typeof featureIcons] || Brain
+                                return (
+                                    <article
+                                        key={idx}
+                                        className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow dark:border-slate-700 dark:bg-slate-900"
+                                    >
+                                        <div className="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-sky-100 text-sky-700 dark:bg-slate-800 dark:text-sky-300">
+                                            <Icon className="w-5 h-5" />
+                                        </div>
+                                        <h3 className="mt-4 text-lg font-semibold text-slate-900 dark:text-white">{feature.title[lang]}</h3>
+                                        <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{feature.description[lang]}</p>
+                                    </article>
+                                )
+                            })}
+                        </div>
                     </div>
+                </section>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {copy.features.items.map((feature, idx) => {
-                            const Icon = featureIcons[feature.icon as keyof typeof featureIcons]
-                            return (
-                                <div
+                <section className="px-4 sm:px-6 lg:px-8 py-16">
+                    <div className="max-w-7xl mx-auto">
+                        <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">{copy.value.title[lang]}</h2>
+                        <p className="mt-3 max-w-3xl text-slate-600 dark:text-slate-300">{copy.value.description[lang]}</p>
+
+                        <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
+                            {copy.problem.items.map((item: any, idx: number) => {
+                                const Icon = valueIcons[idx] || Search
+                                return (
+                                    <article
+                                        key={idx}
+                                        className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900"
+                                    >
+                                        <Icon className="w-5 h-5 text-orange-600 dark:text-orange-300" />
+                                        <h3 className="mt-4 text-lg font-semibold text-slate-900 dark:text-white">{item.title[lang]}</h3>
+                                        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{item.description[lang]}</p>
+                                    </article>
+                                )
+                            })}
+                        </div>
+                    </div>
+                </section>
+
+                <section id="how-it-works" className="px-4 sm:px-6 lg:px-8 py-16 bg-slate-50/80 dark:bg-slate-900/50">
+                    <div className="max-w-7xl mx-auto">
+                        <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">{copy.howItWorks.title[lang]}</h2>
+                        <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-5">
+                            {copy.howItWorks.steps.map((step: any, idx: number) => (
+                                <article
                                     key={idx}
-                                    className="p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-700 hover:shadow-xl transition-all duration-300 group"
+                                    className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900"
                                 >
-                                    <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                        <Icon className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                                    <div className="inline-flex h-9 min-w-9 items-center justify-center rounded-full bg-sky-100 px-3 text-sm font-bold text-sky-800 dark:bg-slate-800 dark:text-sky-300">
+                                        {step.number}
                                     </div>
-                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
-                                        {feature.title[lang]}
-                                    </h3>
-                                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                                        {feature.description[lang]}
-                                    </p>
-                                </div>
-                            )
-                        })}
-                    </div>
-                </div>
-            </section>
-
-            {/* Early Access CTA */}
-            <section id="early-access" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 text-white relative overflow-hidden">
-                {/* Decorative elements */}
-                <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-96 h-96 bg-teal-400/20 rounded-full blur-3xl" />
-
-                <div className="max-w-4xl mx-auto relative z-10">
-                    <div className="text-center mb-12">
-                        <h2 className="text-4xl md:text-5xl font-black mb-4">
-                            {copy.earlyAccess.title[lang]}
-                        </h2>
-                        <p className="text-xl text-emerald-100 mb-8">
-                            {copy.earlyAccess.subtitle[lang]}
-                        </p>
-
-                        {/* Benefits */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12 text-left">
-                            {copy.earlyAccess.benefits.items.map((benefit, idx) => (
-                                <div key={idx} className="flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                                    <CheckCircle2 className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                                    <span className="text-sm">{benefit[lang]}</span>
-                                </div>
+                                    <h3 className="mt-4 text-lg font-semibold text-slate-900 dark:text-white">{step.title[lang]}</h3>
+                                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{step.description[lang]}</p>
+                                </article>
                             ))}
                         </div>
                     </div>
+                </section>
 
-                    {/* Form */}
-                    <form onSubmit={handleEarlyAccess} className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-8">
-                        <div className="space-y-4">
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder={copy.earlyAccess.form.email[lang]}
-                                required
-                                className="w-full px-6 py-4 bg-white/90 dark:bg-slate-900/90 text-slate-900 dark:text-white rounded-xl border-2 border-transparent focus:border-emerald-400 outline-none transition-all"
-                            />
-                            <button
-                                type="submit"
-                                disabled={submitted}
-                                className="w-full px-6 py-4 bg-white hover:bg-emerald-50 text-emerald-600 font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50"
+                <section className="px-4 sm:px-6 lg:px-8 py-16">
+                    <div className="max-w-7xl mx-auto rounded-3xl border border-slate-200 bg-gradient-to-br from-sky-700 via-sky-800 to-slate-900 text-white p-8 sm:p-12 shadow-2xl">
+                        <h2 className="text-3xl sm:text-4xl font-bold">{copy.showcase?.title[lang] || (lang === "el" ? "Ολοκληρωμένος Έλεγχος" : "Complete Control")}</h2>
+                        <ul className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {(copy.showcase?.benefits || []).map((benefit: { en: string; el: string }, idx: number) => (
+                                <li key={idx} className="flex items-start gap-3 rounded-xl bg-white/10 px-4 py-3">
+                                    <CheckCircle2 className="mt-0.5 w-5 h-5 text-orange-300 flex-shrink-0" />
+                                    <span className="text-sm sm:text-base">{cleanBenefit(benefit[lang])}</span>
+                                </li>
+                            ))}
+                        </ul>
+                        <div className="mt-8">
+                            <Link
+                                href="/auth/signup"
+                                className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 font-semibold text-white hover:bg-orange-600 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300"
                             >
-                                {submitted
-                                    ? (lang === 'el' ? '✓ Επιτυχής Εγγραφή!' : '✓ Successfully Registered!')
-                                    : copy.earlyAccess.form.submit[lang]
-                                }
-                            </button>
+                                {copy.hero.cta.primary[lang]}
+                                <ArrowRight className="w-4 h-4" />
+                            </Link>
                         </div>
-                        <p className="text-xs text-emerald-100 mt-4 text-center">
-                            {copy.earlyAccess.form.consent[lang]}
-                        </p>
-                    </form>
-                </div>
-            </section>
+                    </div>
+                </section>
 
-            {/* Trust Signals */}
-            <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-900/50">
-                <div className="max-w-7xl mx-auto">
-                    <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-12 text-center">
-                        {copy.trust.title[lang]}
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {copy.trust.items.map((item, idx) => {
-                            const icons = { lock: Lock, code: Code, heart: Heart }
-                            const Icon = icons[item.icon as keyof typeof icons]
-                            return (
-                                <div key={idx} className="text-center p-6">
-                                    <div className="w-16 h-16 bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-900/30 dark:to-teal-900/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                        <Icon className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                <section id="faq" className="px-4 sm:px-6 lg:px-8 py-16 bg-slate-50/80 dark:bg-slate-900/50">
+                    <div className="max-w-3xl mx-auto">
+                        <h2 className="text-3xl sm:text-4xl font-bold text-center text-slate-900 dark:text-white">{copy.faq.title[lang]}</h2>
+                        <div className="mt-8 space-y-3">
+                            {copy.faq.items.map((item: any, idx: number) => (
+                                <details
+                                    key={idx}
+                                    className="group rounded-xl border border-slate-200 bg-white p-0 open:shadow-sm dark:border-slate-700 dark:bg-slate-900"
+                                >
+                                    <summary className="list-none cursor-pointer flex items-center justify-between p-5">
+                                        <span className="font-semibold text-slate-900 dark:text-white">{item.question[lang]}</span>
+                                        <ChevronDown className="w-4 h-4 text-slate-500 transition-transform group-open:rotate-180" />
+                                    </summary>
+                                    <div className="px-5 pb-5 text-sm leading-relaxed text-slate-600 border-t border-slate-100 dark:text-slate-300 dark:border-slate-800">
+                                        {item.answer[lang]}
                                     </div>
-                                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
-                                        {item.title[lang]}
-                                    </h3>
-                                    <p className="text-slate-600 dark:text-slate-300">
-                                        {item.description[lang]}
-                                    </p>
-                                </div>
-                            )
-                        })}
-                    </div>
-                </div>
-            </section>
-
-            {/* Footer */}
-            <footer className="bg-slate-900 text-white py-12 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-7xl mx-auto">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                        <div className="col-span-1 md:col-span-2">
-                            <PolicyWalletLogo size="md" language={lang} variant="light" className="mb-4" />
-                            <p className="text-slate-400 mb-4">
-                                {copy.footer.tagline[lang]}
-                            </p>
-                        </div>
-
-                        <div>
-                            <h4 className="font-bold mb-4">{copy.footer.contact.title[lang]}</h4>
-                            <p className="text-slate-400 text-sm mb-2">{copy.footer.contact.address[lang]}</p>
-                            <p className="text-slate-400 text-sm">{copy.footer.contact.email}</p>
-                        </div>
-
-                        <div>
-                            <h4 className="font-bold mb-4">{lang === 'el' ? 'Νομικά' : 'Legal'}</h4>
-                            <ul className="space-y-2 text-sm text-slate-400">
-                                <li><Link href="/privacy" className="hover:text-white transition-colors">{copy.footer.legal.privacy[lang]}</Link></li>
-                                <li><Link href="/terms" className="hover:text-white transition-colors">{copy.footer.legal.terms[lang]}</Link></li>
-                            </ul>
+                                </details>
+                            ))}
                         </div>
                     </div>
+                </section>
 
-                    <div className="border-t border-slate-800 pt-8 text-center text-sm text-slate-400">
-                        {copy.footer.copyright[lang]}
+                <section className="px-4 sm:px-6 lg:px-8 py-16 text-center">
+                    <div className="max-w-3xl mx-auto">
+                        <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white">
+                            {lang === "el" ? "Έτοιμοι να ξεκινήσετε;" : "Ready to get started?"}
+                        </h2>
+                        <p className="mt-3 text-slate-600 dark:text-slate-300">
+                            {lang === "el"
+                                ? "Δοκιμάστε δωρεάν και οργανώστε τα συμβόλαιά σας σε ένα μέρος."
+                                : "Start free and bring all your policies into one secure place."}
+                        </p>
+                        <div className="mt-6 flex items-center justify-center gap-3">
+                            <Link
+                                href="/auth/signup"
+                                className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-3 font-semibold text-white hover:bg-orange-600 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300"
+                            >
+                                {copy.hero.cta.primary[lang]}
+                                <ArrowRight className="w-4 h-4" />
+                            </Link>
+                            <Link
+                                href="/auth/signin"
+                                className="inline-flex items-center rounded-xl border border-slate-300 px-6 py-3 font-semibold text-slate-800 hover:bg-slate-100 transition-colors dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+                            >
+                                {lang === "el" ? "Σύνδεση" : "Sign in"}
+                            </Link>
+                        </div>
+                    </div>
+                </section>
+            </main>
+
+            <footer className="border-t border-slate-200 bg-white/70 py-10 px-4 sm:px-6 lg:px-8 text-sm dark:border-slate-800 dark:bg-slate-900/70">
+                <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-5">
+                    <div className="flex items-center gap-3">
+                        <PolicyWalletLogo size="sm" language={lang} />
+                        <span className="text-slate-500 dark:text-slate-400">{copy.footer.tagline[lang]}</span>
+                    </div>
+                    <div className="flex items-center gap-6 text-slate-600 dark:text-slate-300">
+                        <Link href="/privacy" className="hover:text-sky-700 dark:hover:text-sky-300 transition-colors">
+                            {copy.footer.legal.privacy[lang]}
+                        </Link>
+                        <Link href="/terms" className="hover:text-sky-700 dark:hover:text-sky-300 transition-colors">
+                            {copy.footer.legal.terms[lang]}
+                        </Link>
+                        <span className="text-slate-500 dark:text-slate-400">{copy.footer.copyright[lang]}</span>
                     </div>
                 </div>
             </footer>

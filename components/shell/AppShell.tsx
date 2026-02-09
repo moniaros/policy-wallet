@@ -173,11 +173,7 @@ export function AppShell({
                                 </button>
                             </div>
                             {/* Context Indicator */}
-                            <div className="px-6 pb-3">
-                                <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400 dark:text-stone-500">
-                                    {currentRole.role === 'policyholder' ? t.userMenu.viewingAs + ': Personal Wallet' : 'Workspace: ' + currentRole.label}
-                                </span>
-                            </div>
+
                         </div>
 
                         {/* Role switcher */}

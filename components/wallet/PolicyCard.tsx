@@ -159,8 +159,16 @@ export function PolicyCard({
     return (
         <div
             id={id}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    onView?.()
+                }
+            }}
             onClick={onView}
-            className="group relative bg-white/70 dark:bg-stone-800/70 backdrop-blur-xl border border-stone-200/60 dark:border-stone-700/60 rounded-[2rem] p-6 lg:p-7 shadow-sm hover:shadow-2xl hover:shadow-teal-500/10 dark:hover:shadow-teal-400/5 hover:-translate-y-1.5 transition-all duration-500 cursor-pointer overflow-hidden active:scale-[0.98]"
+            className="group relative bg-white/70 dark:bg-stone-800/70 backdrop-blur-xl border border-stone-200/60 dark:border-stone-700/60 rounded-[2rem] p-6 lg:p-7 shadow-sm hover:shadow-2xl hover:shadow-teal-500/10 dark:hover:shadow-teal-400/5 hover:-translate-y-1.5 transition-all duration-500 cursor-pointer overflow-hidden active:scale-[0.98] outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
         >
             {/* Glossy overlay effect */}
             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent dark:from-white/5 pointer-events-none" />
@@ -300,7 +308,7 @@ export function PolicyCard({
                         {/* Exclusions */}
                         {policy.aiInsights.exclusions && policy.aiInsights.exclusions.length > 0 && (
                             <div className="mb-4">
-                                <h4 className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-2">What's NOT Covered</h4>
+                                <h4 className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-2">{t.policyCard.whatsNotCovered}</h4>
                                 <ul className="space-y-2">
                                     {policy.aiInsights.exclusions.map((exclusion, i) => (
                                         <li
@@ -324,20 +332,20 @@ export function PolicyCard({
                         {/* Benchmark */}
                         {policy.aiInsights.premiumBenchmark && (
                             <div>
-                                <h4 className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-2">Premium Fairness</h4>
+                                <h4 className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-2">{t.policyCard.premiumFairness}</h4>
                                 <div className="flex items-end gap-2">
                                     <div>
-                                        <span className="text-xs text-stone-500">You Pay</span>
+                                        <span className="text-xs text-stone-500">{t.policyCard.youPay}</span>
                                         <div className="text-lg font-black text-stone-900 dark:text-white">{formatCurrency(policy.aiInsights.premiumBenchmark.current)}</div>
                                     </div>
                                     <div className="mb-1 text-stone-300 dark:text-stone-600">vs</div>
                                     <div>
-                                        <span className="text-xs text-stone-500">Local Avg</span>
+                                        <span className="text-xs text-stone-500">{t.policyCard.localAvg}</span>
                                         <div className="text-lg font-bold text-stone-500">{formatCurrency(policy.aiInsights.premiumBenchmark.localAverage)}</div>
                                     </div>
                                     {policy.aiInsights.premiumBenchmark.savingsPotential > 0 && (
                                         <div className="ml-auto bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-3 py-1 rounded-xl text-xs font-bold">
-                                            Save {formatCurrency(policy.aiInsights.premiumBenchmark.savingsPotential)}
+                                            {t.policyCard.save} {formatCurrency(policy.aiInsights.premiumBenchmark.savingsPotential)}
                                         </div>
                                     )}
                                 </div>
@@ -413,7 +421,7 @@ export function PolicyCard({
                         >
                             {/* Understand */}
                             <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-stone-400">
-                                {(t.dashboard as any).actionGroups?.understand || 'Understand'}
+                                {t.dashboard.actionGroups?.understand || 'Understand'}
                             </div>
                             <button
                                 onClick={() => {
@@ -442,7 +450,7 @@ export function PolicyCard({
 
                             {/* Act */}
                             <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-stone-400 mt-1">
-                                {(t.dashboard as any).actionGroups?.act || 'Act'}
+                                {t.dashboard.actionGroups?.act || 'Act'}
                             </div>
                             <button
                                 onClick={() => {
@@ -471,7 +479,7 @@ export function PolicyCard({
 
                             {/* Review */}
                             <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-stone-400 mt-1">
-                                {(t.dashboard as any).actionGroups?.review || 'Review'}
+                                {t.dashboard.actionGroups?.review || 'Review'}
                             </div>
                             <button
                                 onClick={() => {
@@ -488,7 +496,7 @@ export function PolicyCard({
 
                             {/* Danger */}
                             <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-red-300 mt-1">
-                                {(t.dashboard as any).actionGroups?.danger || 'Danger Zone'}
+                                {t.dashboard.actionGroups?.danger || 'Danger Zone'}
                             </div>
                             <button
                                 onClick={() => {

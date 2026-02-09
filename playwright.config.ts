@@ -22,7 +22,11 @@ export default defineConfig({
         // Setup project - runs once to authenticate
         {
             name: 'setup',
-            testMatch: /.*\.setup\.ts/,
+            testMatch: /auth\.setup\.ts/,
+        },
+        {
+            name: 'agent-setup',
+            testMatch: /agent-auth\.setup\.ts/,
         },
 
         // Main test projects - use authenticated state
@@ -66,6 +70,15 @@ export default defineConfig({
                 storageState: 'playwright/.auth/user.json',
             },
             dependencies: ['setup'],
+        },
+        // Agent Tests
+        {
+            name: 'agent-chromium',
+            use: {
+                ...devices['Desktop Chrome'],
+                storageState: 'playwright/.auth/agent.json',
+            },
+            dependencies: ['agent-setup'],
         },
     ],
 

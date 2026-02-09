@@ -16,7 +16,7 @@ import {
 
 
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { AIServiceFactory, getAIService } from "@/lib/services/ai/ai-service.factory";
 import { CustomerService } from "@/lib/services/customer.service";
 
 const customerService = new CustomerService(db);
@@ -371,6 +371,21 @@ export async function addPolicyForCustomer(data: {
             }
         })
 
+        // 5. Trigger background analysis for gaps
+        const { PolicyService } = await import("@/lib/services/policy.service")
+        const policyService = new PolicyService()
+        // Determine language from agent's preference for now
+        const language = (authResult.dbUser as any).preferredLanguage || 'en'
+
+        // We use 'after' if available or just run it backgroundly
+        try {
+            // Since this is a server action, 'after' is preferred if supported
+            // If not, we still want to trigger it.
+            await policyService.runBackgroundAnalysis(policy.id, data.customerId, language)
+        } catch (e) {
+            console.error("Failed to trigger background analysis", e)
+        }
+
         revalidatePath(`/customers/${data.customerId}`)
         revalidatePath("/customers")
         revalidatePath("/wallet")
@@ -405,44 +420,18 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
     }
 
     try {
-        const genAI = new GoogleGenerativeAI(apiKey.trim());
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const aiService = getAIService();
 
         const arrayBuffer = await file.arrayBuffer();
         const base64Data = Buffer.from(arrayBuffer).toString("base64");
 
-        const prompt = `
-        Analyze this insurance policy document and extract the following JSON. 
-        Do not include Markdown formatting, just the raw JSON.
-        Fields: 
-        - insurerName (string)
-        - policyNumber (string)
-        - lineOfBusiness (one of: motor, health, home, life, travel, liability)
-        - startDate (YYYY-MM-DD)
-        - endDate (YYYY-MM-DD)
-        - premiumAmount (number)
-        - customerName (string)
-        - customerSurname (string)
-        - customerEmail (string)
-        
-        If a field is missing, make a best guess or use null.
-        `;
+        const result = await aiService.extractPolicyData({
+            data: base64Data,
+            mimeType: file.type,
+            fileName: file.name
+        });
 
-        const part = {
-            inlineData: {
-                data: base64Data,
-                mimeType: file.type === "application/pdf" ? "application/pdf" : "image/jpeg", // Basic fallback mapping
-            },
-        };
-
-        const result = await model.generateContent([prompt, part]);
-        const response = await result.response;
-        const text = response.text();
-
-        const jsonStr = text.replace(/```json/g, "").replace(/```/g, "").trim();
-        const aiJson = JSON.parse(jsonStr);
-
-        return { success: true, data: aiJson }
+        return { success: true, data: result }
     } catch (e) {
         console.error(e)
         return { error: "Failed to parse PDF" }
@@ -510,4 +499,37 @@ export async function sendReminder(customerId: string) {
     revalidatePath(`/customers/${customerId}`)
     revalidatePath("/customers")
     return { success: true }
+}
+
+export async function updateAgentProfile(data: {
+    agencyName?: string;
+    licenseNumber?: string;
+}) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    const agentId = authResult.dbUser.id
+
+    try {
+        await db.agentProfile.upsert({
+            where: { userId: agentId },
+            update: {
+                agencyName: data.agencyName,
+                licenseNumber: data.licenseNumber,
+                updatedAt: new Date()
+            },
+            create: {
+                userId: agentId,
+                agencyName: data.agencyName,
+                licenseNumber: data.licenseNumber,
+                verificationStatus: 'pending'
+            }
+        })
+
+        revalidatePath("/agent/settings")
+        return { success: true }
+    } catch (e) {
+        console.error(e)
+        return { error: "Failed to update profile" }
+    }
 }

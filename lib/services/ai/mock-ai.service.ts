@@ -62,7 +62,10 @@ export class MockAIService implements IAIService {
             startDate: new Date().toISOString().split('T')[0],
             endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
             premiumAmount: 500,
-            coverageSummary: 'Mock policy with standard coverage'
+            coverageSummary: 'Mock policy with standard coverage',
+            customerName: 'John',
+            customerSurname: 'Doe',
+            customerEmail: 'john.doe@example.com'
         }
     }
 
