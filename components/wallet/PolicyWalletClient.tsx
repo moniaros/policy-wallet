@@ -1,7 +1,7 @@
-"use client"
+﻿"use client"
 
 import { PolicyWallet } from "@/components/wallet/PolicyWallet"
-import React, { useEffect, useRef } from "react"
+import React, { useRef } from "react"
 import type { Policy } from "@/components/wallet/types"
 import { useRouter } from "next/navigation"
 import { PageHeader } from "@/components/ui/PageHeader"
@@ -21,10 +21,18 @@ interface PolicyWalletClientProps {
 
 export function PolicyWalletClient({ policies, user, showTour = false }: PolicyWalletClientProps) {
     const router = useRouter()
-
-    const { t } = useLanguage()
+    const { t, language } = useLanguage()
     const previousStatusesRef = useRef<Map<string, string>>(new Map())
     const announcedRef = useRef<Set<string>>(new Set())
+
+    const copy = {
+        analysisProgress: language === 'el' ? 'Η ανάλυση συμβολαίου εκτελείται' : 'Policy analysis is in progress',
+        notifyPrompt: language === 'el' ? 'Θέλετε ειδοποίηση όταν ολοκληρωθεί;' : 'Would you like a notification when it completes?',
+        notifyMe: language === 'el' ? 'Ειδοποίησέ με' : 'Notify me',
+        notificationsEnabled: language === 'el' ? 'Οι ειδοποιήσεις ενεργοποιήθηκαν.' : 'Notifications enabled.',
+        analysisComplete: language === 'el' ? 'Η ανάλυση συμβολαίου ολοκληρώθηκε' : 'Policy analysis completed',
+        view: language === 'el' ? 'Προβολή' : 'View',
+    }
 
     const fireBrowserNotification = (title: string, message: string, policyId: string) => {
         if (typeof window === 'undefined' || !('Notification' in window)) return
@@ -37,34 +45,32 @@ export function PolicyWalletClient({ policies, user, showTour = false }: PolicyW
         }
     }
 
-    // Auto-refresh when policies are analyzing
     React.useEffect(() => {
-        const hasAnalyzing = policies.some(p => p.status === 'analyzing')
-        if (hasAnalyzing) {
-            const interval = setInterval(() => {
-                router.refresh()
-            }, 3000)
+        const hasAnalyzing = policies.some((p) => p.status === 'analyzing')
+        if (!hasAnalyzing) return
 
-            // Prompt for notifications if supported
-            if ('Notification' in window && Notification.permission === 'default') {
-                toast("Policy analysis in progress", {
-                    description: "Would you like to be notified when it's ready?",
-                    action: {
-                        label: "Notify Me",
-                        onClick: () => {
-                            Notification.requestPermission().then(permission => {
-                                if (permission === 'granted') {
-                                    toast.success("Notifications enabled!")
-                                }
-                            })
-                        }
+        const interval = setInterval(() => {
+            router.refresh()
+        }, 3000)
+
+        if ('Notification' in window && Notification.permission === 'default') {
+            toast(copy.analysisProgress, {
+                description: copy.notifyPrompt,
+                action: {
+                    label: copy.notifyMe,
+                    onClick: () => {
+                        Notification.requestPermission().then((permission) => {
+                            if (permission === 'granted') {
+                                toast.success(copy.notificationsEnabled)
+                            }
+                        })
                     },
-                    duration: 8000
-                })
-            }
-
-            return () => clearInterval(interval)
+                },
+                duration: 8000,
+            })
         }
+
+        return () => clearInterval(interval)
     }, [policies, router])
 
     React.useEffect(() => {
@@ -78,14 +84,16 @@ export function PolicyWalletClient({ policies, user, showTour = false }: PolicyW
                 if (announcedRef.current.has(key)) continue
                 announcedRef.current.add(key)
 
-                toast.success("Policy analysis completed", {
-                    description: `${policy.insurerName} • ${policy.policyNumber}`,
+                const summary = `${policy.insurerName} • ${policy.policyNumber}`
+                toast.success(copy.analysisComplete, {
+                    description: summary,
                     action: {
-                        label: "View",
-                        onClick: () => router.push(`/wallet/${policy.id}`)
-                    }
+                        label: copy.view,
+                        onClick: () => router.push(`/wallet/${policy.id}`),
+                    },
                 })
-                fireBrowserNotification("Policy analysis completed", `${policy.insurerName} • ${policy.policyNumber}`, policy.id)
+
+                fireBrowserNotification(copy.analysisComplete, summary, policy.id)
             }
         }
 
@@ -95,64 +103,56 @@ export function PolicyWalletClient({ policies, user, showTour = false }: PolicyW
 
         if (disappearedAnalyzingIds.length > 0) {
             fetch('/api/v1/notifications?limit=10')
-                .then(res => res.ok ? res.json() : null)
-                .then(data => {
+                .then((res) => (res.ok ? res.json() : null))
+                .then((data) => {
                     const notifications = data?.data?.notifications || []
-                    const completion = notifications.find((n: any) =>
-                        (n.event_type === 'policy_analyzed' || n.event_type === 'policy_merged') &&
-                        n.related_object_type === 'policy' &&
-                        n.related_object_id
+                    const completion = notifications.find(
+                        (n: any) =>
+                            (n.event_type === 'policy_analyzed' || n.event_type === 'policy_merged') &&
+                            n.related_object_type === 'policy' &&
+                            n.related_object_id
                     )
                     if (!completion) return
+
                     const key = `notif-${completion.id}`
                     if (announcedRef.current.has(key)) return
                     announcedRef.current.add(key)
 
-                    toast.success(completion.title || "Policy analysis completed", {
+                    toast.success(completion.title || copy.analysisComplete, {
                         description: completion.message,
                         action: {
-                            label: "View",
-                            onClick: () => router.push(`/wallet/${completion.related_object_id}`)
-                        }
+                            label: copy.view,
+                            onClick: () => router.push(`/wallet/${completion.related_object_id}`),
+                        },
                     })
-                    fireBrowserNotification(completion.title || "Policy analysis completed", completion.message || "", completion.related_object_id)
+
+                    fireBrowserNotification(completion.title || copy.analysisComplete, completion.message || '', completion.related_object_id)
                 })
                 .catch(() => {
-                    // Silent fail: polling continues and user can still see status changes in wallet.
+                    // Silent fallback: status update remains visible in wallet.
                 })
         }
 
         previousStatusesRef.current = currentStatuses
-    }, [policies, router])
+    }, [policies, router, copy.analysisComplete, copy.view])
 
     return (
         <div className="min-h-screen bg-transparent relative isolate">
-            {/* Background Blobs for Liquid Glass Effect */}
             <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
                 <div className="absolute top-1/4 -right-20 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[100px] opacity-40 mix-blend-multiply dark:mix-blend-normal animate-blob" />
                 <div className="absolute -bottom-20 -left-20 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-[100px] opacity-40 mix-blend-multiply dark:mix-blend-normal animate-blob animation-delay-2000" />
                 <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] opacity-30 animate-pulse delay-700" />
             </div>
 
-            <PageHeader
-                title={user?.name ? `${t.auth.welcomeBack}, ${user.name.split(' ')[0]}!` : t.wallet.title}
-                subtitle={t.wallet.manageTrack}
-            />
+            <PageHeader title={user?.name ? `${t.auth.welcomeBack}, ${user.name.split(' ')[0]}!` : t.wallet.title} subtitle={t.wallet.manageTrack} />
+
             <PolicyWallet
                 policies={policies}
                 user={user}
-                onViewPolicy={(policyId) => {
-                    router.push(`/wallet/${policyId}`)
-                }}
-                onAddManually={() => {
-                    router.push('/wallet/add')
-                }}
-                onUploadDocument={() => {
-                    router.push('/wallet/add?method=upload')
-                }}
-                onShareWithAgent={(policyId) => {
-                    router.push(`/wallet/${policyId}/share`)
-                }}
+                onViewPolicy={(policyId) => router.push(`/wallet/${policyId}`)}
+                onAddManually={() => router.push('/wallet/add')}
+                onUploadDocument={() => router.push('/wallet/add?method=upload')}
+                onShareWithAgent={(policyId) => router.push(`/wallet/${policyId}/share`)}
                 onRunAnalysis={async (policyId) => {
                     const toastId = toast.loading(t.toast.analysisStarting)
                     const result = await runPolicyAnalysis(policyId)
@@ -175,6 +175,7 @@ export function PolicyWalletClient({ policies, user, showTour = false }: PolicyW
                     }
                 }}
             />
+
             {showTour && <DashboardTour onComplete={() => dismissTour()} />}
         </div>
     )

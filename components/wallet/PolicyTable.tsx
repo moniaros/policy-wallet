@@ -1,7 +1,7 @@
-"use client"
+﻿"use client"
 
-import { MoreVertical, Eye, RefreshCw, History, AlertCircle, Sparkles, Trash2, Share2, Wallet, FileText, Search } from 'lucide-react'
-import { useState, useRef, useEffect } from 'react'
+import { AlertCircle, CheckCircle2, Clock3, MoreVertical, RefreshCw, Search, ShieldAlert, ShieldCheck, Trash2, Share2, FileText } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Policy } from './types'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -18,299 +18,213 @@ interface PolicyTableProps {
     onViewDocuments?: (policyId: string) => void
 }
 
-// Insurance type icons mapping
-const TYPE_ICONS: Record<string, string> = {
-    health: '❤️',
-    motor: '🚗',
-    home: '🏠',
-    life: '🛡️',
-    travel: '✈️',
-    liability: '⚖️',
-    pet: '🐾',
-    professional: '💼',
-    other: '📄',
-    breakdown: '🔧',
-    legal_expenses: '⚖️',
-    income_protection: '💰',
-    gadget: '📱',
-    bicycle: '🚲',
-    business: '🏢',
-    cyber: '💻',
-    motorbike: '🏍️',
-    public_liability: '🤝',
-    renters: '🔑'
-}
-
-// Insurer logo colors (fallback for missing logos)
-const INSURER_COLORS = [
-    'bg-purple-500',
-    'bg-blue-500',
-    'bg-teal-500',
-    'bg-indigo-500',
-    'bg-red-500',
-    'bg-orange-500'
-]
+const INSURER_COLORS = ['bg-purple-500', 'bg-blue-500', 'bg-teal-500', 'bg-indigo-500', 'bg-red-500', 'bg-orange-500']
 
 export function PolicyTable({
     policies,
     onViewPolicy,
     onRenewPolicy,
-    onViewHistory,
     onRunAnalysis,
     onDelete,
     onShare,
-    onAddToWallet,
-    onViewDocuments
+    onViewDocuments,
 }: PolicyTableProps) {
     const { language, t } = useLanguage()
     const [currentPage, setCurrentPage] = useState(1)
     const [openMenuId, setOpenMenuId] = useState<string | null>(null)
-    const [menuPosition, setMenuPosition] = useState<{ top: number, right: number } | null>(null)
-    const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({})
-    const policiesPerPage = 5
+    const [menuPosition, setMenuPosition] = useState<{ top: number; right: number } | null>(null)
+    const policiesPerPage = 6
 
-    // Pagination
-    const totalPages = Math.ceil(policies.length / policiesPerPage)
+    const totalPages = Math.max(1, Math.ceil(policies.length / policiesPerPage))
     const startIndex = (currentPage - 1) * policiesPerPage
-    const endIndex = startIndex + policiesPerPage
-    const currentPolicies = policies.slice(startIndex, endIndex)
+    const currentPolicies = policies.slice(startIndex, startIndex + policiesPerPage)
 
-    // Handle menu open
-    const handleMenuOpen = (policyId: string, e: React.MouseEvent) => {
-        e.stopPropagation()
-        if (openMenuId === policyId) {
+    useEffect(() => {
+        const closeMenu = () => {
             setOpenMenuId(null)
             setMenuPosition(null)
-        } else {
-            const rect = e.currentTarget.getBoundingClientRect()
-            setMenuPosition({
-                top: rect.bottom + window.scrollY,
-                right: window.innerWidth - rect.right
-            })
-            setOpenMenuId(policyId)
         }
+        window.addEventListener('scroll', closeMenu, true)
+        window.addEventListener('resize', closeMenu)
+        return () => {
+            window.removeEventListener('scroll', closeMenu, true)
+            window.removeEventListener('resize', closeMenu)
+        }
+    }, [])
+
+    const label = {
+        cancelled: language === 'el' ? 'Ακυρωμένο' : 'Cancelled',
+        expired: t.policyStatus?.expired || (language === 'el' ? 'Έληξε' : 'Expired'),
+        analyzing: t.dashboard.statusLabels.analyzing,
+        actionNeeded: t.dashboard.statusLabels.action_needed,
+        active: t.dashboard.statusLabels.active,
+        renewalPending: t.dashboard.statusLabels.expiring_soon,
+        unverified: language === 'el' ? 'Μη επαληθευμένο' : 'Unverified',
+        noIssues: language === 'el' ? 'Χωρίς θέματα' : 'No issues',
+        policySuffix: language === 'el' ? 'ασφαλιστήριο' : 'policy',
+        understandPolicy: t.dashboard.runAnalysis || (language === 'el' ? 'Κατανόηση συμβολαίου' : 'Understand policy'),
     }
 
-    // Close menu on scroll or resize
-    useEffect(() => {
-        const handleScroll = () => {
-            if (openMenuId) {
-                setOpenMenuId(null)
-                setMenuPosition(null)
+    const getStatusBadge = (status: Policy['status'], endDate: string | null) => {
+        const isExpired = endDate ? new Date(endDate) < new Date() : false
+
+        if (status === 'cancelled') {
+            return {
+                text: label.cancelled,
+                className: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300',
+                icon: <ShieldAlert className="w-3.5 h-3.5" />,
             }
         }
-        window.addEventListener('scroll', handleScroll, true)
-        window.addEventListener('resize', handleScroll)
-        return () => {
-            window.removeEventListener('scroll', handleScroll, true)
-            window.removeEventListener('resize', handleScroll)
+        if (isExpired) {
+            return {
+                text: label.expired,
+                className: 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300',
+                icon: <Clock3 className="w-3.5 h-3.5" />,
+            }
         }
-    }, [openMenuId])
+        if (status === 'analyzing') {
+            return {
+                text: label.analyzing,
+                className: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
+                icon: <RefreshCw className="w-3.5 h-3.5 animate-spin" />,
+            }
+        }
+        if (status === 'action_needed') {
+            return {
+                text: label.actionNeeded,
+                className: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
+                icon: <AlertCircle className="w-3.5 h-3.5" />,
+            }
+        }
 
-    // Status badge styling - Layer 1: Operational Status
-    const getStatusBadge = (status: Policy['status'], endDate: string | null) => {
-        const isExpired = endDate && new Date(endDate) < new Date()
-
-        if (status === 'cancelled') return { label: 'Cancelled', bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', icon: '🔴' }
-        if (isExpired) return { label: 'Expired', bg: 'bg-stone-100 dark:bg-stone-800', text: 'text-stone-500 dark:text-stone-400', icon: '🔴' }
-        if (status === 'analyzing') return { label: 'Analyzing', bg: 'bg-blue-50 dark:bg-blue-900/20', text: 'text-blue-700 dark:text-blue-400', icon: '🔄' }
-        if (status === 'action_needed') return { label: 'Action Needed', bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-400', icon: '⚠️' }
-
-        // Default Active
-        return { label: 'Active', bg: 'bg-emerald-50 dark:bg-emerald-900/20', text: 'text-emerald-700 dark:text-emerald-400', icon: '🟢' }
+        return {
+            text: label.active,
+            className: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300',
+            icon: <ShieldCheck className="w-3.5 h-3.5" />,
+        }
     }
 
     const getInsightBadge = (policy: Policy) => {
-        // Layer 2: Insights
-        if (policy.status === 'expiring_soon') return { label: 'Renewal Pending', color: 'text-amber-600', icon: '⚠️' }
-        if (!policy.verified) return { label: 'Unverified', color: 'text-stone-400', icon: '🛡️' }
-        return { label: 'No Issues', color: 'text-teal-600', icon: '✅' }
+        if (policy.status === 'expiring_soon') {
+            return { text: label.renewalPending, className: 'text-amber-600 dark:text-amber-400', icon: <Clock3 className="w-3.5 h-3.5" /> }
+        }
+        if (!policy.verified) {
+            return { text: label.unverified, className: 'text-stone-500 dark:text-stone-400', icon: <ShieldAlert className="w-3.5 h-3.5" /> }
+        }
+        return { text: label.noIssues, className: 'text-teal-600 dark:text-teal-400', icon: <CheckCircle2 className="w-3.5 h-3.5" /> }
     }
 
-    // Get insurer initials for logo fallback
-    const getInsurerInitials = (name: string) => {
-        return name
+    const getInsurerInitials = (name: string) =>
+        name
             .split(' ')
-            .map(word => word[0])
+            .map((word) => word[0])
             .join('')
             .toUpperCase()
             .slice(0, 2)
-    }
 
-    // Get color for insurer (deterministic based on name)
     const getInsurerColor = (name: string) => {
         const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
         return INSURER_COLORS[hash % INSURER_COLORS.length]
     }
 
     return (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            {/* Header */}
-            <div className="px-6 py-5 border-b border-gray-100">
-                <h2 className="text-xl font-bold text-gray-900">
-                    {t.dashboard.myPolicies}
-                </h2>
+        <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-sm border border-stone-200 dark:border-stone-800 overflow-hidden">
+            <div className="px-6 py-5 border-b border-stone-200 dark:border-stone-800">
+                <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100">{t.dashboard.myPolicies}</h2>
             </div>
 
-            {/* Table */}
             <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full min-w-[720px]">
                     <thead>
-                        <tr className="bg-gray-50 border-b border-gray-100">
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-stone-300">
-                                {t.dashboard.insurer}
-                            </th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-stone-300">
-                                {(t.dashboard as any).insuredItem || 'Insured Item'}
-                            </th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700 dark:text-stone-300">
-                                {t.dashboard.status}
-                            </th>
-                            <th className="px-6 py-4 text-right text-sm font-semibold text-gray-700 dark:text-stone-300">
-                                {t.dashboard.actions}
-                            </th>
+                        <tr className="bg-stone-50 dark:bg-stone-800/40 border-b border-stone-200 dark:border-stone-800">
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-stone-700 dark:text-stone-300">{t.dashboard.insurer}</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-stone-700 dark:text-stone-300">{(t.dashboard as any).insuredItem || 'Insured Item'}</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-stone-700 dark:text-stone-300">{t.dashboard.status}</th>
+                            <th className="px-6 py-4 text-right text-sm font-semibold text-stone-700 dark:text-stone-300">{t.dashboard.actions}</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
                         {currentPolicies.map((policy) => {
                             const statusBadge = getStatusBadge(policy.status, policy.endDate)
                             const insightBadge = getInsightBadge(policy)
-                            const typeIcon = TYPE_ICONS[policy.lineOfBusiness] || '📄'
                             const isMenuOpen = openMenuId === policy.id
 
                             return (
-                                <tr
-                                    key={policy.id}
-                                    onClick={() => onViewPolicy?.(policy.id)}
-                                    className="hover:bg-gray-50 transition-colors group cursor-pointer"
-                                >
-                                    {/* Insurer */}
+                                <tr key={policy.id} onClick={() => onViewPolicy?.(policy.id)} className="hover:bg-stone-50 dark:hover:bg-stone-800/40 transition-colors group cursor-pointer">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
                                             {policy.insurerLogo ? (
-                                                <img
-                                                    src={policy.insurerLogo}
-                                                    alt={policy.insurerName}
-                                                    className="w-10 h-10 rounded-lg object-contain bg-white border border-gray-200"
-                                                />
+                                                <img src={policy.insurerLogo} alt={policy.insurerName} className="w-10 h-10 rounded-lg object-contain bg-white border border-stone-200" />
                                             ) : (
-                                                <div className={`
-                                                    w-10 h-10 rounded-lg 
-                                                    ${getInsurerColor(policy.insurerName)}
-                                                    flex items-center justify-center
-                                                    text-white font-bold text-sm
-                                                `}>
+                                                <div className={`w-10 h-10 rounded-lg ${getInsurerColor(policy.insurerName)} flex items-center justify-center text-white font-bold text-sm`}>
                                                     {getInsurerInitials(policy.insurerName)}
                                                 </div>
                                             )}
-                                            <span className={`font-medium text-gray-900 ${policy.status === 'analyzing' ? 'animate-pulse opacity-70' : ''}`}>
-                                                {policy.insurerName}
-                                            </span>
+                                            <span className={`font-medium text-stone-900 dark:text-stone-100 ${policy.status === 'analyzing' ? 'opacity-80' : ''}`}>{policy.insurerName}</span>
                                         </div>
                                     </td>
 
-                                    {/* Insured Item (New Column) */}
                                     <td className="px-6 py-4">
                                         {policy.insuredItem ? (
                                             <div>
                                                 <div className="font-bold text-stone-900 dark:text-white text-sm">{policy.insuredItem.title}</div>
-                                                {policy.insuredItem.subtitle && <div className="text-xs text-stone-500 font-mono mt-0.5">{policy.insuredItem.subtitle}</div>}
+                                                {policy.insuredItem.subtitle ? <div className="text-xs text-stone-500 font-mono mt-0.5">{policy.insuredItem.subtitle}</div> : null}
                                             </div>
                                         ) : (
-                                            <div className="text-stone-400 text-sm italic">
-                                                {policy.lineOfBusiness} policy
-                                            </div>
+                                            <div className="text-stone-400 text-sm italic">{`${t.policyTypes[policy.lineOfBusiness as keyof typeof t.policyTypes] || policy.lineOfBusiness} ${label.policySuffix}`}</div>
                                         )}
                                     </td>
 
-                                    {/* Status (Split System) */}
                                     <td className="px-6 py-4">
                                         <div className="flex flex-col items-start gap-1.5">
-                                            {/* Layer 1: Operational */}
-                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold whitespace-nowrap border ${statusBadge.bg} ${statusBadge.text} border-transparent bg-opacity-50`}>
-                                                {statusBadge.icon} {statusBadge.label}
+                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap ${statusBadge.className}`}>
+                                                {statusBadge.icon}
+                                                {statusBadge.text}
                                             </span>
-
-                                            {/* Layer 2: Insights */}
-                                            {insightBadge.label !== 'No Issues' && (
-                                                <div className={`flex items-center gap-1.5 text-xs font-medium ${insightBadge.color} px-2`}>
-                                                    <span>{insightBadge.icon}</span> {insightBadge.label}
-                                                </div>
-                                            )}
+                                            <div className={`inline-flex items-center gap-1.5 text-xs font-medium ${insightBadge.className} px-1`}>
+                                                {insightBadge.icon}
+                                                {insightBadge.text}
+                                            </div>
                                         </div>
                                     </td>
 
-                                    {/* Actions */}
                                     <td className="px-6 py-4">
-                                        <div className="flex items-center justify-end gap-2" onClick={e => e.stopPropagation()}>
-                                            {/* Renew Now Button (for expiring policies) */}
-                                            {policy.status === 'expiring_soon' && (
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation()
-                                                        onRenewPolicy?.(policy.id)
-                                                    }}
-                                                    className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2"
-                                                >
-                                                    <RefreshCw className="w-4 h-4" />
-                                                    {t.dashboard.renewNow}
-                                                </button>
-                                            )}
-
-                                            {/* View Details Button */}
+                                        <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                                             <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation()
-                                                    onViewPolicy?.(policy.id)
-                                                }}
-                                                className="px-4 py-2 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg transition-colors"
+                                                onClick={() => onViewPolicy?.(policy.id)}
+                                                className="px-4 py-2 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 text-sm font-medium rounded-lg transition-colors cursor-pointer"
                                             >
                                                 {t.dashboard.viewDetails}
                                             </button>
 
-                                            {/* More Actions Menu */}
-                                            <div className="relative">
-                                                <button
-                                                    onClick={(e) => handleMenuOpen(policy.id, e)}
-                                                    className={`p-2 hover:bg-gray-100 rounded-lg transition-colors ${isMenuOpen ? 'bg-gray-100' : ''}`}
-                                                >
-                                                    <MoreVertical className="w-5 h-5 text-gray-600" />
-                                                </button>
-                                            </div>
+                                            <button
+                                                onClick={(e) => {
+                                                    const rect = e.currentTarget.getBoundingClientRect()
+                                                    setMenuPosition({ top: rect.bottom + window.scrollY, right: window.innerWidth - rect.right })
+                                                    setOpenMenuId(isMenuOpen ? null : policy.id)
+                                                }}
+                                                className={`p-2 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-lg transition-colors cursor-pointer ${isMenuOpen ? 'bg-stone-100 dark:bg-stone-800' : ''}`}
+                                                aria-label={t.dashboard.actions}
+                                            >
+                                                <MoreVertical className="w-5 h-5 text-stone-600 dark:text-stone-300" />
+                                            </button>
 
-                                            {/* Portal Dropdown Menu */}
                                             {isMenuOpen && typeof document !== 'undefined' && createPortal(
                                                 <>
+                                                    <div className="fixed inset-0 z-[9998]" onClick={() => setOpenMenuId(null)} />
                                                     <div
-                                                        className="fixed inset-0 z-[9998]"
-                                                        onClick={() => {
-                                                            setOpenMenuId(null)
-                                                            setMenuPosition(null)
-                                                        }}
-                                                    />
-                                                    <div
-                                                        className="fixed z-[9999] w-64 bg-white dark:bg-stone-800 rounded-2xl shadow-2xl border border-stone-200 dark:border-stone-700 py-3 animate-in fade-in zoom-in-95 duration-200"
-                                                        style={{
-                                                            top: `${menuPosition?.top ?? 0}px`,
-                                                            right: `${menuPosition?.right ?? 0}px`,
-                                                            marginTop: '8px'
-                                                        }}
+                                                        className="fixed z-[9999] w-64 bg-white dark:bg-stone-800 rounded-2xl shadow-2xl border border-stone-200 dark:border-stone-700 py-2 animate-in fade-in zoom-in-95 duration-200"
+                                                        style={{ top: `${menuPosition?.top ?? 0}px`, right: `${menuPosition?.right ?? 0}px`, marginTop: '8px' }}
                                                     >
-                                                        {/* Understand */}
-                                                        <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-stone-400">
-                                                            {(t.dashboard as any).actionGroups?.understand || 'Understand'}
-                                                        </div>
                                                         <button
                                                             onClick={() => {
-                                                                onViewPolicy?.(policy.id)
+                                                                onRunAnalysis?.(policy.id)
                                                                 setOpenMenuId(null)
                                                             }}
                                                             className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 flex items-center gap-3 transition-colors"
                                                         >
-                                                            <div className="w-8 h-8 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400">
-                                                                <Search className="w-4 h-4" />
-                                                            </div>
-                                                            {t.dashboard.runAnalysis || 'Understand Policy'}
+                                                            <Search className="w-4 h-4" />
+                                                            {label.understandPolicy}
                                                         </button>
                                                         <button
                                                             onClick={() => {
@@ -319,16 +233,9 @@ export function PolicyTable({
                                                             }}
                                                             className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 flex items-center gap-3 transition-colors"
                                                         >
-                                                            <div className="w-8 h-8 bg-amber-50 dark:bg-amber-900/30 rounded-lg flex items-center justify-center text-amber-600 dark:text-amber-400">
-                                                                <FileText className="w-4 h-4" />
-                                                            </div>
+                                                            <FileText className="w-4 h-4" />
                                                             {t.wallet.documents}
                                                         </button>
-
-                                                        {/* Act */}
-                                                        <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-stone-400 mt-2">
-                                                            {(t.dashboard as any).actionGroups?.act || 'Act'}
-                                                        </div>
                                                         <button
                                                             onClick={() => {
                                                                 onShare?.(policy.id)
@@ -336,12 +243,9 @@ export function PolicyTable({
                                                             }}
                                                             className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 flex items-center gap-3 transition-colors"
                                                         >
-                                                            <div className="w-8 h-8 bg-teal-50 dark:bg-teal-900/30 rounded-lg flex items-center justify-center text-teal-600 dark:text-teal-400">
-                                                                <Share2 className="w-4 h-4" />
-                                                            </div>
+                                                            <Share2 className="w-4 h-4" />
                                                             {t.wallet.shareWithAgent}
                                                         </button>
-
                                                         {policy.status === 'expiring_soon' && (
                                                             <button
                                                                 onClick={() => {
@@ -350,17 +254,10 @@ export function PolicyTable({
                                                                 }}
                                                                 className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 flex items-center gap-3 transition-colors"
                                                             >
-                                                                <div className="w-8 h-8 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                                                                    <RefreshCw className="w-4 h-4" />
-                                                                </div>
+                                                                <RefreshCw className="w-4 h-4" />
                                                                 {t.dashboard.renewPolicy}
                                                             </button>
                                                         )}
-
-                                                        {/* Danger Zone */}
-                                                        <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-red-300 mt-2">
-                                                            {(t.dashboard as any).actionGroups?.danger || 'Danger Zone'}
-                                                        </div>
                                                         <button
                                                             onClick={() => {
                                                                 onDelete?.(policy.id)
@@ -368,9 +265,7 @@ export function PolicyTable({
                                                             }}
                                                             className="w-full px-4 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center gap-3 transition-colors"
                                                         >
-                                                            <div className="w-8 h-8 bg-red-50 dark:bg-red-900/30 rounded-lg flex items-center justify-center text-red-500">
-                                                                <Trash2 className="w-4 h-4" />
-                                                            </div>
+                                                            <Trash2 className="w-4 h-4" />
                                                             {t.dashboard.delete}
                                                         </button>
                                                     </div>
@@ -386,44 +281,36 @@ export function PolicyTable({
                 </table>
             </div>
 
-            {/* Empty State */}
             {currentPolicies.length === 0 && (
                 <div className="px-6 py-12 text-center">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                        <AlertCircle className="w-8 h-8 text-gray-400" />
+                    <div className="w-16 h-16 mx-auto mb-4 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center">
+                        <AlertCircle className="w-8 h-8 text-stone-400" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                        {t.dashboard.noPolicies}
-                    </h3>
-                    <p className="text-gray-600">
-                        {t.dashboard.addFirstPolicy}
-                    </p>
+                    <h3 className="text-lg font-semibold text-stone-900 dark:text-stone-100 mb-2">{t.dashboard.noPolicies}</h3>
+                    <p className="text-stone-600 dark:text-stone-400">{t.dashboard.addFirstPolicy}</p>
                 </div>
             )}
 
-            {/* Pagination */}
             {totalPages > 1 && (
-                <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between">
+                <div className="px-6 py-4 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
                     <button
-                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                         disabled={currentPage === 1}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="px-4 py-2 text-sm font-medium text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                     >
                         {t.dashboard.previous}
                     </button>
 
                     <div className="flex items-center gap-2">
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                             <button
                                 key={page}
                                 onClick={() => setCurrentPage(page)}
-                                className={`
-                                    w-10 h-10 rounded-lg text-sm font-medium transition-colors
-                                    ${currentPage === page
+                                className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                                    currentPage === page
                                         ? 'bg-teal-600 text-white'
-                                        : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
-                                    }
-                                `}
+                                        : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800'
+                                }`}
                             >
                                 {page}
                             </button>
@@ -431,9 +318,9 @@ export function PolicyTable({
                     </div>
 
                     <button
-                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                         disabled={currentPage === totalPages}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="px-4 py-2 text-sm font-medium text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                     >
                         {t.dashboard.next}
                     </button>

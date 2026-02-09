@@ -54,8 +54,8 @@ const getBottomNavItems = (role: UserRole['role'], t: any) => {
     if (role === 'policyholder') {
         return [
             { href: '/wallet', icon: Wallet, label: t.nav.wallet, id: 'wallet' },
-            { href: '/tasks', icon: ListChecks, label: 'Tasks', id: 'tasks' },
-            { href: '/coverage', icon: Shield, label: 'Coverage', id: 'coverage' },
+            { href: '/tasks', icon: ListChecks, label: t.tasks?.actionCenter || (t.common.locale === 'el-GR' ? 'Εργασίες' : 'Tasks'), id: 'tasks' },
+            { href: '/coverage', icon: Shield, label: t.nav.coverage, id: 'coverage' },
             { href: '/notifications', icon: Bell, label: t.nav.notifications, id: 'notifications' },
             { href: '/account', icon: User, label: t.userMenu.settings, id: 'account' }
         ]
@@ -290,8 +290,8 @@ export function AppShell({
                                             </span>
                                         )}
                                     </div>
-                                    <span className="text-[10px] font-black lowercase tracking-[0.1em] whitespace-nowrap">
-                                        {item.label.toLowerCase()}
+                                    <span className="text-[10px] font-black tracking-[0.08em] whitespace-nowrap">
+                                        {item.label}
                                     </span>
                                 </button>
                             )
