@@ -15,6 +15,7 @@ import type {
     AIGapAnalysisResponse,
     AITrackingOptions
 } from './ai-service.interface'
+import { enrichExtractionPayload } from './extraction-enrichment'
 
 export class MockAIService implements IAIService {
     private shouldFail: boolean = false
@@ -54,8 +55,7 @@ export class MockAIService implements IAIService {
             fileName: document.fileName
         })
 
-        // Return mock data
-        return {
+        const base = {
             insurerName: 'Mock Insurance Co.',
             policyNumber: `MOCK-${Date.now()}`,
             lineOfBusiness: 'motor',
@@ -65,7 +65,34 @@ export class MockAIService implements IAIService {
             coverageSummary: 'Mock policy with standard coverage',
             customerName: 'John',
             customerSurname: 'Doe',
-            customerEmail: 'john.doe@example.com'
+            customerEmail: 'john.doe@example.com',
+            exclusions: ['Driving under influence', 'Commercial use not declared'],
+            extractionConfidence: {
+                overall: 88,
+                fields: {
+                    insurerName: 96,
+                    policyNumber: 92,
+                    lineOfBusiness: 90,
+                    startDate: 84,
+                    endDate: 85,
+                    premiumAmount: 88,
+                }
+            },
+            acordData: {
+                policy: {
+                    insurerName: 'Mock Insurance Co.',
+                    policyNumber: `MOCK-${Date.now()}`,
+                }
+            }
+        }
+        const enriched = enrichExtractionPayload(base)
+
+        // Return mock data
+        return {
+            ...base,
+            exclusions: enriched.exclusions,
+            extractionMeta: enriched.extractionMeta,
+            acordData: enriched.acordData
         }
     }
 
@@ -104,7 +131,7 @@ export class MockAIService implements IAIService {
             }
         }))
 
-        return {
+        const response = {
             verifiedMetadata: {
                 insurerName: metadata.insurerName,
                 policyNumber: metadata.policyNumber,
@@ -122,9 +149,33 @@ export class MockAIService implements IAIService {
                     type: metadata.lineOfBusiness
                 },
                 vehicle: {},
-                coverages: []
+                coverages: [],
+                exclusions: ['Damage during illegal activity']
             }
         }
+        const enriched = enrichExtractionPayload({
+            insurerName: response.verifiedMetadata.insurerName,
+            policyNumber: response.verifiedMetadata.policyNumber,
+            lineOfBusiness: response.verifiedMetadata.lineOfBusiness,
+            startDate: response.verifiedMetadata.startDate,
+            endDate: response.verifiedMetadata.endDate,
+            premiumAmount: response.verifiedMetadata.premiumAmount,
+            exclusions: response.acordData.exclusions,
+            extractionConfidence: {
+                overall: 86,
+                fields: {
+                    insurerName: 95,
+                    policyNumber: 93,
+                    lineOfBusiness: 90,
+                    startDate: 80,
+                    endDate: 80,
+                    premiumAmount: 78,
+                }
+            },
+            acordData: response.acordData
+        })
+        response.acordData = enriched.acordData
+        return response
     }
 
     /**

@@ -86,26 +86,27 @@ export function AddToWallet({
                 <div onClick={() => handleOpenChange(true)}>{trigger}</div>
             ) : (
                 <div
-                    className="bg-gradient-to-br from-stone-900 to-stone-800 dark:from-stone-800 dark:to-stone-900 rounded-3xl p-6 shadow-lg text-white relative overflow-hidden group cursor-pointer"
+                    className="bg-gradient-to-br from-slate-950 via-slate-900 to-teal-900 dark:from-slate-900 dark:via-slate-900 dark:to-emerald-900 rounded-3xl p-6 shadow-lg text-white relative overflow-hidden group cursor-pointer border border-white/10"
                     onClick={() => handleOpenChange(true)}
                 >
-                    <div className="absolute top-0 right-0 p-3 opacity-50 text-[10px] font-black uppercase tracking-widest">{t.wallet.digitalCard}</div>
+                    <div className="absolute top-0 right-0 p-3 text-[10px] font-black uppercase tracking-widest text-teal-100/80">{t.wallet.digitalCard}</div>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(45,212,191,0.22),_transparent_45%)] pointer-events-none" />
 
                     <div className="relative z-10 flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-400/35 to-cyan-400/25 border border-white/20 backdrop-blur flex items-center justify-center">
                             <WalletCards className="w-6 h-6" />
                         </div>
                         <div>
                             <h3 className="font-bold text-lg leading-none">{t.wallet.addToWallet}</h3>
-                            <p className="text-stone-400 text-xs mt-1">{t.wallet.digitalCardDesc}</p>
+                            <p className="text-teal-100/80 text-xs mt-1">{t.wallet.digitalCardDesc}</p>
                         </div>
                     </div>
 
                     <div className="mt-6 flex gap-2">
-                        <div className="h-8 px-3 rounded-lg bg-black border border-white/20 flex items-center justify-center">
+                        <div className="h-8 px-3 rounded-lg bg-black/75 border border-white/20 flex items-center justify-center">
                             <span className="text-[10px] font-bold">Apple Wallet</span>
                         </div>
-                        <div className="h-8 px-3 rounded-lg bg-black border border-white/20 flex items-center justify-center">
+                        <div className="h-8 px-3 rounded-lg bg-black/75 border border-white/20 flex items-center justify-center">
                             <span className="text-[10px] font-bold">Google Wallet</span>
                         </div>
                     </div>

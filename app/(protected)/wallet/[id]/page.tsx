@@ -24,7 +24,9 @@ export default async function PolicyDetailPage({
         db.policy.findUnique({
             where: { id: policyId },
             include: {
-                documents: true,
+                documents: {
+                    orderBy: { uploadedAt: 'desc' }
+                },
                 gapInstances: {
                     where: { status: 'open' },
                     include: { definition: true }
@@ -95,6 +97,13 @@ export default async function PolicyDetailPage({
         updatedAt: policy.updatedAt.toISOString(),
         lastAnalyzedAt: policy.lastAnalyzedAt?.toISOString() || null,
         premiumAmount: policy.premiumAmount ? Number(policy.premiumAmount) : null,
+        verified: !(
+            (policy.acordData as any)?.extraction?.requiresReview ||
+            (typeof (policy.acordData as any)?.extraction?.confidence?.overall === 'number' &&
+                (policy.acordData as any).extraction.confidence.overall < 80) ||
+            (Array.isArray((policy.acordData as any)?.extraction?.missingCriticalFields) &&
+                (policy.acordData as any).extraction.missingCriticalFields.length > 0)
+        ),
         premiumCurrency: policy.premiumCurrency,
         documents: policy.documents.map(d => ({
             ...d,

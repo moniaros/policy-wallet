@@ -3,8 +3,21 @@
 import { AlertCircle, CheckCircle2, Clock3, MoreVertical, RefreshCw, Search, ShieldAlert, ShieldCheck, Trash2, Share2, FileText } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import type { ReactNode } from 'react'
 import type { Policy } from './types'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { getDocumentPolicySummary } from '@/lib/wallet/document-insights'
+import {
+    CarIcon,
+    HeartIcon,
+    HomeIcon,
+    ShieldIcon,
+    PlaneIcon,
+    ScaleIcon,
+    PawIcon,
+    BriefcaseIcon,
+    DocumentIcon,
+} from '@/components/icons/PolicyIcons'
 
 interface PolicyTableProps {
     policies: Policy[]
@@ -18,7 +31,17 @@ interface PolicyTableProps {
     onViewDocuments?: (policyId: string) => void
 }
 
-const INSURER_COLORS = ['bg-purple-500', 'bg-blue-500', 'bg-teal-500', 'bg-indigo-500', 'bg-red-500', 'bg-orange-500']
+const POLICY_VISUALS: Record<string, { icon: any; badge: string; iconColor: string }> = {
+    motor: { icon: CarIcon, badge: 'bg-amber-100 dark:bg-amber-900/30', iconColor: 'text-amber-700 dark:text-amber-300' },
+    health: { icon: HeartIcon, badge: 'bg-cyan-100 dark:bg-cyan-900/30', iconColor: 'text-cyan-700 dark:text-cyan-300' },
+    home: { icon: HomeIcon, badge: 'bg-emerald-100 dark:bg-emerald-900/30', iconColor: 'text-emerald-700 dark:text-emerald-300' },
+    life: { icon: ShieldIcon, badge: 'bg-violet-100 dark:bg-violet-900/30', iconColor: 'text-violet-700 dark:text-violet-300' },
+    travel: { icon: PlaneIcon, badge: 'bg-indigo-100 dark:bg-indigo-900/30', iconColor: 'text-indigo-700 dark:text-indigo-300' },
+    liability: { icon: ScaleIcon, badge: 'bg-slate-100 dark:bg-slate-800', iconColor: 'text-slate-700 dark:text-slate-300' },
+    pet: { icon: PawIcon, badge: 'bg-orange-100 dark:bg-orange-900/30', iconColor: 'text-orange-700 dark:text-orange-300' },
+    professional: { icon: BriefcaseIcon, badge: 'bg-stone-100 dark:bg-stone-800', iconColor: 'text-stone-700 dark:text-stone-300' },
+    other: { icon: DocumentIcon, badge: 'bg-stone-100 dark:bg-stone-800', iconColor: 'text-stone-700 dark:text-stone-300' },
+}
 
 export function PolicyTable({
     policies,
@@ -54,53 +77,52 @@ export function PolicyTable({
 
     const label = {
         cancelled: language === 'el' ? 'Ακυρωμένο' : 'Cancelled',
-        expired: t.policyStatus?.expired || (language === 'el' ? 'Έληξε' : 'Expired'),
+        expired: language === 'el' ? 'ΛΗΞΕ' : 'EXPIRED',
         analyzing: t.dashboard.statusLabels.analyzing,
-        actionNeeded: t.dashboard.statusLabels.action_needed,
-        active: t.dashboard.statusLabels.active,
-        renewalPending: t.dashboard.statusLabels.expiring_soon,
+        actionNeeded: language === 'el' ? 'ΛΕΙΠΟΥΝ ΣΤΟΙΧΕΙΑ' : 'MISSING INFO',
+        active: language === 'el' ? 'ΕΝΕΡΓΟ' : 'ACTIVE',
+        renewalPending: language === 'el' ? 'ΧΡΕΙΑΖΕΤΑΙ ΑΝΑΝΕΩΣΗ' : 'RENEWAL NEEDED',
         unverified: language === 'el' ? 'Μη επαληθευμένο' : 'Unverified',
         noIssues: language === 'el' ? 'Χωρίς θέματα' : 'No issues',
-        policySuffix: language === 'el' ? 'ασφαλιστήριο' : 'policy',
         understandPolicy: t.dashboard.runAnalysis || (language === 'el' ? 'Κατανόηση συμβολαίου' : 'Understand policy'),
+        expiresOn: language === 'el' ? 'Λήξη' : 'Expiry',
+        premium: language === 'el' ? 'Ασφάλιστρο' : 'Premium',
+        assetFallback: language === 'el' ? 'Ασφαλισμένο αντικείμενο' : 'Insured asset',
     }
 
-    const getStatusBadge = (status: Policy['status'], endDate: string | null) => {
-        const isExpired = endDate ? new Date(endDate) < new Date() : false
-
-        if (status === 'cancelled') {
-            return {
-                text: label.cancelled,
-                className: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300',
-                icon: <ShieldAlert className="w-3.5 h-3.5" />,
-            }
-        }
-        if (isExpired) {
-            return {
-                text: label.expired,
-                className: 'bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300',
-                icon: <Clock3 className="w-3.5 h-3.5" />,
-            }
-        }
-        if (status === 'analyzing') {
+    const getStatusBadge = (policy: Policy) => {
+        const typeLabel = t.policyTypes[policy.lineOfBusiness as keyof typeof t.policyTypes] || policy.lineOfBusiness
+        const summary = getDocumentPolicySummary(policy, language === 'el' ? 'el' : 'en', typeLabel)
+        if (policy.status === 'analyzing') {
             return {
                 text: label.analyzing,
                 className: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
                 icon: <RefreshCw className="w-3.5 h-3.5 animate-spin" />,
-            }
-        }
-        if (status === 'action_needed') {
-            return {
-                text: label.actionNeeded,
-                className: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
-                icon: <AlertCircle className="w-3.5 h-3.5" />,
+                message: summary.status.message,
             }
         }
 
+        const styleByTone: Record<string, string> = {
+            critical: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300',
+            warning: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
+            active: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300',
+            inactive: 'bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200',
+            info: 'bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300',
+        }
+
+        const iconByTone: Record<string, ReactNode> = {
+            critical: <AlertCircle className="w-3.5 h-3.5" />,
+            warning: <AlertCircle className="w-3.5 h-3.5" />,
+            active: <ShieldCheck className="w-3.5 h-3.5" />,
+            inactive: <ShieldAlert className="w-3.5 h-3.5" />,
+            info: <Clock3 className="w-3.5 h-3.5" />,
+        }
+
         return {
-            text: label.active,
-            className: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300',
-            icon: <ShieldCheck className="w-3.5 h-3.5" />,
+            text: summary.status.label,
+            className: styleByTone[summary.status.tone] || styleByTone.active,
+            icon: iconByTone[summary.status.tone] || iconByTone.active,
+            message: summary.status.message,
         }
     }
 
@@ -114,19 +136,6 @@ export function PolicyTable({
         return { text: label.noIssues, className: 'text-teal-600 dark:text-teal-400', icon: <CheckCircle2 className="w-3.5 h-3.5" /> }
     }
 
-    const getInsurerInitials = (name: string) =>
-        name
-            .split(' ')
-            .map((word) => word[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2)
-
-    const getInsurerColor = (name: string) => {
-        const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
-        return INSURER_COLORS[hash % INSURER_COLORS.length]
-    }
-
     return (
         <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-sm border border-stone-200 dark:border-stone-800 overflow-hidden">
             <div className="px-6 py-5 border-b border-stone-200 dark:border-stone-800">
@@ -137,42 +146,44 @@ export function PolicyTable({
                 <table className="w-full min-w-[720px]">
                     <thead>
                         <tr className="bg-stone-50 dark:bg-stone-800/40 border-b border-stone-200 dark:border-stone-800">
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-stone-700 dark:text-stone-300">{t.dashboard.insurer}</th>
                             <th className="px-6 py-4 text-left text-sm font-semibold text-stone-700 dark:text-stone-300">{(t.dashboard as any).insuredItem || 'Insured Item'}</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-stone-700 dark:text-stone-300">{t.dashboard.insurer}</th>
                             <th className="px-6 py-4 text-left text-sm font-semibold text-stone-700 dark:text-stone-300">{t.dashboard.status}</th>
                             <th className="px-6 py-4 text-right text-sm font-semibold text-stone-700 dark:text-stone-300">{t.dashboard.actions}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
                         {currentPolicies.map((policy) => {
-                            const statusBadge = getStatusBadge(policy.status, policy.endDate)
+                            const statusBadge = getStatusBadge(policy)
                             const insightBadge = getInsightBadge(policy)
                             const isMenuOpen = openMenuId === policy.id
+                            const visual = POLICY_VISUALS[policy.lineOfBusiness] || POLICY_VISUALS.other
+                            const Icon = visual.icon
+                            const typeLabel = t.policyTypes[policy.lineOfBusiness as keyof typeof t.policyTypes] || policy.lineOfBusiness
+                            const summary = getDocumentPolicySummary(policy, language === 'el' ? 'el' : 'en', typeLabel)
 
                             return (
                                 <tr key={policy.id} onClick={() => onViewPolicy?.(policy.id)} className="hover:bg-stone-50 dark:hover:bg-stone-800/40 transition-colors group cursor-pointer">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            {policy.insurerLogo ? (
-                                                <img src={policy.insurerLogo} alt={policy.insurerName} className="w-10 h-10 rounded-lg object-contain bg-white border border-stone-200" />
-                                            ) : (
-                                                <div className={`w-10 h-10 rounded-lg ${getInsurerColor(policy.insurerName)} flex items-center justify-center text-white font-bold text-sm`}>
-                                                    {getInsurerInitials(policy.insurerName)}
+                                            <div className={`w-11 h-11 rounded-xl ${visual.badge} flex items-center justify-center`}>
+                                                <Icon className={`w-6 h-6 ${visual.iconColor}`} />
+                                            </div>
+                                            <div className="min-w-0">
+                                                <div className="font-bold text-stone-900 dark:text-white text-sm truncate">{summary.assetTitle}</div>
+                                                {summary.assetSubtitle ? <div className="text-xs text-stone-500 font-mono mt-0.5 truncate">{summary.assetSubtitle}</div> : null}
+                                                <div className="text-xs text-stone-500 dark:text-stone-400 mt-0.5 truncate">
+                                                    {summary.insurerLine}
                                                 </div>
-                                            )}
-                                            <span className={`font-medium text-stone-900 dark:text-stone-100 ${policy.status === 'analyzing' ? 'opacity-80' : ''}`}>{policy.insurerName}</span>
+                                            </div>
                                         </div>
                                     </td>
 
                                     <td className="px-6 py-4">
-                                        {policy.insuredItem ? (
-                                            <div>
-                                                <div className="font-bold text-stone-900 dark:text-white text-sm">{policy.insuredItem.title}</div>
-                                                {policy.insuredItem.subtitle ? <div className="text-xs text-stone-500 font-mono mt-0.5">{policy.insuredItem.subtitle}</div> : null}
-                                            </div>
-                                        ) : (
-                                            <div className="text-stone-400 text-sm italic">{`${t.policyTypes[policy.lineOfBusiness as keyof typeof t.policyTypes] || policy.lineOfBusiness} ${label.policySuffix}`}</div>
-                                        )}
+                                        <div>
+                                            <div className="font-semibold text-stone-900 dark:text-white text-sm">{policy.insurerName}</div>
+                                            <div className="text-xs text-stone-500 font-mono mt-0.5">{policy.policyNumber}</div>
+                                        </div>
                                     </td>
 
                                     <td className="px-6 py-4">
@@ -181,6 +192,15 @@ export function PolicyTable({
                                                 {statusBadge.icon}
                                                 {statusBadge.text}
                                             </span>
+                                            <div className="text-xs text-stone-600 dark:text-stone-400">
+                                                {label.expiresOn}: <span className="font-semibold">{summary.expiryDisplay}</span>
+                                            </div>
+                                            <div className="text-xs text-stone-600 dark:text-stone-400">
+                                                {label.premium}: <span className="font-semibold">{summary.premiumDisplay}</span>
+                                            </div>
+                                            <div className="text-xs text-stone-600 dark:text-stone-400">
+                                                <span className="font-medium">{statusBadge.message}</span>
+                                            </div>
                                             <div className={`inline-flex items-center gap-1.5 text-xs font-medium ${insightBadge.className} px-1`}>
                                                 {insightBadge.icon}
                                                 {insightBadge.text}

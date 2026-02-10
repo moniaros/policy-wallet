@@ -18,6 +18,7 @@ import type {
   AITrackingOptions
 } from './ai-service.interface'
 import { trackTokenUsage } from '@/lib/token-tracking'
+import { enrichExtractionPayload } from './extraction-enrichment'
 
 export class GeminiAIService implements IAIService {
   private genAI: GoogleGenerativeAI | null = null
@@ -105,6 +106,19 @@ REQUIRED FIELDS:
   "customerName": "First name of the insured if visible",
   "customerSurname": "Last name of the insured if visible",
   "customerEmail": "Email of the insured if visible",
+  "exclusions": ["Top policy exclusions/limitations in plain language"],
+  "extractionConfidence": {
+    "overall": 0-100,
+    "requiresReview": true|false,
+    "fields": {
+      "insurerName": 0-100,
+      "policyNumber": 0-100,
+      "lineOfBusiness": 0-100,
+      "startDate": 0-100,
+      "endDate": 0-100,
+      "premiumAmount": 0-100
+    }
+  },
   
   "acordData": {
     "acordStandard": "V1.0",
@@ -160,6 +174,7 @@ REQUIRED FIELDS:
         "description": "string"
       }
     ],
+    "exclusions": ["string exclusion 1", "string exclusion 2"],
     "beneficiaries": [
       {
         "name": "string",
@@ -180,6 +195,8 @@ EXTRACTION PRIORITIES:
 7. For property policies: extract address, type, square meters
 8. Extract deductibles (often labeled "Excess", "Απαλλαγή")
 9. Extract coverage limits (often labeled "Sum Insured", "Ασφαλιζόμενο Κεφάλαιο")
+10. Extract exclusions from sections titled "Exclusions", "Δεν καλύπτεται", "Εξαιρέσεις", "Αποκλεισμοί"
+11. Provide realistic confidence scores per critical field (0-100)
 
 LANGUAGE SUPPORT:
 - Handle both Greek and English documents
@@ -230,6 +247,7 @@ Return ONLY the JSON object, nothing else.
 
       const jsonStr = jsonMatch[0]
       const extracted = JSON.parse(jsonStr)
+      const enriched = enrichExtractionPayload(extracted)
 
       logger('info', 'Gemini 2.0 Flash extraction successful', {
         fileName: document.fileName,
@@ -250,7 +268,9 @@ Return ONLY the JSON object, nothing else.
         customerName: extracted.customerName,
         customerSurname: extracted.customerSurname,
         customerEmail: extracted.customerEmail,
-        acordData: extracted.acordData || null
+        exclusions: enriched.exclusions,
+        extractionMeta: enriched.extractionMeta,
+        acordData: enriched.acordData
       }
     } catch (error) {
       logger('error', 'Gemini 2.0 Flash extraction failed', {
@@ -326,6 +346,19 @@ IMPORTANT: Return ONLY a JSON object with this exact structure:
     "premiumAmount": number,
     "coverageSummary": "string"
   },
+  "exclusions": ["Top exclusions discovered from document text"],
+  "extractionConfidence": {
+    "overall": 0-100,
+    "requiresReview": true|false,
+    "fields": {
+      "insurerName": 0-100,
+      "policyNumber": 0-100,
+      "lineOfBusiness": 0-100,
+      "startDate": 0-100,
+      "endDate": 0-100,
+      "premiumAmount": 0-100
+    }
+  },
   "gapResults": [
     {
       "slug": "gap-slug",
@@ -348,7 +381,8 @@ IMPORTANT: Return ONLY a JSON object with this exact structure:
     },
     "vehicle": {},
     "property": {},
-    "coverages": []
+    "coverages": [],
+    "exclusions": []
   }
 }
 
@@ -399,7 +433,19 @@ Return ONLY valid JSON, no other text.
         throw new Error('AI did not return valid JSON')
       }
 
-      const analysis: AIGapAnalysisResponse = JSON.parse(jsonMatch[0])
+      const analysis: AIGapAnalysisResponse & { exclusions?: unknown; extractionConfidence?: unknown } = JSON.parse(jsonMatch[0])
+      const enriched = enrichExtractionPayload({
+        insurerName: analysis.verifiedMetadata?.insurerName,
+        policyNumber: analysis.verifiedMetadata?.policyNumber,
+        lineOfBusiness: analysis.verifiedMetadata?.lineOfBusiness,
+        startDate: analysis.verifiedMetadata?.startDate,
+        endDate: analysis.verifiedMetadata?.endDate,
+        premiumAmount: analysis.verifiedMetadata?.premiumAmount,
+        exclusions: analysis.exclusions,
+        extractionConfidence: analysis.extractionConfidence,
+        acordData: analysis.acordData,
+      })
+      analysis.acordData = enriched.acordData
 
       logger('info', 'Gemini 2.0 Flash gap analysis successful', {
         policyNumber: metadata.policyNumber,

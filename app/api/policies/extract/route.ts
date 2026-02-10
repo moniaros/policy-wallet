@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { env } from "@/lib/env"
+import { enrichExtractionPayload } from "@/lib/services/ai/extraction-enrichment"
 
 export async function POST(request: NextRequest) {
     const authResult = await getAuthenticatedUserOrNull()
@@ -54,6 +55,19 @@ export async function POST(request: NextRequest) {
         - endDate (YYYY-MM-DD format)
         - premiumAmount (number): Annual premium amount
         - coverageSummary (string): Brief summary of main coverages (max 200 chars)
+        - exclusions (array of strings): top exclusions/limitations found in the text
+        - extractionConfidence (object): {
+            overall: 0-100,
+            requiresReview: boolean,
+            fields: {
+              insurerName: 0-100,
+              policyNumber: 0-100,
+              lineOfBusiness: 0-100,
+              startDate: 0-100,
+              endDate: 0-100,
+              premiumAmount: 0-100
+            }
+          }
         
         If a field cannot be determined, use null.
         `
@@ -86,6 +100,7 @@ export async function POST(request: NextRequest) {
             }
             extracted = JSON.parse(jsonMatch[0])
         }
+        const enriched = enrichExtractionPayload(extracted)
 
         return NextResponse.json({
             success: true,
@@ -96,7 +111,10 @@ export async function POST(request: NextRequest) {
                 startDate: extracted.startDate || new Date().toISOString().split('T')[0],
                 endDate: extracted.endDate || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
                 premiumAmount: extracted.premiumAmount || null,
-                coverageSummary: extracted.coverageSummary || null
+                coverageSummary: extracted.coverageSummary || null,
+                exclusions: enriched.exclusions,
+                extractionMeta: enriched.extractionMeta,
+                acordData: enriched.acordData
             }
         })
 

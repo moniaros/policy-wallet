@@ -13,6 +13,7 @@ import path from 'path'
 import fs from 'fs/promises'
 import type { Policy, GapInstance } from '@prisma/client'
 import type { GapSeverity, GapStatus } from '@/types'
+import { enrichExtractionPayload } from '@/lib/services/ai/extraction-enrichment'
 
 // Type Definitions
 export interface GapAnalysisResult {
@@ -106,7 +107,11 @@ export class GapAnalysisService extends BaseService {
         // 1. Authorization
         const policy = await this.db.policy.findUnique({
             where: { id: policyId },
-            include: { documents: true }
+            include: {
+                documents: {
+                    orderBy: { uploadedAt: 'desc' }
+                }
+            }
         })
 
         if (!policy) {
@@ -251,6 +256,19 @@ export class GapAnalysisService extends BaseService {
             // 6. Call AI Service
             const analysis = await aiService.analyzeGaps(aiDocument, metadata, gapDefinitions, { userId, policyId })
             const { verifiedMetadata, gapResults, acordData } = analysis
+            const enriched = enrichExtractionPayload({
+                insurerName: verifiedMetadata.insurerName || policy.insurerName,
+                policyNumber: verifiedMetadata.policyNumber || policy.policyNumber,
+                lineOfBusiness: verifiedMetadata.lineOfBusiness || policy.lineOfBusiness,
+                startDate: verifiedMetadata.startDate || policy.startDate.toISOString().split('T')[0],
+                endDate: verifiedMetadata.endDate || policy.endDate.toISOString().split('T')[0],
+                premiumAmount: typeof verifiedMetadata.premiumAmount === 'number'
+                    ? verifiedMetadata.premiumAmount
+                    : (policy.premiumAmount ? Number(policy.premiumAmount) : null),
+                exclusions: (analysis as any).exclusions,
+                extractionConfidence: (analysis as any).extractionConfidence,
+                acordData
+            }, (policy as any).acordData || {})
 
             // 7. Update Policy with Verified Data
             await this.db.policy.update({
@@ -265,7 +283,7 @@ export class GapAnalysisService extends BaseService {
                         ? verifiedMetadata.premiumAmount
                         : policy.premiumAmount,
                     coverageSummary: verifiedMetadata.coverageSummary || policy.coverageSummary,
-                    acordData: acordData || (policy as any).acordData || {},
+                    acordData: enriched.acordData,
                     lastAnalyzedAt: new Date()
                 }
             })

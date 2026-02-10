@@ -69,8 +69,56 @@ export function PolicyDetailsClient({
         return Number(policy.premiumAmount?.toString() || 0)
     }
     const getPremiumCurrency = () => policy.acordData?.policy?.premium?.currency || policy.premiumCurrency || 'EUR'
+    const parseDate = (value: unknown): Date | null => {
+        if (!value) return null
+        const d = new Date(String(value))
+        return Number.isNaN(d.getTime()) ? null : d
+    }
+    const getLatestRenewalEndDate = () => {
+        const history = Array.isArray(policy?.acordData?.renewalHistory) ? policy.acordData.renewalHistory : []
+        const dated = history.map((item: any) => parseDate(item?.endDate)).filter(Boolean) as Date[]
+        if (dated.length === 0) return null
+        return dated.sort((a, b) => b.getTime() - a.getTime())[0]
+    }
     const getStartDate = () => policy.acordData?.policy?.effectiveDate || policy.startDate
-    const getEndDate = () => policy.acordData?.policy?.expirationDate || policy.endDate
+    const getEndDate = () => {
+        const latestRenewal = getLatestRenewalEndDate()
+        if (latestRenewal) return latestRenewal.toISOString()
+        return policy.acordData?.policy?.expirationDate || policy.endDate
+    }
+    const computedDaysLeft = (() => {
+        const end = parseDate(getEndDate())
+        if (!end) return daysLeft
+        return Math.floor((end.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    })()
+    const insuredNames = Array.from(
+        new Set(
+            [
+                policy?.acordData?.insured?.name,
+                policy?.acordData?.policyholder?.name,
+                policy?.acordData?.policy?.insuredName,
+                (policy?.acordData?.customerName && policy?.acordData?.customerSurname)
+                    ? `${policy.acordData.customerName} ${policy.acordData.customerSurname}`
+                    : null,
+                ...(Array.isArray(policy?.acordData?.insureds) ? policy.acordData.insureds.map((i: any) => i?.name || `${i?.firstName || ''} ${i?.lastName || ''}`) : []),
+                ...(Array.isArray(policy?.acordData?.beneficiaries) ? policy.acordData.beneficiaries.map((i: any) => i?.name) : []),
+            ]
+                .map((v) => String(v || '').trim())
+                .filter(Boolean)
+        )
+    )
+    const renewalHistory = (Array.isArray(policy?.acordData?.renewalHistory) ? policy.acordData.renewalHistory : [])
+        .map((entry: any, index: number) => ({
+            id: entry?.id || `renewal-${index}`,
+            startDate: entry?.startDate || null,
+            endDate: entry?.endDate || null,
+            sourceDocumentName: entry?.sourceDocumentName || null,
+        }))
+        .sort((a: any, b: any) => {
+            const aDate = parseDate(a.endDate)?.getTime() || 0
+            const bDate = parseDate(b.endDate)?.getTime() || 0
+            return bDate - aDate
+        })
 
     const insurerPhone = policy.acordData?.policy?.insurerContact || ''
     const firstDocumentUrl = policy.documents?.[0]?.fileUrl
@@ -180,10 +228,10 @@ export function PolicyDetailsClient({
                                     <span className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider ${statusColor.bg} ${statusColor.text} border ${statusColor.border}`}>
                                         {statusLabel}
                                     </span>
-                                    {daysLeft >= 0 && daysLeft <= 30 && (
+                                    {computedDaysLeft >= 0 && computedDaysLeft <= 30 && (
                                         <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-full text-xs font-bold border border-amber-200 dark:border-amber-800">
                                             <Calendar className="w-3.5 h-3.5" />
-                                            {t.wallet.expiresIn} {daysLeft} {t.wallet.days}
+                                            {t.wallet.expiresIn} {computedDaysLeft} {t.wallet.days}
                                         </div>
                                     )}
                                 </div>
@@ -305,7 +353,7 @@ export function PolicyDetailsClient({
                         <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-white/20 dark:border-slate-700/50">
                             <h3 className="text-sm font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">{t.wallet.actionItems}</h3>
                             <div className="space-y-3">
-                                {daysLeft <= 30 && (
+                                {computedDaysLeft <= 30 && (
                                     <div className="p-4 bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 rounded-xl text-sm font-semibold border border-amber-200 dark:border-amber-800/50 flex items-center gap-3">
                                         <Calendar className="w-5 h-5 flex-shrink-0" />
                                         <span>{t.wallet.reviewRenewal}</span>
@@ -327,6 +375,49 @@ export function PolicyDetailsClient({
                                     <span>{t.wallet.downloadContract}</span>
                                 </button>
                             </div>
+                        </div>
+
+                        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-white/20 dark:border-slate-700/50">
+                            <h3 className="text-sm font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">
+                                {language === 'el' ? 'Ασφαλισμένοι' : 'Insured people'}
+                            </h3>
+                            {insuredNames.length === 0 ? (
+                                <p className="text-sm text-slate-500 dark:text-slate-400">
+                                    {language === 'el' ? 'Δεν βρέθηκαν ονόματα ασφαλισμένων.' : 'No insured names found.'}
+                                </p>
+                            ) : (
+                                <ul className="space-y-2">
+                                    {insuredNames.map((name) => (
+                                        <li key={name} className="text-sm text-slate-700 dark:text-slate-300 px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                                            {name}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+
+                        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-white/20 dark:border-slate-700/50">
+                            <h3 className="text-sm font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-4">
+                                {language === 'el' ? 'Ιστορικό ανανεώσεων' : 'Renewal history'}
+                            </h3>
+                            {renewalHistory.length === 0 ? (
+                                <p className="text-sm text-slate-500 dark:text-slate-400">
+                                    {language === 'el' ? 'Δεν υπάρχει ακόμη ιστορικό ανανεώσεων.' : 'No renewal history available yet.'}
+                                </p>
+                            ) : (
+                                <ul className="space-y-2">
+                                    {renewalHistory.map((entry: any) => (
+                                        <li key={entry.id} className="px-3 py-2 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                                            <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                                                {entry.startDate ? new Date(entry.startDate).toLocaleDateString(t.common.locale || 'el-GR') : '-'} - {entry.endDate ? new Date(entry.endDate).toLocaleDateString(t.common.locale || 'el-GR') : '-'}
+                                            </p>
+                                            {entry.sourceDocumentName ? (
+                                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{entry.sourceDocumentName}</p>
+                                            ) : null}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </div>
 
                         <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-white/20 dark:border-slate-700/50">

@@ -93,6 +93,13 @@ export default async function WalletPage() {
             return undefined
         })()
 
+        const extraction = (p.acordData as any)?.extraction
+        const requiresReview = Boolean(
+            extraction?.requiresReview ||
+            (typeof extraction?.confidence?.overall === 'number' && extraction.confidence.overall < 80) ||
+            (Array.isArray(extraction?.missingCriticalFields) && extraction.missingCriticalFields.length > 0)
+        )
+
         return {
             id: p.id,
             policyNumber: p.policyNumber,
@@ -111,6 +118,7 @@ export default async function WalletPage() {
                 permissions: g.permissions
             })),
             coverageHighlights: [], // Mock or parse from summary
+            verified: !requiresReview,
             documents: p.documents.map((d: any) => ({
                 id: d.id,
                 fileName: d.fileName,
@@ -128,12 +136,12 @@ export default async function WalletPage() {
     )
 }
 
-function mapStatus(dbStatus: string, endDate: Date): 'active' | 'expiring_soon' | 'incomplete' | 'action_needed' | 'analyzing' {
+function mapStatus(dbStatus: string, endDate: Date): 'active' | 'expiring_soon' | 'incomplete' | 'action_needed' | 'analyzing' | 'cancelled' {
     const now = new Date()
     const daysUntilExpiry = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
 
     if (dbStatus === 'analyzing') return 'analyzing'
-    if (dbStatus === 'cancelled') return 'action_needed'
+    if (dbStatus === 'cancelled') return 'cancelled'
     if (daysUntilExpiry < 0) return 'action_needed' // Expired
     if (daysUntilExpiry < 30) return 'expiring_soon'
 

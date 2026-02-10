@@ -93,6 +93,13 @@ export interface AIPolicyExtractionResponse {
     customerName?: string
     customerSurname?: string
     customerEmail?: string
+    exclusions?: string[]
+    extractionMeta?: {
+        overallConfidence: number
+        fieldConfidence: Record<string, number>
+        missingCriticalFields: string[]
+        requiresReview: boolean
+    }
     acordData?: any // ACORD-compliant structured data extracted from document
 }
 

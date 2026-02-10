@@ -51,30 +51,30 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
     }
 
     return (
-        <div className={`${ibmPlexSans.className} min-h-screen bg-gradient-to-b from-sky-50 via-white to-slate-50 text-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-slate-100`}>
+        <div className={`${ibmPlexSans.className} min-h-screen bg-gradient-to-b from-emerald-50 via-white to-teal-50 text-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-teal-950/30 dark:text-slate-100`}>
             <header className="fixed top-4 left-4 right-4 z-50 mx-auto max-w-7xl">
-                <div className="h-16 px-4 sm:px-6 flex items-center justify-between rounded-2xl border border-sky-100/80 bg-white/90 backdrop-blur-xl shadow-xl shadow-sky-900/5 dark:border-slate-700 dark:bg-slate-900/90">
+                <div className="h-16 px-4 sm:px-6 flex items-center justify-between rounded-2xl border border-emerald-100/80 bg-white/90 backdrop-blur-xl shadow-xl shadow-emerald-900/5 dark:border-slate-700 dark:bg-slate-900/90">
                     <PolicyWalletLogo size="sm" language={locale} />
                     <div className="flex items-center gap-2 sm:gap-3">
                         <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-1 dark:bg-slate-800">
                             <Link
                                 href="/"
-                                className={`px-2.5 py-1 text-xs font-bold rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${isGreek ? "bg-white text-sky-700 shadow-sm dark:bg-slate-700 dark:text-sky-300" : "text-slate-600 dark:text-slate-400"}`}
+                                className={`px-2.5 py-1 text-xs font-bold rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${isGreek ? "bg-white text-emerald-700 shadow-sm dark:bg-slate-700 dark:text-emerald-300" : "text-slate-600 dark:text-slate-400"}`}
                             >
                                 EL
                             </Link>
                             <Link
                                 href="/en"
-                                className={`px-2.5 py-1 text-xs font-bold rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 ${!isGreek ? "bg-white text-sky-700 shadow-sm dark:bg-slate-700 dark:text-sky-300" : "text-slate-600 dark:text-slate-400"}`}
+                                className={`px-2.5 py-1 text-xs font-bold rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${!isGreek ? "bg-white text-emerald-700 shadow-sm dark:bg-slate-700 dark:text-emerald-300" : "text-slate-600 dark:text-slate-400"}`}
                             >
                                 EN
                             </Link>
                         </div>
                         <ThemeToggle />
-                        <Link href="/auth/signin" className="sm:hidden px-2.5 py-1 text-xs font-bold rounded-md text-slate-700 hover:text-sky-700 dark:text-slate-200 dark:hover:text-sky-300">
+                        <Link href="/auth/signin" className="sm:hidden px-2.5 py-1 text-xs font-bold rounded-md text-slate-700 hover:text-emerald-700 dark:text-slate-200 dark:hover:text-emerald-300">
                             {isGreek ? "Σύνδεση" : "Sign in"}
                         </Link>
-                        <Link href="/auth/signin" className="hidden sm:block px-3 py-2 text-sm font-semibold text-slate-700 hover:text-sky-700 dark:text-slate-300 dark:hover:text-sky-300">
+                        <Link href="/auth/signin" className="hidden sm:block px-3 py-2 text-sm font-semibold text-slate-700 hover:text-emerald-700 dark:text-slate-300 dark:hover:text-emerald-300">
                             {isGreek ? "Σύνδεση" : "Sign in"}
                         </Link>
                     </div>
@@ -85,7 +85,7 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                 <section id="hero" className="px-4 sm:px-6 lg:px-8 pb-14 sm:pb-20">
                     <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-10 items-center">
                         <div>
-                            <div className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-100/80 px-3 py-1.5 text-xs font-semibold text-sky-800 dark:border-sky-900 dark:bg-sky-950/50 dark:text-sky-300">
+                            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-100/80 px-3 py-1.5 text-xs font-semibold text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
                                 <Shield className="w-3.5 h-3.5" />
                                 {t.hero.badge[locale]}
                             </div>
@@ -121,7 +121,7 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                                 <Link
                                     href="/auth/signup?role=agent&source=landing_hero_agent"
                                     onClick={() => trackCta("agent", "agent")}
-                                    className="text-sm font-semibold text-sky-700 hover:text-sky-600 dark:text-sky-300"
+                                    className="text-sm font-semibold text-emerald-700 hover:text-emerald-600 dark:text-emerald-300"
                                 >
                                     {t.hero.tertiaryCta[locale]}
                                 </Link>
@@ -130,7 +130,7 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                                 <Link
                                     href="/auth/signup?role=agent&source=landing_hero_agent_mobile"
                                     onClick={() => trackCta("agent", "agent")}
-                                    className="text-sm font-semibold text-sky-700 hover:text-sky-600 dark:text-sky-300"
+                                    className="text-sm font-semibold text-emerald-700 hover:text-emerald-600 dark:text-emerald-300"
                                 >
                                     {t.hero.tertiaryCta[locale]}
                                 </Link>
@@ -153,7 +153,7 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                         </div>
 
                         <div className="relative">
-                            <div className="absolute -inset-8 -z-10 rounded-full bg-gradient-to-tr from-sky-400/25 to-cyan-200/25 blur-3xl dark:from-sky-800/30 dark:to-cyan-900/20" />
+                            <div className="absolute -inset-8 -z-10 rounded-full bg-gradient-to-tr from-emerald-300/30 to-teal-200/30 blur-3xl dark:from-emerald-800/30 dark:to-teal-900/20" />
                             <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl shadow-slate-900/10 dark:border-slate-700 dark:bg-slate-900">
                                 <div className="relative aspect-[16/11] sm:aspect-[4/3] overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800">
                                     <Image src="/screenshots/desktop-dashboard.png" alt="PolicyWallet dashboard preview" fill className="object-cover" priority />
@@ -182,7 +182,7 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                                         trackLandingEvent("persona_card_click", { persona: track.id, locale })
                                         trackLandingEvent("signup_start", { role: track.id, source: `landing_persona_${track.id}`, locale })
                                     }}
-                                    className="mt-5 inline-flex items-center gap-2 rounded-lg bg-sky-600 px-4 py-2.5 text-white hover:bg-sky-700"
+                                    className="mt-5 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-white hover:bg-emerald-700"
                                 >
                                     {track.ctaLabel[locale]}
                                     <ArrowRight className="w-4 h-4" />
@@ -213,7 +213,7 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                             {t.aiExtraction.fields.map((field, idx) => (
                                 <div key={idx} className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm dark:border-slate-700 dark:bg-slate-900">
-                                    <FileText className="w-4 h-4 mb-2 text-sky-600" />
+                                    <FileText className="w-4 h-4 mb-2 text-emerald-600" />
                                     {field[locale]}
                                 </div>
                             ))}
@@ -232,7 +232,7 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                                     <ul className="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-300">
                                         {track.points.map((point, idx) => (
                                             <li key={idx} className="flex items-start gap-2">
-                                                <Users className="w-4 h-4 mt-0.5 text-sky-600" />
+                                                <Users className="w-4 h-4 mt-0.5 text-emerald-600" />
                                                 <span>{point[locale]}</span>
                                             </li>
                                         ))}
@@ -351,10 +351,10 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                         <span className="text-slate-500 dark:text-slate-400">{t.footer.linksLabel[locale]}</span>
                     </div>
                     <div className="flex items-center gap-6 text-slate-600 dark:text-slate-300">
-                        <Link href="/pricing" onClick={() => trackLandingEvent("pricing_click", { locale })} className="hover:text-sky-700 dark:hover:text-sky-300">Pricing</Link>
-                        <Link href="/privacy" className="hover:text-sky-700 dark:hover:text-sky-300">Privacy</Link>
-                        <Link href="/terms" className="hover:text-sky-700 dark:hover:text-sky-300">Terms</Link>
-                        <Link href="/auth/signin?next=/help" className="hover:text-sky-700 dark:hover:text-sky-300">{t.footer.helpLabel[locale]}</Link>
+                        <Link href="/pricing" onClick={() => trackLandingEvent("pricing_click", { locale })} className="hover:text-emerald-700 dark:hover:text-emerald-300">Pricing</Link>
+                        <Link href="/privacy" className="hover:text-emerald-700 dark:hover:text-emerald-300">Privacy</Link>
+                        <Link href="/terms" className="hover:text-emerald-700 dark:hover:text-emerald-300">Terms</Link>
+                        <Link href="/auth/signin?next=/help" className="hover:text-emerald-700 dark:hover:text-emerald-300">{t.footer.helpLabel[locale]}</Link>
                     </div>
                 </div>
             </footer>

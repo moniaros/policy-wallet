@@ -287,6 +287,52 @@ export class PolicyService extends BaseService {
                         policyNumber: currentPolicy.policyNumber
                     })
 
+                    const existingPolicyFull = await this.db.policy.findUnique({
+                        where: { id: existingPolicy.id }
+                    })
+                    const existingEnd = existingPolicyFull?.endDate ? existingPolicyFull.endDate.getTime() : 0
+                    const incomingEnd = currentPolicy.endDate ? currentPolicy.endDate.getTime() : 0
+                    const shouldPromoteIncoming = incomingEnd >= existingEnd
+
+                    const mergedHistory = [
+                        ...(((existingPolicyFull as any)?.acordData?.renewalHistory || []) as any[]),
+                        {
+                            uploadedAt: new Date().toISOString(),
+                            sourcePolicyId: currentPolicy.id,
+                            policyNumber: currentPolicy.policyNumber,
+                            startDate: currentPolicy.startDate?.toISOString?.() || null,
+                            endDate: currentPolicy.endDate?.toISOString?.() || null,
+                            insurerName: currentPolicy.insurerName || null,
+                            documents: (currentPolicy.documents || []).map((d: any) => ({
+                                id: d.id,
+                                fileName: d.fileName,
+                                uploadedAt: d.uploadedAt?.toISOString?.() || null
+                            }))
+                        }
+                    ].slice(-20)
+
+                    const mergedAcordData = {
+                        ...((existingPolicyFull as any)?.acordData || {}),
+                        ...((currentPolicy as any).acordData || {}),
+                        renewalHistory: mergedHistory
+                    }
+
+                    await this.db.policy.update({
+                        where: { id: existingPolicy.id },
+                        data: {
+                            insurerName: shouldPromoteIncoming ? currentPolicy.insurerName : existingPolicyFull?.insurerName,
+                            lineOfBusiness: shouldPromoteIncoming ? currentPolicy.lineOfBusiness : existingPolicyFull?.lineOfBusiness,
+                            startDate: shouldPromoteIncoming ? currentPolicy.startDate : existingPolicyFull?.startDate,
+                            endDate: shouldPromoteIncoming ? currentPolicy.endDate : existingPolicyFull?.endDate,
+                            premiumAmount: shouldPromoteIncoming ? currentPolicy.premiumAmount : existingPolicyFull?.premiumAmount,
+                            premiumCurrency: shouldPromoteIncoming ? currentPolicy.premiumCurrency : existingPolicyFull?.premiumCurrency,
+                            coverageSummary: currentPolicy.coverageSummary || existingPolicyFull?.coverageSummary,
+                            acordData: mergedAcordData,
+                            lastAnalyzedAt: new Date(),
+                            status: 'active',
+                        }
+                    })
+
                     // Move documents to the existing policy
                     await this.db.policyDocument.updateMany({
                         where: { policyId },
