@@ -12,7 +12,7 @@ import { PolicyWalletLogo } from "@/components/branding/Logo"
 function SignUpForm() {
     const searchParams = useSearchParams()
     const router = useRouter()
-    const { t, language } = useLanguage()
+    const { t, language, setLanguage } = useLanguage()
     const urlRole = searchParams.get("role")
     const urlSource = searchParams.get("source") || "signup_direct"
     const urlEmail = searchParams.get("email")
@@ -35,6 +35,25 @@ function SignUpForm() {
     // Compliance
     const [termsAccepted, setTermsAccepted] = useState(false)
     const [marketingConsent, setMarketingConsent] = useState(false)
+
+    const copy = {
+        joinAs: language === "el" ? "Εγγραφή ως" : "Join as",
+        agent: language === "el" ? "Σύμβουλος" : "Agent",
+        policyholder: language === "el" ? "Ασφαλισμένος" : "Policyholder",
+        subtitle: language === "el"
+            ? "Δημιουργήστε τον λογαριασμό σας για να ξεκινήσετε."
+            : "Create your account to get started.",
+        fullName: language === "el" ? "Ονοματεπώνυμο" : "Full Name",
+        email: language === "el" ? "Διεύθυνση email" : "Email address",
+        password: language === "el" ? "Κωδικός" : "Password",
+        confirm: language === "el" ? "Επιβεβαίωση" : "Confirm",
+        creating: language === "el" ? "Δημιουργία λογαριασμού..." : "Creating account...",
+        terms: language === "el" ? "Συμφωνώ με τους" : "I agree to the",
+        and: language === "el" ? "και την" : "and",
+        marketing: language === "el"
+            ? "Συναινώ να λαμβάνω ενημερώσεις και ανακοινώσεις."
+            : "I consent to receive marketing communications and updates",
+    }
 
     useEffect(() => {
         // Domain-based Role Locking
@@ -123,17 +142,16 @@ function SignUpForm() {
                         <PolicyWalletLogo size="md" variant="light" />
                     </Link>
                     <h2 className="text-2xl font-bold text-white mb-2">
-                        Join as {role === 'agent' ? 'Agent' : 'Policyholder'}
+                        {copy.joinAs} {role === 'agent' ? copy.agent : copy.policyholder}
                     </h2>
                     <p className="text-slate-400 text-sm">
-                        Create your {role === 'agent' ? 'professional' : 'personal'} account to get started
+                        {copy.subtitle}
                     </p>
                     <div className="mt-4 inline-flex items-center gap-1 rounded-lg bg-slate-800/70 p-1 border border-slate-700">
                         <button
                             type="button"
                             onClick={() => {
-                                localStorage.setItem("language", "el")
-                                window.location.href = "/"
+                                setLanguage("el")
                             }}
                             className={`px-2.5 py-1 text-xs font-bold rounded-md transition-colors ${language === "el" ? "bg-slate-700 text-emerald-300" : "text-slate-400 hover:text-white"}`}
                         >
@@ -142,8 +160,7 @@ function SignUpForm() {
                         <button
                             type="button"
                             onClick={() => {
-                                localStorage.setItem("language", "en")
-                                window.location.href = "/en"
+                                setLanguage("en")
                             }}
                             className={`px-2.5 py-1 text-xs font-bold rounded-md transition-colors ${language === "en" ? "bg-slate-700 text-emerald-300" : "text-slate-400 hover:text-white"}`}
                         >
@@ -187,7 +204,7 @@ function SignUpForm() {
 
                     <div className="space-y-5">
                         <div className="space-y-1.5">
-                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Full Name</label>
+                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">{copy.fullName}</label>
                             <div className="relative group">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <User className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-500 transition-colors" />
@@ -205,7 +222,7 @@ function SignUpForm() {
                         </div>
 
                         <div className="space-y-1.5">
-                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Email address</label>
+                            <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">{copy.email}</label>
                             <div className="relative group">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <Mail className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-500 transition-colors" />
@@ -224,7 +241,7 @@ function SignUpForm() {
 
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                             <div className="space-y-1.5">
-                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Password</label>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">{copy.password}</label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <Lock className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-500 transition-colors" />
@@ -241,7 +258,7 @@ function SignUpForm() {
                                 </div>
                             </div>
                             <div className="space-y-1.5">
-                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Confirm</label>
+                                <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">{copy.confirm}</label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <Lock className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-500 transition-colors" />
@@ -322,11 +339,11 @@ function SignUpForm() {
                                     />
                                 </div>
                                 <span className="ml-3 text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
-                                    I agree to the{" "}
+                                    {copy.terms}{" "}
                                     <Link href="/terms" target="_blank" className="font-bold text-emerald-500 hover:text-emerald-400 hover:underline">
                                         Terms & Conditions
                                     </Link>{" "}
-                                    and{" "}
+                                    {copy.and}{" "}
                                     <Link href="/privacy" target="_blank" className="font-bold text-emerald-500 hover:text-emerald-400 hover:underline">
                                         Privacy Policy
                                     </Link>
@@ -345,7 +362,7 @@ function SignUpForm() {
                                     />
                                 </div>
                                 <span className="ml-3 text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
-                                    I consent to receive marketing communications and updates
+                                    {copy.marketing}
                                 </span>
                             </label>
                         </div>
@@ -359,7 +376,7 @@ function SignUpForm() {
                         {isLoading ? (
                             <span className="flex items-center gap-2">
                                 <Loader2 className="h-4 w-4 animate-spin" />
-                                Creating Account...
+                                {copy.creating}
                             </span>
                         ) : (
                             <span className="flex items-center gap-2">

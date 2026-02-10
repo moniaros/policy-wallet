@@ -123,7 +123,7 @@ export default async function WalletPage() {
 
     return (
         <div className="min-h-screen bg-transparent">
-            <PolicyWalletClient policies={mappedPolicies} user={user} showTour={showTour} />
+            <PolicyWalletClient policies={mappedPolicies} user={user} agent={agent} showTour={showTour} />
         </div>
     )
 }

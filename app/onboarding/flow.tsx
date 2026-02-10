@@ -6,6 +6,7 @@ import { ArrowRight, Check, Upload, Camera, FileText, Shield, Home, Heart, Brief
 import { toast } from "sonner"
 import { completeOnboardingStep, uploadOnboardingPolicy } from "./actions"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 interface OnboardingFlowProps {
     initialState: {
@@ -33,6 +34,7 @@ const variants = {
 }
 
 export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
+    const { language } = useLanguage()
     const [step, setStep] = useState(initialState.step)
     const [direction, setDirection] = useState(0)
     const [loading, setLoading] = useState(false)
@@ -53,7 +55,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
             setDirection(1)
             setStep(s => s + 1)
         } catch (error) {
-            toast.error("Something went wrong")
+            toast.error(language === "el" ? "Προέκυψε πρόβλημα" : "Something went wrong")
         } finally {
             setLoading(false)
         }
@@ -66,7 +68,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
             setDirection(1)
             setStep(s => s + 1)
         } catch (error) {
-            toast.error("Something went wrong")
+            toast.error(language === "el" ? "Προέκυψε πρόβλημα" : "Something went wrong")
         } finally {
             setLoading(false)
         }
@@ -99,6 +101,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
 }
 
 function WelcomeStep({ onNext, name }: { onNext: () => void, name: string }) {
+    const { language } = useLanguage()
     return (
         <motion.div
             className="w-full max-w-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 dark:border-slate-800 text-center relative overflow-hidden"
@@ -114,36 +117,38 @@ function WelcomeStep({ onNext, name }: { onNext: () => void, name: string }) {
             </div>
 
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
-                Welcome to PolicyWallet, {name}!
+                {language === "el" ? `Καλώς ήρθες στο PolicyWallet, ${name}!` : `Welcome to PolicyWallet, ${name}!`}
             </h1>
 
             <p className="text-lg text-slate-600 dark:text-slate-300 mb-8 max-w-sm mx-auto">
-                All your insurance in one secure place.
-                AI-powered gap detection, digital wallet integration, and more.
+                {language === "el"
+                    ? "Όλα τα ασφαλιστήριά σου σε ένα ασφαλές μέρος, με AI ανάλυση και εύκολη συνεργασία."
+                    : "All your insurance in one secure place, with AI insights and easy collaboration."}
             </p>
 
             <div className="space-y-3 mb-8 text-left max-w-xs mx-auto">
-                <FeatureItem icon={Check} text="AI-powered gap detection" />
-                <FeatureItem icon={Check} text="Digital wallet integration" />
-                <FeatureItem icon={Check} text="Share with your agent" />
+                <FeatureItem icon={Check} text={language === "el" ? "Ανάλυση κενών με AI" : "AI-powered gap detection"} />
+                <FeatureItem icon={Check} text={language === "el" ? "Άμεση οργάνωση συμβολαίων" : "Fast policy organization"} />
+                <FeatureItem icon={Check} text={language === "el" ? "Κοινοποίηση με σύμβουλο" : "Share with your agent"} />
             </div>
 
             <button
                 onClick={onNext}
                 className="w-full py-4 px-6 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/30 transform transition hover:-translate-y-1 active:scale-95 flex items-center justify-center group"
             >
-                Get Started
+                {language === "el" ? "Ξεκίνα τώρα" : "Get started"}
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
             </button>
 
             <p className="mt-4 text-xs text-slate-400">
-                Takes less than 2 minutes
+                {language === "el" ? "Χρειάζεται λιγότερο από 2 λεπτά" : "Takes less than 2 minutes"}
             </p>
         </motion.div>
     )
 }
 
 function PreferencesStep({ onNext, onSkip }: { onNext: (data: any) => void, onSkip: () => void }) {
+    const { language } = useLanguage()
     const [selected, setSelected] = useState<string[]>([])
 
     const types = [
@@ -168,18 +173,18 @@ function PreferencesStep({ onNext, onSkip }: { onNext: (data: any) => void, onSk
         >
             <div className="flex justify-between items-center mb-6">
                 <button onClick={onSkip} className="text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                    Skip
+                    {language === "el" ? "Παράλειψη" : "Skip"}
                 </button>
                 <div className="text-xs font-medium text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1 rounded-full">
-                    Step 1 of 3
+                    {language === "el" ? "Βήμα 1 από 3" : "Step 1 of 3"}
                 </div>
             </div>
 
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-                What's your main insurance type?
+                {language === "el" ? "Ποιοι τύποι ασφάλισης σε ενδιαφέρουν;" : "What's your main insurance type?"}
             </h2>
             <p className="text-slate-500 dark:text-slate-400 mb-8">
-                Select all that apply to personalize your experience.
+                {language === "el" ? "Επίλεξε ό,τι σε αφορά για καλύτερη εμπειρία." : "Select all that apply to personalize your experience."}
             </p>
 
             <div className="grid grid-cols-2 gap-4 mb-8">
@@ -215,7 +220,7 @@ function PreferencesStep({ onNext, onSkip }: { onNext: (data: any) => void, onSk
                         : 'bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed'}
                 `}
             >
-                Continue
+                {language === "el" ? "Συνέχεια" : "Continue"}
                 <ArrowRight className="w-5 h-5 ml-2" />
             </button>
         </motion.div>
@@ -223,6 +228,7 @@ function PreferencesStep({ onNext, onSkip }: { onNext: (data: any) => void, onSk
 }
 
 function UploadStep({ onNext, onSkip }: { onNext: (data?: any) => void, onSkip: () => void }) {
+    const { language } = useLanguage()
     const [uploading, setUploading] = useState(false)
     const [dragActive, setDragActive] = useState(false)
 
@@ -244,7 +250,7 @@ function UploadStep({ onNext, onSkip }: { onNext: (data?: any) => void, onSkip: 
                 setUploading(false)
             }
         } catch (e) {
-            toast.error("Upload failed")
+            toast.error(language === "el" ? "Η μεταφόρτωση απέτυχε" : "Upload failed")
             setUploading(false)
         }
     }
@@ -266,18 +272,18 @@ function UploadStep({ onNext, onSkip }: { onNext: (data?: any) => void, onSkip: 
         >
             <div className="flex justify-between items-center mb-6">
                 <button onClick={onSkip} className="text-sm text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                    Skip for now
+                    {language === "el" ? "Παράλειψη προς το παρόν" : "Skip for now"}
                 </button>
                 <div className="text-xs font-medium text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1 rounded-full">
-                    Step 2 of 3
+                    {language === "el" ? "Βήμα 2 από 3" : "Step 2 of 3"}
                 </div>
             </div>
 
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-                Add your first policy
+                {language === "el" ? "Πρόσθεσε το πρώτο σου συμβόλαιο" : "Add your first policy"}
             </h2>
             <p className="text-slate-500 dark:text-slate-400 mb-8">
-                AI analysis starts immediately after upload.
+                {language === "el" ? "Η ανάλυση AI ξεκινά αμέσως μετά τη μεταφόρτωση." : "AI analysis starts immediately after upload."}
             </p>
 
             <div
@@ -295,8 +301,8 @@ function UploadStep({ onNext, onSkip }: { onNext: (data?: any) => void, onSkip: 
                 {uploading ? (
                     <div className="flex flex-col items-center">
                         <Loader2 className="w-12 h-12 text-indigo-500 animate-spin mb-4" />
-                        <p className="text-lg font-medium text-slate-700 dark:text-slate-300">Analyzing document...</p>
-                        <p className="text-sm text-slate-400 mt-2">Initial results usually appear within 1 minute.</p>
+                        <p className="text-lg font-medium text-slate-700 dark:text-slate-300">{language === "el" ? "Ανάλυση εγγράφου..." : "Analyzing document..."}</p>
+                        <p className="text-sm text-slate-400 mt-2">{language === "el" ? "Τα πρώτα αποτελέσματα συνήθως εμφανίζονται μέσα σε 1 λεπτό." : "Initial results usually appear within 1 minute."}</p>
                     </div>
                 ) : (
                     <>
@@ -304,10 +310,10 @@ function UploadStep({ onNext, onSkip }: { onNext: (data?: any) => void, onSkip: 
                             <Upload className="w-8 h-8 text-indigo-500" />
                         </div>
                         <h3 className="text-lg font-bold text-slate-700 dark:text-slate-200 mb-1">
-                            Upload Policy Document
+                            {language === "el" ? "Μεταφόρτωση ασφαλιστηρίου" : "Upload policy document"}
                         </h3>
                         <p className="text-sm text-slate-500 mb-6">
-                            Drag & drop or PDF, JPG, PNG up to 15MB
+                            {language === "el" ? "Σύρε αρχείο ή επίλεξε PDF, JPG, PNG έως 15MB" : "Drag & drop or PDF, JPG, PNG up to 15MB"}
                         </p>
 
                         <label className="inline-block">
@@ -318,7 +324,7 @@ function UploadStep({ onNext, onSkip }: { onNext: (data?: any) => void, onSkip: 
                                 onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
                             />
                             <span className="cursor-pointer py-2 px-6 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm font-medium text-slate-700 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-600 transition-colors shadow-sm">
-                                Browse Files
+                                {language === "el" ? "Επιλογή αρχείου" : "Browse files"}
                             </span>
                         </label>
                     </>
@@ -330,7 +336,7 @@ function UploadStep({ onNext, onSkip }: { onNext: (data?: any) => void, onSkip: 
                     <div className="w-full border-t border-slate-200 dark:border-slate-700"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white dark:bg-slate-900 text-slate-400">OR</span>
+                    <span className="px-2 bg-white dark:bg-slate-900 text-slate-400">{language === "el" ? "Ή" : "OR"}</span>
                 </div>
             </div>
 
@@ -340,7 +346,7 @@ function UploadStep({ onNext, onSkip }: { onNext: (data?: any) => void, onSkip: 
                     className="flex flex-col items-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                 >
                     <Camera className="w-6 h-6 text-slate-500 mb-2" />
-                    <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Scan Camera</span>
+                    <span className="text-sm font-medium text-slate-600 dark:text-slate-300">{language === "el" ? "Σάρωση κάμερας" : "Scan camera"}</span>
                 </button>
                 <button
                     disabled={uploading}
@@ -348,7 +354,7 @@ function UploadStep({ onNext, onSkip }: { onNext: (data?: any) => void, onSkip: 
                     className="flex flex-col items-center p-4 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                 >
                     <FileText className="w-6 h-6 text-slate-500 mb-2" />
-                    <span className="text-sm font-medium text-slate-600 dark:text-slate-300">Enter Manually</span>
+                    <span className="text-sm font-medium text-slate-600 dark:text-slate-300">{language === "el" ? "Χειροκίνητη καταχώριση" : "Enter manually"}</span>
                 </button>
             </div>
         </motion.div>
@@ -356,6 +362,7 @@ function UploadStep({ onNext, onSkip }: { onNext: (data?: any) => void, onSkip: 
 }
 
 function SuccessStep({ onNext }: { onNext: () => void }) {
+    const { language } = useLanguage()
     return (
         <motion.div
             className="w-full max-w-lg bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 dark:border-slate-800 text-center"
@@ -368,12 +375,13 @@ function SuccessStep({ onNext }: { onNext: () => void }) {
             </div>
 
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
-                You're all set!
+                {language === "el" ? "Είσαι έτοιμος!" : "You're all set!"}
             </h1>
 
             <p className="text-slate-600 dark:text-slate-300 mb-8 max-w-sm mx-auto">
-                Your account is ready and your first policy has been uploaded.
-                Analysis may still be running in the background.
+                {language === "el"
+                    ? "Ο λογαριασμός σου είναι έτοιμος και το πρώτο συμβόλαιο μεταφορτώθηκε. Η ανάλυση μπορεί να συνεχίζεται στο παρασκήνιο."
+                    : "Your account is ready and your first policy has been uploaded. Analysis may still be running in the background."}
             </p>
 
             <div className="space-y-4 mb-8">
@@ -381,19 +389,19 @@ function SuccessStep({ onNext }: { onNext: () => void }) {
                     <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center shrink-0">
                         <Check className="w-4 h-4 text-green-600" />
                     </div>
-                    <span>Account created</span>
+                    <span>{language === "el" ? "Ο λογαριασμός δημιουργήθηκε" : "Account created"}</span>
                 </div>
                 <div className="flex items-center gap-3 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg">
                     <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center shrink-0">
                         <Check className="w-4 h-4 text-green-600" />
                     </div>
-                    <span>Policy uploaded and analysis started</span>
+                    <span>{language === "el" ? "Το συμβόλαιο ανέβηκε και η ανάλυση ξεκίνησε" : "Policy uploaded and analysis started"}</span>
                 </div>
                 <div className="flex items-center gap-3 text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg">
                     <div className="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/50 flex items-center justify-center shrink-0">
                         <Check className="w-4 h-4 text-green-600" />
                     </div>
-                    <span>Next: ask AI, share with your agent, and review renewals</span>
+                    <span>{language === "el" ? "Επόμενο: ρώτα το AI, μοιράσου με σύμβουλο και έλεγξε ανανεώσεις" : "Next: ask AI, share with your agent, and review renewals"}</span>
                 </div>
             </div>
 
@@ -401,7 +409,7 @@ function SuccessStep({ onNext }: { onNext: () => void }) {
                 onClick={onNext}
                 className="w-full py-4 px-6 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/30 transform transition hover:-translate-y-1"
             >
-                Start Exploring
+                {language === "el" ? "Ξεκίνα την περιήγηση" : "Start exploring"}
             </button>
         </motion.div>
     )

@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import { useEffect } from "react"
 import Image from "next/image"
@@ -71,6 +71,9 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                             </Link>
                         </div>
                         <ThemeToggle />
+                        <Link href="/auth/signin" className="sm:hidden px-2.5 py-1 text-xs font-bold rounded-md text-slate-700 hover:text-sky-700 dark:text-slate-200 dark:hover:text-sky-300">
+                            {isGreek ? "Σύνδεση" : "Sign in"}
+                        </Link>
                         <Link href="/auth/signin" className="hidden sm:block px-3 py-2 text-sm font-semibold text-slate-700 hover:text-sky-700 dark:text-slate-300 dark:hover:text-sky-300">
                             {isGreek ? "Σύνδεση" : "Sign in"}
                         </Link>
@@ -78,7 +81,7 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                 </div>
             </header>
 
-            <main className="pt-28 sm:pt-32">
+            <main className="pt-28 sm:pt-32 pb-24 sm:pb-0">
                 <section id="hero" className="px-4 sm:px-6 lg:px-8 pb-14 sm:pb-20">
                     <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-10 items-center">
                         <div>
@@ -92,11 +95,11 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                             <p className="mt-5 text-lg sm:text-xl leading-relaxed text-slate-600 dark:text-slate-300 max-w-2xl">
                                 {t.hero.subtitle[locale]}
                             </p>
-                            <div className="mt-7 flex flex-wrap gap-3">
+                            <div className="mt-7 flex flex-col sm:flex-row gap-3 max-w-xl">
                                 <Link
                                     href="/auth/signup?role=policyholder&source=landing_hero_primary"
                                     onClick={() => trackCta("hero_primary", "policyholder")}
-                                    className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 font-semibold text-white hover:bg-orange-600"
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3.5 font-semibold text-white hover:bg-orange-600 text-center"
                                 >
                                     {t.hero.primaryCta[locale]}
                                     <ArrowRight className="w-4 h-4" />
@@ -104,7 +107,7 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                                 <Link
                                     href="/auth/signin?source=landing_agent_invite"
                                     onClick={() => trackCta("hero_secondary", "invite")}
-                                    className="inline-flex items-center gap-2 rounded-xl border border-slate-300 px-5 py-3 font-semibold text-slate-800 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
+                                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 px-5 py-3.5 font-semibold text-slate-800 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 text-center"
                                 >
                                     {t.hero.secondaryCta[locale]}
                                 </Link>
@@ -114,9 +117,18 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                                     ? "Πρώτη αξία σε λιγότερο από 2 λεπτά: ανεβάζετε συμβόλαιο και ξεκινά η ανάλυση."
                                     : "First value in under 2 minutes: upload your policy and AI analysis starts immediately."}
                             </p>
-                            <div className="mt-3">
+                            <div className="mt-3 hidden sm:block">
                                 <Link
                                     href="/auth/signup?role=agent&source=landing_hero_agent"
+                                    onClick={() => trackCta("agent", "agent")}
+                                    className="text-sm font-semibold text-sky-700 hover:text-sky-600 dark:text-sky-300"
+                                >
+                                    {t.hero.tertiaryCta[locale]}
+                                </Link>
+                            </div>
+                            <div className="mt-3 sm:hidden">
+                                <Link
+                                    href="/auth/signup?role=agent&source=landing_hero_agent_mobile"
                                     onClick={() => trackCta("agent", "agent")}
                                     className="text-sm font-semibold text-sky-700 hover:text-sky-600 dark:text-sky-300"
                                 >
@@ -143,7 +155,7 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                         <div className="relative">
                             <div className="absolute -inset-8 -z-10 rounded-full bg-gradient-to-tr from-sky-400/25 to-cyan-200/25 blur-3xl dark:from-sky-800/30 dark:to-cyan-900/20" />
                             <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-2xl shadow-slate-900/10 dark:border-slate-700 dark:bg-slate-900">
-                                <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800">
+                                <div className="relative aspect-[16/11] sm:aspect-[4/3] overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800">
                                     <Image src="/screenshots/desktop-dashboard.png" alt="PolicyWallet dashboard preview" fill className="object-cover" priority />
                                 </div>
                             </div>
@@ -346,6 +358,27 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                     </div>
                 </div>
             </footer>
+            <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-slate-200 bg-white/95 dark:border-slate-700 dark:bg-slate-900/95 backdrop-blur-md p-3">
+                <div className="mx-auto max-w-7xl flex items-center gap-2">
+                    <Link
+                        href="/auth/signup?role=policyholder&source=landing_mobile_sticky"
+                        onClick={() => trackCta("hero_primary", "policyholder")}
+                        className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-4 py-3 font-semibold text-white hover:bg-orange-600"
+                    >
+                        {isGreek ? "Ξεκίνα δωρεάν" : "Start free"}
+                        <ArrowRight className="w-4 h-4" />
+                    </Link>
+                    <Link
+                        href="/auth/signin?source=landing_mobile_sticky_signin"
+                        className="inline-flex items-center justify-center rounded-xl border border-slate-300 px-3.5 py-3 font-semibold text-slate-700 dark:border-slate-600 dark:text-slate-200"
+                        aria-label={isGreek ? "Σύνδεση" : "Sign in"}
+                    >
+                        {isGreek ? "Σύνδεση" : "Sign in"}
+                    </Link>
+                </div>
+            </div>
         </div>
     )
 }
+
+

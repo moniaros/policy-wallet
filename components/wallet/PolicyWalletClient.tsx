@@ -10,18 +10,34 @@ import { toast } from "sonner"
 import { deletePolicy, runPolicyAnalysis } from "@/app/(protected)/wallet/actions"
 import DashboardTour from '@/components/onboarding/DashboardTour'
 import { dismissTour } from '@/app/onboarding/actions'
+import { useIsMobile } from "@/hooks/useResponsive"
+import { MobileAppShell } from "@/components/layout/MobileAppShell"
 
 interface PolicyWalletClientProps {
     policies: Policy[]
     user?: {
+        id?: string
         name: string
+        email?: string
+        photoUrl?: string
+        isOnline?: boolean
+    }
+    agent?: {
+        id: string
+        name: string
+        phone: string
+        email: string
+        company?: string
+        photoUrl?: string
+        isOnline?: boolean
     }
     showTour?: boolean
 }
 
-export function PolicyWalletClient({ policies, user, showTour = false }: PolicyWalletClientProps) {
+export function PolicyWalletClient({ policies, user, agent, showTour = false }: PolicyWalletClientProps) {
     const router = useRouter()
     const { t, language } = useLanguage()
+    const isMobile = useIsMobile()
     const previousStatusesRef = useRef<Map<string, string>>(new Map())
     const announcedRef = useRef<Set<string>>(new Set())
 
@@ -135,6 +151,16 @@ export function PolicyWalletClient({ policies, user, showTour = false }: PolicyW
 
         previousStatusesRef.current = currentStatuses
     }, [policies, router, copy.analysisComplete, copy.view])
+
+    if (isMobile) {
+        return (
+            <MobileAppShell
+                policies={policies}
+                user={user as any}
+                agent={agent}
+            />
+        )
+    }
 
     return (
         <div className="min-h-screen bg-transparent relative isolate">

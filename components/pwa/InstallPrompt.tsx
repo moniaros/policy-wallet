@@ -1,31 +1,61 @@
-"use client"
+﻿"use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Download, X, Share } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { useMediaQuery } from "@/hooks/useResponsive"
 import { AnimatePresence, motion } from "framer-motion"
+import { usePathname } from "next/navigation"
+
+const DISMISS_KEY = "pwa_prompt_dismissed_at"
+const SNOOZE_MS = 7 * 24 * 60 * 60 * 1000
+
+const HIDDEN_PATH_PREFIXES = [
+    "/auth",
+    "/onboarding",
+    "/wallet/add",
+]
+
+const HIDDEN_EXACT_PATHS = [
+    "/wallet",
+    "/coverage-insights",
+]
+
+function shouldHidePrompt(pathname: string | null) {
+    if (!pathname) return false
+    if (HIDDEN_EXACT_PATHS.includes(pathname)) return true
+    if (pathname.startsWith("/wallet/") && pathname.split("/").length >= 3) return true
+    return HIDDEN_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix))
+}
 
 export function InstallPrompt() {
+    const pathname = usePathname()
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
     const [showPrompt, setShowPrompt] = useState(false)
     const [isIOS, setIsIOS] = useState(false)
-    const isMobile = useMediaQuery("(max-width: 768px)")
+
+    const hiddenForRoute = useMemo(() => shouldHidePrompt(pathname), [pathname])
 
     useEffect(() => {
-        // Check for iOS
-        const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+        if (hiddenForRoute) {
+            setShowPrompt(false)
+            return
+        }
+
+        const dismissedAt = localStorage.getItem(DISMISS_KEY)
+        if (dismissedAt && Date.now() - Number(dismissedAt) < SNOOZE_MS) return
+
+        const isIOSDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
         setIsIOS(isIOSDevice)
 
-        // Check if already in standalone mode
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+        const isStandalone =
+            window.matchMedia("(display-mode: standalone)").matches ||
+            (window.navigator as any).standalone
 
-        if (isStandalone) return;
+        if (isStandalone) return
 
         if (isIOSDevice) {
-            // Show iOS instructions after a short delay
-            const timer = setTimeout(() => setShowPrompt(true), 3000)
+            const timer = setTimeout(() => setShowPrompt(true), 5000)
             return () => clearTimeout(timer)
         }
 
@@ -36,9 +66,13 @@ export function InstallPrompt() {
         }
 
         window.addEventListener("beforeinstallprompt", handler)
-
         return () => window.removeEventListener("beforeinstallprompt", handler)
-    }, [])
+    }, [hiddenForRoute])
+
+    const dismissPrompt = () => {
+        localStorage.setItem(DISMISS_KEY, String(Date.now()))
+        setShowPrompt(false)
+    }
 
     const handleInstall = async () => {
         if (!deferredPrompt) return
@@ -46,51 +80,49 @@ export function InstallPrompt() {
         deferredPrompt.prompt()
         const { outcome } = await deferredPrompt.userChoice
 
-        if (outcome === 'accepted') {
+        if (outcome === "accepted") {
             setShowPrompt(false)
         }
         setDeferredPrompt(null)
     }
 
-    if (!showPrompt) return null
+    if (!showPrompt || hiddenForRoute) return null
 
     return (
         <AnimatePresence>
             <motion.div
-                initial={{ y: 100, opacity: 0 }}
+                initial={{ y: 80, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 100, opacity: 0 }}
-                className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-8 md:w-96"
+                exit={{ y: 80, opacity: 0 }}
+                className="fixed bottom-24 left-3 right-3 z-40 sm:left-auto sm:right-6 sm:w-80"
             >
-                <Card className="p-4 shadow-xl border-primary/20 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                    <div className="flex justify-between items-start mb-2">
-                        <div>
-                            <h3 className="font-semibold text-foreground">Install PolicyWallet</h3>
-                            <p className="text-sm text-muted-foreground">
-                                Add to home screen for offline access and faster loading.
-                            </p>
+                <Card className="p-3.5 shadow-xl border-teal-200/60 dark:border-teal-900/40 bg-white/95 dark:bg-stone-900/95 backdrop-blur">
+                    <div className="flex items-start gap-3">
+                        <div className="mt-0.5 w-8 h-8 rounded-lg bg-teal-50 dark:bg-teal-900/30 text-teal-600 flex items-center justify-center">
+                            <Download className="w-4 h-4" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-sm text-stone-900 dark:text-white">Install PolicyWallet</h3>
+                            <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">Faster access from your home screen.</p>
                         </div>
                         <button
-                            onClick={() => setShowPrompt(false)}
-                            className="text-muted-foreground hover:text-foreground"
+                            onClick={dismissPrompt}
+                            className="text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors cursor-pointer"
+                            aria-label="Dismiss install prompt"
                         >
-                            <X className="w-5 h-5" />
+                            <X className="w-4 h-4" />
                         </button>
                     </div>
 
                     {isIOS ? (
-                        <div className="mt-3 text-sm flex flex-col gap-2 p-3 bg-muted/50 rounded-lg">
-                            <div className="flex items-center gap-2">
-                                1. Tap the <Share className="w-4 h-4" /> Share button
-                            </div>
-                            <div className="flex items-center gap-2">
-                                2. Scroll down and tap "Add to Home Screen"
-                            </div>
+                        <div className="mt-3 text-xs flex items-start gap-2 p-2.5 bg-stone-50 dark:bg-stone-800/70 rounded-lg text-stone-600 dark:text-stone-300">
+                            <Share className="w-4 h-4 mt-0.5" />
+                            <span>Tap Share and choose Add to Home Screen.</span>
                         </div>
                     ) : (
                         <Button
                             onClick={handleInstall}
-                            className="w-full mt-3 gap-2 font-medium"
+                            className="w-full mt-3 gap-2 h-9 text-sm font-semibold"
                         >
                             <Download className="w-4 h-4" />
                             Install App
