@@ -35,6 +35,9 @@ const envSchema = z.object({
     UPSTASH_REDIS_REST_URL: z.string().optional(),
     UPSTASH_REDIS_REST_TOKEN: z.string().min(1).optional(),
 
+    // RevenueCat (webhooks)
+    REVENUECAT_WEBHOOK_AUTH_VALUE: z.string().min(1).optional(),
+
     // App
     NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 

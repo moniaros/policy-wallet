@@ -1,19 +1,30 @@
 import { NextResponse } from "next/server"
-import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { requireApiUser } from "@/lib/api-auth"
+import { z } from "zod"
+
+const creditsQuerySchema = z.object({
+    cursor: z.string().min(1).optional(),
+    limit: z.coerce.number().int().min(1).max(100).default(20),
+})
 
 export async function GET(req: Request) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    const authCheck = await requireApiUser()
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     const { searchParams } = new URL(req.url)
-    const cursor = searchParams.get("cursor")
-    const limit = parseInt(searchParams.get("limit") || "20")
+    const queryParse = creditsQuerySchema.safeParse({
+        cursor: searchParams.get("cursor") ?? undefined,
+        limit: searchParams.get("limit") ?? undefined,
+    })
+    if (!queryParse.success) {
+        return NextResponse.json(
+            { error: { code: "VALIDATION_ERROR", message: "Invalid query parameters", status: 400, details: queryParse.error.issues } },
+            { status: 400 }
+        )
+    }
+    const { cursor, limit } = queryParse.data
 
     try {
         const transactions = await (db as any).creditTransaction.findMany({

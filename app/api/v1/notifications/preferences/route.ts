@@ -1,15 +1,22 @@
 import { NextResponse } from "next/server"
-import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { requireApiUser } from "@/lib/api-auth"
+import { z } from "zod"
+
+const notificationPreferenceSchema = z.object({
+    event_type: z.string().min(1),
+    channel: z.enum(["email", "push", "sms"]),
+    enabled: z.boolean(),
+})
+
+const preferencesUpdateSchema = z.object({
+    preferences: z.array(notificationPreferenceSchema),
+})
 
 export async function GET() {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    const authCheck = await requireApiUser()
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     try {
         const preferences = await (db as any).notificationPreference.findMany({
@@ -46,16 +53,12 @@ export async function GET() {
 }
 
 export async function PATCH(req: Request) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    const authCheck = await requireApiUser()
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     try {
-        const { preferences } = await req.json()
+        const { preferences } = preferencesUpdateSchema.parse(await req.json())
 
         for (const pref of preferences) {
             await (db as any).notificationPreference.upsert({
@@ -82,6 +85,12 @@ export async function PATCH(req: Request) {
             error: null
         })
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return NextResponse.json(
+                { error: { code: "VALIDATION_ERROR", message: "Invalid preferences payload", status: 400, details: error.issues } },
+                { status: 400 }
+            )
+        }
         console.error(error)
         return NextResponse.json(
             { error: { code: "BAD_REQUEST", message: "Update failed", status: 400 } },

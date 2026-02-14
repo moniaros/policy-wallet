@@ -326,6 +326,7 @@ model Opportunity {
 
   @@index([relationshipId])
   @@index([policyId])
+  @@index([ownerAgentUserId])
   @@map("opportunities")
 }
 
@@ -542,6 +543,7 @@ model NotificationEvent {
   user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([eventType])
   @@map("notification_events")
 }
 

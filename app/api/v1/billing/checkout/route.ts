@@ -1,12 +1,18 @@
-import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { createCheckoutSession } from "@/lib/billing"
 import { rateLimit } from "@/lib/rate-limit"
 import { logger } from "@/lib/logger"
+import { requireApiUser } from "@/lib/api-auth"
+import { z } from "zod"
+
+const checkoutRequestSchema = z.object({
+    planId: z.string().min(1, "Plan ID is required"),
+})
 
 export async function POST(req: Request) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authCheck = await requireApiUser()
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     // Rate limit: 5 checkout attempts per minute
     const ip = req.headers.get("x-forwarded-for") || "127.0.0.1"
@@ -14,8 +20,7 @@ export async function POST(req: Request) {
     if (!limitCheck.success) return limitCheck.error!
 
     try {
-        const { planId } = await req.json()
-        if (!planId) return createApiError("BAD_REQUEST", "Plan ID is required", 400)
+        const { planId } = checkoutRequestSchema.parse(await req.json())
 
         const checkout = await createCheckoutSession(authResult.dbUser.id, planId)
 
@@ -29,6 +34,9 @@ export async function POST(req: Request) {
             }
         })
     } catch (error: any) {
+        if (error instanceof z.ZodError) {
+            return createApiError("VALIDATION_ERROR", "Invalid checkout payload", 400, error.issues)
+        }
         logger('error', 'Checkout session creation failed', { userId: authResult.dbUser.id, error })
         return createApiError("INTERNAL_ERROR", error.message || "Failed to create checkout session", 500)
     }

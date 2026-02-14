@@ -1,13 +1,14 @@
-import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { createApiError } from "@/lib/api-utils"
+import { requireApiUser } from "@/lib/api-auth"
 
 export async function GET(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authCheck = await requireApiUser()
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     const { id: policyId } = await params
 

@@ -1,8 +1,8 @@
-import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { z } from "zod"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { rateLimit } from "@/lib/rate-limit"
+import { requireApiUser } from "@/lib/api-auth"
 
 const InviteSchema = z.object({
     invitee_email: z.string().email(),
@@ -12,8 +12,9 @@ const InviteSchema = z.object({
 })
 
 export async function POST(req: Request) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authCheck = await requireApiUser()
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     // Rate limiting: max 5 invites per minute to prevent user or referral spam
     const ip = req.headers.get("x-forwarded-for") || "127.0.0.1"

@@ -1,14 +1,27 @@
-import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
+import { requireApiUser } from "@/lib/api-auth"
+import { z } from "zod"
+
+const activityLogQuerySchema = z.object({
+    cursor: z.string().min(1).optional(),
+    limit: z.coerce.number().int().min(1).max(100).default(20),
+})
 
 export async function GET(req: Request) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authCheck = await requireApiUser({ roles: ["admin"] })
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     const { searchParams } = new URL(req.url)
-    const cursor = searchParams.get("cursor")
-    const limit = parseInt(searchParams.get("limit") || "20")
+    const queryParse = activityLogQuerySchema.safeParse({
+        cursor: searchParams.get("cursor") ?? undefined,
+        limit: searchParams.get("limit") ?? undefined,
+    })
+    if (!queryParse.success) {
+        return createApiError("VALIDATION_ERROR", "Invalid query parameters", 400, queryParse.error.issues)
+    }
+    const { cursor, limit } = queryParse.data
 
     try {
         const logs = await (db.activityLog as any).findMany({

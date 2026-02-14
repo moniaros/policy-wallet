@@ -1,20 +1,21 @@
-import { NextResponse } from "next/server"
-import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { createGoogleWalletLink } from "@/lib/wallet/google"
 import { createApplePass } from "@/lib/wallet/apple"
+import { requireApiUser } from "@/lib/api-auth"
+import { z } from "zod"
+import { createApiResponse, createApiError } from "@/lib/api-utils"
+
+const walletPassQuerySchema = z.object({
+    type: z.enum(["google", "apple"]).default("google"),
+})
 
 export async function GET(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) {
-        return NextResponse.json(
-            { error: { code: "UNAUTHORIZED", message: "Unauthorized", status: 401 } },
-            { status: 401 }
-        )
-    }
+    const authCheck = await requireApiUser()
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     const { id } = await params
 
@@ -27,31 +28,25 @@ export async function GET(
         })
 
         if (!policy) {
-            return NextResponse.json(
-                { error: { code: "NOT_FOUND", message: "Policy not found", status: 404 } },
-                { status: 404 }
-            )
+            return createApiError("NOT_FOUND", "Policy not found", 404)
         }
 
         const { searchParams } = new URL(req.url)
-        const type = searchParams.get('type') || 'google' // default to google if not specified
+        const queryParse = walletPassQuerySchema.safeParse({
+            type: searchParams.get("type") ?? undefined,
+        })
+        if (!queryParse.success) {
+            return createApiError("VALIDATION_ERROR", "Invalid pass type", 400, queryParse.error.issues)
+        }
+        const { type } = queryParse.data
 
         if (type === 'google') {
             try {
                 const saveUrl = await createGoogleWalletLink(policy, authResult.dbUser)
-                return NextResponse.json({
-                    data: {
-                        pass_url: saveUrl,
-                    },
-                    meta: { language: "en" },
-                    error: null
-                })
+                return createApiResponse({ pass_url: saveUrl }, "en")
             } catch (e: any) {
                 console.error("Google Wallet Error:", e)
-                return NextResponse.json(
-                    { error: { code: "CONFIG_ERROR", message: e.message || "Failed to generate Google Pass" } },
-                    { status: 500 }
-                )
+                return createApiError("CONFIG_ERROR", e.message || "Failed to generate Google Pass", 500)
             }
         }
 
@@ -63,22 +58,17 @@ export async function GET(
 
                 // If it succeeded (we had certs), we would return:
                 // return new NextResponse(buffer, { headers: { 'Content-Type': 'application/vnd.apple.pkpass' } })
+                return createApiResponse({ message: "Apple Wallet pass generated" })
             } catch (e: any) {
                 console.error("Apple Wallet Error:", e)
-                return NextResponse.json(
-                    { error: { code: "CONFIG_ERROR", message: e.message || "Apple Wallet signing unavailable" } },
-                    { status: 500 }
-                )
+                return createApiError("CONFIG_ERROR", e.message || "Apple Wallet signing unavailable", 500)
             }
         }
 
-        return NextResponse.json({ error: "Invalid pass type" }, { status: 400 })
+        return createApiError("BAD_REQUEST", "Invalid pass type", 400)
 
     } catch (error) {
         console.error(error)
-        return NextResponse.json(
-            { error: { code: "INTERNAL_ERROR", message: "Failed to generate pass", status: 500 } },
-            { status: 500 }
-        )
+        return createApiError("INTERNAL_ERROR", "Failed to generate pass", 500)
     }
 }

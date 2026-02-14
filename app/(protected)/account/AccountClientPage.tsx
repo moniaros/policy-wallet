@@ -105,8 +105,9 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
             <PageHeader
                 title={t.account.pageTitle}
                 subtitle={t.account.pageSubtitle}
+                className="shadow-sm"
                 actions={
-                    <div className="flex p-1.5 bg-stone-100/50 dark:bg-stone-900/50 backdrop-blur-md rounded-2xl border border-stone-200/50 dark:border-stone-700/50 overflow-x-auto no-scrollbar relative isolate">
+                    <div className="flex p-1 bg-stone-100/60 dark:bg-stone-900/60 backdrop-blur-md rounded-xl border border-stone-200/50 dark:border-stone-700/50 overflow-x-auto no-scrollbar relative isolate">
                         {[
                             { id: 'overview', label: t.account.overview, icon: User },
                             { id: 'billing', label: t.account.billing, icon: CreditCard },
@@ -117,7 +118,7 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
                                 className={`
-                                    flex items-center gap-2 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest 
+                                    flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider
                                     transition-all duration-300 relative isolate whitespace-nowrap
                                     ${activeTab === tab.id
                                         ? 'text-teal-600 dark:text-teal-400'
@@ -140,7 +141,7 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                 }
             />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
                     {activeTab === 'overview' && (

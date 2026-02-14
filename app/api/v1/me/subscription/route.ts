@@ -1,11 +1,12 @@
-import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
+import { requireApiUser } from "@/lib/api-auth"
 
 export async function GET() {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authCheck = await requireApiUser()
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     try {
         const user = await db.user.findUnique({

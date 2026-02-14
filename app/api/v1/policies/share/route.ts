@@ -1,20 +1,22 @@
-import { NextResponse } from 'next/server'
-import { getAuthenticatedUserOrNull } from '@/lib/auth-helpers'
 import { db } from '@/lib/db'
 import * as Sentry from '@sentry/nextjs'
+import { requireApiUser } from '@/lib/api-auth'
+import { z } from 'zod'
+import { createApiResponse, createApiError } from "@/lib/api-utils"
+
+const sharePolicySchema = z.object({
+    policyId: z.string().min(1),
+    email: z.string().email(),
+    permissions: z.string().min(1),
+})
 
 export async function POST(req: Request) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const authCheck = await requireApiUser()
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     try {
-        const { policyId, email, permissions } = await req.json()
-
-        if (!policyId || !email || !permissions) {
-            return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
-        }
+        const { policyId, email, permissions } = sharePolicySchema.parse(await req.json())
 
         // Verify the user owns this policy
         const policy = await db.policy.findUnique({
@@ -23,7 +25,7 @@ export async function POST(req: Request) {
         })
 
         if (!policy || policy.ownerUserId !== authResult.dbUser.id) {
-            return NextResponse.json({ error: 'Policy not found or access denied' }, { status: 404 })
+            return createApiError("NOT_FOUND", "Policy not found or access denied", 404)
         }
 
         // Find or create the grantee user
@@ -74,11 +76,13 @@ export async function POST(req: Request) {
         // TODO: Send email notification to grantee
         // This would integrate with Brevo to send an invitation email
 
-        return NextResponse.json({
-            success: true,
+        return createApiResponse({
             message: `Policy shared with ${email}`
         })
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return createApiError("VALIDATION_ERROR", "Invalid payload", 400, error.issues)
+        }
         Sentry.captureException(error, {
             tags: {
                 endpoint: '/api/v1/policies/share',
@@ -87,19 +91,15 @@ export async function POST(req: Request) {
             }
         })
 
-        return NextResponse.json(
-            { error: 'Failed to share policy' },
-            { status: 500 }
-        )
+        return createApiError("INTERNAL_ERROR", "Failed to share policy", 500)
     }
 }
 
 // Get shared policies for current user
 export async function GET(req: Request) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const authCheck = await requireApiUser()
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     try {
         const grants = await db.accessGrant.findMany({
@@ -138,8 +138,7 @@ export async function GET(req: Request) {
             }
         })
 
-        return NextResponse.json({
-            success: true,
+        return createApiResponse({
             sharedPolicies: policies.map(p => ({
                 ...p,
                 sharedBy: grants.find(g => g.scope === `policy:${p.id}`)?.granter,
@@ -155,27 +154,19 @@ export async function GET(req: Request) {
             }
         })
 
-        return NextResponse.json(
-            { error: 'Failed to fetch shared policies' },
-            { status: 500 }
-        )
+        return createApiError("INTERNAL_ERROR", "Failed to fetch shared policies", 500)
     }
 }
 
 // Revoke access
 export async function DELETE(req: Request) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const authCheck = await requireApiUser()
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     try {
         const { searchParams } = new URL(req.url)
-        const grantId = searchParams.get('grantId')
-
-        if (!grantId) {
-            return NextResponse.json({ error: 'Missing grantId' }, { status: 400 })
-        }
+        const grantId = z.string().min(1).parse(searchParams.get('grantId'))
 
         // Verify the user owns this grant
         const grant = await db.accessGrant.findUnique({
@@ -183,7 +174,7 @@ export async function DELETE(req: Request) {
         })
 
         if (!grant || grant.granterUserId !== authResult.dbUser.id) {
-            return NextResponse.json({ error: 'Grant not found or access denied' }, { status: 404 })
+            return createApiError("NOT_FOUND", "Grant not found or access denied", 404)
         }
 
         // Revoke the grant
@@ -195,11 +186,13 @@ export async function DELETE(req: Request) {
             }
         })
 
-        return NextResponse.json({
-            success: true,
+        return createApiResponse({
             message: 'Access revoked'
         })
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return createApiError("VALIDATION_ERROR", "Missing or invalid grantId", 400)
+        }
         Sentry.captureException(error, {
             tags: {
                 endpoint: '/api/v1/policies/share',
@@ -208,9 +201,6 @@ export async function DELETE(req: Request) {
             }
         })
 
-        return NextResponse.json(
-            { error: 'Failed to revoke access' },
-            { status: 500 }
-        )
+        return createApiError("INTERNAL_ERROR", "Failed to revoke access", 500)
     }
 }

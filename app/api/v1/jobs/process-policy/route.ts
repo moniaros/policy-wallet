@@ -1,14 +1,20 @@
-import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { detectGapsForPolicy, createGapInstances } from "@/lib/gap-detection"
 import { sendNotification } from "@/lib/notifications"
 import { rateLimit } from "@/lib/rate-limit"
 import { logger } from "@/lib/logger"
+import { requireApiUser } from "@/lib/api-auth"
+import { z } from "zod"
+
+const processPolicySchema = z.object({
+    policyId: z.string().min(1, "Policy ID is required"),
+})
 
 export async function POST(req: Request) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authCheck = await requireApiUser()
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     // Rate limiting: max 5 policy analysis requests per minute per IP
     const ip = req.headers.get("x-forwarded-for") || "127.0.0.1"
@@ -16,8 +22,7 @@ export async function POST(req: Request) {
     if (!limitCheck.success) return limitCheck.error!
 
     try {
-        const { policyId } = await req.json()
-        if (!policyId) return createApiError("BAD_REQUEST", "Policy ID is required", 400)
+        const { policyId } = processPolicySchema.parse(await req.json())
 
         // Ensure user owns the policy
         const policy = await db.policy.findUnique({
@@ -53,6 +58,9 @@ export async function POST(req: Request) {
         })
 
     } catch (error: any) {
+        if (error instanceof z.ZodError) {
+            return createApiError("VALIDATION_ERROR", "Invalid process policy payload", 400, error.issues)
+        }
         logger('error', 'Policy Processing Error', { error })
         return createApiError("INTERNAL_ERROR", "Failed to process policy intelligence", 500)
     }

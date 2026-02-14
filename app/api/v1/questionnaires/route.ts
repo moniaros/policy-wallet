@@ -1,19 +1,31 @@
-import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
+import { requireApiUser } from "@/lib/api-auth"
+import { z } from "zod"
+
+const questionnairesQuerySchema = z.object({
+    status: z.enum(["pending", "completed"]).default("pending"),
+})
 
 export async function GET(req: Request) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authCheck = await requireApiUser()
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     const { searchParams } = new URL(req.url)
-    const status = searchParams.get("status") || "pending"
+    const queryParse = questionnairesQuerySchema.safeParse({
+        status: searchParams.get("status") ?? undefined,
+    })
+    if (!queryParse.success) {
+        return createApiError("VALIDATION_ERROR", "Invalid query parameters", 400, queryParse.error.issues)
+    }
+    const { status } = queryParse.data
 
     try {
         const questionnaires = await db.questionnaireInstance.findMany({
             where: {
                 sentToUserId: authResult.dbUser.id,
-                status: status as any
+                status
             },
             include: {
                 template: true,

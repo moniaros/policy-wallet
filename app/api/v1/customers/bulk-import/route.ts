@@ -1,20 +1,27 @@
-import { NextResponse } from 'next/server'
-import { getAuthenticatedUserOrNull } from '@/lib/auth-helpers'
+import { requireApiUser } from '@/lib/api-auth'
 import { db } from '@/lib/db'
 import * as Sentry from '@sentry/nextjs'
+import { z } from 'zod'
+import { createApiResponse, createApiError } from "@/lib/api-utils"
+
+const customerImportSchema = z.object({
+    email: z.string().email(),
+    name: z.string().min(1),
+    surname: z.string().min(1).optional().default(''),
+    phone: z.string().optional(),
+})
+
+const bulkImportSchema = z.object({
+    customers: z.array(customerImportSchema).min(1),
+})
 
 export async function POST(req: Request) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const authCheck = await requireApiUser({ roles: ["agent", "admin"] })
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     try {
-        const { customers } = await req.json()
-
-        if (!Array.isArray(customers) || customers.length === 0) {
-            return NextResponse.json({ error: 'Invalid data' }, { status: 400 })
-        }
+        const { customers } = bulkImportSchema.parse(await req.json())
 
         let imported = 0
         const errors: string[] = []
@@ -69,13 +76,15 @@ export async function POST(req: Request) {
             }
         }
 
-        return NextResponse.json({
-            success: true,
+        return createApiResponse({
             imported,
             total: customers.length,
             errors: errors.length > 0 ? errors : undefined
         })
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return createApiError("VALIDATION_ERROR", "Invalid data", 400, error.issues)
+        }
         Sentry.captureException(error, {
             tags: {
                 endpoint: '/api/v1/customers/bulk-import',
@@ -83,9 +92,6 @@ export async function POST(req: Request) {
             }
         })
 
-        return NextResponse.json(
-            { error: 'Failed to import customers' },
-            { status: 500 }
-        )
+        return createApiError("INTERNAL_ERROR", "Failed to import customers", 500)
     }
 }

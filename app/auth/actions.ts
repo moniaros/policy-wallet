@@ -3,6 +3,8 @@
 import { db } from "@/lib/db"
 import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"
+import { headers } from "next/headers"
+import { rateLimit } from "@/lib/rate-limit"
 // sendMail removed
 import { redirect } from "next/navigation"
 
@@ -75,6 +77,12 @@ export async function redeemInvite(token: string, userId: string) {
 import { generateVerificationToken } from "@/lib/tokens"
 import { sendEmail } from "@/lib/email/email-service"
 
+async function getRequestIp() {
+    const headerStore = await headers()
+    const forwardedFor = headerStore.get("x-forwarded-for")?.split(",")[0]?.trim()
+    return forwardedFor || headerStore.get("x-real-ip") || "127.0.0.1"
+}
+
 // ... (keep existing imports)
 
 // ... (keep RegisterSchema)
@@ -82,6 +90,12 @@ import { sendEmail } from "@/lib/email/email-service"
 // ... (keep redeemInvite)
 
 export async function registerUser(formData: FormData) {
+    const ip = await getRequestIp()
+    const registrationRateLimit = await rateLimit(`auth:register:${ip}`, 5, 15 * 60 * 1000)
+    if (!registrationRateLimit.success) {
+        return { success: false, error: "Too many signup attempts. Please try again in a few minutes." }
+    }
+
     const data = Object.fromEntries(formData.entries())
 
     //Convert checkbox strings to booleans
@@ -234,6 +248,12 @@ export async function signOut() {
 }
 
 export async function resendVerificationEmail(email: string, language: string = 'el') {
+    const ip = await getRequestIp()
+    const resendRateLimit = await rateLimit(`auth:resend-verification:${ip}:${email.toLowerCase()}`, 5, 15 * 60 * 1000)
+    if (!resendRateLimit.success) {
+        return { success: false, error: "Too many verification email requests. Please try again later." }
+    }
+
     try {
         const verificationToken = await generateVerificationToken(email)
         const confirmLink = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/auth/verify-email?token=${verificationToken.token}&email=${encodeURIComponent(email)}`
@@ -265,6 +285,12 @@ export async function resendVerificationEmail(email: string, language: string = 
 }
 
 export async function resetPasswordForEmail(email: string) {
+    const ip = await getRequestIp()
+    const resetRateLimit = await rateLimit(`auth:reset-password:${ip}:${email.toLowerCase()}`, 5, 15 * 60 * 1000)
+    if (!resetRateLimit.success) {
+        return { success: false, error: "Too many password reset attempts. Please try again later." }
+    }
+
     const supabase = await createClient()
 
     try {

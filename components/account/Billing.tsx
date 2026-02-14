@@ -68,23 +68,23 @@ export function Billing({
     const defaultPaymentMethod = paymentMethods.find(pm => pm.is_default)
 
     return (
-        <div className="max-w-7xl mx-auto py-12">
+        <div className="max-w-7xl mx-auto py-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Current Subscription Section */}
                 <div className="lg:col-span-2 space-y-8">
-                    <div className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[40px] p-10 shadow-sm relative overflow-hidden group">
+                    <div className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[32px] p-8 shadow-sm relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/5 blur-[100px] rounded-full -mr-32 -mt-32"></div>
                         <div className="relative z-10">
-                            <div className="flex items-center gap-3 mb-8">
+                            <div className="flex items-center gap-3 mb-6">
                                 <div className="w-8 h-8 rounded-xl bg-teal-100 dark:bg-teal-900/50 flex items-center justify-center text-teal-600 dark:text-teal-400">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" strokeWidth="2" /></svg>
                                 </div>
                                 <span className="text-[10px] font-black uppercase tracking-widest text-stone-400">{t.billing.subscriptionStatus}</span>
                             </div>
 
-                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10">
+                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
                                 <div>
-                                    <h2 className="text-4xl font-black text-stone-900 dark:text-white tracking-tighter mb-2">
+                                    <h2 className="text-3xl font-black text-stone-900 dark:text-white tracking-tighter mb-2">
                                         {currentPlan.name}
                                     </h2>
                                     <p className="text-stone-500 text-sm font-medium italic">
@@ -92,7 +92,7 @@ export function Billing({
                                     </p>
                                 </div>
                                 <div className="text-right">
-                                    <div className="text-3xl font-black text-stone-900 dark:text-white">
+                                    <div className="text-2xl font-black text-stone-900 dark:text-white">
                                         {formatPrice(currentPlan.price)}
                                     </div>
                                     <span className="text-[10px] font-black uppercase tracking-widest text-stone-400">{t.billing.perMonth}</span>
@@ -121,14 +121,14 @@ export function Billing({
                                 <div className="flex items-center gap-4 pt-8 border-t border-stone-50 dark:border-stone-800">
                                     <button
                                         onClick={() => onDowngrade?.(currentPlan.plan_id)}
-                                        className="px-6 py-3 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-600 hover:dark:bg-teal-500 transition-all shadow-lg shadow-stone-900/10"
-                                    >
+                                    className="px-5 py-2.5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-teal-600 hover:dark:bg-teal-500 transition-all shadow-lg shadow-stone-900/10"
+                                >
                                         {t.billing.modifyPlan}
                                     </button>
                                     <button
                                         onClick={() => onCancel?.()}
-                                        className="px-6 py-3 text-stone-400 hover:text-red-500 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
-                                    >
+                                    className="px-5 py-2.5 text-stone-400 hover:text-red-500 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all"
+                                >
                                         {t.billing.terminateCycle}
                                     </button>
                                 </div>
@@ -137,8 +137,8 @@ export function Billing({
                     </div>
 
                     {/* Invoices Section */}
-                    <div className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[40px] shadow-sm overflow-hidden">
-                        <div className="px-10 py-8 border-b border-stone-50 dark:border-stone-800 flex items-center justify-between">
+                    <div className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[32px] shadow-sm overflow-hidden">
+                        <div className="px-8 py-6 border-b border-stone-50 dark:border-stone-800 flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <span className="w-8 h-px bg-stone-200" />
                                 <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">{t.billing.invoiceRecords}</h3>
@@ -154,11 +154,11 @@ export function Billing({
                                 <table className="w-full">
                                     <thead className="bg-stone-50/50 dark:bg-stone-800/30">
                                         <tr>
-                                            <th className="px-10 py-5 text-left text-[10px] font-black text-stone-400 uppercase tracking-widest">{t.billing.reference}</th>
-                                            <th className="px-10 py-5 text-left text-[10px] font-black text-stone-400 uppercase tracking_widest">{t.billing.issueDate}</th>
-                                            <th className="px-10 py-5 text-center text-[10px] font-black text-stone-400 uppercase tracking-widest">{t.billing.status}</th>
-                                            <th className="px-10 py-5 text-right text-[10px] font-black text-stone-400 uppercase tracking-widest">{t.billing.amount}</th>
-                                            <th className="px-10 py-5 text-right text-[10px] font-black text-stone-400 uppercase tracking-widest">{t.billing.action}</th>
+                                            <th className="px-8 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking-wider">{t.billing.reference}</th>
+                                            <th className="px-8 py-4 text-left text-[10px] font-black text-stone-400 uppercase tracking_wider">{t.billing.issueDate}</th>
+                                            <th className="px-8 py-4 text-center text-[10px] font-black text-stone-400 uppercase tracking-wider">{t.billing.status}</th>
+                                            <th className="px-8 py-4 text-right text-[10px] font-black text-stone-400 uppercase tracking-wider">{t.billing.amount}</th>
+                                            <th className="px-8 py-4 text-right text-[10px] font-black text-stone-400 uppercase tracking-wider">{t.billing.action}</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-stone-50 dark:divide-stone-800">
@@ -166,24 +166,24 @@ export function Billing({
                                             const statusBadge = getStatusBadge(invoice.status)
                                             return (
                                                 <tr key={invoice.invoice_id} className="hover:bg-stone-50/30 dark:hover:bg-stone-800/20 transition-all group">
-                                                    <td className="px-10 py-6 whitespace-nowrap text-sm font-black text-stone-900 dark:text-stone-100 uppercase tracking-tight">
+                                                    <td className="px-8 py-5 whitespace-nowrap text-sm font-black text-stone-900 dark:text-stone-100 uppercase tracking-tight">
                                                         {invoice.invoice_number}
                                                     </td>
-                                                    <td className="px-10 py-6 whitespace-nowrap text-xs font-medium text-stone-500 dark:text-stone-400">
+                                                    <td className="px-8 py-5 whitespace-nowrap text-xs font-medium text-stone-500 dark:text-stone-400">
                                                         {formatDate(invoice.issued_at)}
                                                     </td>
-                                                    <td className="px-10 py-6 whitespace-nowrap text-center">
+                                                    <td className="px-8 py-5 whitespace-nowrap text-center">
                                                         <span className={`inline-flex px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border ${statusBadge.color}`}>
                                                             {statusBadge.label}
                                                         </span>
                                                     </td>
-                                                    <td className="px-10 py-6 whitespace-nowrap text-right">
+                                                    <td className="px-8 py-5 whitespace-nowrap text-right">
                                                         <div className="text-sm font-black text-stone-900 dark:text-white">{formatPrice(invoice.amount_total, invoice.currency)}</div>
                                                         {invoice.credits_applied && (
                                                             <div className="text-[9px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-widest">-{formatPrice(invoice.credits_applied, invoice.currency)} {t.billing.applied}</div>
                                                         )}
                                                     </td>
-                                                    <td className="px-10 py-6 whitespace-nowrap text-right">
+                                                    <td className="px-8 py-5 whitespace-nowrap text-right">
                                                         {invoice.pdf_url && (
                                                             <button
                                                                 onClick={() => onDownloadInvoice?.(invoice.invoice_id)}
@@ -205,7 +205,7 @@ export function Billing({
 
                 {/* Payment Methods Sidebar */}
                 <div className="space-y-8">
-                    <div className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[40px] p-10 shadow-sm">
+                    <div className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[32px] p-8 shadow-sm">
                         <div className="flex items-center justify-between mb-8">
                             <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">{t.billing.paymentMethod}</h3>
                             {defaultPaymentMethod && (

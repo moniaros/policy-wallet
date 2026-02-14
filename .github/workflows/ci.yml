@@ -24,6 +24,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run API auth guard audit
+        run: npm run audit:api-auth
+        continue-on-error: false
+
       - name: Run ESLint
         run: npm run lint
         continue-on-error: false

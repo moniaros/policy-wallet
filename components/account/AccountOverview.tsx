@@ -70,13 +70,13 @@ export function AccountOverview({
     const isPolicyholder = currentPlan.plan_type === 'policyholder'
 
     return (
-        <div className="max-w-7xl mx-auto py-8">
+        <div className="max-w-7xl mx-auto py-6">
             {/* Profile Header */}
-            <div className="flex flex-col md:flex-row items-center gap-8 mb-16 p-8 bg-white dark:bg-stone-900 rounded-[40px] border border-stone-100 dark:border-stone-800 shadow-sm relative overflow-hidden group">
+            <div className="flex flex-col md:flex-row items-center gap-6 mb-10 p-6 bg-white dark:bg-stone-900 rounded-[32px] border border-stone-100 dark:border-stone-800 shadow-sm relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/5 blur-[80px] rounded-full -mr-32 -mt-32 transition-colors group-hover:bg-teal-500/10" />
 
                 <div className="relative">
-                    <div className="w-32 h-32 rounded-[32px] overflow-hidden bg-stone-100 dark:bg-stone-800 border-4 border-white dark:border-stone-900 shadow-2xl transition-transform active:scale-95 group-hover:scale-105 duration-500">
+                <div className="w-28 h-28 rounded-[24px] overflow-hidden bg-stone-100 dark:bg-stone-800 border-4 border-white dark:border-stone-900 shadow-2xl transition-transform active:scale-95 group-hover:scale-105 duration-500">
                         {currentUser.image ? (
                             <img
                                 src={currentUser.image}
@@ -103,7 +103,7 @@ export function AccountOverview({
                             </span>
                         )}
                     </div>
-                    <h1 className="text-4xl font-black text-stone-900 dark:text-white tracking-tighter mb-2">
+                    <h1 className="text-3xl font-black text-stone-900 dark:text-white tracking-tighter mb-1">
                         {currentUser.name}
                     </h1>
                     <p className="text-stone-500 dark:text-stone-400 font-bold tracking-tight">
@@ -118,7 +118,7 @@ export function AccountOverview({
 
             {/* Role Switcher for Dual-Role Users */}
             {isDualRole && (
-                <div className="mb-12 relative overflow-hidden bg-stone-900 dark:bg-black rounded-[32px] p-8 text-white shadow-2xl">
+                <div className="mb-10 relative overflow-hidden bg-stone-900 dark:bg-black rounded-[28px] p-6 text-white shadow-2xl">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 blur-[100px] rounded-full -mr-32 -mt-32" />
                     <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                         <div>
@@ -126,7 +126,7 @@ export function AccountOverview({
                                 <span className="w-8 h-px bg-teal-500" />
                                 <span className="text-[10px] font-black uppercase tracking-[0.3em] text-teal-500">{t.account.dualRoleContext}</span>
                             </div>
-                            <h3 className="text-2xl font-black tracking-tight mb-2">
+                            <h3 className="text-xl font-black tracking-tight mb-2">
                                 {t.account.manageFor} <span className="text-stone-400 italic">{t.account.yourRole}</span>
                             </h3>
                             <p className="text-stone-500 text-xs font-medium max-w-sm">
@@ -136,7 +136,7 @@ export function AccountOverview({
                         <div className="flex p-2 bg-stone-800/50 backdrop-blur-md rounded-2xl border border-white/5">
                             <button
                                 onClick={() => onSwitchRole?.('policyholder')}
-                                className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isPolicyholder
+                                className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${isPolicyholder
                                     ? 'bg-white text-stone-900 shadow-xl'
                                     : 'text-stone-400 hover:text-white'
                                     }`}
@@ -145,7 +145,7 @@ export function AccountOverview({
                             </button>
                             <button
                                 onClick={() => onSwitchRole?.('agent')}
-                                className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${!isPolicyholder
+                                className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${!isPolicyholder
                                     ? 'bg-white text-stone-900 shadow-xl'
                                     : 'text-stone-400 hover:text-white'
                                     }`}
@@ -157,24 +157,24 @@ export function AccountOverview({
                 </div>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
                 {/* Current Plan Card */}
                 <div className="lg:col-span-2 relative group">
                     <div className="absolute -inset-0.5 bg-gradient-to-br from-teal-500/20 to-stone-500/20 rounded-[40px] blur opacity-50 group-hover:opacity-100 transition duration-1000"></div>
-                    <div className="relative bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[40px] overflow-hidden shadow-2xl h-full">
-                        <div className="p-10 border-b border-stone-50 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-800/30">
+                    <div className="relative bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[32px] overflow-hidden shadow-2xl h-full">
+                        <div className="p-8 border-b border-stone-50 dark:border-stone-800 bg-stone-50/50 dark:bg-stone-800/30">
                             <div className="flex items-start justify-between mb-8">
                                 <div>
                                     <div className="flex items-center gap-3 mb-2">
                                         <span className="w-6 h-px bg-teal-500" />
                                         <span className="text-[10px] font-black uppercase tracking-widest text-teal-600 dark:text-teal-400">{t.account.currentPlan}</span>
                                     </div>
-                                    <h2 className="text-4xl font-black text-stone-900 dark:text-white tracking-tighter">
+                                    <h2 className="text-3xl font-black text-stone-900 dark:text-white tracking-tighter">
                                         {currentPlan.name}
                                     </h2>
                                 </div>
                                 <div className="text-right">
-                                    <div className="text-4xl font-black text-stone-900 dark:text-white tracking-tight">
+                                    <div className="text-3xl font-black text-stone-900 dark:text-white tracking-tight">
                                         {formatPrice(currentPlan.price)}
                                     </div>
                                     <div className="text-[10px] font-black text-stone-400 uppercase tracking-widest mt-1">
@@ -184,7 +184,7 @@ export function AccountOverview({
                             </div>
                         </div>
 
-                        <div className="p-10">
+                        <div className="p-8">
                             <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-6">
                                 {t.account.includedPrivileges}
                             </h3>
@@ -200,7 +200,7 @@ export function AccountOverview({
                 {/* Credit Registry & Quick Metrics */}
                 <div className="space-y-8">
                     {/* Credit Registry */}
-                    <div className="bg-teal-600 rounded-[40px] p-10 text-white shadow-2xl shadow-teal-600/30 relative overflow-hidden group">
+                    <div className="bg-teal-600 rounded-[32px] p-8 text-white shadow-2xl shadow-teal-600/30 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-white/20 transition-all duration-700"></div>
                         <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-6">
@@ -209,7 +209,7 @@ export function AccountOverview({
                                 </div>
                                 <span className="text-[10px] font-black uppercase tracking-widest text-teal-100">{t.account.walletCredits}</span>
                             </div>
-                            <div className="text-5xl font-black tracking-tighter mb-4">
+                            <div className="text-4xl font-black tracking-tighter mb-3">
                                 {formatPrice(creditBalance)}
                             </div>
                             <p className="text-teal-50/70 text-xs font-medium leading-relaxed italic">
@@ -219,7 +219,7 @@ export function AccountOverview({
                     </div>
 
                     {/* Metrics Card */}
-                    <div className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[40px] p-10 shadow-sm">
+                    <div className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[32px] p-8 shadow-sm">
                         <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] mb-8">
                             {t.account.cycleMetrics}
                         </h3>
@@ -263,7 +263,7 @@ export function AccountOverview({
 
             {/* Upgrade Options (if on basic/free) */}
             {(currentPlan.price === 0 || currentPlan.name.toLowerCase().includes('free')) && (
-                <div className="mt-20">
+                <div className="mt-14">
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10 px-4">
                         <div>
                             <div className="flex items-center gap-3 mb-3">
@@ -276,7 +276,7 @@ export function AccountOverview({
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {availablePlans
                             .filter(plan => plan.price > (currentPlan.price || 0))
                             .map((plan) => {
@@ -284,7 +284,7 @@ export function AccountOverview({
                                 return (
                                     <div
                                         key={plan.plan_id}
-                                        className={`bg-white dark:bg-stone-900 border ${isPro ? 'border-teal-500 shadow-teal-500/10' : 'border-stone-100 dark:border-stone-800'} rounded-[40px] p-10 shadow-sm hover:shadow-2xl hover:scale-[1.02] transition-all group relative overflow-hidden`}
+                                        className={`bg-white dark:bg-stone-900 border ${isPro ? 'border-teal-500 shadow-teal-500/10' : 'border-stone-100 dark:border-stone-800'} rounded-[32px] p-8 shadow-sm hover:shadow-2xl hover:scale-[1.02] transition-all group relative overflow-hidden`}
                                     >
                                         {isPro && (
                                             <div className="absolute top-5 right-5 bg-teal-500 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">
@@ -314,7 +314,7 @@ export function AccountOverview({
 
                                         <button
                                             onClick={() => onUpgrade?.(plan.plan_id)}
-                                            className={`w-full py-5 ${isPro ? 'bg-teal-600 hover:bg-teal-700' : 'bg-stone-900 dark:bg-white hover:bg-teal-600 hover:dark:bg-teal-500'} ${isPro ? 'text-white' : 'text-white dark:text-stone-900'} rounded-3xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-stone-900/10 transition-all active:scale-95`}
+                                            className={`w-full py-4 ${isPro ? 'bg-teal-600 hover:bg-teal-700' : 'bg-stone-900 dark:bg-white hover:bg-teal-600 hover:dark:bg-teal-500'} ${isPro ? 'text-white' : 'text-white dark:text-stone-900'} rounded-2xl text-[10px] font-black uppercase tracking-wider shadow-xl shadow-stone-900/10 transition-all active:scale-95`}
                                         >
                                             {isPro
                                                 ? (language === 'el' ? 'Ξεκινήστε δωρεάν δοκιμή 14 ημερών' : 'Start 14-Day Free Trial')

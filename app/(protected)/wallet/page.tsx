@@ -20,6 +20,9 @@ export default async function WalletPage() {
         },
         include: {
             documents: true,
+            _count: {
+                select: { gapInstances: { where: { status: 'active' } } }
+            }
         },
         orderBy: {
             endDate: 'asc'
@@ -125,8 +128,9 @@ export default async function WalletPage() {
                 uploadedAt: d.uploadedAt.toISOString(),
                 uploadedBy: d.source as any
             })),
-            insuredItem
-        }
+            insuredItem,
+            gapCount: (p as any)._count?.gapInstances || 0,
+        } as Policy & { gapCount: number }
     })
 
     return (

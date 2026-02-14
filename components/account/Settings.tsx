@@ -162,22 +162,22 @@ export function Settings({
     }
 
     return (
-        <div className="max-w-7xl mx-auto py-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="max-w-7xl mx-auto py-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Left Col: Account Identity & Communication */}
-                <div className="lg:col-span-1 space-y-8">
+                <div className="lg:col-span-1 space-y-6">
                     {/* Identity Matrix */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[32px] p-8 shadow-sm"
+                        className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[28px] p-6 shadow-sm"
                     >
-                        <div className="flex items-center gap-3 mb-8">
+                        <div className="flex items-center gap-3 mb-6">
                             <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
                             <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">{t.settings.identityMatrix}</h3>
                         </div>
 
-                        <div className="space-y-8">
+                        <div className="space-y-6">
                             {/* Name Edit */}
                             <div className="group">
                                 <label className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] block mb-3">{t.settings.fullName}</label>
@@ -232,7 +232,7 @@ export function Settings({
                             </div>
 
                             {/* Language Matrix */}
-                            <div className="group pt-8 border-t border-stone-50 dark:border-stone-800">
+                            <div className="group pt-6 border-t border-stone-50 dark:border-stone-800">
                                 <label className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] block mb-4">{t.settings.preferredLanguage}</label>
                                 <div className="grid grid-cols-2 gap-2 p-1.5 bg-stone-100 dark:bg-stone-900 border border-stone-50 dark:border-stone-800 rounded-2xl">
                                     <button
@@ -257,9 +257,9 @@ export function Settings({
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[32px] p-8 shadow-sm"
+                        className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[28px] p-6 shadow-sm"
                     >
-                        <div className="flex items-center gap-3 mb-8">
+                        <div className="flex items-center gap-3 mb-6">
                             <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
                             <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">{t.settings.communicationControl}</h3>
                         </div>
@@ -292,8 +292,8 @@ export function Settings({
                     </motion.div>
 
                     {/* Secondary Identity Actions */}
-                    <div className="space-y-4">
-                        <div className="p-8 bg-stone-900 rounded-[32px] text-white shadow-2xl relative overflow-hidden group">
+                    <div className="space-y-3">
+                        <div className="p-6 bg-stone-900 rounded-[28px] text-white shadow-2xl relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 blur-3xl"></div>
                             <h4 className="text-xl font-black tracking-tight mb-4">{t.settings.securityFirst} <span className="text-stone-400 italic">{t.settings.securityFirstSubtitle}</span></h4>
                             <p className="text-stone-400 text-[10px] font-bold leading-relaxed mb-8 italic">
@@ -310,12 +310,12 @@ export function Settings({
                 </div>
 
                 {/* Right Col: Sessions & Logs */}
-                <div className="lg:col-span-2 space-y-8">
+                <div className="lg:col-span-2 space-y-6">
                     {/* Security Posture Score */}
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="bg-stone-900 rounded-[32px] p-8 text-white relative overflow-hidden group shadow-2xl"
+                        className="bg-stone-900 rounded-[28px] p-6 text-white relative overflow-hidden group shadow-2xl"
                     >
                         <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 blur-[100px] rounded-full -mr-32 -mt-32 transition-transform duration-1000 group-hover:scale-110"></div>
 
@@ -359,9 +359,9 @@ export function Settings({
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[32px] shadow-sm overflow-hidden"
+                        className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[28px] shadow-sm overflow-hidden"
                     >
-                        <div className="px-8 py-6 border-b border-stone-50 dark:border-stone-800 flex items-center justify-between bg-stone-50/50 dark:bg-stone-900/50">
+                        <div className="px-6 py-5 border-b border-stone-50 dark:border-stone-800 flex items-center justify-between bg-stone-50/50 dark:bg-stone-900/50">
                             <div className="flex items-center gap-3">
                                 <Smartphone className="w-4 h-4 text-stone-400" />
                                 <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">{t.settings.activeSessions}</h3>
@@ -371,7 +371,7 @@ export function Settings({
 
                         <div className="divide-y divide-stone-50 dark:divide-stone-800">
                             {activeSessions.map((session) => (
-                                <div key={session.session_id} className="px-8 py-6 group hover:bg-stone-50/30 dark:hover:bg-stone-800/10 transition-all">
+                                <div key={session.session_id} className="px-6 py-5 group hover:bg-stone-50/30 dark:hover:bg-stone-800/10 transition-all">
                                     <div className="flex items-start gap-6">
                                         <div className="w-12 h-12 rounded-2xl bg-stone-50 dark:bg-stone-800 flex items-center justify-center text-stone-400 group-hover:text-teal-600 transition-all border border-transparent group-hover:border-teal-500/10">
                                             {getDeviceIcon(session.device_type)}
@@ -416,9 +416,9 @@ export function Settings({
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
-                        className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[32px] shadow-sm overflow-hidden"
+                        className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[28px] shadow-sm overflow-hidden"
                     >
-                        <div className="px-8 py-6 border-b border-stone-50 dark:border-stone-800 flex items-center justify-between">
+                        <div className="px-6 py-5 border-b border-stone-50 dark:border-stone-800 flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <Lock className="w-4 h-4 text-stone-400" />
                                 <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">{t.settings.auditTrail}</h3>
@@ -430,7 +430,7 @@ export function Settings({
                             {securityEvents.slice(0, 5).map((event) => {
                                 const config = getEventIcon(event.event_type)
                                 return (
-                                    <div key={event.event_id} className="px-8 py-5 hover:bg-stone-50/20 dark:hover:bg-stone-800/10 transition-all border-l-4 border-l-transparent hover:border-l-teal-500">
+                                    <div key={event.event_id} className="px-6 py-4 hover:bg-stone-50/20 dark:hover:bg-stone-800/10 transition-all border-l-4 border-l-transparent hover:border-l-teal-500">
                                         <div className="flex items-center gap-6">
                                             <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${config.color} shadow-sm`}>
                                                 {config.icon}
@@ -464,7 +464,7 @@ export function Settings({
                     </motion.div>
 
                     {/* Danger Zone */}
-                    <div className="p-8 border-2 border-dashed border-red-500/10 bg-red-50/20 dark:bg-red-900/5 rounded-[32px] flex flex-col md:flex-row items-center justify-between gap-8 group">
+                    <div className="p-6 border-2 border-dashed border-red-500/10 bg-red-50/20 dark:bg-red-900/5 rounded-[28px] flex flex-col md:flex-row items-center justify-between gap-6 group">
                         <div className="max-w-md text-center md:text-left">
                             <h4 className="text-xs font-black text-red-600 uppercase tracking-[0.2em] mb-3">{t.settings.nuclearDeletion}</h4>
                             <p className="text-[11px] text-stone-500 dark:text-stone-400 font-bold leading-relaxed">

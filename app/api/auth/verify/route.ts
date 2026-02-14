@@ -1,17 +1,27 @@
-import { createClient } from "@/lib/supabase/server"
 import { db } from "@/lib/db"
 import { NextRequest, NextResponse } from "next/server"
+import { rateLimit } from "@/lib/rate-limit"
+import { z } from "zod"
+
+const verifyEmailPayloadSchema = z.object({
+    token: z.string().min(1),
+    email: z.string().email(),
+})
 
 export async function POST(request: NextRequest) {
     try {
-        const { token, email } = await request.json()
-
-        if (!token || !email) {
+        const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+            || request.headers.get("x-real-ip")
+            || "127.0.0.1"
+        const limitCheck = await rateLimit(`auth:verify-email:${ip}`, 10, 15 * 60 * 1000)
+        if (!limitCheck.success) {
             return NextResponse.json(
-                { success: false, error: 'Invalid verification parameters' },
-                { status: 400 }
+                { success: false, error: "Too many verification attempts. Please try again later." },
+                { status: 429 }
             )
         }
+
+        const { token, email } = verifyEmailPayloadSchema.parse(await request.json())
 
         // 1. Find the verification token in database
         const verificationRecord = await db.verificationToken.findUnique({
@@ -100,6 +110,12 @@ export async function POST(request: NextRequest) {
         })
 
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return NextResponse.json(
+                { success: false, error: 'Invalid verification parameters', details: error.issues },
+                { status: 400 }
+            )
+        }
         console.error('Verification API error:', error)
         return NextResponse.json(
             { success: false, error: 'Internal server error' },

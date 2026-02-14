@@ -1,31 +1,47 @@
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import { logger } from '@/lib/logger';
+import { env } from '@/lib/env';
+import { z } from 'zod';
+import { createApiResponse, createApiError } from "@/lib/api-utils";
 
-const REVENUECAT_WEBHOOK_AUTH_VALUE = process.env.REVENUECAT_WEBHOOK_AUTH_VALUE;
+// PUBLIC_ENDPOINT_AUTH_STRATEGY: bearer_webhook_secret + zod_payload_validation
+
+const revenueCatEventSchema = z.object({
+    app_user_id: z.string().min(1),
+    type: z.string().min(1),
+    product_id: z.string().min(1),
+    expiration_at_ms: z.union([z.number(), z.string()]).optional(),
+    purchased_at_ms: z.union([z.number(), z.string()]).optional(),
+});
+
+const revenueCatWebhookSchema = z.object({
+    event: revenueCatEventSchema,
+});
 
 export async function POST(req: NextRequest) {
     try {
-        if (REVENUECAT_WEBHOOK_AUTH_VALUE) {
-            const authHeader = req.headers.get('Authorization');
-            if (authHeader !== `Bearer ${REVENUECAT_WEBHOOK_AUTH_VALUE}`) {
-                return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-            }
+        if (!env.REVENUECAT_WEBHOOK_AUTH_VALUE) {
+            logger('error', 'RevenueCat webhook secret is not configured');
+            return createApiError("SERVICE_UNAVAILABLE", "Webhook auth not configured", 503);
         }
 
-        const body = await req.json();
-        const { event } = body;
-
-        if (!event) {
-            return NextResponse.json({ error: 'No event data' }, { status: 400 });
+        const authHeader = req.headers.get('Authorization');
+        if (!authHeader?.startsWith('Bearer ')) {
+            return createApiError("UNAUTHORIZED", "Unauthorized", 401);
         }
+        if (authHeader !== `Bearer ${env.REVENUECAT_WEBHOOK_AUTH_VALUE}`) {
+            return createApiError("UNAUTHORIZED", "Unauthorized", 401);
+        }
+
+        const { event } = revenueCatWebhookSchema.parse(await req.json());
 
         const userId = event.app_user_id;
         const type = event.type;
         const productIdentifier = event.product_id;
-        const expirationAt = event.expiration_at_ms ? new Date(event.expiration_at_ms) : null;
-        const purchaseDate = event.purchased_at_ms ? new Date(event.purchased_at_ms) : new Date();
+        const expirationAt = event.expiration_at_ms ? new Date(Number(event.expiration_at_ms)) : null;
+        const purchaseDate = event.purchased_at_ms ? new Date(Number(event.purchased_at_ms)) : new Date();
 
         logger('info', 'RevenueCat Webhook Received', { type, userId, productIdentifier });
 
@@ -81,9 +97,12 @@ export async function POST(req: NextRequest) {
                 logger('info', 'Unhandled RevenueCat event type', { type });
         }
 
-        return NextResponse.json({ received: true });
+        return createApiResponse({ received: true });
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return createApiError("VALIDATION_ERROR", "Invalid webhook payload", 400, error.issues);
+        }
         logger('error', 'RevenueCat Webhook Error', { error });
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return createApiError("INTERNAL_ERROR", "Internal Server Error", 500);
     }
 }

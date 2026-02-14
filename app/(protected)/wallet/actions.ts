@@ -160,6 +160,44 @@ export async function createPolicy(formData: FormData) {
     return { success: true }
 }
 
+export async function updatePolicy(policyId: string, formData: FormData) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    try {
+        const rawData = {
+            insurerName: formData.get("insurerName"),
+            policyNumber: formData.get("policyNumber"),
+            lineOfBusiness: formData.get("lineOfBusiness"),
+            startDate: formData.get("startDate"),
+            endDate: formData.get("endDate"),
+            premiumAmount: formData.get("premiumAmount"),
+            coverageSummary: formData.get("coverageSummary"),
+        }
+
+        const data: any = {}
+        if (rawData.insurerName) data.insurerName = rawData.insurerName
+        if (rawData.policyNumber) data.policyNumber = rawData.policyNumber
+        if (rawData.lineOfBusiness) data.lineOfBusiness = rawData.lineOfBusiness
+        if (rawData.startDate) data.startDate = rawData.startDate
+        if (rawData.endDate) data.endDate = rawData.endDate
+        if (rawData.premiumAmount) data.premiumAmount = Number(rawData.premiumAmount)
+        if (rawData.coverageSummary) data.coverageSummary = rawData.coverageSummary
+
+        const policyService = new PolicyService()
+        const language = (authResult.dbUser.preferredLanguage as 'en' | 'el') || 'en'
+
+        await policyService.update(policyId, authResult.dbUser.id, data, language)
+
+        revalidatePath("/wallet")
+        revalidatePath(`/wallet/${policyId}`)
+        return { success: true }
+    } catch (e: any) {
+        logger('error', 'Update policy failed', { policyId, error: e.message })
+        return { error: e.message || "Update failed" }
+    }
+}
+
 export async function uploadPolicyDocument(formData: FormData) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) {

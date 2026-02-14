@@ -1,14 +1,20 @@
-import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { ensureOwnership } from "@/lib/security"
+import { requireApiUser } from "@/lib/api-auth"
+import { z } from "zod"
+
+const questionnaireAnswersSchema = z.object({
+    answers: z.record(z.string(), z.any()),
+})
 
 export async function GET(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authCheck = await requireApiUser()
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     const { id } = await params
 
@@ -42,8 +48,9 @@ export async function POST(
     req: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authCheck = await requireApiUser()
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     const { id } = await params
 
@@ -51,10 +58,7 @@ export async function POST(
     if (!ownership.success) return ownership.error!
 
     try {
-        const body = await req.json()
-        const { answers } = body
-
-        if (!answers) return createApiError("BAD_REQUEST", "Answers are required", 400)
+        const { answers } = questionnaireAnswersSchema.parse(await req.json())
 
         const response = await db.questionnaireResponse.create({
             data: {
@@ -74,6 +78,9 @@ export async function POST(
 
         return createApiResponse(response)
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return createApiError("VALIDATION_ERROR", "Invalid answers payload", 400, error.issues)
+        }
         console.error(error)
         return createApiError("BAD_REQUEST", "Failed to submit questionnaire", 400)
     }

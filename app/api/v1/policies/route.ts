@@ -1,4 +1,3 @@
-import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { z } from "zod"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
@@ -6,16 +5,113 @@ import { rateLimit } from "@/lib/rate-limit"
 import { logger } from "@/lib/logger"
 import { createPolicySchema } from "@/lib/validations/policy"
 import * as Sentry from "@sentry/nextjs"
+import { requireApiUser } from "@/lib/api-auth"
+import { LINES_OF_BUSINESS } from "@/types/enums"
 
+const policyQueryStatuses = [
+    "active",
+    "pending",
+    "cancelled",
+    "expired",
+    "lapsed",
+    "expiring_soon",
+    "incomplete",
+    "analyzing",
+    "action_needed",
+    "deleted",
+] as const
+
+const policiesQuerySchema = z.object({
+    line_of_business: z.enum(LINES_OF_BUSINESS).optional(),
+    status: z.enum(policyQueryStatuses).optional(),
+    cursor: z.string().min(1).optional(),
+    limit: z.coerce.number().int().min(1).max(100).default(20),
+})
+
+/**
+ * @swagger
+ * /api/v1/policies:
+ *   get:
+ *     summary: List policies
+ *     description: Retrieve a paginated list of policies for the authenticated user.
+ *     tags:
+ *       - Policies
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: line_of_business
+ *         schema:
+ *           type: string
+ *           enum: [motor, health, home, life, travel, liability, pet, breakdown, legal_expenses, income_protection, gadget, bicycle, business, cyber, motorbike, public_liability, renters, other]
+ *         description: Filter by line of business
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [active, pending, cancelled, expired, lapsed, expiring_soon, incomplete, analyzing, action_needed, deleted]
+ *         description: Filter by policy status
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *         description: Number of items to return
+ *       - in: query
+ *         name: cursor
+ *         schema:
+ *           type: string
+ *         description: Pagination cursor
+ *     responses:
+ *       200:
+ *         description: A list of policies
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     policies:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: string
+ *                           policyNumber:
+ *                             type: string
+ *                           insurerName:
+ *                             type: string
+ *                           premiumAmount:
+ *                             type: number
+ *                     pagination:
+ *                       type: object
+ *                       properties:
+ *                         next_cursor:
+ *                           type: string
+ *                         has_more:
+ *                           type: boolean
+ *       401:
+ *         description: Unauthorized
+ */
 export async function GET(req: Request) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authCheck = await requireApiUser()
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     const { searchParams } = new URL(req.url)
-    const lineOfBusiness = searchParams.get("line_of_business")
-    const status = searchParams.get("status")
-    const cursor = searchParams.get("cursor")
-    const limit = parseInt(searchParams.get("limit") || "20")
+    const queryParse = policiesQuerySchema.safeParse({
+        line_of_business: searchParams.get("line_of_business") ?? undefined,
+        status: searchParams.get("status") ?? undefined,
+        cursor: searchParams.get("cursor") ?? undefined,
+        limit: searchParams.get("limit") ?? undefined,
+    })
+    if (!queryParse.success) {
+        return createApiError("VALIDATION_ERROR", "Invalid query parameters", 400, queryParse.error.issues)
+    }
+    const { line_of_business: lineOfBusiness, status, cursor, limit } = queryParse.data
 
     try {
         const policies = await db.policy.findMany({
@@ -79,9 +175,58 @@ export async function GET(req: Request) {
     }
 }
 
+/**
+ * @swagger
+ * /api/v1/policies:
+ *   post:
+ *     summary: Create a policy
+ *     description: Manually create a new insurance policy.
+ *     tags:
+ *       - Policies
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - policyNumber
+ *               - insurerName
+ *               - lineOfBusiness
+ *               - startDate
+ *               - endDate
+ *             properties:
+ *               policyNumber:
+ *                 type: string
+ *               insurerName:
+ *                 type: string
+ *               lineOfBusiness:
+ *                 type: string
+ *               startDate:
+ *                 type: string
+ *                 format: date
+ *               endDate:
+ *                 type: string
+ *                 format: date
+ *               premium:
+ *                 type: number
+ *               status:
+ *                 type: string
+ *                 default: active
+ *     responses:
+ *       200:
+ *         description: Policy created successfully
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthorized
+ */
 export async function POST(req: Request) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+    const authCheck = await requireApiUser()
+    if ("error" in authCheck) return authCheck.error
+    const authResult = authCheck.auth
 
     // Rate limiting: max 10 policy creations per minute
     const ip = req.headers.get("x-forwarded-for") || "127.0.0.1"

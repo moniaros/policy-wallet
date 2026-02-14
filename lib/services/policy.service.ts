@@ -155,6 +155,95 @@ export class PolicyService extends BaseService {
     }
 
     /**
+     * Updates an existing policy
+     * 
+     * @param policyId - ID of the policy to update
+     * @param userId - ID of the user requesting the update
+     * @param data - Partial policy data to update
+     * @param language - User's preferred language for error messages
+     * @returns The updated policy
+     * 
+     * @throws {AppError} NOT_FOUND if policy doesn't exist
+     * @throws {AppError} FORBIDDEN if user is not the owner
+     * @throws {AppError} VALIDATION if data is invalid
+     */
+    async update(
+        policyId: string,
+        userId: string,
+        data: Partial<CreatePolicyInput> & { status?: string },
+        language: 'en' | 'el' = 'en'
+    ): Promise<Policy> {
+        return this.withTransaction(async (tx) => {
+            // 1. Verify policy exists
+            const policy = await tx.policy.findUnique({
+                where: { id: policyId },
+                select: {
+                    id: true,
+                    ownerUserId: true,
+                    policyNumber: true,
+                    insurerName: true
+                }
+            })
+
+            if (!policy) {
+                throw AppError.notFound('Policy', policyId)
+            }
+
+            // 2. Verify ownership
+            if (policy.ownerUserId !== userId) {
+                throw AppError.forbidden(
+                    language === 'el'
+                        ? 'Μόνο ο κάτοχος μπορεί να επεξεργαστεί αυτήν την πολιτική'
+                        : 'Only the owner can edit this policy'
+                )
+            }
+
+            // 3. Build update data
+            const updateData: any = {}
+            if (data.insurerName !== undefined) updateData.insurerName = data.insurerName
+            if (data.policyNumber !== undefined) updateData.policyNumber = data.policyNumber
+            if (data.lineOfBusiness !== undefined) updateData.lineOfBusiness = data.lineOfBusiness
+            if (data.startDate !== undefined) updateData.startDate = new Date(data.startDate)
+            if (data.endDate !== undefined) updateData.endDate = new Date(data.endDate)
+            if (data.premiumAmount !== undefined) updateData.premiumAmount = data.premiumAmount
+            if (data.premiumCurrency !== undefined) updateData.premiumCurrency = data.premiumCurrency
+            if (data.coverageSummary !== undefined) updateData.coverageSummary = data.coverageSummary
+            if (data.status !== undefined) updateData.status = data.status
+
+            // 4. Validate date logic if both dates are provided or inferred
+            if (updateData.startDate && updateData.endDate) {
+                if (updateData.endDate <= updateData.startDate) {
+                    throw AppError.validation({
+                        endDate: [language === 'el'
+                            ? 'Η ημερομηνία λήξης πρέπει να είναι μετά την ημερομηνία έναρξης'
+                            : 'End date must be after start date']
+                    })
+                }
+            }
+
+            // 5. Update policy
+            const updatedPolicy = await tx.policy.update({
+                where: { id: policyId },
+                data: {
+                    ...updateData,
+                    updatedAt: new Date()
+                }
+            })
+
+            // 6. Log activity
+            const changes = Object.keys(updateData).filter(k => k !== 'updatedAt')
+            await this.logActivity(
+                userId,
+                'POLICY_UPDATED',
+                `Updated policy ${policy.policyNumber}`,
+                { policyId, changes }
+            )
+
+            return updatedPolicy
+        })
+    }
+
+    /**
      * Uploads and parses a policy document using AI extraction
      * 
      * @param userId - ID of the uploader

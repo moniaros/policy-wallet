@@ -6,6 +6,7 @@ import {
     CarIcon, HeartIcon, HomeIcon, ShieldIcon, PlaneIcon,
     ScaleIcon, DocumentIcon, PawIcon, BriefcaseIcon, ChevronRightIcon
 } from '@/components/icons/PolicyIcons'
+import { Sparkles } from 'lucide-react'
 
 interface MobilePolicyCardProps {
     policy: Policy
@@ -76,6 +77,17 @@ export function MobilePolicyCard({ policy, variant = 'compact', onView }: Mobile
         return null
     }
 
+    const getPremiumAmount = () => {
+        const data = policy.acordData as any
+        const aiPremium = data?.policy?.premium?.amount
+        if (aiPremium) return Number(aiPremium)
+        return Number(policy.premiumAmount?.toString() || 0)
+    }
+
+    const getGapCount = () => {
+        return (policy as any).gapCount || 0
+    }
+
     const getStatusBadge = () => {
         if (policy.status === 'active') {
             return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-full">{t.policyStatus.active}</span>
@@ -94,6 +106,8 @@ export function MobilePolicyCard({ policy, variant = 'compact', onView }: Mobile
 
     const daysLeft = getDaysUntilExpiry()
     const coverageAmount = getCoverageAmount()
+    const premiumAmount = getPremiumAmount()
+    const gapCount = getGapCount()
 
     if (variant === 'hero') {
         return (
@@ -112,13 +126,27 @@ export function MobilePolicyCard({ policy, variant = 'compact', onView }: Mobile
                     </div>
                 </div>
 
-                <div className="mb-4">{getStatusBadge()}</div>
+                <div className="flex items-center gap-2 mb-4 flex-wrap">
+                    {getStatusBadge()}
+                    {gapCount > 0 && (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 rounded-full">
+                            <Sparkles className="w-3 h-3" />
+                            {gapCount} {language === 'el' ? 'κενά' : 'gaps'}
+                        </span>
+                    )}
+                </div>
 
                 <div className="grid grid-cols-2 gap-3 mb-4">
                     {coverageAmount && (
                         <div className="bg-white dark:bg-stone-900 rounded-xl p-3 border border-stone-200 dark:border-stone-700">
                             <p className="text-xs text-stone-500 dark:text-stone-400 mb-1">{language === 'el' ? 'Κάλυψη' : 'Coverage'}</p>
                             <p className="text-base font-bold text-stone-900 dark:text-white">{formatCurrency(coverageAmount)}</p>
+                        </div>
+                    )}
+                    {premiumAmount > 0 && (
+                        <div className="bg-white dark:bg-stone-900 rounded-xl p-3 border border-stone-200 dark:border-stone-700">
+                            <p className="text-xs text-stone-500 dark:text-stone-400 mb-1">{language === 'el' ? 'Ασφάλιστρο' : 'Premium'}</p>
+                            <p className="text-base font-bold text-teal-600 dark:text-teal-400">{formatCurrency(premiumAmount)}</p>
                         </div>
                     )}
                     <div className="bg-white dark:bg-stone-900 rounded-xl p-3 border border-stone-200 dark:border-stone-700">
@@ -178,12 +206,20 @@ export function MobilePolicyCard({ policy, variant = 'compact', onView }: Mobile
                             <h4 className="text-base font-bold text-stone-900 dark:text-white truncate">{policy.insurerName}</h4>
                             <p className="text-xs font-mono text-stone-500 dark:text-stone-400 truncate">{policy.policyNumber}</p>
                         </div>
-                        {getStatusBadge()}
+                        <div className="flex items-center gap-1.5">
+                            {getStatusBadge()}
+                            {gapCount > 0 && (
+                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[9px] font-bold bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 rounded-full">
+                                    <Sparkles className="w-2.5 h-2.5" />
+                                    {gapCount}
+                                </span>
+                            )}
+                        </div>
                     </div>
 
                     <div className="flex items-center gap-2 text-xs text-stone-600 dark:text-stone-400">
-                        {coverageAmount && <span className="font-semibold">{formatCurrency(coverageAmount)}</span>}
-                        <span>•</span>
+                        {premiumAmount > 0 && <span className="font-bold text-teal-600 dark:text-teal-400">{formatCurrency(premiumAmount)}</span>}
+                        {premiumAmount > 0 && <span>•</span>}
                         <span>{language === 'el' ? 'Λήγει' : 'Expires'} {formatDate(policy.endDate)}</span>
                     </div>
                 </div>
