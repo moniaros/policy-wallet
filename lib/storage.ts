@@ -7,33 +7,65 @@ import { logger } from "./logger"
 // you MUST use S3/GCS. Local storage is ephemeral on Vercel/Run calls.
 // This is a "Production-Ready" fallback for VPS/Single-Node deployments.
 
+import { createClient } from "@/lib/supabase/server"
+
 export async function uploadFile(file: File, folder: string = "policies"): Promise<string> {
     try {
-        // 1. Generate unique filename
+        // Try Supabase Storage first
+        if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+            const supabase = await createClient()
+
+            // Generate unique filename
+            const timestamp = Date.now()
+            const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_")
+            const fileName = `${folder}/${timestamp}-${safeName}`
+
+            // Upload to 'uploads' bucket (ensure this bucket exists and is public/private as needed)
+            const arrayBuffer = await file.arrayBuffer()
+            const buffer = Buffer.from(arrayBuffer)
+
+            const { data, error } = await supabase
+                .storage
+                .from('uploads')
+                .upload(fileName, buffer, {
+                    contentType: file.type,
+                    upsert: false
+                })
+
+            if (error) {
+                console.error("Supabase upload error:", error)
+                // Fallback to local if upload fails? Or throw?
+                // For now, let's fallback to local if explicitly requested or just throw
+                throw error
+            }
+
+            if (data) {
+                // Get public URL
+                const { data: publicUrlData } = supabase
+                    .storage
+                    .from('uploads')
+                    .getPublicUrl(fileName)
+
+                return publicUrlData.publicUrl
+            }
+        }
+
+        // Fallback: Local Public Storage (Only for dev/fallback)
+        console.warn("Using local storage fallback")
         const timestamp = Date.now()
         const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_")
         const fileName = `${timestamp}-${safeName}`
-
-        // 2. Determine destination
-        // TODO: Implement S3/GCS logic here if env.STORAGE_BUCKET is present
-
-        // Default: Local Public Storage
         const uploadDir = path.join(process.cwd(), "public", "uploads", folder)
 
-        // Ensure directory exists
         await fs.mkdir(uploadDir, { recursive: true })
 
-        // 3. Write file
         const arrayBuffer = await file.arrayBuffer()
         const buffer = Buffer.from(arrayBuffer)
         const filePath = path.join(uploadDir, fileName)
 
         await fs.writeFile(filePath, buffer)
 
-        // 4. Return publicly accessible URL
         const publicUrl = `/uploads/${folder}/${fileName}`
-
-        logger('info', 'File uploaded locally', { fileName, publicUrl })
         return publicUrl
 
     } catch (error) {

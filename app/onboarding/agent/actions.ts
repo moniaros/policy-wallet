@@ -51,30 +51,30 @@ export async function completeOnboarding(userId: string) {
 }
 
 
-// Mock for file upload - in real app would upload to S3/Blob storage
+import { uploadFile } from "@/lib/storage"
+
+// ...
+
 export async function uploadAgentAsset(userId: string, formData: FormData) {
     const file = formData.get('file') as File
     const type = formData.get('type') as string // 'logo' or 'license'
 
     if (!file) return { success: false, error: "No file provided" }
 
-    // Simulate upload delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
-
-    const mockUrl = `https://fake-storage.com/${userId}/${type}/${file.name}`
-
     try {
+        const publicUrl = await uploadFile(file, `agent/${userId}/${type}`)
+
         if (type === 'logo') {
             await db.agentProfile.update({
                 where: { userId },
-                data: { logoUrl: mockUrl }
+                data: { logoUrl: publicUrl }
             })
         } else if (type === 'license') {
             // Append to documents JSON
             // This is a simplified update, concurrent updates might overwrite
             const profile = await db.agentProfile.findUnique({ where: { userId }, select: { documents: true } })
             const docs = (profile?.documents as any[]) || []
-            docs.push({ type: 'license', url: mockUrl, name: file.name, uploadedAt: new Date() })
+            docs.push({ type: 'license', url: publicUrl, name: file.name, uploadedAt: new Date() })
 
             await db.agentProfile.update({
                 where: { userId },
@@ -82,10 +82,10 @@ export async function uploadAgentAsset(userId: string, formData: FormData) {
             })
         }
 
-        return { success: true, url: mockUrl }
+        return { success: true, url: publicUrl }
     } catch (error) {
         console.error("Failed to save asset:", error)
-        return { success: false, error: "Database update failed" }
+        return { success: false, error: "Upload failed" }
     }
 }
 
