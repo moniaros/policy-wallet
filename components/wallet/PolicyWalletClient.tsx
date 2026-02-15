@@ -12,6 +12,7 @@ import DashboardTour from '@/components/onboarding/DashboardTour'
 import { dismissTour } from '@/app/onboarding/actions'
 import { useIsMobile } from "@/hooks/useResponsive"
 import { MobileAppShell } from "@/components/layout/MobileAppShell"
+import { BatchUploadModal } from "@/components/wallet/BatchUploadModal"
 
 interface PolicyWalletClientProps {
     policies: Policy[]
@@ -40,6 +41,7 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
     const isMobile = useIsMobile()
     const previousStatusesRef = useRef<Map<string, string>>(new Map())
     const announcedRef = useRef<Set<string>>(new Set())
+    const [isBatchUploadOpen, setIsBatchUploadOpen] = React.useState(false)
 
     const copy = {
         analysisProgress: language === 'el' ? 'Η ανάλυση συμβολαίου εκτελείται' : 'Policy analysis is in progress',
@@ -178,6 +180,7 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
                 onViewPolicy={(policyId) => router.push(`/wallet/${policyId}`)}
                 onAddManually={() => router.push('/wallet/add')}
                 onUploadDocument={() => router.push('/wallet/add?method=upload')}
+                onBatchUpload={() => setIsBatchUploadOpen(true)}
                 onShareWithAgent={(policyId) => router.push(`/wallet/${policyId}/share`)}
                 onRunAnalysis={async (policyId) => {
                     const toastId = toast.loading(t.toast.analysisStarting)
@@ -199,6 +202,15 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
                             router.refresh()
                         }
                     }
+                }}
+            />
+
+            <BatchUploadModal
+                isOpen={isBatchUploadOpen}
+                onClose={() => setIsBatchUploadOpen(false)}
+                onSuccess={() => {
+                    setIsBatchUploadOpen(false)
+                    router.refresh()
                 }}
             />
 

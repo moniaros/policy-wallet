@@ -17,6 +17,7 @@ export function PolicyWallet({
     onViewPolicy,
     onAddManually,
     onUploadDocument,
+    onBatchUpload,
     onShareWithAgent,
     onAddToWallet,
     onViewDocuments,
@@ -302,11 +303,25 @@ export function PolicyWallet({
                                     onUploadDocument?.()
                                     setShowAddMenu(false)
                                 }}
+                                data-testid="wallet-menu-upload-document"
                                 className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-stone-800 rounded-xl shadow-xl text-xs font-bold text-stone-600 dark:text-stone-300 whitespace-nowrap hover:bg-stone-50 dark:hover:bg-stone-700 cursor-pointer"
                             >
                                 {language === 'el' ? 'Μεταφόρτωση εγγράφου' : 'Upload document'}
                                 <span className="w-8 h-8 flex items-center justify-center bg-stone-100 dark:bg-stone-900 rounded-lg">
                                     <FileUp className="w-4 h-4" />
+                                </span>
+                            </button>
+                            <button
+                                onClick={() => {
+                                    onBatchUpload?.()
+                                    setShowAddMenu(false)
+                                }}
+                                data-testid="wallet-menu-batch-upload"
+                                className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-stone-800 rounded-xl shadow-xl text-xs font-bold text-stone-600 dark:text-stone-300 whitespace-nowrap hover:bg-stone-50 dark:hover:bg-stone-700 cursor-pointer"
+                            >
+                                {language === 'el' ? 'Μαζική μεταφόρτωση' : 'Batch upload'}
+                                <span className="w-8 h-8 flex items-center justify-center bg-stone-100 dark:bg-stone-900 rounded-lg">
+                                    <List className="w-4 h-4" />
                                 </span>
                             </button>
                         </div>

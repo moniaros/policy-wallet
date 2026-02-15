@@ -170,13 +170,21 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
 
             const result = await response.json()
 
-            if (result.success) {
-                toast.success(`Successfully added ${result.count} policies!`)
+            if (result.success && (result.count || 0) > 0) {
+                if ((result.failedCount || 0) > 0) {
+                    toast.success(`Added ${result.count} policies. ${result.failedCount} failed.`)
+                } else {
+                    toast.success(`Successfully added ${result.count} policies!`)
+                }
                 router.refresh()
                 onSuccess?.()
                 handleClose()
             } else {
-                toast.error(result.error || "Failed to save policies")
+                if ((result.failedCount || 0) > 0) {
+                    toast.error(`No policies were saved. ${result.failedCount} failed validation.`)
+                } else {
+                    toast.error(result.error || "Failed to save policies")
+                }
             }
         } catch (error) {
             toast.error("An error occurred while saving")
@@ -211,7 +219,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={handleClose} />
 
-            <div className="relative w-full max-w-3xl bg-white dark:bg-stone-900 rounded-[40px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
+            <div data-testid="batch-upload-modal" className="relative w-full max-w-3xl bg-white dark:bg-stone-900 rounded-[40px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
                 {/* Header */}
                 <div className="p-8 pb-0">
                     <div className="flex items-center gap-3 mb-4 text-teal-600">
@@ -252,6 +260,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                                 type="file"
                                 multiple
                                 accept=".pdf,image/*"
+                                data-testid="batch-upload-file-input"
                                 className="hidden"
                                 onChange={handleFileSelect}
                             />
@@ -401,6 +410,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                             <button
                                 onClick={() => fileInputRef.current?.click()}
                                 disabled={isProcessing}
+                                data-testid="batch-upload-add-more"
                                 className="w-full py-4 border-2 border-dashed border-stone-200 dark:border-stone-700 rounded-2xl text-stone-400 hover:text-teal-600 hover:border-teal-400 transition-colors disabled:opacity-50"
                             >
                                 + Add more files
@@ -421,6 +431,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                         <button
                             onClick={handleSaveAll}
                             disabled={isSaving || isProcessing}
+                            data-testid="batch-upload-save-all"
                             className="flex-[2] px-8 py-5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-stone-900/10 hover:bg-teal-600 dark:hover:bg-teal-500 hover:text-white transition-all disabled:opacity-50"
                         >
                             {isSaving ? 'Saving...' : `Save ${successCount} Policies`}
