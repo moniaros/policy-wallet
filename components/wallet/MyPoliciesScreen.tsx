@@ -6,6 +6,7 @@ import { PolicyWalletLogo } from '@/components/branding/Logo'
 import { CarIcon, HomeIcon, DocumentIcon, ShieldIcon, HeartIcon, BriefcaseIcon, PlaneIcon } from '@/components/icons/PolicyIcons'
 import { calculatePremiumFootprint } from '@/lib/wallet/premium-footprint'
 import { getDocumentPolicySummary } from '@/lib/wallet/document-insights'
+import { getRoleCopy } from '@/lib/i18n/role-copy'
 
 interface MyPoliciesScreenProps {
     policies: Policy[]
@@ -15,18 +16,19 @@ interface MyPoliciesScreenProps {
 
 export function MyPoliciesScreen({ policies, onViewPolicy, onAddPolicy }: MyPoliciesScreenProps) {
     const { language } = useLanguage()
+    const roleCopy = getRoleCopy(language)
     const totalPremium = calculatePremiumFootprint(policies)
 
     const copy = {
-        title: language === 'el' ? 'Το Πορτοφόλι Μου' : 'My Wallet',
-        subtitle: language === 'el' ? 'Τα ασφαλιστήριά σου σε μια καθαρή εικόνα.' : 'Your policies in one clear view.',
+        title: roleCopy.walletDashboard.noPoliciesYet,
+        subtitle: roleCopy.walletDashboard.subtitle,
         activePolicies: language === 'el' ? 'Ενεργά συμβόλαια' : 'Active policies',
-        yearlyFootprint: language === 'el' ? 'Ετήσιο ασφαλιστικό αποτύπωμα' : 'Yearly insurance footprint',
-        addPolicy: language === 'el' ? 'Προσθήκη συμβολαίου' : 'Add policy',
-        emptyTitle: language === 'el' ? 'Δεν υπάρχουν ασφαλιστήρια ακόμη' : 'No policies yet',
-        emptyDescription: language === 'el' ? 'Πρόσθεσε το πρώτο σου συμβόλαιο για να ξεκινήσεις.' : 'Add your first policy to get started.',
-        expires: language === 'el' ? 'Λήγει' : 'Expires',
-        policyCount: language === 'el' ? 'συμβόλαια' : 'policies',
+        yearlyFootprint: roleCopy.walletDashboard.yearlyFootprint,
+        addPolicy: roleCopy.walletDashboard.addPolicyAria,
+        emptyTitle: roleCopy.walletDashboard.emptyWalletTitle,
+        emptyDescription: roleCopy.walletDashboard.emptyWalletDescription,
+        expires: roleCopy.walletDashboard.expires,
+        policyCount: roleCopy.walletDashboard.policyCountLabel,
     }
 
     const statusClass = (tone: 'critical' | 'warning' | 'active' | 'inactive' | 'info') => {

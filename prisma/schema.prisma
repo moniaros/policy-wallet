@@ -110,6 +110,14 @@ model AgentProfile {
   verificationStatus    String    @default("pending") @map("verification_status")
   agencyName            String?   @map("agency_name")
   licenseNumber         String?   @map("license_number")
+  
+  // Branding & Profile
+  logoUrl            String?
+  brandColor         String?  @default("#10b981")
+  website            String?
+  phone              String?
+  documents          Json?    // [{ type: "license", url: "..." }]
+
   onboardingCompletedAt DateTime? @map("onboarding_completed_at")
   submittedAt           DateTime  @default(now()) @map("submitted_at")
   createdAt             DateTime  @default(now()) @map("created_at")
@@ -645,6 +653,7 @@ model TokenBalance {
 
   @@map("token_balances")
 }
+
 
 model TokenPurchase {
   id                     String   @id @default(cuid()) @map("purchase_id")

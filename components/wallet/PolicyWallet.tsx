@@ -10,6 +10,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AlertCircle, FileUp, Grid3X3, List, PenSquare, Sparkles } from 'lucide-react'
 import { calculatePremiumFootprint } from '@/lib/wallet/premium-footprint'
+import { getRoleCopy } from '@/lib/i18n/role-copy'
 
 export function PolicyWallet({
     policies,
@@ -31,6 +32,7 @@ export function PolicyWallet({
     onViewHistory?: (policyId: string) => void
 }) {
     const { t, language } = useLanguage()
+    const roleCopy = getRoleCopy(language)
     const [showAddMenu, setShowAddMenu] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
     const [activeFilter, setActiveFilter] = useState<'all' | 'motor' | 'health' | 'home' | 'life' | 'travel'>('all')
@@ -120,7 +122,7 @@ export function PolicyWallet({
                                     : (t.dashboard as any).portfolioInsights?.multipleNeedAttention?.replace('{count}', String(attentionCount))}
                             </h3>
                             <p className="text-xs text-amber-700 dark:text-amber-300">
-                                {language === 'el' ? 'Ελέγξτε λήξεις και πιθανά κενά κάλυψης.' : 'Check expirations and potential coverage gaps.'}
+                                {roleCopy.walletDashboard.checkExpirations}
                             </p>
                         </div>
                     </div>
@@ -131,10 +133,10 @@ export function PolicyWallet({
                         </div>
                         <div>
                             <h3 className="text-sm font-bold text-emerald-900 dark:text-emerald-100">
-                                {(t.dashboard as any).portfolioInsights?.allGood || (language === 'el' ? 'Όλα τα συμβόλαια είναι ενεργά' : 'All policies are active')}
+                                {(t.dashboard as any).portfolioInsights?.allGood || roleCopy.walletDashboard.allPoliciesActive}
                             </h3>
                             <p className="text-xs text-emerald-700 dark:text-emerald-300">
-                                {language === 'el' ? 'Η κάλυψή σας είναι ενημερωμένη.' : 'Your coverage is up to date.'}
+                                {roleCopy.walletDashboard.coverageUpToDate}
                             </p>
                         </div>
                     </div>
@@ -180,7 +182,7 @@ export function PolicyWallet({
                                     localStorage.setItem('wallet_view_mode', 'grid')
                                 }}
                                 className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-stone-700 shadow-sm text-teal-600' : 'text-stone-500'}`}
-                                aria-label="Grid view"
+                                    aria-label={roleCopy.walletDashboard.viewCard}
                             >
                                 <Grid3X3 className="w-4 h-4" />
                             </button>
@@ -190,7 +192,7 @@ export function PolicyWallet({
                                     localStorage.setItem('wallet_view_mode', 'list')
                                 }}
                                 className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white dark:bg-stone-700 shadow-sm text-teal-600' : 'text-stone-500'}`}
-                                aria-label="List view"
+                                    aria-label={roleCopy.walletDashboard.viewList}
                             >
                                 <List className="w-4 h-4" />
                             </button>
@@ -273,7 +275,7 @@ export function PolicyWallet({
                         }}
                         className="mt-6 text-teal-600 dark:text-teal-400 font-black uppercase text-xs tracking-widest hover:underline cursor-pointer"
                     >
-                        {language === 'el' ? 'Καθαρισμός φίλτρων' : 'Clear filters'}
+                        {roleCopy.walletDashboard.clearFilters}
                     </button>
                 </div>
             )}
@@ -293,7 +295,7 @@ export function PolicyWallet({
                                 }}
                                 className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-stone-800 rounded-xl shadow-xl text-xs font-bold text-stone-600 dark:text-stone-300 whitespace-nowrap hover:bg-stone-50 dark:hover:bg-stone-700 cursor-pointer"
                             >
-                                {language === 'el' ? 'Χειροκίνητη προσθήκη' : 'Add details manually'}
+                                {roleCopy.walletDashboard.addDetailsManually}
                                 <span className="w-8 h-8 flex items-center justify-center bg-stone-100 dark:bg-stone-900 rounded-lg">
                                     <PenSquare className="w-4 h-4" />
                                 </span>
@@ -306,7 +308,7 @@ export function PolicyWallet({
                                 data-testid="wallet-menu-upload-document"
                                 className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-stone-800 rounded-xl shadow-xl text-xs font-bold text-stone-600 dark:text-stone-300 whitespace-nowrap hover:bg-stone-50 dark:hover:bg-stone-700 cursor-pointer"
                             >
-                                {language === 'el' ? 'Μεταφόρτωση εγγράφου' : 'Upload document'}
+                                {roleCopy.walletDashboard.uploadDocument}
                                 <span className="w-8 h-8 flex items-center justify-center bg-stone-100 dark:bg-stone-900 rounded-lg">
                                     <FileUp className="w-4 h-4" />
                                 </span>
@@ -319,7 +321,7 @@ export function PolicyWallet({
                                 data-testid="wallet-menu-batch-upload"
                                 className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-stone-800 rounded-xl shadow-xl text-xs font-bold text-stone-600 dark:text-stone-300 whitespace-nowrap hover:bg-stone-50 dark:hover:bg-stone-700 cursor-pointer"
                             >
-                                {language === 'el' ? 'Μαζική μεταφόρτωση' : 'Batch upload'}
+                                {roleCopy.walletDashboard.batchUpload}
                                 <span className="w-8 h-8 flex items-center justify-center bg-stone-100 dark:bg-stone-900 rounded-lg">
                                     <List className="w-4 h-4" />
                                 </span>
@@ -329,7 +331,7 @@ export function PolicyWallet({
                             id="tour-fab"
                             onClick={() => setShowAddMenu((prev) => !prev)}
                             className="flex items-center justify-center w-16 h-16 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer"
-                            aria-label={language === 'el' ? 'Προσθήκη ασφαλιστηρίου' : 'Add policy'}
+                            aria-label={roleCopy.walletDashboard.addPolicyAria}
                             aria-expanded={showAddMenu}
                             aria-haspopup="menu"
                         >
@@ -341,7 +343,7 @@ export function PolicyWallet({
                         onClick={onAddManually}
                         id="tour-fab"
                         className="group relative flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-teal-600 text-white rounded-2xl shadow-2xl shadow-teal-500/20 hover:scale-110 active:scale-95 transition-all duration-300 border border-white/10 cursor-pointer"
-                        aria-label={language === 'el' ? 'Προσθήκη ασφαλιστηρίου' : 'Add policy'}
+                        aria-label={roleCopy.walletDashboard.addPolicyAria}
                     >
                         <svg className="w-8 h-8 group-hover:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />

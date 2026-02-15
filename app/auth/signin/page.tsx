@@ -8,6 +8,7 @@ import { IBM_Plex_Sans } from "next/font/google"
 import { Loader2, Mail, Lock, AlertCircle, ArrowRight, CheckCircle } from "lucide-react"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { getRoleCopy } from "@/lib/i18n/role-copy"
 
 const ibmPlexSans = IBM_Plex_Sans({
     subsets: ["latin", "greek"],
@@ -16,7 +17,8 @@ const ibmPlexSans = IBM_Plex_Sans({
 
 export default function SignInPage() {
     const router = useRouter()
-    const { language, setLanguage } = useLanguage()
+    const { language, setLanguage, t } = useLanguage()
+    const roleCopy = getRoleCopy(language)
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [isLoading, setIsLoading] = useState(false)
@@ -26,22 +28,22 @@ export default function SignInPage() {
     const [resendMessage, setResendMessage] = useState<string | null>(null)
 
     const copy = {
-        title: language === "el" ? "Καλώς ήρθατε πίσω" : "Welcome back",
-        subtitle: language === "el" ? "Συνδεθείτε για να διαχειριστείτε το ασφαλιστικό σας πορτοφόλι." : "Sign in to manage your insurance portfolio.",
-        email: language === "el" ? "Διεύθυνση email" : "Email address",
-        password: language === "el" ? "Κωδικός" : "Password",
-        forgot: language === "el" ? "Ξέχασα τον κωδικό" : "Forgot password?",
-        signIn: language === "el" ? "Σύνδεση" : "Sign In",
-        signingIn: language === "el" ? "Σύνδεση..." : "Signing in...",
-        noAccount: language === "el" ? "Δεν έχετε λογαριασμό;" : "Don't have an account?",
-        createAccount: language === "el" ? "Δημιουργία λογαριασμού" : "Create account",
-        unverified: language === "el" ? "Το email σας δεν έχει επιβεβαιωθεί ακόμη." : "Your email address has not been verified yet.",
-        checkEmail: language === "el" ? "Ελέγξτε τα εισερχόμενα. Δεν το βρήκατε;" : "Check your inbox. Missing it?",
-        resend: language === "el" ? "Επανάληψη αποστολής email επιβεβαίωσης" : "Resend verification email",
-        sending: language === "el" ? "Αποστολή..." : "Sending...",
-        resendSent: language === "el" ? "Το email επιβεβαίωσης εστάλη." : "Verification email sent! Please check your inbox.",
-        genericError: language === "el" ? "Προέκυψε σφάλμα. Δοκιμάστε ξανά." : "Something went wrong. Please try again.",
-        orContinue: language === "el" ? "Ή συνεχίστε με" : "Or continue with",
+        title: t.auth.welcomeBack,
+        subtitle: roleCopy.auth.signInSubtitle,
+        email: t.auth.emailAddress,
+        password: t.auth.password,
+        forgot: roleCopy.auth.forgotPassword,
+        signIn: t.auth.signIn,
+        signingIn: `${t.auth.signIn}...`,
+        noAccount: roleCopy.auth.noAccount,
+        createAccount: t.auth.createAccount,
+        unverified: roleCopy.auth.unverified,
+        checkEmail: roleCopy.auth.checkInbox,
+        resend: roleCopy.auth.resendVerification,
+        sending: `${t.common.loading}`,
+        resendSent: roleCopy.auth.resendSent,
+        genericError: t.errors.somethingWentWrong,
+        orContinue: roleCopy.auth.orContinueWith,
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -184,7 +186,7 @@ export default function SignInPage() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="block w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 dark:bg-slate-800/60 dark:border-slate-700 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all font-bold sm:text-sm"
-                                    placeholder="name@example.com"
+                                    placeholder={roleCopy.auth.emailPlaceholder}
                                 />
                             </div>
                         </div>
@@ -207,7 +209,7 @@ export default function SignInPage() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="block w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 dark:bg-slate-800/60 dark:border-slate-700 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all font-bold sm:text-sm"
-                                    placeholder="********"
+                                    placeholder={roleCopy.auth.passwordPlaceholder}
                                 />
                             </div>
                         </div>

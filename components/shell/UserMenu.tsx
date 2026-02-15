@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { ThemeToggle } from '../ThemeToggle'
 import { NotificationBell } from '../notifications/NotificationBell'
+import { getRoleCopy } from '@/lib/i18n/role-copy'
 
 export interface UserMenuProps {
     user: {
@@ -28,6 +29,7 @@ export function UserMenu({
     const [isPending, startTransition] = useTransition()
     const router = useRouter()
     const { language, setLanguage, t } = useLanguage()
+    const roleCopy = getRoleCopy(language)
 
     const handleLanguageChange = (lang: 'el' | 'en') => {
         startTransition(() => {
@@ -168,7 +170,7 @@ export function UserMenu({
                         </button>
 
                         <div className="flex items-center justify-between px-4 py-2 border-t border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-700">
-                            <span className="text-sm text-stone-700 dark:text-stone-300">Theme</span>
+                            <span className="text-sm text-stone-700 dark:text-stone-300">{roleCopy.shell.theme}</span>
                             <ThemeToggle />
                         </div>
 

@@ -3,9 +3,11 @@ import { db } from "@/lib/db"
 import { AgentClient } from "./AgentClient"
 import type { Policy } from "@/components/wallet/types"
 import { redirect } from "next/navigation"
+import { getRoleCopy } from "@/lib/i18n/role-copy"
 
 export default async function AgentPage() {
     const { dbUser } = await getAuthenticatedUser()
+    const roleCopy = getRoleCopy((dbUser.preferredLanguage as 'el' | 'en') || 'el')
 
     // Fetch policies for navigation context
     const policies = await db.policy.findMany({
@@ -33,17 +35,17 @@ export default async function AgentPage() {
 
     const agent = customerRelationship?.agent ? {
         id: customerRelationship.agent.id,
-        name: customerRelationship.agent.name || 'Your Agent',
+        name: customerRelationship.agent.name || roleCopy.defaults.agentName,
         phone: customerRelationship.agent.phoneNumber || '',
         email: customerRelationship.agent.email,
-        company: 'PolicyWallet Agent',
+        company: roleCopy.defaults.agentCompany,
         photoUrl: customerRelationship.agent.image || undefined,
         isOnline: true
     } : undefined
 
     const user = {
         id: dbUser.id,
-        name: dbUser.name || 'User',
+        name: dbUser.name || roleCopy.defaults.userName,
         email: dbUser.email,
         photoUrl: dbUser.image || undefined,
         isOnline: true

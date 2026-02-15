@@ -9,6 +9,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { trackLandingEvent } from "@/lib/landing/analytics"
 import { User, Mail, Lock, Building, FileBadge, ArrowRight, Loader2, Briefcase, AlertCircle } from "lucide-react"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
+import { getRoleCopy } from "@/lib/i18n/role-copy"
 
 const ibmPlexSans = IBM_Plex_Sans({
     subsets: ["latin", "greek"],
@@ -19,6 +20,7 @@ function SignUpForm() {
     const searchParams = useSearchParams()
     const router = useRouter()
     const { t, language, setLanguage } = useLanguage()
+    const roleCopy = getRoleCopy(language)
 
     const urlRole = searchParams.get("role")
     const urlSource = searchParams.get("source") || "signup_direct"
@@ -41,26 +43,26 @@ function SignUpForm() {
     const [marketingConsent, setMarketingConsent] = useState(false)
 
     const copy = {
-        title: "Create your account",
-        subtitle: "Get started with PolicyWallet in under 2 minutes.",
-        joinAs: "Join as",
-        agent: "Agent",
-        policyholder: "Policyholder",
-        fullName: "Full name",
-        email: "Email address",
-        password: "Password",
-        confirm: "Confirm password",
-        creating: "Creating account...",
-        cta: "Create account",
-        agentDetails: "Agency details",
-        license: "License number",
-        agency: "Agency name",
-        terms: "I agree to the",
-        and: "and",
-        marketing: "I consent to receive marketing updates.",
-        alreadyHave: "Already have an account?",
-        switchAgent: "I am an insurance agent",
-        switchPolicyholder: "Continue as policyholder",
+        title: roleCopy.auth.createAccountTitle,
+        subtitle: roleCopy.auth.createAccountSubtitle,
+        joinAs: roleCopy.auth.joinAs,
+        agent: t.roles.agent,
+        policyholder: t.roles.policyholder,
+        fullName: t.auth.name,
+        email: t.auth.emailAddress,
+        password: t.auth.password,
+        confirm: t.auth.confirmPassword,
+        creating: `${roleCopy.auth.createAccountTitle}...`,
+        cta: roleCopy.auth.createAccountTitle,
+        agentDetails: role === "agent" ? roleCopy.agentSettings.agencyProfile : "",
+        license: roleCopy.agentSettings.licenseNumber,
+        agency: roleCopy.agentSettings.agencyName,
+        terms: t.auth.termsAgree,
+        and: t.auth.and,
+        marketing: language === "el" ? "Συμφωνώ να λαμβάνω ενημερώσεις για νέες υπηρεσίες." : "I consent to receive marketing updates.",
+        alreadyHave: roleCopy.auth.alreadyHaveAccount,
+        switchAgent: roleCopy.auth.switchAgent,
+        switchPolicyholder: roleCopy.auth.switchPolicyholder,
     }
 
     useEffect(() => {
@@ -194,7 +196,7 @@ function SignUpForm() {
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     className="block w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 dark:bg-slate-800/60 dark:border-slate-700 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all font-medium sm:text-sm"
-                                    placeholder="John Doe"
+                                    placeholder={roleCopy.auth.fullNamePlaceholder}
                                 />
                             </div>
                         </div>
@@ -212,7 +214,7 @@ function SignUpForm() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     className="block w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 dark:bg-slate-800/60 dark:border-slate-700 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all font-medium sm:text-sm"
-                                    placeholder="john@example.com"
+                                    placeholder={roleCopy.auth.emailPlaceholder}
                                 />
                             </div>
                         </div>
@@ -231,7 +233,7 @@ function SignUpForm() {
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                         className="block w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 dark:bg-slate-800/60 dark:border-slate-700 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all font-medium sm:text-sm"
-                                        placeholder="********"
+                                        placeholder={roleCopy.auth.passwordPlaceholder}
                                     />
                                 </div>
                             </div>
@@ -248,7 +250,7 @@ function SignUpForm() {
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
                                         className="block w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 dark:bg-slate-800/60 dark:border-slate-700 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all font-medium sm:text-sm"
-                                        placeholder="********"
+                                        placeholder={roleCopy.auth.passwordPlaceholder}
                                     />
                                 </div>
                             </div>
@@ -273,7 +275,7 @@ function SignUpForm() {
                                             value={licenseNumber}
                                             onChange={(e) => setLicenseNumber(e.target.value)}
                                             className="block w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 dark:bg-slate-900/50 dark:border-slate-700 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all font-medium sm:text-sm"
-                                            placeholder="AG-12345"
+                                            placeholder={roleCopy.auth.licensePlaceholder}
                                         />
                                     </div>
                                 </div>
@@ -290,7 +292,7 @@ function SignUpForm() {
                                             value={agencyName}
                                             onChange={(e) => setAgencyName(e.target.value)}
                                             className="block w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 dark:bg-slate-900/50 dark:border-slate-700 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all font-medium sm:text-sm"
-                                            placeholder="Agency Name"
+                                            placeholder={roleCopy.auth.agencyPlaceholder}
                                         />
                                     </div>
                                 </div>
@@ -309,9 +311,9 @@ function SignUpForm() {
                                 />
                                 <span className="ml-3 text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">
                                     {copy.terms}{" "}
-                                    <Link href="/terms" target="_blank" className="font-bold text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300 hover:underline">Terms & Conditions</Link>{" "}
+                                    <Link href="/terms" target="_blank" className="font-bold text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300 hover:underline">{roleCopy.auth.termsAndConditions}</Link>{" "}
                                     {copy.and}{" "}
-                                    <Link href="/privacy" target="_blank" className="font-bold text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300 hover:underline">Privacy Policy</Link>
+                                    <Link href="/privacy" target="_blank" className="font-bold text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300 hover:underline">{roleCopy.auth.privacyPolicy}</Link>
                                     <span className="text-red-500 ml-1">*</span>
                                 </span>
                             </label>

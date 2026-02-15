@@ -1,6 +1,7 @@
 import { getAuthenticatedUser, getIsPayingUser } from "@/lib/auth-helpers"
 import { AppShell } from "@/components/shell"
 import { getTranslations } from "@/lib/i18n"
+import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { signOut } from "@/app/auth/actions"
 import type { NavigationSection, UserRole } from "@/types/navigation"
 
@@ -20,6 +21,7 @@ export default async function ProtectedLayout({
 
     const navigation: NavigationSection[] = []
     const t = getTranslations(dbUser.preferredLanguage as 'en' | 'el' || 'el')
+    const roleCopy = getRoleCopy((dbUser.preferredLanguage as 'en' | 'el') || 'el')
 
     if (currentRole === "policyholder") {
         navigation.push({
@@ -38,14 +40,14 @@ export default async function ProtectedLayout({
         })
     } else if (currentRole === "agent") {
         navigation.push({
-            title: "Agency",
+            title: roleCopy.shell.agentSection,
             items: [
                 { label: t.nav.dashboard, href: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
                 { label: t.nav.customers, href: "/customers", icon: <Users className="w-5 h-5" /> },
                 { label: t.nav.opportunities, href: "/opportunities", icon: <Lightbulb className="w-5 h-5" /> },
                 { label: t.nav.insights, href: "/insights", icon: <PieChart className="w-5 h-5" /> },
                 { label: t.nav.notifications, href: "/notifications", icon: <Bell className="w-5 h-5" /> },
-                { label: "Profile", href: "/agent/settings", icon: <Settings className="w-5 h-5" /> },
+                { label: roleCopy.shell.agentProfile, href: "/agent/settings", icon: <Settings className="w-5 h-5" /> },
             ]
         })
     } else if (currentRole === "admin") {
@@ -68,17 +70,17 @@ export default async function ProtectedLayout({
         ]
     })
 
-    const userRoleObj = { role: currentRole, label: currentRole.charAt(0).toUpperCase() + currentRole.slice(1) }
+    const userRoleObj = { role: currentRole, label: t.roles[currentRole] || currentRole }
 
     return (
         <AppShell
             user={{
-                name: dbUser.name || "User",
+                name: dbUser.name || roleCopy.defaults.userName,
                 email: dbUser.email || "",
                 avatarUrl: dbUser.image || undefined,
             }}
             currentRole={userRoleObj}
-            availableRoles={roles.map(r => ({ role: r as UserRole, label: r }))}
+            availableRoles={roles.map(r => ({ role: r as UserRole, label: t.roles[r as keyof typeof t.roles] || r }))}
             navigation={navigation}
             onLogout={signOut}
         >

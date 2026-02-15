@@ -3,12 +3,14 @@ import { db } from "@/lib/db"
 import { getAccountData } from "./actions"
 import { AccountClientPage } from "./AccountClientPage"
 import type { Policy } from "@/components/wallet/types"
+import { getRoleCopy } from "@/lib/i18n/role-copy"
 
 export default async function AccountPage() {
     const { dbUser } = await getAuthenticatedUser()
+    const roleCopy = getRoleCopy((dbUser.preferredLanguage as 'el' | 'en') || 'el')
 
     const data = await getAccountData()
-    if (!data) return <div>Error loading account data.</div>
+    if (!data) return <div>{roleCopy.defaults.loadingError}</div>
 
     // Fetch additional data for mobile view (policies & agent)
     const policies = await db.policy.findMany({
@@ -27,17 +29,17 @@ export default async function AccountPage() {
 
     const agent = customerRelationship?.agent ? {
         id: customerRelationship.agent.id,
-        name: customerRelationship.agent.name || 'Your Agent',
+        name: customerRelationship.agent.name || roleCopy.defaults.agentName,
         phone: customerRelationship.agent.phoneNumber || '',
         email: customerRelationship.agent.email || '',
-        company: 'PolicyWallet Agent',
+        company: roleCopy.defaults.agentCompany,
         photoUrl: customerRelationship.agent.image || undefined,
         isOnline: true
     } : undefined
 
     const user = {
         id: dbUser.id,
-        name: dbUser.name || 'User',
+        name: dbUser.name || roleCopy.defaults.userName,
         email: dbUser.email,
         photoUrl: dbUser.image || undefined,
         isOnline: true

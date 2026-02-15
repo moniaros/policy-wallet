@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 import { calculatePolicyStatus, getStatusColor, getStatusLabel, getDaysUntilExpiry } from "@/lib/policy-status"
 import { getPolicyShares } from "../actions"
 import { getTranslations } from "@/lib/i18n"
+import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { getAIUsageStats } from "../actions"
 import { PolicyDetailsClient } from "./PolicyDetailsClient"
 
@@ -18,7 +19,9 @@ export default async function PolicyDetailPage({
     const resolvedSearchParams = await searchParams
     const shouldOpenWallet = resolvedSearchParams.openWallet === 'true'
     const { dbUser } = await getAuthenticatedUser()
-    const t = getTranslations((dbUser.preferredLanguage as 'el' | 'en') || 'el')
+    const language = (dbUser.preferredLanguage as 'el' | 'en') || 'el'
+    const t = getTranslations(language)
+    const roleCopy = getRoleCopy(language)
 
     const [policy, sharesResult, aiUsageStats] = await Promise.all([
         db.policy.findUnique({
@@ -152,7 +155,7 @@ export default async function PolicyDetailPage({
             statusLabel={statusLabel}
             statusColor={statusColor}
             daysLeft={daysLeft}
-            holderName={dbUser.name || "Policy Holder"}
+            holderName={dbUser.name || roleCopy.defaults.policyholderName}
             shouldOpenWallet={shouldOpenWallet}
             isOwner={isOwner}
             relationshipId={relationshipId}

@@ -10,6 +10,7 @@ import { PolicyWalletLogo } from '@/components/branding/Logo'
 import { InstallPrompt } from "@/components/pwa/InstallPrompt"
 import { Home, BarChart3, Bell, Settings, Users, Lightbulb, LayoutDashboard, MoreHorizontal, ListChecks, User, LogOut, Wallet, Shield } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { getRoleCopy } from '@/lib/i18n/role-copy'
 
 export interface NavigationItem {
     label: string
@@ -88,6 +89,7 @@ export function AppShell({
     onLogout,
 }: AppShellProps) {
     const { t, language } = useLanguage()
+    const roleCopy = getRoleCopy(language)
     const pathname = usePathname()
     const router = useRouter()
     const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -110,7 +112,7 @@ export function AppShell({
 
     const handleRoleSwitch = (role: UserRole) => {
         onRoleSwitch?.(role)
-        setRoleChangeToast(`${t.userMenu.viewingAs || "Viewing as"} ${role.label}`)
+        setRoleChangeToast(roleCopy.shell.roleViewingAs(role.label))
         setTimeout(() => setRoleChangeToast(null), 3000)
     }
 
@@ -128,7 +130,7 @@ export function AppShell({
                     </button>
 
                     <button onClick={() => handleNavigate('/wallet')} className="hover:opacity-80 transition-opacity">
-                        <PolicyWalletLogo size="sm" language={user.preferred_language || 'en'} />
+                        <PolicyWalletLogo size="sm" language={user.preferred_language || 'el'} />
                     </button>
 
                     <div className="w-10 h-10 flex items-center justify-center">
@@ -160,12 +162,12 @@ export function AppShell({
                         <div className="flex flex-col border-b border-stone-200 dark:border-stone-800 bg-gradient-to-br from-stone-50 to-white dark:from-stone-900 dark:to-stone-950">
                             <div className="flex items-center justify-between px-6 h-16">
                                 <button onClick={() => handleNavigate('/wallet')} className="hover:opacity-80 transition-opacity">
-                                    <PolicyWalletLogo size="md" language={user.preferred_language || 'en'} />
+                                    <PolicyWalletLogo size="md" language={user.preferred_language || 'el'} />
                                 </button>
                                 <button
                                     onClick={() => setSidebarOpen(false)}
                                     className="lg:hidden p-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-500 transition-colors"
-                                    aria-label="Close menu"
+                                    aria-label={roleCopy.shell.closeMenu}
                                 >
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

@@ -2,11 +2,12 @@ import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { PolicyWalletClient } from "@/components/wallet/PolicyWalletClient"
 import type { Policy } from "@/components/wallet/types"
-import { PageHeader } from "@/components/ui/PageHeader"
-import { Plus, Upload } from "lucide-react"
+import { getRoleCopy } from "@/lib/i18n/role-copy"
 
 export default async function WalletPage() {
     const { dbUser } = await getAuthenticatedUser()
+    const language = (dbUser.preferredLanguage as 'el' | 'en') || 'el'
+    const roleCopy = getRoleCopy(language)
 
     const profile = await db.policyholderProfile.findUnique({
         where: { userId: dbUser.id }
@@ -42,17 +43,17 @@ export default async function WalletPage() {
 
     const agent = customerRelationship?.agent ? {
         id: customerRelationship.agent.id,
-        name: customerRelationship.agent.name || 'Your Agent',
+        name: customerRelationship.agent.name || roleCopy.defaults.agentName,
         phone: customerRelationship.agent.phoneNumber || '',
         email: customerRelationship.agent.email,
-        company: 'PolicyWallet Agent',
+        company: roleCopy.defaults.agentCompany,
         photoUrl: customerRelationship.agent.image || undefined,
         isOnline: true
     } : undefined
 
     const user = {
         id: dbUser.id,
-        name: dbUser.name || 'User',
+        name: dbUser.name || roleCopy.defaults.userName,
         email: dbUser.email,
         photoUrl: dbUser.image || undefined,
         isOnline: true
@@ -80,7 +81,7 @@ export default async function WalletPage() {
                 const v = (p.acordData as any).vehicle
                 return {
                     type: 'vehicle' as const,
-                    title: `${v.make || ''} ${v.model || ''}`.trim() || 'Vehicle',
+                    title: `${v.make || ''} ${v.model || ''}`.trim() || roleCopy.defaults.vehicle,
                     subtitle: v.plateNumber || undefined
                 }
             }
@@ -88,7 +89,7 @@ export default async function WalletPage() {
                 const prop = (p.acordData as any).property
                 return {
                     type: 'property' as const,
-                    title: prop.address || 'Property',
+                    title: prop.address || roleCopy.defaults.property,
                     subtitle: prop.postalCode || undefined
                 }
             }
@@ -116,7 +117,7 @@ export default async function WalletPage() {
             premiumAmount: p.premiumAmount ? Number(p.premiumAmount) : undefined,
             premiumCurrency: p.premiumCurrency || 'EUR',
             sharedWithAgents: policyGrants.map(g => ({
-                agentName: g.grantee.name || 'Agent',
+                agentName: g.grantee.name || roleCopy.defaults.agentName,
                 agentId: g.grantee.id,
                 permissions: g.permissions
             })),
