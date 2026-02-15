@@ -1,0 +1,21 @@
+import { requireApiUser } from "@/lib/api-auth"
+import { createApiError, createApiResponse } from "@/lib/api-utils"
+import { runCollaborationReminderJobs } from "@/lib/services/collaboration-reminders.service"
+
+export async function POST(req: Request) {
+    const cronSecret = process.env.CRON_SECRET
+    const headerSecret = req.headers.get("x-cron-secret")
+    const isCronAuthorized = Boolean(cronSecret && headerSecret && headerSecret === cronSecret)
+
+    if (!isCronAuthorized) {
+        const authCheck = await requireApiUser({ roles: ["admin"] })
+        if ("error" in authCheck) return authCheck.error
+    }
+
+    try {
+        const summary = await runCollaborationReminderJobs()
+        return createApiResponse({ summary })
+    } catch (error) {
+        return createApiError("INTERNAL_ERROR", "Failed to run collaboration reminder jobs", 500, String(error))
+    }
+}

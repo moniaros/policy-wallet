@@ -57,6 +57,11 @@ model User {
   tokenBalance                    TokenBalance?            @relation("TokenBalance")
   tokenPurchases                  TokenPurchase[]          @relation("TokenPurchases")
   monthlyTokenUsage               MonthlyTokenUsage[]      @relation("MonthlyTokenUsage")
+  collaborationThreadsCreated     CollaborationThread[]    @relation("CollaborationThreadCreatedBy")
+  collaborationThreadsAssigned    CollaborationThread[]    @relation("CollaborationThreadAssignedTo")
+  collaborationMessages           CollaborationMessage[]
+  collaborationActionsAssigned    CollaborationAction[]    @relation("CollaborationActionAssignee")
+  collaborationParticipants       CollaborationParticipant[]
 
   @@map("users")
 }
@@ -194,6 +199,7 @@ model Policy {
   owner           User             @relation("Owner", fields: [ownerUserId], references: [id])
   documents       PolicyDocument[]
   tokenUsages     TokenUsage[]     @relation("PolicyTokenUsage")
+  collaborationThreads CollaborationThread[]
 
   @@index([ownerUserId])
   @@index([createdByUserId])
@@ -252,6 +258,7 @@ model GapInstance {
   definition      GapDefinition @relation(fields: [gapDefinitionId], references: [id])
   policy          Policy        @relation(fields: [policyId], references: [id], onDelete: Cascade)
   opportunities   Opportunity[]
+  collaborationThreads CollaborationThread[]
 
   @@index([policyId])
   @@index([status])
@@ -270,6 +277,7 @@ model CustomerRelationship {
   customer               User                    @relation("Customer", fields: [policyholderUserId], references: [id])
   opportunities          Opportunity[]
   questionnaireInstances QuestionnaireInstance[]
+  collaborationThreads   CollaborationThread[]
 
   @@unique([agentUserId, policyholderUserId])
   @@map("customer_relationships")
@@ -323,6 +331,7 @@ model Opportunity {
   owner            User                 @relation(fields: [ownerAgentUserId], references: [id])
   policy           Policy?              @relation(fields: [policyId], references: [id])
   relationship     CustomerRelationship @relation(fields: [relationshipId], references: [id])
+  collaborationThreads CollaborationThread[]
 
   @@index([relationshipId])
   @@index([policyId])
@@ -358,6 +367,7 @@ model QuestionnaireInstance {
   receiver       User                    @relation("Receiver", fields: [sentToUserId], references: [id])
   template       QuestionnaireTemplate   @relation(fields: [templateId], references: [id])
   responses      QuestionnaireResponse[]
+  collaborationThreads CollaborationThread[]
 
   @@map("questionnaire_instances")
 }
@@ -669,4 +679,86 @@ model MonthlyTokenUsage {
   @@unique([userId, month])
   @@index([month])
   @@map("monthly_token_usage")
+}
+
+model CollaborationThread {
+  id                          String                    @id @default(cuid()) @map("thread_id")
+  relationshipId              String                    @map("relationship_id")
+  policyId                    String?                   @map("policy_id")
+  subject                     String
+  category                    String                    @default("general")
+  status                      String                    @default("open")
+  priority                    String                    @default("medium")
+  createdByUserId             String                    @map("created_by_user_id")
+  assignedToUserId            String?                   @map("assigned_to_user_id")
+  linkedOpportunityId         String?                   @map("linked_opportunity_id")
+  linkedQuestionnaireInstanceId String?                 @map("linked_questionnaire_instance_id")
+  linkedGapInstanceId         String?                   @map("linked_gap_instance_id")
+  lastActivityAt              DateTime                  @default(now()) @map("last_activity_at")
+  resolvedAt                  DateTime?                 @map("resolved_at")
+  createdAt                   DateTime                  @default(now()) @map("created_at")
+  updatedAt                   DateTime                  @updatedAt @map("updated_at")
+  relationship                CustomerRelationship      @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
+  policy                      Policy?                   @relation(fields: [policyId], references: [id], onDelete: SetNull)
+  createdBy                   User                      @relation("CollaborationThreadCreatedBy", fields: [createdByUserId], references: [id], onDelete: Cascade)
+  assignedTo                  User?                     @relation("CollaborationThreadAssignedTo", fields: [assignedToUserId], references: [id], onDelete: SetNull)
+  linkedOpportunity           Opportunity?              @relation(fields: [linkedOpportunityId], references: [id], onDelete: SetNull)
+  linkedQuestionnaireInstance QuestionnaireInstance?    @relation(fields: [linkedQuestionnaireInstanceId], references: [id], onDelete: SetNull)
+  linkedGapInstance           GapInstance?              @relation(fields: [linkedGapInstanceId], references: [id], onDelete: SetNull)
+  messages                    CollaborationMessage[]
+  actions                     CollaborationAction[]
+  participants                CollaborationParticipant[]
+
+  @@index([relationshipId])
+  @@index([policyId])
+  @@index([status])
+  @@index([lastActivityAt])
+  @@map("collaboration_threads")
+}
+
+model CollaborationMessage {
+  id          String               @id @default(cuid()) @map("message_id")
+  threadId    String               @map("thread_id")
+  senderUserId String              @map("sender_user_id")
+  messageType String               @default("comment") @map("message_type")
+  body        String
+  metadata    Json?
+  createdAt   DateTime             @default(now()) @map("created_at")
+  thread      CollaborationThread  @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  sender      User                 @relation(fields: [senderUserId], references: [id], onDelete: Cascade)
+
+  @@index([threadId, createdAt])
+  @@map("collaboration_messages")
+}
+
+model CollaborationAction {
+  id             String               @id @default(cuid()) @map("action_id")
+  threadId       String               @map("thread_id")
+  title          String
+  description    String?
+  assigneeUserId String               @map("assignee_user_id")
+  status         String               @default("pending")
+  dueDate        DateTime?            @map("due_date")
+  completedAt    DateTime?            @map("completed_at")
+  createdAt      DateTime             @default(now()) @map("created_at")
+  updatedAt      DateTime             @updatedAt @map("updated_at")
+  thread         CollaborationThread  @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  assignee       User                 @relation("CollaborationActionAssignee", fields: [assigneeUserId], references: [id], onDelete: Cascade)
+
+  @@index([assigneeUserId, status, dueDate])
+  @@map("collaboration_actions")
+}
+
+model CollaborationParticipant {
+  id        String               @id @default(cuid()) @map("participant_id")
+  threadId  String               @map("thread_id")
+  userId    String               @map("user_id")
+  role      String               @default("participant")
+  createdAt DateTime             @default(now()) @map("created_at")
+  thread    CollaborationThread  @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([threadId, userId])
+  @@index([userId])
+  @@map("collaboration_participants")
 }

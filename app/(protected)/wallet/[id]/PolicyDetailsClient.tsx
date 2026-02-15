@@ -11,6 +11,7 @@ import { DeletePolicy } from "@/components/wallet/DeletePolicy"
 import { PolicyAnalysisTabs } from "./PolicyAnalysisTabs"
 import { PolicyQA } from "@/components/wallet/PolicyQA"
 import { AIUsageWidget } from "./AIUsageWidget"
+import { CollaborationTimeline } from "@/components/collaboration/CollaborationTimeline"
 import { Calendar, Download, FileText, Phone, Shield, Sparkles, TrendingUp } from "lucide-react"
 
 interface PolicyDetailsClientProps {
@@ -24,6 +25,7 @@ interface PolicyDetailsClientProps {
     holderName: string
     shouldOpenWallet: boolean
     isOwner: boolean
+    relationshipId?: string | null
     t: any
 }
 
@@ -38,10 +40,12 @@ export function PolicyDetailsClient({
     holderName,
     shouldOpenWallet,
     isOwner,
+    relationshipId,
     t,
 }: PolicyDetailsClientProps) {
     const isMobile = useIsMobile()
     const [showMobileWalletModal, setShowMobileWalletModal] = useState(shouldOpenWallet)
+    const [activeTab, setActiveTab] = useState<"analysis" | "qa" | "collaboration">("analysis")
     const language = t.common?.locale?.startsWith('el') ? 'el' : 'en'
 
     const copy = {
@@ -58,6 +62,9 @@ export function PolicyDetailsClient({
         shareUnavailable: language === 'el' ? 'Η κοινοποίηση δεν υποστηρίζεται.' : 'Share is not supported.',
         linkCopied: language === 'el' ? 'Ο σύνδεσμος αντιγράφηκε.' : 'Link copied.',
         copyFailed: language === 'el' ? 'Δεν ήταν δυνατή η αντιγραφή του συνδέσμου.' : 'Failed to copy the link.',
+        tabAnalysis: language === 'el' ? 'Ανάλυση' : 'Analysis',
+        tabQa: language === 'el' ? 'Ερωτήσεις AI' : 'AI Q&A',
+        tabCollaboration: language === 'el' ? 'Συνεργασία' : 'Collaboration',
     }
 
     const getInsurerName = () => policy.acordData?.policy?.insurerName || policy.insurerName
@@ -306,27 +313,74 @@ export function PolicyDetailsClient({
                             <div className="text-slate-700 dark:text-slate-300 leading-relaxed text-sm sm:text-base">{policy.coverageSummary || t.wallet.summaryFallback}</div>
                         </div>
 
-                        <PolicyAnalysisTabs
-                            policyId={policy.id}
-                            gaps={policy.gapInstances.map((g: any) => ({
-                                id: g.id,
-                                aiExplanation: g.aiExplanation || null,
-                                aiExplanationEl: g.aiExplanationEl || null,
-                                aiSuggestion: g.aiSuggestion || null,
-                                aiSuggestionEl: g.aiSuggestionEl || null,
-                                definition: {
-                                    title: g.definition?.title || t.analysis.unknownGap || "Unknown Gap",
-                                    severity: g.definition?.severity || "medium",
-                                },
-                            }))}
-                            acordData={policy.acordData}
-                            t={t}
-                            lastAnalyzedAt={policy.lastAnalyzedAt}
-                        />
-
-                        <div id="policy-qa">
-                            <PolicyQA policyId={policy.id} />
+                        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl p-2 shadow-lg border border-white/20 dark:border-slate-700/50">
+                            <div className="grid grid-cols-3 gap-2">
+                                <button
+                                    onClick={() => setActiveTab("analysis")}
+                                    className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                                        activeTab === "analysis"
+                                            ? "bg-emerald-600 text-white"
+                                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                                    }`}
+                                >
+                                    {copy.tabAnalysis}
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab("qa")}
+                                    className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                                        activeTab === "qa"
+                                            ? "bg-emerald-600 text-white"
+                                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                                    }`}
+                                >
+                                    {copy.tabQa}
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab("collaboration")}
+                                    className={`px-4 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                                        activeTab === "collaboration"
+                                            ? "bg-emerald-600 text-white"
+                                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                                    }`}
+                                >
+                                    {copy.tabCollaboration}
+                                </button>
+                            </div>
                         </div>
+
+                        {activeTab === "analysis" && (
+                            <PolicyAnalysisTabs
+                                policyId={policy.id}
+                                gaps={policy.gapInstances.map((g: any) => ({
+                                    id: g.id,
+                                    aiExplanation: g.aiExplanation || null,
+                                    aiExplanationEl: g.aiExplanationEl || null,
+                                    aiSuggestion: g.aiSuggestion || null,
+                                    aiSuggestionEl: g.aiSuggestionEl || null,
+                                    definition: {
+                                        title: g.definition?.title || t.analysis.unknownGap || "Unknown Gap",
+                                        severity: g.definition?.severity || "medium",
+                                    },
+                                }))}
+                                acordData={policy.acordData}
+                                t={t}
+                                lastAnalyzedAt={policy.lastAnalyzedAt}
+                            />
+                        )}
+
+                        {activeTab === "qa" && (
+                            <div id="policy-qa">
+                                <PolicyQA policyId={policy.id} />
+                            </div>
+                        )}
+
+                        {activeTab === "collaboration" && (
+                            <CollaborationTimeline
+                                policyId={policy.id}
+                                relationshipId={relationshipId || null}
+                                viewerRole={isOwner ? "policyholder" : "agent"}
+                            />
+                        )}
                     </div>
 
                     <div className="space-y-6">

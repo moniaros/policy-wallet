@@ -73,6 +73,28 @@ export default async function PolicyDetailPage({
     const statusLabel = getStatusLabel(status)
     const daysLeft = getDaysUntilExpiry(policy.endDate)
 
+    let relationshipId: string | null = null
+    if (isOwner) {
+        const rel = await db.customerRelationship.findFirst({
+            where: {
+                policyholderUserId: dbUser.id,
+                status: "active",
+            },
+            orderBy: { createdAt: "desc" },
+            select: { id: true },
+        })
+        relationshipId = rel?.id || null
+    } else {
+        const rel = await db.customerRelationship.findFirst({
+            where: {
+                policyholderUserId: policy.ownerUserId,
+                agentUserId: dbUser.id,
+            },
+            select: { id: true },
+        })
+        relationshipId = rel?.id || null
+    }
+
     // Create serializable policy object for Client Component
     const walletPolicy = {
         id: policy.id,
@@ -133,6 +155,7 @@ export default async function PolicyDetailPage({
             holderName={dbUser.name || "Policy Holder"}
             shouldOpenWallet={shouldOpenWallet}
             isOwner={isOwner}
+            relationshipId={relationshipId}
             t={t}
         />
     )

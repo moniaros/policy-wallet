@@ -1,15 +1,16 @@
 ﻿# PolicyWallet Platform — Status Report
-## Date: 14 February 2026
+## Date: 15 February 2026
 
 > **Purpose**: This document provides a complete audit of implemented vs. missing functionality per user role, production readiness gaps, and structural readiness issues. Each section includes actionable items for implementation.
 >
 > **Previous Report**: 13 February 2026
 >
-> **Changes This Sprint (Feb 13–14)**:
-> - 🟡 **P0 PARTIAL** — RBAC hardening implemented: `requireApiUser()` now protects 27/30 `/api/v1` routes; 3 routes are intentionally public (magic-link request, Stripe webhook, RevenueCat webhook)
+> **Changes This Sprint (Feb 14–15)**:
+> - ✅ **P1 RESOLVED** — Policy edit/update functionality implemented (Service layer logic, Server Action, and dedicated Edit Form UI)
+> - ✅ **P2 RESOLVED** — API Documentation infrastructure (Swagger/OpenAPI) with `/api-docs` endpoint and initial route documentation
+> - ✅ **P1 INTEGRATED** — Automation Thread integration via `collaborationService` for policy sharing and gap clarification requests
+> - 🟡 **P0 PARTIAL** — RBAC hardening implemented: `requireApiUser()` protects major `/api/v1` routes; 3 routes intentionally public
 > - ✅ **P1 RESOLVED** — Missing DB indexes added (`Opportunity.ownerAgentUserId`, `NotificationEvent.eventType`)
-> - 🟡 **P1 PARTIAL** — Input validation hardened across API routes (Zod schemas for policies, user profile, magic-link, RevenueCat webhook)
-> - 🟡 **P1 PARTIAL** — Rate limiting applied to auth and high-risk write endpoints (magic-link: 5/5min, policy creation: 10/min, plus selected import/job/device-token/checkout routes)
 > - ✅ Agent Dashboard UI enhanced with glassmorphism, micro-animations, rich color palette, and i18n support
 > - ✅ Customer List component redesigned with premium aesthetics and improved UX
 > - ✅ Desktop Dashboard component built with comprehensive agent-centric KPIs
@@ -83,6 +84,7 @@
 | 🆕 AI extraction enrichment | ✅ | `lib/services/ai/extraction-enrichment.ts` | Confidence scoring, missing field detection, ACORD normalization |
 | 🆕 Document insights utility | ✅ | `lib/wallet/document-insights.ts` | Structured policy summary with bilingual status labels |
 | Delete policy | ✅ | `wallet/[id]/DeletePolicy.tsx` | Owner-only or revoke shared access |
+| Policy edit/update | ✅ | `app/(protected)/wallet/[id]/edit/` | Enforces ownership, partial updates, and date validation |
 | Policy status calculation | ✅ | `lib/policy-status.ts` | Dynamic: active/expiring_soon/expired/action_needed/cancelled |
 | Status summary KPI widgets | ✅ | `StatusSummary.tsx` | Total premium, active count, upcoming renewals |
 | Policy comparison | 🟡 | `PolicyComparison.tsx` | Component exists, integration unclear |
@@ -95,7 +97,7 @@
 | Download policy documents | ✅ | `MobilePolicyDetails.tsx` | With document list |
 
 **🔴 Missing for Policy Management:**
-- [ ] **P1** — Policy edit/update functionality (no endpoint to update existing policy fields)
+- [x] **P1** — Policy edit/update functionality (implemented via PolicyService.update and EditPolicyForm)
 - [ ] **P1** — Policy renewal workflow (mark as renewed, link new policy to old)
 - [ ] **P2** — Batch upload end-to-end validation and error handling
 - [ ] **P2** — Policy comparison page/route (component exists but no page)
@@ -118,7 +120,7 @@
 | Top coverages display | ✅ | `MobilePolicyDetails.tsx` | AI-extracted coverages |
 | AI usage tracking | ✅ | `lib/token-tracking.ts` | Per-operation token counting |
 | AI usage stats widget | ✅ | `wallet/[id]/AIUsageWidget.tsx` | Shows user's AI consumption |
-| Notify agent about gap | ✅ | `wallet/actions.ts → notifyAgentAboutGap` | Creates notification + opportunity |
+| Notify agent about gap | ✅ | `wallet/actions.ts → notifyAgentAboutGap` | Creates notification, opportunity, and automation thread |
 
 **🔴 Missing for AI & Insights:**
 - [ ] **P2** — Comparative analysis across all policies (portfolio-level AI insights)
@@ -131,7 +133,7 @@
 
 | Feature | Status | Location | Notes |
 |---------|--------|----------|-------|
-| Share policy with agent (email) | ✅ | `wallet/actions.ts → sharePolicy` | Creates AccessGrant or Invite |
+| Share policy with agent (email) | ✅ | `wallet/actions.ts → sharePolicy` | Creates AccessGrant + Automation Thread |
 | View who has access | ✅ | `PolicyService.getShares()` | Lists all grantees |
 | Revoke shared access | ✅ | `PolicyService.revokeShare()` | Soft delete |
 | Collaboration panel | ✅ | `CollaborationPanel.tsx` (24KB) | Full sharing management UI |
@@ -151,6 +153,7 @@
 | Apple Wallet pass generation | 🟡 | `lib/wallet/apple.ts` | Implementation exists, needs signing certificate |
 | Add to Wallet UI | ✅ | `wallet/[id]/AddToWallet.tsx` | With WalletPassPreview |
 | Wallet pass API endpoint | ✅ | `api/v1/policies/[id]/wallet-pass/` | Generates pass data |
+| API Documentation (Swagger) | ✅ | `app/api-docs/` | Interactive OpenAPI documentation via `/api-docs` |
 
 **🔴 Missing for Digital Wallet:**
 - [ ] **P2** — Google Wallet JWT signing credentials setup (env: `GOOGLE_WALLET_*`)
@@ -682,7 +685,7 @@
 
 **🔴 API Improvements Needed:**
 - [ ] **P1** — Complete standardization of API response format across ALL routes (some routes still use raw `NextResponse.json`)
-- [ ] **P2** — Generate OpenAPI documentation (for mobile app development)
+- [x] **P2** — Generate OpenAPI documentation (Infrastructure implemented via `/api-docs`)
 - [ ] **P2** — Consistent error code system for API consumers
 
 ---

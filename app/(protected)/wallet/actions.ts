@@ -19,6 +19,7 @@ import { canUserAddPolicy, canUserUseFeature, getUpgradeMessage, getUserSubscrip
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { after } from 'next/server'
+import { collaborationService } from "@/lib/services/collaboration.service"
 
 const PolicySchema = z.object({
     insurerName: z.string().min(1, "Insurer name is required"),
@@ -340,14 +341,27 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
         }
     })
 
+    let relationshipId = existingRel?.id || null
     if (!existingRel) {
-        await db.customerRelationship.create({
+        const createdRel = await db.customerRelationship.create({
             data: {
                 agentUserId: agent.id,
                 policyholderUserId: authResult.dbUser.id,
                 status: "active", // Auto-activate since customer initiated sharing
                 activationStatus: "active"
             }
+        })
+        relationshipId = createdRel.id
+    }
+
+    if (relationshipId) {
+        await collaborationService.ensureAutomationThread(authResult.dbUser.id, {
+            relationshipId,
+            policyId,
+            category: "general",
+            priority: "medium",
+            subject: "Policy shared",
+            initialMessage: `${authResult.dbUser.name || "Policyholder"} shared this policy and started collaboration.`,
         })
     }
 
@@ -777,6 +791,17 @@ export async function notifyAgentAboutGap(gapId: string, policyId: string) {
             status: 'open',
             notes: 'Customer requested more details on this gap.'
         }
+    })
+
+    await collaborationService.ensureAutomationThread(authResult.dbUser.id, {
+        relationshipId: relationship.id,
+        policyId,
+        category: "coverage_gap",
+        priority: "high",
+        linkedGapInstanceId: gapId,
+        linkedOpportunityId: opportunity.id,
+        subject: "Coverage gap clarification requested",
+        initialMessage: `${authResult.dbUser.name || "Policyholder"} requested help on this coverage gap.`,
     })
 
     // Notify Agent

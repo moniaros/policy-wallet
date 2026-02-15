@@ -171,6 +171,7 @@ The app can be deployed to any platform that supports Next.js:
 - **ACTION_PLAN.md** - 30-day implementation plan
 - **QUICK_WINS.md** - Immediate actionable improvements
 - **DEPLOYMENT_CHECKLIST.md** - Production deployment guide
+- **docs/COLLABORATION_REMINDERS_CRON_WORKFLOW.md** - Vercel cron setup and operations guide for collaboration reminder jobs
 - **MIGRATION_PROGRESS.md** - Supabase migration status
 - **AI_ANALYSIS_PLAN.md** - AI feature roadmap
 

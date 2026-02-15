@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import { calculatePolicyStatus, getStatusColor, getStatusLabel, getDaysUntilExpiry } from "@/lib/policy-status"
 import { AnalysisCard } from "@/app/(protected)/wallet/[id]/AnalysisCard"
+import { CollaborationTimeline } from "@/components/collaboration/CollaborationTimeline"
 import { TrendingUp, MessageSquare, Plus, FileText } from "lucide-react"
 
 export default async function AgentPolicyDetailPage({ params }: { params: Promise<{ id: string, policyId: string }> }) {
@@ -11,7 +12,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
     const { dbUser } = await getAuthenticatedUser()
 
     // 1. Verify Access (Agent -> Customer)
-    const hasRelationship = await db.customerRelationship.findFirst({
+    const relationship = await db.customerRelationship.findFirst({
         where: {
             agentUserId: dbUser.id,
             policyholderUserId: customerId,
@@ -26,7 +27,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
         }
     })
 
-    if (!hasRelationship && !hasGrant) {
+    if (!relationship && !hasGrant) {
         notFound()
     }
 
@@ -168,6 +169,12 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
 
                     {/* Gap Analysis */}
                     <AnalysisCard policyId={policyId} gaps={policy.gapInstances as any} />
+
+                    <CollaborationTimeline
+                        policyId={policyId}
+                        relationshipId={relationship?.id || null}
+                        viewerRole="agent"
+                    />
 
                     {/* AI Analysis Insights (ACORD) */}
                     {(policy as any).acordData && typeof (policy as any).acordData === 'object' && Object.keys((policy as any).acordData).length > 0 && (

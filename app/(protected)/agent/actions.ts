@@ -18,6 +18,7 @@ import {
 
 import { AIServiceFactory, getAIService } from "@/lib/services/ai/ai-service.factory";
 import { CustomerService } from "@/lib/services/customer.service";
+import { collaborationService } from "@/lib/services/collaboration.service";
 
 const customerService = new CustomerService(db);
 
@@ -467,6 +468,15 @@ export async function sendQuestionnaire(relationshipId: string, templateId: stri
             sentToUserId: relationship.policyholderUserId,
             status: 'pending'
         }
+    })
+
+    await collaborationService.ensureAutomationThread(authResult.dbUser.id, {
+        relationshipId,
+        category: "questionnaire",
+        priority: "medium",
+        linkedQuestionnaireInstanceId: instance.id,
+        subject: "Questionnaire requested",
+        initialMessage: "A questionnaire has been sent. Use this thread for follow-up and clarifications.",
     })
 
     // Update last interaction
