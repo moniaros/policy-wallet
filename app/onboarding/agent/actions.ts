@@ -95,3 +95,39 @@ export async function sendClientInvite(agentUserId: string, clientEmail: string)
     // For now returning success
     return { success: true }
 }
+
+export async function generateDemoProposal(file: File) {
+    // 1. Simulate file processing
+    await new Promise(resolve => setTimeout(resolve, 1500))
+
+    // 2. In a real scenario, we would:
+    //    a. Upload file to temp storage
+    //    b. Call GapAnalysisService.analyzePolicy() (or a new analyzeDocument() method)
+    //    c. Generate a proposal based on gaps
+
+    // For now, return a mocked "Real AI" response structure
+    return {
+        success: true,
+        data: {
+            policySummary: {
+                insurer: "Allianz",
+                type: "Home Insurance",
+                premium: "€350/year",
+                coverage: "Building & Content"
+            },
+            gaps: [
+                {
+                    title: "Missing Earthquake Coverage",
+                    severity: "high",
+                    description: "Policy excludes earthquake damage which is critical for your zone."
+                },
+                {
+                    title: "Low Liability Limit",
+                    severity: "medium",
+                    description: "Third-party liability is capped at €50k, recommended €100k."
+                }
+            ],
+            proposalId: "prop_" + Math.random().toString(36).substr(2, 9)
+        }
+    }
+}
