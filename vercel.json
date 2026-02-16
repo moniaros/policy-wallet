@@ -2,10 +2,6 @@
   "crons": [
     {
       "path": "/api/v1/jobs/collaboration-reminders",
-      "schedule": "0 * * * *"
-    },
-    {
-      "path": "/api/v1/jobs/collaboration-reminders",
       "schedule": "0 8 * * *"
     }
   ]

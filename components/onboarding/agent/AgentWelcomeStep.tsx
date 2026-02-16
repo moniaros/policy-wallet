@@ -3,7 +3,7 @@
 import { ArrowRight, Briefcase } from "lucide-react"
 
 import { updateAgentProfile } from "@/app/onboarding/agent/actions"
-import { useSession } from "next-auth/react"
+import { useSupabaseUser } from "@/hooks/useSupabaseUser"
 import { useState } from "react"
 
 interface StepProps {
@@ -11,16 +11,16 @@ interface StepProps {
 }
 
 export function AgentWelcomeStep({ onNext }: StepProps) {
-    const { data: session } = useSession()
+    const { user } = useSupabaseUser()
     const [isLoading, setIsLoading] = useState(false)
     const [agencyName, setAgencyName] = useState("Test Agency Local")
     const [title, setTitle] = useState("")
 
     const handleNext = async () => {
-        if (!session?.user?.id) return
+        if (!user?.id) return
 
         setIsLoading(true)
-        const result = await updateAgentProfile(session.user.id, {
+        const result = await updateAgentProfile(user.id, {
             agencyName,
             // title is not in schema yet, adding just agencyName
         })

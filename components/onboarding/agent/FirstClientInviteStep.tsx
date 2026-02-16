@@ -4,7 +4,7 @@ import { useState } from "react"
 import { ArrowRight, Send, UserPlus, Copy, Check } from "lucide-react"
 
 import { sendClientInvite, completeOnboarding } from "@/app/onboarding/agent/actions"
-import { useSession } from "next-auth/react"
+import { useSupabaseUser } from "@/hooks/useSupabaseUser"
 
 interface StepProps {
     onNext: () => void // In this case, 'Finish'
@@ -12,7 +12,7 @@ interface StepProps {
 }
 
 export function FirstClientInviteStep({ onNext, onBack }: StepProps) {
-    const { data: session } = useSession()
+    const { user } = useSupabaseUser()
     const [email, setEmail] = useState("")
     const [inviteSent, setInviteSent] = useState(false)
     const [copied, setCopied] = useState(false)
@@ -20,19 +20,19 @@ export function FirstClientInviteStep({ onNext, onBack }: StepProps) {
 
     const handleInvite = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!session?.user?.id) return
+        if (!user?.id) return
 
         setIsLoading(true)
-        await sendClientInvite(session.user.id, email)
+        await sendClientInvite(user.id, email)
         setIsLoading(false)
         setInviteSent(true)
     }
 
     const handleFinish = async () => {
-        if (!session?.user?.id) return
+        if (!user?.id) return
 
         setIsLoading(true)
-        await completeOnboarding(session.user.id)
+        await completeOnboarding(user.id)
         setIsLoading(false)
         onNext()
     }
