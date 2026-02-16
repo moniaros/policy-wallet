@@ -55,7 +55,7 @@ export function PolicyTable({
     const { language, t } = useLanguage()
     const [currentPage, setCurrentPage] = useState(1)
     const [openMenuId, setOpenMenuId] = useState<string | null>(null)
-    const [menuPosition, setMenuPosition] = useState<{ top: number; right: number } | null>(null)
+    const [menuPosition, setMenuPosition] = useState<{ top: number; left: number; origin: 'top right' | 'bottom right' } | null>(null)
     const policiesPerPage = 6
 
     const totalPages = Math.max(1, Math.ceil(policies.length / policiesPerPage))
@@ -74,6 +74,18 @@ export function PolicyTable({
             window.removeEventListener('resize', closeMenu)
         }
     }, [])
+
+    useEffect(() => {
+        if (!openMenuId) return
+        const closeOnEscape = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                setOpenMenuId(null)
+                setMenuPosition(null)
+            }
+        }
+        window.addEventListener('keydown', closeOnEscape)
+        return () => window.removeEventListener('keydown', closeOnEscape)
+    }, [openMenuId])
 
     const label = {
         cancelled: language === 'el' ? 'Ακυρωμένο' : 'Cancelled',
@@ -219,29 +231,71 @@ export function PolicyTable({
 
                                             <button
                                                 onClick={(e) => {
+                                                    e.stopPropagation()
                                                     const rect = e.currentTarget.getBoundingClientRect()
-                                                    setMenuPosition({ top: rect.bottom + window.scrollY, right: window.innerWidth - rect.right })
-                                                    setOpenMenuId(isMenuOpen ? null : policy.id)
+                                                    const MENU_WIDTH = 256
+                                                    const MENU_HEIGHT = 272
+                                                    const VIEWPORT_PADDING = 12
+                                                    const GAP = 8
+                                                    const spaceBelow = window.innerHeight - rect.bottom
+                                                    const openUpward = spaceBelow < MENU_HEIGHT
+
+                                                    const top = openUpward
+                                                        ? Math.max(VIEWPORT_PADDING, rect.top - MENU_HEIGHT - GAP)
+                                                        : Math.min(window.innerHeight - MENU_HEIGHT - VIEWPORT_PADDING, rect.bottom + GAP)
+
+                                                    const left = Math.min(
+                                                        window.innerWidth - MENU_WIDTH - VIEWPORT_PADDING,
+                                                        Math.max(VIEWPORT_PADDING, rect.right - MENU_WIDTH)
+                                                    )
+
+                                                    setMenuPosition({
+                                                        top,
+                                                        left,
+                                                        origin: openUpward ? 'bottom right' : 'top right',
+                                                    })
+                                                    if (isMenuOpen) {
+                                                        setOpenMenuId(null)
+                                                        setMenuPosition(null)
+                                                    } else {
+                                                        setOpenMenuId(policy.id)
+                                                    }
                                                 }}
-                                                className={`p-2 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-lg transition-colors cursor-pointer ${isMenuOpen ? 'bg-stone-100 dark:bg-stone-800' : ''}`}
+                                                className={`p-2.5 rounded-lg transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50 ${isMenuOpen ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-white shadow-sm' : 'hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300'}`}
                                                 aria-label={t.dashboard.actions}
+                                                aria-expanded={isMenuOpen}
+                                                aria-haspopup="menu"
+                                                aria-controls={isMenuOpen ? `policy-actions-menu-${policy.id}` : undefined}
                                             >
                                                 <MoreVertical className="w-5 h-5 text-stone-600 dark:text-stone-300" />
                                             </button>
 
                                             {isMenuOpen && typeof document !== 'undefined' && createPortal(
                                                 <>
-                                                    <div className="fixed inset-0 z-[9998]" onClick={() => setOpenMenuId(null)} />
                                                     <div
-                                                        className="fixed z-[9999] w-64 bg-white dark:bg-stone-800 rounded-2xl shadow-2xl border border-stone-200 dark:border-stone-700 py-2 animate-in fade-in zoom-in-95 duration-200"
-                                                        style={{ top: `${menuPosition?.top ?? 0}px`, right: `${menuPosition?.right ?? 0}px`, marginTop: '8px' }}
+                                                        className="fixed inset-0 z-[9998] bg-stone-900/5 dark:bg-stone-950/20 backdrop-blur-[1px]"
+                                                        onClick={() => {
+                                                            setOpenMenuId(null)
+                                                            setMenuPosition(null)
+                                                        }}
+                                                    />
+                                                    <div
+                                                        id={`policy-actions-menu-${policy.id}`}
+                                                        role="menu"
+                                                        className="fixed z-[9999] w-64 bg-white dark:bg-stone-800 rounded-2xl shadow-2xl border border-stone-200 dark:border-stone-700 py-2 animate-in fade-in zoom-in-95 duration-150"
+                                                        style={{
+                                                            top: `${menuPosition?.top ?? 0}px`,
+                                                            left: `${menuPosition?.left ?? 0}px`,
+                                                            transformOrigin: menuPosition?.origin ?? 'top right',
+                                                        }}
                                                     >
                                                         <button
                                                             onClick={() => {
                                                                 onRunAnalysis?.(policy.id)
                                                                 setOpenMenuId(null)
                                                             }}
-                                                            className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 flex items-center gap-3 transition-colors"
+                                                            role="menuitem"
+                                                            className="w-full px-4 py-2.5 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 focus-visible:outline-none focus-visible:bg-stone-50 dark:focus-visible:bg-stone-700/50 flex items-center gap-3 transition-colors"
                                                         >
                                                             <Search className="w-4 h-4" />
                                                             {label.understandPolicy}
@@ -251,7 +305,8 @@ export function PolicyTable({
                                                                 onViewDocuments?.(policy.id)
                                                                 setOpenMenuId(null)
                                                             }}
-                                                            className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 flex items-center gap-3 transition-colors"
+                                                            role="menuitem"
+                                                            className="w-full px-4 py-2.5 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 focus-visible:outline-none focus-visible:bg-stone-50 dark:focus-visible:bg-stone-700/50 flex items-center gap-3 transition-colors"
                                                         >
                                                             <FileText className="w-4 h-4" />
                                                             {t.wallet.documents}
@@ -261,7 +316,8 @@ export function PolicyTable({
                                                                 onShare?.(policy.id)
                                                                 setOpenMenuId(null)
                                                             }}
-                                                            className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 flex items-center gap-3 transition-colors"
+                                                            role="menuitem"
+                                                            className="w-full px-4 py-2.5 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 focus-visible:outline-none focus-visible:bg-stone-50 dark:focus-visible:bg-stone-700/50 flex items-center gap-3 transition-colors"
                                                         >
                                                             <Share2 className="w-4 h-4" />
                                                             {t.wallet.shareWithAgent}
@@ -272,7 +328,8 @@ export function PolicyTable({
                                                                     onRenewPolicy?.(policy.id)
                                                                     setOpenMenuId(null)
                                                                 }}
-                                                                className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 flex items-center gap-3 transition-colors"
+                                                                role="menuitem"
+                                                                className="w-full px-4 py-2.5 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 focus-visible:outline-none focus-visible:bg-stone-50 dark:focus-visible:bg-stone-700/50 flex items-center gap-3 transition-colors"
                                                             >
                                                                 <RefreshCw className="w-4 h-4" />
                                                                 {t.dashboard.renewPolicy}
@@ -283,7 +340,8 @@ export function PolicyTable({
                                                                 onDelete?.(policy.id)
                                                                 setOpenMenuId(null)
                                                             }}
-                                                            className="w-full px-4 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 flex items-center gap-3 transition-colors"
+                                                            role="menuitem"
+                                                            className="w-full px-4 py-2.5 text-left text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 focus-visible:outline-none focus-visible:bg-red-50 dark:focus-visible:bg-red-900/10 flex items-center gap-3 transition-colors"
                                                         >
                                                             <Trash2 className="w-4 h-4" />
                                                             {t.dashboard.delete}

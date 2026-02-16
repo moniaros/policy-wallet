@@ -30,7 +30,7 @@ export function PolicyCard({
 }: PolicyCardProps) {
     const [menuOpen, setMenuOpen] = useState(false)
     const [showInsights, setShowInsights] = useState(false)
-    const [menuPosition, setMenuPosition] = useState<{ top: number, right: number } | null>(null)
+    const [menuPosition, setMenuPosition] = useState<{ top: number, left: number, origin: 'top right' | 'bottom right' } | null>(null)
     const { t, language } = useLanguage()
 
     const formatCurrency = (amount: number) => {
@@ -69,9 +69,26 @@ export function PolicyCard({
             setMenuPosition(null)
         } else {
             const rect = e.currentTarget.getBoundingClientRect()
+            const MENU_WIDTH = 256
+            const MENU_HEIGHT = 360
+            const VIEWPORT_PADDING = 12
+            const GAP = 8
+            const spaceBelow = window.innerHeight - rect.bottom
+            const openUpward = spaceBelow < MENU_HEIGHT
+
+            const top = openUpward
+                ? Math.max(VIEWPORT_PADDING, rect.top - MENU_HEIGHT - GAP)
+                : Math.min(window.innerHeight - MENU_HEIGHT - VIEWPORT_PADDING, rect.bottom + GAP)
+
+            const left = Math.min(
+                window.innerWidth - MENU_WIDTH - VIEWPORT_PADDING,
+                Math.max(VIEWPORT_PADDING, rect.right - MENU_WIDTH)
+            )
+
             setMenuPosition({
-                top: rect.bottom + window.scrollY,
-                right: window.innerWidth - rect.right
+                top,
+                left,
+                origin: openUpward ? 'bottom right' : 'top right'
             })
             setMenuOpen(true)
         }
@@ -96,6 +113,17 @@ export function PolicyCard({
             window.removeEventListener('scroll', handleScroll, true)
             window.removeEventListener('resize', handleScroll)
         }
+    }, [menuOpen])
+
+    useEffect(() => {
+        if (!menuOpen) return
+        const closeOnEscape = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                closeMenu()
+            }
+        }
+        window.addEventListener('keydown', closeOnEscape)
+        return () => window.removeEventListener('keydown', closeOnEscape)
     }, [menuOpen])
 
     // Status badge styling
@@ -383,7 +411,10 @@ export function PolicyCard({
                 </button>
                 <button
                     onClick={(e) => handleMenuOpen(e)}
-                    className="flex items-center justify-center px-4 py-2 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl text-xs font-bold hover:bg-stone-800 dark:hover:bg-stone-100 transition-colors"
+                    className="flex items-center justify-center px-4 py-2 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl text-xs font-bold hover:bg-stone-800 dark:hover:bg-stone-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50"
+                    aria-haspopup="menu"
+                    aria-expanded={menuOpen}
+                    aria-controls={menuOpen ? `policy-card-menu-${policy.id}` : undefined}
                 >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
@@ -397,7 +428,10 @@ export function PolicyCard({
                 <div className="relative hidden sm:block" onClick={(e) => e.stopPropagation()}>
                     <button
                         onClick={(e) => handleMenuOpen(e)}
-                        className="p-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-400 hover:text-stone-600 dark:text-stone-500 dark:hover:text-stone-300 transition-colors"
+                        className="p-2 rounded-xl hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-400 hover:text-stone-600 dark:text-stone-500 dark:hover:text-stone-300 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50"
+                        aria-haspopup="menu"
+                        aria-expanded={menuOpen}
+                        aria-controls={menuOpen ? `policy-card-menu-${policy.id}` : undefined}
                     >
                         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
@@ -408,15 +442,17 @@ export function PolicyCard({
                 {menuOpen && typeof document !== 'undefined' && createPortal(
                     <>
                         <div
-                            className="fixed inset-0 z-[9998]"
+                            className="fixed inset-0 z-[9998] bg-stone-900/5 dark:bg-stone-950/20 backdrop-blur-[1px]"
                             onClick={closeMenu}
                         />
                         <div
-                            className="fixed z-[9999] w-64 bg-white dark:bg-stone-800 rounded-2xl shadow-xl border border-stone-200 dark:border-stone-700 py-2 overflow-hidden animate-in fade-in zoom-in-95 duration-200 divide-y divide-stone-100 dark:divide-stone-700"
+                            id={`policy-card-menu-${policy.id}`}
+                            role="menu"
+                            className="fixed z-[9999] w-64 bg-white dark:bg-stone-800 rounded-2xl shadow-xl border border-stone-200 dark:border-stone-700 py-2 overflow-hidden animate-in fade-in zoom-in-95 duration-150 divide-y divide-stone-100 dark:divide-stone-700"
                             style={{
                                 top: `${menuPosition?.top ?? 0}px`,
-                                right: `${menuPosition?.right ?? 0}px`,
-                                marginTop: '8px'
+                                left: `${menuPosition?.left ?? 0}px`,
+                                transformOrigin: menuPosition?.origin ?? 'top right',
                             }}
                         >
                             {/* Understand */}
@@ -428,7 +464,8 @@ export function PolicyCard({
                                     onRunAnalysis?.()
                                     closeMenu()
                                 }}
-                                className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors flex items-center gap-3"
+                                role="menuitem"
+                                className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 focus-visible:outline-none focus-visible:bg-stone-50 dark:focus-visible:bg-stone-700/50 transition-colors flex items-center gap-3"
                             >
                                 <div className="w-8 h-8 bg-blue-50 dark:bg-blue-900/30 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
@@ -440,7 +477,8 @@ export function PolicyCard({
                                     onViewDocuments?.()
                                     closeMenu()
                                 }}
-                                className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors flex items-center gap-3"
+                                role="menuitem"
+                                className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 focus-visible:outline-none focus-visible:bg-stone-50 dark:focus-visible:bg-stone-700/50 transition-colors flex items-center gap-3"
                             >
                                 <div className="w-8 h-8 bg-amber-50 dark:bg-amber-900/30 rounded-lg flex items-center justify-center text-amber-600 dark:text-amber-400">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
@@ -457,7 +495,8 @@ export function PolicyCard({
                                     onShare?.()
                                     closeMenu()
                                 }}
-                                className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors flex items-center gap-3"
+                                role="menuitem"
+                                className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 focus-visible:outline-none focus-visible:bg-stone-50 dark:focus-visible:bg-stone-700/50 transition-colors flex items-center gap-3"
                             >
                                 <div className="w-8 h-8 bg-teal-50 dark:bg-teal-900/30 rounded-lg flex items-center justify-center text-teal-600 dark:text-teal-400">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
@@ -469,7 +508,8 @@ export function PolicyCard({
                                     onAddToWallet?.()
                                     closeMenu()
                                 }}
-                                className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors flex items-center gap-3"
+                                role="menuitem"
+                                className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 focus-visible:outline-none focus-visible:bg-stone-50 dark:focus-visible:bg-stone-700/50 transition-colors flex items-center gap-3"
                             >
                                 <div className="w-8 h-8 bg-purple-50 dark:bg-purple-900/30 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-400">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
@@ -486,7 +526,8 @@ export function PolicyCard({
                                     onViewHistory?.()
                                     closeMenu()
                                 }}
-                                className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 transition-colors flex items-center gap-3"
+                                role="menuitem"
+                                className="w-full px-4 py-2 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 focus-visible:outline-none focus-visible:bg-stone-50 dark:focus-visible:bg-stone-700/50 transition-colors flex items-center gap-3"
                             >
                                 <div className="w-8 h-8 bg-stone-100 dark:bg-stone-700 rounded-lg flex items-center justify-center text-stone-500 dark:text-stone-400">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
@@ -503,7 +544,8 @@ export function PolicyCard({
                                     onDelete?.()
                                     closeMenu()
                                 }}
-                                className="w-full px-4 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-3"
+                                role="menuitem"
+                                className="w-full px-4 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 focus-visible:outline-none focus-visible:bg-red-50 dark:focus-visible:bg-red-900/20 transition-colors flex items-center gap-3"
                             >
                                 <div className="w-8 h-8 bg-red-50 dark:bg-red-900/30 rounded-lg flex items-center justify-center text-red-600 dark:text-red-400">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>

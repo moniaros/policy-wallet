@@ -7,11 +7,10 @@ import { usePathname } from "next/navigation"
 import { IBM_Plex_Sans } from "next/font/google"
 import {
     ArrowRight,
-    CheckCircle2,
-    ChevronDown,
+    Bell,
+    Brain,
     FileText,
     Lock,
-    MessageSquare,
     Shield,
     Users,
 } from "lucide-react"
@@ -33,8 +32,8 @@ interface WorldClassLandingProps {
 
 export function WorldClassLanding({ locale, content = landingContent }: WorldClassLandingProps) {
     const pathname = usePathname()
-
     const isGreek = locale === "el"
+
     const t = content
 
     useEffect(() => {
@@ -50,6 +49,57 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
         trackLandingEvent("signup_start", { role, source: location, locale })
     }
 
+    const trustItems = [
+        {
+            title: isGreek ? "Ασφάλεια τραπεζικού επιπέδου" : "Bank-level security",
+            subtitle: isGreek ? "Κρυπτογραφημένη αποθήκευση και αυστηρή προστασία δεδομένων." : "Encrypted storage and strict data protection.",
+            icon: Lock,
+        },
+        {
+            title: isGreek ? "Ουδέτερη πλατφόρμα" : "Neutral platform",
+            subtitle: isGreek ? "Ανεξάρτητη από σχεδιασμό, με επίκεντρο τα συμφέροντά σας." : "Independent by design, aligned with your interests.",
+            icon: Shield,
+        },
+        {
+            title: isGreek ? "Συνεργάζεται με μεγάλες ασφαλιστικές" : "Works across major insurers",
+            subtitle: isGreek ? "Συγκεντρώστε συμβόλαια από διαφορετικές ασφαλιστικές σε ένα πορτοφόλι." : "Bring policies from different insurers into one wallet.",
+            icon: Users,
+        },
+    ]
+
+    const featureItems = [
+        {
+            title: isGreek ? "Ανέβασμα συμβολαίων" : "Upload policies",
+            subtitle: isGreek ? "Ανεβάζετε PDF ή φωτογραφία με καθαρή καταχώρηση στοιχείων." : "PDF or photo upload with clean policy capture.",
+            icon: FileText,
+        },
+        {
+            title: isGreek ? "Το AI εντοπίζει κενά κάλυψης" : "AI finds coverage gaps",
+            subtitle: isGreek ? "Εντοπίζετε ελλείψεις πριν μετατραπούν σε υψηλό κόστος." : "Spot missing coverage before it becomes expensive.",
+            icon: Brain,
+        },
+        {
+            title: isGreek ? "Έξυπνες υπενθυμίσεις" : "Smart reminders",
+            subtitle: isGreek ? "Υπενθυμίσεις για ανανεώσεις και προθεσμίες όταν πραγματικά χρειάζονται." : "Renewal and deadline reminders when they matter.",
+            icon: Bell,
+        },
+    ]
+
+    const testimonials = [
+        {
+            quote: isGreek
+                ? "Μέσα σε λίγα λεπτά είχα τα βασικά συμβόλαιά μου οργανωμένα και εύκολα κατανοητά."
+                : "In minutes, I had my core policies organized and easy to understand.",
+            author: "Maria K.",
+        },
+        {
+            quote: isGreek
+                ? "Η συνεργασία με τους πελάτες έγινε πιο γρήγορη και πολύ πιο διαφανής."
+                : "Client collaboration became faster and much more transparent.",
+            author: "Nikos P.",
+        },
+    ]
+
     return (
         <div className={`${ibmPlexSans.className} min-h-screen bg-gradient-to-b from-emerald-50 via-white to-teal-50 text-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-teal-950/30 dark:text-slate-100`}>
             <header className="fixed top-4 left-4 right-4 z-50 mx-auto max-w-7xl">
@@ -59,13 +109,13 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                         <div className="flex items-center gap-1 rounded-lg bg-slate-100 p-1 dark:bg-slate-800">
                             <Link
                                 href="/"
-                                className={`px-2.5 py-1 text-xs font-bold rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${isGreek ? "bg-white text-emerald-700 shadow-sm dark:bg-slate-700 dark:text-emerald-300" : "text-slate-600 dark:text-slate-400"}`}
+                                className={`px-2.5 py-1 text-xs font-bold rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${locale === "el" ? "bg-white text-emerald-700 shadow-sm dark:bg-slate-700 dark:text-emerald-300" : "text-slate-600 dark:text-slate-400"}`}
                             >
                                 EL
                             </Link>
                             <Link
                                 href="/en"
-                                className={`px-2.5 py-1 text-xs font-bold rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${!isGreek ? "bg-white text-emerald-700 shadow-sm dark:bg-slate-700 dark:text-emerald-300" : "text-slate-600 dark:text-slate-400"}`}
+                                className={`px-2.5 py-1 text-xs font-bold rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${locale === "en" ? "bg-white text-emerald-700 shadow-sm dark:bg-slate-700 dark:text-emerald-300" : "text-slate-600 dark:text-slate-400"}`}
                             >
                                 EN
                             </Link>
@@ -114,7 +164,7 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                             </div>
                             <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
                                 {isGreek
-                                    ? "Πρώτη αξία σε λιγότερο από 2 λεπτά: ανεβάζετε συμβόλαιο και ξεκινά η ανάλυση."
+                                    ? "Πρώτη αξία σε λιγότερο από 2 λεπτά: ανεβάζετε το συμβόλαιο και η ανάλυση AI ξεκινά άμεσα."
                                     : "First value in under 2 minutes: upload your policy and AI analysis starts immediately."}
                             </p>
                             <div className="mt-3 hidden sm:block">
@@ -135,21 +185,6 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                                     {t.hero.tertiaryCta[locale]}
                                 </Link>
                             </div>
-
-                            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl">
-                                <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm dark:border-slate-700 dark:bg-slate-900">
-                                    <div className="font-semibold text-slate-900 dark:text-white">{isGreek ? "Ουδέτερο πορτοφόλι" : "Neutral wallet"}</div>
-                                    <div className="text-slate-600 dark:text-slate-300">{isGreek ? "Για όλες τις ασφαλιστικές" : "Across all insurers"}</div>
-                                </div>
-                                <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm dark:border-slate-700 dark:bg-slate-900">
-                                    <div className="font-semibold text-slate-900 dark:text-white">{isGreek ? "AI με έλεγχο" : "Controlled AI"}</div>
-                                    <div className="text-slate-600 dark:text-slate-300">{isGreek ? "Επαλήθευση και επεξεργασία από εσάς" : "You review and edit"}</div>
-                                </div>
-                                <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm dark:border-slate-700 dark:bg-slate-900">
-                                    <div className="font-semibold text-slate-900 dark:text-white">{isGreek ? "Συνεργασία πράκτορα" : "Agent collaboration"}</div>
-                                    <div className="text-slate-600 dark:text-slate-300">{isGreek ? "Δικαιώματα και διαφάνεια" : "Permissioned and transparent"}</div>
-                                </div>
-                            </div>
                         </div>
 
                         <div className="relative">
@@ -163,181 +198,129 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
                     </div>
                 </section>
 
-                <section id="personas" className="px-4 sm:px-6 lg:px-8 py-16 bg-slate-50/80 dark:bg-slate-900/50">
-                    <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-5">
-                        {t.personaTracks.map((track) => (
-                            <article key={track.id} className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
-                                <h2 className="text-xl font-bold">{track.title[locale]}</h2>
-                                <ul className="mt-4 space-y-2 text-sm text-slate-600 dark:text-slate-300">
-                                    {track.bullets.map((bullet, idx) => (
-                                        <li key={idx} className="flex items-start gap-2">
-                                            <CheckCircle2 className="w-4 h-4 mt-0.5 text-emerald-600" />
-                                            <span>{bullet[locale]}</span>
-                                        </li>
-                                    ))}
-                                </ul>
+                <section id="trust-strip" className="px-4 sm:px-6 lg:px-8 pb-14 sm:pb-20">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {trustItems.map((item) => {
+                                const Icon = item.icon
+                                return (
+                                    <article key={item.title} className="rounded-xl border border-slate-200 bg-white px-5 py-4 text-sm dark:border-slate-700 dark:bg-slate-900">
+                                        <div className="flex items-start gap-3">
+                                            <div className="mt-0.5 w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 flex items-center justify-center">
+                                                <Icon className="w-4 h-4" />
+                                            </div>
+                                            <div>
+                                                <p className="font-semibold text-slate-900 dark:text-white">{item.title}</p>
+                                                <p className="mt-1 text-slate-600 dark:text-slate-300">{item.subtitle}</p>
+                                            </div>
+                                        </div>
+                                    </article>
+                                )
+                            })}
+                        </div>
+                    </div>
+                </section>
+
+                <section id="core-features" className="px-4 sm:px-6 lg:px-8 py-16 bg-slate-50/80 dark:bg-slate-900/50">
+                    <div className="max-w-7xl mx-auto">
+                        <h2 className="text-3xl sm:text-4xl font-bold">
+                            {isGreek ? "Τρία βήματα για πλήρη εικόνα κάλυψης" : "Three steps to full coverage clarity"}
+                        </h2>
+                        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {featureItems.map((item) => {
+                                const Icon = item.icon
+                                return (
+                                    <article key={item.title} className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
+                                        <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300 flex items-center justify-center">
+                                            <Icon className="w-5 h-5" />
+                                        </div>
+                                        <h3 className="mt-4 text-lg font-semibold">{item.title}</h3>
+                                        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{item.subtitle}</p>
+                                    </article>
+                                )
+                            })}
+                        </div>
+                    </div>
+                </section>
+
+                <section id="social-proof" className="px-4 sm:px-6 lg:px-8 py-16">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr] gap-8 items-start">
+                            <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
+                                <h2 className="text-2xl sm:text-3xl font-bold">{isGreek ? "Εμπιστοσύνη στην πράξη" : "Trust in practice"}</h2>
+                                <div className="mt-6 grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p className="text-3xl font-bold text-slate-900 dark:text-white">10k+</p>
+                                        <p className="text-sm text-slate-600 dark:text-slate-300">{isGreek ? "ενεργοί χρήστες" : "active users"}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-3xl font-bold text-slate-900 dark:text-white">50k+</p>
+                                        <p className="text-sm text-slate-600 dark:text-slate-300">{isGreek ? "συμβόλαια" : "policies"}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {testimonials.map((item) => (
+                                    <article key={item.author} className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
+                                        <p className="text-slate-700 dark:text-slate-200">"{item.quote}"</p>
+                                        <p className="mt-4 text-sm font-semibold text-emerald-700 dark:text-emerald-300">{item.author}</p>
+                                    </article>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="final-cta" className="px-4 sm:px-6 lg:px-8 py-16 bg-slate-50/80 dark:bg-slate-900/50">
+                    <div className="max-w-3xl mx-auto">
+                        <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 dark:border-slate-700 dark:bg-slate-900">
+                            <h2 className="text-3xl sm:text-4xl font-bold text-center">{isGreek ? "Ξεκινήστε τώρα" : "Get started now"}</h2>
+                            <p className="mt-3 text-center text-slate-600 dark:text-slate-300">
+                                {isGreek ? "Δημιουργήστε λογαριασμό ή συνεχίστε στο πορτοφόλι σας." : "Create your account or continue to your wallet."}
+                            </p>
+                            <div className="mt-6 flex flex-col sm:flex-row items-stretch gap-3">
                                 <Link
-                                    href={track.ctaHref}
-                                    onClick={() => {
-                                        trackLandingEvent("persona_card_click", { persona: track.id, locale })
-                                        trackLandingEvent("signup_start", { role: track.id, source: `landing_persona_${track.id}`, locale })
-                                    }}
-                                    className="mt-5 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-white hover:bg-emerald-700"
+                                    href="/auth/signup?source=landing_final_signup"
+                                    onClick={() => trackCta("final", "policyholder")}
+                                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 font-semibold text-white hover:bg-orange-600 transition-colors cursor-pointer"
                                 >
-                                    {track.ctaLabel[locale]}
+                                    {isGreek ? "Εγγραφή" : "Sign up"}
                                     <ArrowRight className="w-4 h-4" />
                                 </Link>
-                            </article>
-                        ))}
-                    </div>
-                </section>
-
-                <section id="how-it-works" className="px-4 sm:px-6 lg:px-8 py-16">
-                    <div className="max-w-7xl mx-auto">
-                        <h2 className="text-3xl sm:text-4xl font-bold">{t.howItWorks.title[locale]}</h2>
-                        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {t.howItWorks.steps.map((step) => (
-                                <article key={step.id} className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
-                                    <h3 className="font-semibold">{step.title[locale]}</h3>
-                                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{step.description[locale]}</p>
-                                </article>
-                            ))}
+                                <Link
+                                    href="/auth/signin?source=landing_final_login"
+                                    onClick={() => trackLandingEvent("cta_click", { location: "final", role: "invite", locale })}
+                                    className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-slate-300 px-5 py-3 font-semibold text-slate-800 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                                >
+                                    {isGreek ? "Σύνδεση" : "Login"}
+                                </Link>
+                            </div>
+                            <p className="mt-3 text-xs text-slate-500 dark:text-slate-400 text-center">
+                                {isGreek ? "Ασφαλής πρόσβαση, χωρίς περιττά βήματα." : "Secure access. No unnecessary steps."}
+                            </p>
                         </div>
-                    </div>
-                </section>
-
-                <section id="ai-extraction" className="px-4 sm:px-6 lg:px-8 py-16 bg-slate-50/80 dark:bg-slate-900/50">
-                    <div className="max-w-7xl mx-auto">
-                        <h2 className="text-3xl sm:text-4xl font-bold">{t.aiExtraction.title[locale]}</h2>
-                        <p className="mt-3 text-slate-600 dark:text-slate-300">{t.aiExtraction.subtitle[locale]}</p>
-                        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                            {t.aiExtraction.fields.map((field, idx) => (
-                                <div key={idx} className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm dark:border-slate-700 dark:bg-slate-900">
-                                    <FileText className="w-4 h-4 mb-2 text-emerald-600" />
-                                    {field[locale]}
-                                </div>
-                            ))}
-                        </div>
-                        <p className="mt-4 text-sm font-medium text-slate-700 dark:text-slate-200">{t.aiExtraction.reviewNote[locale]}</p>
-                    </div>
-                </section>
-
-                <section id="collaboration" className="px-4 sm:px-6 lg:px-8 py-16">
-                    <div className="max-w-7xl mx-auto">
-                        <h2 className="text-3xl sm:text-4xl font-bold">{t.collaboration.title[locale]}</h2>
-                        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-5">
-                            {t.collaboration.tracks.map((track) => (
-                                <article key={track.id} className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
-                                    <h3 className="text-lg font-semibold">{track.title[locale]}</h3>
-                                    <ul className="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-300">
-                                        {track.points.map((point, idx) => (
-                                            <li key={idx} className="flex items-start gap-2">
-                                                <Users className="w-4 h-4 mt-0.5 text-emerald-600" />
-                                                <span>{point[locale]}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </article>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                <section id="qa-upgrade" className="px-4 sm:px-6 lg:px-8 py-16 bg-slate-50/80 dark:bg-slate-900/50">
-                    <div className="max-w-7xl mx-auto">
-                        <h2 className="text-3xl sm:text-4xl font-bold">{t.qaUpgrade.title[locale]}</h2>
-                        <p className="mt-3 text-slate-600 dark:text-slate-300">{t.qaUpgrade.subtitle[locale]}</p>
-                        <ul className="mt-5 space-y-2 text-sm text-slate-600 dark:text-slate-300">
-                            {t.qaUpgrade.bullets.map((bullet, idx) => (
-                                <li key={idx} className="flex items-start gap-2">
-                                    <MessageSquare className="w-4 h-4 mt-0.5 text-orange-500" />
-                                    <span>{bullet[locale]}</span>
-                                </li>
-                            ))}
-                        </ul>
-                        <Link
-                            href="/pricing"
-                            onClick={() => trackLandingEvent("pricing_click", { locale })}
-                            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-orange-500 px-4 py-2.5 font-semibold text-white hover:bg-orange-600"
-                        >
-                            {t.qaUpgrade.pricingCta[locale]}
-                            <ArrowRight className="w-4 h-4" />
-                        </Link>
-                    </div>
-                </section>
-
-                <section id="trust" className="px-4 sm:px-6 lg:px-8 py-16">
-                    <div className="max-w-7xl mx-auto">
-                        <h2 className="text-3xl sm:text-4xl font-bold">{t.trust.title[locale]}</h2>
-                        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {t.trust.bullets.map((bullet, idx) => (
-                                <article key={idx} className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900 text-sm">
-                                    {bullet[locale]}
-                                </article>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                <section id="security" className="px-4 sm:px-6 lg:px-8 py-16 bg-slate-50/80 dark:bg-slate-900/50">
-                    <div className="max-w-7xl mx-auto">
-                        <h2 className="text-3xl sm:text-4xl font-bold">{t.security.title[locale]}</h2>
-                        <ul className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {t.security.bullets.map((bullet, idx) => (
-                                <li key={idx} className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900 text-sm flex items-start gap-2">
-                                    <Lock className="w-4 h-4 mt-0.5 text-emerald-600" />
-                                    <span>{bullet[locale]}</span>
-                                </li>
-                            ))}
-                        </ul>
                     </div>
                 </section>
 
                 <section id="faq" className="px-4 sm:px-6 lg:px-8 py-16">
                     <div className="max-w-3xl mx-auto">
                         <h2 className="text-3xl sm:text-4xl font-bold text-center">{t.faq.title[locale]}</h2>
-                        <div className="mt-8 space-y-3">
-                            {t.faq.items.map((item) => (
-                                <details
-                                    key={item.id}
-                                    className="group rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900"
-                                    onToggle={(e) => {
-                                        if ((e.currentTarget as HTMLDetailsElement).open) {
-                                            trackLandingEvent("faq_expand", { faq_id: item.id, locale })
-                                        }
-                                    }}
-                                >
-                                    <summary className="list-none cursor-pointer flex items-center justify-between p-5">
-                                        <span className="font-semibold">{item.question[locale]}</span>
-                                        <ChevronDown className="w-4 h-4 text-slate-500 transition-transform group-open:rotate-180" />
-                                    </summary>
-                                    <div className="px-5 pb-5 text-sm leading-relaxed text-slate-600 border-t border-slate-100 dark:text-slate-300 dark:border-slate-800">
-                                        {item.answer[locale]}
-                                    </div>
-                                </details>
+                        <div className="mt-6 grid grid-cols-1 gap-3">
+                            {t.faq.items.slice(0, 3).map((item) => (
+                                <article key={item.id} className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900">
+                                    <p className="font-semibold">{item.question[locale]}</p>
+                                    <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{item.answer[locale]}</p>
+                                </article>
                             ))}
                         </div>
-                    </div>
-                </section>
-
-                <section id="final-cta" className="px-4 sm:px-6 lg:px-8 py-16 text-center">
-                    <div className="max-w-3xl mx-auto">
-                        <h2 className="text-3xl sm:text-4xl font-bold">{t.finalCta.title[locale]}</h2>
-                        <p className="mt-3 text-slate-600 dark:text-slate-300">{t.finalCta.subtitle[locale]}</p>
-                        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                        <div className="mt-6 text-center">
                             <Link
-                                href="/auth/signup?role=policyholder&source=landing_final_policyholder"
-                                onClick={() => trackCta("final", "policyholder")}
-                                className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-6 py-3 font-semibold text-white hover:bg-orange-600"
+                                href="/auth/signin?next=/help"
+                                onClick={() => trackLandingEvent("faq_help_click", { locale })}
+                                className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-700 hover:text-emerald-600 dark:text-emerald-300"
                             >
-                                {t.finalCta.policyholderCta[locale]}
-                            </Link>
-                            <Link
-                                href="/auth/signup?role=agent&source=landing_final_agent"
-                                onClick={() => trackCta("final", "agent")}
-                                className="inline-flex items-center gap-2 rounded-xl border border-slate-300 px-6 py-3 font-semibold text-slate-800 hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
-                            >
-                                {t.finalCta.agentCta[locale]}
+                                {t.footer.helpLabel[locale]}
+                                <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
                     </div>
@@ -380,5 +363,3 @@ export function WorldClassLanding({ locale, content = landingContent }: WorldCla
         </div>
     )
 }
-
-
