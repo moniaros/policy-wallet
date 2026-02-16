@@ -1,7 +1,7 @@
 "use server"
 
 import { db } from "@/lib/db"
-import { auth } from "@/auth" // Assuming auth helper exists
+import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 
@@ -14,6 +14,8 @@ const AgentProfileSchema = z.object({
 })
 
 export async function updateAgentProfile(userId: string, data: z.infer<typeof AgentProfileSchema>) {
+    const supabase = await createClient();
+    void supabase;
     try {
         await db.agentProfile.update({
             where: { userId },
