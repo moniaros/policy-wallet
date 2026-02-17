@@ -25,6 +25,29 @@ export interface FaqItemLocalized {
     answer: LocalizedText
 }
 
+export interface LandingVisualAsset {
+    src: string
+    alt: LocalizedText
+    caption?: LocalizedText
+}
+
+export interface LandingTrustItem {
+    title: LocalizedText
+    subtitle: LocalizedText
+    icon: "lock" | "shield" | "users"
+}
+
+export interface LandingFeatureItem {
+    title: LocalizedText
+    subtitle: LocalizedText
+    icon: "file-text" | "brain" | "bell"
+}
+
+export interface LandingTestimonial {
+    quote: LocalizedText
+    author: string
+}
+
 export interface SeoMetaLocalized {
     locale: LandingLocale
     path: "/" | "/en"
@@ -48,6 +71,30 @@ export interface LandingContentModel {
         primaryCta: LocalizedText
         secondaryCta: LocalizedText
         tertiaryCta: LocalizedText
+        helperText?: LocalizedText
+    }
+    visuals?: {
+        heroImage?: LandingVisualAsset
+        trustImages?: LandingVisualAsset[]
+        socialProofImages?: LandingVisualAsset[]
+    }
+    landingSystem?: {
+        trustItems: LandingTrustItem[]
+        featureItems: LandingFeatureItem[]
+        socialProof: {
+            title: LocalizedText
+            metrics: Array<{ value: string; label: LocalizedText }>
+            testimonials: LandingTestimonial[]
+        }
+        conversion: {
+            title: LocalizedText
+            subtitle: LocalizedText
+            signupLabel: LocalizedText
+            loginLabel: LocalizedText
+            footnote: LocalizedText
+            mobilePrimaryLabel: LocalizedText
+            signInLabel: LocalizedText
+        }
     }
     personaTracks: PersonaTrack[]
     howItWorks: {
