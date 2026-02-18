@@ -43,6 +43,22 @@ export interface LandingFeatureItem {
     icon: "file-text" | "brain" | "bell"
 }
 
+export interface LandingHeroCarouselItem {
+    title: LocalizedText
+    description: LocalizedText
+    bullets?: LocalizedText[]
+    cta?: LocalizedText
+    footnote?: LocalizedText
+}
+
+export interface LandingAudienceItem {
+    title: LocalizedText
+    subtitle: LocalizedText
+    bullets: LocalizedText[]
+    highlights?: LocalizedText[]
+    ctaLabel: LocalizedText
+}
+
 export interface LandingTestimonial {
     quote: LocalizedText
     author: string
@@ -79,8 +95,39 @@ export interface LandingContentModel {
         socialProofImages?: LandingVisualAsset[]
     }
     landingSystem?: {
+        heroCarousel: LandingHeroCarouselItem[]
+        audiences: LandingAudienceItem[]
         trustItems: LandingTrustItem[]
         featureItems: LandingFeatureItem[]
+        urgency: {
+            title: LocalizedText
+            bullets: LocalizedText[]
+            conclusion: LocalizedText
+        }
+        riskFlow: {
+            title: LocalizedText
+            scoreLabel: LocalizedText
+            scoreValue: string
+            scoreTone: "low" | "medium" | "high"
+            steps: Array<{ title: LocalizedText; description: LocalizedText }>
+        }
+        proofAlert: {
+            title: LocalizedText
+            subtitle: LocalizedText
+        }
+        differentiator: {
+            title: LocalizedText
+            bullets: LocalizedText[]
+        }
+        inaction: {
+            title: LocalizedText
+            bullets: LocalizedText[]
+        }
+        quickCheck: {
+            title: LocalizedText
+            bullets: LocalizedText[]
+            footnote: LocalizedText
+        }
         socialProof: {
             title: LocalizedText
             metrics: Array<{ value: string; label: LocalizedText }>

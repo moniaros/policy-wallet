@@ -14,135 +14,270 @@ export const landingContent: LandingContentModel = {
     ],
     hero: {
         badge: {
-            el: "Gemini-powered AI guidance",
-            en: "Gemini-powered AI guidance",
+            el: "AI Risk Intelligence για ασφάλειες",
+            en: "AI Risk Intelligence for insurance",
         },
         title: {
-            el: "Το ασφαλιστικό σου πορτοφόλι, όπως πρέπει να είναι.",
-            en: "Your insurance wallet, finally done right.",
+            el: "Δες τι ΔΕΝ καλύπτουν τα συμβόλαιά σου. Πριν το μάθεις αργά.",
+            en: "See what your policies do NOT cover. Before it costs you.",
         },
         subtitle: {
-            el: "Οργάνωσε όλα τα συμβόλαιά σου σε ένα ασφαλές περιβάλλον και συνεργάσου άμεσα με τον πράκτορά σου.",
-            en: "Bring all your policies into one secure workspace and collaborate instantly with your agent.",
+            el: "Ανέβασε τα συμβόλαιά σου και το AI εντοπίζει κενά, επικαλύψεις και ρίσκα που συνήθως μένουν κρυφά.",
+            en: "Upload your policies and AI identifies gaps, overlaps, and hidden risks most people miss.",
         },
         primaryCta: {
-            el: "Ξεκίνα δωρεάν ως ασφαλισμένος",
-            en: "Start free as policyholder",
+            el: "Έλεγξε τώρα την κάλυψή μου",
+            en: "Check my coverage now",
         },
         secondaryCta: {
-            el: "Έχω πρόσκληση από πράκτορα",
-            en: "I have an agent invite",
+            el: "Σύνδεση",
+            en: "Sign in",
         },
         tertiaryCta: {
             el: "Είμαι ασφαλιστικός πράκτορας",
             en: "I'm an insurance agent",
         },
         helperText: {
-            el: "Πρώτη αξία σε λιγότερο από 2 λεπτά: ανεβάζεις συμβόλαιο και η ανάλυση AI ξεκινά άμεσα.",
-            en: "First value in under 2 minutes: upload a policy and AI analysis starts immediately.",
+            el: "Πρώτη εικόνα κάλυψης σε λιγότερο από 2 λεπτά. Χωρίς κάρτα, χωρίς δέσμευση.",
+            en: "Your first coverage snapshot in under 2 minutes. No card, no commitment.",
         },
     },
     visuals: {
         heroImage: {
-            src: "/brand/brochure/feat.jpg",
+            src: "/screenshots/desktop-dashboard.png",
             alt: {
-                el: "Επισκόπηση πλατφόρμας PolicyWallet",
-                en: "PolicyWallet platform overview",
+                el: "Προεπισκόπηση του dashboard του PolicyWallet",
+                en: "PolicyWallet dashboard preview",
             },
             caption: {
                 el: "Ενιαία εικόνα για όλα τα συμβόλαιά σας",
                 en: "Unified view for all your policies",
             },
         },
-        trustImages: [
-            {
-                src: "/brand/brochure/h2-1.jpg",
-                alt: {
-                    el: "Σκηνή συνεργασίας με έμφαση στην εμπιστοσύνη",
-                    en: "Trust-focused collaboration scene",
-                },
-            },
-            {
-                src: "/brand/brochure/med-1.png",
-                alt: {
-                    el: "Υγειονομικά οφέλη και ασφαλιστική καθοδήγηση",
-                    en: "Health benefit and insurance guidance visual",
-                },
-            },
-        ],
         socialProofImages: [
             {
-                src: "/brand/brochure/3.jpg",
+                src: "/screenshots/desktop-dashboard.png",
                 alt: {
-                    el: "Ασφαλιστική εμπειρία πελάτη",
-                    en: "Insurance customer experience",
+                    el: "Κεντρική προβολή συμβολαίων και ειδοποιήσεων",
+                    en: "Central view of policies and notifications",
                 },
             },
             {
-                src: "/brand/brochure/2.jpg",
+                src: "/screenshots/mobile-dashboard.png",
                 alt: {
-                    el: "Οικονομικός σχεδιασμός και προστασία",
-                    en: "Financial planning and protection",
-                },
-            },
-            {
-                src: "/brand/brochure/h2.webp",
-                alt: {
-                    el: "Οικογενειακή ασφάλεια και πρόληψη",
-                    en: "Family safety and prevention",
+                    el: "Κινητή εμπειρία διαχείρισης ασφαλιστηρίων",
+                    en: "Mobile insurance management experience",
                 },
             },
         ],
     },
     landingSystem: {
+        heroCarousel: [
+            {
+                title: { el: "Μην μαντεύεις αν είσαι καλυμμένος. Μάθε το.", en: "Stop guessing if you are covered. Know it." },
+                description: {
+                    el: "Το PolicyWallet διαβάζει τα ασφαλιστήριά σου και σου δείχνει καθαρά πού είσαι καλυμμένος, πού έχεις κενά, πότε λήγουν και αν χάνεις χρήματα.",
+                    en: "PolicyWallet reads your policies and clearly shows where you are covered, where you have gaps, when policies expire, and where you may be losing money.",
+                },
+                bullets: [
+                    { el: "Πού είσαι καλυμμένος", en: "Where you are covered" },
+                    { el: "Πού έχεις κενά", en: "Where you have gaps" },
+                    { el: "Πότε λήγουν", en: "When they expire" },
+                    { el: "Αν χάνεις χρήματα", en: "If you are losing money" },
+                ],
+                cta: { el: "Ξεκίνα δωρεάν έλεγχο", en: "Start free check" },
+                footnote: { el: "Χωρίς κόστος. Χωρίς πίεση.", en: "No cost. No pressure." },
+            },
+            {
+                title: { el: "Τι είναι το PolicyWallet;", en: "What is PolicyWallet?" },
+                description: {
+                    el: "Η έξυπνη πλατφόρμα που οργανώνει και εξηγεί τις ασφάλειές σου με καθαρή και ουδέτερη εικόνα.",
+                    en: "The smart platform that organizes and explains your insurance with a clear and neutral view.",
+                },
+                bullets: [
+                    { el: "Δεν είμαστε ασφαλιστική", en: "We are not an insurance company" },
+                    { el: "Δεν πουλάμε προϊόντα", en: "We do not sell products" },
+                    { el: "Δεν παίρνουμε προμήθειες", en: "We do not take commissions" },
+                ],
+            },
+            {
+                title: { el: "Για οικογένειες με ευθύνη", en: "For families aged with responsibility" },
+                description: {
+                    el: "Όταν έχεις οικογένεια, δεν χωράνε υποθέσεις. Το PolicyWallet σου δείχνει αν οι βασικές καλύψεις σου είναι πραγματικά επαρκείς.",
+                    en: "When you have a family, assumptions are risky. PolicyWallet shows whether your core coverage is truly adequate.",
+                },
+                bullets: [
+                    { el: "Υγεία, σπίτι, αυτοκίνητο", en: "Health, home, car" },
+                    { el: "Επάρκεια αστικής ευθύνης", en: "Liability adequacy" },
+                    { el: "Πραγματική κάλυψη νοσηλείας", en: "Real hospitalization coverage" },
+                ],
+                cta: { el: "Δες την εικόνα της οικογένειάς σου", en: "See your family's full picture" },
+            },
+            {
+                title: { el: "Για οδηγούς και φοιτητές που ξεκινούν τώρα", en: "For drivers and students starting now" },
+                description: {
+                    el: "Ένα ατύχημα δεν σε ρωτάει και ένα νέο ξεκίνημα έχει κρυφά ρίσκα. Ανέβασε τα συμβόλαια και δες τα καθαρά, χωρίς νομική γλώσσα.",
+                    en: "An accident does not ask first, and new beginnings have hidden risk. Upload policies and see clear answers without legal jargon.",
+                },
+                bullets: [
+                    { el: "Απαλλαγές, οδική βοήθεια, φυσικές καταστροφές", en: "Deductibles, roadside support, natural disasters" },
+                    { el: "Κάλυψη κατοικίας και προσωπικής ευθύνης", en: "Home and personal liability coverage" },
+                    { el: "Αξιοποίηση ασφαλιστικής υγείας", en: "Use your health insurance benefits fully" },
+                ],
+                cta: { el: "Κάνε τώρα τον έλεγχο", en: "Run your check now" },
+            },
+        ],
+        audiences: [
+            {
+                title: { el: "Γονείς", en: "Parents" },
+                subtitle: { el: "Για αυτούς που έχουν ευθύνη", en: "For people carrying responsibility" },
+                bullets: [
+                    { el: "Σπίτι, αυτοκίνητο, παιδιά, υγεία", en: "Home, car, children, health" },
+                    { el: "Έλεγχος επάρκειας αστικής ευθύνης", en: "Liability adequacy check" },
+                    { el: "Καθαρή εικόνα οικογενειακού ρίσκου", en: "Clear family risk view" },
+                ],
+                highlights: [
+                    { el: "Η ηρεμία δεν είναι θεωρία. Είναι δεδομένα.", en: "Peace of mind is not theory. It is data." },
+                ],
+                ctaLabel: { el: "Δες την εικόνα της οικογένειάς σου", en: "See your family overview" },
+            },
+            {
+                title: { el: "Οδηγοί", en: "Drivers" },
+                subtitle: { el: "Για όσους περνούν ώρες στον δρόμο", en: "For people spending hours on the road" },
+                bullets: [
+                    { el: "Έλεγχος απαλλαγής και ορίων κάλυψης", en: "Check deductible and coverage limits" },
+                    { el: "Κάλυψη φυσικών καταστροφών", en: "Natural disaster coverage" },
+                    { el: "Οδική βοήθεια και γεωγραφικά όρια", en: "Roadside assistance and geographic limits" },
+                ],
+                ctaLabel: { el: "Έλεγξε το αυτοκίνητό σου τώρα", en: "Check your car now" },
+            },
+            {
+                title: { el: "Φοιτητές", en: "Students" },
+                subtitle: { el: "Για όσους ξεκινούν τώρα", en: "For people starting now" },
+                bullets: [
+                    { el: "Υγεία από οικογενειακό συμβόλαιο", en: "Health cover from family policy" },
+                    { el: "Κάλυψη ενοικιαζόμενης κατοικίας", en: "Rented home coverage" },
+                    { el: "Προσωπική αστική ευθύνη", en: "Personal liability" },
+                ],
+                ctaLabel: { el: "Δες τι καλύπτεσαι", en: "See what you are covered for" },
+            },
+            {
+                title: { el: "Ασφάλεια υγείας", en: "Health insurance" },
+                subtitle: { el: "Για όσους θέλουν να πάρουν όσα δικαιούνται", en: "For those who want to claim what they deserve" },
+                bullets: [
+                    { el: "Όρια κάλυψης και εξαιρέσεις", en: "Coverage limits and exclusions" },
+                    { el: "Χρόνοι αναμονής και ενεργοποιήσεις", en: "Waiting periods and activation rules" },
+                    { el: "Πρακτική αξιοποίηση παροχών", en: "Practical use of benefits" },
+                ],
+                ctaLabel: { el: "Δες την ανάλυση υγείας σου", en: "See your health analysis" },
+            },
+        ],
         trustItems: [
             {
-                title: { el: "Ασφάλεια τραπεζικού επιπέδου", en: "Bank-level security" },
+                title: { el: "Υψηλή ασφάλεια. Απόλυτος έλεγχος.", en: "High security. Full control." },
                 subtitle: {
-                    el: "Κρυπτογραφημένη αποθήκευση και αυστηρή προστασία δεδομένων.",
-                    en: "Encrypted storage and strict data protection.",
+                    el: "Κρυπτογράφηση δεδομένων και πρόσβαση μόνο από εσένα.",
+                    en: "Encrypted data with access controlled by you.",
                 },
                 icon: "lock",
             },
             {
-                title: { el: "Ουδέτερη πλατφόρμα", en: "Neutral platform" },
+                title: { el: "Καμία κοινοποίηση χωρίς άδεια", en: "No sharing without consent" },
                 subtitle: {
-                    el: "Ανεξάρτητη από σχεδιασμό, με επίκεντρο τα συμφέροντά σας.",
-                    en: "Independent by design, aligned with your interests.",
+                    el: "Τα ασφαλιστήριά σου είναι ευαίσθητα δεδομένα και τα αντιμετωπίζουμε σοβαρά.",
+                    en: "Your policies are sensitive data and we handle them seriously.",
                 },
                 icon: "shield",
             },
             {
-                title: { el: "Συνεργάζεται με μεγάλες ασφαλιστικές", en: "Works across major insurers" },
+                title: { el: "Ουδέτερη ανάλυση", en: "Neutral analysis" },
                 subtitle: {
-                    el: "Συγκεντρώστε συμβόλαια από διαφορετικές ασφαλιστικές σε ένα πορτοφόλι.",
-                    en: "Bring policies from different insurers into one wallet.",
+                    el: "Δεν προωθούμε εταιρείες και δεν κερδίζουμε από αλλαγές ασφαλιστικής.",
+                    en: "We do not promote carriers and we do not profit from switching.",
                 },
                 icon: "users",
             },
         ],
+        urgency: {
+            title: { el: "Τι δεν ξέρουν οι περισσότεροι", en: "What most people do not know" },
+            bullets: [
+                { el: "7 στους 10 έχουν ουσιαστικά κενά κάλυψης", en: "7 out of 10 have meaningful coverage gaps" },
+                { el: "Πολλοί πληρώνουν διπλή ή αλληλοεπικαλυπτόμενη κάλυψη", en: "Many people pay for duplicate or overlapping coverage" },
+                { el: "Οι αλλαγές ζωής συχνά δεν αποτυπώνονται έγκαιρα στα συμβόλαια", en: "Life changes are often not reflected in policies on time" },
+            ],
+            conclusion: { el: "Το PolicyWallet σου δείχνει την αλήθεια.", en: "PolicyWallet shows you the truth." },
+        },
+        riskFlow: {
+            title: { el: "Σε 3 κινήσεις", en: "In 3 steps" },
+            scoreLabel: { el: "Coverage Score", en: "Coverage Score" },
+            scoreValue: "68/100",
+            scoreTone: "medium",
+            steps: [
+                {
+                    title: { el: "Βήμα 1 · Ανέβασε τα συμβόλαιά σου", en: "Step 1 · Upload your policies" },
+                    description: { el: "PDF ή φωτογραφία, σε λιγότερο από 1 λεπτό.", en: "PDF or photo, in under 1 minute." },
+                },
+                {
+                    title: { el: "Βήμα 2 · Το σύστημα διαβάζει τους όρους", en: "Step 2 · The system reads policy terms" },
+                    description: { el: "Αναλύει καλύψεις, εξαιρέσεις και κρίσιμα όρια.", en: "It analyzes coverage, exclusions, and critical limits." },
+                },
+                {
+                    title: { el: "Βήμα 3 · Παίρνεις καθαρή εικόνα", en: "Step 3 · You get a clear picture" },
+                    description: { el: "Όχι τεχνικοί όροι. Όχι νομική γλώσσα. Καθαρά.", en: "No technical terms. No legal jargon. Clear output." },
+                },
+            ],
+        },
+        proofAlert: {
+            title: { el: "Εντοπίστηκε κενό στην αστική ευθύνη κατοικίας", en: "Home liability coverage gap detected" },
+            subtitle: { el: "Ενδεικτική πιθανή έκθεση έως €120.000", en: "Indicative potential exposure up to €120,000" },
+        },
+        differentiator: {
+            title: { el: "Ουδέτερη. Ανεξάρτητη. Με το μέρος σου.", en: "Neutral. Independent. On your side." },
+            bullets: [
+                { el: "Δεν πουλάμε ασφάλειες.", en: "We do not sell insurance." },
+                { el: "Δεν προωθούμε συγκεκριμένες εταιρείες.", en: "We do not push specific carriers." },
+                { el: "Αναλύουμε μόνο δεδομένα κάλυψης.", en: "We analyze coverage data only." },
+            ],
+        },
+        inaction: {
+            title: { el: "Reality check", en: "Reality check" },
+            bullets: [
+                { el: "Το πρόβλημα δεν είναι να έχεις ασφάλεια.", en: "The problem is not having insurance." },
+                { el: "Το πρόβλημα είναι να νομίζεις ότι έχεις.", en: "The problem is believing you are covered when you are not." },
+                { el: "Μην το ανακαλύψεις όταν είναι αργά.", en: "Do not discover it too late." },
+            ],
+        },
+        quickCheck: {
+            title: { el: "Χρειάζεσαι μόνο 60 δευτερόλεπτα", en: "Try it in 60 seconds" },
+            bullets: [
+                { el: "Ανέβασε 1 συμβόλαιο", en: "Upload 1 policy" },
+                { el: "Λάβε άμεσα ανάλυση", en: "Get instant analysis" },
+                { el: "Δες το ρίσκο σου", en: "See your risk level" },
+            ],
+            footnote: { el: "Χωρίς κάρτα. Χωρίς δέσμευση.", en: "No card. No commitment." },
+        },
         featureItems: [
             {
                 title: { el: "Ανέβασμα συμβολαίων", en: "Upload policies" },
                 subtitle: {
-                    el: "Ανεβάζετε PDF ή φωτογραφία με καθαρή καταχώρηση στοιχείων.",
-                    en: "PDF or photo upload with clean policy capture.",
+                    el: "Ανέβασμα PDF ή φωτογραφίας με γρήγορη καταχώρηση βασικών στοιχείων.",
+                    en: "Upload PDF or photo with fast capture of key policy details.",
                 },
                 icon: "file-text",
             },
             {
                 title: { el: "Το AI εντοπίζει κενά κάλυψης", en: "AI finds coverage gaps" },
                 subtitle: {
-                    el: "Εντοπίζετε ελλείψεις πριν μετατραπούν σε υψηλό κόστος.",
-                    en: "Spot missing coverage before it becomes expensive.",
+                    el: "Εντοπισμός πιθανών ασφαλιστικών κενών πριν καταλήξουν σε κοστοβόρα ρίσκα.",
+                    en: "Spot potential gaps before they become costly risks.",
                 },
                 icon: "brain",
             },
             {
                 title: { el: "Έξυπνες υπενθυμίσεις", en: "Smart reminders" },
                 subtitle: {
-                    el: "Υπενθυμίσεις για ανανεώσεις και προθεσμίες όταν πραγματικά χρειάζονται.",
-                    en: "Renewal and deadline reminders when they matter.",
+                    el: "Έγκαιρες υπενθυμίσεις για ανανεώσεις και κρίσιμες ημερομηνίες.",
+                    en: "Timely reminders for renewals and critical dates.",
                 },
                 icon: "bell",
             },
@@ -157,26 +292,26 @@ export const landingContent: LandingContentModel = {
                 {
                     quote: {
                         el: "Μέσα σε λίγα λεπτά είχα τα βασικά συμβόλαιά μου οργανωμένα και εύκολα κατανοητά.",
-                        en: "In minutes, I had my core policies organized and easy to understand.",
+                        en: "In minutes, my core policies were organized and easy to understand.",
                     },
                     author: "Maria K.",
                 },
                 {
                     quote: {
-                        el: "Η συνεργασία με τους πελάτες έγινε πιο γρήγορη και πολύ πιο διαφανής.",
-                        en: "Client collaboration became faster and much more transparent.",
+                        el: "Η συνεργασία με πελάτες έγινε πιο γρήγορη και πιο ξεκάθαρη.",
+                        en: "Client collaboration became faster and much clearer.",
                     },
                     author: "Nikos P.",
                 },
             ],
         },
         conversion: {
-            title: { el: "Ξεκινήστε τώρα", en: "Get started now" },
+            title: { el: "Σταμάτα να μαντεύεις.", en: "Stop guessing." },
             subtitle: {
-                el: "Δημιουργήστε λογαριασμό ή συνεχίστε στο πορτοφόλι σας.",
-                en: "Create your account or continue to your wallet.",
+                el: "Ξεκίνα δωρεάν. Σε λιγότερο από 1 λεπτό θα ξέρεις.",
+                en: "Start free. In less than 1 minute, you will know.",
             },
-            signupLabel: { el: "Εγγραφή", en: "Sign up" },
+            signupLabel: { el: "Κάνε τώρα τον έλεγχο", en: "Run your check now" },
             loginLabel: { el: "Σύνδεση", en: "Login" },
             footnote: {
                 el: "Ασφαλής πρόσβαση, χωρίς περιττά βήματα.",
@@ -278,33 +413,36 @@ export const landingContent: LandingContentModel = {
         title: { el: "Συχνές Ερωτήσεις", en: "Frequently asked questions" },
         items: [
             {
-                id: "faq-roles",
-                question: { el: "Σε ποιους απευθύνεται το PolicyWallet;", en: "Who is PolicyWallet for?" },
+                id: "faq-data-security",
+                question: { el: "Είναι ασφαλή τα δεδομένα μου;", en: "Is my data secure?" },
                 answer: {
-                    el: "Σε ασφαλισμένους και ασφαλιστικούς πράκτορες που θέλουν κοινή, καθαρή εικόνα συμβολαίων.",
-                    en: "For policyholders and insurance agents who need shared, clear policy visibility.",
+                    el: "Ναι. Τα δεδομένα αποθηκεύονται κρυπτογραφημένα και η πρόσβαση ελέγχεται με ρόλους και δικαιώματα.",
+                    en: "Yes. Data is encrypted at rest, with role-based access controls.",
                 },
             },
             {
-                id: "faq-sharing",
-                question: { el: "Πώς λειτουργεί ο διαμοιρασμός με πράκτορα;", en: "How does sharing with an agent work?" },
+                id: "faq-carriers-visibility",
+                question: { el: "Μπορεί η ασφαλιστική μου να δει τα δεδομένα μου;", en: "Can my insurer see my data?" },
                 answer: {
-                    el: "Ο διαμοιρασμός γίνεται με ελεγχόμενα δικαιώματα και πλήρη διαφάνεια.",
-                    en: "Sharing uses controlled permissions with full transparency.",
+                    el: "Όχι, εκτός αν εσύ επιλέξεις ρητά να μοιραστείς συγκεκριμένα στοιχεία.",
+                    en: "No, unless you explicitly choose to share specific information.",
                 },
             },
             {
-                id: "faq-ai",
-                question: { el: "Τι αξία μου δίνει το AI;", en: "What value does AI provide?" },
+                id: "faq-no-agent",
+                question: { el: "Τι γίνεται αν δεν έχω πράκτορα;", en: "What if I do not have an agent?" },
                 answer: {
-                    el: "Σου δίνει γρήγορη κατανόηση και υποστήριξη λήψης αποφάσεων.",
-                    en: "It gives faster understanding and stronger decision support.",
+                    el: "Μπορείς να χρησιμοποιήσεις πλήρως το PolicyWallet μόνος σου και να συνεργαστείς με πράκτορα αργότερα.",
+                    en: "You can use PolicyWallet fully on your own and collaborate with an agent later.",
                 },
             },
             {
-                id: "faq-language",
-                question: { el: "Υποστηρίζονται Ελληνικά και Αγγλικά;", en: "Are Greek and English supported?" },
-                answer: { el: "Ναι, πλήρως.", en: "Yes, fully." },
+                id: "faq-ai-accuracy",
+                question: { el: "Πόσο ακριβής είναι η AI ανάλυση;", en: "How accurate is the AI analysis?" },
+                answer: {
+                    el: "Η AI δίνει γρήγορη και πρακτική ανάλυση για κάλυψη και κενά. Εσύ έχεις πάντα τον τελικό έλεγχο πριν από οποιαδήποτε ενέργεια.",
+                    en: "AI provides fast, practical analysis of coverage and gaps. You always stay in control before any decision.",
+                },
             },
         ],
     },
