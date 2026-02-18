@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import "./globals.css";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
@@ -53,7 +54,9 @@ export default function RootLayout({
           </OfflineProvider>
         </LanguageProvider>
         <Toaster richColors position="top-right" />
-        <GoogleAnalytics />
+        <Suspense fallback={null}>
+          <GoogleAnalytics />
+        </Suspense>
         <GoogleAnalyticsWebVitals />
         <Analytics />
         <SpeedInsights />
