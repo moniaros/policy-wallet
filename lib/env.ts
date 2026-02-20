@@ -31,6 +31,9 @@ const envSchema = z.object({
     BREVO_LIST_ID_USERS: z.string().optional(),
     BREVO_LIST_ID_AGENTS: z.string().optional(),
 
+    // CRM / HubSpot (Optional)
+    HUBSPOT_ACCESS_TOKEN: z.string().min(1).optional(),
+
     // Redis / Upstash
     UPSTASH_REDIS_REST_URL: z.string().optional(),
     UPSTASH_REDIS_REST_TOKEN: z.string().min(1).optional(),

@@ -90,8 +90,10 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
     const [faqOpenIndex, setFaqOpenIndex] = useState<number | null>(0)
     const [showExitIntent, setShowExitIntent] = useState(false)
     const [waitlistEmail, setWaitlistEmail] = useState("")
-    const [waitlistProfileType, setWaitlistProfileType] = useState("individual")
+    const [waitlistProfileType, setWaitlistProfileType] = useState<"individual" | "family" | "small_business">("individual")
     const [waitlistIntent, setWaitlistIntent] = useState<IntentType | "">("")
+    const [waitlistSubmitting, setWaitlistSubmitting] = useState(false)
+    const [waitlistError, setWaitlistError] = useState<string | null>(null)
     const [waitlistSubmitted, setWaitlistSubmitted] = useState(false)
 
     const startTimeRef = useRef<number>(Date.now())
@@ -284,19 +286,58 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
         trackWithSchema("demo_started", { location })
     }
 
-    const handleWaitlistSubmit = (event: FormEvent<HTMLFormElement>) => {
+    const handleWaitlistSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault()
+        if (waitlistSubmitting) return
+
         const email = waitlistEmail.trim()
         if (!email || !email.includes("@")) return
 
-        trackWithSchema("form_submitted_waitlist", {
-            email_domain: email.split("@")[1] || "",
-            profile_type: waitlistProfileType,
-            waitlist_intent: waitlistIntent || null,
-        })
-        setWaitlistSubmitted(true)
-        setShowExitIntent(false)
-        setWaitlistEmail("")
+        setWaitlistError(null)
+        setWaitlistSubmitting(true)
+
+        try {
+            const response = await fetch("/api/v1/landing/waitlist", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email,
+                    profile_type: waitlistProfileType,
+                    waitlist_intent: waitlistIntent || null,
+                    source_context: "exit_intent",
+                    referrer_source: sourceRef.current,
+                    device_type: deviceRef.current,
+                    time_on_page: Math.max(0, Math.round((Date.now() - startTimeRef.current) / 1000)),
+                    primary_cta_interacted: primaryCtaRef.current,
+                    locale,
+                }),
+            })
+
+            const result = await response.json().catch(() => null)
+            if (!response.ok) {
+                throw new Error(result?.error?.message || "Waitlist submission failed")
+            }
+
+            trackWithSchema("form_submitted_waitlist", {
+                email_domain: email.split("@")[1] || "",
+                profile_type: waitlistProfileType,
+                waitlist_intent: waitlistIntent || null,
+                hubspot_contact_id: result?.data?.hubspot_contact_id || null,
+            })
+
+            setWaitlistSubmitted(true)
+            setShowExitIntent(false)
+            setWaitlistEmail("")
+            setWaitlistIntent("")
+            setWaitlistProfileType("individual")
+        } catch (error) {
+            console.error("Waitlist submit failed", error)
+            setWaitlistError(t("Δεν ήταν δυνατή η αποθήκευση. Δοκίμασε ξανά.", "Could not save your request. Please try again."))
+        } finally {
+            setWaitlistSubmitting(false)
+        }
     }
 
     return (
@@ -601,25 +642,33 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
                     <BrandCard className="w-full max-w-md p-5">
                         <h3 className="text-lg font-bold text-[var(--brand-text-primary)]">{t("Πριν φύγεις, πάρε το Insurance Clarity Checklist", "Before you go, get the Insurance Clarity Checklist")}</h3>
                         <p className="mt-2 text-sm text-[var(--brand-text-muted)]">{t("Άφησε email για να λάβεις δομημένο οδηγό οργάνωσης συμβολαίων.", "Leave your email to get a structured policy organization guide.")}</p>
-                        <form className="mt-4 space-y-3" onSubmit={handleWaitlistSubmit}>
-                            <input type="email" value={waitlistEmail} onChange={(e) => setWaitlistEmail(e.target.value)} required placeholder={t("Email", "Email")} className="w-full rounded-xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] px-3 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500" />
-                            <select value={waitlistProfileType} onChange={(e) => setWaitlistProfileType(e.target.value)} className="w-full rounded-xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] px-3 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">
+                        <form className="mt-4 space-y-3" onSubmit={handleWaitlistSubmit} aria-busy={waitlistSubmitting}>
+                            <input type="email" value={waitlistEmail} onChange={(e) => setWaitlistEmail(e.target.value)} required disabled={waitlistSubmitting} placeholder={t("Email", "Email")} className="w-full rounded-xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] px-3 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:opacity-60" />
+                            <select value={waitlistProfileType} onChange={(e) => setWaitlistProfileType(e.target.value as "individual" | "family" | "small_business")} disabled={waitlistSubmitting} className="w-full rounded-xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] px-3 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:opacity-60">
                                 <option value="individual">{t("Ιδιώτης", "Individual")}</option>
                                 <option value="family">{t("Οικογένεια", "Family")}</option>
                                 <option value="small_business">{t("Μικρή επιχείρηση", "Small business")}</option>
                             </select>
-                            <select value={waitlistIntent} onChange={(e) => setWaitlistIntent(e.target.value as IntentType | "")} className="w-full rounded-xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] px-3 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500">
+                            <select value={waitlistIntent} onChange={(e) => setWaitlistIntent(e.target.value as IntentType | "")} disabled={waitlistSubmitting} className="w-full rounded-xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] px-3 py-2.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 disabled:opacity-60">
                                 <option value="">{t("Κύριος στόχος (προαιρετικό)", "Primary goal (optional)")}</option>
                                 <option value="organize_policies">{t("Οργάνωση συμβολαίων", "Organize policies")}</option>
                                 <option value="save_money">{t("Μείωση κόστους", "Save money")}</option>
                                 <option value="health_coverage">{t("Κατανόηση καλύψεων", "Understand coverage")}</option>
                                 <option value="avoid_missed_renewals">{t("Να μην χάσω ανανεώσεις", "Avoid missed renewals")}</option>
                             </select>
+                            {waitlistError ? (
+                                <p className="text-xs font-medium text-rose-600 dark:text-rose-400" role="alert">
+                                    {waitlistError}
+                                </p>
+                            ) : null}
                             <div className="flex items-center gap-2">
-                                <BrandActionButton type="submit" className="flex-1">
-                                    {t("Στείλε μου τον οδηγό", "Send me the guide")}
+                                <BrandActionButton type="submit" className="flex-1 disabled:cursor-not-allowed disabled:opacity-60" disabled={waitlistSubmitting}>
+                                    {waitlistSubmitting ? t("Αποθήκευση...", "Saving...") : t("Στείλε μου τον οδηγό", "Send me the guide")}
                                 </BrandActionButton>
-                                <BrandActionButton type="button" variant="secondary" onClick={() => setShowExitIntent(false)}>
+                                <BrandActionButton type="button" variant="secondary" disabled={waitlistSubmitting} onClick={() => {
+                                    setShowExitIntent(false)
+                                    setWaitlistError(null)
+                                }}>
                                     {t("Κλείσιμο", "Close")}
                                 </BrandActionButton>
                             </div>
