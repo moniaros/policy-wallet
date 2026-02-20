@@ -1,5 +1,4 @@
-import nodemailer from 'nodemailer'
-import * as Sentry from '@sentry/nextjs'
+import * as Sentry from "@sentry/nextjs"
 
 export interface EmailOptions {
     to: string
@@ -15,95 +14,126 @@ export interface EmailResult {
     error?: string
 }
 
-/**
- * Send an email using Nodemailer with Brevo SMTP
- * Falls back to console logging in development if SMTP not configured
- */
-export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
-    // Check if SMTP is configured
-    const smtpConfigured = process.env.SMTP_HOST &&
-        process.env.SMTP_USER &&
-        process.env.SMTP_PASSWORD
+const BREVO_EMAIL_API_URL = "https://api.brevo.com/v3/smtp/email"
+const BREVO_ACCOUNT_API_URL = "https://api.brevo.com/v3/account"
 
-    // In development without SMTP, log to console
-    if (process.env.NODE_ENV === 'development' && !smtpConfigured) {
-        console.log('📧 Email (Dev Mode - Not Sent):')
-        console.log('From:', options.from || 'default')
-        console.log('To:', options.to)
-        console.log('Subject:', options.subject)
-        console.log('Text:', options.text)
-        console.log('---')
-        return { success: true, messageId: 'dev-mode' }
+function resolveSender(fromOverride?: string): { email: string; name: string } {
+    if (fromOverride) {
+        const trimmed = fromOverride.trim()
+        const match = trimmed.match(/^"?([^"<]+)"?\s*<([^>]+)>$/)
+        if (match) {
+            return { name: match[1].trim(), email: match[2].trim() }
+        }
+        return { name: "PolicyWallet", email: trimmed }
     }
 
-    // Create transporter
-    const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT || '587'),
-        secure: false, // Use TLS
-        auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASSWORD,
-        },
-    })
-
-    try {
-        const info = await transporter.sendMail({
-            from: options.from || `"PolicyWallet" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
-            to: options.to,
-            subject: options.subject,
-            html: options.html,
-            text: options.text || stripHtml(options.html),
-        })
-
-        console.log('✅ Email sent:', info.messageId)
-        return { success: true, messageId: info.messageId }
-    } catch (error) {
-        console.error('❌ Email send failed:', error)
-        Sentry.captureException(error, {
-            tags: { email_to: options.to, email_subject: options.subject }
-        })
-        return {
-            success: false,
-            error: error instanceof Error ? error.message : 'Unknown error'
-        }
+    return {
+        name: process.env.SENDER_NAME || "PolicyWallet",
+        email: process.env.SENDER_EMAIL || "noreply@policywallet.gr",
     }
 }
 
-/**
- * Simple HTML to text converter for fallback
- */
 function stripHtml(html: string): string {
     return html
-        .replace(/<[^>]*>/g, '')
-        .replace(/\s+/g, ' ')
+        .replace(/<[^>]*>/g, " ")
+        .replace(/\s+/g, " ")
         .trim()
 }
 
 /**
- * Verify SMTP configuration
+ * Single outbound email transport for the platform.
+ * All transactional and operational emails must go through Brevo.
  */
-export async function verifyEmailConfig(): Promise<boolean> {
-    if (process.env.NODE_ENV === 'development') {
-        return true // Skip verification in dev
+export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
+    const apiKey = process.env.BREVO_API_KEY
+
+    if (!apiKey) {
+        if (process.env.NODE_ENV !== "production") {
+            // Local development fallback keeps UX flows testable without external calls.
+            console.log("[email:dev] BREVO_API_KEY missing - email not sent")
+            console.log(`[email:dev] To: ${options.to}`)
+            console.log(`[email:dev] Subject: ${options.subject}`)
+            return { success: true, messageId: "dev-no-brevo-key" }
+        }
+
+        const errorMessage = "BREVO_API_KEY is missing in production environment."
+        Sentry.captureMessage(errorMessage, { level: "error" })
+        return { success: false, error: errorMessage }
+    }
+
+    const sender = resolveSender(options.from)
+    const payload = {
+        sender,
+        to: [{ email: options.to }],
+        subject: options.subject,
+        htmlContent: options.html,
+        textContent: options.text || stripHtml(options.html),
     }
 
     try {
-        const transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST,
-            port: parseInt(process.env.SMTP_PORT || '587'),
-            secure: false,
-            auth: {
-                user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASSWORD,
+        const response = await fetch(BREVO_EMAIL_API_URL, {
+            method: "POST",
+            headers: {
+                "api-key": apiKey,
+                "Content-Type": "application/json",
+                Accept: "application/json",
             },
+            body: JSON.stringify(payload),
         })
 
-        await transporter.verify()
-        console.log('✅ SMTP configuration verified')
-        return true
+        if (!response.ok) {
+            const rawBody = await response.text()
+            let parsedMessage = rawBody
+            try {
+                const parsed = JSON.parse(rawBody)
+                parsedMessage = parsed?.message || parsed?.code || rawBody
+            } catch {
+                // keep raw body
+            }
+
+            const errorMessage = `Brevo send failed (${response.status}): ${parsedMessage}`
+            Sentry.captureMessage(errorMessage, {
+                level: "error",
+                tags: {
+                    email_to: options.to,
+                    email_subject: options.subject.slice(0, 100),
+                },
+            })
+            return { success: false, error: errorMessage }
+        }
+
+        const result = (await response.json()) as { messageId?: string }
+        return { success: true, messageId: result.messageId || "brevo-accepted" }
     } catch (error) {
-        console.error('❌ SMTP verification failed:', error)
+        Sentry.captureException(error, {
+            tags: {
+                email_to: options.to,
+                email_subject: options.subject.slice(0, 100),
+            },
+        })
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : "Unknown Brevo delivery error",
+        }
+    }
+}
+
+export async function verifyEmailConfig(): Promise<boolean> {
+    const apiKey = process.env.BREVO_API_KEY
+    if (!apiKey) {
+        return process.env.NODE_ENV !== "production"
+    }
+
+    try {
+        const response = await fetch(BREVO_ACCOUNT_API_URL, {
+            headers: {
+                "api-key": apiKey,
+                Accept: "application/json",
+            },
+            cache: "no-store",
+        })
+        return response.ok
+    } catch (error) {
         Sentry.captureException(error)
         return false
     }

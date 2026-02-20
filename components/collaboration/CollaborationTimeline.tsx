@@ -219,12 +219,10 @@ export function CollaborationTimeline({
 
     useEffect(() => {
         loadThreads()
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [query])
 
     useEffect(() => {
         if (selectedId) loadThreadDetail(selectedId)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedId])
 
     return (

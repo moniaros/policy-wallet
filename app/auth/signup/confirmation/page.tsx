@@ -1,189 +1,343 @@
 "use client"
 
-import { Suspense, useState } from "react"
-import { useSearchParams } from "next/navigation"
+import { Suspense, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
+import { IBM_Plex_Sans } from "next/font/google"
+import { AnimatePresence, motion } from "framer-motion"
+import { AlertCircle, ArrowRight, CheckCircle2, Loader2, Mail, RefreshCw, ShieldCheck, Sparkles } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { PolicyWalletLogo } from "@/components/branding/Logo"
+import { completeOnboardingStep } from "@/app/onboarding/actions"
+import { resendVerificationEmail } from "@/app/auth/actions"
+import { trackLandingEvent } from "@/lib/landing/analytics"
+import { isSyntheticPhoneEmail } from "@/lib/auth/phone-auth"
+import { getSignupCheckpointState } from "./actions"
 
-function ConfirmationContent() {
+const ibmPlexSans = IBM_Plex_Sans({
+    subsets: ["latin", "greek"],
+    weight: ["400", "500", "600", "700"],
+})
+
+function SignupConfirmationContent() {
+    const router = useRouter()
     const searchParams = useSearchParams()
-    const { t, language } = useLanguage()
+    const { language } = useLanguage()
+    const t = (el: string, en: string) => (language === "el" ? el : en)
+
+    const role = searchParams.get("role") === "agent" ? "agent" : "policyholder"
+    const queryEmail = searchParams.get("email")?.trim().toLowerCase() || ""
+
+    const [email, setEmail] = useState(queryEmail)
+    const [isVerified, setIsVerified] = useState(false)
+    const [needsEmailVerification, setNeedsEmailVerification] = useState(Boolean(queryEmail && !isSyntheticPhoneEmail(queryEmail)))
+    const [isAuthenticated, setIsAuthenticated] = useState(true)
+    const [loadingState, setLoadingState] = useState(true)
+    const [isCheckingVerification, setIsCheckingVerification] = useState(false)
     const [isResending, setIsResending] = useState(false)
-    const [resendMessage, setResendMessage] = useState<string | null>(null)
+    const [isContinuing, setIsContinuing] = useState(false)
+    const [notice, setNotice] = useState<{ kind: "success" | "error"; message: string } | null>(null)
+    const trackedViewRef = useRef(false)
 
-    const email = searchParams.get("email") || ""
-    const role = searchParams.get("role") as "policyholder" | "agent" || "policyholder"
+    useEffect(() => {
+        let isMounted = true
 
-    const nextSteps = role === "agent" ? t.auth.nextStepsAgent : t.auth.nextStepsPolicyholder
+        const loadCheckpointState = async () => {
+            try {
+                const checkpoint = await getSignupCheckpointState()
+                if (!isMounted) return
+                setIsAuthenticated(checkpoint.authenticated)
+                if (checkpoint.email) {
+                    setEmail(checkpoint.email)
+                }
+                setIsVerified(checkpoint.verified)
+                setNeedsEmailVerification(checkpoint.needsEmailVerification)
+            } finally {
+                if (isMounted) {
+                    setLoadingState(false)
+                }
+            }
+        }
+
+        void loadCheckpointState()
+        return () => {
+            isMounted = false
+        }
+    }, [])
+
+    useEffect(() => {
+        if (trackedViewRef.current || loadingState) return
+        trackedViewRef.current = true
+
+        trackLandingEvent("signup_checkpoint_viewed", {
+            role,
+            locale: language,
+            has_email: Boolean(email),
+            needs_email_verification: needsEmailVerification,
+            verified: isVerified,
+        })
+
+        if (needsEmailVerification) {
+            trackLandingEvent("email_verification_viewed", {
+                role,
+                locale: language,
+                source: "signup_checkpoint",
+            })
+        }
+    }, [email, isVerified, language, loadingState, needsEmailVerification, role])
+
+    const copy = useMemo(() => ({
+        heading: t("Ο λογαριασμός σου είναι έτοιμος", "Your wallet account is ready"),
+        subtitle: t("Ένα γρήγορο βήμα και συνεχίζεις στο onboarding.", "One quick checkpoint, then continue to onboarding."),
+        shellTitle: t("Ρύθμιση πρώτης εμπειρίας", "First-login setup shell"),
+        shellDesc: t("Θα χρειαστεί περίπου 2 λεπτά. Θα δεις AI ανάλυση και υπενθυμίσεις.", "This takes about 2 minutes. You will unlock AI insights and reminders."),
+        verifyTitle: t("Επαλήθευση email", "Verify your email"),
+        verifyDesc: t("Χρησιμοποίησε τον σύνδεσμο που στείλαμε στο inbox σου.", "Use the link we sent to your inbox."),
+        checkVerified: t("Έκανα επαλήθευση, συνέχεια", "I verified, continue"),
+        resend: t("Επαναποστολή email", "Resend verification email"),
+        startSetup: t("Start setup", "Start setup"),
+        skip: t("Skip for now", "Skip for now"),
+        verifyPending: t("Δεν έχει ολοκληρωθεί ακόμα η επαλήθευση. Έλεγξε ξανά το email σου.", "Verification is not complete yet. Please check your email again."),
+        verificationSuccess: t("Το email επαληθεύτηκε. Συνεχίζουμε.", "Email verified. Continuing."),
+        resendSuccess: t("Στάλθηκε νέο email επαλήθευσης.", "Verification email sent again."),
+        resendError: t("Αποτυχία αποστολής email επαλήθευσης.", "Failed to resend verification email."),
+        authMissing: t("Η συνεδρία έληξε. Κάνε ξανά σύνδεση για να συνεχίσεις.", "Your session expired. Sign in again to continue."),
+        signin: t("Μετάβαση σε σύνδεση", "Go to sign in"),
+        stepLabel: t("Βήμα 2 από 6", "Step 2 of 6"),
+        secureSetup: t("Ασφαλές setup", "Secure setup"),
+        loading: t("Φόρτωση...", "Loading..."),
+        trustedPoints: [
+            t("Ασφαλής αποθήκευση εγγράφων σε ένα σημείο", "Secure document storage in one place"),
+            t("AI εξήγηση καλύψεων σε απλή γλώσσα", "AI explanation of coverage in plain language"),
+            t("Έξυπνες υπενθυμίσεις ανανέωσης", "Smart renewal reminders"),
+        ],
+    }), [language])
+
+    const handleCheckVerification = async () => {
+        setNotice(null)
+        setIsCheckingVerification(true)
+        try {
+            trackLandingEvent("email_verification_check_clicked", {
+                locale: language,
+                source: "signup_checkpoint",
+            })
+
+            const checkpoint = await getSignupCheckpointState()
+            if (checkpoint.email) {
+                setEmail(checkpoint.email)
+            }
+            setIsAuthenticated(checkpoint.authenticated)
+            setIsVerified(checkpoint.verified)
+            setNeedsEmailVerification(checkpoint.needsEmailVerification)
+
+            if (!checkpoint.verified) {
+                setNotice({ kind: "error", message: copy.verifyPending })
+                return
+            }
+
+            trackLandingEvent("email_verified", {
+                locale: language,
+                source: "signup_checkpoint",
+            })
+            setNotice({ kind: "success", message: copy.verificationSuccess })
+            await continueToOnboarding()
+        } finally {
+            setIsCheckingVerification(false)
+        }
+    }
 
     const handleResend = async () => {
+        if (!email) return
+        setNotice(null)
         setIsResending(true)
-        setResendMessage(null)
-
         try {
-            const { resendVerificationEmail } = await import("../../actions")
-            const result = await resendVerificationEmail(email, language as 'el' | 'en')
+            trackLandingEvent("email_verification_resend_clicked", {
+                locale: language,
+                source: "signup_checkpoint",
+            })
 
-            if (result.success) {
-                setResendMessage("✓ Verification email sent successfully!")
-            } else {
-                setResendMessage(result.error || "Failed to send email")
+            const result = await resendVerificationEmail(email, language)
+            if (!result.success) {
+                setNotice({ kind: "error", message: result.error || copy.resendError })
+                return
             }
-        } catch (error) {
-            setResendMessage("An error occurred. Please try again.")
+
+            setNotice({ kind: "success", message: copy.resendSuccess })
+        } catch {
+            setNotice({ kind: "error", message: copy.resendError })
         } finally {
             setIsResending(false)
         }
     }
 
+    const continueToOnboarding = async () => {
+        setNotice(null)
+        setIsContinuing(true)
+        try {
+            trackLandingEvent("onboarding_checkpoint_continue_clicked", {
+                locale: language,
+                role,
+            })
+
+            await completeOnboardingStep(1, {
+                onboardingEntryCompletedAt: new Date().toISOString(),
+                onboardingEntrySource: "signup_checkpoint",
+            })
+
+            router.push("/onboarding")
+        } catch {
+            setNotice({
+                kind: "error",
+                message: t("Αποτυχία μετάβασης στο onboarding. Δοκίμασε ξανά.", "Could not continue to onboarding. Please try again."),
+            })
+        } finally {
+            setIsContinuing(false)
+        }
+    }
+
+    const handleSkip = () => {
+        trackLandingEvent("onboarding_skipped", {
+            locale: language,
+            step: 1,
+            location: "signup_checkpoint",
+        })
+        router.push("/wallet")
+    }
+
+    const showVerificationCard = Boolean(email) && needsEmailVerification && !isVerified
+    const busy = isContinuing || isCheckingVerification || isResending
+
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-stone-50 via-teal-50/30 to-stone-50 px-4 py-12 sm:px-6 lg:px-8 relative overflow-hidden">
-            {/* Animated Background Elements */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-                <div className="absolute -top-[30%] -right-[10%] w-[70%] h-[70%] rounded-full bg-gradient-to-br from-teal-100/40 to-blue-100/40 blur-3xl opacity-60 animate-pulse" />
-                <div className="absolute bottom-[0%] -left-[10%] w-[50%] h-[50%] rounded-full bg-gradient-to-tr from-emerald-100/40 to-teal-100/40 blur-3xl opacity-50 animate-pulse" style={{ animationDelay: '1s' }} />
-            </div>
+        <div className={`${ibmPlexSans.className} relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-b from-[#1E3A8A] via-[#dbeafe] to-white px-4 py-10`}>
+            <motion.div className="absolute -top-20 right-[-10%] h-72 w-72 rounded-full bg-cyan-300/30 blur-3xl" animate={{ scale: [1, 1.06, 1] }} transition={{ duration: 6, repeat: Infinity }} />
+            <motion.div className="absolute -bottom-20 left-[-8%] h-64 w-64 rounded-full bg-blue-200/45 blur-3xl" animate={{ scale: [1.06, 1, 1.06] }} transition={{ duration: 6, repeat: Infinity }} />
 
-            <div className="w-full max-w-2xl space-y-8 rounded-3xl bg-white/90 backdrop-blur-2xl p-10 sm:p-12 shadow-2xl border border-white/60 relative z-10 transition-all duration-300">
-                {/* Success Icon */}
-                <div className="flex justify-center">
-                    <div className="relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-teal-400 to-emerald-500 rounded-full blur-xl opacity-50 animate-pulse"></div>
-                        <div className="relative bg-gradient-to-br from-teal-500 to-emerald-600 rounded-full p-6 shadow-lg">
-                            <svg className="w-16 h-16 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="relative z-10 w-full max-w-md rounded-3xl border border-white/70 bg-white/95 p-6 shadow-2xl shadow-blue-900/10 sm:p-7">
+                <div className="mb-5 flex items-center justify-between text-xs font-semibold text-slate-500">
+                    <span className="rounded-full bg-slate-100 px-2.5 py-1">{copy.stepLabel}</span>
+                    <span className="inline-flex items-center gap-1 text-emerald-700">
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                        {copy.secureSetup}
+                    </span>
+                </div>
+
+                <div className="mb-6 text-center">
+                    <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 shadow-sm">
+                        <PolicyWalletLogo size="md" language={language} />
                     </div>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">{copy.heading}</h1>
+                    <p className="mt-1.5 text-sm text-slate-600">{copy.subtitle}</p>
                 </div>
 
-                {/* Header */}
-                <div className="text-center space-y-3">
-                    <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-teal-600 to-emerald-600 bg-clip-text text-transparent">
-                        {t.auth.accountCreated}
-                    </h1>
-                    <p className="text-xl font-semibold text-stone-700">
-                        {t.auth.verifyEmailSent}
-                    </p>
-                </div>
-
-                {/* Email Info Card */}
-                <div className="bg-gradient-to-br from-teal-50 to-emerald-50 border-2 border-teal-200/50 rounded-2xl p-6 space-y-4">
-                    <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 mt-1">
-                            <svg className="w-6 h-6 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <div className="flex-1 space-y-2">
-                            <p className="text-stone-700 font-medium">
-                                {t.auth.verificationEmailSent}
-                            </p>
-                            <p className="text-lg font-bold text-teal-700 break-all">
-                                {email}
-                            </p>
-                            <p className="text-sm text-stone-600 leading-relaxed">
-                                {t.auth.clickLinkToVerify}
-                            </p>
-                        </div>
+                {loadingState ? (
+                    <div className="flex items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 p-6 text-slate-600">
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {copy.loading}
                     </div>
-                </div>
+                ) : null}
 
-                {/* Next Steps */}
-                <div className="space-y-4">
-                    <h3 className="text-lg font-bold text-stone-800 flex items-center gap-2">
-                        <svg className="w-5 h-5 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                        {t.auth.nextSteps}
-                    </h3>
-                    <ol className="space-y-3">
-                        {nextSteps.map((step, index) => (
-                            <li key={index} className="flex items-start gap-3 group">
-                                <div className="flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-teal-500 to-emerald-600 text-white flex items-center justify-center text-sm font-bold shadow-md group-hover:scale-110 transition-transform">
-                                    {index + 1}
+                {!loadingState && !isAuthenticated ? (
+                    <div className="space-y-4">
+                        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+                            {copy.authMissing}
+                        </div>
+                        <Link href="/auth/signin" className="inline-flex w-full items-center justify-center rounded-xl bg-[#1E3A8A] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110">
+                            {copy.signin}
+                        </Link>
+                    </div>
+                ) : null}
+
+                {!loadingState && isAuthenticated ? (
+                    <div className="space-y-4">
+                        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                            <p className="text-sm font-semibold text-slate-900">{copy.shellTitle}</p>
+                            <p className="mt-1 text-sm text-slate-600">{copy.shellDesc}</p>
+                            <ul className="mt-3 space-y-2 text-sm text-slate-700">
+                                {copy.trustedPoints.map((point) => (
+                                    <li key={point} className="flex items-center gap-2">
+                                        <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                                        <span>{point}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {showVerificationCard ? (
+                            <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4">
+                                <div className="inline-flex items-center gap-2 text-sm font-semibold text-blue-900">
+                                    <Mail className="h-4 w-4" />
+                                    {copy.verifyTitle}
                                 </div>
-                                <p className="text-stone-700 pt-0.5 group-hover:text-teal-700 transition-colors">
-                                    {step}
-                                </p>
-                            </li>
-                        ))}
-                    </ol>
-                </div>
+                                <p className="mt-1 text-sm text-blue-800">{copy.verifyDesc}</p>
+                                <p className="mt-2 break-all rounded-lg bg-white/80 px-2.5 py-1.5 text-xs font-semibold text-blue-900">{email}</p>
+                            </div>
+                        ) : null}
 
-                {/* Help Section with Resend Button */}
-                <div className="bg-stone-50 border border-stone-200 rounded-xl p-5 space-y-3">
-                    <p className="text-sm font-semibold text-stone-700">
-                        {t.auth.didntReceiveEmail}
-                    </p>
-                    <ul className="text-sm text-stone-600 space-y-2 ml-5 list-disc">
-                        <li>{t.auth.checkSpam}</li>
-                        <li>{t.auth.checkEmailCorrect}</li>
-                        <li>{t.auth.waitFewMinutes}</li>
-                    </ul>
+                        <AnimatePresence>
+                            {notice ? (
+                                <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={`flex items-start gap-2 rounded-xl border p-3 text-sm ${notice.kind === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-rose-200 bg-rose-50 text-rose-700"}`} role="status">
+                                    {notice.kind === "success" ? <CheckCircle2 className="mt-0.5 h-4 w-4" /> : <AlertCircle className="mt-0.5 h-4 w-4" />}
+                                    <span>{notice.message}</span>
+                                </motion.div>
+                            ) : null}
+                        </AnimatePresence>
 
-                    {/* Resend Button */}
-                    <div className="pt-2">
-                        <button
-                            onClick={handleResend}
-                            disabled={isResending}
-                            className="w-full px-4 py-3 rounded-lg bg-white border-2 border-teal-200 text-teal-700 font-semibold hover:bg-teal-50 hover:border-teal-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                        >
-                            {isResending ? (
+                        <div className="space-y-2.5">
+                            {showVerificationCard ? (
                                 <>
-                                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                    </svg>
-                                    Sending...
+                                    <button
+                                        type="button"
+                                        onClick={() => void handleCheckVerification()}
+                                        disabled={busy}
+                                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#1E3A8A] to-[#6D28D9] px-4 py-3.5 text-sm font-semibold text-white transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
+                                    >
+                                        {isCheckingVerification ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                                        {copy.checkVerified}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => void handleResend()}
+                                        disabled={busy}
+                                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
+                                    >
+                                        {isResending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                                        {copy.resend}
+                                    </button>
                                 </>
                             ) : (
-                                <>
-                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                    </svg>
-                                    Resend Verification Email
-                                </>
+                                <button
+                                    type="button"
+                                    onClick={() => void continueToOnboarding()}
+                                    disabled={busy}
+                                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#1E3A8A] to-[#6D28D9] px-4 py-3.5 text-sm font-semibold text-white transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
+                                >
+                                    {isContinuing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
+                                    {copy.startSetup}
+                                </button>
                             )}
-                        </button>
-                        {resendMessage && (
-                            <p className={`mt-2 text-sm text-center ${resendMessage.startsWith('✓') ? 'text-teal-600' : 'text-red-600'}`}>
-                                {resendMessage}
-                            </p>
-                        )}
+
+                            <button
+                                type="button"
+                                onClick={handleSkip}
+                                disabled={busy}
+                                className="inline-flex w-full items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
+                            >
+                                {copy.skip}
+                            </button>
+                        </div>
                     </div>
-                </div>
-
-                {/* Action Button */}
-                <div className="pt-4">
-                    <Link
-                        href="/auth/signin"
-                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 px-6 py-4 text-base font-bold text-white shadow-lg shadow-teal-600/30 transition-all hover:shadow-xl hover:shadow-teal-600/40 hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
-                    >
-                        {t.auth.proceedToLogin}
-                        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                    </Link>
-                </div>
-
-                {/* Footer Note */}
-                <p className="text-center text-xs text-stone-500 pt-4">
-                    {t.auth.welcomeToPolicyWallet} 🎉
-                </p>
-            </div>
+                ) : null}
+            </motion.div>
         </div>
     )
 }
 
 export default function SignUpConfirmationPage() {
     return (
-        <Suspense fallback={
-            <div className="flex min-h-screen items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
-            </div>
-        }>
-            <ConfirmationContent />
+        <Suspense fallback={<div className={`${ibmPlexSans.className} flex min-h-screen items-center justify-center`}><Loader2 className="h-7 w-7 animate-spin text-blue-700" /></div>}>
+            <SignupConfirmationContent />
         </Suspense>
     )
 }
+

@@ -7,6 +7,55 @@ import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { canUserAddPolicy, getUpgradeMessage } from "@/lib/subscription-limits"
 
+const ONBOARDING_REMINDER_EVENT_TYPES = [
+    "policy_expiring",
+    "pending_questionnaire",
+    "renewal_milestone",
+    // Backward-compatible aliases used in some parts of the app/API.
+    "questionnaire_received",
+]
+
+const ONBOARDING_NOTIFICATION_CHANNELS = ["email", "push"] as const
+
+async function syncOnboardingReminderPreferences(
+    userId: string,
+    reminderOptIn: boolean,
+    reminderChannels: string[]
+) {
+    const selectedChannels = new Set(
+        reminderChannels
+            .map((channel) => String(channel).toLowerCase().trim())
+            .filter((channel): channel is "email" | "push" => channel === "email" || channel === "push")
+    )
+
+    const ops: Promise<unknown>[] = []
+    for (const eventType of ONBOARDING_REMINDER_EVENT_TYPES) {
+        for (const channel of ONBOARDING_NOTIFICATION_CHANNELS) {
+            const enabled = reminderOptIn && selectedChannels.has(channel)
+            ops.push(
+                db.notificationPreference.upsert({
+                    where: {
+                        userId_eventType_channel: {
+                            userId,
+                            eventType,
+                            channel,
+                        },
+                    },
+                    update: { enabled },
+                    create: {
+                        userId,
+                        eventType,
+                        channel,
+                        enabled,
+                    },
+                })
+            )
+        }
+    }
+
+    await Promise.all(ops)
+}
+
 export async function completeOnboardingStep(step: number, data?: any) {
     const { dbUser } = await getAuthenticatedUser()
     const userId = dbUser.id
@@ -26,13 +75,22 @@ export async function completeOnboardingStep(step: number, data?: any) {
     }
 
     const currentPreferences = (profile.preferences as Record<string, any>) || {}
-    const updatedPreferences = {
+    const payload = (data && typeof data === "object") ? data : {}
+    const {
+        onboardingReminderOptIn,
+        onboardingReminderChannels,
+        ...persistedPayload
+    } = payload as Record<string, any>
+
+    const updatedPreferences: Record<string, any> = {
         ...currentPreferences,
         onboardingStep: step,
-        ...data // Merge any step-specific data (e.g., insuranceTypes)
+        ...persistedPayload, // Merge step data except reminder channel payload (stored in notification_preferences)
     }
 
-    if (step === 5) { // Step 5 is completion
+    const shouldComplete = Boolean(payload?.markCompleted) || step >= 7
+
+    if (shouldComplete) {
         updatedPreferences.onboardingCompleted = true
         updatedPreferences.onboardingCompletedAt = new Date().toISOString()
         updatedPreferences.showTour = true
@@ -45,10 +103,22 @@ export async function completeOnboardingStep(step: number, data?: any) {
         }
     })
 
+    const hasReminderChoice = Object.prototype.hasOwnProperty.call(payload, "onboardingReminderOptIn")
+    if (hasReminderChoice) {
+        const reminderOptIn = Boolean(onboardingReminderOptIn)
+        const reminderChannels = Array.isArray(onboardingReminderChannels)
+            ? onboardingReminderChannels
+            : []
+        await syncOnboardingReminderPreferences(userId, reminderOptIn, reminderChannels)
+    }
+
     revalidatePath("/onboarding")
 
-    if (step === 5) {
-        redirect("/wallet")
+    if (shouldComplete) {
+        const redirectTo = typeof payload?.redirectTo === "string" && payload.redirectTo.startsWith("/")
+            ? payload.redirectTo
+            : "/wallet"
+        redirect(redirectTo)
     }
 }
 
@@ -117,14 +187,24 @@ export async function getOnboardingState() {
     if (!profile || !profile.preferences) return {
         step: 1,
         completed: false,
-        name: dbUser.name?.split(" ")[0] || "there"
+        name: dbUser.name?.split(" ")[0] || "there",
+        onboardingSegment: null as "individual" | "family_manager" | "small_business" | null,
+        onboardingGoals: [] as string[],
+        onboardingFamiliarity: null as "beginner" | "intermediate" | "experienced" | null,
+        onboardingFileReady: null as boolean | null,
+        onboardingEntryCompleted: false,
     }
 
     const prefs = profile.preferences as any
     return {
         step: prefs.onboardingStep || 1,
         completed: prefs.onboardingCompleted || false,
-        name: dbUser.name?.split(" ")[0] || "there"
+        name: dbUser.name?.split(" ")[0] || "there",
+        onboardingSegment: prefs.onboardingSegment ?? null,
+        onboardingGoals: Array.isArray(prefs.onboardingGoals) ? prefs.onboardingGoals : [],
+        onboardingFamiliarity: prefs.onboardingFamiliarity ?? null,
+        onboardingFileReady: typeof prefs.onboardingFileReady === "boolean" ? prefs.onboardingFileReady : null,
+        onboardingEntryCompleted: Boolean(prefs.onboardingEntryCompletedAt),
     }
 }
 

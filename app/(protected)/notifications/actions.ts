@@ -62,7 +62,7 @@ export async function getNotificationData() {
     const uiUser = {
         user_id: user.id,
         email: user.email!, // assumed as per types
-        preferred_language: 'el' as const, // default for now
+        preferred_language: (authResult.dbUser.preferredLanguage || "en") as "en" | "el",
         role: user.roles,
         created_at: user.createdAt.toISOString()
     }
@@ -114,17 +114,46 @@ export async function getNotificationData() {
         created_at: r.createdAt.toISOString()
     }))
 
-    const uiPreferences = preferences.map(p => ({
-        preference_id: p.id,
-        user_id: p.userId,
-        role: 'policyholder' as const, // We'll need to handle dual roles better later
-        event_category: 'reminder' as const, // Fallback
-        event_type: p.eventType,
-        channel_email: p.channel === 'email' ? p.enabled : true,
-        channel_push: p.channel === 'push' ? p.enabled : true,
-        always_sent: false,
-        updated_at: p.updatedAt.toISOString()
-    }))
+    const preferenceMap = new Map<string, {
+        preference_id: string
+        user_id: string
+        role: "policyholder"
+        event_category: "reminder"
+        event_type: string
+        channel_email: boolean
+        channel_push: boolean
+        always_sent: boolean
+        updated_at: string
+    }>()
+
+    for (const p of preferences) {
+        const existing = preferenceMap.get(p.eventType) || {
+            preference_id: p.id,
+            user_id: p.userId,
+            role: "policyholder" as const,
+            event_category: "reminder" as const,
+            event_type: p.eventType,
+            channel_email: true,
+            channel_push: true,
+            always_sent: false,
+            updated_at: p.updatedAt.toISOString(),
+        }
+
+        if (p.channel === "email") {
+            existing.channel_email = p.enabled
+        }
+        if (p.channel === "push") {
+            existing.channel_push = p.enabled
+        }
+        if (new Date(p.updatedAt).getTime() > new Date(existing.updated_at).getTime()) {
+            existing.updated_at = p.updatedAt.toISOString()
+            existing.preference_id = p.id
+        }
+
+        preferenceMap.set(p.eventType, existing)
+    }
+
+    const uiPreferences = Array.from(preferenceMap.values())
 
     return {
         user: uiUser,

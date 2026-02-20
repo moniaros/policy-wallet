@@ -3,6 +3,7 @@ import { z } from "zod"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { rateLimit } from "@/lib/rate-limit"
 import { requireApiUser } from "@/lib/api-auth"
+import { sendPolicyInviteEmail } from "@/lib/email/invite-emails"
 
 const InviteSchema = z.object({
     invitee_email: z.string().email(),
@@ -52,6 +53,19 @@ export async function POST(req: Request) {
             }
         })
 
+        let emailQueued = false
+        try {
+            const emailResult = await sendPolicyInviteEmail({
+                to: invitee_email,
+                token: invite.token,
+                inviterName: authResult.dbUser.name || authResult.dbUser.email,
+                language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
+            })
+            emailQueued = Boolean(emailResult.success)
+        } catch (emailError) {
+            console.error("Failed to send invite email", emailError)
+        }
+
         await (db.activityLog as any).create({
             data: {
                 adminUserId: authResult.dbUser.id,
@@ -66,8 +80,9 @@ export async function POST(req: Request) {
             invitee_email: invite.inviteeEmail,
             scope: invite.scope,
             token: invite.token,
-            invite_link: `${process.env.NEXTAUTH_URL}/accept-invite/${invite.token}`,
-            status: "sent",
+            invite_link: `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/invite/${invite.token}`,
+            status: emailQueued ? "sent" : "created",
+            email_queued: emailQueued,
             expires_at: invite.expiresAt,
             created_at: invite.createdAt
         })

@@ -16,6 +16,7 @@ export default async function NotificationsPage() {
                 history: data.history.map(e => ({
                     id: e.event_id,
                     event_type: e.event_type,
+                    channel: e.channel,
                     title: e.subject,
                     message: e.message,
                     created_at: e.created_at,

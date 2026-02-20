@@ -1,380 +1,310 @@
 ﻿"use client"
 
-import { useState, useEffect, Suspense } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
+import { useEffect, useMemo, useState, Suspense } from "react"
 import Link from "next/link"
+import { useRouter, useSearchParams } from "next/navigation"
 import { IBM_Plex_Sans } from "next/font/google"
+import { z } from "zod"
+import { useForm, useWatch } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { AnimatePresence, motion } from "framer-motion"
+import { AlertCircle, CheckCircle2, Eye, EyeOff, Loader2, ShieldCheck, Sparkles } from "lucide-react"
 import { registerUser } from "../actions"
-import { useLanguage } from "@/contexts/LanguageContext"
-import { trackLandingEvent } from "@/lib/landing/analytics"
-import { User, Mail, Lock, Building, FileBadge, ArrowRight, Loader2, Briefcase, AlertCircle } from "lucide-react"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
-import { getRoleCopy } from "@/lib/i18n/role-copy"
+import { trackLandingEvent } from "@/lib/landing/analytics"
+import { buildSyntheticEmailFromPhone, normalizeGreekMobile } from "@/lib/auth/phone-auth"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 const ibmPlexSans = IBM_Plex_Sans({
     subsets: ["latin", "greek"],
     weight: ["400", "500", "600", "700"],
 })
 
+const signupSchema = z.object({
+    mobileNumber: z.string().min(1, "Mobile number is required").refine((value) => Boolean(normalizeGreekMobile(value)), "Enter a valid Greek mobile"),
+    email: z.string().trim().toLowerCase().refine((value) => !value || z.email().safeParse(value).success, "Invalid email"),
+    password: z.string().min(8, "Use at least 8 characters"),
+    termsAccepted: z.boolean().refine((value) => value, "You must accept Terms & Privacy"),
+})
+
+type SignupFormValues = z.infer<typeof signupSchema>
+
+function formatPhoneInput(value: string): string {
+    const digitsOnly = value.replace(/\D/g, "")
+    let local = digitsOnly
+
+    if (local.startsWith("30")) local = local.slice(2)
+    if (local.startsWith("0")) local = local.slice(1)
+
+    local = local.slice(0, 10)
+    const p1 = local.slice(0, 3)
+    const p2 = local.slice(3, 6)
+    const p3 = local.slice(6, 10)
+
+    let formatted = "+30"
+    if (p1) formatted += ` ${p1}`
+    if (p2) formatted += ` ${p2}`
+    if (p3) formatted += ` ${p3}`
+    return formatted
+}
+
+function passwordStrength(password: string): 0 | 1 | 2 | 3 {
+    let score = 0
+    if (password.length >= 8) score += 1
+    if (/\d/.test(password)) score += 1
+    if (/[^A-Za-z0-9]/.test(password)) score += 1
+    return score as 0 | 1 | 2 | 3
+}
+
+function ConfettiBurst() {
+    return (
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            {Array.from({ length: 12 }).map((_, i) => (
+                <motion.span
+                    key={i}
+                    className="absolute h-2 w-2 rounded-full"
+                    style={{
+                        left: `${15 + i * 6}%`,
+                        top: "55%",
+                        backgroundColor: i % 3 === 0 ? "#1E3A8A" : i % 3 === 1 ? "#22C55E" : "#06B6D4",
+                    }}
+                    initial={{ opacity: 0, y: 0, scale: 0.6 }}
+                    animate={{ opacity: [0, 1, 0], y: -80 - (i % 4) * 12, x: (i % 2 === 0 ? 1 : -1) * (12 + i), scale: [0.6, 1, 0.6] }}
+                    transition={{ duration: 0.8, delay: i * 0.03, ease: "easeOut" }}
+                />
+            ))}
+        </div>
+    )
+}
+
 function SignUpForm() {
-    const searchParams = useSearchParams()
     const router = useRouter()
-    const { t, language, setLanguage } = useLanguage()
-    const roleCopy = getRoleCopy(language)
+    const searchParams = useSearchParams()
+    const { language } = useLanguage()
 
-    const urlRole = searchParams.get("role")
-    const urlSource = searchParams.get("source") || "signup_direct"
-    const urlEmail = searchParams.get("email")
-    const urlToken = searchParams.get("token")
+    const role = searchParams.get("role") === "agent" ? "agent" : "policyholder"
+    const source = searchParams.get("source") || "signup_direct"
+    const token = searchParams.get("token") || ""
 
-    const [name, setName] = useState("")
-    const [email, setEmail] = useState(urlEmail || "")
-    const [password, setPassword] = useState("")
-    const [confirmPassword, setConfirmPassword] = useState("")
-    const [role, setRole] = useState(urlRole === "agent" ? "agent" : "policyholder")
-    const [isRoleLocked, setIsRoleLocked] = useState(false)
-    const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
+    const [showPassword, setShowPassword] = useState(false)
+    const [isSubmitting, setIsSubmitting] = useState(false)
+    const [serverError, setServerError] = useState<string | null>(null)
+    const [signupSuccess, setSignupSuccess] = useState(false)
 
-    const [licenseNumber, setLicenseNumber] = useState("")
-    const [agencyName, setAgencyName] = useState("")
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        control,
+        formState: { errors },
+    } = useForm<SignupFormValues>({
+        resolver: zodResolver(signupSchema),
+        defaultValues: {
+            mobileNumber: "+30 ",
+            email: "",
+            password: "",
+            termsAccepted: false,
+        },
+        mode: "onChange",
+    })
 
-    const [termsAccepted, setTermsAccepted] = useState(false)
-    const [marketingConsent, setMarketingConsent] = useState(false)
+    const mobileValue = useWatch({ control, name: "mobileNumber" }) || ""
+    const emailValue = useWatch({ control, name: "email" }) || ""
+    const passwordValue = useWatch({ control, name: "password" }) || ""
 
-    const copy = {
-        title: roleCopy.auth.createAccountTitle,
-        subtitle: roleCopy.auth.createAccountSubtitle,
-        joinAs: roleCopy.auth.joinAs,
-        agent: t.roles.agent,
-        policyholder: t.roles.policyholder,
-        fullName: t.auth.name,
-        email: t.auth.emailAddress,
-        password: t.auth.password,
-        confirm: t.auth.confirmPassword,
-        creating: `${roleCopy.auth.createAccountTitle}...`,
-        cta: roleCopy.auth.createAccountTitle,
-        agentDetails: role === "agent" ? roleCopy.agentSettings.agencyProfile : "",
-        license: roleCopy.agentSettings.licenseNumber,
-        agency: roleCopy.agentSettings.agencyName,
-        terms: t.auth.termsAgree,
-        and: t.auth.and,
-        marketing: language === "el" ? "Συμφωνώ να λαμβάνω ενημερώσεις για νέες υπηρεσίες." : "I consent to receive marketing updates.",
-        alreadyHave: roleCopy.auth.alreadyHaveAccount,
-        switchAgent: roleCopy.auth.switchAgent,
-        switchPolicyholder: roleCopy.auth.switchPolicyholder,
-    }
+    const strength = passwordStrength(passwordValue)
+    const normalizedPhone = normalizeGreekMobile(mobileValue)
+    const emailOrSynthetic = useMemo(() => {
+        if (emailValue) return emailValue.trim().toLowerCase()
+        if (!normalizedPhone) return ""
+        return buildSyntheticEmailFromPhone(normalizedPhone)
+    }, [emailValue, normalizedPhone])
+
+    const isMobileValid = Boolean(normalizedPhone)
+    const isEmailValid = Boolean(emailValue && !errors.email)
+    const isPasswordValid = !errors.password && passwordValue.length > 0
 
     useEffect(() => {
-        const hostname = window.location.hostname
-        if (hostname.startsWith("app.")) {
-            setRole("policyholder")
-            setIsRoleLocked(true)
-        } else if (hostname.startsWith("agent.")) {
-            setRole("agent")
-            setIsRoleLocked(true)
-        }
-    }, [])
+        trackLandingEvent("page_view_signup", {
+            role,
+            source,
+            locale: language,
+        })
+    }, [language, role, source])
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setIsLoading(true)
-        setError(null)
+    const onSubmit = async (values: SignupFormValues) => {
+        setServerError(null)
+        setIsSubmitting(true)
+        const sanitizedEmail = values.email.trim().toLowerCase()
 
         const formData = new FormData()
-        formData.append("name", name)
-        formData.append("email", email)
-        formData.append("password", password)
-        formData.append("confirmPassword", confirmPassword)
+        formData.append("mobileNumber", values.mobileNumber)
+        formData.append("email", sanitizedEmail)
+        formData.append("password", values.password)
+        formData.append("confirmPassword", values.password)
+        formData.append("name", role === "agent" ? "Agent User" : "")
         formData.append("role", role)
         formData.append("language", language)
-        formData.append("termsAccepted", String(termsAccepted))
-        formData.append("marketingConsent", String(marketingConsent))
+        formData.append("termsAccepted", String(values.termsAccepted))
+        formData.append("marketingConsent", "false")
+        if (token) formData.append("token", token)
 
         if (role === "agent") {
-            formData.append("licenseNumber", licenseNumber)
-            formData.append("agencyName", agencyName)
+            formData.append("licenseNumber", "pending")
+            formData.append("agencyName", "pending")
         }
 
-        if (urlToken) formData.append("token", urlToken)
-
         try {
-            trackLandingEvent("signup_start", { role, source: urlSource, locale: language })
-
+            trackLandingEvent("signup_started", { role, source, locale: language, identifier_type: sanitizedEmail ? "email" : "phone" })
+            trackLandingEvent("signup_start", { role, source, locale: language, identifier_type: sanitizedEmail ? "email" : "phone" })
             const result = await registerUser(formData)
 
-            if (result.success) {
-                trackLandingEvent("signup_complete", { role, source: urlSource, locale: language })
-
-                if (result.redirect) {
-                    router.push(result.redirect)
-                } else {
-                    router.push(`/auth/signup/confirmation?email=${encodeURIComponent(email)}&role=${role}`)
-                }
-            } else if (typeof result.error === "string") {
-                setError(result.error)
-            } else {
-                const errorObj = result.error as Record<string, string[]>
-                const messages = Object.values(errorObj || {}).flat().join(", ")
-                setError(messages || t.errors.somethingWentWrong)
+            if (!result.success) {
+                const err = typeof result.error === "string"
+                    ? result.error
+                    : Object.values((result.error || {}) as Record<string, string[]>).flat().join(", ") || "Signup failed"
+                setServerError(err)
+                setIsSubmitting(false)
+                return
             }
+
+            trackLandingEvent("signup_completed", {
+                role,
+                source,
+                locale: language,
+                identifier_type: sanitizedEmail ? "email" : "phone",
+                auth_identifier: emailOrSynthetic,
+            })
+            trackLandingEvent("signup_complete", {
+                role,
+                source,
+                locale: language,
+                identifier_type: sanitizedEmail ? "email" : "phone",
+                auth_identifier: emailOrSynthetic,
+            })
+
+            setSignupSuccess(true)
+            setTimeout(() => {
+                router.push(result.redirect || "/onboarding")
+            }, 900)
         } catch {
-            setError(t.errors.somethingWentWrong)
-        } finally {
-            setIsLoading(false)
+            setServerError("Something went wrong. Please try again.")
+            setIsSubmitting(false)
         }
     }
 
-    return (
-        <div className={`${ibmPlexSans.className} flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-emerald-50 via-white to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-teal-950/30 px-4 py-12 relative overflow-hidden`}>
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-                <div className="absolute -top-[20%] right-[10%] w-[60%] h-[60%] rounded-full bg-emerald-300/30 blur-[120px]" />
-                <div className="absolute bottom-[0%] left-[10%] w-[50%] h-[50%] rounded-full bg-teal-300/30 blur-[120px]" />
-            </div>
+    const inputBase = "w-full rounded-xl border bg-white px-4 py-3.5 text-sm text-slate-900 outline-none transition focus-visible:ring-2 focus-visible:ring-blue-500"
 
-            <div className="w-full max-w-xl bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl border border-emerald-100 p-8 sm:p-10 relative z-10 dark:bg-slate-900/85 dark:border-slate-700">
-                <div className="text-center mb-8">
-                    <Link href="/" className="inline-block mb-6">
+    return (
+        <div className={`${ibmPlexSans.className} relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-b from-[#1E3A8A] via-[#dbeafe] to-white px-4 py-10`}>
+            <motion.div className="absolute -top-24 right-[-12%] h-72 w-72 rounded-full bg-sky-300/35 blur-3xl" animate={{ scale: [1, 1.08, 1], opacity: [0.35, 0.5, 0.35] }} transition={{ duration: 6, repeat: Infinity }} />
+            <motion.div className="absolute -bottom-20 left-[-10%] h-64 w-64 rounded-full bg-blue-200/50 blur-3xl" animate={{ scale: [1.08, 1, 1.08], opacity: [0.35, 0.45, 0.35] }} transition={{ duration: 6, repeat: Infinity }} />
+
+            <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="relative z-10 w-full max-w-md rounded-3xl border border-white/60 bg-white/95 p-6 shadow-2xl shadow-blue-900/10 sm:p-7">
+                {signupSuccess ? <ConfettiBurst /> : null}
+
+                <div className="mb-6 text-center">
+                    <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 shadow-sm">
                         <PolicyWalletLogo size="md" language={language} />
-                    </Link>
-                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{copy.title}</h1>
-                    <p className="text-slate-600 dark:text-slate-300 text-sm">{copy.subtitle}</p>
-                    <div className="mt-4 inline-flex items-center gap-1 rounded-lg bg-slate-100 p-1 border border-slate-200 dark:bg-slate-800 dark:border-slate-700">
-                        <button
-                            type="button"
-                            onClick={() => setLanguage("el")}
-                            className={`px-2.5 py-1 text-xs font-bold rounded-md transition-colors ${language === "el" ? "bg-white text-emerald-700 shadow-sm dark:bg-slate-700 dark:text-emerald-300" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
-                        >
-                            EL
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setLanguage("en")}
-                            className={`px-2.5 py-1 text-xs font-bold rounded-md transition-colors ${language === "en" ? "bg-white text-emerald-700 shadow-sm dark:bg-slate-700 dark:text-emerald-300" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
-                        >
-                            EN
-                        </button>
                     </div>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">Your Insurance Wallet</h1>
+                    <p className="mt-1.5 text-sm text-slate-600">All your policies. One secure place.</p>
                 </div>
 
-                {!isRoleLocked && (
-                    <div className="flex justify-center mb-8">
-                        {role === "policyholder" ? (
-                            <div className="text-sm text-slate-600 dark:text-slate-400">
-                                <span>{copy.joinAs} {copy.policyholder}. </span>
-                                <button type="button" onClick={() => setRole("agent")} className="font-bold text-teal-700 hover:text-teal-600 dark:text-teal-300 dark:hover:text-teal-200 underline underline-offset-2 cursor-pointer">
-                                    {copy.switchAgent}
-                                </button>
-                            </div>
-                        ) : (
-                            <button type="button" onClick={() => setRole("policyholder")} className="text-sm font-bold text-emerald-700 hover:text-emerald-600 dark:text-emerald-300 dark:hover:text-emerald-200 underline underline-offset-2 cursor-pointer">
-                                {copy.switchPolicyholder}
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                    <AnimatePresence>
+                        {serverError ? (
+                            <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700" role="alert">
+                                <AlertCircle className="mt-0.5 h-4 w-4" />
+                                <span>{serverError}</span>
+                            </motion.div>
+                        ) : null}
+                    </AnimatePresence>
+
+                    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
+                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">Mobile number</label>
+                        <div className="relative">
+                            <input
+                                type="tel"
+                                inputMode="tel"
+                                placeholder="+30 69X XXX XXXX"
+                                {...register("mobileNumber")}
+                                onChange={(event) => setValue("mobileNumber", formatPhoneInput(event.target.value), { shouldValidate: true })}
+                                className={`${inputBase} ${errors.mobileNumber ? "border-rose-300" : "border-slate-300"}`}
+                            />
+                            {isMobileValid ? <CheckCircle2 className="absolute right-3 top-3.5 h-4 w-4 text-emerald-500" /> : null}
+                        </div>
+                        {errors.mobileNumber ? <p className="mt-1 text-xs text-rose-600">{errors.mobileNumber.message}</p> : null}
+                    </motion.div>
+
+                    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }}>
+                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">Email (optional)</label>
+                        <div className="relative">
+                            <input type="email" placeholder="name@example.com" {...register("email")} className={`${inputBase} ${errors.email ? "border-rose-300" : "border-slate-300"}`} />
+                            {isEmailValid ? <CheckCircle2 className="absolute right-3 top-3.5 h-4 w-4 text-emerald-500" /> : null}
+                        </div>
+                        <p className="mt-1 text-xs text-slate-500">Optional, used for account recovery and alerts.</p>
+                        {errors.email ? <p className="mt-1 text-xs text-rose-600">{errors.email.message}</p> : null}
+                    </motion.div>
+
+                    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.11 }}>
+                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">Password</label>
+                        <div className="relative">
+                            <input type={showPassword ? "text" : "password"} placeholder="Create password" {...register("password")} className={`${inputBase} pr-11 ${errors.password ? "border-rose-300" : "border-slate-300"}`} />
+                            <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-2 top-2.5 rounded-md p-1.5 text-slate-500 transition hover:bg-slate-100" aria-label={showPassword ? "Hide password" : "Show password"}>
+                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </button>
-                        )}
-                    </div>
-                )}
-
-                <form onSubmit={handleSubmit} className="space-y-5">
-                    {error && (
-                        <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-700 dark:text-red-300 text-sm font-medium flex items-center gap-3">
-                            <AlertCircle className="w-4 h-4" />
-                            {error}
                         </div>
-                    )}
-
-                    <div className="space-y-5">
-                        <div className="space-y-1.5">
-                            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{copy.fullName}</label>
-                            <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <User className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-500 transition-colors" />
-                                </div>
-                                <input
-                                    name="name"
-                                    type="text"
-                                    required
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    className="block w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 dark:bg-slate-800/60 dark:border-slate-700 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all font-medium sm:text-sm"
-                                    placeholder={roleCopy.auth.fullNamePlaceholder}
+                        <div className="mt-2 grid grid-cols-3 gap-1.5" aria-hidden>
+                            {[0, 1, 2].map((index) => (
+                                <span
+                                    key={index}
+                                    className={`h-1.5 rounded-full ${strength > index ? (strength === 1 ? "bg-rose-500" : strength === 2 ? "bg-amber-500" : "bg-emerald-500") : "bg-slate-200"}`}
                                 />
-                            </div>
+                            ))}
                         </div>
+                        {isPasswordValid ? <p className="mt-1 text-xs text-emerald-600">Strong enough</p> : null}
+                        {errors.password ? <p className="mt-1 text-xs text-rose-600">{errors.password.message}</p> : null}
+                    </motion.div>
 
-                        <div className="space-y-1.5">
-                            <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{copy.email}</label>
-                            <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Mail className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-500 transition-colors" />
-                                </div>
-                                <input
-                                    name="email"
-                                    type="email"
-                                    required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="block w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 dark:bg-slate-800/60 dark:border-slate-700 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all font-medium sm:text-sm"
-                                    placeholder={roleCopy.auth.emailPlaceholder}
-                                />
-                            </div>
-                        </div>
+                    <motion.label initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700">
+                        <input type="checkbox" {...register("termsAccepted")} className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-700" />
+                        <span>
+                            I agree to <Link href="/terms" className="font-semibold text-blue-700 hover:underline">Terms</Link> and <Link href="/privacy" className="font-semibold text-blue-700 hover:underline">Privacy</Link>
+                        </span>
+                    </motion.label>
+                    {errors.termsAccepted ? <p className="-mt-2 text-xs text-rose-600">{errors.termsAccepted.message}</p> : null}
 
-                        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                            <div className="space-y-1.5">
-                                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{copy.password}</label>
-                                <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <Lock className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-500 transition-colors" />
-                                    </div>
-                                    <input
-                                        name="password"
-                                        type="password"
-                                        required
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        className="block w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 dark:bg-slate-800/60 dark:border-slate-700 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all font-medium sm:text-sm"
-                                        placeholder={roleCopy.auth.passwordPlaceholder}
-                                    />
-                                </div>
-                            </div>
-                            <div className="space-y-1.5">
-                                <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{copy.confirm}</label>
-                                <div className="relative group">
-                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <Lock className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-500 transition-colors" />
-                                    </div>
-                                    <input
-                                        name="confirmPassword"
-                                        type="password"
-                                        required
-                                        value={confirmPassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                        className="block w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 dark:bg-slate-800/60 dark:border-slate-700 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all font-medium sm:text-sm"
-                                        placeholder={roleCopy.auth.passwordPlaceholder}
-                                    />
-                                </div>
-                            </div>
-                        </div>
+                    <AnimatePresence>
+                        {isMobileValid && strength >= 2 ? (
+                            <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="inline-flex items-center gap-1.5 rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-medium text-sky-700">
+                                <ShieldCheck className="h-3.5 w-3.5" />
+                                Use FaceID after first signup
+                            </motion.div>
+                        ) : null}
+                    </AnimatePresence>
 
-                        {role === "agent" && (
-                            <div className="bg-slate-50 dark:bg-slate-800/30 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-5">
-                                <div className="flex items-center gap-2 text-teal-700 dark:text-teal-300 mb-1">
-                                    <Briefcase className="w-4 h-4" />
-                                    <span className="text-xs font-bold uppercase tracking-wider">{copy.agentDetails}</span>
-                                </div>
-                                <div className="space-y-1.5">
-                                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{copy.license} <span className="text-red-500">*</span></label>
-                                    <div className="relative group">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <FileBadge className="h-5 w-5 text-slate-500 group-focus-within:text-teal-500 transition-colors" />
-                                        </div>
-                                        <input
-                                            name="licenseNumber"
-                                            type="text"
-                                            required={role === "agent"}
-                                            value={licenseNumber}
-                                            onChange={(e) => setLicenseNumber(e.target.value)}
-                                            className="block w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 dark:bg-slate-900/50 dark:border-slate-700 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all font-medium sm:text-sm"
-                                            placeholder={roleCopy.auth.licensePlaceholder}
-                                        />
-                                    </div>
-                                </div>
-                                <div className="space-y-1.5">
-                                    <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{copy.agency} <span className="text-red-500">*</span></label>
-                                    <div className="relative group">
-                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <Building className="h-5 w-5 text-slate-500 group-focus-within:text-teal-500 transition-colors" />
-                                        </div>
-                                        <input
-                                            name="agencyName"
-                                            type="text"
-                                            required={role === "agent"}
-                                            value={agencyName}
-                                            onChange={(e) => setAgencyName(e.target.value)}
-                                            className="block w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 dark:bg-slate-900/50 dark:border-slate-700 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-teal-500 transition-all font-medium sm:text-sm"
-                                            placeholder={roleCopy.auth.agencyPlaceholder}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+                    <motion.button initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} type="submit" disabled={isSubmitting || signupSuccess} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#1E3A8A] to-[#6D28D9] px-4 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-70">
+                        {isSubmitting || signupSuccess ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                        {signupSuccess ? "Wallet Created" : "Create My Wallet"}
+                    </motion.button>
 
-                        <div className="space-y-3 pt-2">
-                            <label className="flex items-start cursor-pointer group">
-                                <input
-                                    type="checkbox"
-                                    id="termsAccepted"
-                                    checked={termsAccepted}
-                                    onChange={(e) => setTermsAccepted(e.target.checked)}
-                                    className="mt-0.5 h-5 w-5 rounded border-slate-400 bg-white text-emerald-500 dark:border-slate-600 dark:bg-slate-800 focus:ring-emerald-500 focus:ring-offset-white dark:focus:ring-offset-slate-900 transition-all"
-                                    required
-                                />
-                                <span className="ml-3 text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">
-                                    {copy.terms}{" "}
-                                    <Link href="/terms" target="_blank" className="font-bold text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300 hover:underline">{roleCopy.auth.termsAndConditions}</Link>{" "}
-                                    {copy.and}{" "}
-                                    <Link href="/privacy" target="_blank" className="font-bold text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300 hover:underline">{roleCopy.auth.privacyPolicy}</Link>
-                                    <span className="text-red-500 ml-1">*</span>
-                                </span>
-                            </label>
-
-                            <label className="flex items-start cursor-pointer group">
-                                <input
-                                    type="checkbox"
-                                    id="marketingConsent"
-                                    checked={marketingConsent}
-                                    onChange={(e) => setMarketingConsent(e.target.checked)}
-                                    className="mt-0.5 h-5 w-5 rounded border-slate-400 bg-white text-emerald-500 dark:border-slate-600 dark:bg-slate-800 focus:ring-emerald-500 focus:ring-offset-white dark:focus:ring-offset-slate-900 transition-all"
-                                />
-                                <span className="ml-3 text-sm text-slate-600 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">
-                                    {copy.marketing}
-                                </span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full flex items-center justify-center py-4 px-4 border border-transparent rounded-xl shadow-lg shadow-orange-500/20 text-sm font-bold text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
-                    >
-                        {isLoading ? (
-                            <span className="flex items-center gap-2">
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                                {copy.creating}
-                            </span>
-                        ) : (
-                            <span className="flex items-center gap-2">
-                                {copy.cta} <ArrowRight className="w-4 h-4 opacity-80" />
-                            </span>
-                        )}
-                    </button>
+                    <p className="text-center text-xs text-slate-500">Takes 90 seconds. Cancel anytime.</p>
                 </form>
 
-                <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700/50 text-center">
-                    <p className="text-sm text-slate-600 dark:text-slate-400">
-                        {copy.alreadyHave}{" "}
-                        <Link href="/auth/signin" className="font-bold text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300 hover:underline transition-colors">
-                            {t.auth.signIn}
-                        </Link>
-                    </p>
+                <div className="mt-5 border-t border-slate-200 pt-4 text-center text-sm text-slate-600">
+                    Already have account? <Link href="/auth/signin" className="font-semibold text-blue-700 hover:underline">Login</Link>
                 </div>
-            </div>
+
+            </motion.div>
         </div>
     )
 }
 
 export default function SignUpPage() {
     return (
-        <Suspense
-            fallback={
-                <div className={`${ibmPlexSans.className} min-h-screen bg-gradient-to-b from-emerald-50 via-white to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-teal-950/30 flex items-center justify-center`}>
-                    <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
-                </div>
-            }
-        >
+        <Suspense fallback={<div className={`${ibmPlexSans.className} flex min-h-screen items-center justify-center`}><Loader2 className="h-7 w-7 animate-spin text-blue-700" /></div>}>
             <SignUpForm />
         </Suspense>
     )
 }
-

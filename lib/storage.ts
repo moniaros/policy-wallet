@@ -2,12 +2,24 @@ import fs from "fs/promises"
 import path from "path"
 import { env } from "./env"
 import { logger } from "./logger"
+import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js"
 
 // In a real production app with k8s/serverless, 
 // you MUST use S3/GCS. Local storage is ephemeral on Vercel/Run calls.
 // This is a "Production-Ready" fallback for VPS/Single-Node deployments.
 
 import { createClient } from "@/lib/supabase/server"
+
+function resolveSupabaseUploadPathFromUrl(fileUrl: string): string | null {
+    try {
+        const parsed = new URL(fileUrl)
+        const match = parsed.pathname.match(/\/storage\/v1\/object\/(?:public|sign)\/uploads\/(.+)$/)
+        if (!match?.[1]) return null
+        return decodeURIComponent(match[1])
+    } catch {
+        return null
+    }
+}
 
 export async function uploadFile(file: File, folder: string = "policies"): Promise<string> {
     try {
@@ -78,9 +90,31 @@ export async function deleteFile(fileUrl: string): Promise<boolean> {
     try {
         if (!fileUrl) return true;
 
-        // Handle remote URLs (S3/Supabase) - Placeholder
+        // Handle remote URLs (Supabase/S3). We only actively delete Supabase files here.
         if (fileUrl.startsWith('http')) {
-            // TODO: Implement S3 delete
+            const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL
+            const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+            const uploadPath = resolveSupabaseUploadPathFromUrl(fileUrl)
+
+            if (supabaseUrl && serviceRoleKey && uploadPath) {
+                const adminClient = createSupabaseAdminClient(supabaseUrl, serviceRoleKey, {
+                    auth: {
+                        autoRefreshToken: false,
+                        persistSession: false,
+                    },
+                })
+
+                const { error } = await adminClient.storage.from("uploads").remove([uploadPath])
+                if (error) {
+                    logger('warn', 'Supabase file delete failed', { fileUrl, uploadPath, error: error.message })
+                    return false
+                }
+
+                logger('info', 'Supabase file deleted', { fileUrl, uploadPath })
+                return true
+            }
+
+            logger('warn', 'Remote file delete skipped (unsupported provider or missing config)', { fileUrl })
             return true;
         }
 

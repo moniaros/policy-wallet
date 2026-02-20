@@ -3,6 +3,7 @@ import * as Sentry from '@sentry/nextjs'
 import { requireApiUser } from '@/lib/api-auth'
 import { z } from 'zod'
 import { createApiResponse, createApiError } from "@/lib/api-utils"
+import { sendPolicySharedAccessEmail } from "@/lib/email/invite-emails"
 
 const sharePolicySchema = z.object({
     policyId: z.string().min(1),
@@ -73,8 +74,16 @@ export async function POST(req: Request) {
             })
         }
 
-        // TODO: Send email notification to grantee
-        // This would integrate with Brevo to send an invitation email
+        try {
+            await sendPolicySharedAccessEmail({
+                to: email,
+                inviterName: authResult.dbUser.name || authResult.dbUser.email,
+                policyNumber: policy.policyNumber,
+                language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
+            })
+        } catch (emailError) {
+            console.error("Failed to send policy share email", emailError)
+        }
 
         return createApiResponse({
             message: `Policy shared with ${email}`

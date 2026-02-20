@@ -1,5 +1,5 @@
 import { db } from "./db"
-import { sendMail } from "./mail"
+import { sendEmail } from "./email/email-service"
 import { templates } from "./mail-templates"
 
 export type NotificationChannel = 'email' | 'push' | 'whatsapp' | 'viber'
@@ -70,7 +70,14 @@ export async function sendNotification({
                 const emailSubject = template ? template({ id: relatedObjectId }).subject : title
                 const emailHtml = template ? template({ id: relatedObjectId }).html : message
 
-                await sendMail({ to: user.email, subject: emailSubject || title, html: emailHtml || message })
+                const result = await sendEmail({
+                    to: user.email,
+                    subject: emailSubject || title,
+                    html: emailHtml || message,
+                })
+                if (!result.success) {
+                    throw new Error(result.error || "Email delivery failed")
+                }
             } else if (channel === 'push' && user.pushToken) {
                 console.log(`[Push] To: ${user.pushToken} Title: ${title}`)
             }

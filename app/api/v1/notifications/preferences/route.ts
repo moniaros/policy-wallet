@@ -3,6 +3,13 @@ import { db } from "@/lib/db"
 import { requireApiUser } from "@/lib/api-auth"
 import { z } from "zod"
 
+const DEFAULT_NOTIFICATION_EVENTS = [
+    "policy_expiring",
+    "pending_questionnaire",
+    "renewal_milestone",
+    "policy_reviewed",
+] as const
+
 const notificationPreferenceSchema = z.object({
     event_type: z.string().min(1),
     channel: z.enum(["email", "push", "sms"]),
@@ -23,17 +30,21 @@ export async function GET() {
             where: { userId: authResult.dbUser.id }
         })
 
-        // Default categories if nothing set
-        const defaultEvents = ["policy_expiring", "gap_detected", "questionnaire_received"]
+        // Include defaults plus any persisted custom event types.
+        const eventTypes = new Set<string>(DEFAULT_NOTIFICATION_EVENTS)
+        for (const pref of preferences) {
+            if (pref?.eventType) eventTypes.add(pref.eventType)
+        }
 
-        const result = defaultEvents.map(event => {
+        const result = Array.from(eventTypes).sort((a, b) => a.localeCompare(b)).map(event => {
             const userPrefs = preferences.filter((p: any) => p.eventType === event)
             return {
                 event_type: event,
                 channels: {
                     email: userPrefs.find((p: any) => p.channel === "email")?.enabled ?? true,
                     push: userPrefs.find((p: any) => p.channel === "push")?.enabled ?? true,
-                    sms: userPrefs.find((p: any) => p.channel === "sms")?.enabled ?? false
+                    // SMS channel is not currently exposed in UI but is preserved for backward compatibility.
+                    sms: userPrefs.find((p: any) => p.channel === "sms")?.enabled ?? false,
                 }
             }
         })

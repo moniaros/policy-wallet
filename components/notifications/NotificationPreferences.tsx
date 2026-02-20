@@ -21,7 +21,7 @@ export function NotificationPreferences({
             case 'reminder':
                 return 'Υπενθυμίσεις'
             case 'intelligence':
-                return 'Ευφυία Κάλυψης'
+                return 'AI Ανάλυση Κάλυψης'
             default:
                 return category
         }
@@ -67,8 +67,8 @@ export function NotificationPreferences({
                             <button
                                 onClick={() => onSwitchRole?.('policyholder')}
                                 className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeRole === 'policyholder'
-                                        ? 'bg-white text-stone-900 shadow-xl'
-                                        : 'text-stone-400 hover:text-white'
+                                    ? 'bg-white text-stone-900 shadow-xl'
+                                    : 'text-stone-400 hover:text-white'
                                     }`}
                             >
                                 Ασφαλισμένος
@@ -76,8 +76,8 @@ export function NotificationPreferences({
                             <button
                                 onClick={() => onSwitchRole?.('agent')}
                                 className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeRole === 'agent'
-                                        ? 'bg-white text-stone-900 shadow-xl'
-                                        : 'text-stone-400 hover:text-white'
+                                    ? 'bg-white text-stone-900 shadow-xl'
+                                    : 'text-stone-400 hover:text-white'
                                     }`}
                             >
                                 Πράκτορας
@@ -142,8 +142,8 @@ export function NotificationPreferences({
                                                             <button
                                                                 onClick={() => onToggleChannel?.(eventType.event_type, 'email', !pref.channel_email)}
                                                                 className={`relative inline-flex h-5 w-10 items-center rounded-full transition-all ${pref.channel_email
-                                                                        ? 'bg-teal-500 shadow-[0_0_12px_rgba(20,184,166,0.3)]'
-                                                                        : 'bg-stone-200 dark:bg-stone-700'
+                                                                    ? 'bg-teal-500 shadow-[0_0_12px_rgba(20,184,166,0.3)]'
+                                                                    : 'bg-stone-200 dark:bg-stone-700'
                                                                     }`}
                                                             >
                                                                 <span
@@ -161,8 +161,8 @@ export function NotificationPreferences({
                                                             <button
                                                                 onClick={() => onToggleChannel?.(eventType.event_type, 'push', !pref.channel_push)}
                                                                 className={`relative inline-flex h-5 w-10 items-center rounded-full transition-all ${pref.channel_push
-                                                                        ? 'bg-teal-500 shadow-[0_0_12px_rgba(20,184,166,0.3)]'
-                                                                        : 'bg-stone-200 dark:bg-stone-700'
+                                                                    ? 'bg-teal-500 shadow-[0_0_12px_rgba(20,184,166,0.3)]'
+                                                                    : 'bg-stone-200 dark:bg-stone-700'
                                                                     }`}
                                                             >
                                                                 <span

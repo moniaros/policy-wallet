@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { verifyEmailToken } from "./actions"
 import { Loader2 } from "lucide-react"
+import { trackLandingEvent } from "@/lib/landing/analytics"
 
 function VerifyEmailContent() {
     const searchParams = useSearchParams()
@@ -21,10 +22,19 @@ function VerifyEmailContent() {
             return
         }
 
+        trackLandingEvent("email_verification_viewed", {
+            source: "verify_email_page",
+            email_domain: email.includes("@") ? email.split("@")[1] : "unknown",
+        })
+
         verifyEmailToken(token, email)
             .then((result) => {
                 if (result.success) {
                     setStatus("success")
+                    trackLandingEvent("email_verified", {
+                        source: "verify_email_page",
+                        email_domain: email.includes("@") ? email.split("@")[1] : "unknown",
+                    })
                 } else {
                     setStatus("error")
                     setMessage(result.error || "Verification failed")

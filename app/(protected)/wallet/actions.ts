@@ -20,6 +20,7 @@ import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { after } from 'next/server'
 import { collaborationService } from "@/lib/services/collaboration.service"
+import { sendPolicyInviteEmail, sendPolicySharedAccessEmail } from "@/lib/email/invite-emails"
 
 const PolicySchema = z.object({
     insurerName: z.string().min(1, "Insurer name is required"),
@@ -298,6 +299,21 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
         const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
         const link = `${baseUrl}/invite/${invite.token}`
 
+        try {
+            await sendPolicyInviteEmail({
+                to: agentEmail,
+                token: invite.token,
+                inviterName: authResult.dbUser.name || authResult.dbUser.email,
+                language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
+            })
+        } catch (error) {
+            logger('warn', 'Failed to send policy invite email', {
+                policyId,
+                agentEmail,
+                error: error instanceof Error ? error.message : String(error),
+            })
+        }
+
         // Log interaction
         await (db as any).activityLog.create({
             data: {
@@ -383,6 +399,25 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
             relatedObjectId: policyId
         }
     })
+
+    try {
+        const sharedPolicy = await db.policy.findUnique({
+            where: { id: policyId },
+            select: { policyNumber: true },
+        })
+        await sendPolicySharedAccessEmail({
+            to: agentEmail,
+            inviterName: authResult.dbUser.name || authResult.dbUser.email,
+            policyNumber: sharedPolicy?.policyNumber,
+            language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
+        })
+    } catch (error) {
+        logger('warn', 'Failed to send shared policy access email', {
+            policyId,
+            agentEmail,
+            error: error instanceof Error ? error.message : String(error),
+        })
+    }
 
     // 6. Log
     await (db as any).activityLog.create({

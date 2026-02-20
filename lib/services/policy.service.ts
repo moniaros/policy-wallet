@@ -10,6 +10,7 @@ import { BaseService } from './base.service'
 import { AppError } from '@/lib/errors'
 import { uploadFile, deleteFile } from '@/lib/storage'
 import { logger } from '@/lib/logger'
+import { sendPolicyInviteEmail, sendPolicySharedAccessEmail } from '@/lib/email/invite-emails'
 import type { Policy, PolicyDocument } from '@prisma/client'
 import type {
     CreatePolicyInput,
@@ -677,6 +678,11 @@ export class PolicyService extends BaseService {
         }
 
         const recipientEmail = data.agentEmail.toLowerCase().trim()
+        const owner = await this.db.user.findUnique({
+            where: { id: ownerUserId },
+            select: { name: true, email: true }
+        })
+        const inviterName = owner?.name || owner?.email || 'PolicyWallet user'
 
         // Check if recipient exists
         const recipient = await this.db.user.findUnique({
@@ -734,6 +740,22 @@ export class PolicyService extends BaseService {
                 { policyId, recipientEmail, recipientId: recipient.id }
             )
 
+            try {
+                await sendPolicySharedAccessEmail({
+                    to: recipientEmail,
+                    inviterName,
+                    policyNumber: policy.policyNumber,
+                    language,
+                })
+            } catch (emailError) {
+                logger('warn', 'Policy share email failed', {
+                    ownerUserId,
+                    policyId,
+                    recipientEmail,
+                    error: emailError instanceof Error ? emailError.message : String(emailError),
+                })
+            }
+
             logger('info', 'Policy shared successfully', {
                 ownerUserId,
                 policyId,
@@ -753,13 +775,31 @@ export class PolicyService extends BaseService {
                 data: {
                     inviterUserId: ownerUserId,
                     inviteeEmail: recipientEmail,
-                    inviteType: 'policy_share',
+                    inviteType: 'share',
+                    scope: `policy:${policyId}`,
+                    requestedPermissions: 'view',
                     token,
                     expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
                 }
             })
 
-            // TODO: Send email invite (email service integration)
+            try {
+                await sendPolicyInviteEmail({
+                    to: recipientEmail,
+                    token: invite.token,
+                    inviterName,
+                    policyNumber: policy.policyNumber,
+                    language,
+                })
+            } catch (emailError) {
+                logger('warn', 'Policy invite email failed', {
+                    ownerUserId,
+                    policyId,
+                    recipientEmail,
+                    inviteId: invite.id,
+                    error: emailError instanceof Error ? emailError.message : String(emailError),
+                })
+            }
 
             await this.logActivity(
                 ownerUserId,
@@ -780,7 +820,7 @@ export class PolicyService extends BaseService {
                 message: language === 'el'
                     ? 'Η πρόσκληση στάλθηκε επιτυχώς'
                     : 'Invite sent successfully',
-                link: `/invite/${invite.id}`
+                link: `/invite/${invite.token}`
             }
         }
     }

@@ -19,6 +19,7 @@ import {
 import { AIServiceFactory, getAIService } from "@/lib/services/ai/ai-service.factory";
 import { CustomerService } from "@/lib/services/customer.service";
 import { collaborationService } from "@/lib/services/collaboration.service";
+import { sendPolicyInviteEmail } from "@/lib/email/invite-emails";
 
 const customerService = new CustomerService(db);
 
@@ -238,9 +239,21 @@ export async function createAgentInvite(email: string, scope: AccessScope) {
             inviteeEmail: email,
             token: Math.random().toString(36).substring(7),
             inviteType: 'signup',
+            scope,
             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
         }
     })
+
+    try {
+        await sendPolicyInviteEmail({
+            to: email,
+            token: invite.token,
+            inviterName: authResult.dbUser.name || authResult.dbUser.email,
+            language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
+        })
+    } catch (error) {
+        console.error("Failed to send agent invite email", error)
+    }
 
     revalidatePath("/dashboard")
     revalidatePath("/customers")

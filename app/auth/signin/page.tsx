@@ -9,6 +9,7 @@ import { Loader2, Mail, Lock, AlertCircle, ArrowRight, CheckCircle } from "lucid
 import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
+import { resolveAuthEmailIdentifier } from "@/lib/auth/phone-auth"
 
 const ibmPlexSans = IBM_Plex_Sans({
     subsets: ["latin", "greek"],
@@ -19,7 +20,7 @@ export default function SignInPage() {
     const router = useRouter()
     const { language, setLanguage, t } = useLanguage()
     const roleCopy = getRoleCopy(language)
-    const [email, setEmail] = useState("")
+    const [identifier, setIdentifier] = useState("")
     const [password, setPassword] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -30,7 +31,7 @@ export default function SignInPage() {
     const copy = {
         title: t.auth.welcomeBack,
         subtitle: roleCopy.auth.signInSubtitle,
-        email: t.auth.emailAddress,
+        email: language === "el" ? "Email ή κινητό" : "Email or mobile",
         password: t.auth.password,
         forgot: roleCopy.auth.forgotPassword,
         signIn: t.auth.signIn,
@@ -56,8 +57,9 @@ export default function SignInPage() {
         const supabase = createClient()
 
         try {
+            const resolved = resolveAuthEmailIdentifier(identifier)
             const { error } = await supabase.auth.signInWithPassword({
-                email,
+                email: resolved.email,
                 password,
             })
 
@@ -87,7 +89,8 @@ export default function SignInPage() {
 
         try {
             const { resendVerificationEmail } = await import("../actions")
-            const result = await resendVerificationEmail(email, language)
+            const resolved = resolveAuthEmailIdentifier(identifier)
+            const result = await resendVerificationEmail(resolved.email, language)
 
             if (result.success) {
                 setResendMessage(copy.resendSent)
@@ -181,12 +184,12 @@ export default function SignInPage() {
                                 </div>
                                 <input
                                     id="email"
-                                    type="email"
+                                    type="text"
                                     required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    value={identifier}
+                                    onChange={(e) => setIdentifier(e.target.value)}
                                     className="block w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 dark:bg-slate-800/60 dark:border-slate-700 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all font-bold sm:text-sm"
-                                    placeholder={roleCopy.auth.emailPlaceholder}
+                                    placeholder={language === "el" ? "name@email.com ή +30 69X XXX XXXX" : "name@email.com or +30 69X XXX XXXX"}
                                 />
                             </div>
                         </div>

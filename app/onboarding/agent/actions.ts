@@ -54,6 +54,7 @@ export async function completeOnboarding(userId: string) {
 
 
 import { uploadFile } from "@/lib/storage"
+import { sendPolicyInviteEmail } from "@/lib/email/invite-emails"
 
 // ...
 
@@ -92,10 +93,43 @@ export async function uploadAgentAsset(userId: string, formData: FormData) {
 }
 
 export async function sendClientInvite(agentUserId: string, clientEmail: string) {
-    // Logic to create invite record and send email
-    // ...
-    // For now returning success
-    return { success: true }
+    if (!agentUserId || !clientEmail) {
+        return { success: false, error: "Missing agent or client email" }
+    }
+
+    const normalizedEmail = clientEmail.trim().toLowerCase()
+    if (!normalizedEmail) {
+        return { success: false, error: "Invalid email" }
+    }
+
+    try {
+        const invite = await db.invite.create({
+            data: {
+                inviterUserId: agentUserId,
+                inviteeEmail: normalizedEmail,
+                token: crypto.randomUUID().replace(/-/g, ""),
+                inviteType: "signup",
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            },
+        })
+
+        const inviter = await db.user.findUnique({
+            where: { id: agentUserId },
+            select: { name: true, email: true, preferredLanguage: true },
+        })
+
+        const emailResult = await sendPolicyInviteEmail({
+            to: normalizedEmail,
+            token: invite.token,
+            inviterName: inviter?.name || inviter?.email || "PolicyWallet advisor",
+            language: (inviter?.preferredLanguage as "el" | "en") || "en",
+        })
+
+        return { success: true, inviteId: invite.id, token: invite.token, emailQueued: emailResult.success }
+    } catch (error) {
+        console.error("Failed to create client invite:", error)
+        return { success: false, error: "Failed to send invite" }
+    }
 }
 
 export async function generateDemoProposal(file: File) {

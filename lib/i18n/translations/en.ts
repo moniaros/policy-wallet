@@ -627,7 +627,7 @@ export const en: TranslationKeys = {
         revokeAccess: 'Revoke Access',
         auditTrail: 'Audit Trail',
         downloadReport: 'Download Report',
-        nuclearDeletion: 'Nuclear Deletion',
+        nuclearDeletion: 'Delete Account',
         nuclearDesc: 'Proceed with extreme caution. Deleting your account will irrevocably destroy all policies, analytical data, and shared access models.',
         deletePermanently: 'Delete Permanently',
         processing: 'Processing...',

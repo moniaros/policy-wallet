@@ -1,139 +1,156 @@
-﻿"use client"
+"use client"
 
-import { useState } from "react"
 import Link from "next/link"
+import { useState } from "react"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
 import { IBM_Plex_Sans } from "next/font/google"
-import { resetPasswordForEmail } from "../actions"
-import { ArrowLeft, Mail, AlertTriangle, CheckCircle, Loader2, Lock } from "lucide-react"
+import { AnimatePresence, motion } from "framer-motion"
+import { AlertCircle, ArrowLeft, CheckCircle2, Loader2, Mail, ShieldCheck } from "lucide-react"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { resetPasswordForEmail } from "../actions"
 
 const ibmPlexSans = IBM_Plex_Sans({
     subsets: ["latin", "greek"],
     weight: ["400", "500", "600", "700"],
 })
 
+const forgotPasswordSchema = z.object({
+    email: z.string().email("Please provide a valid email address"),
+})
+
+type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>
+
 export default function ForgotPasswordPage() {
     const { language } = useLanguage()
-    const [email, setEmail] = useState("")
-    const [isLoading, setIsLoading] = useState(false)
-    const [isSuccess, setIsSuccess] = useState(false)
-    const [error, setError] = useState<string | null>(null)
+    const [submitting, setSubmitting] = useState(false)
+    const [submittedEmail, setSubmittedEmail] = useState<string | null>(null)
+    const [serverError, setServerError] = useState<string | null>(null)
 
+    const isGreek = language === "el"
     const copy = {
-        title: "Forgot password?",
-        subtitle: "Enter your email to receive a password reset link.",
-        email: "Email address",
-        send: "Send reset link",
-        successTitle: "Check your email",
-        successBody: "We sent a reset link to",
-        hint: "If you don't see it, check your spam folder.",
-        back: "Back to sign in",
-        genericError: "Something went wrong. Please try again.",
+        title: isGreek ? "Επαναφορά κωδικού" : "Reset your password",
+        subtitle: isGreek
+            ? "Στείλε το email σου και θα σου στείλουμε ασφαλή σύνδεσμο επαναφοράς."
+            : "Enter your email and we will send a secure reset link.",
+        emailLabel: isGreek ? "Email λογαριασμού" : "Account email",
+        emailPlaceholder: "name@example.com",
+        send: isGreek ? "Αποστολή συνδέσμου" : "Send reset link",
+        sending: isGreek ? "Αποστολή..." : "Sending...",
+        sentTitle: isGreek ? "Έλεγξε το inbox σου" : "Check your inbox",
+        sentBody: isGreek
+            ? "Αν υπάρχει λογαριασμός για αυτό το email, στάλθηκε σύνδεσμος επαναφοράς."
+            : "If an account exists for this email, we have sent a reset link.",
+        sentHint: isGreek ? "Ο σύνδεσμος ισχύει για 30 λεπτά." : "The reset link is valid for 30 minutes.",
+        backToSignIn: isGreek ? "Επιστροφή στη σύνδεση" : "Back to sign in",
+        trust: isGreek ? "Τραπεζικού επιπέδου ασφάλεια" : "Bank-grade security",
+        genericError: isGreek ? "Κάτι πήγε στραβά. Δοκίμασε ξανά." : "Something went wrong. Please try again.",
     }
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setIsLoading(true)
-        setError(null)
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<ForgotPasswordValues>({
+        resolver: zodResolver(forgotPasswordSchema),
+        defaultValues: { email: "" },
+        mode: "onChange",
+    })
 
-        try {
-            const result = await resetPasswordForEmail(email)
-            if (result.success) {
-                setIsSuccess(true)
-            } else {
-                setError(result.error || copy.genericError)
-            }
-        } catch {
-            setError(copy.genericError)
-        } finally {
-            setIsLoading(false)
+    const onSubmit = async (values: ForgotPasswordValues) => {
+        setServerError(null)
+        setSubmitting(true)
+        const result = await resetPasswordForEmail(values.email, language)
+        setSubmitting(false)
+
+        if (!result.success) {
+            setServerError(result.error || copy.genericError)
+            return
         }
+
+        setSubmittedEmail(values.email)
     }
 
     return (
-        <div className={`${ibmPlexSans.className} flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-emerald-50 via-white to-teal-50 dark:from-slate-950 dark:via-slate-900 dark:to-teal-950/30 px-4 py-12 relative overflow-hidden`}>
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-                <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-300/30 blur-[100px]" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-teal-300/30 blur-[100px]" />
-            </div>
+        <div className={`${ibmPlexSans.className} relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-b from-[#1E3A8A] via-[#dbeafe] to-white px-4 py-10`}>
+            <motion.div className="absolute -top-16 right-[-12%] h-72 w-72 rounded-full bg-cyan-300/35 blur-3xl" animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 6, repeat: Infinity }} />
+            <motion.div className="absolute -bottom-24 left-[-10%] h-64 w-64 rounded-full bg-blue-200/45 blur-3xl" animate={{ scale: [1.05, 1, 1.05] }} transition={{ duration: 6, repeat: Infinity }} />
 
-            <div className="w-full max-w-md bg-white/90 backdrop-blur-xl rounded-2xl shadow-xl border border-emerald-100 p-8 relative z-10 dark:bg-slate-900/85 dark:border-slate-700">
-                <div className="text-center mb-8">
-                    <Link href="/" className="inline-block mb-5">
-                        <PolicyWalletLogo size="md" language={language} />
-                    </Link>
-                    <div className="mx-auto w-12 h-12 bg-emerald-100 dark:bg-emerald-500/10 rounded-xl flex items-center justify-center mb-4 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">
-                        <Lock className="w-6 h-6" />
-                    </div>
-                    <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{copy.title}</h1>
-                    <p className="text-slate-600 dark:text-slate-300 text-sm">{copy.subtitle}</p>
+            <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="relative z-10 w-full max-w-md rounded-3xl border border-white/70 bg-white/95 p-6 shadow-2xl shadow-blue-900/10 sm:p-7">
+                <div className="mb-5 flex items-center justify-between text-xs font-semibold text-slate-500">
+                    <span className="rounded-full bg-slate-100 px-2.5 py-1">{isGreek ? "Ασφαλής ανάκτηση" : "Secure recovery"}</span>
+                    <span className="inline-flex items-center gap-1 text-emerald-700">
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                        {copy.trust}
+                    </span>
                 </div>
 
-                {isSuccess ? (
-                    <div className="text-center space-y-6">
-                        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-6">
-                            <CheckCircle className="w-12 h-12 text-emerald-500 mx-auto mb-3" />
-                            <h3 className="text-slate-900 dark:text-white font-semibold mb-2">{copy.successTitle}</h3>
-                            <p className="text-slate-600 dark:text-slate-300 text-sm">
-                                {copy.successBody} <span className="text-slate-900 dark:text-white font-medium">{email}</span>
-                            </p>
-                        </div>
+                <div className="mb-6 text-center">
+                    <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 shadow-sm">
+                        <PolicyWalletLogo size="md" language={language} />
+                    </div>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">{copy.title}</h1>
+                    <p className="mt-1.5 text-sm text-slate-600">{copy.subtitle}</p>
+                </div>
 
-                        <div className="space-y-3">
-                            <p className="text-xs text-slate-500 dark:text-slate-400">{copy.hint}</p>
-                            <Link href="/auth/signin" className="block w-full py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-900 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-white rounded-xl font-bold transition-all duration-200 cursor-pointer">
-                                {copy.back}
-                            </Link>
+                {submittedEmail ? (
+                    <div className="space-y-4">
+                        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                            <div className="flex items-start gap-2">
+                                <CheckCircle2 className="mt-0.5 h-4 w-4 text-emerald-600" />
+                                <div>
+                                    <p className="text-sm font-semibold text-emerald-900">{copy.sentTitle}</p>
+                                    <p className="mt-1 text-sm text-emerald-800">{copy.sentBody}</p>
+                                    <p className="mt-1 break-all text-xs font-semibold text-emerald-900">{submittedEmail}</p>
+                                    <p className="mt-2 text-xs text-emerald-800">{copy.sentHint}</p>
+                                </div>
+                            </div>
                         </div>
+                        <Link href="/auth/signin" className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                            <ArrowLeft className="h-4 w-4" />
+                            {copy.backToSignIn}
+                        </Link>
                     </div>
                 ) : (
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                        {error && (
-                            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-3">
-                                <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-                                <p className="text-sm text-red-700 dark:text-red-300 font-medium">{error}</p>
-                            </div>
-                        )}
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                        <AnimatePresence>
+                            {serverError ? (
+                                <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700" role="alert">
+                                    <AlertCircle className="mt-0.5 h-4 w-4" />
+                                    <span>{serverError}</span>
+                                </motion.div>
+                            ) : null}
+                        </AnimatePresence>
 
                         <div>
-                            <label htmlFor="email" className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
-                                {copy.email}
-                            </label>
-                            <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Mail className="h-5 w-5 text-slate-500 group-focus-within:text-emerald-500 transition-colors" />
-                                </div>
+                            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">{copy.emailLabel}</label>
+                            <div className="relative">
+                                <Mail className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
                                 <input
-                                    id="email"
                                     type="email"
-                                    required
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="block w-full pl-10 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 dark:bg-slate-800/60 dark:border-slate-700 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all font-medium"
-                                    placeholder="name@company.com"
+                                    autoComplete="email"
+                                    placeholder={copy.emailPlaceholder}
+                                    {...register("email")}
+                                    className={`w-full rounded-xl border bg-white py-3.5 pl-9 pr-4 text-sm text-slate-900 outline-none transition focus-visible:ring-2 focus-visible:ring-blue-500 ${errors.email ? "border-rose-300" : "border-slate-300"}`}
                                 />
                             </div>
+                            {errors.email ? <p className="mt-1 text-xs text-rose-600">{errors.email.message}</p> : null}
                         </div>
 
-                        <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-lg shadow-orange-500/20 text-sm font-bold text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900 focus:ring-orange-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
-                        >
-                            {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : copy.send}
+                        <button type="submit" disabled={submitting} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#1E3A8A] to-[#6D28D9] px-4 py-3.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70">
+                            {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                            {submitting ? copy.sending : copy.send}
                         </button>
 
-                        <div className="text-center">
-                            <Link href="/auth/signin" className="inline-flex items-center text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors gap-2">
-                                <ArrowLeft className="w-4 h-4" />
-                                {copy.back}
-                            </Link>
-                        </div>
+                        <Link href="/auth/signin" className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                            <ArrowLeft className="h-4 w-4" />
+                            {copy.backToSignIn}
+                        </Link>
                     </form>
                 )}
-            </div>
+            </motion.div>
         </div>
     )
 }
-
