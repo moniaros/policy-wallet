@@ -18,7 +18,12 @@ interface PolicyDetailsClientProps {
     policy: any
     walletPolicy: any
     serializedShares: any[]
-    aiUsageStats: any
+    aiUsageStats: {
+        count: number
+        limit: number | null
+        remaining?: number | null
+        creditBalance?: number
+    }
     statusLabel: string
     statusColor: any
     daysLeft: number
@@ -66,6 +71,7 @@ export function PolicyDetailsClient({
         tabQa: language === 'el' ? 'Ερωτήσεις AI' : 'AI Q&A',
         tabCollaboration: language === 'el' ? 'Συνεργασία' : 'Collaboration',
     }
+    const canShowCollaboration = Boolean(relationshipId) || (serializedShares?.length ?? 0) > 0
 
     const getInsurerName = () => policy.acordData?.policy?.insurerName || policy.insurerName
     const getPolicyNumber = () => policy.acordData?.policy?.policyNumber || policy.policyNumber
@@ -202,6 +208,9 @@ export function PolicyDetailsClient({
                     onAddToWallet={() => setShowMobileWalletModal(true)}
                     initialShares={serializedShares || []}
                     isOwner={isOwner}
+                    relationshipId={relationshipId || null}
+                    aiUsageStats={aiUsageStats}
+                    showCollaboration={canShowCollaboration}
                 />
 
                 <AddToWallet

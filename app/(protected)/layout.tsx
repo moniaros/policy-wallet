@@ -29,7 +29,7 @@ export default async function ProtectedLayout({
             items: [
                 { label: t.nav.wallet, href: "/wallet", icon: <Wallet className="w-5 h-5" /> },
                 {
-                    label: t.nav.insights,
+                    label: t.nav.coverageInsights || t.nav.insights,
                     href: "/coverage-insights", // Directing to the main insights page
                     variant: 'plus',
                     isLocked: false, // Unlocking for visibility, specific features can be locked inside

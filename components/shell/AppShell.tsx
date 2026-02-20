@@ -8,9 +8,10 @@ import { RoleSwitcher } from './RoleSwitcher'
 import { ThemeToggle } from '../ThemeToggle'
 import { PolicyWalletLogo } from '@/components/branding/Logo'
 import { InstallPrompt } from "@/components/pwa/InstallPrompt"
-import { Home, BarChart3, Bell, Settings, Users, Lightbulb, LayoutDashboard, MoreHorizontal, ListChecks, User, LogOut, Wallet, Shield } from 'lucide-react'
+import { Bell, Users, Lightbulb, LayoutDashboard, MoreHorizontal, User, Wallet, Shield } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
+import { track } from '@vercel/analytics'
 
 export interface NavigationItem {
     label: string
@@ -55,8 +56,7 @@ const getBottomNavItems = (role: UserRole['role'], t: any) => {
     if (role === 'policyholder') {
         return [
             { href: '/wallet', icon: Wallet, label: t.nav.wallet, id: 'wallet' },
-            { href: '/tasks', icon: ListChecks, label: t.tasks?.actionCenter || 'Tasks', id: 'tasks' },
-            { href: '/coverage', icon: Shield, label: t.nav.coverage, id: 'coverage' },
+            { href: '/coverage-insights', icon: Shield, label: t.nav.coverageInsights || t.nav.coverage, id: 'analysis' },
             { href: '/notifications', icon: Bell, label: t.nav.notifications, id: 'notifications' },
             { href: '/account', icon: User, label: t.userMenu.settings, id: 'account' }
         ]
@@ -95,10 +95,17 @@ export function AppShell({
     const [sidebarOpen, setSidebarOpen] = useState(false)
     const [roleChangeToast, setRoleChangeToast] = useState<string | null>(null)
 
-    const handleNavigate = (href: string) => {
+    const handleNavigate = (href: string, source: 'default' | 'mobile_nav' = 'default', navId?: string) => {
         if (href === '#logout') {
             onLogout?.()
             return
+        }
+        if (source === 'mobile_nav') {
+            track('mobile_nav_click', {
+                destination: href,
+                tab_id: navId || 'unknown',
+                role: currentRole.role,
+            })
         }
         if (onNavigate) {
             onNavigate(href)
@@ -265,7 +272,7 @@ export function AppShell({
 
                 {/* Mobile Bottom Navigation */}
                 <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-stone-800 border-t border-stone-200 dark:border-stone-700 safe-area-inset-bottom shadow-xl">
-                    <div className="grid grid-cols-5 h-20">
+                    <div className="grid grid-cols-4 gap-1.5 px-2 py-2 min-h-[76px]">
                         {bottomNavItems.map((item) => {
                             const Icon = item.icon
                             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))
@@ -273,10 +280,10 @@ export function AppShell({
                             return (
                                 <button
                                     key={item.id}
-                                    onClick={() => handleNavigate(item.href)}
-                                    className={`flex flex-col items-center justify-center gap-1.5 transition-all active:scale-90 ${isActive
-                                        ? 'text-teal-600 dark:text-teal-400'
-                                        : 'text-stone-400 dark:text-stone-500'
+                                    onClick={() => handleNavigate(item.href, 'mobile_nav', item.id)}
+                                    className={`min-h-[44px] rounded-xl flex flex-col items-center justify-center gap-0.5 transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 ${isActive
+                                        ? 'text-teal-700 dark:text-teal-300 bg-teal-50/90 dark:bg-teal-900/20'
+                                        : 'text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200'
                                         }`}
                                     aria-label={item.label}
                                     aria-current={isActive ? 'page' : undefined}
@@ -292,7 +299,7 @@ export function AppShell({
                                             </span>
                                         )}
                                     </div>
-                                    <span className="text-[10px] font-black tracking-[0.08em] whitespace-nowrap">
+                                    <span className="text-[10px] font-medium whitespace-nowrap">
                                         {item.label}
                                     </span>
                                 </button>

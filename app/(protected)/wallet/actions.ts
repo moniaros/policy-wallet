@@ -557,22 +557,35 @@ export async function deletePolicy(policyId: string) {
 
 export async function getAIUsageStats() {
     const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) return { count: 0, limit: 10 }
+    if (!authResult) {
+        return { count: 0, limit: 10, remaining: 10, creditBalance: 0 }
+    }
 
     const startOfMonth = new Date()
     startOfMonth.setDate(1)
     startOfMonth.setHours(0, 0, 0, 0)
     const entitlements = await resolveUserEntitlements(authResult.dbUser.id)
 
-    const count = await (db as any).activityLog.count({
-        where: {
-            adminUserId: authResult.dbUser.id,
-            actionType: "POLICY_ANALYZED",
-            timestamp: { gte: startOfMonth }
-        }
-    })
+    const [count, latestCreditTransaction] = await Promise.all([
+        (db as any).activityLog.count({
+            where: {
+                adminUserId: authResult.dbUser.id,
+                actionType: "POLICY_ANALYZED",
+                timestamp: { gte: startOfMonth }
+            }
+        }),
+        db.creditTransaction.findFirst({
+            where: { userId: authResult.dbUser.id },
+            orderBy: { createdAt: "desc" },
+            select: { balanceAfter: true }
+        })
+    ])
 
-    return { count, limit: entitlements.limits.aiAnalysisPerMonth }
+    const limit = entitlements.limits.aiAnalysisPerMonth
+    const remaining = limit === null ? null : Math.max(limit - count, 0)
+    const creditBalance = latestCreditTransaction?.balanceAfter ?? 0
+
+    return { count, limit, remaining, creditBalance }
 }
 
 /**
