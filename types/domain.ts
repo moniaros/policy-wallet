@@ -70,30 +70,133 @@ export interface AcordData {
     acordStandard: string
     policy?: {
         insurer?: string
+        insurerName?: string
         number?: string
+        policyNumber?: string
         type?: string
+        lineOfBusiness?: string
         premium?: {
             amount?: number
             currency?: string
+            frequency?: string
         }
         effectiveDate?: string
         expirationDate?: string
+        deductible?: {
+            amount?: number
+            currency?: string
+        }
+        coverageLimit?: {
+            amount?: number
+            currency?: string
+        }
+        insurerContact?: string
+        agentName?: string
+        agentContact?: string
     }
     vehicle?: {
         plateNumber?: string
         make?: string
         model?: string
         year?: number
+        vin?: string
+        usage?: string
     }
+    property?: {
+        address?: string
+        type?: string
+        squareMeters?: number
+        constructionYear?: number
+    }
+    insured?: {
+        name?: string
+        taxId?: string
+        address?: string
+        phone?: string
+        email?: string
+    }
+    health?: {
+        hospitalClass?: string
+        coordinationCentre?: {
+            name?: string
+            phone?: string
+        }
+        annualCheckupIncluded?: boolean
+        directBillingAvailable?: boolean
+        waitingPeriods?: Array<{
+            type?: string
+            durationDays?: number
+            endDate?: string
+        }>
+        outpatientLimit?: number
+        deductiblePerClaim?: number
+    }
+    motor?: {
+        coverageTier?: string
+        greenCardExpiry?: string
+        namedDrivers?: Array<{
+            name?: string
+            licenseNumber?: string
+        }>
+        accidentDeclarationPhone?: string
+        roadsideAssistancePhone?: string
+        ownVehicleDamage?: boolean
+        glassBreakage?: boolean
+    }
+    home?: {
+        enfiaEligible?: boolean
+        catastropheCoverage?: {
+            fire?: boolean
+            earthquake?: boolean
+            flood?: boolean
+        }
+        mortgageeBank?: string
+        technicalAssistancePhone?: string
+        theftCoverageLimit?: number
+        insuredValue?: number
+        replacementValue?: number
+        contentsVsStructure?: string
+    }
+    life?: {
+        currentFundValue?: number
+        ytdGrowth?: number
+        taxFreeAtMaturity?: boolean
+        guaranteedPercentage?: number
+        unitLinkedPercentage?: number
+        surrenderValue?: number
+        lastPremiumDate?: string
+        lastPremiumAmount?: number
+    }
+    pet?: {
+        microchipNumber?: string
+        annualLimitTotal?: number
+        annualLimitUsed?: number
+        breedSpecificDiseases?: string[]
+        leishmaniaCovered?: boolean
+        directVetPayment?: boolean
+        waitingPeriods?: Array<{
+            type?: string
+            durationDays?: number
+            endDate?: string
+        }>
+    }
+    beneficiaries?: Array<{
+        name?: string
+        relationship?: string
+        percentage?: number
+    }>
     coverages?: Array<{
         name: string
+        type?: string
         limit?: string
         deductible?: string
+        description?: string
         explanation?: {
             en: string
             el: string
         }
     }>
+    exclusions?: string[]
 }
 
 export interface PolicyDetailView extends PolicyView {
