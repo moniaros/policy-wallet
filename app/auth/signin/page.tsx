@@ -58,7 +58,7 @@ export default function SignInPage() {
     const copy = {
         title: t.auth.welcomeBack,
         subtitle: roleCopy.auth.signInSubtitle,
-        email: language === "el" ? "Email ? ????t?" : "Email or mobile",
+        email: language === "el" ? "Email ή κινητό" : "Email or mobile",
         password: t.auth.password,
         forgot: roleCopy.auth.forgotPassword,
         signIn: t.auth.signIn,
@@ -71,24 +71,24 @@ export default function SignInPage() {
         sending: `${t.common.loading}`,
         resendSent: roleCopy.auth.resendSent,
         genericError: t.errors.somethingWentWrong,
-        biometricPrimary: language === "el" ? "???µet???? s??des? (????a)" : "Biometric sign-in (primary)",
+        biometricPrimary: language === "el" ? "Βιομετρική σύνδεση (κύρια)" : "Biometric sign-in (primary)",
         pinFallback: language === "el" ? "PIN fallback" : "PIN fallback",
         quickUnlockHint: language === "el"
-            ? "???s?µ?p???se ß??µet???? ? PIN p??ta. ?? email/password pa?aµ??e? d?a??s?µ? ?? de?te?e???sa µ???d??."
+            ? "Χρησιμοποίησε βιομετρικό ή PIN πρώτα. Το email/password παραμένει διαθέσιμο ως δευτερεύουσα μέθοδος."
             : "Use biometrics or PIN first. Email/password remains available as a secondary method.",
-        useBiometric: language === "el" ? "???s? ???µet?????" : "Use Biometric",
-        usePin: language === "el" ? "???s? PIN" : "Use PIN",
-        pinLabel: language === "el" ? "PIN 4 ??f???" : "4-digit PIN",
-        pinMissing: language === "el" ? "?e? ??e? ???µ?ste? PIN se a?t? t? s?s?e??." : "No PIN is configured on this device.",
-        pinInvalid: language === "el" ? "????? PIN." : "Invalid PIN.",
-        quickMissing: language === "el" ? "?e? ß?????e p??????µe?? s??des? st? s?s?e??." : "No previous sign-in found on this device.",
-        passkeyUnavailable: language === "el" ? "? s?s?e?? de? ?p?st????e? passkey API." : "This device does not support passkey API.",
-        enableQuickUnlock: language === "el" ? "??e???p???s? quick unlock se a?t? t? s?s?e??" : "Enable quick unlock on this device",
-        setQuickPin: language === "el" ? "PIN fallback (p??a??et???)" : "Fallback PIN (optional)",
-        openSecondary: "Use email/password (secondary)",
-        hideSecondary: "Hide email/password",
-        readyOnDevice: "Quick unlock is ready on this device",
-        setupNeeded: "Sign in once with password to enable quick unlock",
+        useBiometric: language === "el" ? "Χρήση Βιομετρικού" : "Use Biometric",
+        usePin: language === "el" ? "Χρήση PIN" : "Use PIN",
+        pinLabel: language === "el" ? "PIN 4 ψηφίων" : "4-digit PIN",
+        pinMissing: language === "el" ? "Δεν έχει ρυθμιστεί PIN σε αυτή τη συσκευή." : "No PIN is configured on this device.",
+        pinInvalid: language === "el" ? "Λάθος PIN." : "Invalid PIN.",
+        quickMissing: language === "el" ? "Δεν βρέθηκε προηγούμενη σύνδεση στη συσκευή." : "No previous sign-in found on this device.",
+        passkeyUnavailable: language === "el" ? "Η συσκευή δεν υποστηρίζει passkey API." : "This device does not support passkey API.",
+        enableQuickUnlock: language === "el" ? "Ενεργοποίηση quick unlock σε αυτή τη συσκευή" : "Enable quick unlock on this device",
+        setQuickPin: language === "el" ? "PIN fallback (προαιρετικό)" : "Fallback PIN (optional)",
+        openSecondary: language === "el" ? "Χρήση email/password (δευτερεύουσα)" : "Use email/password (secondary)",
+        hideSecondary: language === "el" ? "Απόκρυψη email/password" : "Hide email/password",
+        readyOnDevice: language === "el" ? "Το quick unlock είναι έτοιμο σε αυτή τη συσκευή" : "Quick unlock is ready on this device",
+        setupNeeded: language === "el" ? "Συνδεθείτε μία φορά με password για ενεργοποίηση quick unlock" : "Sign in once with password to enable quick unlock",
     }
 
     useEffect(() => {
@@ -400,7 +400,7 @@ export default function SignInPage() {
                                         value={identifier}
                                         onChange={(e) => setIdentifier(e.target.value)}
                                         className="block w-full rounded-xl border border-slate-300 bg-white py-3 pl-10 pr-4 text-slate-900 transition-all placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:border-slate-700 dark:bg-slate-800/60 dark:text-white sm:text-sm"
-                                        placeholder={language === "el" ? "name@email.com ? +30 69X XXX XXXX" : "name@email.com or +30 69X XXX XXXX"}
+                                        placeholder={language === "el" ? "name@email.com ή +30 69X XXX XXXX" : "name@email.com or +30 69X XXX XXXX"}
                                     />
                                 </div>
                             </div>
