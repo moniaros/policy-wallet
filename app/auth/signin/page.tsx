@@ -1,11 +1,22 @@
-"use client"
+﻿"use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import { IBM_Plex_Sans } from "next/font/google"
-import { Loader2, Mail, Lock, AlertCircle, ArrowRight, CheckCircle, Fingerprint, KeyRound } from "lucide-react"
+import {
+    Loader2,
+    Mail,
+    Lock,
+    AlertCircle,
+    ArrowRight,
+    CheckCircle,
+    Fingerprint,
+    KeyRound,
+    ChevronDown,
+    ChevronUp,
+} from "lucide-react"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
@@ -20,6 +31,9 @@ export default function SignInPage() {
     const router = useRouter()
     const { language, setLanguage, t } = useLanguage()
     const roleCopy = getRoleCopy(language)
+
+    const passwordInputRef = useRef<HTMLInputElement | null>(null)
+
     const [identifier, setIdentifier] = useState("")
     const [password, setPassword] = useState("")
     const [isLoading, setIsLoading] = useState(false)
@@ -30,16 +44,21 @@ export default function SignInPage() {
 
     const [storedIdentifier, setStoredIdentifier] = useState("")
     const [passkeySupported, setPasskeySupported] = useState(false)
+    const [hasPinConfigured, setHasPinConfigured] = useState(false)
     const [isQuickUnlocking, setIsQuickUnlocking] = useState(false)
     const [showPinPrompt, setShowPinPrompt] = useState(false)
     const [pinPrompt, setPinPrompt] = useState("")
+    const [showPasswordLogin, setShowPasswordLogin] = useState(false)
+
     const [enableQuickUnlock, setEnableQuickUnlock] = useState(false)
     const [quickPin, setQuickPin] = useState("")
+
+    const quickUnlockReady = Boolean(storedIdentifier && (passkeySupported || hasPinConfigured))
 
     const copy = {
         title: t.auth.welcomeBack,
         subtitle: roleCopy.auth.signInSubtitle,
-        email: language === "el" ? "Email ή κινητό" : "Email or mobile",
+        email: language === "el" ? "Email ? ????t?" : "Email or mobile",
         password: t.auth.password,
         forgot: roleCopy.auth.forgotPassword,
         signIn: t.auth.signIn,
@@ -52,76 +71,108 @@ export default function SignInPage() {
         sending: `${t.common.loading}`,
         resendSent: roleCopy.auth.resendSent,
         genericError: t.errors.somethingWentWrong,
-        orContinue: roleCopy.auth.orContinueWith,
-        biometricPrimary: language === "el" ? "Βιομετρική σύνδεση (κύρια)" : "Biometric sign-in (primary)",
+        biometricPrimary: language === "el" ? "???µet???? s??des? (????a)" : "Biometric sign-in (primary)",
         pinFallback: language === "el" ? "PIN fallback" : "PIN fallback",
         quickUnlockHint: language === "el"
-            ? "Χρησιμοποίησε βιομετρική ή PIN για γρήγορο prefill και συνέχισε με έλεγχο κωδικού."
-            : "Use biometrics or PIN for quick prefill, then continue with password verification.",
-        useBiometric: language === "el" ? "Χρήση Βιομετρικού" : "Use Biometric",
-        usePin: language === "el" ? "Χρήση PIN" : "Use PIN",
-        pinLabel: language === "el" ? "PIN 4 ψηφίων" : "4-digit PIN",
-        pinMissing: language === "el" ? "Δεν έχει ρυθμιστεί PIN σε αυτή τη συσκευή." : "No PIN is configured on this device.",
-        pinInvalid: language === "el" ? "Λάθος PIN." : "Invalid PIN.",
-        quickMissing: language === "el" ? "Δεν βρέθηκε προηγούμενη σύνδεση στη συσκευή." : "No previous sign-in found on this device.",
-        passkeyUnavailable: language === "el" ? "Η συσκευή δεν υποστηρίζει passkey API." : "This device does not support passkey API.",
-        enableQuickUnlock: language === "el" ? "Ενεργοποίηση quick unlock σε αυτή τη συσκευή" : "Enable quick unlock on this device",
-        setQuickPin: language === "el" ? "PIN fallback (προαιρετικό)" : "Fallback PIN (optional)",
+            ? "???s?µ?p???se ß??µet???? ? PIN p??ta. ?? email/password pa?aµ??e? d?a??s?µ? ?? de?te?e???sa µ???d??."
+            : "Use biometrics or PIN first. Email/password remains available as a secondary method.",
+        useBiometric: language === "el" ? "???s? ???µet?????" : "Use Biometric",
+        usePin: language === "el" ? "???s? PIN" : "Use PIN",
+        pinLabel: language === "el" ? "PIN 4 ??f???" : "4-digit PIN",
+        pinMissing: language === "el" ? "?e? ??e? ???µ?ste? PIN se a?t? t? s?s?e??." : "No PIN is configured on this device.",
+        pinInvalid: language === "el" ? "????? PIN." : "Invalid PIN.",
+        quickMissing: language === "el" ? "?e? ß?????e p??????µe?? s??des? st? s?s?e??." : "No previous sign-in found on this device.",
+        passkeyUnavailable: language === "el" ? "? s?s?e?? de? ?p?st????e? passkey API." : "This device does not support passkey API.",
+        enableQuickUnlock: language === "el" ? "??e???p???s? quick unlock se a?t? t? s?s?e??" : "Enable quick unlock on this device",
+        setQuickPin: language === "el" ? "PIN fallback (p??a??et???)" : "Fallback PIN (optional)",
+        openSecondary: "Use email/password (secondary)",
+        hideSecondary: "Hide email/password",
+        readyOnDevice: "Quick unlock is ready on this device",
+        setupNeeded: "Sign in once with password to enable quick unlock",
     }
 
     useEffect(() => {
         if (typeof window === "undefined") return
-        setStoredIdentifier(window.localStorage.getItem("pw_quick_identifier") || "")
+
+        const savedIdentifier = window.localStorage.getItem("pw_quick_identifier") || ""
+        const savedPinHash = window.localStorage.getItem("pw_quick_pin_hash") || ""
+
+        setStoredIdentifier(savedIdentifier)
         setPasskeySupported(Boolean(window.PublicKeyCredential && navigator.credentials))
+        setHasPinConfigured(Boolean(savedPinHash))
     }, [])
+
+    const focusPasswordField = () => {
+        setTimeout(() => passwordInputRef.current?.focus(), 80)
+    }
+
+    const revealSecondaryPasswordFlow = () => {
+        setShowPasswordLogin(true)
+        focusPasswordField()
+    }
 
     const hashPin = async (pin: string) => {
         if (typeof window === "undefined" || !window.crypto?.subtle) {
             return pin
         }
+
         const digest = await window.crypto.subtle.digest("SHA-256", new TextEncoder().encode(pin))
         return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("")
     }
 
     const handleBiometricPrefill = async () => {
         setError(null)
+
         if (!storedIdentifier) {
             setError(copy.quickMissing)
+            revealSecondaryPasswordFlow()
             return
         }
+
         if (!passkeySupported) {
             setError(copy.passkeyUnavailable)
+            revealSecondaryPasswordFlow()
             return
         }
+
         setIsQuickUnlocking(true)
         await new Promise((resolve) => setTimeout(resolve, 500))
         setIdentifier(storedIdentifier)
         setIsQuickUnlocking(false)
+        revealSecondaryPasswordFlow()
     }
 
     const handlePinPrefill = async () => {
         setError(null)
+
         if (!storedIdentifier) {
             setError(copy.quickMissing)
+            revealSecondaryPasswordFlow()
             return
         }
+
         const storedPinHash = localStorage.getItem("pw_quick_pin_hash")
         if (!storedPinHash) {
             setError(copy.pinMissing)
+            revealSecondaryPasswordFlow()
             return
         }
+
         if (!pinPrompt || pinPrompt.length !== 4) {
             setError(copy.pinInvalid)
             return
         }
+
         const enteredHash = await hashPin(pinPrompt)
         if (enteredHash !== storedPinHash) {
             setError(copy.pinInvalid)
             return
         }
+
         setIdentifier(storedIdentifier)
         setPinPrompt("")
         setShowPinPrompt(false)
+        revealSecondaryPasswordFlow()
     }
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -141,8 +192,10 @@ export default function SignInPage() {
             })
 
             if (error) {
-                if (error.message.toLowerCase().includes("email not confirmed") ||
-                    error.message.toLowerCase().includes("confirm your email")) {
+                if (
+                    error.message.toLowerCase().includes("email not confirmed") ||
+                    error.message.toLowerCase().includes("confirm your email")
+                ) {
                     setError(copy.unverified)
                     setShowResendVerification(true)
                 } else {
@@ -154,8 +207,11 @@ export default function SignInPage() {
                     if (enableQuickUnlock && quickPin.length === 4) {
                         const pinHash = await hashPin(quickPin)
                         localStorage.setItem("pw_quick_pin_hash", pinHash)
+                    } else {
+                        localStorage.removeItem("pw_quick_pin_hash")
                     }
                 }
+
                 router.refresh()
                 router.push("/home")
             }
@@ -220,12 +276,18 @@ export default function SignInPage() {
                     </div>
                 </div>
 
-                <div className="mb-5 space-y-3 rounded-xl border border-emerald-200 bg-emerald-50/80 p-4 dark:border-emerald-900/40 dark:bg-emerald-900/20">
+                <div className="mb-4 space-y-3 rounded-xl border border-emerald-200 bg-emerald-50/80 p-4 dark:border-emerald-900/40 dark:bg-emerald-900/20">
                     <div className="flex items-center justify-between">
                         <p className="text-xs font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-300">{copy.biometricPrimary}</p>
                         <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-300">{copy.pinFallback}</p>
                     </div>
+
                     <p className="text-xs text-emerald-900 dark:text-emerald-100">{copy.quickUnlockHint}</p>
+
+                    <p className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-200">
+                        {quickUnlockReady ? copy.readyOnDevice : copy.setupNeeded}
+                    </p>
+
                     <div className="grid grid-cols-2 gap-2">
                         <button
                             type="button"
@@ -236,6 +298,7 @@ export default function SignInPage() {
                             {isQuickUnlocking ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Fingerprint className="h-3.5 w-3.5" />}
                             {copy.useBiometric}
                         </button>
+
                         <button
                             type="button"
                             onClick={() => setShowPinPrompt((value) => !value)}
@@ -245,6 +308,7 @@ export default function SignInPage() {
                             {copy.usePin}
                         </button>
                     </div>
+
                     {showPinPrompt && (
                         <div className="flex items-center gap-2">
                             <input
@@ -265,138 +329,152 @@ export default function SignInPage() {
                             </button>
                         </div>
                     )}
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-5">
-                    {error && (
-                        <div className="space-y-3">
-                            <div className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/10 p-4">
-                                <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-500" />
-                                <p className="text-sm font-medium text-red-700 dark:text-red-300">{error}</p>
-                            </div>
-
-                            {showResendVerification && (
-                                <div className="space-y-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4">
-                                    <p className="text-sm text-emerald-800 dark:text-emerald-200/90">{copy.checkEmail}</p>
-                                    <button
-                                        type="button"
-                                        onClick={handleResendVerification}
-                                        disabled={isResending}
-                                        className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-100 py-2.5 text-sm font-bold text-emerald-800 transition-all hover:bg-emerald-200 disabled:opacity-60 dark:bg-emerald-500/20 dark:text-emerald-300 dark:hover:bg-emerald-500/30"
-                                    >
-                                        {isResending ? (
-                                            <>
-                                                <Loader2 className="h-4 w-4 animate-spin" />
-                                                {copy.sending}
-                                            </>
-                                        ) : copy.resend}
-                                    </button>
-                                    {resendMessage && (
-                                        <div className="flex items-center justify-center gap-2 text-sm">
-                                            {resendMessage === copy.resendSent
-                                                ? <CheckCircle className="h-4 w-4 text-green-500" />
-                                                : <AlertCircle className="h-4 w-4 text-red-500" />}
-                                            <span className={resendMessage === copy.resendSent ? "text-green-400" : "text-red-400"}>
-                                                {resendMessage}
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    <div className="space-y-4">
-                        <div className="space-y-1.5">
-                            <label htmlFor="email" className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">{copy.email}</label>
-                            <div className="group relative">
-                                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                    <Mail className="h-5 w-5 text-slate-500 transition-colors group-focus-within:text-emerald-500" />
-                                </div>
-                                <input
-                                    id="email"
-                                    type="text"
-                                    required
-                                    value={identifier}
-                                    onChange={(e) => setIdentifier(e.target.value)}
-                                    className="block w-full rounded-xl border border-slate-300 bg-white py-3 pl-10 pr-4 text-slate-900 transition-all placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:border-slate-700 dark:bg-slate-800/60 dark:text-white sm:text-sm"
-                                    placeholder={language === "el" ? "name@email.com ή +30 69X XXX XXXX" : "name@email.com or +30 69X XXX XXXX"}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-1.5">
-                            <div className="flex items-center justify-between">
-                                <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-slate-400">{copy.password}</label>
-                                <Link href="/auth/forgot-password" className="text-xs font-bold text-emerald-600 transition-all hover:text-emerald-500 hover:underline dark:text-emerald-400 dark:hover:text-emerald-300">
-                                    {copy.forgot}
-                                </Link>
-                            </div>
-                            <div className="group relative">
-                                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                    <Lock className="h-5 w-5 text-slate-500 transition-colors group-focus-within:text-emerald-500" />
-                                </div>
-                                <input
-                                    id="password"
-                                    type="password"
-                                    required
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    className="block w-full rounded-xl border border-slate-300 bg-white py-3 pl-10 pr-4 text-slate-900 transition-all placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:border-slate-700 dark:bg-slate-800/60 dark:text-white sm:text-sm"
-                                    placeholder={roleCopy.auth.passwordPlaceholder}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800/40">
-                            <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-200">
-                                <input
-                                    type="checkbox"
-                                    checked={enableQuickUnlock}
-                                    onChange={(e) => setEnableQuickUnlock(e.target.checked)}
-                                />
-                                {copy.enableQuickUnlock}
-                            </label>
-                            {enableQuickUnlock && (
-                                <input
-                                    type="password"
-                                    inputMode="numeric"
-                                    maxLength={4}
-                                    value={quickPin}
-                                    onChange={(e) => setQuickPin(e.target.value.replace(/\D/g, ""))}
-                                    placeholder={copy.setQuickPin}
-                                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
-                                />
-                            )}
-                        </div>
-                    </div>
 
                     <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="flex w-full cursor-pointer items-center justify-center rounded-xl border border-transparent bg-orange-500 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-slate-900"
+                        type="button"
+                        onClick={() => {
+                            setShowPasswordLogin((value) => !value)
+                            if (!showPasswordLogin) focusPasswordField()
+                        }}
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-emerald-300 bg-white px-3 py-2 text-xs font-bold text-emerald-800 transition hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-200 dark:hover:bg-emerald-900/50"
                     >
-                        {isLoading ? (
-                            <span className="flex items-center gap-2">
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                                {copy.signingIn}
-                            </span>
-                        ) : (
-                            <span className="flex items-center gap-2">
-                                {copy.signIn} <ArrowRight className="h-4 w-4 opacity-80" />
-                            </span>
-                        )}
+                        {showPasswordLogin ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                        {showPasswordLogin ? copy.hideSecondary : copy.openSecondary}
                     </button>
-                </form>
-
-                <div className="relative my-7">
-                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200 dark:border-slate-700" /></div>
-                    <div className="relative flex justify-center text-sm">
-                        <span className="rounded-full bg-white px-3 font-medium text-slate-500 dark:bg-slate-900">{copy.orContinue}</span>
-                    </div>
                 </div>
 
-                <div className="text-center">
+                {error && (
+                    <div className="mb-4 space-y-3">
+                        <div className="flex items-start gap-3 rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+                            <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-500" />
+                            <p className="text-sm font-medium text-red-700 dark:text-red-300">{error}</p>
+                        </div>
+
+                        {showResendVerification && (
+                            <div className="space-y-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4">
+                                <p className="text-sm text-emerald-800 dark:text-emerald-200/90">{copy.checkEmail}</p>
+                                <button
+                                    type="button"
+                                    onClick={handleResendVerification}
+                                    disabled={isResending}
+                                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-100 py-2.5 text-sm font-bold text-emerald-800 transition-all hover:bg-emerald-200 disabled:opacity-60 dark:bg-emerald-500/20 dark:text-emerald-300 dark:hover:bg-emerald-500/30"
+                                >
+                                    {isResending ? (
+                                        <>
+                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                            {copy.sending}
+                                        </>
+                                    ) : copy.resend}
+                                </button>
+                                {resendMessage && (
+                                    <div className="flex items-center justify-center gap-2 text-sm">
+                                        {resendMessage === copy.resendSent
+                                            ? <CheckCircle className="h-4 w-4 text-green-500" />
+                                            : <AlertCircle className="h-4 w-4 text-red-500" />}
+                                        <span className={resendMessage === copy.resendSent ? "text-green-500" : "text-red-500"}>
+                                            {resendMessage}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {showPasswordLogin && (
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        <div className="space-y-4">
+                            <div className="space-y-1.5">
+                                <label htmlFor="email" className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                                    {copy.email}
+                                </label>
+                                <div className="group relative">
+                                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                        <Mail className="h-5 w-5 text-slate-500 transition-colors group-focus-within:text-emerald-500" />
+                                    </div>
+                                    <input
+                                        id="email"
+                                        type="text"
+                                        autoComplete="username"
+                                        required
+                                        value={identifier}
+                                        onChange={(e) => setIdentifier(e.target.value)}
+                                        className="block w-full rounded-xl border border-slate-300 bg-white py-3 pl-10 pr-4 text-slate-900 transition-all placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:border-slate-700 dark:bg-slate-800/60 dark:text-white sm:text-sm"
+                                        placeholder={language === "el" ? "name@email.com ? +30 69X XXX XXXX" : "name@email.com or +30 69X XXX XXXX"}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <div className="flex items-center justify-between">
+                                    <label htmlFor="password" className="block text-xs font-bold uppercase tracking-wider text-slate-400">
+                                        {copy.password}
+                                    </label>
+                                    <Link href="/auth/forgot-password" className="text-xs font-bold text-emerald-600 transition-all hover:text-emerald-500 hover:underline dark:text-emerald-400 dark:hover:text-emerald-300">
+                                        {copy.forgot}
+                                    </Link>
+                                </div>
+                                <div className="group relative">
+                                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                        <Lock className="h-5 w-5 text-slate-500 transition-colors group-focus-within:text-emerald-500" />
+                                    </div>
+                                    <input
+                                        ref={passwordInputRef}
+                                        id="password"
+                                        type="password"
+                                        autoComplete="current-password"
+                                        required
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="block w-full rounded-xl border border-slate-300 bg-white py-3 pl-10 pr-4 text-slate-900 transition-all placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:border-slate-700 dark:bg-slate-800/60 dark:text-white sm:text-sm"
+                                        placeholder={roleCopy.auth.passwordPlaceholder}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800/40">
+                                <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-200">
+                                    <input
+                                        type="checkbox"
+                                        checked={enableQuickUnlock}
+                                        onChange={(e) => setEnableQuickUnlock(e.target.checked)}
+                                    />
+                                    {copy.enableQuickUnlock}
+                                </label>
+                                {enableQuickUnlock && (
+                                    <input
+                                        type="password"
+                                        inputMode="numeric"
+                                        maxLength={4}
+                                        value={quickPin}
+                                        onChange={(e) => setQuickPin(e.target.value.replace(/\D/g, ""))}
+                                        placeholder={copy.setQuickPin}
+                                        className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/40 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                                    />
+                                )}
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="flex w-full cursor-pointer items-center justify-center rounded-xl border border-transparent bg-orange-500 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:ring-offset-2 focus:ring-offset-white disabled:cursor-not-allowed disabled:opacity-50 dark:focus:ring-offset-slate-900"
+                        >
+                            {isLoading ? (
+                                <span className="flex items-center gap-2">
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    {copy.signingIn}
+                                </span>
+                            ) : (
+                                <span className="flex items-center gap-2">
+                                    {copy.signIn} <ArrowRight className="h-4 w-4 opacity-80" />
+                                </span>
+                            )}
+                        </button>
+                    </form>
+                )}
+
+                <div className="mt-7 text-center">
                     <p className="text-sm text-slate-600 dark:text-slate-400">
                         {copy.noAccount}{" "}
                         <Link href="/auth/signup" className="font-bold text-emerald-600 transition-colors hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300">
@@ -408,3 +486,5 @@ export default function SignInPage() {
         </div>
     )
 }
+
+

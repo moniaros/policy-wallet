@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["*.picard.replit.dev", "*.replit.dev"],
+  turbopack: {
+    // Pin the app root to avoid workspace root inference from parent lockfiles.
+    root: process.cwd(),
+  },
   async headers() {
     return [
       {
@@ -59,11 +63,8 @@ if (process.env.SENTRY_ORG && process.env.SENTRY_PROJECT) {
     project: process.env.SENTRY_PROJECT,
     silent: !process.env.CI,
     widenClientFileUpload: true,
-    reactComponentAnnotation: { enabled: true },
     tunnelRoute: "/monitoring",
     hideSourceMaps: true,
-    disableLogger: true,
-    automaticVercelMonitors: false,
   });
 }
 

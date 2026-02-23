@@ -4,11 +4,18 @@ import { db } from "@/lib/db"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import {
     AlertCircle,
+    Car,
     CalendarClock,
     CircleHelp,
     FileText,
     HeartPulse,
+    House,
+    Landmark,
+    PawPrint,
+    Shield,
+    Ship,
     Sparkles,
+    Stethoscope,
     Upload,
     Users,
     Wallet,
@@ -16,6 +23,32 @@ import {
 
 function daysUntil(date: Date) {
     return Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+}
+
+function formatCurrencyValue(amount: unknown, currency: string = "EUR") {
+    if (amount == null) return null
+    const numericAmount = Number(amount)
+    if (!Number.isFinite(numericAmount)) return null
+
+    return new Intl.NumberFormat("en-GB", {
+        style: "currency",
+        currency: currency || "EUR",
+        maximumFractionDigits: 0,
+    }).format(numericAmount)
+}
+
+function getLineOfBusinessMeta(lineOfBusiness: string) {
+    const key = (lineOfBusiness || "").toLowerCase()
+
+    if (key.includes("motor") || key.includes("auto")) return { icon: Car, label: "Motor" }
+    if (key.includes("health")) return { icon: HeartPulse, label: "Health" }
+    if (key.includes("home") || key.includes("property")) return { icon: House, label: "Home" }
+    if (key.includes("life") || key.includes("investment")) return { icon: Landmark, label: "Life" }
+    if (key.includes("pet")) return { icon: PawPrint, label: "Pet" }
+    if (key.includes("doctor") || key.includes("liability")) return { icon: Stethoscope, label: "Doctor Liability" }
+    if (key.includes("marine") || key.includes("yacht")) return { icon: Ship, label: "Marine" }
+
+    return { icon: Shield, label: "Other" }
 }
 
 export default async function PolicyholderHomePage() {
@@ -143,18 +176,46 @@ export default async function PolicyholderHomePage() {
                         <p className="text-xs font-black uppercase tracking-widest text-stone-500">
                             {t("Ανανεώσεις σύντομα", "Upcoming renewals")}
                         </p>
-                        <div className="mt-3 space-y-2">
+                        <div className="mt-3">
                             {upcomingRenewals.length === 0 ? (
                                 <p className="text-sm text-stone-500">{t("Δεν υπάρχουν ανανεώσεις.", "No upcoming renewals.")}</p>
                             ) : (
-                                upcomingRenewals.map((policy) => (
-                                    <div key={policy.id} className="flex items-center justify-between rounded-xl bg-stone-50 px-3 py-2 dark:bg-stone-800">
-                                        <p className="text-xs font-bold text-stone-900 dark:text-white">{policy.insurerName}</p>
-                                        <p className="text-xs text-stone-600 dark:text-stone-300">
-                                            {daysUntil(policy.endDate)} {t("ημ.", "days")}
-                                        </p>
-                                    </div>
-                                ))
+                                <div className="-mx-2 flex snap-x gap-3 overflow-x-auto px-2 pb-1">
+                                    {upcomingRenewals.map((policy) => {
+                                        const { icon: PolicyIcon, label } = getLineOfBusinessMeta(policy.lineOfBusiness)
+                                        const premiumLabel = formatCurrencyValue(policy.premiumAmount, policy.premiumCurrency || "EUR")
+
+                                        return (
+                                            <div
+                                                key={policy.id}
+                                                className="min-w-[220px] snap-start rounded-2xl border border-stone-200 bg-stone-50 p-3 dark:border-stone-700 dark:bg-stone-800"
+                                            >
+                                                <div className="flex items-start justify-between gap-2">
+                                                    <div className="inline-flex items-center gap-2">
+                                                        <span className="grid h-8 w-8 place-items-center rounded-lg bg-white text-teal-600 dark:bg-stone-900">
+                                                            <PolicyIcon className="h-4 w-4" />
+                                                        </span>
+                                                        <div>
+                                                            <p className="text-[11px] font-black uppercase tracking-wide text-stone-500">{label}</p>
+                                                            <p className="truncate text-xs font-bold text-stone-900 dark:text-white">{policy.insurerName}</p>
+                                                        </div>
+                                                    </div>
+                                                    <p className="text-[11px] font-semibold text-amber-700 dark:text-amber-300">
+                                                        {daysUntil(policy.endDate)} {t("ημ.", "days")}
+                                                    </p>
+                                                </div>
+                                                <div className="mt-3 flex items-center justify-between text-xs">
+                                                    <p className="text-stone-600 dark:text-stone-300">
+                                                        {policy.endDate.toLocaleDateString(isGreek ? "el-GR" : "en-GB")}
+                                                    </p>
+                                                    <p className="font-black text-stone-900 dark:text-white">
+                                                        {premiumLabel || t("χωρίς premium", "premium n/a")}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
                             )}
                         </div>
                     </div>
@@ -199,20 +260,27 @@ export default async function PolicyholderHomePage() {
                         <p className="text-xs font-black uppercase tracking-widest text-stone-500">
                             {t("Πρόσφατα έγγραφα", "Recent documents")}
                         </p>
-                        <div className="mt-3 space-y-2">
+                        <div className="mt-3">
                             {recentDocuments.length === 0 ? (
                                 <p className="text-sm text-stone-500">{t("Δεν βρέθηκαν έγγραφα.", "No documents yet.")}</p>
                             ) : (
-                                recentDocuments.map((document) => (
-                                    <Link
-                                        key={document.id}
-                                        href={`/wallet/${document.policyId}`}
-                                        className="flex items-center justify-between rounded-xl bg-stone-50 px-3 py-2 transition hover:bg-stone-100 dark:bg-stone-800 dark:hover:bg-stone-700"
-                                    >
-                                        <span className="truncate text-xs font-semibold text-stone-900 dark:text-white">{document.fileName}</span>
-                                        <FileText className="h-4 w-4 text-stone-500" />
-                                    </Link>
-                                ))
+                                <div className="-mx-2 flex snap-x gap-2 overflow-x-auto px-2 pb-1">
+                                    {recentDocuments.map((document) => (
+                                        <Link
+                                            key={document.id}
+                                            href={`/wallet/${document.policyId}`}
+                                            className="min-w-[220px] snap-start rounded-xl border border-stone-200 bg-stone-50 px-3 py-3 transition hover:bg-stone-100 dark:border-stone-700 dark:bg-stone-800 dark:hover:bg-stone-700"
+                                        >
+                                            <div className="flex items-center justify-between gap-2">
+                                                <span className="truncate text-xs font-semibold text-stone-900 dark:text-white">{document.fileName}</span>
+                                                <FileText className="h-4 w-4 flex-shrink-0 text-stone-500" />
+                                            </div>
+                                            <p className="mt-2 truncate text-[11px] text-stone-500 dark:text-stone-300">
+                                                {document.insurerName}
+                                            </p>
+                                        </Link>
+                                    ))}
+                                </div>
                             )}
                         </div>
                     </div>
@@ -294,7 +362,7 @@ export default async function PolicyholderHomePage() {
 
             <Link
                 href="/wallet/add"
-                className="fixed bottom-24 right-6 z-30 grid h-14 w-14 place-items-center rounded-2xl bg-teal-600 text-white shadow-xl transition hover:bg-teal-500 lg:bottom-6"
+                className="fixed bottom-24 left-1/2 z-30 grid h-14 w-14 -translate-x-1/2 place-items-center rounded-2xl bg-teal-600 text-white shadow-xl transition hover:bg-teal-500 lg:bottom-6 lg:left-auto lg:right-6 lg:translate-x-0"
                 aria-label={t("Γρήγορο upload", "Quick upload")}
             >
                 <Upload className="h-6 w-6" />
@@ -322,4 +390,5 @@ export default async function PolicyholderHomePage() {
         </div>
     )
 }
+
 
