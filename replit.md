@@ -38,6 +38,17 @@ A Next.js 16 insurance policy management web application (PWA) migrated from Ver
 - `next.config.ts` — Sentry wrapping is conditional on SENTRY_ORG/SENTRY_PROJECT; `allowedDevOrigins` set for Replit
 - Vercel-specific packages (@vercel/analytics, @vercel/speed-insights) remain installed but are non-functional outside Vercel
 
+## Testing
+- **E2E Tests**: Playwright with system Chromium (`npx playwright test --project=sentry`)
+- **Test files**:
+  - `tests/helpers/sentry-helper.ts` — SentryTestHelper class that intercepts Sentry envelope requests
+  - `tests/e2e/sentry-client.spec.ts` — Client-side error capture, ignoreErrors filtering, beforeSend dev suppression
+  - `tests/e2e/sentry-api.spec.ts` — API route middleware redirects, callback URLs, error tracking integration
+  - `tests/e2e/sentry-auth.spec.ts` — Auth flow redirects, invalid credentials, protected route enforcement
+  - `tests/e2e/sentry-admin.spec.ts` — Admin route protection, API endpoint middleware, security event handling
+- **Run**: `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$(which chromium) npx playwright test --project=sentry --workers=1`
+- 42 tests total across 4 test files
+
 ## Required Environment Variables
 See `.env.example` for the full list. Critical ones:
 - `DATABASE_URL` / `DIRECT_URL` — PostgreSQL connection strings

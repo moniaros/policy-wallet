@@ -1,11 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
+const systemChromiumPath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined;
+const defaultLaunchArgs = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage'];
+
 export default defineConfig({
     testDir: './tests',
-    testIgnore: ['**/tests/unit/**', '**/tests/e2e/**'], // Exclude Vitest unit tests
+    testIgnore: ['**/tests/unit/**'],
     fullyParallel: true,
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 2 : 0,
@@ -13,28 +13,28 @@ export default defineConfig({
     reporter: 'html',
 
     use: {
-        baseURL: process.env.BASE_URL || 'http://localhost:3000',
+        baseURL: process.env.BASE_URL || 'http://localhost:5000',
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
     },
 
     projects: [
-        // Setup project - runs once to authenticate
         {
             name: 'setup',
             testMatch: /auth\.setup\.ts/,
+            use: { launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs } },
         },
         {
             name: 'agent-setup',
             testMatch: /agent-auth\.setup\.ts/,
+            use: { launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs } },
         },
-
-        // Main test projects - use authenticated state
         {
             name: 'chromium',
             use: {
                 ...devices['Desktop Chrome'],
                 storageState: 'playwright/.auth/user.json',
+                launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
             },
             dependencies: ['setup'],
         },
@@ -54,12 +54,12 @@ export default defineConfig({
             },
             dependencies: ['setup'],
         },
-        // Mobile viewports
         {
             name: 'Mobile Chrome',
             use: {
                 ...devices['Pixel 5'],
                 storageState: 'playwright/.auth/user.json',
+                launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
             },
             dependencies: ['setup'],
         },
@@ -71,20 +71,28 @@ export default defineConfig({
             },
             dependencies: ['setup'],
         },
-        // Agent Tests
         {
             name: 'agent-chromium',
             use: {
                 ...devices['Desktop Chrome'],
                 storageState: 'playwright/.auth/agent.json',
+                launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
             },
             dependencies: ['agent-setup'],
+        },
+        {
+            name: 'sentry',
+            testMatch: /sentry-.*\.spec\.ts/,
+            use: {
+                ...devices['Desktop Chrome'],
+                launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs },
+            },
         },
     ],
 
     webServer: {
         command: 'npm run dev',
-        url: 'http://localhost:3000',
+        url: 'http://localhost:5000',
         reuseExistingServer: !process.env.CI,
         timeout: 120 * 1000,
     },
