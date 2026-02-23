@@ -1,5 +1,6 @@
 import { el } from './translations/el'
 import { en } from './translations/en'
+import { fixMojibakeObject } from './fix-mojibake'
 
 export type Language = 'el' | 'en'
 
@@ -9,7 +10,7 @@ const translations = {
 }
 
 export function getTranslations(language: Language) {
-    return translations[language] || translations.el
+    return fixMojibakeObject(translations[language] || translations.el)
 }
 
 // Helper function to get nested translation

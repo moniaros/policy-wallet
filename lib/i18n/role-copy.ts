@@ -1,4 +1,5 @@
 import type { Language } from "@/lib/i18n"
+import { fixMojibakeObject } from "@/lib/i18n/fix-mojibake"
 
 type RoleCopy = {
     shell: {
@@ -499,5 +500,5 @@ const roleCopy: Record<Language, RoleCopy> = {
 }
 
 export function getRoleCopy(language: Language): RoleCopy {
-    return roleCopy[language] || roleCopy.el
+    return fixMojibakeObject(roleCopy[language] || roleCopy.el)
 }
