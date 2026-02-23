@@ -5,7 +5,7 @@ import { redirect } from "next/navigation"
 export default async function OnboardingPage() {
     const initialState = await getOnboardingState()
     if (initialState.completed) {
-        redirect("/wallet")
+        redirect("/home")
     }
 
     return (

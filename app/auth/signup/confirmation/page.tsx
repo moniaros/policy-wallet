@@ -201,7 +201,7 @@ function SignupConfirmationContent() {
             step: 1,
             location: "signup_checkpoint",
         })
-        router.push("/wallet")
+        router.push("/home")
     }
 
     const showVerificationCard = Boolean(email) && needsEmailVerification && !isVerified
@@ -340,4 +340,3 @@ export default function SignUpConfirmationPage() {
         </Suspense>
     )
 }
-

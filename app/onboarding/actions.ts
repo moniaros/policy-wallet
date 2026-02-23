@@ -117,7 +117,7 @@ export async function completeOnboardingStep(step: number, data?: any) {
     if (shouldComplete) {
         const redirectTo = typeof payload?.redirectTo === "string" && payload.redirectTo.startsWith("/")
             ? payload.redirectTo
-            : "/wallet"
+            : "/home"
         redirect(redirectTo)
     }
 }

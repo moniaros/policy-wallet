@@ -31,7 +31,7 @@ export function MobileAppShell({ policies, user }: MobileAppShellProps) {
     const { language } = useLanguage()
 
     const activeTab = (() => {
-        if (pathname === '/wallet' || pathname === '/') return 'home'
+        if (pathname === '/home' || pathname === '/wallet' || pathname === '/') return 'home'
         if (pathname?.includes('/tasks')) return 'tasks'
         if (pathname?.includes('/coverage-insights') || pathname?.includes('/coverage')) return 'coverage'
         if (pathname?.includes('/notifications')) return 'alerts'

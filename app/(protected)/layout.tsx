@@ -22,19 +22,23 @@ export default async function ProtectedLayout({
     const navigation: NavigationSection[] = []
     const t = getTranslations(dbUser.preferredLanguage as 'en' | 'el' || 'el')
     const roleCopy = getRoleCopy((dbUser.preferredLanguage as 'en' | 'el') || 'el')
+    const isGreek = (dbUser.preferredLanguage as 'en' | 'el' || 'en') === "el"
 
     if (currentRole === "policyholder") {
         navigation.push({
-            title: t.nav.wallet,
+            title: isGreek ? "Πλοήγηση" : "Navigation",
             items: [
+                { label: isGreek ? "Αρχική" : "Home", href: "/home", icon: <LayoutDashboard className="w-5 h-5" /> },
                 { label: t.nav.wallet, href: "/wallet", icon: <Wallet className="w-5 h-5" /> },
                 {
-                    label: t.nav.coverageInsights || t.nav.insights,
+                    label: isGreek ? "AI Insights" : "AI Insights",
                     href: "/coverage-insights", // Directing to the main insights page
                     variant: 'plus',
                     isLocked: false, // Unlocking for visibility, specific features can be locked inside
                     icon: <Shield className="w-5 h-5" />
                 },
+                { label: isGreek ? "Ο Σύμβουλός μου" : "My Agent", href: "/agent", icon: <Users className="w-5 h-5" /> },
+                { label: t.userMenu.settings, href: "/account", icon: <Settings className="w-5 h-5" /> },
                 { label: t.nav.notifications, href: "/notifications", icon: <Bell className="w-5 h-5" /> },
             ]
         })
@@ -62,13 +66,14 @@ export default async function ProtectedLayout({
         })
     }
 
-    // Common settings
-    navigation.push({
-        title: t.nav.account,
-        items: [
-            { label: t.userMenu.settings, href: "/account" }
-        ]
-    })
+    if (currentRole !== "policyholder") {
+        navigation.push({
+            title: t.nav.account,
+            items: [
+                { label: t.userMenu.settings, href: "/account" }
+            ]
+        })
+    }
 
     const userRoleObj = { role: currentRole, label: t.roles[currentRole] || currentRole }
 

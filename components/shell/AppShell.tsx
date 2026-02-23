@@ -8,7 +8,7 @@ import { RoleSwitcher } from './RoleSwitcher'
 import { ThemeToggle } from '../ThemeToggle'
 import { PolicyWalletLogo } from '@/components/branding/Logo'
 import { InstallPrompt } from "@/components/pwa/InstallPrompt"
-import { Bell, Users, Lightbulb, LayoutDashboard, MoreHorizontal, User, Wallet, Shield } from 'lucide-react'
+import { Users, Lightbulb, LayoutDashboard, MoreHorizontal, Wallet, Shield, Settings } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
 import { track } from '@vercel/analytics'
@@ -54,11 +54,13 @@ export interface AppShellProps {
 // Bottom navigation items based on role
 const getBottomNavItems = (role: UserRole['role'], t: any) => {
     if (role === 'policyholder') {
+        const isGreek = (t.common?.locale || '').startsWith('el')
         return [
+            { href: '/home', icon: LayoutDashboard, label: isGreek ? 'Αρχική' : 'Home', id: 'home' },
             { href: '/wallet', icon: Wallet, label: t.nav.wallet, id: 'wallet' },
-            { href: '/coverage-insights', icon: Shield, label: t.nav.coverageInsights || t.nav.coverage, id: 'analysis' },
-            { href: '/notifications', icon: Bell, label: t.nav.notifications, id: 'notifications' },
-            { href: '/account', icon: User, label: t.userMenu.settings, id: 'account' }
+            { href: '/coverage-insights', icon: Shield, label: isGreek ? 'AI Insights' : 'AI Insights', id: 'analysis' },
+            { href: '/agent', icon: Users, label: isGreek ? 'Σύμβουλος' : 'My Agent', id: 'agent' },
+            { href: '/account', icon: Settings, label: t.userMenu.settings, id: 'settings' }
         ]
     } else if (role === 'agent') {
         const translations = {
@@ -116,6 +118,11 @@ export function AppShell({
     }
 
     const hasMultipleRoles = availableRoles.length > 1
+    const roleHomeHref = currentRole.role === 'policyholder'
+        ? '/home'
+        : currentRole.role === 'admin'
+            ? '/admin/dashboard'
+            : '/dashboard'
 
     const handleRoleSwitch = (role: UserRole) => {
         onRoleSwitch?.(role)
@@ -136,7 +143,7 @@ export function AppShell({
                         </svg>
                     </button>
 
-                    <button onClick={() => handleNavigate('/wallet')} className="hover:opacity-80 transition-opacity">
+                    <button onClick={() => handleNavigate(roleHomeHref)} className="hover:opacity-80 transition-opacity">
                         <PolicyWalletLogo size="sm" language={user.preferred_language || 'el'} />
                     </button>
 
@@ -168,7 +175,7 @@ export function AppShell({
                         {/* Enhanced Logo Section */}
                         <div className="flex flex-col border-b border-stone-200 dark:border-stone-800 bg-gradient-to-br from-stone-50 to-white dark:from-stone-900 dark:to-stone-950">
                             <div className="flex items-center justify-between px-6 h-16">
-                                <button onClick={() => handleNavigate('/wallet')} className="hover:opacity-80 transition-opacity">
+                                <button onClick={() => handleNavigate(roleHomeHref)} className="hover:opacity-80 transition-opacity">
                                     <PolicyWalletLogo size="md" language={user.preferred_language || 'el'} />
                                 </button>
                                 <button
@@ -272,7 +279,10 @@ export function AppShell({
 
                 {/* Mobile Bottom Navigation */}
                 <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-stone-800 border-t border-stone-200 dark:border-stone-700 safe-area-inset-bottom shadow-xl">
-                    <div className="grid grid-cols-4 gap-1.5 px-2 py-2 min-h-[76px]">
+                    <div
+                        className="grid gap-1.5 px-2 py-2 min-h-[76px]"
+                        style={{ gridTemplateColumns: `repeat(${Math.max(bottomNavItems.length, 1)}, minmax(0, 1fr))` }}
+                    >
                         {bottomNavItems.map((item) => {
                             const Icon = item.icon
                             const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href))

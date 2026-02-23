@@ -53,6 +53,7 @@ export class SentryTestHelper {
           this.events.push(event)
         }
       } catch {
+        // Ignore non-JSON envelope lines; Sentry envelopes include headers and metadata rows.
       }
     }
   }
