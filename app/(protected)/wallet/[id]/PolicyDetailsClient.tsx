@@ -12,7 +12,8 @@ import { PolicyAnalysisTabs } from "./PolicyAnalysisTabs"
 import { PolicyQA } from "@/components/wallet/PolicyQA"
 import { AIUsageWidget } from "./AIUsageWidget"
 import { CollaborationTimeline } from "@/components/collaboration/CollaborationTimeline"
-import { Calendar, Download, FileText, Phone, Shield, Sparkles, TrendingUp } from "lucide-react"
+import { Calendar, Download, FileText, Phone, RefreshCw, Shield, Sparkles, TrendingUp } from "lucide-react"
+import { CoverageTabView } from "@/components/wallet/coverage-details/CoverageTabView"
 
 interface PolicyDetailsClientProps {
     policy: any
@@ -321,6 +322,49 @@ export function PolicyDetailsClient({
                             </h2>
                             <div className="text-slate-700 dark:text-slate-300 leading-relaxed text-sm sm:text-base">{policy.coverageSummary || t.wallet.summaryFallback}</div>
                         </div>
+
+                        {(() => {
+                            const lob = getCoverageType()
+                            const typeSpecificFields = ['health', 'motor', 'home', 'life', 'pet'] as const
+                            const hasTypeData = typeSpecificFields.some(
+                                (field) => lob === field && policy.acordData?.[field] && Object.keys(policy.acordData[field]).length > 0
+                            )
+                            const hasCoverageOrExclusion = (policy.acordData?.coverages?.length > 0) || (policy.acordData?.exclusions?.length > 0)
+
+                            if (hasTypeData || hasCoverageOrExclusion) {
+                                return (
+                                    <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl p-8 shadow-lg border border-white/20 dark:border-slate-700/50">
+                                        <CoverageTabView
+                                            acordData={policy.acordData}
+                                            lineOfBusiness={lob}
+                                            language={language as "el" | "en"}
+                                        />
+                                    </div>
+                                )
+                            }
+
+                            if (typeSpecificFields.includes(lob as any)) {
+                                return (
+                                    <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl p-8 shadow-lg border border-white/20 dark:border-slate-700/50">
+                                        <div className="flex flex-col items-center justify-center py-6 text-center">
+                                            <div className="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mb-3">
+                                                <RefreshCw className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+                                            </div>
+                                            <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                                {language === 'el' ? 'Επαναλάβετε ανάλυση για λεπτομερή κάλυψη' : 'Re-analyze to see detailed coverage'}
+                                            </p>
+                                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                                                {language === 'el'
+                                                    ? 'Τα ειδικά δεδομένα κάλυψης θα εμφανιστούν μετά από νέα ανάλυση AI'
+                                                    : 'Type-specific coverage details will appear after a new AI analysis'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                )
+                            }
+
+                            return null
+                        })()}
 
                         <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl p-2 shadow-lg border border-white/20 dark:border-slate-700/50">
                             <div className="grid grid-cols-3 gap-2">

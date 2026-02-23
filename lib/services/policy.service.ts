@@ -511,10 +511,22 @@ export class PolicyService extends BaseService {
                 error: error instanceof Error ? error.message : String(error)
             })
 
-            // Update status to indicate manual action might be needed
+            const errorMessage = error instanceof Error ? error.message : String(error)
+            const isTimeout = errorMessage.toLowerCase().includes('timeout')
+
             await this.db.policy.update({
                 where: { id: policyId },
-                data: { status: 'action_needed' }
+                data: {
+                    status: 'action_needed',
+                    acordData: {
+                        processingError: {
+                            message: errorMessage,
+                            code: isTimeout ? 'TIMEOUT' : 'ANALYSIS_FAILED',
+                            occurredAt: new Date().toISOString(),
+                            retryable: true,
+                        },
+                    },
+                }
             })
 
             await this.db.policyDocument.updateMany({

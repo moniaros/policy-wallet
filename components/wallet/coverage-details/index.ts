@@ -1,0 +1,6 @@
+export { HealthCoverageDetails } from "./HealthCoverageDetails"
+export { MotorCoverageDetails } from "./MotorCoverageDetails"
+export { HomeCoverageDetails } from "./HomeCoverageDetails"
+export { LifeCoverageDetails } from "./LifeCoverageDetails"
+export { PetCoverageDetails } from "./PetCoverageDetails"
+export { CoverageTabView } from "./CoverageTabView"

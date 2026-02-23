@@ -17,6 +17,7 @@ import {
     Mail,
     MessageSquare,
     Phone,
+    RefreshCw,
     Shield,
     ShieldCheck,
     Share2,
@@ -30,6 +31,7 @@ import {
 } from "lucide-react"
 import { CollaborationPanel } from "@/components/wallet/CollaborationPanel"
 import { PolicyQA } from "@/components/wallet/PolicyQA"
+import { CoverageTabView } from "@/components/wallet/coverage-details/CoverageTabView"
 import { localizeCoverageName } from "@/lib/i18n/text-format"
 import { analyzeGaps, ignoreGap, notifyAgentAboutGap } from "@/app/(protected)/wallet/actions"
 import { toast } from "sonner"
@@ -657,6 +659,49 @@ export function MobilePolicyDetails({
                         </div>
                     )}
                 </section>
+
+                {(() => {
+                    const lob = policy?.lineOfBusiness || policy?.acordData?.policy?.lineOfBusiness
+                    const typeSpecificFields = ['health', 'motor', 'home', 'life', 'pet'] as const
+                    const hasTypeData = typeSpecificFields.some(
+                        (field) => lob === field && policy?.acordData?.[field] && Object.keys(policy.acordData[field]).length > 0
+                    )
+                    const hasCoverageOrExclusion = (policy?.acordData?.coverages?.length > 0) || (policy?.acordData?.exclusions?.length > 0)
+
+                    if (hasTypeData || hasCoverageOrExclusion) {
+                        return (
+                            <section className="rounded-2xl border border-stone-200 bg-white p-3.5">
+                                <CoverageTabView
+                                    acordData={policy.acordData}
+                                    lineOfBusiness={lob}
+                                    language={language as "el" | "en"}
+                                />
+                            </section>
+                        )
+                    }
+
+                    if (typeSpecificFields.includes(lob as any)) {
+                        return (
+                            <section className="rounded-2xl border border-stone-200 bg-white p-4">
+                                <div className="flex flex-col items-center justify-center py-4 text-center">
+                                    <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center mb-2.5">
+                                        <RefreshCw className="w-5 h-5 text-amber-600" />
+                                    </div>
+                                    <p className="text-sm font-semibold text-stone-700">
+                                        {isGreek ? 'Επαναλάβετε ανάλυση για λεπτομερή κάλυψη' : 'Re-analyze to see detailed coverage'}
+                                    </p>
+                                    <p className="text-xs text-stone-400 mt-1">
+                                        {isGreek
+                                            ? 'Τα ειδικά δεδομένα κάλυψης θα εμφανιστούν μετά από νέα ανάλυση AI'
+                                            : 'Type-specific coverage details will appear after a new AI analysis'}
+                                    </p>
+                                </div>
+                            </section>
+                        )
+                    }
+
+                    return null
+                })()}
 
                 <section className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
                     <button

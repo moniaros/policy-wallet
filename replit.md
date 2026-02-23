@@ -49,6 +49,24 @@ A Next.js 16 insurance policy management web application (PWA) migrated from Ver
 - **Run**: `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=$(which chromium) npx playwright test --project=sentry --workers=1`
 - 42 tests total across 4 test files
 
+## Type-Specific Coverage Detail Views
+- `components/wallet/coverage-details/` — Type-specific policy detail components:
+  - `HealthCoverageDetails.tsx` — Hospital class, coordination centre, check-up status, direct billing, waiting periods
+  - `MotorCoverageDetails.tsx` — Accident/roadside phones, green card, named drivers, coverage tier
+  - `HomeCoverageDetails.tsx` — ENFIA eligibility, catastrophe coverage, technical assistance, insured/replacement values
+  - `LifeCoverageDetails.tsx` — Fund value, YTD growth, tax-free maturity, beneficiaries, surrender value
+  - `PetCoverageDetails.tsx` — Microchip, annual limit, leishmania coverage, breed diseases, vet payment
+  - `CoverageTabView.tsx` — Two-tab layout (What's Covered / What's NOT Covered) wrapping type-specific components
+  - `index.ts` — Barrel exports
+- Integrated into `PolicyDetailsClient.tsx` (desktop) and `MobilePolicyDetails.tsx` (mobile)
+- All components bilingual (el/en) with graceful fallback when data is missing
+
+## AI Pipeline
+- See `AI_PIPELINE.md` for full documentation of data flow, status state machine, timeout/retry behavior, and front-end polling contract
+- Gemini calls have 60s timeout + 1 automatic retry with exponential backoff
+- Type-specific extraction fields added for health, motor, home, life, pet policies
+- Processing error details stored in `acordData.processingError` on failure
+
 ## Required Environment Variables
 See `.env.example` for the full list. Critical ones:
 - `DATABASE_URL` / `DIRECT_URL` — PostgreSQL connection strings

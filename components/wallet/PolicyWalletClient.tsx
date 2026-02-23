@@ -49,6 +49,8 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
         notifyMe: language === 'el' ? 'Ειδοποίησέ με' : 'Notify me',
         notificationsEnabled: language === 'el' ? 'Οι ειδοποιήσεις ενεργοποιήθηκαν.' : 'Notifications enabled.',
         analysisComplete: language === 'el' ? 'Η ανάλυση συμβολαίου ολοκληρώθηκε' : 'Policy analysis completed',
+        analysisFailed: language === 'el' ? 'Η ανάλυση απέτυχε' : 'Analysis failed',
+        analysisFailedDesc: language === 'el' ? 'Μπορείτε να δοκιμάσετε ξανά.' : 'You can retry the analysis.',
         view: language === 'el' ? 'Προβολή' : 'View',
     }
 
@@ -103,15 +105,26 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
                 announcedRef.current.add(key)
 
                 const summary = `${policy.insurerName} • ${policy.policyNumber}`
-                toast.success(copy.analysisComplete, {
-                    description: summary,
-                    action: {
-                        label: copy.view,
-                        onClick: () => router.push(`/wallet/${policy.id}`),
-                    },
-                })
 
-                fireBrowserNotification(copy.analysisComplete, summary, policy.id)
+                if (policy.status === 'action_needed') {
+                    toast.error(copy.analysisFailed, {
+                        description: copy.analysisFailedDesc,
+                        action: {
+                            label: copy.view,
+                            onClick: () => router.push(`/wallet/${policy.id}`),
+                        },
+                    })
+                    fireBrowserNotification(copy.analysisFailed, copy.analysisFailedDesc, policy.id)
+                } else {
+                    toast.success(copy.analysisComplete, {
+                        description: summary,
+                        action: {
+                            label: copy.view,
+                            onClick: () => router.push(`/wallet/${policy.id}`),
+                        },
+                    })
+                    fireBrowserNotification(copy.analysisComplete, summary, policy.id)
+                }
             }
         }
 

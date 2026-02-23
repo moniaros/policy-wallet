@@ -20,6 +20,50 @@ import type {
 import { trackTokenUsage } from '@/lib/token-tracking'
 import { enrichExtractionPayload } from './extraction-enrichment'
 
+const AI_CALL_TIMEOUT_MS = 60_000
+const MAX_RETRIES = 1
+const INITIAL_BACKOFF_MS = 2_000
+
+function isTransientError(error: unknown): boolean {
+  if (error instanceof Error) {
+    const msg = error.message.toLowerCase()
+    if (msg.includes('timeout') || msg.includes('aborted') || msg.includes('deadline')) return true
+    if (msg.includes('503') || msg.includes('500') || msg.includes('429') || msg.includes('service unavailable')) return true
+    if (msg.includes('internal') || msg.includes('temporarily') || msg.includes('overloaded')) return true
+  }
+  return false
+}
+
+async function withTimeoutAndRetry<T>(
+  fn: () => Promise<T>,
+  context: string
+): Promise<T> {
+  let lastError: unknown
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const result = await Promise.race([
+        fn(),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error(`AI call timed out after ${AI_CALL_TIMEOUT_MS}ms`)), AI_CALL_TIMEOUT_MS)
+        ),
+      ])
+      return result
+    } catch (error) {
+      lastError = error
+      if (attempt < MAX_RETRIES && isTransientError(error)) {
+        const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt)
+        logger('warn', `${context}: transient failure, retrying in ${backoff}ms (attempt ${attempt + 1}/${MAX_RETRIES})`, {
+          error: error instanceof Error ? error.message : String(error),
+        })
+        await new Promise(resolve => setTimeout(resolve, backoff))
+      } else {
+        throw error
+      }
+    }
+  }
+  throw lastError
+}
+
 export class GeminiAIService implements IAIService {
   private genAI: GoogleGenerativeAI | null = null
   private apiKey: string | null = null
@@ -181,9 +225,69 @@ REQUIRED FIELDS:
         "relationship": "string",
         "percentage": number
       }
-    ]
+    ],
+
+    "health": {
+      "hospitalClass": "A|B|C or null if not health policy",
+      "coordinationCentre": { "name": "string", "phone": "string" },
+      "annualCheckupIncluded": true|false,
+      "directBillingAvailable": true|false,
+      "waitingPeriods": [{ "type": "string", "durationDays": number, "endDate": "YYYY-MM-DD" }],
+      "outpatientLimit": number,
+      "deductiblePerClaim": number
+    },
+
+    "motor": {
+      "coverageTier": "third_party|third_party_fire_theft|comprehensive",
+      "greenCardExpiry": "YYYY-MM-DD",
+      "namedDrivers": [{ "name": "string", "licenseNumber": "string" }],
+      "accidentDeclarationPhone": "string",
+      "roadsideAssistancePhone": "string",
+      "ownVehicleDamage": true|false,
+      "glassBreakage": true|false
+    },
+
+    "home": {
+      "enfiaEligible": true|false,
+      "catastropheCoverage": { "fire": true|false, "earthquake": true|false, "flood": true|false },
+      "mortgageeBank": "string",
+      "technicalAssistancePhone": "string",
+      "theftCoverageLimit": number,
+      "insuredValue": number,
+      "replacementValue": number,
+      "contentsVsStructure": "contents_only|structure_only|both"
+    },
+
+    "life": {
+      "currentFundValue": number,
+      "ytdGrowth": number,
+      "taxFreeAtMaturity": true|false,
+      "guaranteedPercentage": number,
+      "unitLinkedPercentage": number,
+      "surrenderValue": number,
+      "lastPremiumDate": "YYYY-MM-DD",
+      "lastPremiumAmount": number
+    },
+
+    "pet": {
+      "microchipNumber": "string",
+      "annualLimitTotal": number,
+      "annualLimitUsed": number,
+      "breedSpecificDiseases": ["string"],
+      "leishmaniaCovered": true|false,
+      "directVetPayment": true|false,
+      "waitingPeriods": [{ "type": "string", "durationDays": number, "endDate": "YYYY-MM-DD" }]
+    }
   }
 }
+
+TYPE-SPECIFIC EXTRACTION INSTRUCTIONS:
+- Only populate the type-specific section that matches the lineOfBusiness (e.g., populate "health" only for health policies)
+- For Health policies: Look for hospital class (Κλάση Νοσηλείας), coordination centre (Κέντρο Συντονισμού), waiting periods (Περίοδοι Αναμονής), outpatient limits
+- For Motor policies: Look for coverage tier (Τρίτων/Μικτή), green card (Πράσινη Κάρτα), roadside assistance (Οδική Βοήθεια), accident declaration phone (Δήλωση Ατυχήματος), named drivers
+- For Home policies: Check for fire+earthquake+flood coverage to compute ENFIA eligibility, look for technical assistance (Τεχνική Βοήθεια), insured vs replacement values, contents vs structure coverage
+- For Life policies: Look for fund value, growth rates, tax-free maturity status, guaranteed vs unit-linked split, surrender value (Αξία Εξαγοράς), beneficiary details
+- For Pet policies: Look for microchip number, annual limits, breed-specific disease coverage, leishmania coverage (Λεϊσμανίαση), direct vet payment, waiting periods
 
 EXTRACTION PRIORITIES:
 1. Look for policy number in headers, footers, or labeled fields
@@ -218,11 +322,13 @@ Return ONLY the JSON object, nothing else.
         model: 'gemini-2.0-flash-exp'
       })
 
-      const result = await model.generateContent([prompt, imagePart])
+      const result = await withTimeoutAndRetry(
+        () => model.generateContent([prompt, imagePart]),
+        'Gemini extraction'
+      )
       const response = await result.response
       const text = response.text()
 
-      // Track token usage if user ID is provided
       if (options?.userId) {
         const usage = response.usageMetadata
         if (usage) {
@@ -406,11 +512,13 @@ Return ONLY valid JSON, no other text.
         model: 'gemini-2.0-flash-exp'
       })
 
-      const result = await model.generateContent(parts)
+      const result = await withTimeoutAndRetry(
+        () => model.generateContent(parts),
+        'Gemini gap analysis'
+      )
       const response = await result.response
       const text = response.text()
 
-      // Track token usage if user ID is provided
       if (options?.userId) {
         const usage = response.usageMetadata
         if (usage) {
@@ -533,7 +641,10 @@ Answer the user's question:
 `
       parts.push(prompt)
 
-      const result = await model.generateContent(parts)
+      const result = await withTimeoutAndRetry(
+        () => model.generateContent(parts),
+        'Gemini Q&A'
+      )
       const response = await result.response
       const answer = response.text()
 
