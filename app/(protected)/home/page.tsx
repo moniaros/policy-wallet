@@ -2,6 +2,7 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
+import { fixMojibakeText } from "@/lib/i18n/fix-mojibake"
 import {
     AlertCircle,
     Car,
@@ -62,7 +63,7 @@ export default async function PolicyholderHomePage() {
     }
 
     const isGreek = (dbUser.preferredLanguage || "en") === "el"
-    const t = (el: string, en: string) => (isGreek ? el : en)
+    const t = (el: string, en: string) => fixMojibakeText(isGreek ? el : en)
 
     const policies = await db.policy.findMany({
         where: { ownerUserId: dbUser.id },
