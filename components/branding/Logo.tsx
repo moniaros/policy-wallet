@@ -43,8 +43,8 @@ export function PolicyWalletLogo({
             : 'text-slate-900 dark:text-white'
 
     const walletTextColor = variant === 'light'
-        ? 'text-emerald-400'
-        : 'text-emerald-500'
+        ? 'text-slate-400'
+        : 'text-slate-500'
 
     return (
         <div className={`flex items-center ${sizes.container} ${className}`}>

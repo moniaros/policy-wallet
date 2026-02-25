@@ -75,6 +75,9 @@ export async function proxy(request: NextRequest) {
         "/auth/handover",
         "/terms",
         "/privacy",
+        "/product",
+        "/pricing",
+        "/company",
     ].includes(nextUrl.pathname)
     const isAuthRoute = nextUrl.pathname.startsWith("/auth")
 

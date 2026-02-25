@@ -147,7 +147,7 @@ export function FeatureComparison({ language, className = '' }: FeatureCompariso
 function renderCell(value: boolean | string) {
     if (typeof value === 'boolean') {
         return value ? (
-            <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mx-auto" />
+            <Check className="w-5 h-5 text-slate-800 dark:text-slate-200 mx-auto" />
         ) : (
             <X className="w-5 h-5 text-slate-400 dark:text-slate-600 mx-auto" />
         )

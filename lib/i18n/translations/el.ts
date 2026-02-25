@@ -35,6 +35,7 @@ export const el = {
         account: 'Λογαριασμός',
         dashboard: 'Πίνακας Ελέγχου',
         customers: 'Πελάτες',
+        policies: 'Συμβόλαια',
         opportunities: 'Ευκαιρίες',
         insights: 'Πληροφορίες',
         activity: 'Δραστηριότητα',

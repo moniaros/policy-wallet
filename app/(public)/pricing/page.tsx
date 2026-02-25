@@ -11,7 +11,7 @@ import { PricingCard } from '@/components/pricing/PricingCard'
 import { FeatureComparison } from '@/components/pricing/FeatureComparison'
 import { PricingFAQ } from '@/components/pricing/PricingFAQ'
 import { subscriptionCopy } from '@/lib/subscription-copy'
-import { Shield, Lock, CreditCard } from 'lucide-react'
+import { Shield, Lock, CreditCard, Menu, X } from 'lucide-react'
 import { trackJourneyEvent } from '@/lib/journey/funnel'
 
 export default function PricingPage() {
@@ -20,6 +20,19 @@ export default function PricingPage() {
     const { language, setLanguage } = useLanguage()
     const copy = subscriptionCopy
     const supabase = createClient()
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
+    // Prevent scrolling when mobile menu is open
+    useEffect(() => {
+        if (isMobileMenuOpen) {
+            document.body.style.overflow = "hidden"
+        } else {
+            document.body.style.overflow = "unset"
+        }
+        return () => {
+            document.body.style.overflow = "unset"
+        }
+    }, [isMobileMenuOpen])
 
     useEffect(() => {
         // Get initial session
@@ -83,59 +96,95 @@ export default function PricingPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-blue-950">
-            {/* Header */}
-            <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border-b border-slate-200/60 dark:border-slate-700/60">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-16">
-                        <Link href="/">
-                            <PolicyWalletLogo size="sm" language={language} />
-                        </Link>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-900 dark:to-blue-950 selection:bg-[#64748B]/20 selection:text-[#0F172A]">
+            {/* Header - Floating Pill */}
+            <header className="fixed top-4 left-4 right-4 z-50">
+                <div className="mx-auto flex h-14 max-w-[1400px] items-center justify-between rounded-full bg-white/80 dark:bg-slate-900/80 px-6 backdrop-blur-xl border border-gray-200/50 dark:border-slate-700/50 shadow-sm transition-all duration-300">
+                    <Link href="/" className="inline-flex items-center text-[20px] font-bold tracking-tight">
+                        <span className="text-[#0F172A] dark:text-white">Policy</span><span className="text-[#64748B] dark:text-slate-400">Wallet</span>
+                    </Link>
 
-                        <nav className="flex items-center gap-4">
-                            {/* Language Toggle */}
-                            <div className="hidden sm:flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
-                                <button
-                                    onClick={() => setLanguage('el')}
-                                    className={`px-3 py-1.5 text-sm font-bold rounded transition-all ${language === 'el'
-                                        ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-sm'
-                                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                                        }`}
-                                >
-                                    EL
-                                </button>
-                                <button
-                                    onClick={() => setLanguage('en')}
-                                    className={`px-3 py-1.5 text-sm font-bold rounded transition-all ${language === 'en'
-                                        ? 'bg-white dark:bg-slate-700 text-blue-600 shadow-sm'
-                                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
-                                        }`}
-                                >
-                                    EN
-                                </button>
-                            </div>
+                    <nav className="hidden items-center gap-8 font-medium text-[#475569] dark:text-slate-300 md:flex text-[14px]">
+                        <Link href="/product" className="hover:text-[#0F172A] dark:hover:text-white transition-colors">{language === 'el' ? 'Προϊόντα' : 'Products'}</Link>
+                        <Link href="/pricing" className="text-[#0F172A] dark:text-white transition-colors">{language === 'el' ? 'Τιμολόγηση' : 'Pricing'}</Link>
+                    </nav>
 
-                            <ThemeToggle />
-
-                            {session ? (
-                                <Link
-                                    href="/wallet"
-                                    className="px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                >
-                                    {language === 'el' ? 'Πίνακας Ελέγχου' : 'Dashboard'}
+                    <div className="hidden md:flex items-center gap-5">
+                        <div className="flex items-center gap-2">
+                            <button onClick={() => setLanguage('el')} className={`text-xs font-semibold transition-colors ${language === 'el' ? 'text-[#0F172A] dark:text-white' : 'text-[#64748B] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white'}`}>EL</button>
+                            <span className="text-[#E2E8F0] dark:text-slate-700">|</span>
+                            <button onClick={() => setLanguage('en')} className={`text-xs font-semibold transition-colors ${language === 'en' ? 'text-[#0F172A] dark:text-white' : 'text-[#64748B] dark:text-slate-400 hover:text-[#0F172A] dark:hover:text-white'}`}>EN</button>
+                        </div>
+                        <ThemeToggle />
+                        {session ? (
+                            <Link href="/wallet" className="font-medium text-[#0F172A] dark:text-white hover:text-[#64748B] transition-colors text-[14px]">
+                                {language === 'el' ? 'Πίνακας Ελέγχου' : 'Dashboard'}
+                            </Link>
+                        ) : (
+                            <>
+                                <Link href="/auth/signin" className="font-medium text-[#0F172A] dark:text-white hover:text-[#64748B] transition-colors text-[14px]">
+                                    {language === 'el' ? 'Σύνδεση' : 'Log in'}
                                 </Link>
-                            ) : (
-                                <Link
-                                    href="/auth/signin"
-                                    className="px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                                >
-                                    {language === 'el' ? 'Σύνδεση' : 'Sign In'}
+                                <Link href="/auth/signup" className="rounded-full bg-[#29685B] dark:bg-[#29685B] px-5 py-2 text-[14px] font-bold text-white dark:text-white transition-colors hover:bg-[#1C4E44] dark:hover:bg-[#1C4E44]">
+                                    {language === 'el' ? 'Ξεκινήστε' : 'Get started'}
                                 </Link>
-                            )}
-                        </nav>
+                            </>
+                        )}
+                    </div>
+
+                    <div className="flex items-center gap-4 md:hidden">
+                        <ThemeToggle />
+                        <button className="p-2 -mr-2 text-[#0F172A] dark:text-white" onClick={() => setIsMobileMenuOpen(true)}>
+                            <Menu className="w-5 h-5" />
+                        </button>
                     </div>
                 </div>
             </header>
+
+            {/* FULL-SCREEN MOBILE MENU (Arc Style) */}
+            <div className={`fixed inset-0 z-[100] bg-[#29685B] dark:bg-[#29685B] backdrop-blur-3xl text-white dark:text-white flex flex-col transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isMobileMenuOpen ? "translate-y-0" : "-translate-y-full"}`}>
+                <div className="flex h-16 items-center justify-between px-6 pt-4 max-w-[1400px] w-full mx-auto">
+                    <Link href="/" className="inline-flex items-center text-[20px] font-bold tracking-tight" onClick={() => setIsMobileMenuOpen(false)}>
+                        <span className="text-white">Policy</span><span className="text-white/80">Wallet</span>
+                    </Link>
+                    <button className="p-2 -mr-2 text-white hover:bg-white/10 rounded-full transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                        <X className="w-6 h-6" />
+                    </button>
+                </div>
+
+                <div className="flex flex-1 flex-col justify-center px-8 sm:px-12 pb-24 max-w-[1400px] w-full mx-auto">
+                    <nav className="flex flex-col gap-6 text-[44px] sm:text-[56px] font-medium tracking-tight mb-12 leading-tight">
+                        <Link href="/product" className="text-white hover:text-white/80 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                            {language === 'el' ? 'Προϊόντα' : 'Products'}
+                        </Link>
+                        <Link href="/pricing" className="text-white hover:text-white/80 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                            {language === 'el' ? 'Τιμολόγηση' : 'Pricing'}
+                        </Link>
+                        <div className="flex items-center gap-4 mt-4 text-[18px] font-bold">
+                            <button onClick={() => { setLanguage('el'); setIsMobileMenuOpen(false) }} className={`transition-colors text-white ${language === 'el' ? 'opacity-100' : 'opacity-50'}`}>EL</button>
+                            <span className="text-white/20">|</span>
+                            <button onClick={() => { setLanguage('en'); setIsMobileMenuOpen(false) }} className={`transition-colors text-white ${language === 'en' ? 'opacity-100' : 'opacity-50'}`}>EN</button>
+                        </div>
+                    </nav>
+
+                    <div className="flex flex-col gap-4 mt-auto">
+                        {session ? (
+                            <Link href="/wallet" className="w-full rounded-2xl bg-[#1C4E44] border border-transparent px-6 py-4 text-center text-[18px] font-bold text-white transition-colors hover:bg-[#143B33]" onClick={() => setIsMobileMenuOpen(false)}>
+                                {language === 'el' ? 'Πίνακας Ελέγχου' : 'Dashboard'}
+                            </Link>
+                        ) : (
+                            <>
+                                <Link href="/auth/signin" className="w-full rounded-2xl bg-[#1C4E44] border border-transparent px-6 py-4 text-center text-[18px] font-bold text-white transition-colors hover:bg-[#143B33]" onClick={() => setIsMobileMenuOpen(false)}>
+                                    {language === 'el' ? 'Σύνδεση' : 'Log in'}
+                                </Link>
+                                <Link href="/auth/signup" className="w-full rounded-2xl bg-[#337D6F] px-6 py-4 text-center text-[18px] font-bold text-white transition-transform active:scale-[0.98] hover:bg-[#2C6E61]" onClick={() => setIsMobileMenuOpen(false)}>
+                                    {language === 'el' ? 'Ξεκινήστε' : 'Get started'}
+                                </Link>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
 
             {/* Hero Section */}
             <section className="pt-20 pb-12 px-4 sm:px-6 lg:px-8">
@@ -210,10 +259,10 @@ export default function PricingPage() {
             </section>
 
             {/* CTA Section */}
-            <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 text-white relative overflow-hidden">
+            <section className="py-20 px-4 sm:px-6 lg:px-8 bg-[#1A1C1D] text-white relative overflow-hidden">
                 {/* Decorative elements */}
-                <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
-                <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-400/20 rounded-full blur-3xl" />
+                <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-[#29685B]/20 rounded-full blur-3xl" />
 
                 <div className="max-w-4xl mx-auto text-center relative z-10">
                     <h2 className="text-3xl md:text-4xl font-black mb-4">
@@ -228,7 +277,7 @@ export default function PricingPage() {
                     </p>
                     <button
                         onClick={() => handleSelectPlan('free')}
-                        className="px-8 py-4 bg-white hover:bg-blue-50 text-blue-600 font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                        className="inline-flex rounded-[4px] bg-[#89D9B2] px-6 py-3 text-[16px] font-bold text-[#1A1A1A] transition-opacity hover:opacity-90 mt-8"
                     >
                         {copy.cta.getStarted[language]}
                     </button>

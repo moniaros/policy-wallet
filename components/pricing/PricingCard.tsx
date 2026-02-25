@@ -58,21 +58,21 @@ export function PricingCard({
             className={`
         relative rounded-2xl p-8 transition-all duration-300
         ${isHighlighted
-                    ? 'bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 border-2 border-blue-500 dark:border-blue-400 shadow-2xl shadow-blue-500/20 scale-105'
-                    : 'bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-xl'
+                    ? 'bg-[#EBE5D9] dark:bg-slate-900 border-2 border-[#D9D0C1] dark:border-slate-700 shadow-2xl shadow-[#D9D0C1]/50 scale-105'
+                    : 'bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 hover:border-[#29685B] dark:hover:border-[#29685B] hover:shadow-xl'
                 }
         ${className}
       `}
         >
             {isHighlighted && !isCurrentPlan && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-gradient-to-r from-blue-600 to-cyan-600 text-white text-sm font-bold rounded-full shadow-lg flex items-center gap-1.5">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#29685B] text-white text-sm font-bold rounded-full shadow-lg flex items-center gap-1.5">
                     <Sparkles className="w-4 h-4" />
                     {'badge' in tierData && tierData.badge[language]}
                 </div>
             )}
 
             {isCurrentPlan && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-emerald-600 text-white text-sm font-bold rounded-full shadow-lg">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-slate-800 text-white text-sm font-bold rounded-full shadow-lg">
                     {copy.cta.currentPlan[language]}
                 </div>
             )}
@@ -110,7 +110,7 @@ export function PricingCard({
                             }`}
                     >
                         {feature.included ? (
-                            <Check className={`w-5 h-5 flex-shrink-0 mt-0.5 ${feature.highlight ? 'text-blue-600 dark:text-blue-400' : 'text-emerald-600 dark:text-emerald-400'
+                            <Check className={`w-5 h-5 flex-shrink-0 mt-0.5 ${feature.highlight ? 'text-[#29685B] dark:text-[#89D9B2]' : 'text-slate-800 dark:text-slate-200'
                                 }`} />
                         ) : (
                             <X className="w-5 h-5 flex-shrink-0 mt-0.5 text-slate-400 dark:text-slate-600" />
@@ -128,8 +128,8 @@ export function PricingCard({
           ${isCurrentPlan
                         ? 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
                         : tier !== 'free'
-                            ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40'
-                            : 'bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-white border-2 border-slate-300 dark:border-slate-600 hover:border-blue-400 dark:hover:border-blue-500'
+                            ? 'bg-[#29685B] hover:bg-[#1C4E44] text-white shadow-lg shadow-[#29685B]/30 hover:shadow-xl'
+                            : 'bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-white border-2 border-slate-300 dark:border-slate-600 hover:border-[#29685B] dark:hover:border-[#89D9B2]'
                     }
         `}
             >

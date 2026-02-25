@@ -215,7 +215,7 @@ function SignupConfirmationContent() {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="relative z-10 w-full max-w-md rounded-3xl border border-white/70 bg-white/95 p-6 shadow-2xl shadow-blue-900/10 sm:p-7">
                 <div className="mb-5 flex items-center justify-between text-xs font-semibold text-slate-500">
                     <span className="rounded-full bg-slate-100 px-2.5 py-1">{copy.stepLabel}</span>
-                    <span className="inline-flex items-center gap-1 text-emerald-700">
+                    <span className="inline-flex items-center gap-1 text-slate-700">
                         <ShieldCheck className="h-3.5 w-3.5" />
                         {copy.secureSetup}
                     </span>
@@ -255,7 +255,7 @@ function SignupConfirmationContent() {
                             <ul className="mt-3 space-y-2 text-sm text-slate-700">
                                 {copy.trustedPoints.map((point) => (
                                     <li key={point} className="flex items-center gap-2">
-                                        <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                                        <CheckCircle2 className="h-4 w-4 text-slate-600" />
                                         <span>{point}</span>
                                     </li>
                                 ))}
@@ -275,7 +275,7 @@ function SignupConfirmationContent() {
 
                         <AnimatePresence>
                             {notice ? (
-                                <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={`flex items-start gap-2 rounded-xl border p-3 text-sm ${notice.kind === "success" ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-rose-200 bg-rose-50 text-rose-700"}`} role="status">
+                                <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={`flex items-start gap-2 rounded-xl border p-3 text-sm ${notice.kind === "success" ? "border-slate-200 bg-slate-50 text-slate-700" : "border-rose-200 bg-rose-50 text-rose-700"}`} role="status">
                                     {notice.kind === "success" ? <CheckCircle2 className="mt-0.5 h-4 w-4" /> : <AlertCircle className="mt-0.5 h-4 w-4" />}
                                     <span>{notice.message}</span>
                                 </motion.div>
