@@ -164,10 +164,10 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
         <section className="px-6 lg:px-12">
           <div className="mx-auto max-w-[900px] text-center">
             <h1 className="text-[46px] lg:text-[68px] leading-[1.05] tracking-[-0.04em] font-medium text-[#0F172A] mb-8">
-              {t("Απλή και έξυπνη διαχείριση ασφαλιστηρίων, για όλους", "Intelligent policy management for modern policyholders")}
+              {t("Απλή και έξυπνη διαχείριση, για όλους", "Intelligent policy management for modern policyholders")}
             </h1>
             <p className="mx-auto max-w-[680px] text-[20px] lg:text-[22px] leading-[1.5] text-[#475569] mb-10">
-              {t("Διαχειριστείτε τα ασφαλιστήρια, ανακαλύψτε κενά ασφάλισης και αποκτήστε πρόσβαση σε AI συμβουλευτική—όλα σε μία πλατφόρμα.", "Manage your policies, unlock competitive renewals, cover insurance gaps, and access AI-powered financial services—all in one unified platform.")}
+              {t("Η Τεχνητή Νοημοσύνη αναλύει τα ασφαλιστήρια σας, εντόπίζει ευκαιρίες και ασφαλιστικά κενά, σας υπενθυμίζει τις πιο σημαντικές ημερομηνίες και υποστηρίζει 99% των Ασφαλιστικών—όλα σε μία πλατφόρμα.", "Manage your policies, unlock competitive renewals, cover insurance gaps, and access AI-powered financial services—all in one unified platform.")}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
@@ -206,7 +206,7 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
         <section className="px-6 lg:px-12 py-24 bg-white" id="products">
           <div className="mx-auto max-w-[1240px]">
             <h2 className="text-[36px] lg:text-[44px] font-medium tracking-[-0.03em] mb-12 max-w-xl leading-[1.1] text-[#1A1A1A]">
-              {t("Λογαριασμοί σχεδιασμένοι για την ανάπτυξή σας", "Policy Management accounts built for scale")}
+              {t("Ψηφιακό πορτοφόλι σχεδιασμένο για την ασφαλιστική ανάπτυξή σας", "Policy Management accounts built for scale")}
             </h2>
 
             <div className="grid md:grid-cols-3 gap-6">
@@ -277,7 +277,7 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
         <section className="px-6 lg:px-12 py-24 bg-white" id="solutions">
           <div className="mx-auto max-w-[1240px]">
             <h2 className="text-[36px] lg:text-[44px] font-medium tracking-[-0.03em] mb-12 max-w-2xl leading-[1.1] text-[#1A1A1A]">
-              {t("Έξυπνες λύσεις για την υποστήριξη της ζωής σας", "Intelligent solutions to support your growth")}
+              {t("Για να έχετε απόλυτη γνώση και έλεγχο των συμβολαίων σας", "Intelligent solutions to support your growth")}
             </h2>
 
             <div className="flex flex-col gap-6">
@@ -369,7 +369,7 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
         <section className="px-6 lg:px-12 py-24 bg-white">
           <div className="mx-auto max-w-[1240px]">
             <h2 className="text-[36px] lg:text-[44px] font-medium tracking-[-0.03em] mb-16 max-w-2xl leading-[1.1] text-[#1A1A1A]">
-              {t("Enterprise-grade ασφάλεια και υποστήριξη στάνταρ", "Enterprise-grade security and support comes standard")}
+              {t("Enterprise-grade ασφάλεια και υποστήριξη για όλους", "Enterprise-grade security and support comes standard")}
             </h2>
 
             <div className="grid md:grid-cols-3 gap-12 lg:gap-16">
@@ -381,7 +381,7 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
                   <div className="absolute top-8 right-8 w-16 h-8 bg-[#1A1C1D] rounded-[4px]"></div>
                   <div className="absolute bottom-8 right-12 w-4 h-16 bg-[#64748B] rounded-[2px]"></div>
                 </div>
-                <h4 className="text-[20px] font-medium mb-3 tracking-[-0.01em] text-[#1A1A1A]">{t("Κρυπτογράφηση Tραπεζών", "Bank-level security")}</h4>
+                <h4 className="text-[20px] font-medium mb-3 tracking-[-0.01em] text-[#1A1A1A]">{t("Κρυπτογράφηση συμφωνα με τα πρότυπα της Ε.Ε.", "Bank-level security")}</h4>
                 <p className="text-[#707070] text-[16px] leading-[1.6]">
                   {t("Κάθε αρχείο προστατεύεται με αλγόριθμο 256-bit AES σε transit και at rest.", "SOC 2 Type II certified. Files are protected with 256-bit AES encryption in transit and at rest.")}
                 </p>
@@ -395,9 +395,9 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
                   <div className="absolute bottom-6 right-6 w-14 h-14 bg-[#DCEBDA] rounded-[4px]"></div>
                   <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-[#64748B] rounded-[2px]"></div>
                 </div>
-                <h4 className="text-[20px] font-medium mb-3 tracking-[-0.01em] text-[#1A1A1A]">{t("Αυτονομία Δεδομένων", "Data autonomy")}</h4>
+                <h4 className="text-[20px] font-medium mb-3 tracking-[-0.01em] text-[#1A1A1A]">{t("Διαχείρηση Δεδομένων & GDPR", "Data autonomy")}</h4>
                 <p className="text-[#707070] text-[16px] leading-[1.6]">
-                  {t("Εσείς ελέγχετε με ποιον μοιράζεστε τα δεδομένα σας. Αποσυνδέστε άμεσα.", "You control who you share your data with. Revoke agent access instantly, at any time.")}
+                  {t("Εσείς ελέγχετε με ποιον μοιράζεστε τα δεδομένα σας. Διαγράψτε δεδομένα και προσβάσεις με ενα κλικ.", "You control who you share your data with. Revoke agent access instantly, at any time.")}
                 </p>
               </div>
 
