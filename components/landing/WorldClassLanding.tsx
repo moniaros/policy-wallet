@@ -164,10 +164,10 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
         <section className="px-6 lg:px-12">
           <div className="mx-auto max-w-[900px] text-center">
             <h1 className="text-[46px] lg:text-[68px] leading-[1.05] tracking-[-0.04em] font-medium text-[#0F172A] mb-8">
-              {t("Απλή και έξυπνη διαχείριση, για όλους", "Intelligent policy management for modern policyholders")}
+              {t("ΟΛΑ τα συμβόλαια σου οργανωμένα, σε ΕΝΑ Wallet", "Your Smart Insurance Wallet Powered by AI")}
             </h1>
             <p className="mx-auto max-w-[680px] text-[20px] lg:text-[22px] leading-[1.5] text-[#475569] mb-10">
-              {t("Η Τεχνητή Νοημοσύνη αναλύει τα ασφαλιστήρια σας, εντόπίζει ευκαιρίες και ασφαλιστικά κενά, σας υπενθυμίζει τις πιο σημαντικές ημερομηνίες και υποστηρίζει 99% των Ασφαλιστικών—όλα σε μία πλατφόρμα.", "Manage your policies, unlock competitive renewals, cover insurance gaps, and access AI-powered financial services—all in one unified platform.")}
+              {t("Συγκεντρώστε τα συμβόλαια, κατανοήστε δυσνόητους όρους, ξεκλειδώστε ξεχασμένες καλύψεις και συμβουλευτείτε την AI τεχνολογία μας. Υποστηρίζει 99% των Ασφαλιστικών—όλα σε μία ενιαία πλατφόρμα.", "Maximize your insurance benefits with intelligent insights and preventive care reminders—all in one place. Get personalized recommendations to optimize your coverage, close gaps, and save money.")}
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
@@ -209,20 +209,20 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
               {t("Ψηφιακό πορτοφόλι σχεδιασμένο για την ασφαλιστική ανάπτυξή σας", "Policy Management accounts built for scale")}
             </h2>
 
-            <div className="grid md:grid-cols-3 gap-6">
-              {/* Card 1 - Soft Blue / Slate */}
-              <Link href="/product" className="group flex flex-col justify-between h-[400px] rounded-[8px] bg-[#D7E4ED] p-10 cursor-pointer overflow-hidden relative transition-transform hover:scale-[1.02]">
+            <div className="flex gap-6 overflow-x-auto snap-x snap-mandatory pb-8 pt-4 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden -mx-6 px-6 lg:mx-0 lg:px-0">
+              {/* Card 1 - Soft Blue / Motor */}
+              <Link href="/product/motor" className="shrink-0 w-[85vw] md:w-[400px] snap-center lg:snap-align-none group flex flex-col justify-between h-[400px] rounded-[8px] bg-[#D7E4ED] p-10 cursor-pointer overflow-hidden relative transition-transform hover:scale-[1.02]">
                 <div className="z-10">
                   <span className="inline-flex bg-white px-3 py-1 rounded-[4px] text-[11px] font-semibold tracking-wider uppercase text-[#1A1A1A]">
-                    {t("Διαχείριση", "Storage")}
+                    {t("Οχήματα", "Motor & Liability")}
                   </span>
                   <h3 className="text-[28px] font-medium mt-8 tracking-[-0.02em] leading-[1.1] max-w-[90%] text-[#1A1A1A]">
-                    {t("Οργανώστε τα έγγραφά σας με ασφάλεια", "Manage your documents on your terms")}
+                    {t("Έλεγχος πραγματικής αξίας", "Real-time market tracking")}
                   </h3>
                 </div>
                 <div className="z-10">
                   <p className="text-[#1A1A1A]/70 text-[16px] max-w-[260px] mb-8 leading-snug">
-                    {t("Αποθηκεύστε τα ασφαλιστήρια σας. Εύκολη πρόσβαση από παντού, χωρίς χαρτιά.", "Secure, organized vault for all policies and related documents.")}
+                    {t("Ασφαλίστε την πραγματική αξία του οχήματός σας και εντοπίστε κενά οδικής βοήθειας.", "Track vehicle values and verify roadside assistance coverages instantly.")}
                   </p>
                   <div className="inline-flex items-center gap-1.5 text-[#1A1A1A] font-medium text-[15px] group-hover:underline decoration-1 underline-offset-4">
                     {t("Μάθετε περισσότερα", "Learn more")} <ArrowRight className="w-4 h-4" />
@@ -230,19 +230,19 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
                 </div>
               </Link>
 
-              {/* Card 2 - Soft Green */}
-              <Link href="/product" className="group flex flex-col justify-between h-[400px] rounded-[8px] bg-[#DCEBDA] p-10 cursor-pointer overflow-hidden relative transition-transform hover:scale-[1.02]">
+              {/* Card 2 - Soft Green / Property */}
+              <Link href="/product/property" className="shrink-0 w-[85vw] md:w-[400px] snap-center lg:snap-align-none group flex flex-col justify-between h-[400px] rounded-[8px] bg-[#DCEBDA] p-10 cursor-pointer overflow-hidden relative transition-transform hover:scale-[1.02]">
                 <div className="z-10">
                   <span className="inline-flex bg-white px-3 py-1 rounded-[4px] text-[11px] font-semibold tracking-wider uppercase text-[#1A1A1A]">
-                    {t("AI Insights", "AI Insights")}
+                    {t("Ακίνητα", "Property & Home")}
                   </span>
                   <h3 className="text-[28px] font-medium mt-8 tracking-[-0.02em] leading-[1.1] max-w-[90%] text-[#1A1A1A]">
-                    {t("Βάλτε τα δεδομένα σας να δουλέψουν", "Let your data do the heavy lifting")}
+                    {t("Εκπτώσεις ΕΝΦΙΑ", "ENFIA compliance")}
                   </h3>
                 </div>
                 <div className="z-10">
                   <p className="text-[#1A1A1A]/70 text-[16px] max-w-[260px] mb-8 leading-snug">
-                    {t("Η τεχνητή νοημοσύνη αναλύει ρίσκα και βρίσκει ευκαιρίες αναβάθμισης στις καλύψεις σας.", "AI automatically analyzes your coverages to highlight critical gaps and overlaps.")}
+                    {t("Ελέγξτε τις καλύψεις φυσικών καταστροφών και διασφαλίστε το Rebuild Cost του ακινήτου σας.", "Analyze rebuild costs and strictly evaluate natural disaster coverage for tax deductions.")}
                   </p>
                   <div className="inline-flex items-center gap-1.5 text-[#1A1A1A] font-medium text-[15px] group-hover:underline decoration-1 underline-offset-4">
                     {t("Μάθετε περισσότερα", "Learn more")} <ArrowRight className="w-4 h-4" />
@@ -250,19 +250,79 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
                 </div>
               </Link>
 
-              {/* Card 3 - Soft Sand / Beige */}
-              <Link href="/product" className="group flex flex-col justify-between h-[400px] rounded-[8px] bg-[#EBE5D9] p-10 cursor-pointer overflow-hidden relative transition-transform hover:scale-[1.02]">
+              {/* Card 3 - Soft Sand / Health */}
+              <Link href="/product/health" className="shrink-0 w-[85vw] md:w-[400px] snap-center lg:snap-align-none group flex flex-col justify-between h-[400px] rounded-[8px] bg-[#EBE5D9] p-10 cursor-pointer overflow-hidden relative transition-transform hover:scale-[1.02]">
                 <div className="z-10">
                   <span className="inline-flex bg-white px-3 py-1 rounded-[4px] text-[11px] font-semibold tracking-wider uppercase text-[#1A1A1A]">
-                    {t("Συνεργασία", "Network")}
+                    {t("Υγεία", "Health & Life")}
                   </span>
                   <h3 className="text-[28px] font-medium mt-8 tracking-[-0.02em] leading-[1.1] max-w-[90%] text-[#1A1A1A]">
-                    {t("Δίκτυο συμβούλων σχεδιασμένο για εσάς", "A network designed to go further")}
+                    {t("Έλεγχος συμμετοχής", "Out-of-Pocket Trackers")}
                   </h3>
                 </div>
                 <div className="z-10">
                   <p className="text-[#1A1A1A]/70 text-[16px] max-w-[260px] mb-8 leading-snug">
-                    {t("Μοιραστείτε τα δεδομένα με τον πράκτορά σας για κορυφαία υποστήριξη 24/7.", "Connect securely with advisors who provide personalized recommendations.")}
+                    {t("Οπτικοποιήστε τα μέγιστα όρια πληρωμών και αποκτήστε πρόσβαση στα κέντρα συντονισμού άμεσα.", "Visualize max out-of-pocket limits and access coordination centers immediately.")}
+                  </p>
+                  <div className="inline-flex items-center gap-1.5 text-[#1A1A1A] font-medium text-[15px] group-hover:underline decoration-1 underline-offset-4">
+                    {t("Μάθετε περισσότερα", "Learn more")} <ArrowRight className="w-4 h-4" />
+                  </div>
+                </div>
+              </Link>
+
+              {/* Card 4 - Soft Purple / Cyber */}
+              <Link href="/product/cyber" className="shrink-0 w-[85vw] md:w-[400px] snap-center lg:snap-align-none group flex flex-col justify-between h-[400px] rounded-[8px] bg-[#E6DDF2] p-10 cursor-pointer overflow-hidden relative transition-transform hover:scale-[1.02]">
+                <div className="z-10">
+                  <span className="inline-flex bg-white px-3 py-1 rounded-[4px] text-[11px] font-semibold tracking-wider uppercase text-[#1A1A1A]">
+                    {t("Κυβερνοασφάλεια", "Cyber Risk")}
+                  </span>
+                  <h3 className="text-[28px] font-medium mt-8 tracking-[-0.02em] leading-[1.1] max-w-[90%] text-[#1A1A1A]">
+                    {t("Ανταπόκριση επιθέσεων", "Incident Response")}
+                  </h3>
+                </div>
+                <div className="z-10">
+                  <p className="text-[#1A1A1A]/70 text-[16px] max-w-[260px] mb-8 leading-snug">
+                    {t("Ελέγξτε τις καλύψεις σας για ransomware και Business Interruption πριν συμβεί το οτιδήποτε.", "Validate your ransomware coverage and verify business interruption limits before a breach.")}
+                  </p>
+                  <div className="inline-flex items-center gap-1.5 text-[#1A1A1A] font-medium text-[15px] group-hover:underline decoration-1 underline-offset-4">
+                    {t("Μάθετε περισσότερα", "Learn more")} <ArrowRight className="w-4 h-4" />
+                  </div>
+                </div>
+              </Link>
+
+              {/* Card 5 - Soft Coral / Group Health */}
+              <Link href="/product/group-health" className="shrink-0 w-[85vw] md:w-[400px] snap-center lg:snap-align-none group flex flex-col justify-between h-[400px] rounded-[8px] bg-[#F2E3DF] p-10 cursor-pointer overflow-hidden relative transition-transform hover:scale-[1.02]">
+                <div className="z-10">
+                  <span className="inline-flex bg-white px-3 py-1 rounded-[4px] text-[11px] font-semibold tracking-wider uppercase text-[#1A1A1A]">
+                    {t("Ομαδική Υγεία", "Group Health")}
+                  </span>
+                  <h3 className="text-[28px] font-medium mt-8 tracking-[-0.02em] leading-[1.1] max-w-[90%] text-[#1A1A1A]">
+                    {t("Εταιρικές παροχές", "Corporate benefits")}
+                  </h3>
+                </div>
+                <div className="z-10">
+                  <p className="text-[#1A1A1A]/70 text-[16px] max-w-[260px] mb-8 leading-snug">
+                    {t("Συνδυάστε τις παροχές του ομαδικού σας με την ατομική σας ασφάλιση.", "Combine deeply your corporate medical benefits with personal plans to minimize exposure.")}
+                  </p>
+                  <div className="inline-flex items-center gap-1.5 text-[#1A1A1A] font-medium text-[15px] group-hover:underline decoration-1 underline-offset-4">
+                    {t("Μάθετε περισσότερα", "Learn more")} <ArrowRight className="w-4 h-4" />
+                  </div>
+                </div>
+              </Link>
+
+              {/* Card 6 - Soft Lime / Group Pension */}
+              <Link href="/product/group-pension" className="shrink-0 w-[85vw] md:w-[400px] snap-center lg:snap-align-none group flex flex-col justify-between h-[400px] rounded-[8px] bg-[#E7EDD7] p-10 cursor-pointer overflow-hidden relative transition-transform hover:scale-[1.02]">
+                <div className="z-10">
+                  <span className="inline-flex bg-white px-3 py-1 rounded-[4px] text-[11px] font-semibold tracking-wider uppercase text-[#1A1A1A]">
+                    {t("Συνταξιοδοτικά", "Group Pension")}
+                  </span>
+                  <h3 className="text-[28px] font-medium mt-8 tracking-[-0.02em] leading-[1.1] max-w-[90%] text-[#1A1A1A]">
+                    {t("Φορολογικές ελαφρύνσεις", "Tax deductions")}
+                  </h3>
+                </div>
+                <div className="z-10">
+                  <p className="text-[#1A1A1A]/70 text-[16px] max-w-[260px] mb-8 leading-snug">
+                    {t("Αναλύστε την απόδοση των κεφαλαίων σας και εκμεταλλευτείτε τις φοροαπαλλαγές.", "Monitor fund growth and securely log premium contributions for tax deduction claims.")}
                   </p>
                   <div className="inline-flex items-center gap-1.5 text-[#1A1A1A] font-medium text-[15px] group-hover:underline decoration-1 underline-offset-4">
                     {t("Μάθετε περισσότερα", "Learn more")} <ArrowRight className="w-4 h-4" />
@@ -281,27 +341,27 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
             </h2>
 
             <div className="flex flex-col gap-6">
-              {/* Top Light Panel */}
+              {/* Top Light Panel - Pet */}
               <div className="rounded-[8px] bg-[#F7F7F7] p-8 lg:p-16 flex flex-col lg:flex-row gap-12 items-center">
                 <div className="flex-1 lg:pr-12">
                   <span className="inline-flex bg-white border border-[#E5E5E5] px-3 py-1 rounded-[4px] text-[11px] font-semibold tracking-wider uppercase text-[#1A1A1A]">
-                    {t("Αναλύσεις", "Analytics")}
+                    {t("Κατοικίδια", "Pet Safety")}
                   </span>
-                  <h3 className="text-[32px] font-medium mt-6 mb-4 tracking-[-0.02em] leading-[1.1]">{t("Προβλέψτε την επόμενη κίνησή σας", "Anticipate your family's next move")}</h3>
+                  <h3 className="text-[32px] font-medium mt-6 mb-4 tracking-[-0.02em] leading-[1.1]">{t("Κλείστε τα κρυφά παραθυράκια", "Close hidden exclusion loopholes")}</h3>
                   <p className="text-[#707070] text-[18px] leading-relaxed max-w-[420px]">
-                    {t("Αναλύστε την συνολική κάλυψη σας με βάση την αξία και την πιθανότητα εντός δευτερολέπτων.", "Analyze your total coverage status based on value and risk probability in seconds.")}
+                    {t("Εξάγουμε προϋπάρχουσες παθήσεις και επαληθεύουμε αν έχετε την απαραίτητη κάλυψη Leishmania (Καλαζάρ).", "Extract pre-existing condition exclusions and verify strictly necessary vector disease coverages.")}
                   </p>
-                  <Link href="/product" className="inline-flex items-center gap-1.5 mt-8 text-[#1A1A1A] font-medium text-[15px] hover:underline decoration-1 underline-offset-4">
+                  <Link href="/product/pet" className="inline-flex items-center gap-1.5 mt-8 text-[#1A1A1A] font-medium text-[15px] hover:underline decoration-1 underline-offset-4">
                     {t("Μάθετε περισσότερα", "Learn more")} <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
                 <div className="flex-1 w-full bg-white rounded-[8px] p-6 lg:p-8 shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#E5E5E5]">
                   <div className="flex items-center justify-between border-b border-[#F0F0F0] pb-4 mb-6">
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-[#F0F0F0] rounded flex items-center justify-center text-[#1A1A1A] font-semibold text-sm">Mo</div>
+                      <div className="w-10 h-10 bg-[#F0F0F0] rounded flex items-center justify-center text-[#1A1A1A] font-semibold text-sm">Pt</div>
                       <div>
-                        <div className="font-medium text-[#1A1A1A]">Motor Fleet</div>
-                        <div className="text-sm text-[#707070]">Expiring in 14 days</div>
+                        <div className="font-medium text-[#1A1A1A]">Golden Retriever Age 4</div>
+                        <div className="text-sm text-[#707070]">Limit Reached: 20%</div>
                       </div>
                     </div>
                     <div className="text-right">
@@ -311,8 +371,8 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
                   </div>
                   <div className="space-y-3">
                     <div className="flex justify-between text-[13px] font-medium text-[#707070] uppercase tracking-wider mb-2">
-                      <span>Coverage Optimization</span>
-                      <span className="text-[#0F172A]">High Risk Gap</span>
+                      <span>Coverage Risk</span>
+                      <span className="text-[#0F172A]">Leishmania Covered ✓</span>
                     </div>
                     <div className="w-full bg-[#F0F0F0] h-2 rounded-full overflow-hidden">
                       <div className="bg-[#0F172A] w-[45%] h-full rounded-full transition-all duration-1000"></div>
@@ -443,7 +503,7 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
 
               <div className="border-t border-white/10 pt-16">
                 <h2 className="text-[36px] lg:text-[48px] font-medium tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-md">
-                  {t("Αποκτήστε πρόσβαση.", "Get access to the experience built for scale.")}
+                  {t("Ξεκινήστε τώρα.", "Start optimizing your coverage.")}
                 </h2>
                 <div>
                   <Link

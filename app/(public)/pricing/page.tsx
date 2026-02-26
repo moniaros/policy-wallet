@@ -106,6 +106,7 @@ export default function PricingPage() {
 
                     <nav className="hidden items-center gap-8 font-medium text-[#475569] dark:text-slate-300 md:flex text-[14px]">
                         <Link href="/product" className="hover:text-[#0F172A] dark:hover:text-white transition-colors">{language === 'el' ? 'Προϊόντα' : 'Products'}</Link>
+                        <Link href="/company" className="hover:text-[#0F172A] dark:hover:text-white transition-colors">{language === 'el' ? 'Εταιρεία' : 'Company'}</Link>
                         <Link href="/pricing" className="text-[#0F172A] dark:text-white transition-colors">{language === 'el' ? 'Τιμολόγηση' : 'Pricing'}</Link>
                     </nav>
 
@@ -156,6 +157,9 @@ export default function PricingPage() {
                     <nav className="flex flex-col gap-6 text-[44px] sm:text-[56px] font-medium tracking-tight mb-12 leading-tight">
                         <Link href="/product" className="text-white hover:text-white/80 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                             {language === 'el' ? 'Προϊόντα' : 'Products'}
+                        </Link>
+                        <Link href="/company" className="text-white hover:text-white/80 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                            {language === 'el' ? 'Εταιρεία' : 'Company'}
                         </Link>
                         <Link href="/pricing" className="text-white hover:text-white/80 transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                             {language === 'el' ? 'Τιμολόγηση' : 'Pricing'}

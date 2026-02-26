@@ -62,23 +62,25 @@ export async function proxy(request: NextRequest) {
     const isLoggedIn = !!user
 
     const isApiAuthRoute = nextUrl.pathname.startsWith("/api/auth")
-    const isPublicRoute = [
+
+    // Public routes — exact matches OR prefix matches for sub-pages
+    const publicPrefixes = [
+        "/product",    // /product, /product/motor, /product/property, etc.
+        "/auth",       // all auth sub-routes
+        "/api/auth",   // auth API routes
+    ]
+    const publicExactRoutes = [
         "/",
         "/en",
-        "/auth/signin",
-        "/auth/signup",
-        "/auth/verify",
-        "/auth/verify-email",
-        "/auth/signup/confirmation",
-        "/auth/forgot-password",
-        "/auth/reset-password",
-        "/auth/handover",
         "/terms",
         "/privacy",
-        "/product",
         "/pricing",
         "/company",
-    ].includes(nextUrl.pathname)
+    ]
+    const isPublicRoute =
+        publicExactRoutes.includes(nextUrl.pathname) ||
+        publicPrefixes.some((prefix) => nextUrl.pathname.startsWith(prefix))
+
     const isAuthRoute = nextUrl.pathname.startsWith("/auth")
 
     // Allow API routes

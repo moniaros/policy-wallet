@@ -69,15 +69,6 @@ const insurerOptions = [
 ];
 
 const policyTypes = [
-    { value: "motor", label: "Motor", icon: "🚗" },
-    { value: "health", label: "Health", icon: "❤️" },
-    { value: "home", label: "Home", icon: "🏠" },
-    { value: "life", label: "Life", icon: "🛡️" },
-    { value: "travel", label: "Travel", icon: "✈️" },
-    { value: "liability", label: "Liability", icon: "⚖️" }
-]
-
-const policyTypes = [
     { value: "motor", label: "🚗 Motor", icon: "🚗" },
     { value: "health", label: "❤️ Health", icon: "❤️" },
     { value: "home", label: "🏠 Home", icon: "🏠" },
