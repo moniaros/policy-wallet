@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { getDashboardData, createAgentInvite } from "../agent/actions"
 import { DashboardClient } from "./DashboardClient"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"

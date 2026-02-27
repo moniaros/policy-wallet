@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { getDashboardMetrics, getActivityLogs, getPendingAgents } from "../actions"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { redirect } from "next/navigation"

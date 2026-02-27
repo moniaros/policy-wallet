@@ -1,9 +1,9 @@
 "use client"
-import { useState, useMemo } from "react"
-import { analyzeGaps, ignoreGap, notifyAgentAboutGap } from "../actions"
+import { useEffect, useMemo, useState } from "react"
+import { runPolicyAnalysis, ignoreGap, notifyAgentAboutGap } from "../actions"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { Sparkles, AlertTriangle, Lightbulb, EyeOff, MessageSquare } from "lucide-react"
+import { Sparkles, AlertTriangle, Lightbulb, EyeOff, MessageSquare, Loader2, RefreshCw } from "lucide-react"
 import { LimitReachedModal } from "@/components/account/LimitReachedModal"
 
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -21,14 +21,65 @@ interface Gap {
     }
 }
 
-export function AnalysisCard({ policyId, gaps }: { policyId: string, gaps: Gap[] }) {
+interface AnalysisCardProps {
+    policyId: string
+    gaps: Gap[]
+    policyStatus?: string
+    processingError?: { code?: string; message?: string } | null
+}
+
+export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: AnalysisCardProps) {
     const [analyzing, setAnalyzing] = useState(false)
+    const [runId, setRunId] = useState<string | null>(null)
+    const [runStatus, setRunStatus] = useState<string>(policyStatus === "analyzing" ? "running" : "idle")
+    const [runProgress, setRunProgress] = useState<number>(0)
+    const [runStepLabel, setRunStepLabel] = useState<string | null>(null)
+    const [runStepHint, setRunStepHint] = useState<string | null>(null)
+    const [analysisError, setAnalysisError] = useState<string | null>(null)
     const [ignoring, setIgnoring] = useState<string | null>(null)
     const [notifying, setNotifying] = useState<string | null>(null)
     const [gapLimitReached, setGapLimitReached] = useState(false)
     const router = useRouter()
     const { t, language } = useLanguage()
     const analysisTitle = toGreekUppercaseNoAccents(t.analysis.title, t.common?.locale || 'el-GR')
+    const stepsCopy = t.analysis?.steps || {}
+    const statusCopy = t.analysis?.status || {}
+    const errorCopy = t.analysis?.errors || {}
+    const stepLabels = useMemo(
+        () => ({
+            document_load_and_validation: stepsCopy.document_load_and_validation || "Loading policy document",
+            metadata_extraction_and_verification: stepsCopy.metadata_extraction_and_verification || "Extracting core policy details",
+            plain_language_translation: stepsCopy.plain_language_translation || "Generating plain-language summary",
+            coverage_mapping: stepsCopy.coverage_mapping || "Mapping policy coverages",
+            gap_detection: stepsCopy.gap_detection || "Checking coverage gaps",
+            savings_detection: stepsCopy.savings_detection || "Detecting savings opportunities",
+            checklist_scoring_and_actions: stepsCopy.checklist_scoring_and_actions || "Scoring checklist and actions",
+            persistence_and_finalize: stepsCopy.persistence_and_finalize || "Saving analysis results",
+        }),
+        [stepsCopy.checklist_scoring_and_actions, stepsCopy.coverage_mapping, stepsCopy.document_load_and_validation, stepsCopy.gap_detection, stepsCopy.metadata_extraction_and_verification, stepsCopy.persistence_and_finalize, stepsCopy.plain_language_translation, stepsCopy.savings_detection]
+    )
+
+    const resolveErrorMessage = (code?: string | null, fallback?: string | null) => {
+        const normalizedCode = String(code || "").toUpperCase()
+        const normalizedFallback = String(fallback || "")
+        if (
+            normalizedCode.includes("TOKEN_LIMIT_BLOCKED") ||
+            normalizedFallback.includes("monthly_limit_reached") ||
+            normalizedFallback.includes("insufficient_tokens")
+        ) {
+            return errorCopy.tokenLimit || "Analysis is paused because token limits were reached. Upgrade or buy credits to continue."
+        }
+        if (normalizedCode.includes("TIMEOUT") || normalizedFallback.toLowerCase().includes("timeout")) {
+            return errorCopy.timeout || "Analysis took longer than expected. Please retry in a moment."
+        }
+        if (normalizedCode.includes("EXTERNAL_SERVICE")) {
+            return errorCopy.unavailable || "AI service is temporarily unavailable. Please try again shortly."
+        }
+        return fallback || errorCopy.generic || "Analysis failed. Please retry."
+    }
+
+    const backgroundInProgress = policyStatus === "analyzing" && !runId && !analyzing
+    const analysisInProgress = analyzing || runStatus === "queued" || runStatus === "running" || backgroundInProgress
 
     // Deduplicate gaps based on content
     const uniqueGaps = useMemo(() => {
@@ -47,23 +98,152 @@ export function AnalysisCard({ policyId, gaps }: { policyId: string, gaps: Gap[]
         });
     }, [gaps]);
 
+    useEffect(() => {
+        if (backgroundInProgress && !analyzing) {
+            setRunStatus("running")
+            setRunStepLabel(statusCopy.background || "Background analysis is running")
+            setRunStepHint(statusCopy.backgroundHint || "This may take a few minutes for larger documents.")
+            setRunProgress((prev) => (prev > 0 ? prev : 20))
+        }
+    }, [backgroundInProgress, analyzing, statusCopy.background, statusCopy.backgroundHint])
+
+    useEffect(() => {
+        if (!analysisInProgress && processingError) {
+            setAnalysisError(resolveErrorMessage(processingError.code, processingError.message))
+        }
+    }, [analysisInProgress, processingError])
+
     const handleAnalyze = async () => {
+        setAnalysisError(null)
         setAnalyzing(true)
-        const toastId = toast.loading(t.analysis.analyzing)
-        const res = await analyzeGaps(policyId)
-        setAnalyzing(false)
-        if ('error' in res && res.error) {
-            if (res.error === "LIMIT_REACHED") {
+        setRunId(null)
+        setRunStatus("queued")
+        setRunProgress(5)
+        setRunStepLabel(statusCopy.queued || "Queued for analysis")
+        setRunStepHint(statusCopy.starting || "Preparing your document for AI analysis...")
+
+        const toastId = toast.loading(t.toast?.analysisStarting || statusCopy.starting || t.analysis.analyzing)
+        const res = await runPolicyAnalysis(policyId)
+
+        if ("error" in res && res.error) {
+            setAnalyzing(false)
+            setRunStatus("failed")
+
+            if (res.error === "TOKEN_LIMIT_BLOCKED" || res.error === "LIMIT_REACHED") {
                 setGapLimitReached(true)
+                setAnalysisError(resolveErrorMessage(res.error, res.error))
                 toast.dismiss(toastId)
-            } else {
-                toast.error(res.error, { id: toastId })
+                return
             }
-        } else if ('count' in res) {
-            toast.success(`${t.analysis.analysisComplete}${res.count}${t.analysis.issues}`, { id: toastId })
-            router.refresh()
+
+            const friendly = resolveErrorMessage(res.error, res.error)
+            setAnalysisError(friendly)
+            toast.error(friendly, { id: toastId })
+            return
+        }
+
+        if ("runId" in res && res.runId) {
+            setRunId(res.runId)
+            toast.success(
+                t.toast?.analysisStarted || statusCopy.inProgress || "Analysis started. Progress will update below.",
+                { id: toastId }
+            )
+        } else {
+            setAnalyzing(false)
+            setRunStatus("failed")
+            const fallback = errorCopy.generic || "Analysis failed. Please retry."
+            setAnalysisError(fallback)
+            toast.error(fallback, { id: toastId })
         }
     }
+
+    useEffect(() => {
+        if (!runId) return
+
+        let cancelled = false
+
+        const pollRun = async () => {
+            try {
+                const response = await fetch(`/api/v1/policies/${policyId}/analysis-runs/${runId}`, {
+                    method: "GET",
+                    cache: "no-store",
+                })
+
+                if (!response.ok) {
+                    throw new Error(`Run status fetch failed (${response.status})`)
+                }
+
+                const payload = await response.json()
+                const run = payload?.data
+                if (!run || cancelled) return
+
+                const status = String(run.status || "running")
+                setRunStatus(status)
+
+                const steps = Array.isArray(run.steps) ? run.steps : []
+                const latestByKey = new Map<string, any>()
+                for (const step of steps) {
+                    const existing = latestByKey.get(step.key)
+                    if (!existing || Number(step.attempt || 0) >= Number(existing.attempt || 0)) {
+                        latestByKey.set(step.key, step)
+                    }
+                }
+
+                const latestSteps = Array.from(latestByKey.values())
+                const runningStep = latestSteps.find((step) => step.status === "running" || step.status === "retrying")
+                const completedSteps = latestSteps.filter((step) => step.status === "completed").length
+
+                const overallProgress =
+                    typeof run.overall_success_pct === "number"
+                        ? run.overall_success_pct
+                        : Math.round((completedSteps / 8) * 100)
+
+                if (status === "queued") {
+                    setRunProgress(10)
+                    setRunStepLabel(statusCopy.queued || "Queued for analysis")
+                    setRunStepHint(statusCopy.starting || "Preparing your document for AI analysis...")
+                } else if (status === "running") {
+                    setRunProgress(Math.max(12, Math.min(95, overallProgress || 0)))
+                    if (runningStep?.key) {
+                        setRunStepLabel(stepLabels[runningStep.key] || runningStep.key)
+                    } else {
+                        setRunStepLabel(statusCopy.inProgress || "AI analysis in progress")
+                    }
+                    setRunStepHint(runningStep?.log_message || statusCopy.inProgressHint || "We are validating and extracting policy insights.")
+                } else if (status === "completed") {
+                    setRunProgress(100)
+                    setRunStepLabel(statusCopy.completed || "Analysis completed")
+                    setRunStepHint(statusCopy.completedHint || "Refreshing insights...")
+                    setAnalyzing(false)
+                    setRunId(null)
+                    toast.success(statusCopy.completed || "Analysis completed")
+                    router.refresh()
+                } else if (status === "blocked" || status === "failed") {
+                    const message = resolveErrorMessage(run.failure_code, run.failure_message)
+                    setAnalysisError(message)
+                    setAnalyzing(false)
+                    setRunId(null)
+                    if (status === "blocked") {
+                        setGapLimitReached(true)
+                    } else {
+                        toast.error(message)
+                    }
+                }
+            } catch {
+                if (!cancelled) {
+                    setRunStepHint(statusCopy.inProgressHint || "We are still processing your analysis.")
+                }
+            }
+        }
+
+        pollRun()
+        const interval = setInterval(pollRun, 2500)
+
+        return () => {
+            cancelled = true
+            clearInterval(interval)
+        }
+    }, [runId, policyId, router, statusCopy.completed, statusCopy.completedHint, statusCopy.inProgress, statusCopy.inProgressHint, statusCopy.queued, statusCopy.starting, stepLabels])
 
     const handleIgnore = async (gapId: string) => {
         setIgnoring(gapId)
@@ -104,12 +284,62 @@ export function AnalysisCard({ policyId, gaps }: { policyId: string, gaps: Gap[]
                 </div>
                 <button
                     onClick={handleAnalyze}
-                    disabled={analyzing}
+                    disabled={analysisInProgress}
                     className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl font-bold transition-all disabled:opacity-50 backdrop-blur-sm border border-white/30 hover:shadow-lg"
                 >
-                    {analyzing ? t.analysis.analyzing : t.analysis.runAnalysis}
+                    {analysisInProgress ? (statusCopy.inProgress || t.analysis.analyzing) : t.analysis.runAnalysis}
                 </button>
             </div>
+            {analysisInProgress && (
+                <div className="px-6 pt-5">
+                    <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-800/60 dark:bg-emerald-950/20">
+                        <div className="flex items-start gap-3">
+                            <Loader2 className="mt-0.5 h-4 w-4 animate-spin text-emerald-700 dark:text-emerald-300" />
+                            <div className="min-w-0 flex-1">
+                                <p className="text-sm font-bold text-emerald-900 dark:text-emerald-100">
+                                    {runStepLabel || statusCopy.inProgress || "AI analysis in progress"}
+                                </p>
+                                <p className="mt-1 text-xs text-emerald-800/85 dark:text-emerald-200/90">
+                                    {runStepHint || statusCopy.inProgressHint || "Your results will refresh automatically when this run finishes."}
+                                </p>
+                            </div>
+                            <span className="text-xs font-bold text-emerald-900 dark:text-emerald-100">
+                                {runProgress}%
+                            </span>
+                        </div>
+                        <div className="mt-3 h-2 overflow-hidden rounded-full bg-emerald-200/80 dark:bg-emerald-900/60">
+                            <div
+                                className="h-full rounded-full bg-emerald-600 transition-all duration-500"
+                                style={{ width: `${Math.max(8, Math.min(100, runProgress))}%` }}
+                            />
+                        </div>
+                    </div>
+                </div>
+            )}
+            {analysisError && !analysisInProgress && (
+                <div className="px-6 pt-5">
+                    <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 dark:border-amber-700/60 dark:bg-amber-950/20">
+                        <div className="flex items-start gap-3">
+                            <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-700 dark:text-amber-300" />
+                            <div className="flex-1">
+                                <p className="text-sm font-bold text-amber-900 dark:text-amber-100">
+                                    {statusCopy.attention || "Action required"}
+                                </p>
+                                <p className="mt-1 text-xs text-amber-800/90 dark:text-amber-200/90">
+                                    {analysisError}
+                                </p>
+                            </div>
+                            <button
+                                onClick={handleAnalyze}
+                                className="inline-flex items-center gap-1 rounded-lg border border-amber-400/60 bg-white px-2.5 py-1 text-xs font-bold text-amber-900 transition-colors hover:bg-amber-100 dark:border-amber-600/60 dark:bg-amber-900/50 dark:text-amber-100 dark:hover:bg-amber-900/80"
+                            >
+                                <RefreshCw className="h-3 w-3" />
+                                {statusCopy.retry || "Retry"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="p-6">
                 {uniqueGaps.length === 0 ? (
                     <div className="text-center py-8">

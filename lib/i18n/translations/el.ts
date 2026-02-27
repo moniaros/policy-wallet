@@ -229,6 +229,30 @@ export const el = {
         securityNote: 'Τα δεδομένα σας είναι κρυπτογραφημένα και ασφαλή.',
         selectOrEmpty: 'Επιλέξτε ή αφήστε κενό',
         selectTypePlaceholder: 'Επιλέξτε Τύπο',
+        policyDetailsPage: {
+            nextBestActions: 'Επόμενες ενέργειες',
+            askStarter: 'Κάνε μία αρχική ερώτηση στο AI',
+            sharePolicy: 'Κοινοποίηση σε σύμβουλο ή οικογένεια',
+            reviewRenewal: 'Έλεγχος λήξης και ανανέωσης',
+            contactInsurer: 'Επικοινωνία με ασφαλιστή',
+            requestRenewal: 'Αίτημα προσφοράς ανανέωσης',
+            renewalRequested: 'Το αίτημα ανανέωσης στάλθηκε.',
+            noInsurerPhone: 'Δεν υπάρχει διαθέσιμο τηλέφωνο ασφαλιστή.',
+            documentsArea: 'Έγγραφα συμβολαίου',
+            shareCanceled: 'Η κοινοποίηση ακυρώθηκε.',
+            shareUnavailable: 'Η κοινοποίηση δεν υποστηρίζεται.',
+            linkCopied: 'Ο σύνδεσμος αντιγράφηκε.',
+            copyFailed: 'Αποτυχία αντιγραφής συνδέσμου.',
+            tabAnalysis: 'Ανάλυση',
+            tabQa: 'AI Q&A',
+            tabCollaboration: 'Συνεργασία',
+            insuredPeople: 'Ασφαλισμένα πρόσωπα',
+            noInsuredPeople: 'Δεν βρέθηκαν ονόματα ασφαλισμένων.',
+            renewalHistory: 'Ιστορικό ανανεώσεων',
+            noRenewalHistory: 'Δεν υπάρχει ακόμη ιστορικό ανανεώσεων.',
+            reanalyzeToSeeCoverage: 'Επανάλυση για εμφάνιση λεπτομερούς κάλυψης',
+            reanalyzeToSeeCoverageHint: 'Τα ειδικά στοιχεία κάλυψης εμφανίζονται μετά από νέα ανάλυση AI',
+        },
     },
 
     activity: {
@@ -364,6 +388,34 @@ export const el = {
         analysisComplete: 'Η ανάλυση ολοκληρώθηκε. Βρέθηκαν ',
         issues: ' ζητήματα.',
         unknownGap: 'Άγνωστο Ασφαλιστικό Κενό',
+        status: {
+            queued: 'Η ανάλυση μπήκε σε ουρά',
+            starting: 'Προετοιμασία εγγράφου για AI ανάλυση...',
+            inProgress: 'Η AI ανάλυση εκτελείται',
+            inProgressHint: 'Επαληθεύουμε και εξάγουμε συμπεράσματα από το συμβόλαιό σας.',
+            background: 'Η ανάλυση τρέχει στο παρασκήνιο',
+            backgroundHint: 'Για μεγάλα έγγραφα μπορεί να χρειαστούν μερικά λεπτά.',
+            completed: 'Η ανάλυση ολοκληρώθηκε',
+            completedHint: 'Ανανέωση ευρημάτων συμβολαίου...',
+            attention: 'Απαιτείται ενέργεια',
+            retry: 'Επανάληψη',
+        },
+        errors: {
+            tokenLimit: 'Η ανάλυση διακόπηκε επειδή εξαντλήθηκε το όριο AI tokens. Αναβαθμίστε ή αγοράστε credits για συνέχεια.',
+            timeout: 'Η ανάλυση άργησε περισσότερο από το αναμενόμενο. Δοκιμάστε ξανά σε λίγο.',
+            unavailable: 'Η υπηρεσία AI δεν είναι προσωρινά διαθέσιμη. Δοκιμάστε ξανά σύντομα.',
+            generic: 'Η ανάλυση απέτυχε. Δοκιμάστε ξανά.',
+        },
+        steps: {
+            document_load_and_validation: 'Φόρτωση εγγράφου συμβολαίου',
+            metadata_extraction_and_verification: 'Εξαγωγή βασικών στοιχείων',
+            plain_language_translation: 'Δημιουργία απλής σύνοψης',
+            coverage_mapping: 'Χαρτογράφηση καλύψεων',
+            gap_detection: 'Έλεγχος κενών κάλυψης',
+            savings_detection: 'Εντοπισμός ευκαιριών εξοικονόμησης',
+            checklist_scoring_and_actions: 'Βαθμολόγηση checklist και ενεργειών',
+            persistence_and_finalize: 'Αποθήκευση αποτελεσμάτων',
+        },
     },
 
     // Standardized Coverage Names
@@ -832,3 +884,4 @@ export const el = {
 }
 
 export type TranslationKeys = typeof el
+

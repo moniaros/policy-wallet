@@ -178,12 +178,8 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
     }
 
     return (
-        <div className="min-h-screen bg-transparent relative isolate">
-            <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 -right-20 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[100px] opacity-40 mix-blend-multiply dark:mix-blend-normal animate-blob" />
-                <div className="absolute -bottom-20 -left-20 w-[600px] h-[600px] bg-amber-500/10 rounded-full blur-[100px] opacity-40 mix-blend-multiply dark:mix-blend-normal animate-blob animation-delay-2000" />
-                <div className="absolute top-1/3 left-1/3 w-[500px] h-[500px] bg-indigo-500/10 rounded-full blur-[120px] opacity-30 animate-pulse delay-700" />
-            </div>
+        <div className="pw-page-shell relative isolate">
+            <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none pw-app-canvas" />
 
             <PageHeader title={user?.name ? `${t.auth.welcomeBack}, ${user.name.split(' ')[0]}!` : t.wallet.title} subtitle={t.wallet.manageTrack} />
 
@@ -199,7 +195,11 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
                     const toastId = toast.loading(t.toast.analysisStarting)
                     const result = await runPolicyAnalysis(policyId)
                     if (result.error) {
-                        toast.error(result.error, { id: toastId })
+                        const friendlyError =
+                            result.error === "TOKEN_LIMIT_BLOCKED"
+                                ? (t.analysis?.errors?.tokenLimit || "Analysis is paused because your AI token limit was reached.")
+                                : result.error
+                        toast.error(friendlyError, { id: toastId })
                     } else {
                         toast.success(t.toast.analysisStarted, { id: toastId })
                     }

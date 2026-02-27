@@ -21,7 +21,7 @@ import {
 } from "@/lib/auth/phone-auth"
 
 const RegisterSchema = z.object({
-    name: z.string().min(1, "Name is required").optional(),
+    name: z.preprocess((v) => (typeof v === "string" && v.trim().length === 0 ? undefined : v), z.string().min(1).optional()),
     mobileNumber: z.string().min(1, "Mobile number is required")
         .refine((value) => Boolean(normalizeGreekMobile(value)), "Invalid Greek mobile number"),
     email: z.preprocess((value) => {

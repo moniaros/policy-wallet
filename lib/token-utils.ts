@@ -28,6 +28,7 @@ export type AIModel = keyof typeof TOKEN_COSTS
 
 export type OperationType =
     | 'policy_analysis'
+    | 'policy_clarity'
     | 'gap_detection'
     | 'qa_session'
     | 'document_parsing'

@@ -15,7 +15,7 @@ export function AIUsageWidget({ count, limit, t }: AIUsageWidgetProps) {
     const remaining = isUnlimited ? null : Math.max(safeLimit - count, 0)
 
     return (
-        <div className="bg-gradient-to-br from-stone-900 to-stone-800 dark:from-stone-800 dark:to-stone-900 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden group">
+        <div className="bg-gradient-to-br from-black to-[#111111] dark:from-[#111111] dark:to-black rounded-3xl p-6 text-white shadow-lg relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
                 <svg className="w-24 h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm1 15h-2v-6h2zm0-8h-2V7h2z" /></svg>
             </div>
@@ -33,7 +33,7 @@ export function AIUsageWidget({ count, limit, t }: AIUsageWidgetProps) {
                 <>
                     <div className="h-2 bg-white/20 rounded-full overflow-hidden mb-4">
                         <div
-                            className="h-full bg-teal-400 transition-all duration-500 ease-out"
+                            className="h-full bg-[#1FDC86] transition-all duration-500 ease-out"
                             style={{ width: `${percentage}%` }}
                         />
                     </div>
@@ -45,9 +45,9 @@ export function AIUsageWidget({ count, limit, t }: AIUsageWidgetProps) {
 
             <a
                 href="/upgrade?reason=ai_analysis_limit"
-                className="w-full py-3 bg-white text-stone-900 rounded-xl font-bold hover:bg-stone-100 transition-colors flex items-center justify-center gap-2 text-sm"
+                className="w-full py-3 bg-white text-black rounded-xl font-bold hover:bg-black/5 transition-colors flex items-center justify-center gap-2 text-sm"
             >
-                <svg className="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                <svg className="w-4 h-4 text-[#1FDC86]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                 {t.wallet.upgradePlan}
             </a>
         </div>

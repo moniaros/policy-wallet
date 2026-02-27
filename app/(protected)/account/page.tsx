@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { getAccountData } from "./actions"
@@ -10,7 +12,15 @@ export default async function AccountPage() {
     const roleCopy = getRoleCopy((dbUser.preferredLanguage as 'el' | 'en') || 'el')
 
     const data = await getAccountData()
-    if (!data) return <div>{roleCopy.defaults.loadingError}</div>
+    if (!data) {
+        return (
+            <div className="pw-page-shell px-4 py-8">
+                <div className="mx-auto max-w-2xl pw-card rounded-2xl p-6 text-sm text-black/70 dark:text-white/75">
+                    {roleCopy.defaults.loadingError}
+                </div>
+            </div>
+        )
+    }
 
     // Fetch additional data for mobile view (policies & agent)
     const policies = await db.policy.findMany({

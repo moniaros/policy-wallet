@@ -14,13 +14,14 @@ import path from "path"
 import { getAIService } from "@/lib/services/ai"
 import { GapAnalysisService } from "@/lib/services/gap-analysis.service"
 import { PolicyService } from "@/lib/services/policy.service"
-import { trackTokenUsage } from "@/lib/token-tracking"
+import { canUserUseTokens } from "@/lib/token-tracking"
 import { canUserAddPolicy, canUserUseFeature, getUpgradeMessage, getUserSubscription, SUBSCRIPTION_LIMITS } from "@/lib/subscription-limits"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { after } from 'next/server'
 import { collaborationService } from "@/lib/services/collaboration.service"
 import { sendPolicyInviteEmail, sendPolicySharedAccessEmail } from "@/lib/email/invite-emails"
+import { PolicyAnalysisOrchestratorService } from "@/lib/services/analysis/policy-analysis-orchestrator.service"
 
 const PolicySchema = z.object({
     insurerName: z.string().min(1, "Insurer name is required"),
@@ -509,6 +510,10 @@ export async function analyzeGaps(policyId: string) {
 
     const language = (authResult.dbUser.preferredLanguage as 'en' | 'el') || 'en'
     const gapService = new GapAnalysisService(db)
+    const gapTokenGate = await canUserUseTokens(authResult.dbUser.id, 60000)
+    if (!gapTokenGate.allowed && !authResult.dbUser.roles.includes('admin')) {
+        return { error: "TOKEN_LIMIT_BLOCKED" }
+    }
 
     try {
         const result = await gapService.analyzePolicy(policyId, authResult.dbUser.id, language)
@@ -687,6 +692,11 @@ export async function askPolicyQuestion(policyId: string, question: string) {
         }
     }
 
+    const qaTokenGate = await canUserUseTokens(authResult.dbUser.id, 15000)
+    if (!qaTokenGate.allowed && !authResult.dbUser.roles.includes('admin')) {
+        return { error: "TOKEN_LIMIT_BLOCKED" }
+    }
+
     // Use centralized AI service
     const aiService = getAIService()
     if (!aiService.isAvailable()) {
@@ -773,15 +783,27 @@ export async function runPolicyAnalysis(policyId: string) {
         if (!grant) return { error: "Unauthorized" }
     }
 
-    const policyService = new PolicyService()
     const language = (authResult.dbUser.preferredLanguage as 'en' | 'el') || 'en'
 
     try {
-        // Trigger background analysis
-        await policyService.runBackgroundAnalysis(policyId, authResult.dbUser.id, language)
+        const orchestrator = new PolicyAnalysisOrchestratorService()
+        const run = await orchestrator.createRun(policyId, authResult.dbUser.id)
+
+        if (run.status === "blocked") {
+            return { error: "TOKEN_LIMIT_BLOCKED", runId: run.id }
+        }
+
+        after(async () => {
+            try {
+                await orchestrator.executeRun(run.id, language)
+            } catch (e) {
+                logger('error', 'Deferred manual policy analysis failed', { policyId, runId: run.id, error: e })
+            }
+        })
+
         revalidatePath(`/wallet`)
         revalidatePath(`/wallet/${policyId}`)
-        return { success: true, message: "Analysis started" }
+        return { success: true, message: "Analysis started", runId: run.id }
     } catch (e: any) {
         logger('error', 'Manual policy analysis failed', { policyId, error: e.message })
         return { error: e.message || "Analysis failed" }

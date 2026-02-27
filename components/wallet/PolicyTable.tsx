@@ -32,15 +32,15 @@ interface PolicyTableProps {
 }
 
 const POLICY_VISUALS: Record<string, { icon: any; badge: string; iconColor: string }> = {
-    motor: { icon: CarIcon, badge: 'bg-amber-100 dark:bg-amber-900/30', iconColor: 'text-amber-700 dark:text-amber-300' },
-    health: { icon: HeartIcon, badge: 'bg-cyan-100 dark:bg-cyan-900/30', iconColor: 'text-cyan-700 dark:text-cyan-300' },
-    home: { icon: HomeIcon, badge: 'bg-emerald-100 dark:bg-emerald-900/30', iconColor: 'text-emerald-700 dark:text-emerald-300' },
-    life: { icon: ShieldIcon, badge: 'bg-violet-100 dark:bg-violet-900/30', iconColor: 'text-violet-700 dark:text-violet-300' },
-    travel: { icon: PlaneIcon, badge: 'bg-indigo-100 dark:bg-indigo-900/30', iconColor: 'text-indigo-700 dark:text-indigo-300' },
-    liability: { icon: ScaleIcon, badge: 'bg-slate-100 dark:bg-slate-800', iconColor: 'text-slate-700 dark:text-slate-300' },
-    pet: { icon: PawIcon, badge: 'bg-orange-100 dark:bg-orange-900/30', iconColor: 'text-orange-700 dark:text-orange-300' },
-    professional: { icon: BriefcaseIcon, badge: 'bg-stone-100 dark:bg-stone-800', iconColor: 'text-stone-700 dark:text-stone-300' },
-    other: { icon: DocumentIcon, badge: 'bg-stone-100 dark:bg-stone-800', iconColor: 'text-stone-700 dark:text-stone-300' },
+    motor: { icon: CarIcon, badge: 'bg-[#000000] dark:bg-black', iconColor: 'text-white' },
+    health: { icon: HeartIcon, badge: 'bg-[#000000] dark:bg-black', iconColor: 'text-white' },
+    home: { icon: HomeIcon, badge: 'bg-[#000000] dark:bg-black', iconColor: 'text-white' },
+    life: { icon: ShieldIcon, badge: 'bg-[#000000] dark:bg-black', iconColor: 'text-white' },
+    travel: { icon: PlaneIcon, badge: 'bg-[#000000] dark:bg-black', iconColor: 'text-white' },
+    liability: { icon: ScaleIcon, badge: 'bg-[#000000] dark:bg-black', iconColor: 'text-white' },
+    pet: { icon: PawIcon, badge: 'bg-[#000000] dark:bg-black', iconColor: 'text-white' },
+    professional: { icon: BriefcaseIcon, badge: 'bg-[#000000] dark:bg-black', iconColor: 'text-white' },
+    other: { icon: DocumentIcon, badge: 'bg-[#000000] dark:bg-black', iconColor: 'text-white' },
 }
 
 export function PolicyTable({
@@ -88,12 +88,12 @@ export function PolicyTable({
     }, [openMenuId])
 
     const label = {
-        cancelled: language === 'el' ? 'Ακυρωμένο' : 'Cancelled',
-        expired: language === 'el' ? 'ΛΗΞΕ' : 'EXPIRED',
+        cancelled: t.policyStatus?.cancelled || (language === 'el' ? 'Ακυρωμένο' : 'Cancelled'),
+        expired: t.policyStatus?.expired || (language === 'el' ? 'Έληξε' : 'EXPIRED'),
         analyzing: t.dashboard.statusLabels.analyzing,
-        actionNeeded: language === 'el' ? 'ΛΕΙΠΟΥΝ ΣΤΟΙΧΕΙΑ' : 'MISSING INFO',
-        active: language === 'el' ? 'ΕΝΕΡΓΟ' : 'ACTIVE',
-        renewalPending: language === 'el' ? 'ΧΡΕΙΑΖΕΤΑΙ ΑΝΑΝΕΩΣΗ' : 'RENEWAL NEEDED',
+        actionNeeded: language === 'el' ? 'Απαιτείται ενέργεια' : 'MISSING INFO',
+        active: t.policyStatus?.active || (language === 'el' ? 'Ενεργό' : 'ACTIVE'),
+        renewalPending: language === 'el' ? 'Απαιτείται ανανέωση' : 'RENEWAL NEEDED',
         unverified: language === 'el' ? 'Μη επαληθευμένο' : 'Unverified',
         noIssues: language === 'el' ? 'Χωρίς θέματα' : 'No issues',
         understandPolicy: t.dashboard.runAnalysis || (language === 'el' ? 'Κατανόηση συμβολαίου' : 'Understand policy'),
@@ -108,7 +108,7 @@ export function PolicyTable({
         if (policy.status === 'analyzing') {
             return {
                 text: label.analyzing,
-                className: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
+                className: 'bg-black/5 dark:bg-white/10 text-black/80 dark:text-white/75',
                 icon: <RefreshCw className="w-3.5 h-3.5 animate-spin" />,
                 message: summary.status.message,
             }
@@ -117,9 +117,9 @@ export function PolicyTable({
         const styleByTone: Record<string, string> = {
             critical: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300',
             warning: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
-            active: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300',
-            inactive: 'bg-stone-200 dark:bg-stone-700 text-stone-700 dark:text-stone-200',
-            info: 'bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300',
+            active: 'bg-[#1FDC86]/15 dark:bg-[#1FDC86]/15 text-[#19b870] dark:text-[#7de8ba]',
+            inactive: 'bg-black/10 dark:bg-white/15 text-black/80 dark:text-white/85',
+            info: 'bg-black/5 dark:bg-black/30 text-black/80 dark:text-white/70',
         }
 
         const iconByTone: Record<string, ReactNode> = {
@@ -143,28 +143,28 @@ export function PolicyTable({
             return { text: label.renewalPending, className: 'text-amber-600 dark:text-amber-400', icon: <Clock3 className="w-3.5 h-3.5" /> }
         }
         if (!policy.verified) {
-            return { text: label.unverified, className: 'text-stone-500 dark:text-stone-400', icon: <ShieldAlert className="w-3.5 h-3.5" /> }
+            return { text: label.unverified, className: 'text-black/60 dark:text-white/60', icon: <ShieldAlert className="w-3.5 h-3.5" /> }
         }
-        return { text: label.noIssues, className: 'text-teal-600 dark:text-teal-400', icon: <CheckCircle2 className="w-3.5 h-3.5" /> }
+        return { text: label.noIssues, className: 'text-[#1FDC86] dark:text-[#1FDC86]', icon: <CheckCircle2 className="w-3.5 h-3.5" /> }
     }
 
     return (
-        <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-sm border border-stone-200 dark:border-stone-800 overflow-hidden">
-            <div className="px-6 py-5 border-b border-stone-200 dark:border-stone-800">
-                <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100">{t.dashboard.myPolicies}</h2>
+        <div className="bg-[#FFFFFF] dark:bg-[#111111] rounded-[2rem] shadow-[0_2px_12px_rgb(0,0,0,0.02)] border border-black/10 dark:border-white/15 overflow-hidden arc-card">
+            <div className="px-6 py-5 border-b border-black/10 dark:border-white/15">
+                <h2 className="text-xl font-bold text-black dark:text-white">{t.dashboard.myPolicies}</h2>
             </div>
 
             <div className="overflow-x-auto">
                 <table className="w-full min-w-[720px]">
                     <thead>
-                        <tr className="bg-stone-50 dark:bg-stone-800/40 border-b border-stone-200 dark:border-stone-800">
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-stone-700 dark:text-stone-300">{(t.dashboard as any).insuredItem || 'Insured Item'}</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-stone-700 dark:text-stone-300">{t.dashboard.insurer}</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-stone-700 dark:text-stone-300">{t.dashboard.status}</th>
-                            <th className="px-6 py-4 text-right text-sm font-semibold text-stone-700 dark:text-stone-300">{t.dashboard.actions}</th>
+                        <tr className="bg-black/5 dark:bg-black border-b border-black/10 dark:border-white/15">
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 dark:text-white/70">{(t.dashboard as any).insuredItem || 'Insured Item'}</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 dark:text-white/70">{t.dashboard.insurer}</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 dark:text-white/70">{t.dashboard.status}</th>
+                            <th className="px-6 py-4 text-right text-sm font-semibold text-black/80 dark:text-white/70">{t.dashboard.actions}</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-stone-100 dark:divide-stone-800">
+                    <tbody className="divide-y divide-black/10 dark:divide-white/10">
                         {currentPolicies.map((policy) => {
                             const statusBadge = getStatusBadge(policy)
                             const insightBadge = getInsightBadge(policy)
@@ -175,16 +175,16 @@ export function PolicyTable({
                             const summary = getDocumentPolicySummary(policy, language === 'el' ? 'el' : 'en', typeLabel)
 
                             return (
-                                <tr key={policy.id} onClick={() => onViewPolicy?.(policy.id)} className="hover:bg-stone-50 dark:hover:bg-stone-800/40 transition-colors group cursor-pointer">
+                                <tr key={policy.id} onClick={() => onViewPolicy?.(policy.id)} className="hover:bg-black/5 dark:hover:bg-black/80 transition-colors group cursor-pointer">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
                                             <div className={`w-11 h-11 rounded-xl ${visual.badge} flex items-center justify-center`}>
                                                 <Icon className={`w-6 h-6 ${visual.iconColor}`} />
                                             </div>
                                             <div className="min-w-0">
-                                                <div className="font-bold text-stone-900 dark:text-white text-sm truncate">{summary.assetTitle}</div>
-                                                {summary.assetSubtitle ? <div className="text-xs text-stone-500 font-mono mt-0.5 truncate">{summary.assetSubtitle}</div> : null}
-                                                <div className="text-xs text-stone-500 dark:text-stone-400 mt-0.5 truncate">
+                                                <div className="font-bold text-black dark:text-white text-sm truncate">{summary.assetTitle}</div>
+                                                {summary.assetSubtitle ? <div className="text-xs text-black/60 dark:text-white/60 font-mono mt-0.5 truncate">{summary.assetSubtitle}</div> : null}
+                                                <div className="text-xs text-black/60 dark:text-white/60 mt-0.5 truncate">
                                                     {summary.insurerLine}
                                                 </div>
                                             </div>
@@ -193,8 +193,8 @@ export function PolicyTable({
 
                                     <td className="px-6 py-4">
                                         <div>
-                                            <div className="font-semibold text-stone-900 dark:text-white text-sm">{policy.insurerName}</div>
-                                            <div className="text-xs text-stone-500 font-mono mt-0.5">{policy.policyNumber}</div>
+                                            <div className="font-semibold text-black dark:text-white text-sm">{policy.insurerName}</div>
+                                            <div className="text-xs text-black/60 dark:text-white/60 font-mono mt-0.5">{policy.policyNumber}</div>
                                         </div>
                                     </td>
 
@@ -204,13 +204,13 @@ export function PolicyTable({
                                                 {statusBadge.icon}
                                                 {statusBadge.text}
                                             </span>
-                                            <div className="text-xs text-stone-600 dark:text-stone-400">
+                                            <div className="text-xs text-black/70 dark:text-white/60">
                                                 {label.expiresOn}: <span className="font-semibold">{summary.expiryDisplay}</span>
                                             </div>
-                                            <div className="text-xs text-stone-600 dark:text-stone-400">
+                                            <div className="text-xs text-black/70 dark:text-white/60">
                                                 {label.premium}: <span className="font-semibold">{summary.premiumDisplay}</span>
                                             </div>
-                                            <div className="text-xs text-stone-600 dark:text-stone-400">
+                                            <div className="text-xs text-black/70 dark:text-white/60">
                                                 <span className="font-medium">{statusBadge.message}</span>
                                             </div>
                                             <div className={`inline-flex items-center gap-1.5 text-xs font-medium ${insightBadge.className} px-1`}>
@@ -224,7 +224,7 @@ export function PolicyTable({
                                         <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                                             <button
                                                 onClick={() => onViewPolicy?.(policy.id)}
-                                                className="px-4 py-2 bg-white dark:bg-stone-900 hover:bg-stone-50 dark:hover:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 text-sm font-medium rounded-lg transition-colors cursor-pointer"
+                                                className="arc-btn arc-btn-primary px-4 py-2 text-sm font-bold cursor-pointer"
                                             >
                                                 {t.dashboard.viewDetails}
                                             </button>
@@ -261,19 +261,19 @@ export function PolicyTable({
                                                         setOpenMenuId(policy.id)
                                                     }
                                                 }}
-                                                className={`p-2.5 rounded-lg transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50 ${isMenuOpen ? 'bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-white shadow-sm' : 'hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-300'}`}
+                                                className={`p-2.5 rounded-lg transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86]/40 ${isMenuOpen ? 'bg-black/5 dark:bg-black text-black dark:text-white shadow-sm' : 'hover:bg-black/5 dark:hover:bg-black/80 text-black/70 dark:text-white/70'}`}
                                                 aria-label={t.dashboard.actions}
                                                 aria-expanded={isMenuOpen}
                                                 aria-haspopup="menu"
                                                 aria-controls={isMenuOpen ? `policy-actions-menu-${policy.id}` : undefined}
                                             >
-                                                <MoreVertical className="w-5 h-5 text-stone-600 dark:text-stone-300" />
+                                                <MoreVertical className="w-5 h-5 text-black/70 dark:text-white/70" />
                                             </button>
 
                                             {isMenuOpen && typeof document !== 'undefined' && createPortal(
                                                 <>
                                                     <div
-                                                        className="fixed inset-0 z-[9998] bg-stone-900/5 dark:bg-stone-950/20 backdrop-blur-[1px]"
+                                                        className="fixed inset-0 z-[9998] bg-black/5 dark:bg-black/20 backdrop-blur-[1px]"
                                                         onClick={() => {
                                                             setOpenMenuId(null)
                                                             setMenuPosition(null)
@@ -282,7 +282,7 @@ export function PolicyTable({
                                                     <div
                                                         id={`policy-actions-menu-${policy.id}`}
                                                         role="menu"
-                                                        className="fixed z-[9999] w-64 bg-white dark:bg-stone-800 rounded-2xl shadow-2xl border border-stone-200 dark:border-stone-700 py-2 animate-in fade-in zoom-in-95 duration-150"
+                                                        className="fixed z-[9999] w-64 bg-white dark:bg-black rounded-2xl shadow-2xl border border-black/10 dark:border-white/15 py-2 animate-in fade-in zoom-in-95 duration-150"
                                                         style={{
                                                             top: `${menuPosition?.top ?? 0}px`,
                                                             left: `${menuPosition?.left ?? 0}px`,
@@ -295,7 +295,7 @@ export function PolicyTable({
                                                                 setOpenMenuId(null)
                                                             }}
                                                             role="menuitem"
-                                                            className="w-full px-4 py-2.5 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 focus-visible:outline-none focus-visible:bg-stone-50 dark:focus-visible:bg-stone-700/50 flex items-center gap-3 transition-colors"
+                                                            className="w-full px-4 py-2.5 text-left text-sm font-medium text-black/80 dark:text-white/85 hover:bg-black/5 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:bg-black/5 dark:focus-visible:bg-white/10 flex items-center gap-3 transition-colors"
                                                         >
                                                             <Search className="w-4 h-4" />
                                                             {label.understandPolicy}
@@ -306,7 +306,7 @@ export function PolicyTable({
                                                                 setOpenMenuId(null)
                                                             }}
                                                             role="menuitem"
-                                                            className="w-full px-4 py-2.5 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 focus-visible:outline-none focus-visible:bg-stone-50 dark:focus-visible:bg-stone-700/50 flex items-center gap-3 transition-colors"
+                                                            className="w-full px-4 py-2.5 text-left text-sm font-medium text-black/80 dark:text-white/85 hover:bg-black/5 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:bg-black/5 dark:focus-visible:bg-white/10 flex items-center gap-3 transition-colors"
                                                         >
                                                             <FileText className="w-4 h-4" />
                                                             {t.wallet.documents}
@@ -317,7 +317,7 @@ export function PolicyTable({
                                                                 setOpenMenuId(null)
                                                             }}
                                                             role="menuitem"
-                                                            className="w-full px-4 py-2.5 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 focus-visible:outline-none focus-visible:bg-stone-50 dark:focus-visible:bg-stone-700/50 flex items-center gap-3 transition-colors"
+                                                            className="w-full px-4 py-2.5 text-left text-sm font-medium text-black/80 dark:text-white/85 hover:bg-black/5 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:bg-black/5 dark:focus-visible:bg-white/10 flex items-center gap-3 transition-colors"
                                                         >
                                                             <Share2 className="w-4 h-4" />
                                                             {t.wallet.shareWithAgent}
@@ -329,7 +329,7 @@ export function PolicyTable({
                                                                     setOpenMenuId(null)
                                                                 }}
                                                                 role="menuitem"
-                                                                className="w-full px-4 py-2.5 text-left text-sm font-medium text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-700/50 focus-visible:outline-none focus-visible:bg-stone-50 dark:focus-visible:bg-stone-700/50 flex items-center gap-3 transition-colors"
+                                                                className="w-full px-4 py-2.5 text-left text-sm font-medium text-black/80 dark:text-white/85 hover:bg-black/5 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:bg-black/5 dark:focus-visible:bg-white/10 flex items-center gap-3 transition-colors"
                                                             >
                                                                 <RefreshCw className="w-4 h-4" />
                                                                 {t.dashboard.renewPolicy}
@@ -361,20 +361,20 @@ export function PolicyTable({
 
             {currentPolicies.length === 0 && (
                 <div className="px-6 py-12 text-center">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center">
-                        <AlertCircle className="w-8 h-8 text-stone-400" />
+                    <div className="w-16 h-16 mx-auto mb-4 bg-black/5 dark:bg-black rounded-full flex items-center justify-center">
+                        <AlertCircle className="w-8 h-8 text-black/45 dark:text-white/55" />
                     </div>
-                    <h3 className="text-lg font-semibold text-stone-900 dark:text-stone-100 mb-2">{t.dashboard.noPolicies}</h3>
-                    <p className="text-stone-600 dark:text-stone-400">{t.dashboard.addFirstPolicy}</p>
+                    <h3 className="text-lg font-semibold text-black dark:text-white mb-2">{t.dashboard.noPolicies}</h3>
+                    <p className="text-black/70 dark:text-white/60">{t.dashboard.addFirstPolicy}</p>
                 </div>
             )}
 
             {totalPages > 1 && (
-                <div className="px-6 py-4 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
+                <div className="px-6 py-4 border-t border-black/10 dark:border-white/15 flex items-center justify-between">
                     <button
                         onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                         disabled={currentPage === 1}
-                        className="px-4 py-2 text-sm font-medium text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                        className="px-4 py-2 text-sm font-medium text-black/80 dark:text-white/70 bg-white dark:bg-[#111111] border border-black/10 dark:border-white/15 rounded-lg hover:bg-black/5 dark:hover:bg-black/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                     >
                         {t.dashboard.previous}
                     </button>
@@ -384,11 +384,10 @@ export function PolicyTable({
                             <button
                                 key={page}
                                 onClick={() => setCurrentPage(page)}
-                                className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                                    currentPage === page
-                                        ? 'bg-teal-600 text-white'
-                                        : 'bg-white dark:bg-stone-900 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700 hover:bg-stone-50 dark:hover:bg-stone-800'
-                                }`}
+                                className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors cursor-pointer ${currentPage === page
+                                    ? 'bg-[#1FDC86] text-white'
+                                    : 'bg-white dark:bg-[#111111] text-black/80 dark:text-white/70 border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-black/80'
+                                    }`}
                             >
                                 {page}
                             </button>
@@ -398,7 +397,7 @@ export function PolicyTable({
                     <button
                         onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                         disabled={currentPage === totalPages}
-                        className="px-4 py-2 text-sm font-medium text-stone-700 dark:text-stone-300 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-lg hover:bg-stone-50 dark:hover:bg-stone-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                        className="px-4 py-2 text-sm font-medium text-black/80 dark:text-white/70 bg-white dark:bg-[#111111] border border-black/10 dark:border-white/15 rounded-lg hover:bg-black/5 dark:hover:bg-black/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
                     >
                         {t.dashboard.next}
                     </button>
@@ -407,3 +406,8 @@ export function PolicyTable({
         </div>
     )
 }
+
+
+
+
+

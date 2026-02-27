@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import Stripe from 'stripe'
 import { stripe } from '@/lib/stripe'
 import { db as prisma } from '@/lib/db'
+import { logger } from '@/lib/logger'
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
@@ -53,6 +54,15 @@ export async function POST(req: NextRequest) {
             case 'customer.subscription.deleted': {
                 const subscription = event.data.object as Stripe.Subscription
                 await handleSubscriptionDeleted(subscription)
+                break
+            }
+
+            case 'payment_intent.succeeded': {
+                const paymentIntent = event.data.object as Stripe.PaymentIntent
+                // Only handle token purchases (identified by tokensPurchased metadata)
+                if (paymentIntent.metadata?.tokensPurchased) {
+                    await handleTokenPurchaseCompleted(paymentIntent)
+                }
                 break
             }
 
@@ -185,4 +195,60 @@ async function handleSubscriptionDeleted(stripeSubscription: Stripe.Subscription
             autoRenew: false
         }
     })
+}
+
+async function handleTokenPurchaseCompleted(paymentIntent: Stripe.PaymentIntent) {
+    const userId = paymentIntent.metadata?.userId
+    const tokensPurchased = parseInt(paymentIntent.metadata?.tokensPurchased || '0', 10)
+    const priceEur = parseFloat(paymentIntent.metadata?.priceEur || '0')
+
+    if (!userId || !tokensPurchased) {
+        logger('warn', 'Token purchase webhook: missing metadata', {
+            paymentIntentId: paymentIntent.id,
+        })
+        return
+    }
+
+    try {
+        await prisma.$transaction(async (tx) => {
+            // Update existing pending purchase record
+            await tx.tokenPurchase.updateMany({
+                where: {
+                    userId,
+                    stripePaymentIntentId: paymentIntent.id,
+                    status: 'pending',
+                },
+                data: { status: 'completed' },
+            })
+
+            // Upsert token balance
+            await tx.tokenBalance.upsert({
+                where: { userId },
+                create: {
+                    userId,
+                    purchasedTokens: BigInt(tokensPurchased),
+                    usedTokens: BigInt(0),
+                    lastPurchaseAt: new Date(),
+                },
+                update: {
+                    purchasedTokens: { increment: BigInt(tokensPurchased) },
+                    lastPurchaseAt: new Date(),
+                },
+            })
+        })
+
+        logger('info', 'Token purchase completed and balance updated', {
+            userId,
+            tokensPurchased,
+            priceEur,
+            paymentIntentId: paymentIntent.id,
+        })
+    } catch (error) {
+        logger('error', 'Failed to process token purchase webhook', {
+            userId,
+            paymentIntentId: paymentIntent.id,
+            error: error instanceof Error ? error.message : String(error),
+        })
+        throw error
+    }
 }

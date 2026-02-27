@@ -87,17 +87,17 @@ export function StatusSummary({
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
 
                 {/* Widget 1: Total Premium (Compact) */}
-                <div className="col-span-2 relative overflow-hidden rounded-2xl p-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-sm flex items-center justify-between group hover:border-indigo-500/30 transition-all duration-300">
+                <div className="col-span-2 relative overflow-hidden bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl p-4 border border-black/10 dark:border-white/15 arc-card block w-full text-left">
                     <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-105 transition-transform duration-300">
+                        <div className="w-10 h-10 bg-[#000000] dark:bg-black rounded-xl flex items-center justify-center text-white dark:text-white transition-transform duration-300">
                             <Euro className="w-5 h-5" />
                         </div>
                         <div>
-                            <h3 className="text-[10px] font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-0.5">{t.status.totalPremium}</h3>
-                            <div className="text-2xl font-bold text-stone-900 dark:text-white tracking-tight tabular-nums flex items-end gap-2">
+                            <h3 className="text-[10px] font-bold uppercase tracking-widest text-black/60 dark:text-white/60 mb-0.5">{t.status.totalPremium}</h3>
+                            <div className="text-2xl font-black text-black dark:text-white tracking-tight tabular-nums flex items-end gap-2">
                                 {formatCurrency(totalPremium)}
                                 {premiumTrend.length > 1 && premiumChange !== 0 && (
-                                    <span className={`text-[10px] font-bold mb-1 px-1.5 py-0.5 rounded-full ${premiumChange > 0 ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400' : 'bg-stone-100 text-stone-600'}`}>
+                                    <span className={`text-[10px] font-bold mb-1 px-1.5 py-0.5 rounded-full ${premiumChange > 0 ? 'bg-[#111111] text-white dark:bg-black dark:text-white/85' : 'bg-black/5 text-black/70 dark:text-white/60'}`}>
                                         {premiumChange > 0 ? '+' : ''}{Math.round((premiumChange / (totalPremium - premiumChange)) * 100)}%
                                     </span>
                                 )}
@@ -106,34 +106,34 @@ export function StatusSummary({
                     </div>
                     {/* Compact Sparkline - Only show if data exists */}
                     {premiumTrend.length > 1 && (
-                        <div className="w-24 h-8 text-indigo-500 opacity-30">
+                        <div className="w-24 h-8 text-black/70 dark:text-white/60 opacity-30">
                             <Sparkline data={premiumTrend} />
                         </div>
                     )}
                 </div>
 
                 {/* Widget 2: Active Policies (Compact) */}
-                <div className="relative overflow-hidden rounded-2xl p-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-sm flex items-center gap-3 group hover:border-blue-500/30 transition-all duration-300">
+                <div className="relative overflow-hidden bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl p-4 border border-black/10 dark:border-white/15 arc-card block w-full text-left flex items-center gap-3">
                     <div className="relative w-10 h-10 flex-shrink-0">
                         {/* Mini Circle Progress */}
                         <svg className="w-10 h-10 transform -rotate-90">
-                            <circle cx="20" cy="20" r="16" stroke="currentColor" strokeWidth="3" fill="none" className="text-stone-100 dark:text-stone-800" />
-                            <circle cx="20" cy="20" r="16" stroke="currentColor" strokeWidth="3" fill="none" strokeDasharray={`${2 * Math.PI * 16}`} strokeDashoffset={`${2 * Math.PI * 16 * (1 - activeCount / (totalPolicies || 1))}`} className="text-blue-500 transition-all duration-1000 ease-out" strokeLinecap="round" />
+                            <circle cx="20" cy="20" r="16" stroke="currentColor" strokeWidth="3" fill="none" className="text-black/15 dark:text-white/20" />
+                            <circle cx="20" cy="20" r="16" stroke="currentColor" strokeWidth="3" fill="none" strokeDasharray={`${2 * Math.PI * 16}`} strokeDashoffset={`${2 * Math.PI * 16 * (1 - activeCount / (totalPolicies || 1))}`} className="text-[#1FDC86] transition-all duration-1000 ease-out" strokeLinecap="round" />
                         </svg>
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <Shield className="w-4 h-4 text-blue-500" />
+                            <Shield className="w-4 h-4 text-black dark:text-white" />
                         </div>
                     </div>
                     <div>
-                        <h3 className="text-[10px] font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-0.5">{t.status.activePolicies}</h3>
-                        <div className="text-xl font-bold text-stone-900 dark:text-white tracking-tight leading-none">
-                            {activeCount} <span className="text-xs text-stone-400 font-medium">/ {totalPolicies} {t.status.added}</span>
+                        <h3 className="text-[10px] font-bold uppercase tracking-widest text-black/60 dark:text-white/60 mb-0.5">{t.status.activePolicies}</h3>
+                        <div className="text-xl font-black text-black dark:text-white tracking-tight leading-none">
+                            {activeCount} <span className="text-xs text-black/45 dark:text-white/60 font-medium">/ {totalPolicies} {t.status.added}</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Widget 3: Renewals (Compact) */}
-                <div className="relative overflow-hidden rounded-2xl p-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 shadow-sm flex items-center gap-3 group hover:border-amber-500/30 transition-all duration-300">
+                <div className="relative overflow-hidden bg-[#FFFFFF] dark:bg-[#111111] rounded-2xl p-4 border border-black/10 dark:border-white/15 arc-card block w-full text-left flex items-center gap-3">
                     {(() => {
                         let urgency: 'normal' | 'warning' | 'critical' = 'normal';
                         if (expiringPolicies.length > 0) {
@@ -150,15 +150,15 @@ export function StatusSummary({
 
                         return (
                             <>
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300 ${urgency === 'critical' ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 animate-pulse' :
-                                    urgency === 'warning' ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400' :
-                                        'bg-stone-100 dark:bg-stone-800 text-stone-400'
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300 ${urgency === 'critical' ? 'bg-[#000000] dark:bg-black text-white dark:text-white' :
+                                    urgency === 'warning' ? 'bg-[#000000] dark:bg-black text-white dark:text-white' :
+                                        'bg-black/5 dark:bg-black text-black/45 dark:text-white/60'
                                     }`}>
                                     <Calendar className="w-5 h-5" />
                                 </div>
                                 <div>
-                                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-stone-500 dark:text-stone-400 mb-0.5">{t.status.upcomingRenewals}</h3>
-                                    <div className="text-xl font-bold text-stone-900 dark:text-white tracking-tight leading-none flex items-baseline gap-2">
+                                    <h3 className="text-[10px] font-bold uppercase tracking-widest text-black/60 dark:text-white/60 mb-0.5">{t.status.upcomingRenewals}</h3>
+                                    <div className="text-xl font-black text-black dark:text-white tracking-tight leading-none flex items-baseline gap-2">
                                         {expiringCount}
                                         {expiringCount > 0 && (
                                             <span className={`text-[10px] font-normal ${urgency === 'critical' ? 'text-red-600 dark:text-red-500 font-bold' :
@@ -178,3 +178,6 @@ export function StatusSummary({
         </div>
     )
 }
+
+
+

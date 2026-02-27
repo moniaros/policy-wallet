@@ -77,6 +77,7 @@ export interface AIGapAnalysisResponse {
     verifiedMetadata: VerifiedPolicyMetadata
     gapResults: AIGapResult[]
     acordData?: any
+    usage?: AITokenUsage
 }
 
 /**
@@ -101,6 +102,67 @@ export interface AIPolicyExtractionResponse {
         requiresReview: boolean
     }
     acordData?: any // ACORD-compliant structured data extracted from document
+    usage?: AITokenUsage
+}
+
+export interface AITokenUsage {
+    inputTokens: number
+    outputTokens: number
+    totalTokens: number
+    model: string
+}
+
+export interface LocalizedText {
+    en: string
+    el: string
+}
+
+export interface ClarityCoverageSnapshot {
+    covered: string[]
+    notCovered: string[]
+    limits: Array<{ name: string; value: string }>
+    deductibles: Array<{ name: string; value: string }>
+    exclusions: string[]
+}
+
+export interface ClaritySavingsOpportunity {
+    action: LocalizedText
+    rationale: LocalizedText
+    estimatedAnnualSavingsEur: number | null
+    confidence: number
+}
+
+export interface ClarityCoverageGap {
+    slug: string
+    severity: "low" | "medium" | "high" | "critical"
+    evidence: LocalizedText
+    recommendation: LocalizedText
+}
+
+export interface ClarityChecklistScore {
+    pillarKey: string
+    pillarName: LocalizedText
+    checksPassed: number
+    checksTotal: number
+    successPct: number
+    notes: LocalizedText
+}
+
+export interface ClarityPriorityAction {
+    priority: "high" | "medium" | "low"
+    action: LocalizedText
+    reason: LocalizedText
+}
+
+export interface AIPolicyClarityResponse {
+    plainLanguageSummary: LocalizedText
+    coverageSnapshot: ClarityCoverageSnapshot
+    savingsOpportunities: ClaritySavingsOpportunity[]
+    coverageGaps: ClarityCoverageGap[]
+    checklistScores: ClarityChecklistScore[]
+    priorityActions: ClarityPriorityAction[]
+    acordData?: any
+    usage?: AITokenUsage
 }
 
 /**
@@ -114,6 +176,7 @@ export interface AIPolicyExtractionResponse {
 export interface AITrackingOptions {
     userId?: string
     policyId?: string
+    modelOverride?: string
 }
 
 /**
@@ -148,6 +211,26 @@ export interface IAIService {
         gapDefinitions: GapDefinitionForAI[],
         options?: AITrackingOptions
     ): Promise<AIGapAnalysisResponse>
+
+    /**
+     * Produces policy clarity insights from checklist-based analysis.
+     *
+     * @param document - Policy document to analyze
+     * @param metadata - Current policy metadata
+     * @param checklist - Checklist pillars and checks to evaluate
+     * @param options - Tracking options
+     */
+    analyzePolicyClarity(
+        document: AIDocument | null,
+        metadata: PolicyMetadata,
+        checklist: Array<{
+            key: string
+            title: LocalizedText
+            description: LocalizedText
+            checks: string[]
+        }>,
+        options?: AITrackingOptions
+    ): Promise<AIPolicyClarityResponse>
 
     /**
      * Answers a question about a policy

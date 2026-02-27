@@ -86,19 +86,19 @@ export function AddToWallet({
                 <div onClick={() => handleOpenChange(true)}>{trigger}</div>
             ) : (
                 <div
-                    className="bg-gradient-to-br from-slate-950 via-slate-900 to-teal-900 dark:from-slate-900 dark:via-slate-900 dark:to-emerald-900 rounded-3xl p-6 shadow-lg text-white relative overflow-hidden group cursor-pointer border border-white/10"
+                    className="bg-gradient-to-br from-black via-[#111111] to-black rounded-3xl p-6 shadow-lg text-white relative overflow-hidden group cursor-pointer border border-white/10"
                     onClick={() => handleOpenChange(true)}
                 >
-                    <div className="absolute top-0 right-0 p-3 text-[10px] font-black uppercase tracking-widest text-teal-100/80">{t.wallet.digitalCard}</div>
-                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(45,212,191,0.22),_transparent_45%)] pointer-events-none" />
+                    <div className="absolute top-0 right-0 p-3 text-[10px] font-black uppercase tracking-widest text-[#7de8ba]/90">{t.wallet.digitalCard}</div>
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(31,220,134,0.24),_transparent_45%)] pointer-events-none" />
 
                     <div className="relative z-10 flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-400/35 to-cyan-400/25 border border-white/20 backdrop-blur flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-2xl bg-[#1FDC86]/20 border border-[#1FDC86]/35 backdrop-blur flex items-center justify-center">
                             <WalletCards className="w-6 h-6" />
                         </div>
                         <div>
                             <h3 className="font-bold text-lg leading-none">{t.wallet.addToWallet}</h3>
-                            <p className="text-teal-100/80 text-xs mt-1">{t.wallet.digitalCardDesc}</p>
+                            <p className="text-white/75 text-xs mt-1">{t.wallet.digitalCardDesc}</p>
                         </div>
                     </div>
 
@@ -117,17 +117,17 @@ export function AddToWallet({
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => handleOpenChange(false)} />
 
-                    <div className="relative w-full max-w-md bg-stone-50 dark:bg-stone-900 rounded-3xl shadow-2xl p-8 animate-in fade-in zoom-in-95 duration-200">
+                    <div className="relative w-full max-w-md bg-white dark:bg-black rounded-3xl shadow-2xl p-8 animate-in fade-in zoom-in-95 duration-200 border border-black/10 dark:border-white/15">
                         <button
                             onClick={() => handleOpenChange(false)}
-                            className="absolute top-4 right-4 p-2 rounded-full hover:bg-stone-200 dark:hover:bg-stone-800 text-stone-500 transition-colors cursor-pointer"
+                            className="absolute top-4 right-4 p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-black/55 dark:text-white/65 transition-colors cursor-pointer"
                         >
                             <X className="w-5 h-5" />
                         </button>
 
                         <div className="text-center mb-8">
-                            <h2 className="text-xl font-black text-stone-900 dark:text-white uppercase tracking-tight">{t.wallet.yourDigitalPass}</h2>
-                            <p className="text-sm text-stone-500 mt-2">{t.wallet.addWalletDesc}</p>
+                            <h2 className="text-xl font-black text-black dark:text-white uppercase tracking-tight">{t.wallet.yourDigitalPass}</h2>
+                            <p className="text-sm text-black/60 dark:text-white/70 mt-2">{t.wallet.addWalletDesc}</p>
                         </div>
 
                         <div className="mb-8 transform hover:scale-[1.02] transition-transform duration-500">
@@ -138,7 +138,7 @@ export function AddToWallet({
                             <button
                                 onClick={() => fetchPass('apple')}
                                 disabled={loadingApple || loadingGoogle}
-                                className="w-full h-12 bg-black text-white rounded-xl flex items-center justify-center gap-2 hover:bg-stone-800 transition-colors font-medium border border-stone-800 disabled:opacity-50 cursor-pointer"
+                                className="arc-btn arc-btn-primary w-full h-12 font-medium"
                             >
                                 {loadingApple ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>{t.wallet.addToApple}</span>}
                             </button>
@@ -146,7 +146,7 @@ export function AddToWallet({
                             <button
                                 onClick={() => fetchPass('google')}
                                 disabled={loadingApple || loadingGoogle}
-                                className="w-full h-12 bg-white text-stone-900 border border-stone-200 rounded-xl flex items-center justify-center gap-2 hover:bg-stone-50 transition-colors font-medium disabled:opacity-50 cursor-pointer"
+                                className="arc-btn arc-btn-secondary w-full h-12 font-medium"
                             >
                                 {loadingGoogle ? <Loader2 className="w-5 h-5 animate-spin" /> : <span>{t.wallet.addToGoogle}</span>}
                             </button>
@@ -157,3 +157,4 @@ export function AddToWallet({
         </>
     )
 }
+

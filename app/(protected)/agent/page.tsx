@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { AgentClient } from "./AgentClient"

@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { getCustomerProfile } from "../../agent/actions"
 import { CustomerProfileClient } from "./CustomerProfileClient"
 import { notFound } from "next/navigation"

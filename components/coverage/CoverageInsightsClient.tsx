@@ -96,8 +96,8 @@ export function CoverageInsightsClient({
                     en: 'Your overall coverage is stable and balanced.'
                 },
                 summary: { el: 'Η κάλυψή σου είναι ισχυρή.', en: 'Your coverage is strong.' },
-                color: 'text-emerald-600',
-                bg: 'bg-emerald-100 dark:bg-emerald-900/30'
+                color: 'text-[#19b870] dark:text-[#7de8ba]',
+                bg: 'bg-[#1FDC86]/12 dark:bg-[#1FDC86]/15'
             }
         }
 
@@ -189,40 +189,40 @@ export function CoverageInsightsClient({
     }
 
     return (
-        <div className="min-h-screen bg-stone-50 dark:bg-stone-950 pb-24">
+        <div className="pw-page-shell">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-7 lg:py-10">
                 <div className="mb-7 text-center">
-                    <h1 className="text-base font-medium text-stone-500 dark:text-stone-400 mb-2">{copy.summaryTitle}</h1>
-                    <p className="text-xl sm:text-2xl font-black text-stone-900 dark:text-white leading-tight">{summaryText}</p>
+                    <h1 className="pw-kicker mb-2">{copy.summaryTitle}</h1>
+                    <p className="text-xl sm:text-2xl font-semibold text-black dark:text-white leading-tight">{summaryText}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
                     <div className={`rounded-2xl p-4 ${confidence.bg}`}>
-                        <p className={`text-xs font-black uppercase tracking-widest mb-1 ${confidence.color}`}>{confidence.label[lang]}</p>
-                        <p className="text-sm text-stone-800 dark:text-stone-100">{confidence.desc[lang]}</p>
+                        <p className={`text-xs font-semibold uppercase tracking-widest mb-1 ${confidence.color}`}>{confidence.label[lang]}</p>
+                        <p className="text-sm text-black/85 dark:text-white/85">{confidence.desc[lang]}</p>
                     </div>
-                    <div className="rounded-2xl p-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800">
-                        <p className="text-xs font-black uppercase tracking-widest text-stone-500 mb-1">{copy.policiesWithPoints}</p>
-                        <p className="text-2xl font-black text-stone-900 dark:text-white">{stats.totalGaps}</p>
+                    <div className="pw-card rounded-2xl p-4">
+                        <p className="pw-kicker mb-1">{copy.policiesWithPoints}</p>
+                        <p className="text-2xl font-semibold text-black dark:text-white">{stats.totalGaps}</p>
                     </div>
-                    <div className="rounded-2xl p-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800">
-                        <p className="text-xs font-black uppercase tracking-widest text-stone-500 mb-1">{copy.totalPolicies}</p>
-                        <p className="text-2xl font-black text-stone-900 dark:text-white">{stats.totalPolicies}</p>
+                    <div className="pw-card rounded-2xl p-4">
+                        <p className="pw-kicker mb-1">{copy.totalPolicies}</p>
+                        <p className="text-2xl font-semibold text-black dark:text-white">{stats.totalPolicies}</p>
                     </div>
                 </div>
 
                 {isFreeTier && (
-                    <div className="mb-8 rounded-2xl border border-violet-200 dark:border-violet-800 bg-violet-50 dark:bg-violet-900/20 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="mb-8 rounded-2xl border border-[#1FDC86]/35 bg-[#1FDC86]/10 dark:bg-[#1FDC86]/10 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div className="flex items-start gap-3">
-                            <Lock className="w-5 h-5 text-violet-600 dark:text-violet-300 mt-0.5" />
+                            <Lock className="w-5 h-5 text-black dark:text-[#1FDC86] mt-0.5" />
                             <div>
-                                <p className="font-bold text-violet-900 dark:text-violet-100">{copy.liteTitle}</p>
-                                <p className="text-sm text-violet-800 dark:text-violet-200">{copy.liteDescription}</p>
+                                <p className="font-semibold text-black dark:text-white">{copy.liteTitle}</p>
+                                <p className="text-sm text-black/75 dark:text-white/80">{copy.liteDescription}</p>
                             </div>
                         </div>
                         <button
                             onClick={() => router.push('/upgrade?reason=feature_locked')}
-                            className="px-4 py-2.5 rounded-xl bg-violet-700 hover:bg-violet-600 text-white text-sm font-bold transition-colors flex items-center gap-2 cursor-pointer"
+                            className="pw-primary-button text-sm cursor-pointer"
                         >
                             <Crown className="w-4 h-4" />
                             {copy.upgrade}
@@ -231,7 +231,7 @@ export function CoverageInsightsClient({
                 )}
 
                 <div className="mb-10">
-                    <h2 className="text-lg font-black text-stone-900 dark:text-white mb-5 flex items-center gap-2">
+                    <h2 className="text-lg font-semibold text-black dark:text-white mb-5 flex items-center gap-2">
                         <AlertCircle className="w-5 h-5" />
                         {copy.reviewSectionTitle}
                     </h2>
@@ -247,10 +247,10 @@ export function CoverageInsightsClient({
                                 />
                             ))
                         ) : (
-                            <div className="text-center py-10 bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800">
-                                <Sparkles className="w-8 h-8 text-teal-500 mx-auto mb-3" />
-                                <p className="text-stone-900 dark:text-stone-100 font-bold">{copy.allGoodTitle}</p>
-                                <p className="text-stone-500 text-sm">{copy.allGoodDescription}</p>
+                            <div className="text-center py-10 pw-card rounded-3xl">
+                                <Sparkles className="w-8 h-8 text-[#1FDC86] mx-auto mb-3" />
+                                <p className="text-black dark:text-white font-semibold">{copy.allGoodTitle}</p>
+                                <p className="text-black/55 dark:text-white/65 text-sm">{copy.allGoodDescription}</p>
                             </div>
                         )}
                     </div>
@@ -258,45 +258,45 @@ export function CoverageInsightsClient({
 
                 {policiesOk.length > 0 && (
                     <div className="mb-10">
-                        <h3 className="text-sm font-bold text-stone-500 uppercase tracking-widest mb-3 px-1">{copy.checkedAndGood}</h3>
-                        <div className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 divide-y divide-stone-100 dark:divide-stone-800">
+                        <h3 className="text-sm font-semibold text-black/55 dark:text-white/60 uppercase tracking-widest mb-3 px-1">{copy.checkedAndGood}</h3>
+                        <div className="pw-card rounded-2xl divide-y divide-black/10 dark:divide-white/10">
                             {policiesOk.map((policy) => (
                                 <div key={policy.id} className="p-4 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600">
+                                        <div className="w-8 h-8 rounded-full bg-[#1FDC86]/15 flex items-center justify-center text-[#1FDC86]">
                                             <CheckCircle2 className="w-4 h-4" />
                                         </div>
                                         <div>
-                                            <div className="font-bold text-stone-900 dark:text-white text-sm">{policy.lineOfBusiness?.name || (lang === 'el' ? 'Ασφαλιστήριο' : 'Policy')}</div>
-                                            <div className="text-xs text-stone-500">{policy.insurerName}</div>
+                                            <div className="font-semibold text-black dark:text-white text-sm">{policy.lineOfBusiness?.name || (lang === 'el' ? 'Ασφαλιστήριο' : 'Policy')}</div>
+                                            <div className="text-xs text-black/55 dark:text-white/60">{policy.insurerName}</div>
                                         </div>
                                     </div>
-                                    <span className="text-xs font-bold text-stone-500 bg-stone-100 dark:bg-stone-800 px-2 py-1 rounded">OK</span>
+                                    <span className="text-xs font-semibold text-black/70 dark:text-white/75 bg-black/5 dark:bg-white/10 px-2 py-1 rounded">OK</span>
                                 </div>
                             ))}
                         </div>
                     </div>
                 )}
 
-                <div className="pt-6 border-t border-stone-200 dark:border-stone-800 text-center">
-                    <h3 className="text-lg font-bold text-stone-900 dark:text-white mb-4">{copy.nextSteps}</h3>
+                <div className="pt-6 border-t border-black/10 dark:border-white/10 text-center">
+                    <h3 className="text-lg font-semibold text-black dark:text-white mb-4">{copy.nextSteps}</h3>
                     <div className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
                         <button
                             onClick={() => router.push('/wallet')}
-                            className="flex-1 py-3.5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl font-bold transition-opacity hover:opacity-90 flex items-center justify-center gap-2 cursor-pointer"
+                            className="flex-1 py-3.5 bg-[#1FDC86] text-white rounded-xl font-semibold transition-opacity hover:opacity-90 flex items-center justify-center gap-2 cursor-pointer"
                         >
                             <span>{copy.backToWallet}</span>
                             <ArrowRight className="w-4 h-4" />
                         </button>
                         <button
                             onClick={() => router.push(isFreeTier ? '/upgrade?reason=feature_locked' : '/account')}
-                            className="flex-1 py-3.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 text-stone-700 dark:text-stone-300 rounded-xl font-bold hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                            className="flex-1 py-3.5 bg-transparent border border-black/15 dark:border-white/20 text-black dark:text-white rounded-xl font-semibold hover:bg-black/5 dark:hover:bg-white/10 transition-colors flex items-center justify-center gap-2 cursor-pointer"
                         >
                             <Activity className="w-4 h-4" />
                             {isFreeTier ? copy.unlockFull : copy.coverageSettings}
                         </button>
                     </div>
-                    <p className="text-xs text-stone-400 mt-5 max-w-md mx-auto leading-relaxed">{copy.independentNote}</p>
+                    <p className="text-xs text-black/45 dark:text-white/55 mt-5 max-w-md mx-auto leading-relaxed">{copy.independentNote}</p>
                 </div>
             </div>
         </div>

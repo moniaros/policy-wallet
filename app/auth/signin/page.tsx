@@ -245,12 +245,9 @@ export default function SignInPage() {
     }
 
     return (
-        <div className={`${ibmPlexSans.className} relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-white px-4 py-10 dark:bg-[#0F172A]`}>
-            <div className="pointer-events-none absolute left-0 top-0 z-0 h-full w-full overflow-hidden">
-                <div className="absolute left-[20%] top-[-10%] h-[60%] w-[60%] rounded-full bg-slate-100/50 blur-[120px] dark:bg-slate-800/20" />
-            </div>
+        <div className={`${ibmPlexSans.className} relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#F9FAFB] px-4 py-10 dark:bg-[#000000]`}>
 
-            <div className="relative z-10 w-full max-w-[440px] animate-in zoom-in rounded-2xl border border-gray-200 bg-white/95 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-3xl duration-500 dark:border-slate-800 dark:bg-slate-900/90 sm:p-10">
+            <div className="relative z-10 w-full max-w-[440px] animate-in zoom-in rounded-2xl border border-gray-200 bg-[#FFFFFF] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] duration-500 dark:border-slate-800 dark:bg-[#111111] sm:p-10">
                 <div className="mb-7 text-center">
                     <Link href="/" className="group mb-5 inline-block">
                         <PolicyWalletLogo size="md" language={language} />
@@ -292,7 +289,7 @@ export default function SignInPage() {
                             type="button"
                             onClick={handleBiometricPrefill}
                             disabled={isQuickUnlocking}
-                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-800 transition hover:bg-slate-100 disabled:opacity-70 dark:border-slate-700 dark:bg-slate-800/30 dark:text-slate-200 dark:hover:bg-slate-800/50"
+                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-800 transition-all hover:-translate-y-[1px] hover:shadow-sm disabled:opacity-70 dark:border-slate-700 dark:bg-slate-800/30 dark:text-slate-200 dark:hover:bg-slate-800/50"
                         >
                             {isQuickUnlocking ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Fingerprint className="h-3.5 w-3.5" />}
                             {copy.useBiometric}
@@ -301,7 +298,7 @@ export default function SignInPage() {
                         <button
                             type="button"
                             onClick={() => setShowPinPrompt((value) => !value)}
-                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-800 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800/30 dark:text-slate-200 dark:hover:bg-slate-800/50"
+                            className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-800 transition-all hover:-translate-y-[1px] hover:shadow-sm dark:border-slate-700 dark:bg-slate-800/30 dark:text-slate-200 dark:hover:bg-slate-800/50"
                         >
                             <KeyRound className="h-3.5 w-3.5" />
                             {copy.usePin}
@@ -335,7 +332,7 @@ export default function SignInPage() {
                             setShowPasswordLogin((value) => !value)
                             if (!showPasswordLogin) focusPasswordField()
                         }}
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-800 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800/30 dark:text-slate-200 dark:hover:bg-slate-800/50"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-bold text-slate-800 transition-all hover:-translate-y-[1px] hover:shadow-sm dark:border-slate-700 dark:bg-slate-800/30 dark:text-slate-200 dark:hover:bg-slate-800/50"
                     >
                         {showPasswordLogin ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
                         {showPasswordLogin ? copy.hideSecondary : copy.openSecondary}
@@ -398,7 +395,7 @@ export default function SignInPage() {
                                         required
                                         value={identifier}
                                         onChange={(e) => setIdentifier(e.target.value)}
-                                        className="block w-full rounded-xl border border-slate-300 bg-white py-3 pl-10 pr-4 text-slate-900 transition-all placeholder-slate-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-[#29685B]/40 dark:border-slate-700 dark:bg-slate-800/60 dark:text-white sm:text-sm"
+                                        className="block w-full rounded-xl border border-slate-300 bg-white py-3 pl-10 pr-4 text-slate-900 transition-all placeholder-slate-400 focus:border-[#1FDC86] focus:outline-none focus:ring-2 focus:ring-[#1FDC86]/40 dark:border-slate-700 dark:bg-slate-800/60 dark:text-white sm:text-sm"
                                         placeholder={language === "el" ? "name@email.com ή +30 69X XXX XXXX" : "name@email.com or +30 69X XXX XXXX"}
                                     />
                                 </div>
@@ -425,7 +422,7 @@ export default function SignInPage() {
                                         required
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="block w-full rounded-xl border border-slate-300 bg-white py-3 pl-10 pr-4 text-slate-900 transition-all placeholder-slate-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-[#29685B]/40 dark:border-slate-700 dark:bg-slate-800/60 dark:text-white sm:text-sm"
+                                        className="block w-full rounded-xl border border-slate-300 bg-white py-3 pl-10 pr-4 text-slate-900 transition-all placeholder-slate-400 focus:border-[#1FDC86] focus:outline-none focus:ring-2 focus:ring-[#1FDC86]/40 dark:border-slate-700 dark:bg-slate-800/60 dark:text-white sm:text-sm"
                                         placeholder={roleCopy.auth.passwordPlaceholder}
                                     />
                                 </div>
@@ -457,7 +454,7 @@ export default function SignInPage() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="flex w-full cursor-pointer items-center justify-center rounded-xl border border-transparent bg-[#29685B] px-4 py-4 text-[16px] font-bold text-white transition-transform active:scale-[0.98] hover:bg-[#1C4E44] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29685B] disabled:cursor-not-allowed disabled:opacity-70 dark:bg-[#29685B] dark:text-white dark:hover:bg-[#1C4E44]"
+                            className="flex w-full cursor-pointer items-center justify-center rounded-full border border-transparent bg-[#1FDC86] px-4 py-4 text-[16px] font-bold text-slate-900 transition-all hover:-translate-y-[2px] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86] flex-shrink-0 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-[#1FDC86] dark:text-slate-900"
                         >
                             {isLoading ? (
                                 <span className="flex items-center gap-2">

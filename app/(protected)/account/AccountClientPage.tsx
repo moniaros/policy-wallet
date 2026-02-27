@@ -101,13 +101,13 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
     }
 
     return (
-        <div className="min-h-screen bg-transparent">
+        <div className="pw-page-shell">
             <PageHeader
                 title={t.account.pageTitle}
                 subtitle={t.account.pageSubtitle}
                 className="shadow-sm"
                 actions={
-                    <div className="flex p-1 bg-stone-100/60 dark:bg-stone-900/60 backdrop-blur-md rounded-xl border border-stone-200/50 dark:border-stone-700/50 overflow-x-auto no-scrollbar relative isolate">
+                    <div className="flex p-1 bg-black/5 dark:bg-white/10 backdrop-blur-md rounded-xl border border-black/10 dark:border-white/15 overflow-x-auto no-scrollbar relative isolate">
                         {[
                             { id: 'overview', label: t.account.overview, icon: User },
                             { id: 'billing', label: t.account.billing, icon: CreditCard },
@@ -121,15 +121,15 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                                     flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider
                                     transition-all duration-300 relative isolate whitespace-nowrap
                                     ${activeTab === tab.id
-                                        ? 'text-teal-600 dark:text-teal-400'
-                                        : 'text-stone-400 hover:text-stone-600 dark:hover:text-stone-200'
+                                        ? 'text-black dark:text-[#1FDC86]'
+                                        : 'text-black/45 dark:text-white/60 hover:text-black dark:hover:text-white'
                                     }
                                 `}
                             >
                                 {activeTab === tab.id && (
                                     <motion.div
                                         layoutId="activeAccountTab"
-                                        className="absolute inset-0 bg-white dark:bg-stone-800 rounded-xl shadow-sm -z-10"
+                                        className="absolute inset-0 bg-white dark:bg-black rounded-xl shadow-sm -z-10 border border-black/10 dark:border-white/15"
                                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                     />
                                 )}

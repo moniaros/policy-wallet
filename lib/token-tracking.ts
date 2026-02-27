@@ -17,6 +17,20 @@ import {
 // Re-export for backward compatibility if needed, but preferably use token-utils directly
 export { formatTokens, formatCost, TOKEN_COSTS, type AIModel, type OperationType }
 
+const TOKEN_LIMITS: Record<'free' | 'plus' | 'pro', number | null> = {
+    free: 250_000,
+    plus: 1_000_000,
+    pro: 5_000_000,
+}
+
+function normalizeTokenTier(rawTier: string): 'free' | 'plus' | 'pro' {
+    const tier = (rawTier || 'free').toLowerCase()
+    if (tier === 'essential') return 'plus'
+    if (tier === 'professional') return 'pro'
+    if (tier === 'plus' || tier === 'pro' || tier === 'free') return tier
+    return 'free'
+}
+
 /**
  * Track token usage for an AI operation
  */
@@ -29,72 +43,99 @@ export async function trackTokenUsage(params: {
     model: AIModel
 }): Promise<void> {
     const costs = TOKEN_COSTS[params.model]
+    const totalTokens = params.inputTokens + params.outputTokens
 
     // Calculate costs
     const inputCost = (params.inputTokens / 1_000_000) * costs.input
     const outputCost = (params.outputTokens / 1_000_000) * costs.output
     const totalCost = inputCost + outputCost
 
-    // Record usage
-    await prisma.tokenUsage.create({
-        data: {
-            userId: params.userId,
-            operationType: params.operationType,
-            policyId: params.policyId,
-            inputTokens: params.inputTokens,
-            outputTokens: params.outputTokens,
-            totalTokens: params.inputTokens + params.outputTokens,
-            costEur: new Decimal(totalCost),
-            model: params.model,
-        },
-    })
-
-    // Update monthly usage
-    await updateMonthlyUsage(
-        params.userId,
-        params.inputTokens + params.outputTokens,
-        totalCost
-    )
-}
-
-/**
- * Update monthly token usage summary
- */
-async function updateMonthlyUsage(
-    userId: string,
-    tokens: number,
-    cost: number
-): Promise<void> {
+    const { tier: rawTier } = await getUserSubscription(params.userId)
+    const tier = normalizeTokenTier(rawTier)
     const now = new Date()
     const month = new Date(now.getFullYear(), now.getMonth(), 1)
 
-    const { tier } = await getUserSubscription(userId)
+    await prisma.$transaction(async (tx) => {
+        const existingMonthly = await tx.monthlyTokenUsage.findUnique({
+            where: {
+                userId_month: {
+                    userId: params.userId,
+                    month,
+                },
+            },
+        })
 
-    await prisma.monthlyTokenUsage.upsert({
-        where: {
-            userId_month: {
-                userId,
+        const monthlyUsedBefore = existingMonthly ? Number(existingMonthly.totalTokens) : 0
+        const subscriptionLimit = TOKEN_LIMITS[tier]
+        const subscriptionRemaining = subscriptionLimit === null
+            ? totalTokens
+            : Math.max(subscriptionLimit - monthlyUsedBefore, 0)
+        const subscriptionConsumed = subscriptionLimit === null
+            ? totalTokens
+            : Math.min(subscriptionRemaining, totalTokens)
+        const purchasedConsumed = Math.max(totalTokens - subscriptionConsumed, 0)
+
+        await tx.tokenUsage.create({
+            data: {
+                userId: params.userId,
+                operationType: params.operationType,
+                policyId: params.policyId,
+                inputTokens: params.inputTokens,
+                outputTokens: params.outputTokens,
+                totalTokens,
+                costEur: new Decimal(totalCost),
+                model: params.model,
+            },
+        })
+
+        await tx.monthlyTokenUsage.upsert({
+            where: {
+                userId_month: {
+                    userId: params.userId,
+                    month,
+                },
+            },
+            create: {
+                userId: params.userId,
                 month,
+                tier,
+                totalTokens: BigInt(totalTokens),
+                totalCostEur: new Decimal(totalCost),
+                subscriptionTokens: BigInt(subscriptionConsumed),
+                purchasedTokensUsed: BigInt(purchasedConsumed),
             },
-        },
-        create: {
-            userId,
-            month,
-            tier,
-            totalTokens: BigInt(tokens),
-            totalCostEur: new Decimal(cost),
-            subscriptionTokens: BigInt(tokens),
-            purchasedTokensUsed: BigInt(0),
-        },
-        update: {
-            totalTokens: {
-                increment: BigInt(tokens),
+            update: {
+                totalTokens: {
+                    increment: BigInt(totalTokens),
+                },
+                totalCostEur: {
+                    increment: new Decimal(totalCost),
+                },
+                subscriptionTokens: {
+                    increment: BigInt(subscriptionConsumed),
+                },
+                purchasedTokensUsed: {
+                    increment: BigInt(purchasedConsumed),
+                },
+                tier,
             },
-            totalCostEur: {
-                increment: new Decimal(cost),
-            },
-            tier, // Update tier in case it changed
-        },
+        })
+
+        if (purchasedConsumed > 0) {
+            await tx.tokenBalance.upsert({
+                where: { userId: params.userId },
+                create: {
+                    userId: params.userId,
+                    purchasedTokens: BigInt(0),
+                    usedTokens: BigInt(purchasedConsumed),
+                },
+                update: {
+                    usedTokens: {
+                        increment: BigInt(purchasedConsumed),
+                    },
+                },
+            })
+        }
     })
 }
 
@@ -151,24 +192,17 @@ export async function canUserUseTokens(
     remainingTokens?: number
     source?: 'subscription' | 'purchased'
 }> {
-    const { tier } = await getUserSubscription(userId)
+    const { tier: rawTier } = await getUserSubscription(userId)
+    const tier = normalizeTokenTier(rawTier)
     const monthlyUsage = await getMonthlyUsage(userId)
-
-    // Monthly limits by tier
-    const limits = {
-        free: 250_000, // 250K tokens/month
-        plus: 1_000_000, // 1M tokens/month
-        pro: 5_000_000, // 5M tokens/month
-    }
-
-    const limit = limits[tier]
+    const limit = TOKEN_LIMITS[tier]
     const used = monthlyUsage.total_tokens
 
     // Check subscription allowance
-    if (used + estimatedTokens <= limit) {
+    if (limit === null || used + estimatedTokens <= limit) {
         return {
             allowed: true,
-            remainingTokens: limit - used,
+            remainingTokens: limit === null ? Number.MAX_SAFE_INTEGER : limit - used,
             source: 'subscription',
         }
     }

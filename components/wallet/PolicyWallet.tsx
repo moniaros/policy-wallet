@@ -8,7 +8,7 @@ import { PolicyTable } from './PolicyTable'
 import { EmptyState } from './EmptyState'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { Skeleton } from '@/components/ui/skeleton'
-import { AlertCircle, FileUp, Grid3X3, List, PenSquare, Sparkles } from 'lucide-react'
+import { AlertCircle, FileUp, Grid3X3, List, PenSquare, Sparkles, Search } from 'lucide-react'
 import { calculatePremiumFootprint } from '@/lib/wallet/premium-footprint'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
 
@@ -127,15 +127,15 @@ export function PolicyWallet({
                         </div>
                     </div>
                 ) : (
-                    <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-2xl p-4 flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 flex-shrink-0">
+                    <div className="bg-[#1FDC86]/12 dark:bg-[#1FDC86]/12 border border-[#1FDC86]/35 dark:border-[#1FDC86]/35 rounded-2xl p-4 flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-[#1FDC86]/15 dark:bg-[#1FDC86]/15 flex items-center justify-center text-[#1FDC86] flex-shrink-0">
                             <Sparkles className="w-5 h-5" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-bold text-emerald-900 dark:text-emerald-100">
+                            <h3 className="text-sm font-bold text-black dark:text-[#7de8ba]">
                                 {(t.dashboard as any).portfolioInsights?.allGood || roleCopy.walletDashboard.allPoliciesActive}
                             </h3>
-                            <p className="text-xs text-emerald-700 dark:text-emerald-300">
+                            <p className="text-xs text-[#19b870] dark:text-[#7de8ba]">
                                 {roleCopy.walletDashboard.coverageUpToDate}
                             </p>
                         </div>
@@ -144,45 +144,44 @@ export function PolicyWallet({
             </div>
 
             <div className="mb-6">
-                <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white/60 dark:bg-stone-900/60 backdrop-blur-md p-2 rounded-2xl border border-stone-200 dark:border-stone-800 shadow-sm">
+                <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white/60 dark:bg-black/60 backdrop-blur-md p-2 rounded-2xl border border-black/10 dark:border-white/15 shadow-sm">
                     <div className="relative group w-full sm:max-w-md">
                         <input
                             type="text"
                             placeholder={t.wallet.searchPlaceholder}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10 pr-4 py-2.5 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-teal-500/30 w-full placeholder:text-stone-400"
+                            className="pl-10 pr-4 py-2.5 bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#1FDC86]/30 w-full placeholder:text-black/45 dark:placeholder:text-white/45"
                         />
-                        <svg className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-4 h-4 text-black/45 dark:text-white/55 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
 
                     <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-                        <div className="flex bg-stone-100 dark:bg-stone-800 p-1 rounded-lg border border-stone-200 dark:border-stone-700 overflow-x-auto max-w-[260px] sm:max-w-none">
+                        <div className="flex bg-black/5 dark:bg-black p-1 rounded-lg border border-black/10 dark:border-white/15 overflow-x-auto max-w-[260px] sm:max-w-none">
                             {filters.map((filter) => (
                                 <button
                                     key={filter}
                                     onClick={() => setActiveFilter(filter)}
-                                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
-                                        activeFilter === filter
-                                            ? 'bg-white dark:bg-stone-700 shadow-sm text-teal-700 dark:text-teal-400'
-                                            : 'text-stone-500 hover:text-stone-700 dark:hover:text-stone-300'
-                                    }`}
+                                    className={`px-3 py-1.5 rounded-md text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${activeFilter === filter
+                                        ? 'bg-black dark:bg-white shadow-sm text-white dark:text-black'
+                                        : 'text-black/60 dark:text-white/60 hover:text-black/80 dark:hover:text-white'
+                                        }`}
                                 >
                                     {filter === 'all' ? t.common.all : t.policyTypes?.[filter as keyof typeof t.policyTypes] || filter}
                                 </button>
                             ))}
                         </div>
 
-                        <div className="hidden sm:flex bg-stone-100 dark:bg-stone-800 p-1 rounded-lg border border-stone-200 dark:border-stone-700">
+                        <div className="hidden sm:flex bg-black/5 dark:bg-black p-1 rounded-lg border border-black/10 dark:border-white/15">
                             <button
                                 onClick={() => {
                                     setViewMode('grid')
                                     localStorage.setItem('wallet_view_mode', 'grid')
                                 }}
-                                className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white dark:bg-stone-700 shadow-sm text-teal-600' : 'text-stone-500'}`}
-                                    aria-label={roleCopy.walletDashboard.viewCard}
+                                className={`p-1.5 rounded-md transition-all ${viewMode === 'grid' ? 'bg-black dark:bg-white shadow-sm text-white dark:text-black' : 'text-black/60 dark:text-white/60'}`}
+                                aria-label={roleCopy.walletDashboard.viewCard}
                             >
                                 <Grid3X3 className="w-4 h-4" />
                             </button>
@@ -191,8 +190,8 @@ export function PolicyWallet({
                                     setViewMode('list')
                                     localStorage.setItem('wallet_view_mode', 'list')
                                 }}
-                                className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-white dark:bg-stone-700 shadow-sm text-teal-600' : 'text-stone-500'}`}
-                                    aria-label={roleCopy.walletDashboard.viewList}
+                                className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-black dark:bg-white shadow-sm text-white dark:text-black' : 'text-black/60 dark:text-white/60'}`}
+                                aria-label={roleCopy.walletDashboard.viewList}
                             >
                                 <List className="w-4 h-4" />
                             </button>
@@ -219,10 +218,10 @@ export function PolicyWallet({
                         name: `${t.policyTypes[p.lineOfBusiness as keyof typeof t.policyTypes] || p.lineOfBusiness}`,
                         expiryDate: p.endDate
                             ? new Date(p.endDate).toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US', {
-                                  month: 'short',
-                                  day: 'numeric',
-                                  year: 'numeric',
-                              })
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                            })
                             : '-',
                     }))}
                 premiumTrend={[]}
@@ -263,17 +262,17 @@ export function PolicyWallet({
 
             {filteredPolicies.length === 0 && policies.length > 0 && (
                 <div className="py-20 text-center">
-                    <div className="w-20 h-20 bg-stone-100 dark:bg-stone-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <AlertCircle className="w-10 h-10 text-stone-400" />
+                    <div className="w-20 h-20 bg-black/5 dark:bg-black rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Search className="w-10 h-10 text-black/45 dark:text-white/55" />
                     </div>
-                    <h3 className="text-xl font-black text-stone-900 dark:text-white">{t.wallet.noPoliciesFound}</h3>
-                    <p className="text-stone-500 dark:text-stone-400 mt-2 font-medium">{t.wallet.noPoliciesFoundDesc}</p>
+                    <h3 className="text-xl font-black text-black dark:text-white">{t.wallet.noPoliciesFound}</h3>
+                    <p className="text-black/60 dark:text-white/60 mt-2 font-medium">{t.wallet.noPoliciesFoundDesc}</p>
                     <button
                         onClick={() => {
                             setSearchQuery('')
                             setActiveFilter('all')
                         }}
-                        className="mt-6 text-teal-600 dark:text-teal-400 font-black uppercase text-xs tracking-widest hover:underline cursor-pointer"
+                        className="mt-6 text-black dark:text-white font-black uppercase text-xs tracking-widest hover:underline cursor-pointer"
                     >
                         {roleCopy.walletDashboard.clearFilters}
                     </button>
@@ -284,19 +283,18 @@ export function PolicyWallet({
                 {policies.length > 0 ? (
                     <div ref={addMenuRef} className="relative">
                         <div
-                            className={`absolute bottom-full right-0 mb-4 flex flex-col gap-2 transition-all duration-200 origin-bottom-right ${
-                                showAddMenu ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto' : 'opacity-0 scale-95 translate-y-2 pointer-events-none'
-                            }`}
+                            className={`absolute bottom-full right-0 mb-4 flex flex-col gap-2 transition-all duration-200 origin-bottom-right ${showAddMenu ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto' : 'opacity-0 scale-95 translate-y-2 pointer-events-none'
+                                }`}
                         >
                             <button
                                 onClick={() => {
                                     onAddManually?.()
                                     setShowAddMenu(false)
                                 }}
-                                className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-stone-800 rounded-xl shadow-xl text-xs font-bold text-stone-600 dark:text-stone-300 whitespace-nowrap hover:bg-stone-50 dark:hover:bg-stone-700 cursor-pointer"
+                                className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-black rounded-xl shadow-xl text-xs font-bold text-black/70 dark:text-white/70 whitespace-nowrap hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
                             >
                                 {roleCopy.walletDashboard.addDetailsManually}
-                                <span className="w-8 h-8 flex items-center justify-center bg-stone-100 dark:bg-stone-900 rounded-lg">
+                                <span className="w-8 h-8 flex items-center justify-center bg-black/5 dark:bg-black rounded-lg">
                                     <PenSquare className="w-4 h-4" />
                                 </span>
                             </button>
@@ -306,10 +304,10 @@ export function PolicyWallet({
                                     setShowAddMenu(false)
                                 }}
                                 data-testid="wallet-menu-upload-document"
-                                className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-stone-800 rounded-xl shadow-xl text-xs font-bold text-stone-600 dark:text-stone-300 whitespace-nowrap hover:bg-stone-50 dark:hover:bg-stone-700 cursor-pointer"
+                                className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-black rounded-xl shadow-xl text-xs font-bold text-black/70 dark:text-white/70 whitespace-nowrap hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
                             >
                                 {roleCopy.walletDashboard.uploadDocument}
-                                <span className="w-8 h-8 flex items-center justify-center bg-stone-100 dark:bg-stone-900 rounded-lg">
+                                <span className="w-8 h-8 flex items-center justify-center bg-black/5 dark:bg-black rounded-lg">
                                     <FileUp className="w-4 h-4" />
                                 </span>
                             </button>
@@ -319,10 +317,10 @@ export function PolicyWallet({
                                     setShowAddMenu(false)
                                 }}
                                 data-testid="wallet-menu-batch-upload"
-                                className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-stone-800 rounded-xl shadow-xl text-xs font-bold text-stone-600 dark:text-stone-300 whitespace-nowrap hover:bg-stone-50 dark:hover:bg-stone-700 cursor-pointer"
+                                className="flex items-center gap-3 px-4 py-2 bg-white dark:bg-black rounded-xl shadow-xl text-xs font-bold text-black/70 dark:text-white/70 whitespace-nowrap hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer"
                             >
                                 {roleCopy.walletDashboard.batchUpload}
-                                <span className="w-8 h-8 flex items-center justify-center bg-stone-100 dark:bg-stone-900 rounded-lg">
+                                <span className="w-8 h-8 flex items-center justify-center bg-black/5 dark:bg-black rounded-lg">
                                     <List className="w-4 h-4" />
                                 </span>
                             </button>
@@ -330,7 +328,7 @@ export function PolicyWallet({
                         <button
                             id="tour-fab"
                             onClick={() => setShowAddMenu((prev) => !prev)}
-                            className="flex items-center justify-center w-16 h-16 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-2xl shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer"
+                            className="flex items-center justify-center w-16 h-16 bg-[#1FDC86] text-white rounded-2xl shadow-2xl hover:bg-[#19b870] hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer border border-[#1FDC86]/40"
                             aria-label={roleCopy.walletDashboard.addPolicyAria}
                             aria-expanded={showAddMenu}
                             aria-haspopup="menu"
@@ -342,10 +340,10 @@ export function PolicyWallet({
                     <button
                         onClick={onAddManually}
                         id="tour-fab"
-                        className="group relative flex items-center justify-center w-16 h-16 bg-gradient-to-br from-teal-500 to-teal-600 text-white rounded-2xl shadow-2xl shadow-teal-500/20 hover:scale-110 active:scale-95 transition-all duration-300 border border-white/10 cursor-pointer"
+                        className="group relative flex items-center justify-center w-16 h-16 bg-[#1FDC86] text-white rounded-2xl shadow-xl hover:-translate-y-1 hover:bg-[#19b870] transition-all duration-300 border border-[#1FDC86]/40 cursor-pointer"
                         aria-label={roleCopy.walletDashboard.addPolicyAria}
                     >
-                        <svg className="w-8 h-8 group-hover:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-8 h-8 transition-transform duration-300 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
                         </svg>
                     </button>
@@ -354,3 +352,8 @@ export function PolicyWallet({
         </div>
     )
 }
+
+
+
+
+

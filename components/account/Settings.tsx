@@ -1,11 +1,11 @@
-"use client"
+﻿"use client"
 
 import { useState } from 'react'
 import type { SettingsProps } from './types'
 import { deleteAccount } from '@/app/(protected)/account/actions'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Shield, Smartphone, Globe, Bell, Lock, AlertTriangle, CheckCircle2, Zap, Loader2, ChevronRight } from 'lucide-react'
+import { Shield, Smartphone, Globe, Bell, Lock, AlertTriangle, CheckCircle2, Zap, Loader2, ChevronRight, LogIn, LogOut, KeyRound, Mail } from 'lucide-react'
 import { ProcessingHUD } from '@/components/ui/ProcessingHUD'
 import { useLanguage } from '@/contexts/LanguageContext'
 
@@ -141,12 +141,12 @@ export function Settings({
 
     const getEventIcon = (eventType: string) => {
         switch (eventType) {
-            case 'login': return { icon: '🔓', color: 'text-teal-500 bg-teal-50 dark:bg-teal-900/20' }
-            case 'login_failed': return { icon: '⚠️', color: 'text-amber-500 bg-amber-50 dark:bg-amber-900/20' }
-            case 'logout': return { icon: '🔒', color: 'text-stone-400 bg-stone-50 dark:bg-stone-800' }
-            case 'password_change': return { icon: '🔑', color: 'text-blue-500 bg-blue-50 dark:bg-blue-900/20' }
-            case 'email_change': return { icon: '✉️', color: 'text-indigo-500 bg-indigo-50 dark:bg-indigo-900/20' }
-            default: return { icon: '•', color: 'text-stone-400 bg-stone-50' }
+            case 'login': return { Icon: LogIn, color: 'text-[#1FDC86] bg-[#1FDC86]/12 dark:bg-[#1FDC86]/12' }
+            case 'login_failed': return { Icon: AlertTriangle, color: 'text-amber-500 bg-amber-50 dark:bg-amber-900/20' }
+            case 'logout': return { Icon: LogOut, color: 'text-black/45 dark:text-white/60 bg-black/5 dark:bg-black' }
+            case 'password_change': return { Icon: KeyRound, color: 'text-black/70 dark:text-white/70 bg-black/5 dark:bg-white/10' }
+            case 'email_change': return { Icon: Mail, color: 'text-black/70 dark:text-white/70 bg-black/5 dark:bg-white/10' }
+            default: return { Icon: Bell, color: 'text-black/45 dark:text-white/60 bg-black/5 dark:bg-black' }
         }
     }
 
@@ -170,17 +170,17 @@ export function Settings({
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[28px] p-6 shadow-sm"
+                        className="bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[28px] p-6 shadow-sm"
                     >
                         <div className="flex items-center gap-3 mb-6">
-                            <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">{t.settings.identityMatrix}</h3>
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#1FDC86]" />
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">{t.settings.identityMatrix}</h3>
                         </div>
 
                         <div className="space-y-6">
                             {/* Name Edit */}
                             <div className="group">
-                                <label className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] block mb-3">{t.settings.fullName}</label>
+                                <label className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] block mb-3">{t.settings.fullName}</label>
                                 {isEditingName ? (
                                     <div className="flex items-center gap-2">
                                         <input
@@ -188,62 +188,62 @@ export function Settings({
                                             value={nameDraft}
                                             onChange={(e) => setNameDraft(e.target.value)}
                                             autoFocus
-                                            className="flex-1 bg-stone-50 dark:bg-stone-800 border border-stone-100 dark:border-stone-700 rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-teal-500 transition-all outline-none"
+                                            className="flex-1 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-[#1FDC86] transition-all outline-none"
                                         />
-                                        <button onClick={handleSaveName} className="p-2 bg-teal-500 text-white rounded-xl shadow-lg shadow-teal-500/20 active:scale-90 transition-transform">
+                                        <button onClick={handleSaveName} className="p-2 bg-[#1FDC86] text-white rounded-xl shadow-lg shadow-[#1FDC86]/25 active:scale-90 transition-transform">
                                             <CheckCircle2 className="w-4 h-4" />
                                         </button>
-                                        <button onClick={() => { setIsEditingName(false); setNameDraft(currentUser.name || '') }} className="p-2 border border-stone-100 dark:border-stone-800 rounded-xl active:scale-90 transition-transform">
+                                        <button onClick={() => { setIsEditingName(false); setNameDraft(currentUser.name || '') }} className="p-2 border border-black/10 dark:border-white/15 rounded-xl active:scale-90 transition-transform">
                                             <AlertTriangle className="w-4 h-4" />
                                         </button>
                                     </div>
                                 ) : (
-                                    <div className="flex items-center justify-between p-4 bg-stone-50 dark:bg-stone-900 border border-stone-50 dark:border-stone-800 rounded-2xl group/item hover:border-teal-500/30 transition-all">
-                                        <span className="text-sm font-black text-stone-900 dark:text-white tracking-tight">{currentUser.name || t.settings.setYourName}</span>
-                                        <button onClick={() => setIsEditingName(true)} className="opacity-0 group-hover/item:opacity-100 text-[10px] font-black uppercase tracking-widest text-teal-600 dark:text-teal-400 transition-all">{t.billing.edit}</button>
+                                    <div className="flex items-center justify-between p-4 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl group/item hover:border-[#1FDC86]/35 transition-all">
+                                        <span className="text-sm font-black text-black dark:text-white tracking-tight">{currentUser.name || t.settings.setYourName}</span>
+                                        <button onClick={() => setIsEditingName(true)} className="opacity-0 group-hover/item:opacity-100 text-[10px] font-black uppercase tracking-widest text-[#1FDC86] dark:text-[#1FDC86] transition-all">{t.billing.edit}</button>
                                     </div>
                                 )}
                             </div>
 
                             {/* Email Edit */}
                             <div className="group">
-                                <label className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] block mb-3">{t.settings.registeredEmail}</label>
+                                <label className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] block mb-3">{t.settings.registeredEmail}</label>
                                 {isEditingEmail ? (
                                     <div className="flex items-center gap-2">
                                         <input
                                             type="email"
                                             value={emailDraft}
                                             onChange={(e) => setEmailDraft(e.target.value)}
-                                            className="flex-1 bg-stone-50 dark:bg-stone-800 border border-stone-100 dark:border-stone-700 rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-teal-500 transition-all outline-none"
+                                            className="flex-1 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-[#1FDC86] transition-all outline-none"
                                         />
-                                        <button onClick={handleSaveEmail} className="p-2 bg-teal-500 text-white rounded-xl shadow-lg shadow-teal-500/20 active:scale-90 transition-transform">
+                                        <button onClick={handleSaveEmail} className="p-2 bg-[#1FDC86] text-white rounded-xl shadow-lg shadow-[#1FDC86]/25 active:scale-90 transition-transform">
                                             <CheckCircle2 className="w-4 h-4" />
                                         </button>
-                                        <button onClick={() => { setIsEditingEmail(false); setEmailDraft(currentUser.email) }} className="p-2 border border-stone-100 dark:border-stone-800 rounded-xl active:scale-90 transition-transform">
+                                        <button onClick={() => { setIsEditingEmail(false); setEmailDraft(currentUser.email) }} className="p-2 border border-black/10 dark:border-white/15 rounded-xl active:scale-90 transition-transform">
                                             <AlertTriangle className="w-4 h-4" />
                                         </button>
                                     </div>
                                 ) : (
-                                    <div className="flex items-center justify-between p-4 bg-stone-50 dark:bg-stone-900 border border-stone-50 dark:border-stone-800 rounded-2xl group/item hover:border-teal-500/30 transition-all">
-                                        <span className="text-sm font-black text-stone-900 dark:text-white tracking-tight">{currentUser.email}</span>
-                                        <button onClick={() => setIsEditingEmail(true)} className="opacity-0 group-hover/item:opacity-100 text-[10px] font-black uppercase tracking-widest text-teal-600 dark:text-teal-400 transition-all">{t.billing.edit}</button>
+                                    <div className="flex items-center justify-between p-4 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl group/item hover:border-[#1FDC86]/35 transition-all">
+                                        <span className="text-sm font-black text-black dark:text-white tracking-tight">{currentUser.email}</span>
+                                        <button onClick={() => setIsEditingEmail(true)} className="opacity-0 group-hover/item:opacity-100 text-[10px] font-black uppercase tracking-widest text-[#1FDC86] dark:text-[#1FDC86] transition-all">{t.billing.edit}</button>
                                     </div>
                                 )}
                             </div>
 
                             {/* Language Matrix */}
-                            <div className="group pt-6 border-t border-stone-50 dark:border-stone-800">
-                                <label className="text-[10px] font-black text-stone-400 uppercase tracking-[0.2em] block mb-4">{t.settings.preferredLanguage}</label>
-                                <div className="grid grid-cols-2 gap-2 p-1.5 bg-stone-100 dark:bg-stone-900 border border-stone-50 dark:border-stone-800 rounded-2xl">
+                            <div className="group pt-6 border-t border-black/10 dark:border-white/15">
+                                <label className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] block mb-4">{t.settings.preferredLanguage}</label>
+                                <div className="grid grid-cols-2 gap-2 p-1.5 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl">
                                     <button
                                         onClick={() => handleLanguageUpdate('el')}
-                                        className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentUser.preferred_language === 'el' ? 'bg-white dark:bg-stone-800 text-teal-600 dark:text-teal-400 shadow-md transform scale-[1.02]' : 'text-stone-400 hover:text-stone-600'}`}
+                                        className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentUser.preferred_language === 'el' ? 'bg-white dark:bg-black text-[#1FDC86] dark:text-[#1FDC86] shadow-md transform scale-[1.02]' : 'text-black/45 dark:text-white/60 hover:text-black/70 dark:hover:text-white/80'}`}
                                     >
                                         {t.settings.greek}
                                     </button>
                                     <button
                                         onClick={() => handleLanguageUpdate('en')}
-                                        className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentUser.preferred_language === 'en' ? 'bg-white dark:bg-stone-800 text-teal-600 dark:text-teal-400 shadow-md transform scale-[1.02]' : 'text-stone-400 hover:text-stone-600'}`}
+                                        className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentUser.preferred_language === 'en' ? 'bg-white dark:bg-black text-[#1FDC86] dark:text-[#1FDC86] shadow-md transform scale-[1.02]' : 'text-black/45 dark:text-white/60 hover:text-black/70 dark:hover:text-white/80'}`}
                                     >
                                         {t.settings.english}
                                     </button>
@@ -257,11 +257,11 @@ export function Settings({
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[28px] p-6 shadow-sm"
+                        className="bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[28px] p-6 shadow-sm"
                     >
                         <div className="flex items-center gap-3 mb-6">
-                            <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />
-                            <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">{t.settings.communicationControl}</h3>
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#1FDC86]" />
+                            <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">{t.settings.communicationControl}</h3>
                         </div>
 
                         <div className="space-y-6">
@@ -270,16 +270,16 @@ export function Settings({
                                 { id: 'security_alert', label: t.settings.securityAlert, icon: Shield },
                                 { id: 'marketing', label: t.settings.innovationUpdates, icon: Zap }
                             ].map(pref => (
-                                <div key={pref.id} className="flex items-center justify-between group p-3 hover:bg-stone-50 dark:hover:bg-stone-800 rounded-2xl transition-all">
+                                <div key={pref.id} className="flex items-center justify-between group p-3 hover:bg-black/5 dark:hover:bg-black/80 rounded-2xl transition-all">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-stone-50 dark:bg-stone-900 border border-stone-100 dark:border-stone-800 flex items-center justify-center text-stone-400 group-hover:text-teal-500 transition-all">
+                                        <div className="w-8 h-8 rounded-lg bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 flex items-center justify-center text-black/45 dark:text-white/60 group-hover:text-[#1FDC86] transition-all">
                                             <pref.icon className="w-4 h-4" />
                                         </div>
-                                        <span className="text-[11px] font-bold text-stone-700 dark:text-stone-300 group-hover:text-stone-900 dark:group-hover:text-white transition-colors">{pref.label}</span>
+                                        <span className="text-[11px] font-bold text-black/80 dark:text-white/70 group-hover:text-black dark:group-hover:text-white transition-colors">{pref.label}</span>
                                     </div>
                                     <button
                                         onClick={() => onToggleNotification?.(pref.id, 'email', !isPreferenceEnabled(pref.id, 'email'))}
-                                        className={`w-11 h-6 rounded-full transition-all relative ${isPreferenceEnabled(pref.id, 'email') ? 'bg-teal-500' : 'bg-stone-200 dark:bg-stone-700'}`}
+                                        className={`w-11 h-6 rounded-full transition-all relative ${isPreferenceEnabled(pref.id, 'email') ? 'bg-[#1FDC86]' : 'bg-black/10 dark:bg-white/15'}`}
                                     >
                                         <motion.span
                                             animate={{ x: isPreferenceEnabled(pref.id, 'email') ? 22 : 2 }}
@@ -293,15 +293,15 @@ export function Settings({
 
                     {/* Secondary Identity Actions */}
                     <div className="space-y-3">
-                        <div className="p-6 bg-stone-900 rounded-[28px] text-white shadow-2xl relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 blur-3xl"></div>
-                            <h4 className="text-xl font-black tracking-tight mb-4">{t.settings.securityFirst} <span className="text-stone-400 italic">{t.settings.securityFirstSubtitle}</span></h4>
-                            <p className="text-stone-400 text-[10px] font-bold leading-relaxed mb-8 italic">
+                        <div className="p-6 bg-black rounded-[28px] text-white shadow-2xl relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#1FDC86]/10 blur-3xl"></div>
+                            <h4 className="text-xl font-black tracking-tight mb-4">{t.settings.securityFirst} <span className="text-white/70 italic">{t.settings.securityFirstSubtitle}</span></h4>
+                            <p className="text-white/75 text-[10px] font-bold leading-relaxed mb-8 italic">
                                 {t.settings.securityFirstDesc}
                             </p>
                             <button
                                 onClick={() => withProcessing("Terminating all sessions...", async () => { await onLogoutAllSessions?.() })}
-                                className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:border-red-500 transition-all text-stone-400 hover:text-white"
+                                className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:border-red-500 transition-all text-white/80 hover:text-white"
                             >
                                 {t.settings.masterSignOut}
                             </button>
@@ -315,9 +315,9 @@ export function Settings({
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="bg-stone-900 rounded-[28px] p-6 text-white relative overflow-hidden group shadow-2xl"
+                        className="bg-black rounded-[28px] p-6 text-white relative overflow-hidden group shadow-2xl"
                     >
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 blur-[100px] rounded-full -mr-32 -mt-32 transition-transform duration-1000 group-hover:scale-110"></div>
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#1FDC86]/10 blur-[100px] rounded-full -mr-32 -mt-32 transition-transform duration-1000 group-hover:scale-110"></div>
 
                         <div className="flex flex-col md:flex-row items-center gap-10 relative z-10">
                             <div className="relative w-32 h-32 flex items-center justify-center">
@@ -325,7 +325,7 @@ export function Settings({
                                     <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
                                     <motion.circle
                                         cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent"
-                                        className="text-teal-500"
+                                        className="text-[#1FDC86]"
                                         initial={{ strokeDasharray: "365 365", strokeDashoffset: 365 }}
                                         animate={{ strokeDashoffset: 365 - (365 * 0.85) }}
                                         transition={{ duration: 1.5, ease: "easeOut" }}
@@ -333,22 +333,22 @@ export function Settings({
                                 </svg>
                                 <div className="absolute flex flex-col items-center">
                                     <span className="text-3xl font-black">85</span>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-stone-400">{t.settings.score}</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-white/70">{t.settings.score}</span>
                                 </div>
                             </div>
 
                             <div className="flex-1 text-center md:text-left">
                                 <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                                    <CheckCircle2 className="w-5 h-5 text-teal-500" />
+                                    <CheckCircle2 className="w-5 h-5 text-[#1FDC86]" />
                                     <h3 className="text-2xl font-black tracking-tight">{t.settings.accountShield}</h3>
                                 </div>
-                                <p className="text-stone-400 text-sm font-medium leading-relaxed max-w-md">
-                                    {t.settings.securityPosture} <span className="text-white font-black">{t.settings.excellent}</span>. We found <span className="text-teal-500 underline decoration-teal-500/30">{t.settings.optimizations}</span> {t.settings.securityPostureDesc}
+                                <p className="text-white/75 text-sm font-medium leading-relaxed max-w-md">
+                                    {t.settings.securityPosture} <span className="text-white font-black">{t.settings.excellent}</span>. We found <span className="text-[#1FDC86] underline decoration-[#1FDC86]/35">{t.settings.optimizations}</span> {t.settings.securityPostureDesc}
                                 </p>
                                 <div className="flex flex-wrap gap-2 mt-6">
                                     <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest">{t.settings.verified2FA}</span>
                                     <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest">{t.settings.safeIP}</span>
-                                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest text-teal-400">{t.settings.encryptionActive}</span>
+                                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest text-[#1FDC86]">{t.settings.encryptionActive}</span>
                                 </div>
                             </div>
                         </div>
@@ -359,40 +359,40 @@ export function Settings({
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[28px] shadow-sm overflow-hidden"
+                        className="bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[28px] shadow-sm overflow-hidden"
                     >
-                        <div className="px-6 py-5 border-b border-stone-50 dark:border-stone-800 flex items-center justify-between bg-stone-50/50 dark:bg-stone-900/50">
+                        <div className="px-6 py-5 border-b border-black/10 dark:border-white/15 flex items-center justify-between bg-black/5 dark:bg-black/50">
                             <div className="flex items-center gap-3">
-                                <Smartphone className="w-4 h-4 text-stone-400" />
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">{t.settings.activeSessions}</h3>
+                                <Smartphone className="w-4 h-4 text-black/45 dark:text-white/60" />
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">{t.settings.activeSessions}</h3>
                             </div>
-                            <span className="px-3 py-1 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 text-[10px] font-black uppercase tracking-widest rounded-full">{activeSessions.length} {t.settings.total}</span>
+                            <span className="px-3 py-1 bg-[#1FDC86]/12 dark:bg-[#1FDC86]/15 text-[#1FDC86] dark:text-[#1FDC86] text-[10px] font-black uppercase tracking-widest rounded-full">{activeSessions.length} {t.settings.total}</span>
                         </div>
 
-                        <div className="divide-y divide-stone-50 dark:divide-stone-800">
+                        <div className="divide-y divide-black/10 dark:divide-white/10">
                             {activeSessions.map((session) => (
-                                <div key={session.session_id} className="px-6 py-5 group hover:bg-stone-50/30 dark:hover:bg-stone-800/10 transition-all">
+                                <div key={session.session_id} className="px-6 py-5 group hover:bg-black/5 dark:hover:bg-black/80 transition-all">
                                     <div className="flex items-start gap-6">
-                                        <div className="w-12 h-12 rounded-2xl bg-stone-50 dark:bg-stone-800 flex items-center justify-center text-stone-400 group-hover:text-teal-600 transition-all border border-transparent group-hover:border-teal-500/10">
+                                        <div className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-black flex items-center justify-center text-black/45 dark:text-white/60 group-hover:text-[#1FDC86] transition-all border border-transparent group-hover:border-[#1FDC86]/20">
                                             {getDeviceIcon(session.device_type)}
                                         </div>
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3 mb-1">
-                                                <span className="text-sm font-black text-stone-900 dark:text-white uppercase tracking-tight">
+                                                <span className="text-sm font-black text-black dark:text-white uppercase tracking-tight">
                                                     {session.device_name}
                                                 </span>
                                                 {session.is_current && (
-                                                    <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-teal-500 text-white rounded shadow-sm">
+                                                    <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-[#1FDC86] text-white rounded shadow-sm">
                                                         {t.settings.activeNow}
                                                     </span>
                                                 )}
                                             </div>
-                                            <div className="text-[10px] font-bold text-stone-400 uppercase tracking-widest flex items-center gap-2">
+                                            <div className="text-[10px] font-bold text-black/45 dark:text-white/60 uppercase tracking-widest flex items-center gap-2">
                                                 <span>{session.location}</span>
-                                                <span className="w-1 h-1 rounded-full bg-stone-200" />
+                                                <span className="w-1 h-1 rounded-full bg-black/10 dark:bg-white/25" />
                                                 <span className="font-mono">{session.ip_address}</span>
                                             </div>
-                                            <div className="text-[9px] font-medium text-stone-400 mt-2 italic flex items-center gap-1.5">
+                                            <div className="text-[9px] font-medium text-black/45 dark:text-white/60 mt-2 italic flex items-center gap-1.5">
                                                 <Globe className="w-3 h-3" />
                                                 {t.settings.since} {formatDateTime(session.last_active_at)}
                                             </div>
@@ -400,7 +400,7 @@ export function Settings({
                                         {!session.is_current && (
                                             <button
                                                 onClick={() => withProcessing(t.settings.revokeAccess + "...", async () => { await onLogoutSession?.(session.session_id) })}
-                                                className="text-[9px] font-black uppercase tracking-widest text-stone-400 hover:text-red-500 hover:scale-105 transition-all pt-2"
+                                                className="text-[9px] font-black uppercase tracking-widest text-black/45 dark:text-white/60 hover:text-red-500 hover:scale-105 transition-all pt-2"
                                             >
                                                 {t.settings.revokeAccess}
                                             </button>
@@ -416,28 +416,28 @@ export function Settings({
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
-                        className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[28px] shadow-sm overflow-hidden"
+                        className="bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[28px] shadow-sm overflow-hidden"
                     >
-                        <div className="px-6 py-5 border-b border-stone-50 dark:border-stone-800 flex items-center justify-between">
+                        <div className="px-6 py-5 border-b border-black/10 dark:border-white/15 flex items-center justify-between">
                             <div className="flex items-center gap-3">
-                                <Lock className="w-4 h-4 text-stone-400" />
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-stone-900 dark:text-white">{t.settings.auditTrail}</h3>
+                                <Lock className="w-4 h-4 text-black/45 dark:text-white/60" />
+                                <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">{t.settings.auditTrail}</h3>
                             </div>
-                            <button className="text-[9px] font-black text-teal-600 uppercase tracking-widest hover:underline">{t.settings.downloadReport}</button>
+                            <button className="text-[9px] font-black text-[#1FDC86] uppercase tracking-widest hover:underline">{t.settings.downloadReport}</button>
                         </div>
 
-                        <div className="divide-y divide-stone-50 dark:divide-stone-800">
+                        <div className="divide-y divide-black/10 dark:divide-white/10">
                             {securityEvents.slice(0, 5).map((event) => {
                                 const config = getEventIcon(event.event_type)
                                 return (
-                                    <div key={event.event_id} className="px-6 py-4 hover:bg-stone-50/20 dark:hover:bg-stone-800/10 transition-all border-l-4 border-l-transparent hover:border-l-teal-500">
+                                    <div key={event.event_id} className="px-6 py-4 hover:bg-black/5 dark:hover:bg-black/80 transition-all border-l-4 border-l-transparent hover:border-l-[#1FDC86]">
                                         <div className="flex items-center gap-6">
-                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${config.color} shadow-sm`}>
-                                                {config.icon}
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${config.color} shadow-sm`}>
+                                                <config.Icon className="w-4 h-4" />
                                             </div>
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-1">
-                                                    <span className="text-[11px] font-black text-stone-900 dark:text-white uppercase tracking-tight">
+                                                    <span className="text-[11px] font-black text-black dark:text-white uppercase tracking-tight">
                                                         {getEventLabel(event.event_type)}
                                                     </span>
                                                     {!event.success && (
@@ -446,15 +446,15 @@ export function Settings({
                                                         </span>
                                                     )}
                                                 </div>
-                                                <div className="text-[10px] font-bold text-stone-400 uppercase tracking-widest flex items-center gap-2">
+                                                <div className="text-[10px] font-bold text-black/45 dark:text-white/60 uppercase tracking-widest flex items-center gap-2">
                                                     <span>{event.device_name}</span>
-                                                    <span className="w-1 h-1 rounded-full bg-stone-200" />
+                                                    <span className="w-1 h-1 rounded-full bg-black/10 dark:bg-white/25" />
                                                     <span>{formatDateTime(event.created_at)}</span>
                                                 </div>
                                             </div>
                                             <div className="text-right flex flex-col items-end">
-                                                <div className="text-[9px] font-black text-stone-900 dark:text-white tracking-widest font-mono">{event.ip_address}</div>
-                                                <div className="text-[8px] text-stone-400 font-bold uppercase tracking-widest">{event.location}</div>
+                                                <div className="text-[9px] font-black text-black dark:text-white tracking-widest font-mono">{event.ip_address}</div>
+                                                <div className="text-[8px] text-black/45 dark:text-white/60 font-bold uppercase tracking-widest">{event.location}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -467,7 +467,7 @@ export function Settings({
                     <div className="p-6 border-2 border-dashed border-red-500/10 bg-red-50/20 dark:bg-red-900/5 rounded-[28px] flex flex-col md:flex-row items-center justify-between gap-6 group">
                         <div className="max-w-md text-center md:text-left">
                             <h4 className="text-xs font-black text-red-600 uppercase tracking-[0.2em] mb-3">{t.settings.nuclearDeletion}</h4>
-                            <p className="text-[11px] text-stone-500 dark:text-stone-400 font-bold leading-relaxed">
+                            <p className="text-[11px] text-black/60 dark:text-white/60 font-bold leading-relaxed">
                                 {t.settings.nuclearDesc}
                             </p>
                         </div>
@@ -489,3 +489,9 @@ export function Settings({
         </div>
     )
 }
+
+
+
+
+
+

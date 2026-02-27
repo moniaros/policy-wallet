@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { PolicyWalletClient } from "@/components/wallet/PolicyWalletClient"
@@ -135,7 +137,7 @@ export default async function WalletPage() {
     })
 
     return (
-        <div className="min-h-screen bg-transparent">
+        <div className="pw-page-shell">
             <PolicyWalletClient policies={mappedPolicies} user={user} agent={agent} showTour={showTour} />
         </div>
     )

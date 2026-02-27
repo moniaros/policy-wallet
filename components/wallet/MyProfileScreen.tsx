@@ -68,15 +68,15 @@ export function MyProfileScreen({
     ]
 
     return (
-        <div className="min-h-screen bg-stone-50 dark:bg-stone-950 pb-28">
-            <div className="px-5 pt-6 pb-6 sticky top-0 z-20 bg-stone-50/95 dark:bg-stone-950/95 backdrop-blur-md border-b border-stone-200 dark:border-stone-800">
+        <div className="min-h-screen bg-white dark:bg-black pb-28">
+            <div className="px-5 pt-6 pb-6 sticky top-0 z-20 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-black/10 dark:border-white/15">
                 <PolicyWalletLogo size="sm" language={language} />
             </div>
 
             <div className="px-5 pb-10">
                 <div className="flex items-center gap-4 mb-6 mt-2">
                     <div className="relative">
-                        <div className="w-20 h-20 rounded-3xl overflow-hidden bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800">
+                        <div className="w-20 h-20 rounded-3xl overflow-hidden bg-white dark:bg-black border border-black/10 dark:border-white/15">
                             {user?.photoUrl ? (
                                 <Image
                                     src={user.photoUrl}
@@ -86,21 +86,21 @@ export function MyProfileScreen({
                                     className="w-full h-full object-cover"
                                 />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-teal-600 text-white">
+                                <div className="w-full h-full flex items-center justify-center bg-[#1FDC86] text-white">
                                     <span className="text-2xl font-black">{(user?.name || 'U')[0]}</span>
                                 </div>
                             )}
                         </div>
                         {user?.isOnline && (
-                            <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-emerald-500 border-2 border-stone-50 dark:border-stone-950 rounded-full" />
+                            <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-[#1FDC86] border-2 border-white dark:border-black rounded-full" />
                         )}
                     </div>
 
                     <div className="min-w-0">
-                        <h1 className="text-2xl font-black text-stone-900 dark:text-white tracking-tight truncate">
+                        <h1 className="text-2xl font-black text-black dark:text-white tracking-tight truncate">
                             {user?.name || (language === 'el' ? 'Χρήστης' : 'User')}
                         </h1>
-                        <p className="text-stone-500 dark:text-stone-400 text-sm truncate">{user?.email}</p>
+                        <p className="text-black/55 dark:text-white/65 text-sm truncate">{user?.email}</p>
                     </div>
                 </div>
 
@@ -109,18 +109,18 @@ export function MyProfileScreen({
                         <button
                             key={index}
                             onClick={item.onClick}
-                            className={`w-full flex items-center gap-4 p-4 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 transition-all active:scale-[0.98] text-left cursor-pointer ${item.danger ? 'hover:border-red-300 dark:hover:border-red-800' : 'hover:border-teal-300 dark:hover:border-teal-700'}`}
+                            className={`w-full flex items-center gap-4 p-4 bg-white dark:bg-black rounded-2xl border border-black/10 dark:border-white/15 transition-all active:scale-[0.98] text-left cursor-pointer ${item.danger ? 'hover:border-red-300 dark:hover:border-red-800' : 'hover:border-[#1FDC86]/35'}`}
                         >
-                            <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${item.danger ? 'bg-red-50 dark:bg-red-900/20 text-red-600' : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300'}`}>
+                            <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${item.danger ? 'bg-red-50 dark:bg-red-900/20 text-red-600' : 'bg-black/5 dark:bg-black text-[#1FDC86]'}`}>
                                 {item.icon}
                             </div>
                             <div className="flex-1 min-w-0">
-                                <h3 className={`text-sm font-black tracking-tight ${item.danger ? 'text-red-600 dark:text-red-400' : 'text-stone-900 dark:text-white'}`}>
+                                <h3 className={`text-sm font-black tracking-tight ${item.danger ? 'text-red-600 dark:text-red-400' : 'text-black dark:text-white'}`}>
                                     {item.label}
                                 </h3>
-                                <p className="text-xs text-stone-500 dark:text-stone-400 truncate">{item.sublabel}</p>
+                                <p className="text-xs text-black/55 dark:text-white/65 truncate">{item.sublabel}</p>
                             </div>
-                            <ChevronRightIcon className={`w-4 h-4 ${item.danger ? 'text-red-300' : 'text-stone-400'}`} />
+                            <ChevronRightIcon className={`w-4 h-4 ${item.danger ? 'text-red-300' : 'text-black/45 dark:text-white/55'}`} />
                         </button>
                     ))}
                 </div>

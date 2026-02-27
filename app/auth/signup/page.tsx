@@ -196,20 +196,17 @@ function SignUpForm() {
     const inputBase = "w-full rounded-xl border bg-white px-4 py-3.5 text-sm text-slate-900 outline-none transition focus-visible:ring-2 focus-visible:ring-[#29685B]/40"
 
     return (
-        <div className={`${ibmPlexSans.className} relative flex min-h-screen items-center justify-center overflow-hidden bg-white px-4 py-10 dark:bg-[#0F172A]`}>
-            <div className="pointer-events-none absolute left-0 top-0 z-0 h-full w-full overflow-hidden">
-                <div className="absolute left-[20%] top-[-10%] h-[60%] w-[60%] rounded-full bg-slate-100/50 blur-[120px] dark:bg-slate-800/20" />
-            </div>
+        <div className={`${ibmPlexSans.className} relative flex min-h-screen items-center justify-center overflow-hidden bg-[#F9FAFB] px-4 py-10 dark:bg-[#000000]`}>
 
-            <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="relative z-10 w-full max-w-[440px] rounded-2xl border border-gray-200 bg-white/95 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-3xl dark:border-slate-800 dark:bg-slate-900/90 sm:p-10">
+            <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="relative z-10 w-full max-w-[440px] rounded-2xl border border-gray-200 bg-[#FFFFFF] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-slate-800 dark:bg-[#111111] sm:p-10">
                 {signupSuccess ? <ConfettiBurst /> : null}
 
                 <div className="mb-6 text-center">
                     <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 shadow-sm">
                         <PolicyWalletLogo size="md" language={language} />
                     </div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">Your Insurance Wallet</h1>
-                    <p className="mt-1.5 text-sm text-slate-600">All your policies. One secure place.</p>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Your Insurance Wallet</h1>
+                    <p className="mt-1.5 text-sm text-slate-600 dark:text-slate-400">All your policies. One secure place.</p>
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -285,7 +282,7 @@ function SignUpForm() {
                         ) : null}
                     </AnimatePresence>
 
-                    <motion.button initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} type="submit" disabled={isSubmitting || signupSuccess} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#29685B] px-4 py-4 text-[16px] font-bold text-white transition-transform active:scale-[0.98] hover:bg-[#1C4E44] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29685B] disabled:cursor-not-allowed disabled:opacity-70 dark:bg-[#29685B] dark:text-white dark:hover:bg-[#1C4E44]">
+                    <motion.button initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} type="submit" disabled={isSubmitting || signupSuccess} className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-transparent bg-[#1FDC86] px-4 py-4 text-[16px] font-bold text-slate-900 transition-all hover:-translate-y-[2px] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86] flex-shrink-0 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-[#1FDC86] dark:text-slate-900">
                         {isSubmitting || signupSuccess ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                         {signupSuccess ? "Wallet Created" : "Create My Wallet"}
                     </motion.button>
@@ -294,7 +291,7 @@ function SignUpForm() {
                 </form>
 
                 <div className="mt-5 border-t border-slate-200 pt-4 text-center text-sm text-slate-600">
-                    Already have account? <Link href="/auth/signin" className="font-semibold text-[#29685B] hover:underline">Login</Link>
+                    Already have account? <Link href="/auth/signin" className="font-semibold text-[#1FDC86] hover:underline">Login</Link>
                 </div>
 
             </motion.div>

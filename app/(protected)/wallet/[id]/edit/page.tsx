@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { db } from "@/lib/db"
 import { notFound, redirect } from "next/navigation"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"

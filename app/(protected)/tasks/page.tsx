@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { getPendingActionItems } from "./actions"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { TasksClient } from "@/components/tasks/TasksClient"

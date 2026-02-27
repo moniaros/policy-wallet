@@ -8,6 +8,23 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum AnalysisRunStatus {
+  queued
+  running
+  completed
+  failed
+  blocked
+}
+
+enum AnalysisStepStatus {
+  pending
+  running
+  completed
+  failed
+  retrying
+  skipped
+}
+
 model User {
   id                              String                   @id @default(cuid()) @map("user_id")
   name                            String?
@@ -57,6 +74,7 @@ model User {
   tokenBalance                    TokenBalance?            @relation("TokenBalance")
   tokenPurchases                  TokenPurchase[]          @relation("TokenPurchases")
   monthlyTokenUsage               MonthlyTokenUsage[]      @relation("MonthlyTokenUsage")
+  policyAnalysisRuns              PolicyAnalysisRun[]
   collaborationThreadsCreated     CollaborationThread[]    @relation("CollaborationThreadCreatedBy")
   collaborationThreadsAssigned    CollaborationThread[]    @relation("CollaborationThreadAssignedTo")
   collaborationMessages           CollaborationMessage[]
@@ -209,6 +227,7 @@ model Policy {
   owner           User             @relation("Owner", fields: [ownerUserId], references: [id])
   documents       PolicyDocument[]
   tokenUsages     TokenUsage[]     @relation("PolicyTokenUsage")
+  analysisRuns    PolicyAnalysisRun[]
   collaborationThreads CollaborationThread[]
 
   @@index([ownerUserId])
@@ -678,7 +697,7 @@ model MonthlyTokenUsage {
   id                  String   @id @default(cuid()) @map("summary_id")
   userId              String   @map("user_id")
   month               DateTime @map("month") @db.Date // First day of month
-  tier                String   // 'free', 'essential', 'professional'
+  tier                String   // 'free', 'plus', 'pro'
   totalTokens         BigInt   @map("total_tokens")
   totalCostEur        Decimal  @map("total_cost_eur") @db.Decimal(10, 2)
   subscriptionTokens  BigInt   @map("subscription_tokens") // Tokens included in subscription
@@ -690,6 +709,62 @@ model MonthlyTokenUsage {
   @@unique([userId, month])
   @@index([month])
   @@map("monthly_token_usage")
+}
+
+model PolicyAnalysisRun {
+  id               String            @id @default(cuid()) @map("analysis_run_id")
+  policyId         String            @map("policy_id")
+  userId           String            @map("user_id")
+  provider         String
+  model            String
+  status           AnalysisRunStatus @default(queued)
+  runAttempt       Int               @default(1) @map("run_attempt")
+  overallSuccessPct Int?             @map("overall_success_pct")
+  estimatedTokens  Int?              @map("estimated_tokens")
+  actualInputTokens Int?             @map("actual_input_tokens")
+  actualOutputTokens Int?            @map("actual_output_tokens")
+  actualTotalTokens Int?             @map("actual_total_tokens")
+  blockedReason    String?           @map("blocked_reason")
+  failureCode      String?           @map("failure_code")
+  failureMessage   String?           @map("failure_message")
+  resultJson       Json?             @map("result_json")
+  startedAt        DateTime?         @map("started_at")
+  finishedAt       DateTime?         @map("finished_at")
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+
+  policy           Policy            @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  steps            PolicyAnalysisStep[]
+
+  @@index([policyId, createdAt])
+  @@index([userId, createdAt])
+  @@map("policy_analysis_runs")
+}
+
+model PolicyAnalysisStep {
+  id             String             @id @default(cuid()) @map("analysis_step_id")
+  runId          String             @map("analysis_run_id")
+  stepKey        String             @map("step_key")
+  stepOrder      Int                @map("step_order")
+  status         AnalysisStepStatus @default(pending)
+  attempt        Int                @default(1)
+  successPct     Int?               @map("success_pct")
+  inputTokens    Int?               @map("input_tokens")
+  outputTokens   Int?               @map("output_tokens")
+  totalTokens    Int?               @map("total_tokens")
+  logMessage     String?            @map("log_message")
+  logJson        Json?              @map("log_json")
+  errorCode      String?            @map("error_code")
+  errorMessage   String?            @map("error_message")
+  startedAt      DateTime?          @map("started_at")
+  finishedAt     DateTime?          @map("finished_at")
+  createdAt      DateTime           @default(now()) @map("created_at")
+
+  run            PolicyAnalysisRun  @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([runId, stepOrder, attempt])
+  @@map("policy_analysis_steps")
 }
 
 model CollaborationThread {

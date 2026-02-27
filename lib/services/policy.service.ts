@@ -341,12 +341,34 @@ export class PolicyService extends BaseService {
         logger('info', 'Starting background policy analysis', { policyId, userId })
 
         try {
-            // 1. Run Gap Analysis (Includes metadata extraction and gap detection)
-            const { GapAnalysisService } = await import('./gap-analysis.service')
-            const gapService = new GapAnalysisService(this.db)
+            // 1. Run orchestrated AI analysis (token-gated checklist + gaps + persistence)
+            const { PolicyAnalysisOrchestratorService } = await import('./analysis/policy-analysis-orchestrator.service')
+            const orchestrator = new PolicyAnalysisOrchestratorService()
+            const run = await orchestrator.createAndExecuteRun(policyId, userId, language)
 
-            // This service handles the call to aiService and updates the policy record with extracted data
-            await gapService.analyzePolicy(policyId, userId, language)
+            if (!run) {
+                throw new Error('Analysis run did not return a result')
+            }
+
+            if (run.status === 'blocked') {
+                logger('warn', 'Background policy analysis blocked by token budget', {
+                    policyId,
+                    userId,
+                    blockedReason: run.blockedReason || null,
+                    failureMessage: run.failureMessage || null
+                })
+
+                await this.db.policyDocument.updateMany({
+                    where: { policyId },
+                    data: { processingStatus: 'failed' }
+                })
+                return
+            }
+
+            if (run.status !== 'completed') {
+                const reason = run?.failureMessage || run?.blockedReason || 'analysis_orchestration_failed'
+                throw new Error(`Analysis run did not complete: ${reason}`)
+            }
 
             // 2. Post-Analysis Deduplication
             // Now that we have the real policy number extracted by AI, check if it already exists in the user's wallet
@@ -514,15 +536,21 @@ export class PolicyService extends BaseService {
 
             const errorMessage = error instanceof Error ? error.message : String(error)
             const isTimeout = errorMessage.toLowerCase().includes('timeout')
+            const isTokenLimit = /token budget check failed|monthly_limit_reached|insufficient_tokens|token_limit_blocked/i.test(errorMessage)
+            const currentPolicy = await this.db.policy.findUnique({
+                where: { id: policyId },
+                select: { acordData: true }
+            })
 
             await this.db.policy.update({
                 where: { id: policyId },
                 data: {
                     status: 'action_needed',
                     acordData: {
+                        ...((currentPolicy?.acordData as any) || {}),
                         processingError: {
                             message: errorMessage,
-                            code: isTimeout ? 'TIMEOUT' : 'ANALYSIS_FAILED',
+                            code: isTimeout ? 'TIMEOUT' : isTokenLimit ? 'TOKEN_LIMIT_BLOCKED' : 'ANALYSIS_FAILED',
                             occurredAt: new Date().toISOString(),
                             retryable: true,
                         },

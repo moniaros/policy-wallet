@@ -39,33 +39,33 @@ interface NotificationsClientProps {
 const preferenceCatalog = [
     {
         eventType: "policy_expiring",
-        label: { el: "Î›Î®Î¾Î· ÏƒÏ…Î¼Î²Î¿Î»Î±Î¯Î¿Ï…", en: "Policy expiring" },
+        label: { el: "Λήξη συμβολαίου", en: "Policy expiring" },
         description: {
-            el: "Î¥Ï€ÎµÎ½Î¸ÏÎ¼Î¹ÏƒÎ· Ï€ÏÎ¹Î½ Ï„Î· Î»Î®Î¾Î· Î³Î¹Î± Î½Î± Î¼Î·Î½ Ï‡Î¬ÏƒÎµÎ¹Ï‚ Ï„Î·Î½ Î±Î½Î±Î½Î­Ï‰ÏƒÎ·.",
+            el: "Υπενθύμιση πριν τη λήξη για να μη χάσεις την ανανέωση.",
             en: "Reminder before expiration so you never miss renewal.",
         },
     },
     {
         eventType: "pending_questionnaire",
-        label: { el: "Î•ÎºÎºÏÎµÎ¼Î­Ï‚ ÎµÏÏ‰Ï„Î·Î¼Î±Ï„Î¿Î»ÏŒÎ³Î¹Î¿", en: "Pending questionnaire" },
+        label: { el: "Εκκρεμές ερωτηματολόγιο", en: "Pending questionnaire" },
         description: {
-            el: "Î•Î½Î·Î¼Î­ÏÏ‰ÏƒÎ· Î³Î¹Î± ÎµÎºÎºÏÎµÎ¼Î® ÏƒÏ„Î¿Î¹Ï‡ÎµÎ¯Î± Ï€Î¿Ï… Ï‡ÏÎµÎ¹Î¬Î¶Î¿Î½Ï„Î±Î¹ ÏƒÏ…Î¼Ï€Î»Î®ÏÏ‰ÏƒÎ·.",
+            el: "Ενημέρωση για εκκρεμή στοιχεία που χρειάζονται συμπλήρωση.",
             en: "Updates for outstanding information requests.",
         },
     },
     {
         eventType: "renewal_milestone",
-        label: { el: "ÎŸÏÏŒÏƒÎ·Î¼Î¿ Î±Î½Î±Î½Î­Ï‰ÏƒÎ·Ï‚", en: "Renewal milestone" },
+        label: { el: "Ορόσημο ανανέωσης", en: "Renewal milestone" },
         description: {
-            el: "Î•Î¹Î´Î¿Ï€Î¿Î¯Î·ÏƒÎ· Î³Î¹Î± ÎºÏÎ¯ÏƒÎ¹Î¼Î± Î²Î®Î¼Î±Ï„Î± Î­Ï‰Ï‚ Ï„Î·Î½ Î±Î½Î±Î½Î­Ï‰ÏƒÎ·.",
+            el: "Ειδοποίηση για κρίσιμα βήματα έως την ανανέωση.",
             en: "Alert for important milestones before renewal.",
         },
     },
     {
         eventType: "policy_reviewed",
-        label: { el: "ÎŸÎ»Î¿ÎºÎ»Î®ÏÏ‰ÏƒÎ· Î±Î½Î¬Î»Ï…ÏƒÎ·Ï‚", en: "Analysis completed" },
+        label: { el: "Ολοκλήρωση ανάλυσης", en: "Analysis completed" },
         description: {
-            el: "Î•Î½Î·Î¼Î­ÏÏ‰ÏƒÎ· ÏŒÏ„Î±Î½ Î· AI Î±Î½Î¬Î»Ï…ÏƒÎ· Î¿Î»Î¿ÎºÎ»Î·ÏÏŽÎ½ÎµÏ„Î±Î¹.",
+            el: "Ενημέρωση όταν η AI ανάλυση ολοκληρώνεται.",
             en: "Notification when AI policy analysis is complete.",
         },
     },
@@ -104,7 +104,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
     const { language } = useLanguage()
     const locale = language || userLanguage || "en"
     const isGreek = locale === "el"
-    const tr = (el: string, en: string) => (isGreek ? fixMojibakeText(el) : en)
+    const tr = (el: string, en: string) => (isGreek ? el : en)
     const [activeTab, setActiveTab] = useState<"preferences" | "history">("preferences")
     const [savingKey, setSavingKey] = useState<string | null>(null)
 
@@ -180,150 +180,151 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                 }
                 return next
             })
-            toast.error(tr("Î— Î±Ï€Î¿Î¸Î®ÎºÎµÏ…ÏƒÎ· Î±Ï€Î­Ï„Ï…Ï‡Îµ. Î”Î¿ÎºÎ¯Î¼Î±ÏƒÎµ Î¾Î±Î½Î¬.", "Could not save this preference. Please try again."))
+            toast.error(tr("Η αποθήκευση απέτυχε. Δοκίμασε ξανά.", "Could not save this preference. Please try again."))
         } finally {
             setSavingKey(null)
         }
     }
 
     return (
-        <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6" aria-busy={Boolean(savingKey)}>
-            <div className="mb-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                <div className="flex items-center gap-3">
-                    <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
-                        <BellRing className="h-5 w-5" />
+        <div className="pw-page-shell" aria-busy={Boolean(savingKey)}>
+            <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
+                <div className="mb-5 rounded-2xl border border-black/10 dark:border-white/15 bg-white dark:bg-black p-4 shadow-sm">
+                    <div className="flex items-center gap-3">
+                        <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[#1FDC86]/15 text-[#1FDC86]">
+                            <BellRing className="h-5 w-5" />
+                        </div>
+                        <div>
+                            <h1 className="text-lg font-semibold text-black dark:text-white">{tr("Κέντρο ειδοποιήσεων", "Notification center")}</h1>
+                            <p className="text-sm text-black/65 dark:text-white/70">{tr("Επίλεξε πότε θέλεις να λαμβάνεις email και push ενημερώσεις.", "Control when you receive email and push updates.")}</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 className="text-lg font-semibold text-slate-900">{tr("ÎšÎ­Î½Ï„ÏÎ¿ ÎµÎ¹Î´Î¿Ï€Î¿Î¹Î®ÏƒÎµÏ‰Î½", "Notification center")}</h1>
-                        <p className="text-sm text-slate-600">{tr("Î•Ï€Î¯Î»ÎµÎ¾Îµ Ï€ÏŒÏ„Îµ Î¸Î­Î»ÎµÎ¹Ï‚ Î½Î± Î»Î±Î¼Î²Î¬Î½ÎµÎ¹Ï‚ email ÎºÎ±Î¹ push ÎµÎ½Î·Î¼ÎµÏÏŽÏƒÎµÎ¹Ï‚.", "Control when you receive email and push updates.")}</p>
+                    <div className="mt-4 grid grid-cols-2 gap-3">
+                        <div className="rounded-xl border border-black/10 dark:border-white/15 bg-black/5 dark:bg-white/5 px-3 py-2">
+                            <p className="text-xs font-semibold text-black/65 dark:text-white/70">{tr("Ενεργά email", "Email enabled")}</p>
+                            <p className="text-lg font-semibold text-black dark:text-white">{enabledEmailCount}/{totalPreferenceCount}</p>
+                        </div>
+                        <div className="rounded-xl border border-[#1FDC86]/30 bg-[#1FDC86]/12 px-3 py-2">
+                            <p className="text-xs font-semibold text-black/70">{tr("Πρόσφατες ενημερώσεις", "Recent updates")}</p>
+                            <p className="text-lg font-semibold text-black">{historyItems.length}</p>
+                        </div>
                     </div>
                 </div>
-                <div className="mt-4 grid grid-cols-2 gap-3">
-                    <div className="rounded-xl border border-blue-100 bg-blue-50 px-3 py-2">
-                        <p className="text-xs font-semibold text-blue-700">{tr("Email ÎµÎ½ÎµÏÎ³Î¬", "Email enabled")}</p>
-                        <p className="text-lg font-bold text-blue-900">{enabledEmailCount}/{totalPreferenceCount}</p>
-                    </div>
-                    <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2">
-                        <p className="text-xs font-semibold text-emerald-700">{tr("Î ÏÏŒÏƒÏ†Î±Ï„ÎµÏ‚ ÎµÎ½Î·Î¼ÎµÏÏŽÏƒÎµÎ¹Ï‚", "Recent updates")}</p>
-                        <p className="text-lg font-bold text-emerald-900">{historyItems.length}</p>
-                    </div>
+
+                <div
+                    className="mb-5 grid grid-cols-2 rounded-xl border border-black/10 dark:border-white/15 bg-black/5 dark:bg-white/5 p-1"
+                    role="tablist"
+                    aria-label={tr("Πλοήγηση ειδοποιήσεων", "Notification tabs")}
+                >
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab("preferences")}
+                        role="tab"
+                        aria-selected={activeTab === "preferences"}
+                        className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${activeTab === "preferences" ? "bg-white dark:bg-black text-black dark:text-white shadow-sm" : "text-black/60 dark:text-white/65"}`}
+                    >
+                        {tr("Προτιμήσεις", "Preferences")}
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setActiveTab("history")}
+                        role="tab"
+                        aria-selected={activeTab === "history"}
+                        className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${activeTab === "history" ? "bg-white dark:bg-black text-black dark:text-white shadow-sm" : "text-black/60 dark:text-white/65"}`}
+                    >
+                        {tr("Ιστορικό", "History")}
+                    </button>
                 </div>
-            </div>
 
-            <div
-                className="mb-5 grid grid-cols-2 rounded-xl border border-slate-200 bg-slate-50 p-1"
-                role="tablist"
-                aria-label={tr("Πλοήγηση ειδοποιήσεων", "Notification tabs")}
-            >
-                <button
-                    type="button"
-                    onClick={() => setActiveTab("preferences")}
-                    role="tab"
-                    aria-selected={activeTab === "preferences"}
-                    className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${activeTab === "preferences" ? "bg-white text-slate-900 shadow-sm" : "text-slate-600"}`}
-                >
-                    {tr("Î ÏÎ¿Ï„Î¹Î¼Î®ÏƒÎµÎ¹Ï‚", "Preferences")}
-                </button>
-                <button
-                    type="button"
-                    onClick={() => setActiveTab("history")}
-                    role="tab"
-                    aria-selected={activeTab === "history"}
-                    className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${activeTab === "history" ? "bg-white text-slate-900 shadow-sm" : "text-slate-600"}`}
-                >
-                    {tr("Î™ÏƒÏ„Î¿ÏÎ¹ÎºÏŒ", "History")}
-                </button>
-            </div>
+                <p className="mb-4 text-xs text-black/50 dark:text-white/60" role="status" aria-live="polite">
+                    {savingKey ? tr("Αποθήκευση αλλαγών...", "Saving changes...") : tr("Οι αλλαγές αποθηκεύονται αυτόματα.", "Changes are saved automatically.")}
+                </p>
 
-            <p className="mb-4 text-xs text-slate-500" role="status" aria-live="polite">
-                {savingKey ? tr("Î‘Ï€Î¿Î¸Î®ÎºÎµÏ…ÏƒÎ· Î±Î»Î»Î±Î³ÏŽÎ½...", "Saving changes...") : tr("ÎŸÎ¹ Î±Î»Î»Î±Î³Î­Ï‚ Î±Ï€Î¿Î¸Î·ÎºÎµÏÎ¿Î½Ï„Î±Î¹ Î±Ï…Ï„ÏŒÎ¼Î±Ï„Î±.", "Changes are saved automatically.")}
-            </p>
-
-            <AnimatePresence mode="wait">
-                {activeTab === "preferences" ? (
-                    <motion.div key="prefs" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="space-y-3">
-                        {preferenceCatalog.map((item) => {
-                            const current = preferences[item.eventType] || { email: true, push: true }
-                            const emailKey = `${item.eventType}:email`
-                            const pushKey = `${item.eventType}:push`
-
-                            return (
-                                <div key={item.eventType} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                                    <p className="text-sm font-semibold text-slate-900">{isGreek ? fixMojibakeText(item.label.el) : item.label.en}</p>
-                                    <p className="mt-1 text-sm text-slate-600">{isGreek ? fixMojibakeText(item.description.el) : item.description.en}</p>
-
-                                    <div className="mt-4 grid grid-cols-2 gap-3">
-                                        <button
-                                            type="button"
-                                            onClick={() => void togglePreference(item.eventType, "email")}
-                                            disabled={savingKey === emailKey}
-                                            aria-pressed={current.email}
-                                            className={`inline-flex items-center justify-between rounded-xl border px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${current.email ? "border-blue-200 bg-blue-50 text-blue-900" : "border-slate-200 bg-white text-slate-700"} ${savingKey === emailKey ? "opacity-80" : ""}`}
-                                        >
-                                            <span className="inline-flex items-center gap-2">
-                                                <Mail className="h-4 w-4" />
-                                                {tr("Email", "Email")}
-                                            </span>
-                                            {savingKey === emailKey ? <Loader2 className="h-4 w-4 animate-spin" /> : current.email ? <CheckCircle2 className="h-4 w-4" /> : null}
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            onClick={() => void togglePreference(item.eventType, "push")}
-                                            disabled={savingKey === pushKey}
-                                            aria-pressed={current.push}
-                                            className={`inline-flex items-center justify-between rounded-xl border px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 ${current.push ? "border-emerald-200 bg-emerald-50 text-emerald-900" : "border-slate-200 bg-white text-slate-700"} ${savingKey === pushKey ? "opacity-80" : ""}`}
-                                        >
-                                            <span className="inline-flex items-center gap-2">
-                                                <Smartphone className="h-4 w-4" />
-                                                {tr("Push", "Push")}
-                                            </span>
-                                            {savingKey === pushKey ? <Loader2 className="h-4 w-4 animate-spin" /> : current.push ? <CheckCircle2 className="h-4 w-4" /> : null}
-                                        </button>
-                                    </div>
-                                </div>
-                            )
-                        })}
-                    </motion.div>
-                ) : (
-                    <motion.div key="history" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="space-y-3">
-                        {historyItems.length === 0 ? (
-                            <div className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm">
-                                <Settings2 className="mx-auto h-5 w-5 text-slate-400" />
-                                <p className="mt-2 text-sm text-slate-600">{tr("Î”ÎµÎ½ Ï…Ï€Î¬ÏÏ‡Î¿Ï…Î½ Ï€ÏÏŒÏƒÏ†Î±Ï„ÎµÏ‚ ÎµÎ¹Î´Î¿Ï€Î¿Î¹Î®ÏƒÎµÎ¹Ï‚.", "No recent notification activity.")}</p>
-                            </div>
-                        ) : (
-                            historyItems.map((event) => {
-                                const channelInfo = channelMeta[event.channel]
-                                const ChannelIcon = channelInfo.icon
-                                const createdAtDate = new Date(event.created_at)
-                                const createdAtText = Number.isNaN(createdAtDate.getTime())
-                                    ? event.created_at
-                                    : createdAtDate.toLocaleString(isGreek ? "el-GR" : "en-US", { dateStyle: "short", timeStyle: "short" })
+                <AnimatePresence mode="wait">
+                    {activeTab === "preferences" ? (
+                        <motion.div key="prefs" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="space-y-3">
+                            {preferenceCatalog.map((item) => {
+                                const current = preferences[item.eventType] || { email: true, push: true }
+                                const emailKey = `${item.eventType}:email`
+                                const pushKey = `${item.eventType}:push`
 
                                 return (
-                                    <div key={event.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                                        <div className="flex items-start justify-between gap-3">
-                                            <div>
-                                                <p className="text-sm font-semibold text-slate-900">{fixMojibakeText(event.title)}</p>
-                                                <p className="mt-1 text-sm text-slate-600">{fixMojibakeText(event.message)}</p>
-                                                <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
-                                                    <ChannelIcon className="h-3 w-3" />
-                                                    <span>{isGreek ? channelInfo.label.el : channelInfo.label.en}</span>
-                                                </div>
-                                            </div>
-                                            <p className="text-xs font-medium text-slate-500">
-                                                {createdAtText}
-                                            </p>
+                                    <div key={item.eventType} className="rounded-2xl border border-black/10 dark:border-white/15 bg-white dark:bg-black p-4 shadow-sm">
+                                        <p className="text-sm font-semibold text-black dark:text-white">{isGreek ? item.label.el : item.label.en}</p>
+                                        <p className="mt-1 text-sm text-black/65 dark:text-white/70">{isGreek ? item.description.el : item.description.en}</p>
+
+                                        <div className="mt-4 grid grid-cols-2 gap-3">
+                                            <button
+                                                type="button"
+                                                onClick={() => void togglePreference(item.eventType, "email")}
+                                                disabled={savingKey === emailKey}
+                                                aria-pressed={current.email}
+                                                className={`inline-flex items-center justify-between rounded-xl border px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86] ${current.email ? "border-[#1FDC86]/35 bg-[#1FDC86]/12 text-black" : "border-black/15 dark:border-white/20 bg-white dark:bg-black text-black dark:text-white"} ${savingKey === emailKey ? "opacity-80" : ""}`}
+                                            >
+                                                <span className="inline-flex items-center gap-2">
+                                                    <Mail className="h-4 w-4" />
+                                                    {tr("Email", "Email")}
+                                                </span>
+                                                {savingKey === emailKey ? <Loader2 className="h-4 w-4 animate-spin" /> : current.email ? <CheckCircle2 className="h-4 w-4" /> : null}
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={() => void togglePreference(item.eventType, "push")}
+                                                disabled={savingKey === pushKey}
+                                                aria-pressed={current.push}
+                                                className={`inline-flex items-center justify-between rounded-xl border px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86] ${current.push ? "border-[#1FDC86]/35 bg-[#1FDC86]/12 text-black" : "border-black/15 dark:border-white/20 bg-white dark:bg-black text-black dark:text-white"} ${savingKey === pushKey ? "opacity-80" : ""}`}
+                                            >
+                                                <span className="inline-flex items-center gap-2">
+                                                    <Smartphone className="h-4 w-4" />
+                                                    {tr("Push", "Push")}
+                                                </span>
+                                                {savingKey === pushKey ? <Loader2 className="h-4 w-4 animate-spin" /> : current.push ? <CheckCircle2 className="h-4 w-4" /> : null}
+                                            </button>
                                         </div>
                                     </div>
                                 )
-                            })
-                        )}
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                            })}
+                        </motion.div>
+                    ) : (
+                        <motion.div key="history" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="space-y-3">
+                            {historyItems.length === 0 ? (
+                                <div className="rounded-2xl border border-black/10 dark:border-white/15 bg-white dark:bg-black p-6 text-center shadow-sm">
+                                    <Settings2 className="mx-auto h-5 w-5 text-black/40 dark:text-white/50" />
+                                    <p className="mt-2 text-sm text-black/65 dark:text-white/70">{tr("Δεν υπάρχουν πρόσφατες ειδοποιήσεις.", "No recent notification activity.")}</p>
+                                </div>
+                            ) : (
+                                historyItems.map((event) => {
+                                    const channelInfo = channelMeta[event.channel]
+                                    const ChannelIcon = channelInfo.icon
+                                    const createdAtDate = new Date(event.created_at)
+                                    const createdAtText = Number.isNaN(createdAtDate.getTime())
+                                        ? event.created_at
+                                        : createdAtDate.toLocaleString(isGreek ? "el-GR" : "en-US", { dateStyle: "short", timeStyle: "short" })
+
+                                    return (
+                                        <div key={event.id} className="rounded-2xl border border-black/10 dark:border-white/15 bg-white dark:bg-black p-4 shadow-sm">
+                                            <div className="flex items-start justify-between gap-3">
+                                                <div>
+                                                    <p className="text-sm font-semibold text-black dark:text-white">{fixMojibakeText(event.title)}</p>
+                                                    <p className="mt-1 text-sm text-black/65 dark:text-white/70">{fixMojibakeText(event.message)}</p>
+                                                    <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-black/5 dark:bg-white/10 px-2 py-0.5 text-xs font-medium text-black/70 dark:text-white/75">
+                                                        <ChannelIcon className="h-3 w-3" />
+                                                        <span>{isGreek ? channelInfo.label.el : channelInfo.label.en}</span>
+                                                    </div>
+                                                </div>
+                                                <p className="text-xs font-medium text-black/50 dark:text-white/60">
+                                                    {createdAtText}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
         </div>
     )
 }
-

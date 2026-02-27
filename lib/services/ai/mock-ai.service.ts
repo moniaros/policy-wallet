@@ -13,6 +13,7 @@ import type {
     GapDefinitionForAI,
     AIPolicyExtractionResponse,
     AIGapAnalysisResponse,
+    AIPolicyClarityResponse,
     AITrackingOptions
 } from './ai-service.interface'
 import { enrichExtractionPayload } from './extraction-enrichment'
@@ -92,7 +93,13 @@ export class MockAIService implements IAIService {
             ...base,
             exclusions: enriched.exclusions,
             extractionMeta: enriched.extractionMeta,
-            acordData: enriched.acordData
+            acordData: enriched.acordData,
+            usage: {
+                inputTokens: 2400,
+                outputTokens: 900,
+                totalTokens: 3300,
+                model: options?.modelOverride || 'gemini-2.0-flash-exp'
+            }
         }
     }
 
@@ -175,7 +182,108 @@ export class MockAIService implements IAIService {
             acordData: response.acordData
         })
         response.acordData = enriched.acordData
+        ;(response as any).usage = {
+            inputTokens: 3200,
+            outputTokens: 1100,
+            totalTokens: 4300,
+            model: options?.modelOverride || 'gemini-2.0-flash-exp'
+        }
         return response
+    }
+
+    async analyzePolicyClarity(
+        document: AIDocument | null,
+        metadata: PolicyMetadata,
+        checklist: Array<{
+            key: string
+            title: { en: string; el: string }
+            description: { en: string; el: string }
+            checks: string[]
+        }>,
+        options?: AITrackingOptions
+    ): Promise<AIPolicyClarityResponse> {
+        await this.simulateDelay()
+
+        if (this.shouldFail) {
+            throw new Error('Mock AI clarity analysis failed')
+        }
+
+        return {
+            plainLanguageSummary: {
+                en: `This ${metadata.lineOfBusiness} policy is active and can be improved in selected areas.`,
+                el: `Το συμβόλαιο ${metadata.lineOfBusiness} είναι ενεργό και μπορεί να βελτιωθεί σε επιλεγμένα σημεία.`,
+            },
+            coverageSnapshot: {
+                covered: ['Third party liability', 'Legal protection'],
+                notCovered: ['Natural disaster extension'],
+                limits: [{ name: 'Third party bodily injury', value: '1300000' }],
+                deductibles: [{ name: 'Own damage deductible', value: '300 EUR' }],
+                exclusions: ['Damage during illegal use'],
+            },
+            savingsOpportunities: [
+                {
+                    action: {
+                        en: 'Request renewal market comparison',
+                        el: 'Ζητήστε σύγκριση αγοράς στην ανανέωση',
+                    },
+                    rationale: {
+                        en: 'Premium appears above benchmark for similar profile.',
+                        el: 'Το ασφάλιστρο φαίνεται υψηλότερο από το μέσο όρο για παρόμοιο προφίλ.',
+                    },
+                    estimatedAnnualSavingsEur: 120,
+                    confidence: 76,
+                },
+            ],
+            coverageGaps: [
+                {
+                    slug: 'natural_disaster_extension_missing',
+                    severity: 'medium',
+                    evidence: {
+                        en: 'No explicit flood/earthquake extension found.',
+                        el: 'Δεν εντοπίστηκε ρητή επέκταση για πλημμύρα/σεισμό.',
+                    },
+                    recommendation: {
+                        en: 'Consider adding natural disaster extension.',
+                        el: 'Εξετάστε την προσθήκη επέκτασης φυσικών φαινομένων.',
+                    },
+                },
+            ],
+            checklistScores: checklist.map((pillar) => ({
+                pillarKey: pillar.key,
+                pillarName: pillar.title,
+                checksPassed: Math.max(1, pillar.checks.length - 1),
+                checksTotal: pillar.checks.length,
+                successPct: Math.round((Math.max(1, pillar.checks.length - 1) / pillar.checks.length) * 100),
+                notes: {
+                    en: `Mock assessment for ${pillar.title.en}.`,
+                    el: `Εικονική αξιολόγηση για ${pillar.title.el}.`,
+                },
+            })),
+            priorityActions: [
+                {
+                    priority: 'high',
+                    action: {
+                        en: 'Review uncovered risks with advisor',
+                        el: 'Ελέγξτε τα ακάλυπτα ρίσκα με σύμβουλο',
+                    },
+                    reason: {
+                        en: 'At least one medium/high impact gap detected.',
+                        el: 'Εντοπίστηκε τουλάχιστον ένα κενό μέσης/υψηλής επίδρασης.',
+                    },
+                },
+            ],
+            acordData: {
+                policy: {
+                    number: metadata.policyNumber,
+                },
+            },
+            usage: {
+                inputTokens: 3500,
+                outputTokens: 1400,
+                totalTokens: 4900,
+                model: options?.modelOverride || 'gemini-2.0-flash-exp',
+            },
+        }
     }
 
     /**

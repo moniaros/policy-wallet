@@ -50,7 +50,7 @@ export function MobileAppShell({ policies, user }: MobileAppShellProps) {
     }
 
     return (
-        <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
+        <div className="pw-page-shell">
             <div className="pb-24">
                 {activeTab === 'home' && (
                     <MyPoliciesScreen
@@ -61,22 +61,22 @@ export function MobileAppShell({ policies, user }: MobileAppShellProps) {
                 )}
 
                 {activeTab === 'tasks' && (
-                    <div className="min-h-screen bg-stone-50 dark:bg-stone-950 px-5 py-8">
-                        <div className="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 p-8 text-center">
-                            <h3 className="text-lg font-black text-stone-900 dark:text-white">{copy.allTasksDone}</h3>
-                            <p className="text-sm text-stone-500 dark:text-stone-400 mt-2">{copy.checkLater}</p>
+                    <div className="min-h-screen px-5 py-8">
+                        <div className="pw-card rounded-3xl p-8 text-center">
+                            <h3 className="text-lg font-semibold text-black dark:text-white">{copy.allTasksDone}</h3>
+                            <p className="text-sm text-black/55 dark:text-white/65 mt-2">{copy.checkLater}</p>
                         </div>
                     </div>
                 )}
 
                 {activeTab === 'coverage' && (
-                    <div className="min-h-screen bg-stone-50 dark:bg-stone-950 px-5 py-8">
-                        <div className="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 p-6">
-                            <h3 className="text-xl font-black text-stone-900 dark:text-white mb-2">{copy.coverageTitle}</h3>
-                            <p className="text-sm text-stone-500 dark:text-stone-400 mb-5">{copy.coverageDesc}</p>
+                    <div className="min-h-screen px-5 py-8">
+                        <div className="pw-card rounded-3xl p-6">
+                            <h3 className="text-xl font-semibold text-black dark:text-white mb-2">{copy.coverageTitle}</h3>
+                            <p className="text-sm text-black/55 dark:text-white/65 mb-5">{copy.coverageDesc}</p>
                             <button
                                 onClick={() => router.push('/coverage-insights')}
-                                className="px-4 py-2.5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-xl text-sm font-bold cursor-pointer"
+                                className="pw-primary-button text-sm cursor-pointer"
                             >
                                 {copy.openInsights}
                             </button>
@@ -85,10 +85,10 @@ export function MobileAppShell({ policies, user }: MobileAppShellProps) {
                 )}
 
                 {activeTab === 'alerts' && (
-                    <div className="min-h-screen bg-stone-50 dark:bg-stone-950 px-5 py-8">
-                        <div className="bg-white dark:bg-stone-900 rounded-3xl border border-stone-200 dark:border-stone-800 p-8 text-center">
-                            <h3 className="text-lg font-black text-stone-900 dark:text-white">{copy.allCaughtUp}</h3>
-                            <p className="text-sm text-stone-500 dark:text-stone-400 mt-2">{copy.noWarnings}</p>
+                    <div className="min-h-screen px-5 py-8">
+                        <div className="pw-card rounded-3xl p-8 text-center">
+                            <h3 className="text-lg font-semibold text-black dark:text-white">{copy.allCaughtUp}</h3>
+                            <p className="text-sm text-black/55 dark:text-white/65 mt-2">{copy.noWarnings}</p>
                         </div>
                     </div>
                 )}

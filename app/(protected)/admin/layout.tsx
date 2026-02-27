@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { redirect } from "next/navigation"
 

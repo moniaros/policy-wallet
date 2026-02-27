@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { getCustomers } from "../agent/actions"
 import { CustomersClient } from "./CustomersClient"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"

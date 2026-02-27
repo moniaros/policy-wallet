@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { getNotificationData } from "./actions"
 import { NotificationsClient } from "@/components/notifications/NotificationsClient"
@@ -6,7 +8,15 @@ export default async function NotificationsPage() {
     const { dbUser } = await getAuthenticatedUser()
 
     const data = await getNotificationData()
-    if (!data) return <div>Error loading notifications data.</div>
+    if (!data) {
+        return (
+            <div className="pw-page-shell px-4 py-8">
+                <div className="mx-auto max-w-2xl pw-card rounded-2xl p-6 text-sm text-black/70 dark:text-white/75">
+                    Error loading notifications data.
+                </div>
+            </div>
+        )
+    }
 
     const activeRole = dbUser.roles.includes('agent') ? 'agent' : 'policyholder'
 

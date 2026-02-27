@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { getAuthenticatedUser, getIsPayingUser } from "@/lib/auth-helpers"
 import { AppShell } from "@/components/shell"
 import { getTranslations } from "@/lib/i18n"

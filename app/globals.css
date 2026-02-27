@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary: #10b981;
+  --color-primary: #1fdc86;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #f59e0b;
+  --color-secondary: #173330;
   --color-secondary-foreground: #ffffff;
 
   /* Mapping neutral to slate for premium feel */
@@ -20,8 +20,8 @@
   --color-neutral-800: #1e293b;
   --color-neutral-900: #0f172a;
 
-  --font-heading: 'Inter', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --font-heading: 'GT America', 'IBM Plex Sans', 'Inter', sans-serif;
+  --font-body: 'GT America', 'IBM Plex Sans', 'Inter', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   /* Shadcn UI Variables */
@@ -47,29 +47,44 @@
 }
 
 :root {
-  --brand-bg-canvas: #f4f8fb;
-  --brand-bg-soft: #ecf4f3;
-  --brand-text-primary: #111b3f;
-  --brand-text-muted: #496182;
+  --brand-bg-canvas: #f8fafc;
+  --brand-bg-soft: #ffffff;
+  --brand-text-primary: #000000;
+  --brand-text-muted: #888888;
   --brand-surface-card: #ffffff;
-  --brand-surface-elevated: #f8fbff;
-  --brand-border-subtle: #d8e4ef;
-  --brand-border-strong: #afc3d7;
-  --brand-accent-primary: #12b886;
-  --brand-accent-cta: #f97316;
-  --brand-accent-trust: #0f766e;
+  --brand-surface-elevated: #f9fafb;
+  --brand-border-subtle: rgba(0, 0, 0, 0.08);
+  --brand-border-strong: rgba(0, 0, 0, 0.15);
+  --brand-accent-primary: #1fdc86;
+  --brand-accent-cta: #1fdc86;
+  --brand-accent-trust: #173330;
+
+  --pw-primary: #1fdc86;
+  --pw-primary-hover: #19b870;
+  --pw-bg-dark: #000000;
+  --pw-bg-light: #ffffff;
+  --pw-surface-dark: #111111;
+  --pw-surface-light: #f9fafb;
+  --pw-text-primary-dark: #ffffff;
+  --pw-text-primary-light: #000000;
+  --pw-text-muted: #888888;
+  --pw-border: rgba(0, 0, 0, 0.12);
+  --pw-radius-button: 9999px;
+  --pw-radius-card: 16px;
+  --pw-shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --pw-shadow-card-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 
   --background: #ffffff;
   --foreground: #0f172a;
   /* slate-900 */
 
   /* Primary - Emerald */
-  --primary: #10b981;
+  --primary: #1fdc86;
   /* emerald-500 */
   --primary-foreground: #ffffff;
 
   /* Secondary - Amber */
-  --secondary: #f59e0b;
+  --secondary: #173330;
   /* amber-500 */
   --secondary-foreground: #ffffff;
 
@@ -102,7 +117,7 @@
   /* slate-200 */
   --input: #e2e8f0;
   /* slate-200 */
-  --ring: #10b981;
+  --ring: #1fdc86;
   /* emerald-500 */
 
   --radius: 0.75rem;
@@ -110,29 +125,27 @@
 }
 
 .dark {
-  --brand-bg-canvas: #020617;
-  --brand-bg-soft: #0b132a;
-  --brand-text-primary: #eaf2ff;
-  --brand-text-muted: #9cb2cc;
-  --brand-surface-card: #0f172a;
-  --brand-surface-elevated: #111d34;
-  --brand-border-subtle: #1f2f48;
-  --brand-border-strong: #35506e;
-  --brand-accent-primary: #34d399;
-  --brand-accent-cta: #fb923c;
-  --brand-accent-trust: #2dd4bf;
+  --brand-bg-canvas: #000000;
+  --brand-bg-soft: #111111;
+  --brand-text-primary: #ffffff;
+  --brand-text-muted: #bdbdbd;
+  --brand-surface-card: #111111;
+  --brand-surface-elevated: #1a1a1a;
+  --brand-border-subtle: rgba(255, 255, 255, 0.14);
+  --brand-border-strong: rgba(255, 255, 255, 0.25);
+  --brand-accent-primary: #1fdc86;
+  --brand-accent-cta: #1fdc86;
+  --brand-accent-trust: #7de8ba;
 
-  --background: #020617;
-  /* slate-950 */
+  --background: #000000;
   --foreground: #f8fafc;
-  /* slate-50 */
 
   /* Primary - Emerald Dark */
-  --primary: #10b981;
+  --primary: #1fdc86;
   --primary-foreground: #ffffff;
 
   /* Secondary - Amber */
-  --secondary: #f59e0b;
+  --secondary: #173330;
   --secondary-foreground: #ffffff;
 
   /* Card */
@@ -165,7 +178,7 @@
   /* slate-800 */
   --input: #1e293b;
   /* slate-800 */
-  --ring: #10b981;
+  --ring: #1fdc86;
 }
 
 body {
@@ -200,6 +213,115 @@ pre {
 }
 
 @layer utilities {
+  .pw-app-canvas {
+    @apply bg-[radial-gradient(circle_at_top_right,_rgba(31,220,134,0.08),_transparent_40%),linear-gradient(to_bottom_right,#f8fafc,#ffffff)];
+  }
+
+  .pw-page-shell {
+    @apply min-h-screen pb-24;
+    background: linear-gradient(140deg, #f8fafc 0%, #ffffff 50%, #f9fafb 100%);
+  }
+
+  .dark .pw-page-shell {
+    background: linear-gradient(140deg, #000000 0%, #111111 60%, #171717 100%);
+  }
+
+  .pw-card {
+    border-radius: var(--pw-radius-card);
+    border: 1px solid var(--pw-border);
+    background: var(--pw-bg-light);
+    box-shadow: var(--pw-shadow-card);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .dark .pw-card {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: var(--pw-surface-dark);
+  }
+
+  .pw-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--pw-shadow-card-hover);
+  }
+
+  .pw-pill {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest;
+    border: 1px solid var(--pw-border);
+    color: var(--pw-text-muted);
+  }
+
+  .pw-primary-button {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold text-white transition-colors;
+    border-radius: var(--pw-radius-button);
+    background: var(--pw-primary);
+  }
+
+  .pw-primary-button:hover {
+    background: var(--pw-primary-hover);
+  }
+
+  .pw-secondary-button {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold transition-colors;
+    border-radius: var(--pw-radius-button);
+    border: 1px solid var(--pw-border);
+    color: var(--pw-text-primary-light);
+    background: transparent;
+  }
+
+  .dark .pw-secondary-button {
+    color: var(--pw-text-primary-dark);
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+
+  .pw-kicker {
+    @apply text-[10px] font-bold uppercase tracking-[0.24em];
+    color: var(--pw-text-muted);
+  }
+
+  .arc-card {
+    border-radius: var(--pw-radius-card);
+    border: 1px solid var(--pw-border);
+    background: var(--pw-bg-light);
+    box-shadow: var(--pw-shadow-card);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .dark .arc-card {
+    border-color: rgba(255, 255, 255, 0.14);
+    background: var(--pw-surface-dark);
+  }
+
+  .arc-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--pw-shadow-card-hover);
+  }
+
+  .arc-btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86] focus-visible:ring-offset-2;
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .arc-btn-primary {
+    @apply border border-[#1FDC86]/40 bg-[#1FDC86] text-white shadow-sm hover:bg-[#19b870];
+  }
+
+  .arc-btn-secondary {
+    @apply border border-black/15 bg-white text-black hover:bg-black/5;
+  }
+
+  .dark .arc-btn-secondary {
+    @apply border-white/20 bg-black text-white hover:bg-white/10;
+  }
+
+  .arc-btn-neutral {
+    @apply border border-black/10 bg-black/5 text-black/80 hover:bg-black/10;
+  }
+
+  .dark .arc-btn-neutral {
+    @apply border-white/15 bg-white/10 text-white/80 hover:bg-white/15;
+  }
+
   .animate-blob {
     animation: blob 7s infinite;
   }

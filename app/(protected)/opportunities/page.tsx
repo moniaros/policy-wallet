@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { db } from "@/lib/db"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { OpportunitiesClient } from "./OpportunitiesClient"

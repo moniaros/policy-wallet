@@ -1,6 +1,8 @@
 import { db } from "@/lib/db"
 import { requireApiUser } from "@/lib/api-auth"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
+import { PolicyAnalysisOrchestratorService } from "@/lib/services/analysis/policy-analysis-orchestrator.service"
+import { after } from "next/server"
 
 export async function POST(
     req: Request,
@@ -24,24 +26,42 @@ export async function POST(
             return createApiError("NOT_FOUND", "Policy not found", 404)
         }
 
-        // Mock job trigger
-        const jobId = "job_review_" + crypto.randomUUID().substring(0, 8)
+        const orchestrator = new PolicyAnalysisOrchestratorService()
+        const run = await orchestrator.createRun(policy.id, authResult.dbUser.id)
+
+        if (run.status === "blocked") {
+            return createApiError(
+                "TOKEN_LIMIT_BLOCKED",
+                "Policy review blocked due to token usage limits",
+                402,
+                { run_id: run.id }
+            )
+        }
+
+        after(async () => {
+            try {
+                await orchestrator.executeRun(run.id, (authResult.dbUser.preferredLanguage as "en" | "el") || "en")
+            } catch (error) {
+                console.error("Deferred policy review execution failed:", error)
+            }
+        })
 
         await (db.activityLog as any).create({
             data: {
                 adminUserId: authResult.dbUser.id,
                 adminEmail: authResult.dbUser.email || "unknown",
                 actionType: "POLICY_REVIEW_TRIGGERED",
-                description: `Triggered AI review for policy ${policy.policyNumber}`,
+                description: `Triggered AI review run ${run.id} for policy ${policy.policyNumber}`,
                 timestamp: new Date()
             }
         })
 
         return createApiResponse({
-            job_id: jobId,
+            run_id: run.id,
             status: "queued",
             message: "Policy review started. Results will be available shortly.",
-            estimated_completion: new Date(Date.now() + 60000) // +1 min
+            estimated_completion: new Date(Date.now() + 120000),
+            estimated_tokens: run.estimatedTokens
         })
     } catch (error) {
         console.error(error)

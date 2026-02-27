@@ -1,4 +1,6 @@
-﻿import { requirePayingUser } from "@/lib/auth-helpers"
+export const runtime = 'nodejs'
+
+import { requirePayingUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { WalletSummary } from "@/components/coverage/WalletSummary"
 import { calculatePortfolioSummary } from "@/lib/policy-status"

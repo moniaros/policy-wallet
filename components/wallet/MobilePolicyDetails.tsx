@@ -494,16 +494,16 @@ export function MobilePolicyDetails({
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-stone-50 via-white to-stone-100 pb-24">
+        <div className="min-h-screen bg-gradient-to-b from-black/5 via-white to-black/10 pb-24">
             {/* Sticky header */}
-            <div className="sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-stone-200">
+            <div className="sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-black/10">
                 <div className="mx-auto max-w-md px-4 py-2.5 flex items-center justify-between">
-                    <h1 className="text-[15px] font-black text-stone-900">{t?.wallet?.policyDetails || "Policy details"}</h1>
+                    <h1 className="text-[15px] font-black text-black">{t?.wallet?.policyDetails || "Policy details"}</h1>
                     <div className="flex items-center gap-2">
                         {isOwner && (
                             <button
                                 onClick={() => router.push(`/wallet/${policy.id}/edit`)}
-                                className="h-11 w-11 inline-flex items-center justify-center rounded-xl border border-stone-300 text-stone-700 hover:bg-stone-100 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                                className="h-11 w-11 inline-flex items-center justify-center rounded-xl border border-black/15 text-black/75 hover:bg-black/10 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86] focus-visible:ring-offset-2"
                                 aria-label={copy.editPolicy}
                                 title={copy.editPolicy}
                             >
@@ -513,7 +513,7 @@ export function MobilePolicyDetails({
                         {onShare ? (
                             <button
                                 onClick={onShare}
-                                className="h-11 w-11 inline-flex items-center justify-center rounded-xl border border-stone-300 text-stone-700 hover:bg-stone-100 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                                className="h-11 w-11 inline-flex items-center justify-center rounded-xl border border-black/15 text-black/75 hover:bg-black/10 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86] focus-visible:ring-offset-2"
                                 aria-label={copy.sharePolicy}
                                 title={copy.sharePolicy}
                             >
@@ -523,7 +523,7 @@ export function MobilePolicyDetails({
                         {onAddToWallet ? (
                             <button
                                 onClick={onAddToWallet}
-                                className="h-11 w-11 inline-flex items-center justify-center rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                                className="h-11 w-11 inline-flex items-center justify-center rounded-xl bg-[#19b870] text-white hover:bg-[#19b870] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86] focus-visible:ring-offset-2"
                                 aria-label={copy.addToWalletAction}
                                 title={copy.addToWalletAction}
                             >
@@ -536,21 +536,21 @@ export function MobilePolicyDetails({
 
             <div className="mx-auto max-w-md px-4 py-2.5 space-y-2.5">
                 {/* Hero: Insurer + Premium */}
-                <section className="rounded-2xl overflow-hidden border border-stone-200 bg-white">
-                    <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-3.5">
+                <section className="rounded-2xl overflow-hidden border border-black/10 bg-white">
+                    <div className="bg-gradient-to-r from-[#1FDC86] to-[#19b870] p-3.5">
                         <div className="flex items-center gap-3 mb-2.5">
                             <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
                                 <Shield className="w-5 h-5 text-white" />
                             </div>
                             <div className="flex-1 min-w-0">
                                 <h2 className="text-base font-extrabold text-white truncate">{insurerName}</h2>
-                                <p className="text-xs font-semibold text-emerald-100">{policyTypeLabel}</p>
+                                <p className="text-xs font-semibold text-[#1FDC86]/12">{policyTypeLabel}</p>
                             </div>
                         </div>
 
                         <div className="flex items-end justify-between">
                             <div>
-                                <p className="text-[11px] font-semibold text-emerald-100 flex items-center gap-1.5">
+                                <p className="text-[11px] font-semibold text-[#1FDC86]/12 flex items-center gap-1.5">
                                     <TrendingUp className="w-3 h-3" />
                                     {copy.annualPremium}
                                 </p>
@@ -571,11 +571,11 @@ export function MobilePolicyDetails({
                     </div>
                 </section>
 
-                <section className="rounded-2xl border border-stone-200 bg-white p-3.5">
+                <section className="rounded-2xl border border-black/10 bg-white p-3.5">
                     <div className="flex items-center justify-between gap-2 mb-1.5">
                         <div className="flex items-center gap-2">
-                            <Sparkles className="w-4 h-4 text-emerald-600" />
-                            <h2 className="text-[15px] font-extrabold text-stone-900">{copy.mainAction}</h2>
+                            <Sparkles className="w-4 h-4 text-[#19b870]" />
+                            <h2 className="text-[15px] font-extrabold text-black">{copy.mainAction}</h2>
                         </div>
                         {!hasDocuments ? (
                             <span className="text-[10px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5">
@@ -583,38 +583,38 @@ export function MobilePolicyDetails({
                             </span>
                         ) : null}
                     </div>
-                    <p className="text-xs text-stone-500 mb-2.5">{primaryCtaHint}</p>
+                    <p className="text-xs text-black/55 mb-2.5">{primaryCtaHint}</p>
                     <button
                         onClick={handlePrimaryAction}
                         disabled={isPrimaryActionDisabled}
-                        className="w-full min-h-[44px] inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 disabled:opacity-60 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                        className="w-full min-h-[44px] inline-flex items-center justify-center gap-2 rounded-xl bg-[#19b870] text-white text-sm font-semibold hover:bg-[#19b870] disabled:opacity-60 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86] focus-visible:ring-offset-2"
                     >
                         {isPrimaryActionDisabled ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                         {primaryCtaLabel}
                     </button>
                 </section>
 
-                <section className="rounded-2xl border border-stone-200 bg-white p-3.5">
-                    <h2 className="text-[15px] font-extrabold text-stone-900 mb-2.5">{copy.usageSnapshot}</h2>
+                <section className="rounded-2xl border border-black/10 bg-white p-3.5">
+                    <h2 className="text-[15px] font-extrabold text-black mb-2.5">{copy.usageSnapshot}</h2>
                     <div className="flex items-end justify-between gap-3 mb-1.5">
-                        <p className="text-2xl font-black text-stone-900">{usageCount}</p>
-                        <p className="text-xs text-stone-500">
+                        <p className="text-2xl font-black text-black">{usageCount}</p>
+                        <p className="text-xs text-black/55">
                             / {usageLimit === null ? (t?.common?.unlimited || "Unlimited") : usageLimit} {t?.wallet?.analyses || (isGreek ? "αναλύσεις" : "analyses")}
                         </p>
                     </div>
                     {usageLimit !== null ? (
                         <>
-                            <div className="h-2 rounded-full bg-stone-100 overflow-hidden">
-                                <div className="h-full bg-emerald-500 transition-all duration-500" style={{ width: `${usageProgress}%` }} />
+                            <div className="h-2 rounded-full bg-black/10 overflow-hidden">
+                                <div className="h-full bg-[#1FDC86] transition-all duration-500" style={{ width: `${usageProgress}%` }} />
                             </div>
-                            <p className="mt-2 text-xs text-stone-500">
+                            <p className="mt-2 text-xs text-black/55">
                                 {usageRemaining} {copy.analysesRemaining}
                             </p>
                         </>
                     ) : null}
-                    <p className="mt-2 text-xs text-stone-600">
+                    <p className="mt-2 text-xs text-black/65">
                         {copy.currentCredits}:{" "}
-                        <span className="font-semibold text-stone-900">
+                        <span className="font-semibold text-black">
                             {creditBalance.toLocaleString(locale, { style: "currency", currency: "EUR" })}
                         </span>
                     </p>
@@ -623,15 +623,15 @@ export function MobilePolicyDetails({
                             track("buy_more_cta_click", { source: "mobile_policy_details_usage", policy_id: policy.id })
                             router.push("/upgrade?reason=ai_analysis_limit")
                         }}
-                        className="mt-2.5 w-full min-h-[44px] rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 text-sm font-semibold hover:bg-emerald-100 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                        className="mt-2.5 w-full min-h-[44px] rounded-xl border border-[#1FDC86]/30 bg-[#1FDC86]/12 text-[#19b870] text-sm font-semibold hover:bg-[#1FDC86]/12 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86] focus-visible:ring-offset-2"
                     >
                         {copy.viewUsageBuyMore}
                     </button>
                 </section>
 
-                <section className="rounded-2xl border border-stone-200 bg-white p-3.5">
+                <section className="rounded-2xl border border-black/10 bg-white p-3.5">
                     <div className="flex items-center justify-between gap-2 mb-2.5">
-                        <h2 className="text-[15px] font-extrabold text-stone-900">{copy.aiAnalysis}</h2>
+                        <h2 className="text-[15px] font-extrabold text-black">{copy.aiAnalysis}</h2>
                         {uniqueGaps.length > 0 ? (
                             <span className="text-[10px] font-semibold text-red-700 bg-red-50 border border-red-200 rounded-full px-2 py-0.5">
                                 {uniqueGaps.length} {copy.gaps}
@@ -639,7 +639,7 @@ export function MobilePolicyDetails({
                         ) : null}
                     </div>
                     {analysisPreviewGaps.length === 0 ? (
-                        <p className="text-sm text-stone-500">{hasAnalysis ? copy.noIssuesDetected : copy.noGapsRunDesc}</p>
+                        <p className="text-sm text-black/55">{hasAnalysis ? copy.noIssuesDetected : copy.noGapsRunDesc}</p>
                     ) : (
                         <div className="space-y-2">
                             {analysisPreviewGaps.map((gap: any) => {
@@ -652,7 +652,7 @@ export function MobilePolicyDetails({
                                 )
                             })}
                             {uniqueGaps.length > 2 ? (
-                                <p className="text-xs text-stone-500">
+                                <p className="text-xs text-black/55">
                                     {isGreek ? `+${uniqueGaps.length - 2} επιπλέον ευρήματα στα στοιχεία.` : `+${uniqueGaps.length - 2} more findings in details.`}
                                 </p>
                             ) : null}
@@ -670,7 +670,7 @@ export function MobilePolicyDetails({
 
                     if (hasTypeData || hasCoverageOrExclusion) {
                         return (
-                            <section className="rounded-2xl border border-stone-200 bg-white p-3.5">
+                            <section className="rounded-2xl border border-black/10 bg-white p-3.5">
                                 <CoverageTabView
                                     acordData={policy.acordData}
                                     lineOfBusiness={lob}
@@ -682,15 +682,15 @@ export function MobilePolicyDetails({
 
                     if (typeSpecificFields.includes(lob as any)) {
                         return (
-                            <section className="rounded-2xl border border-stone-200 bg-white p-4">
+                            <section className="rounded-2xl border border-black/10 bg-white p-4">
                                 <div className="flex flex-col items-center justify-center py-4 text-center">
                                     <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center mb-2.5">
                                         <RefreshCw className="w-5 h-5 text-amber-600" />
                                     </div>
-                                    <p className="text-sm font-semibold text-stone-700">
+                                    <p className="text-sm font-semibold text-black/75">
                                         {isGreek ? 'Επαναλάβετε ανάλυση για λεπτομερή κάλυψη' : 'Re-analyze to see detailed coverage'}
                                     </p>
-                                    <p className="text-xs text-stone-400 mt-1">
+                                    <p className="text-xs text-black/45 mt-1">
                                         {isGreek
                                             ? 'Τα ειδικά δεδομένα κάλυψης θα εμφανιστούν μετά από νέα ανάλυση AI'
                                             : 'Type-specific coverage details will appear after a new AI analysis'}
@@ -703,66 +703,66 @@ export function MobilePolicyDetails({
                     return null
                 })()}
 
-                <section className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
+                <section className="rounded-2xl border border-black/10 bg-white overflow-hidden">
                     <button
                         id={detailsButtonId}
                         type="button"
                         onClick={handleDetailsToggle}
-                        className="w-full min-h-[44px] px-4 py-3 flex items-center justify-between gap-3 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-inset"
+                        className="w-full min-h-[44px] px-4 py-3 flex items-center justify-between gap-3 text-left cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86] focus-visible:ring-inset"
                         aria-expanded={detailsExpanded}
                         aria-controls={detailsPanelId}
                     >
-                        <span className="text-[15px] font-black text-stone-900">
+                        <span className="text-[15px] font-black text-black">
                             {detailsExpanded ? copy.collapseDetails : copy.moreDetailsSection}
                         </span>
-                        <ChevronDown className={`w-4 h-4 text-stone-500 transition-transform ${detailsExpanded ? "rotate-180" : ""}`} />
+                        <ChevronDown className={`w-4 h-4 text-black/55 transition-transform ${detailsExpanded ? "rotate-180" : ""}`} />
                     </button>
                     <div
                         id={detailsPanelId}
                         role="region"
                         aria-labelledby={detailsButtonId}
-                        className={detailsExpanded ? "border-t border-stone-200 p-4 space-y-3" : "hidden"}
+                        className={detailsExpanded ? "border-t border-black/10 p-4 space-y-3" : "hidden"}
                     >
 
                 {/* Policy details grid */}
-                <section className="rounded-2xl border border-stone-200 bg-white p-4">
+                <section className="rounded-2xl border border-black/10 bg-white p-4">
                     <div className="flex items-center gap-2 mb-2">
-                        <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                        <h2 className="text-[15px] font-black text-stone-900">{copy.policyDetails}</h2>
+                        <ShieldCheck className="w-4 h-4 text-[#19b870]" />
+                        <h2 className="text-[15px] font-black text-black">{copy.policyDetails}</h2>
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div className="rounded-xl bg-stone-50 p-2.5">
-                            <p className="text-stone-500 mb-1">{t?.wallet?.policyNumber || "Policy number"}</p>
-                            <p className="font-bold text-stone-900 break-words">{policyNumber}</p>
+                        <div className="rounded-xl bg-black/5 p-2.5">
+                            <p className="text-black/55 mb-1">{t?.wallet?.policyNumber || "Policy number"}</p>
+                            <p className="font-bold text-black break-words">{policyNumber}</p>
                         </div>
-                        <div className="rounded-xl bg-stone-50 p-2.5">
-                            <p className="text-stone-500 mb-1">{t?.wallet?.type || "Type"}</p>
-                            <p className="font-bold text-stone-900">{policyTypeLabel}</p>
+                        <div className="rounded-xl bg-black/5 p-2.5">
+                            <p className="text-black/55 mb-1">{t?.wallet?.type || "Type"}</p>
+                            <p className="font-bold text-black">{policyTypeLabel}</p>
                         </div>
-                        <div className="rounded-xl bg-stone-50 p-2.5">
-                            <p className="text-stone-500 mb-1">{t?.wallet?.starts || "Starts"}</p>
-                            <p className="font-bold text-stone-900">{formatDate(startDate, locale)}</p>
+                        <div className="rounded-xl bg-black/5 p-2.5">
+                            <p className="text-black/55 mb-1">{t?.wallet?.starts || "Starts"}</p>
+                            <p className="font-bold text-black">{formatDate(startDate, locale)}</p>
                         </div>
-                        <div className="rounded-xl bg-stone-50 p-2.5">
-                            <p className="text-stone-500 mb-1">{t?.wallet?.ends || "Ends"}</p>
-                            <p className="font-bold text-stone-900">{formatDate(endDate, locale)}</p>
+                        <div className="rounded-xl bg-black/5 p-2.5">
+                            <p className="text-black/55 mb-1">{t?.wallet?.ends || "Ends"}</p>
+                            <p className="font-bold text-black">{formatDate(endDate, locale)}</p>
                         </div>
                     </div>
                 </section>
 
                 {/* People & Roles — structured names with roles, contact, and relationship */}
                 {hasPeopleDetails ? (
-                    <section className="rounded-2xl border border-stone-200 bg-white p-4">
+                    <section className="rounded-2xl border border-black/10 bg-white p-4">
                         <div className="flex items-center gap-2 mb-3">
-                            <Users className="w-4 h-4 text-indigo-600" />
-                            <h2 className="text-[15px] font-black text-stone-900">{copy.peopleAndRoles}</h2>
+                            <Users className="w-4 h-4 text-[#19b870]" />
+                            <h2 className="text-[15px] font-black text-black">{copy.peopleAndRoles}</h2>
                         </div>
                         <div className="space-y-2">
                             {policyPeople.map((person, idx) => {
                                 const roleColorMap: Record<string, string> = {
                                     policyholder: "bg-sky-100 text-sky-700 border-sky-200",
-                                    insured: "bg-emerald-100 text-emerald-700 border-emerald-200",
-                                    beneficiary: "bg-violet-100 text-violet-700 border-violet-200",
+                                    insured: "bg-[#1FDC86]/12 text-[#19b870] border-[#1FDC86]/30",
+                                    beneficiary: "bg-[#1FDC86]/12 text-[#19b870] border-[#1FDC86]/30",
                                     agent: "bg-amber-100 text-amber-700 border-amber-200",
                                 }
                                 const roleIconMap: Record<string, React.ReactNode> = {
@@ -772,48 +772,48 @@ export function MobilePolicyDetails({
                                     agent: <Building2 className="w-3.5 h-3.5" />,
                                 }
                                 return (
-                                    <div key={`${person.name}-${person.role}-${idx}`} className="rounded-xl bg-stone-50 border border-stone-200 px-3 py-2.5">
+                                    <div key={`${person.name}-${person.role}-${idx}`} className="rounded-xl bg-black/5 border border-black/10 px-3 py-2.5">
                                         <div className="flex items-start justify-between gap-2">
                                             <div className="min-w-0 flex-1">
-                                                <p className="text-sm font-bold text-stone-900">{person.name}</p>
+                                                <p className="text-sm font-bold text-black">{person.name}</p>
                                                 {person.relationship && (
-                                                    <p className="text-[10px] text-stone-400 mt-0.5">
+                                                    <p className="text-[10px] text-black/45 mt-0.5">
                                                         {person.relationship}
                                                         {person.percentage != null ? ` · ${person.percentage}%` : ""}
                                                     </p>
                                                 )}
                                             </div>
-                                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-full border ${roleColorMap[person.role] || "bg-stone-100 text-stone-600 border-stone-200"}`}>
+                                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-full border ${roleColorMap[person.role] || "bg-black/10 text-black/65 border-black/10"}`}>
                                                 {roleIconMap[person.role]}
                                                 {person.roleLabel}
                                             </span>
                                         </div>
                                         {(person.email || person.phone || person.taxId || person.address || person.contact) && (
-                                            <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 pt-2 border-t border-stone-100">
+                                            <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 pt-2 border-t border-black/10">
                                                 {person.email && (
-                                                    <span className="inline-flex items-center gap-1 text-[10px] text-stone-500">
-                                                        <Mail className="w-3 h-3 text-stone-400" />{person.email}
+                                                    <span className="inline-flex items-center gap-1 text-[10px] text-black/55">
+                                                        <Mail className="w-3 h-3 text-black/45" />{person.email}
                                                     </span>
                                                 )}
                                                 {person.phone && (
-                                                    <span className="inline-flex items-center gap-1 text-[10px] text-stone-500">
-                                                        <Phone className="w-3 h-3 text-stone-400" />{person.phone}
+                                                    <span className="inline-flex items-center gap-1 text-[10px] text-black/55">
+                                                        <Phone className="w-3 h-3 text-black/45" />{person.phone}
                                                     </span>
                                                 )}
                                                 {person.taxId && (
-                                                    <span className="inline-flex items-center gap-1 text-[10px] text-stone-500">
-                                                        <Shield className="w-3 h-3 text-stone-400" />
+                                                    <span className="inline-flex items-center gap-1 text-[10px] text-black/55">
+                                                        <Shield className="w-3 h-3 text-black/45" />
                                                         {isGreek ? "ΑΦΜ" : "Tax ID"}: {person.taxId}
                                                     </span>
                                                 )}
                                                 {person.address && (
-                                                    <span className="inline-flex items-center gap-1 text-[10px] text-stone-500">
-                                                        <Home className="w-3 h-3 text-stone-400" />{person.address}
+                                                    <span className="inline-flex items-center gap-1 text-[10px] text-black/55">
+                                                        <Home className="w-3 h-3 text-black/45" />{person.address}
                                                     </span>
                                                 )}
                                                 {person.contact && (
-                                                    <span className="inline-flex items-center gap-1 text-[10px] text-stone-500">
-                                                        <Phone className="w-3 h-3 text-stone-400" />{person.contact}
+                                                    <span className="inline-flex items-center gap-1 text-[10px] text-black/55">
+                                                        <Phone className="w-3 h-3 text-black/45" />{person.contact}
                                                     </span>
                                                 )}
                                             </div>
@@ -824,19 +824,19 @@ export function MobilePolicyDetails({
 
                             {/* Insurer contact row */}
                             {insurerContact && (
-                                <div className="rounded-xl bg-stone-50 border border-stone-200 px-3 py-2.5">
+                                <div className="rounded-xl bg-black/5 border border-black/10 px-3 py-2.5">
                                     <div className="flex items-start justify-between gap-2">
                                         <div className="min-w-0 flex-1">
-                                            <p className="text-sm font-bold text-stone-900">{insurerName}</p>
+                                            <p className="text-sm font-bold text-black">{insurerName}</p>
                                         </div>
-                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-full border bg-teal-100 text-teal-700 border-teal-200">
+                                        <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider rounded-full border bg-[#1FDC86]/12 text-[#19b870] border-[#1FDC86]/30">
                                             <Building2 className="w-3.5 h-3.5" />
                                             {copy.roleInsurer}
                                         </span>
                                     </div>
-                                    <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 pt-2 border-t border-stone-100">
-                                        <span className="inline-flex items-center gap-1 text-[10px] text-stone-500">
-                                            <Phone className="w-3 h-3 text-stone-400" />{insurerContact}
+                                    <div className="flex flex-wrap gap-x-3 gap-y-1 mt-2 pt-2 border-t border-black/10">
+                                        <span className="inline-flex items-center gap-1 text-[10px] text-black/55">
+                                            <Phone className="w-3 h-3 text-black/45" />{insurerContact}
                                         </span>
                                     </div>
                                 </div>
@@ -847,64 +847,64 @@ export function MobilePolicyDetails({
 
                 {/* Insured Item (Vehicle / Property) */}
                 {hasInsuredItemDetails && (
-                    <section className="rounded-2xl border border-stone-200 bg-white p-4">
+                    <section className="rounded-2xl border border-black/10 bg-white p-4">
                         <div className="flex items-center gap-2 mb-2">
                             {vehicleInfo?.plateNumber || vehicleInfo?.make ? (
-                                <Car className="w-4 h-4 text-blue-600" />
+                                <Car className="w-4 h-4 text-[#19b870]" />
                             ) : (
                                 <Home className="w-4 h-4 text-orange-600" />
                             )}
-                            <h2 className="text-[15px] font-black text-stone-900">{copy.insuredItem}</h2>
+                            <h2 className="text-[15px] font-black text-black">{copy.insuredItem}</h2>
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-sm">
                             {vehicleInfo?.make && (
-                                <div className="rounded-xl bg-stone-50 p-2.5">
-                                    <p className="text-stone-500 mb-1">{isGreek ? "Μάρκα / Μοντέλο" : "Make / Model"}</p>
-                                    <p className="font-bold text-stone-900">
+                                <div className="rounded-xl bg-black/5 p-2.5">
+                                    <p className="text-black/55 mb-1">{isGreek ? "Μάρκα / Μοντέλο" : "Make / Model"}</p>
+                                    <p className="font-bold text-black">
                                         {[asText(vehicleInfo.make), asText(vehicleInfo.model)].filter(Boolean).join(" ") || "-"}
                                     </p>
                                 </div>
                             )}
                             {vehicleInfo?.year && (
-                                <div className="rounded-xl bg-stone-50 p-2.5">
-                                    <p className="text-stone-500 mb-1">{isGreek ? "Έτος" : "Year"}</p>
-                                    <p className="font-bold text-stone-900">{vehicleInfo.year}</p>
+                                <div className="rounded-xl bg-black/5 p-2.5">
+                                    <p className="text-black/55 mb-1">{isGreek ? "Έτος" : "Year"}</p>
+                                    <p className="font-bold text-black">{vehicleInfo.year}</p>
                                 </div>
                             )}
                             {vehicleInfo?.plateNumber && (
-                                <div className="rounded-xl bg-stone-50 p-2.5">
-                                    <p className="text-stone-500 mb-1">{t?.wallet?.plateNumber || "Plate number"}</p>
-                                    <p className="font-bold text-stone-900 font-mono">{vehicleInfo.plateNumber}</p>
+                                <div className="rounded-xl bg-black/5 p-2.5">
+                                    <p className="text-black/55 mb-1">{t?.wallet?.plateNumber || "Plate number"}</p>
+                                    <p className="font-bold text-black font-mono">{vehicleInfo.plateNumber}</p>
                                 </div>
                             )}
                             {vehicleInfo?.vin && (
-                                <div className="rounded-xl bg-stone-50 p-2.5">
-                                    <p className="text-stone-500 mb-1">VIN</p>
-                                    <p className="font-bold text-stone-900 font-mono text-xs">{vehicleInfo.vin}</p>
+                                <div className="rounded-xl bg-black/5 p-2.5">
+                                    <p className="text-black/55 mb-1">VIN</p>
+                                    <p className="font-bold text-black font-mono text-xs">{vehicleInfo.vin}</p>
                                 </div>
                             )}
                             {vehicleInfo?.usage && (
-                                <div className="rounded-xl bg-stone-50 p-2.5">
-                                    <p className="text-stone-500 mb-1">{isGreek ? "Χρήση" : "Usage"}</p>
-                                    <p className="font-bold text-stone-900 capitalize">{vehicleInfo.usage}</p>
+                                <div className="rounded-xl bg-black/5 p-2.5">
+                                    <p className="text-black/55 mb-1">{isGreek ? "Χρήση" : "Usage"}</p>
+                                    <p className="font-bold text-black capitalize">{vehicleInfo.usage}</p>
                                 </div>
                             )}
                             {propertyInfo?.address && (
-                                <div className="rounded-xl bg-stone-50 p-2.5 col-span-2">
-                                    <p className="text-stone-500 mb-1">{isGreek ? "Διεύθυνση" : "Address"}</p>
-                                    <p className="font-bold text-stone-900">{propertyInfo.address}</p>
+                                <div className="rounded-xl bg-black/5 p-2.5 col-span-2">
+                                    <p className="text-black/55 mb-1">{isGreek ? "Διεύθυνση" : "Address"}</p>
+                                    <p className="font-bold text-black">{propertyInfo.address}</p>
                                 </div>
                             )}
                             {propertyInfo?.type && (
-                                <div className="rounded-xl bg-stone-50 p-2.5">
-                                    <p className="text-stone-500 mb-1">{isGreek ? "Τύπος" : "Type"}</p>
-                                    <p className="font-bold text-stone-900 capitalize">{propertyInfo.type}</p>
+                                <div className="rounded-xl bg-black/5 p-2.5">
+                                    <p className="text-black/55 mb-1">{isGreek ? "Τύπος" : "Type"}</p>
+                                    <p className="font-bold text-black capitalize">{propertyInfo.type}</p>
                                 </div>
                             )}
                             {propertyInfo?.squareMeters && (
-                                <div className="rounded-xl bg-stone-50 p-2.5">
-                                    <p className="text-stone-500 mb-1">{isGreek ? "Εμβαδόν" : "Area"}</p>
-                                    <p className="font-bold text-stone-900">{propertyInfo.squareMeters} m²</p>
+                                <div className="rounded-xl bg-black/5 p-2.5">
+                                    <p className="text-black/55 mb-1">{isGreek ? "Εμβαδόν" : "Area"}</p>
+                                    <p className="font-bold text-black">{propertyInfo.squareMeters} m²</p>
                                 </div>
                             )}
                         </div>
@@ -913,8 +913,8 @@ export function MobilePolicyDetails({
 
                 {/* AI Gap Analysis — interactive, matching desktop capabilities */}
                 {hasAnalysis || uniqueGaps.length > 0 || analysisInProgress ? (
-                <section className="rounded-2xl border border-stone-200 bg-white overflow-hidden">
-                    <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-4 py-3 flex items-center justify-between">
+                <section className="rounded-2xl border border-black/10 bg-white overflow-hidden">
+                    <div className="bg-gradient-to-r from-[#1FDC86] to-[#19b870] px-4 py-3 flex items-center justify-between">
                         <div className="flex items-center gap-2.5 text-white">
                             <div className="w-9 h-9 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
                                 <Sparkles className="w-4.5 h-4.5" />
@@ -922,7 +922,7 @@ export function MobilePolicyDetails({
                             <div>
                                 <h2 className="text-[14px] font-black">{copy.aiAnalysis}</h2>
                                 {uniqueGaps.length > 0 && (
-                                    <p className="text-[10px] text-emerald-100 font-semibold mt-0.5">
+                                    <p className="text-[10px] text-[#1FDC86]/12 font-semibold mt-0.5">
                                         {uniqueGaps.length} {copy.gaps}
                                     </p>
                                 )}
@@ -931,7 +931,7 @@ export function MobilePolicyDetails({
                         <button
                             onClick={handleAnalyze}
                             disabled={analysisInProgress}
-                            className="px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50 backdrop-blur-sm border border-white/30 cursor-pointer flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-emerald-600"
+                            className="px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50 backdrop-blur-sm border border-white/30 cursor-pointer flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#19b870]"
                         >
                             {analysisInProgress ? (
                                 <>
@@ -950,13 +950,13 @@ export function MobilePolicyDetails({
                     <div className="p-4">
                         {uniqueGaps.length === 0 ? (
                             <div className="text-center py-6">
-                                <div className="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center mx-auto mb-3">
-                                    <Sparkles className="w-6 h-6 text-emerald-600" />
+                                <div className="w-12 h-12 rounded-2xl bg-[#1FDC86]/12 flex items-center justify-center mx-auto mb-3">
+                                    <Sparkles className="w-6 h-6 text-[#19b870]" />
                                 </div>
-                                <p className="text-sm text-stone-600 font-semibold mb-1">
+                                <p className="text-sm text-black/65 font-semibold mb-1">
                                     {analysisInProgress ? copy.analysisInProgress : copy.noGaps}
                                 </p>
-                                <p className="text-xs text-stone-400">
+                                <p className="text-xs text-black/45">
                                     {analysisInProgress ? copy.analysisInProgressHint : copy.noGapsRunDesc}
                                 </p>
                             </div>
@@ -973,10 +973,10 @@ export function MobilePolicyDetails({
                                     return (
                                         <div
                                             key={gap.id}
-                                            className="bg-gradient-to-r from-red-50 to-rose-50 p-3.5 rounded-xl border border-red-200"
+                                            className="bg-gradient-to-r from-red-50 to-red-50 p-3.5 rounded-xl border border-red-200"
                                         >
                                             <div className="flex items-start gap-3">
-                                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center flex-shrink-0 mt-0.5">
                                                     <AlertTriangle className="w-4 h-4 text-white" />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
@@ -987,7 +987,7 @@ export function MobilePolicyDetails({
                                                         <button
                                                             onClick={() => handleIgnore(gap.id)}
                                                             disabled={ignoring === gap.id}
-                                                            className="p-1 rounded-md text-stone-400 hover:bg-white/60 hover:text-stone-600 transition-colors flex-shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1"
+                                                            className="p-1 rounded-md text-black/45 hover:bg-white/60 hover:text-black/65 transition-colors flex-shrink-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-1"
                                                             title={copy.hide}
                                                         >
                                                             <EyeOff className="w-3.5 h-3.5" />
@@ -1033,10 +1033,10 @@ export function MobilePolicyDetails({
 
                 {/* Structured Coverages */}
                 {hasCoverageDetails ? (
-                <section className="rounded-2xl border border-stone-200 bg-white p-4">
+                <section className="rounded-2xl border border-black/10 bg-white p-4">
                     <div className="flex items-center gap-2 mb-3">
-                        <ShieldCheck className="w-4 h-4 text-teal-600" />
-                        <h2 className="text-[15px] font-black text-stone-900">{copy.topCoverages}</h2>
+                        <ShieldCheck className="w-4 h-4 text-[#19b870]" />
+                        <h2 className="text-[15px] font-black text-black">{copy.topCoverages}</h2>
                     </div>
                     <div className="space-y-2">
                             {allCoverages.map((coverage: any, index: number) => {
@@ -1046,30 +1046,30 @@ export function MobilePolicyDetails({
                                 return (
                                     <div
                                         key={`${coverage?.name || "coverage"}-${index}`}
-                                        className="rounded-xl bg-stone-50 px-3 py-2.5 border border-stone-200"
+                                        className="rounded-xl bg-black/5 px-3 py-2.5 border border-black/10"
                                     >
                                         <div className="flex justify-between items-start gap-2">
                                             <div className="min-w-0 flex-1">
-                                                <p className="text-sm font-bold text-stone-900 uppercase tracking-tight">
+                                                <p className="text-sm font-bold text-black uppercase tracking-tight">
                                                     {localizeCoverageName(
                                                         String(coverage?.name || coverage?.coverageName || "-"),
                                                         t?.coverage_names as Record<string, string>
                                                     )}
                                                 </p>
                                                 {deductibleDisplay && (
-                                                    <p className="text-[10px] text-stone-400 mt-0.5">
+                                                    <p className="text-[10px] text-black/45 mt-0.5">
                                                         {copy.deductibleLabel} {deductibleDisplay}
                                                     </p>
                                                 )}
                                             </div>
                                             {limitDisplay && (
-                                                <span className="font-mono text-xs text-teal-600 font-bold bg-teal-50 px-2 py-1 rounded-lg flex-shrink-0">
+                                                <span className="font-mono text-xs text-[#19b870] font-bold bg-[#1FDC86]/12 px-2 py-1 rounded-lg flex-shrink-0">
                                                     {limitDisplay}
                                                 </span>
                                             )}
                                         </div>
                                         {explanation && (
-                                            <p className="text-[11px] text-stone-500 leading-snug mt-1.5 border-t border-stone-100 pt-1.5">
+                                            <p className="text-[11px] text-black/55 leading-snug mt-1.5 border-t border-black/10 pt-1.5">
                                                 {explanation}
                                             </p>
                                         )}
@@ -1091,22 +1091,22 @@ export function MobilePolicyDetails({
 
                 {/* Renewal history */}
                 {hasRenewalHistory ? (
-                <section className="rounded-2xl border border-stone-200 bg-white p-4">
+                <section className="rounded-2xl border border-black/10 bg-white p-4">
                     <div className="flex items-center gap-2 mb-2">
-                        <History className="w-4 h-4 text-violet-700" />
-                        <h2 className="text-[15px] font-black text-stone-900">{copy.renewalHistory}</h2>
+                        <History className="w-4 h-4 text-[#19b870]" />
+                        <h2 className="text-[15px] font-black text-black">{copy.renewalHistory}</h2>
                     </div>
                     <ul className="space-y-2">
                             {renewalHistory.map((entry: any) => (
-                                <li key={entry.id} className="rounded-xl border border-stone-200 bg-stone-50 px-3 py-2">
-                                    <p className="text-sm font-semibold text-stone-900">
+                                <li key={entry.id} className="rounded-xl border border-black/10 bg-black/5 px-3 py-2">
+                                    <p className="text-sm font-semibold text-black">
                                         {formatDate(entry.startDate, locale)} - {formatDate(entry.endDate, locale)}
                                     </p>
                                     {entry.sourceDocumentName ? (
-                                        <p className="text-xs text-stone-500 mt-0.5">{entry.sourceDocumentName}</p>
+                                        <p className="text-xs text-black/55 mt-0.5">{entry.sourceDocumentName}</p>
                                     ) : null}
                                     {entry.mergedAt ? (
-                                        <p className="text-xs text-stone-400 mt-0.5">
+                                        <p className="text-xs text-black/45 mt-0.5">
                                             <span className="inline-flex items-center gap-1">
                                                 <Calendar className="w-3 h-3" />
                                                 {formatDate(entry.mergedAt, locale)}
@@ -1121,25 +1121,25 @@ export function MobilePolicyDetails({
 
                 {/* Documents */}
                 {hasDocuments ? (
-                <section className="rounded-2xl border border-stone-200 bg-white p-4">
+                <section className="rounded-2xl border border-black/10 bg-white p-4">
                     <div className="flex items-center gap-2 mb-2">
-                        <FileText className="w-4 h-4 text-teal-700" />
-                        <h2 className="text-[15px] font-black text-stone-900">{t?.wallet?.documents || "Documents"}</h2>
+                        <FileText className="w-4 h-4 text-[#19b870]" />
+                        <h2 className="text-[15px] font-black text-black">{t?.wallet?.documents || "Documents"}</h2>
                     </div>
                     <ul className="space-y-2">
                             {documents.map((doc: any) => (
                                 <li key={doc.id}>
                                     <button
                                         onClick={() => onDownloadDocument?.(doc.fileUrl)}
-                                        className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-left hover:bg-stone-50 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                                        className="w-full rounded-xl border border-black/10 bg-white px-3 py-2.5 text-left hover:bg-black/5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86] focus-visible:ring-offset-2"
                                     >
                                         <div className="flex items-center gap-3">
-                                            <div className="w-9 h-9 rounded-xl bg-stone-100 flex items-center justify-center">
-                                                <Download className="w-4 h-4 text-stone-700" />
+                                            <div className="w-9 h-9 rounded-xl bg-black/10 flex items-center justify-center">
+                                                <Download className="w-4 h-4 text-black/75" />
                                             </div>
                                             <div className="min-w-0">
-                                                <p className="text-sm font-semibold text-stone-900 truncate">{doc.fileName}</p>
-                                                <p className="text-xs text-stone-500">{formatDate(doc.uploadedAt, locale)}</p>
+                                                <p className="text-sm font-semibold text-black truncate">{doc.fileName}</p>
+                                                <p className="text-xs text-black/55">{formatDate(doc.uploadedAt, locale)}</p>
                                             </div>
                                         </div>
                                     </button>
@@ -1171,3 +1171,4 @@ export function MobilePolicyDetails({
         </div>
     )
 }
+

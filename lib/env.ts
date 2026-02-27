@@ -12,7 +12,9 @@ const envSchema = z.object({
     GEMINI_API_KEY: z.string().optional(),
     GEMINI_MODEL_EXTRACTION: z.string().default("gemini-2.0-flash-exp"),
     GEMINI_MODEL_GAP_ANALYSIS: z.string().default("gemini-2.0-flash-exp"),
+    GEMINI_MODEL_CLARITY_ANALYSIS: z.string().default("gemini-2.0-flash-exp"),
     GEMINI_MODEL_QA: z.string().default("gemini-2.0-flash"),
+    GEMINI_MODEL_FALLBACK: z.string().default("gemini-2.0-flash-exp"),
 
     // Storage (Optional - Defaults to local /public/uploads)
     STORAGE_BUCKET: z.string().optional(),

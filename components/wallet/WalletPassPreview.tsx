@@ -11,13 +11,13 @@ export function WalletPassPreview({ policy, holderName, plateNumber }: WalletPas
     const getGradient = (type: string) => {
         switch (type) {
             case 'health':
-                return 'from-rose-500 via-pink-600 to-purple-700'
+                return 'from-black via-[#111111] to-[#19b870]'
             case 'home':
-                return 'from-emerald-500 via-teal-600 to-cyan-700'
+                return 'from-black via-[#111111] to-[#1FDC86]'
             case 'motor':
-                return 'from-blue-600 via-indigo-700 to-slate-800'
+                return 'from-[#111111] via-black to-[#1FDC86]'
             default:
-                return 'from-stone-700 via-stone-800 to-stone-900'
+                return 'from-black via-[#111111] to-[#19b870]'
         }
     }
 
@@ -95,7 +95,7 @@ export function WalletPassPreview({ policy, holderName, plateNumber }: WalletPas
                                 <div className="text-right">
                                     <p className="text-[10px] uppercase tracking-widest opacity-60 font-semibold">Plate No</p>
                                     <div className="flex items-center gap-1 justify-end">
-                                        <span className="bg-blue-700 text-white text-[8px] font-bold px-1 rounded-sm border border-blue-800 shadow-sm">GR</span>
+                                        <span className="bg-[#111111] text-white text-[8px] font-bold px-1 rounded-sm border border-white/20 shadow-sm">GR</span>
                                         <p className="font-mono text-lg font-bold tracking-wider text-shadow-sm">
                                             {plateNumber}
                                         </p>
