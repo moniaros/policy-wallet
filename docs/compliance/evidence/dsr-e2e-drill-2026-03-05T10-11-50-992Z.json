@@ -1,0 +1,369 @@
+{
+  "capturedAt": "2026-03-05T10:11:59.673Z",
+  "drillTag": "DSR_E2E_DRILL_1772705514219",
+  "adminActor": {
+    "id": "cmmbtdlap0000qyzriolwylqo",
+    "email": "sre.drill.admin.1772615290190@example.com"
+  },
+  "baselineSnapshot": {
+    "generatedAt": "2026-03-05T10:11:54.831Z",
+    "windowHours": 24,
+    "pendingSlaHours": 24,
+    "summary": {
+      "totalOpenRequests": 0,
+      "openDataExportRequests": 0,
+      "openDeletionRequests": 0,
+      "failedInWindow": 0,
+      "completedInWindow": 0,
+      "pendingBeyondSla": 0
+    },
+    "dataExportStatusBreakdown": [],
+    "deletionStatusBreakdown": [],
+    "samples": {
+      "failedRequests": [],
+      "oldestPending": []
+    },
+    "needsAttention": false
+  },
+  "postSnapshot": {
+    "generatedAt": "2026-03-05T10:11:58.361Z",
+    "windowHours": 24,
+    "pendingSlaHours": 24,
+    "summary": {
+      "totalOpenRequests": 0,
+      "openDataExportRequests": 0,
+      "openDeletionRequests": 0,
+      "failedInWindow": 0,
+      "completedInWindow": 3,
+      "pendingBeyondSla": 0
+    },
+    "dataExportStatusBreakdown": [
+      {
+        "status": "completed",
+        "count": 2
+      }
+    ],
+    "deletionStatusBreakdown": [
+      {
+        "status": "completed",
+        "count": 1
+      }
+    ],
+    "samples": {
+      "failedRequests": [],
+      "oldestPending": []
+    },
+    "needsAttention": false
+  },
+  "cleanupSnapshot": {
+    "generatedAt": "2026-03-05T10:11:59.483Z",
+    "windowHours": 24,
+    "pendingSlaHours": 24,
+    "summary": {
+      "totalOpenRequests": 0,
+      "openDataExportRequests": 0,
+      "openDeletionRequests": 0,
+      "failedInWindow": 0,
+      "completedInWindow": 0,
+      "pendingBeyondSla": 0
+    },
+    "dataExportStatusBreakdown": [],
+    "deletionStatusBreakdown": [],
+    "samples": {
+      "failedRequests": [],
+      "oldestPending": []
+    },
+    "needsAttention": false
+  },
+  "lifecycleEvidence": {
+    "dataExports": [
+      {
+        "id": "cmmdb3dxj0004m2yzrr5gdvtg",
+        "status": "completed",
+        "requestSource": "self_service",
+        "requestedAt": "2026-03-05T10:11:55.591Z",
+        "startedAt": "2026-03-05T10:11:55.707Z",
+        "completedAt": "2026-03-05T10:11:56.102Z",
+        "expiresAt": "2026-03-12T10:11:56.102Z",
+        "errorMessage": null
+      },
+      {
+        "id": "cmmdb3ehe0007m2yzbo9k8vxn",
+        "status": "completed",
+        "requestSource": "self_service",
+        "requestedAt": "2026-03-05T10:11:56.306Z",
+        "startedAt": "2026-03-05T10:11:56.545Z",
+        "completedAt": "2026-03-05T10:11:56.924Z",
+        "expiresAt": "2026-03-12T10:11:56.924Z",
+        "errorMessage": null
+      }
+    ],
+    "deletionRequests": [
+      {
+        "id": "cmmdb3f3x000bm2yz1eut6w98",
+        "status": "completed",
+        "legalBasis": "GDPR_ARTICLE_17",
+        "retentionNotes": "DSR_E2E_DRILL_1772705514219: no legal hold",
+        "operatorNotes": "DSR_E2E_DRILL_1772705514219: created for E2E drill\n2026-03-05T10:11:58.217Z - DSR_E2E_DRILL_1772705514219: execution completed",
+        "requestedAt": "2026-03-05T10:11:57.118Z",
+        "reviewedAt": "2026-03-05T10:11:57.457Z",
+        "completedAt": "2026-03-05T10:11:58.217Z",
+        "errorMessage": null
+      }
+    ],
+    "activityLogs": [
+      {
+        "id": "cmmdb3een0005m2yzyffmpz1p",
+        "adminUserId": "cmmbtdlap0000qyzriolwylqo",
+        "adminEmail": "sre.drill.admin.1772615290190@example.com",
+        "actionType": "EXECUTE_DATA_EXPORT_REQUEST",
+        "description": "[DSR_E2E_DRILL_1772705514219] Executed data export request cmmdb3dxj0004m2yzrr5gdvtg",
+        "metadata": {
+          "flow": "export_a",
+          "drillTag": "DSR_E2E_DRILL_1772705514219",
+          "requestId": "cmmdb3dxj0004m2yzrr5gdvtg"
+        },
+        "timestamp": "2026-03-05T10:11:56.207Z"
+      },
+      {
+        "id": "cmmdb3emo0008m2yzybsq68vf",
+        "adminUserId": "cmmbtdlap0000qyzriolwylqo",
+        "adminEmail": "sre.drill.admin.1772615290190@example.com",
+        "actionType": "EXECUTE_DATA_EXPORT_REQUEST_FAILED",
+        "description": "[DSR_E2E_DRILL_1772705514219] Failed data export request cmmdb3ehe0007m2yzbo9k8vxn",
+        "metadata": {
+          "flow": "export_b",
+          "phase": "failed",
+          "drillTag": "DSR_E2E_DRILL_1772705514219",
+          "requestId": "cmmdb3ehe0007m2yzbo9k8vxn"
+        },
+        "timestamp": "2026-03-05T10:11:56.496Z"
+      },
+      {
+        "id": "cmmdb3f1b0009m2yz63flqwr4",
+        "adminUserId": "cmmbtdlap0000qyzriolwylqo",
+        "adminEmail": "sre.drill.admin.1772615290190@example.com",
+        "actionType": "EXECUTE_DATA_EXPORT_REQUEST_RETRY",
+        "description": "[DSR_E2E_DRILL_1772705514219] Retried and completed data export request cmmdb3ehe0007m2yzbo9k8vxn",
+        "metadata": {
+          "flow": "export_b",
+          "phase": "retry_completed",
+          "drillTag": "DSR_E2E_DRILL_1772705514219",
+          "requestId": "cmmdb3ehe0007m2yzbo9k8vxn"
+        },
+        "timestamp": "2026-03-05T10:11:57.023Z"
+      },
+      {
+        "id": "cmmdb3f9d000cm2yz1mf19bxd",
+        "adminUserId": "cmmbtdlap0000qyzriolwylqo",
+        "adminEmail": "sre.drill.admin.1772615290190@example.com",
+        "actionType": "DELETION_REQUEST_IN_REVIEW",
+        "description": "[DSR_E2E_DRILL_1772705514219] Marked deletion request cmmdb3f3x000bm2yz1eut6w98 in_review",
+        "metadata": {
+          "phase": "in_review",
+          "drillTag": "DSR_E2E_DRILL_1772705514219",
+          "requestId": "cmmdb3f3x000bm2yz1eut6w98"
+        },
+        "timestamp": "2026-03-05T10:11:57.313Z"
+      },
+      {
+        "id": "cmmdb3fc2000dm2yzb7w2jzok",
+        "adminUserId": "cmmbtdlap0000qyzriolwylqo",
+        "adminEmail": "sre.drill.admin.1772615290190@example.com",
+        "actionType": "APPROVE_DELETION_REQUEST",
+        "description": "[DSR_E2E_DRILL_1772705514219] Approved deletion request cmmdb3f3x000bm2yz1eut6w98",
+        "metadata": {
+          "phase": "approved",
+          "drillTag": "DSR_E2E_DRILL_1772705514219",
+          "requestId": "cmmdb3f3x000bm2yz1eut6w98"
+        },
+        "timestamp": "2026-03-05T10:11:57.410Z"
+      },
+      {
+        "id": "cmmdb3fg3000em2yz2gvspudi",
+        "adminUserId": "cmmbtdlap0000qyzriolwylqo",
+        "adminEmail": "sre.drill.admin.1772615290190@example.com",
+        "actionType": "EXECUTE_DELETION_REQUEST_STARTED",
+        "description": "[DSR_E2E_DRILL_1772705514219] Started deletion execution for cmmdb3f3x000bm2yz1eut6w98",
+        "metadata": {
+          "phase": "processing",
+          "drillTag": "DSR_E2E_DRILL_1772705514219",
+          "requestId": "cmmdb3f3x000bm2yz1eut6w98"
+        },
+        "timestamp": "2026-03-05T10:11:57.556Z"
+      },
+      {
+        "id": "cmmdb3g16000gm2yz54xz8v95",
+        "adminUserId": "cmmbtdlap0000qyzriolwylqo",
+        "adminEmail": "sre.drill.admin.1772615290190@example.com",
+        "actionType": "EXECUTE_DELETION_REQUEST",
+        "description": "[DSR_E2E_DRILL_1772705514219] Completed deletion request cmmdb3f3x000bm2yz1eut6w98",
+        "metadata": {
+          "phase": "completed",
+          "summary": {
+            "anonymizedEmail": "deleted+cmmdb3drl0000m2yzhyskasfv.1772705517602@deleted.policywallet.local",
+            "deletedAccounts": 0,
+            "deletedPolicies": 1,
+            "deletedSessions": 0,
+            "deletedActiveSessions": 0
+          },
+          "drillTag": "DSR_E2E_DRILL_1772705514219",
+          "requestId": "cmmdb3f3x000bm2yz1eut6w98"
+        },
+        "timestamp": "2026-03-05T10:11:58.314Z"
+      }
+    ]
+  },
+  "acceptanceChecks": {
+    "exportCompletesSuccessfully": true,
+    "deletionCompletesSuccessfully": true,
+    "failedRequestHandlingDocumented": true,
+    "activityLogsCaptured": true,
+    "finalSnapshotCaptured": true
+  },
+  "notes": [
+    "DSR UI screenshots were not captured in this execution pass due local runtime instability; lifecycle state evidence is attached from persisted DB records and DSR snapshot service.",
+    "All drill artifacts were cleaned up after evidence capture to avoid polluting production-like datasets."
+  ],
+  "timeline": [
+    {
+      "step": "baseline_snapshot_captured",
+      "at": "2026-03-05T10:11:55.375Z",
+      "details": {
+        "generatedAt": "2026-03-05T10:11:54.831Z",
+        "needsAttention": false,
+        "summary": {
+          "totalOpenRequests": 0,
+          "openDataExportRequests": 0,
+          "openDeletionRequests": 0,
+          "failedInWindow": 0,
+          "completedInWindow": 0,
+          "pendingBeyondSla": 0
+        }
+      }
+    },
+    {
+      "step": "drill_user_created",
+      "at": "2026-03-05T10:11:55.475Z",
+      "details": {
+        "userId": "cmmdb3drl0000m2yzhyskasfv",
+        "email": "dsr.e2e.drill.1772705515375@example.com"
+      }
+    },
+    {
+      "step": "drill_policy_seeded",
+      "at": "2026-03-05T10:11:55.589Z"
+    },
+    {
+      "step": "export_request_a_created",
+      "at": "2026-03-05T10:11:55.707Z",
+      "details": {
+        "requestId": "cmmdb3dxj0004m2yzrr5gdvtg",
+        "status": "requested"
+      }
+    },
+    {
+      "step": "export_request_a_processing",
+      "at": "2026-03-05T10:11:55.802Z",
+      "details": {
+        "requestId": "cmmdb3dxj0004m2yzrr5gdvtg"
+      }
+    },
+    {
+      "step": "export_request_a_completed",
+      "at": "2026-03-05T10:11:56.304Z",
+      "details": {
+        "requestId": "cmmdb3dxj0004m2yzrr5gdvtg"
+      }
+    },
+    {
+      "step": "export_request_b_failed",
+      "at": "2026-03-05T10:11:56.544Z",
+      "details": {
+        "requestId": "cmmdb3ehe0007m2yzbo9k8vxn"
+      }
+    },
+    {
+      "step": "export_request_b_retry_completed",
+      "at": "2026-03-05T10:11:57.116Z",
+      "details": {
+        "requestId": "cmmdb3ehe0007m2yzbo9k8vxn"
+      }
+    },
+    {
+      "step": "deletion_request_created",
+      "at": "2026-03-05T10:11:57.216Z",
+      "details": {
+        "requestId": "cmmdb3f3x000bm2yz1eut6w98",
+        "status": "requested"
+      }
+    },
+    {
+      "step": "deletion_request_in_review",
+      "at": "2026-03-05T10:11:57.360Z",
+      "details": {
+        "requestId": "cmmdb3f3x000bm2yz1eut6w98"
+      }
+    },
+    {
+      "step": "deletion_request_approved",
+      "at": "2026-03-05T10:11:57.457Z",
+      "details": {
+        "requestId": "cmmdb3f3x000bm2yz1eut6w98"
+      }
+    },
+    {
+      "step": "deletion_request_completed",
+      "at": "2026-03-05T10:11:58.361Z",
+      "details": {
+        "requestId": "cmmdb3f3x000bm2yz1eut6w98",
+        "summary": {
+          "deletedPolicies": 1,
+          "deletedSessions": 0,
+          "deletedActiveSessions": 0,
+          "deletedAccounts": 0,
+          "anonymizedEmail": "deleted+cmmdb3drl0000m2yzhyskasfv.1772705517602@deleted.policywallet.local"
+        }
+      }
+    },
+    {
+      "step": "post_snapshot_captured",
+      "at": "2026-03-05T10:11:58.551Z",
+      "details": {
+        "generatedAt": "2026-03-05T10:11:58.361Z",
+        "needsAttention": false,
+        "summary": {
+          "totalOpenRequests": 0,
+          "openDataExportRequests": 0,
+          "openDeletionRequests": 0,
+          "failedInWindow": 0,
+          "completedInWindow": 3,
+          "pendingBeyondSla": 0
+        }
+      }
+    },
+    {
+      "step": "cleanup_completed",
+      "at": "2026-03-05T10:11:59.483Z",
+      "details": {
+        "startedAt": "2026-03-05T10:11:58.835Z",
+        "finishedAt": "2026-03-05T10:11:59.483Z"
+      }
+    },
+    {
+      "step": "cleanup_snapshot_captured",
+      "at": "2026-03-05T10:11:59.673Z",
+      "details": {
+        "generatedAt": "2026-03-05T10:11:59.483Z",
+        "summary": {
+          "totalOpenRequests": 0,
+          "openDataExportRequests": 0,
+          "openDeletionRequests": 0,
+          "failedInWindow": 0,
+          "completedInWindow": 0,
+          "pendingBeyondSla": 0
+        }
+      }
+    }
+  ]
+}

@@ -6,50 +6,32 @@ import { toast } from "sonner"
 import { deletePolicy } from "@/app/(protected)/wallet/actions"
 import { Trash2, AlertTriangle, X } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 
 export function DeletePolicy({ policyId }: { policyId: string }) {
     const [isDeleting, setIsDeleting] = useState(false)
     const [showConfirmModal, setShowConfirmModal] = useState(false)
     const router = useRouter()
-    const { language } = useLanguage()
+    const { t } = useLanguage()
 
-    const copy = {
-        deleting: language === 'el' ? 'Διαγραφή συμβολαίου...' : 'Deleting policy...',
-        deleted: language === 'el' ? 'Το συμβόλαιο διαγράφηκε επιτυχώς' : 'Policy deleted successfully',
-        fallbackError: language === 'el' ? 'Κάτι πήγε στραβά' : 'Something went wrong',
-        dangerZone: language === 'el' ? 'Ζώνη κινδύνου' : 'Danger Zone',
-        dangerDesc:
-            language === 'el'
-                ? 'Μόνιμη διαγραφή αυτού του συμβολαίου και όλων των σχετικών εγγράφων. Η ενέργεια δεν αναιρείται.'
-                : 'Permanently delete this policy and all associated documents. This action cannot be undone.',
-        deletePolicy: language === 'el' ? 'Διαγραφή συμβολαίου' : 'Delete Policy',
-        confirmDeletion: language === 'el' ? 'Επιβεβαίωση διαγραφής' : 'Confirm Deletion',
-        permanentAction: language === 'el' ? 'Η ενέργεια είναι οριστική' : 'This action is permanent',
-        confirmBody:
-            language === 'el'
-                ? 'Θέλετε σίγουρα να διαγράψετε αυτό το συμβόλαιο; Όλα τα σχετικά έγγραφα και οι αναλύσεις θα αφαιρεθούν οριστικά.'
-                : 'Are you sure you want to delete this policy? All associated documents and analysis insights will be permanently removed.',
-        cannotUndo: language === 'el' ? 'Η ενέργεια δεν μπορεί να αναιρεθεί' : 'This action cannot be undone',
-        cancel: language === 'el' ? 'Ακύρωση' : 'Cancel',
-        deleteForever: language === 'el' ? 'Οριστική διαγραφή' : 'Delete Forever',
-    }
+    const copy = t.wallet.deletePolicyModal
 
     const handleDelete = async () => {
         setIsDeleting(true)
         setShowConfirmModal(false)
-        const toastId = toast.loading(copy.deleting)
+        const toastId = toast.loading(t.toast.policyDeleting)
 
         try {
             const result = await deletePolicy(policyId)
             if (result.error) {
-                toast.error(result.error, { id: toastId })
+                toast.error(mapWalletErrorToMessage(result.error, t, "deletePolicy"), { id: toastId })
             } else {
-                toast.success(result.message || copy.deleted, { id: toastId })
+                toast.success(t.toast.policyDeleted, { id: toastId })
                 router.push("/wallet")
                 router.refresh()
             }
-        } catch (e) {
-            toast.error(copy.fallbackError, { id: toastId })
+        } catch {
+            toast.error(t.errors.somethingWentWrong, { id: toastId })
         } finally {
             setIsDeleting(false)
         }
@@ -65,9 +47,7 @@ export function DeletePolicy({ policyId }: { policyId: string }) {
                     <h3 className="text-sm font-black text-red-600 dark:text-red-400 uppercase tracking-widest">{copy.dangerZone}</h3>
                 </div>
 
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
-                    {copy.dangerDesc}
-                </p>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">{copy.dangerDesc}</p>
 
                 <button
                     onClick={() => setShowConfirmModal(true)}
@@ -79,11 +59,9 @@ export function DeletePolicy({ policyId }: { policyId: string }) {
                 </button>
             </div>
 
-            {/* Confirmation Modal */}
             {showConfirmModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                     <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 dark:border-slate-700">
-                        {/* Header */}
                         <div className="bg-gradient-to-r from-red-500 to-rose-600 p-6 text-white">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
@@ -104,11 +82,8 @@ export function DeletePolicy({ policyId }: { policyId: string }) {
                             </div>
                         </div>
 
-                        {/* Content */}
                         <div className="p-6">
-                            <p className="text-slate-700 dark:text-slate-300 mb-6 leading-relaxed">
-                                {copy.confirmBody}
-                            </p>
+                            <p className="text-slate-700 dark:text-slate-300 mb-6 leading-relaxed">{copy.confirmBody}</p>
 
                             <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6">
                                 <p className="text-sm text-amber-800 dark:text-amber-200 font-semibold flex items-center gap-2">
@@ -117,7 +92,6 @@ export function DeletePolicy({ policyId }: { policyId: string }) {
                                 </p>
                             </div>
 
-                            {/* Actions */}
                             <div className="flex gap-3">
                                 <button
                                     onClick={() => setShowConfirmModal(false)}

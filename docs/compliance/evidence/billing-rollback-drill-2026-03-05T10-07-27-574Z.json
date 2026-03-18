@@ -1,0 +1,257 @@
+{
+  "capturedAt": "2026-03-05T10:07:35.895Z",
+  "drillTag": "BILLING_ROLLBACK_DRILL_1772705251159",
+  "scope": "Billing rollback drill (canonical -> compatibility rollback simulation) with webhook idempotency replay checks",
+  "baselineSnapshot": {
+    "generatedAt": "2026-03-05T10:07:31.159Z",
+    "needsAttention": true,
+    "summary": {
+      "activeSubscriptions": 8,
+      "activeStripeMissingExternalId": 8,
+      "activeRevenueCatMissingExternalId": 0,
+      "activePaidSubscriptionsWithoutRecentInvoice": 4,
+      "invoiceUserMismatches": 0,
+      "recentWebhookProcessed": 0,
+      "recentWebhookFailed": 0,
+      "staleFailedWebhookEvents": 0
+    },
+    "providerBreakdown": []
+  },
+  "postSnapshot": {
+    "generatedAt": "2026-03-05T10:07:35.611Z",
+    "needsAttention": true,
+    "summary": {
+      "activeSubscriptions": 8,
+      "activeStripeMissingExternalId": 8,
+      "activeRevenueCatMissingExternalId": 0,
+      "activePaidSubscriptionsWithoutRecentInvoice": 4,
+      "invoiceUserMismatches": 0,
+      "recentWebhookProcessed": 0,
+      "recentWebhookFailed": 0,
+      "staleFailedWebhookEvents": 0
+    },
+    "providerBreakdown": []
+  },
+  "summaryDelta": {
+    "invoiceUserMismatches": 0,
+    "activePaidSubscriptionsWithoutRecentInvoice": 0,
+    "staleFailedWebhookEvents": 0,
+    "recentWebhookFailed": 0
+  },
+  "drillQueryResults": {
+    "subscriptions": [
+      {
+        "id": "cmmdaxrih00022uwbqodxcjp3",
+        "provider": "stripe",
+        "status": "active",
+        "autoRenew": true,
+        "revenueCatIdentifier": null,
+        "stripeSubscriptionId": null,
+        "currentPeriodEnd": "2026-04-04T10:07:33.254Z"
+      },
+      {
+        "id": "cmmdaxs8900092uwbkb26yexa",
+        "provider": "revenue_cat",
+        "status": "expired",
+        "autoRenew": false,
+        "revenueCatIdentifier": "BILLING_ROLLBACK_DRILL_1772705251159:rc:ph-plus",
+        "stripeSubscriptionId": null,
+        "currentPeriodEnd": "2026-04-04T10:07:34.184Z"
+      }
+    ],
+    "invoices": [
+      {
+        "id": "cmmdaxrxc00062uwbinjcr6hr",
+        "invoiceNumber": "INV-2705251159",
+        "status": "paid",
+        "billingDate": "2026-03-05T10:07:33.790Z",
+        "paidAt": "2026-03-05T10:07:33.937Z",
+        "totalAmount": "12.39"
+      }
+    ],
+    "processedWebhookEvents": [
+      {
+        "provider": "stripe",
+        "eventId": "BILLING_ROLLBACK_DRILL_1772705251159:stripe:checkout.session.completed",
+        "sourceRoute": "/api/v1/billing/webhook",
+        "status": "processed",
+        "processedAt": "2026-03-05T10:07:33.482Z"
+      },
+      {
+        "provider": "stripe",
+        "eventId": "BILLING_ROLLBACK_DRILL_1772705251159:stripe:invoice.paid",
+        "sourceRoute": "/api/v1/billing/webhook",
+        "status": "processed",
+        "processedAt": "2026-03-05T10:07:34.042Z"
+      },
+      {
+        "provider": "revenuecat",
+        "eventId": "BILLING_ROLLBACK_DRILL_1772705251159:revenuecat:renewal",
+        "sourceRoute": "/api/v1/billing/revenuecat-webhook",
+        "status": "processed",
+        "processedAt": "2026-03-05T10:07:34.284Z"
+      },
+      {
+        "provider": "revenuecat",
+        "eventId": "BILLING_ROLLBACK_DRILL_1772705251159:revenuecat:cancellation",
+        "sourceRoute": "/api/v1/billing/revenuecat-webhook",
+        "status": "processed",
+        "processedAt": "2026-03-05T10:07:34.635Z"
+      }
+    ]
+  },
+  "duplicateReplayChecks": {
+    "stripeCheckoutCanonicalReplayIgnored": true,
+    "stripeCheckoutLegacyReplayIgnored": true,
+    "stripeInvoiceLegacyReplayIgnored": true,
+    "revenueCatRenewalReplayIgnored": true,
+    "revenueCatCancellationReplayIgnored": true
+  },
+  "acceptanceCriteria": {
+    "noUnexpectedIncreaseInKeyMismatchMetrics": true,
+    "duplicateWebhookDeliveriesIgnored": true,
+    "rollbackPathCompletionWithinRto": true,
+    "rollbackPathCompletionMs": 4452,
+    "rollbackPathRtoTargetMs": 900000
+  },
+  "timeline": [
+    {
+      "step": "baseline_snapshot_captured",
+      "at": "2026-03-05T10:07:32.881Z",
+      "details": {
+        "generatedAt": "2026-03-05T10:07:31.159Z",
+        "needsAttention": true,
+        "summary": {
+          "activeSubscriptions": 8,
+          "activeStripeMissingExternalId": 8,
+          "activeRevenueCatMissingExternalId": 0,
+          "activePaidSubscriptionsWithoutRecentInvoice": 4,
+          "invoiceUserMismatches": 0,
+          "recentWebhookProcessed": 0,
+          "recentWebhookFailed": 0,
+          "staleFailedWebhookEvents": 0
+        }
+      }
+    },
+    {
+      "step": "drill_user_created",
+      "at": "2026-03-05T10:07:33.028Z",
+      "details": {
+        "userId": "cmmdaxr8400002uwbjja5h79c",
+        "email": "billing.rollback.drill.1772705252881@example.com"
+      }
+    },
+    {
+      "step": "stripe_checkout_processed_canonical",
+      "at": "2026-03-05T10:07:33.588Z",
+      "details": {
+        "duplicateBefore": false
+      }
+    },
+    {
+      "step": "stripe_checkout_replay_canonical_checked",
+      "at": "2026-03-05T10:07:33.636Z",
+      "details": {
+        "duplicate": true
+      }
+    },
+    {
+      "step": "stripe_checkout_replay_legacy_checked",
+      "at": "2026-03-05T10:07:33.694Z",
+      "details": {
+        "duplicate": true
+      }
+    },
+    {
+      "step": "invoice_seeded",
+      "at": "2026-03-05T10:07:33.889Z",
+      "details": {
+        "invoiceId": "cmmdaxrxc00062uwbinjcr6hr",
+        "invoiceNumber": "INV-2705251159",
+        "status": "issued"
+      }
+    },
+    {
+      "step": "stripe_invoice_paid_processed_canonical",
+      "at": "2026-03-05T10:07:34.090Z",
+      "details": {
+        "duplicateBefore": false
+      }
+    },
+    {
+      "step": "stripe_invoice_paid_replay_legacy_checked",
+      "at": "2026-03-05T10:07:34.137Z",
+      "details": {
+        "duplicate": true
+      }
+    },
+    {
+      "step": "revenuecat_renewal_processed",
+      "at": "2026-03-05T10:07:34.333Z",
+      "details": {
+        "duplicateBefore": false
+      }
+    },
+    {
+      "step": "revenuecat_renewal_replay_checked",
+      "at": "2026-03-05T10:07:34.381Z",
+      "details": {
+        "duplicate": true
+      }
+    },
+    {
+      "step": "revenuecat_cancellation_processed",
+      "at": "2026-03-05T10:07:34.682Z",
+      "details": {
+        "duplicateBefore": false
+      }
+    },
+    {
+      "step": "revenuecat_cancellation_replay_checked",
+      "at": "2026-03-05T10:07:34.734Z",
+      "details": {
+        "duplicate": true
+      }
+    },
+    {
+      "step": "rollback_switch_simulated",
+      "at": "2026-03-05T10:07:34.734Z",
+      "details": {
+        "from": "/api/v1/billing/*",
+        "to": "/api/stripe/* (compatibility mode)",
+        "rollbackReason": "webhook regression drill validation"
+      }
+    },
+    {
+      "step": "cleanup_completed",
+      "at": "2026-03-05T10:07:35.611Z",
+      "details": {
+        "startedAt": "2026-03-05T10:07:35.035Z",
+        "finishedAt": "2026-03-05T10:07:35.611Z"
+      }
+    },
+    {
+      "step": "post_snapshot_captured",
+      "at": "2026-03-05T10:07:35.895Z",
+      "details": {
+        "generatedAt": "2026-03-05T10:07:35.611Z",
+        "needsAttention": true,
+        "summary": {
+          "activeSubscriptions": 8,
+          "activeStripeMissingExternalId": 8,
+          "activeRevenueCatMissingExternalId": 0,
+          "activePaidSubscriptionsWithoutRecentInvoice": 4,
+          "invoiceUserMismatches": 0,
+          "recentWebhookProcessed": 0,
+          "recentWebhookFailed": 0,
+          "staleFailedWebhookEvents": 0
+        }
+      }
+    }
+  ],
+  "notes": [
+    "Admin UI screenshot for /admin/billing-reconciliation was not captured in this pass due local runtime instability on full-page interactive compile; reconciliation payloads were captured directly from service layer.",
+    "Drill data was fully cleaned up (user, subscriptions, invoices, processed webhook events) before post-snapshot capture.",
+    "Legacy compatibility behavior was validated through duplicate replay checks against shared idempotency keys across stripe providers."
+  ]
+}

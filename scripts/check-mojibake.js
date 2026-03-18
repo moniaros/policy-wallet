@@ -19,7 +19,7 @@ const TARGETS = [
   "components/notifications/NotificationsClient.tsx",
 ];
 
-const SUSPICIOUS = /Ã|Â|â€|�|\?{3,}/;
+const SUSPICIOUS = /\u00C3|\u00C2|\u00E2\u20AC|\uFFFD|\?{3,}/u;
 
 function scanFile(filePath) {
   const abs = path.join(ROOT, filePath);

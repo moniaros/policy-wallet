@@ -38,7 +38,7 @@ The platform requires **one major sprint** to:
 ## 🚨 Critical Blockers (P0 - Must Fix Before Launch)
 
 ### 1. Admin Portal Functionality
-**Status:** � **Mostly Ready**
+**Status:** **Mostly Ready**
 **Impact:** Platform management logic exists, UI connected.
 
 **Current State:**
@@ -54,7 +54,7 @@ The platform requires **one major sprint** to:
 
 
 ### 2. Testing Infrastructure
-**Status:** � **Infrastructure Ready**
+**Status:** **Infrastructure Ready**
 **Impact:** Test runner installed, coverage pending.
 
 **Current State:**

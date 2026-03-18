@@ -157,6 +157,16 @@ export async function updateOpportunityStatus(
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
+    // Verify ownership
+    const oppAuth = await db.opportunity.findUnique({
+        where: { id: opportunityId },
+        select: { relationshipId: true, relationship: { select: { agentUserId: true } } }
+    })
+
+    if (!oppAuth || oppAuth.relationship?.agentUserId !== authResult.dbUser.id) {
+        return { error: "Opportunity not found or access denied" }
+    }
+
     await db.opportunity.update({
         where: { id: opportunityId },
         data: {
@@ -166,15 +176,9 @@ export async function updateOpportunityStatus(
         }
     })
 
-    // Update relationship last interaction
-    const opp = await db.opportunity.findUnique({
-        where: { id: opportunityId },
-        select: { relationshipId: true }
-    })
-
-    if (opp?.relationshipId) {
+    if (oppAuth.relationshipId) {
         await db.customerRelationship.update({
-            where: { id: opp.relationshipId },
+            where: { id: oppAuth.relationshipId },
             data: { lastInteractionAt: new Date() }
         })
     }

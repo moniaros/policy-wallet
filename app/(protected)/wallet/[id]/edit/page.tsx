@@ -30,8 +30,7 @@ export default async function EditPolicyPage({ params }: Props) {
 
     const preferredLanguage = (authResult.dbUser.preferredLanguage as "en" | "el") || "en"
     const t = getTranslations(preferredLanguage)
-    const isGreek = preferredLanguage === "el"
-
+    
     // Sanitize Decimal to number/string for client component
     const sanitizedPolicy = {
         ...policy,
@@ -46,7 +45,7 @@ export default async function EditPolicyPage({ params }: Props) {
                     <ChevronLeft className="w-5 h-5 text-stone-600" />
                 </Link>
                 <h1 className="text-lg font-bold text-stone-900">
-                    {isGreek ? "Επεξεργασία Συμβολαίου" : "Edit Policy"}
+                    {t.wallet.editPolicyForm.title}
                 </h1>
             </div>
 
@@ -59,3 +58,4 @@ export default async function EditPolicyPage({ params }: Props) {
         </div>
     )
 }
+

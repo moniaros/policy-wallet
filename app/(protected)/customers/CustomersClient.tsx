@@ -59,28 +59,29 @@ export function CustomersClient({ initialCustomers }: Props) {
     // I should probably export/import the shared type to be safe, but for now I'll let TS check or cast.
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <header className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <div className="pw-page-shell min-h-screen">
+            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+                <header className="mb-10 text-center sm:text-left flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div>
-                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+                        <span className="pw-kicker inline-block mb-2">DIRECTORY</span>
+                        <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-3">
                             Client Directory
                         </h1>
-                        <p className="mt-2 text-slate-600 dark:text-slate-400">
+                        <p className="max-w-xl text-lg text-slate-600 dark:text-slate-400">
                             Manage your customer relationships and portfolios.
                         </p>
                     </div>
                     <div className="flex gap-3">
                         <button
                             onClick={() => setIsBulkImportOpen(true)}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium rounded-lg transition-colors"
+                            className="arc-btn bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 flex items-center gap-2"
                         >
                             <Upload className="w-4 h-4" />
                             <span>Import</span>
                         </button>
                         <button
                             onClick={() => setIsAddModalOpen(true)}
-                            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-sm"
+                            className="arc-btn arc-btn-primary shadow-sm flex items-center gap-2"
                         >
                             <User className="w-4 h-4" />
                             <span>Add Client</span>

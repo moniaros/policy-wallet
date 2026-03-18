@@ -1,5 +1,6 @@
 import { Policy } from './types'
 import { QrCode, Shield, Zap, Home, Heart } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface WalletPassPreviewProps {
     policy: Policy
@@ -8,6 +9,7 @@ interface WalletPassPreviewProps {
 }
 
 export function WalletPassPreview({ policy, holderName, plateNumber }: WalletPassPreviewProps) {
+    const { t } = useLanguage()
     const getGradient = (type: string) => {
         switch (type) {
             case 'health':
@@ -68,7 +70,7 @@ export function WalletPassPreview({ policy, holderName, plateNumber }: WalletPas
                                     {policy.insurerName}
                                 </h3>
                                 <p className="text-[10px] font-medium tracking-widest uppercase opacity-80">
-                                    {policy.lineOfBusiness} Protection
+                                    {t.policyTypes?.[policy.lineOfBusiness as keyof typeof t.policyTypes] || policy.lineOfBusiness}
                                 </p>
                             </div>
                         </div>
@@ -85,7 +87,7 @@ export function WalletPassPreview({ policy, holderName, plateNumber }: WalletPas
                     <div className="mt-4">
                         <div className="flex items-center justify-between">
                             <div className="space-y-1">
-                                <p className="text-[10px] uppercase tracking-widest opacity-60 font-semibold">Policy Number</p>
+                                <p className="text-[10px] uppercase tracking-widest opacity-60 font-semibold">{t.wallet.policyNumber}</p>
                                 <p className="font-mono text-xl tracking-widest text-shadow-sm">
                                     {policy.policyNumber}
                                 </p>
@@ -93,7 +95,7 @@ export function WalletPassPreview({ policy, holderName, plateNumber }: WalletPas
 
                             {plateNumber && (
                                 <div className="text-right">
-                                    <p className="text-[10px] uppercase tracking-widest opacity-60 font-semibold">Plate No</p>
+                                    <p className="text-[10px] uppercase tracking-widest opacity-60 font-semibold">{t.wallet.plateNumber}</p>
                                     <div className="flex items-center gap-1 justify-end">
                                         <span className="bg-[#111111] text-white text-[8px] font-bold px-1 rounded-sm border border-white/20 shadow-sm">GR</span>
                                         <p className="font-mono text-lg font-bold tracking-wider text-shadow-sm">
@@ -115,13 +117,13 @@ export function WalletPassPreview({ policy, holderName, plateNumber }: WalletPas
                     {/* Footer */}
                     <div className="flex justify-between items-end">
                         <div>
-                            <p className="text-[9px] uppercase tracking-widest opacity-60 font-semibold mb-0.5">Card Holder</p>
+                            <p className="text-[9px] uppercase tracking-widest opacity-60 font-semibold mb-0.5">{t.wallet.walletPass.cardHolder}</p>
                             <p className="font-medium tracking-wide text-sm truncate max-w-[140px]">
                                 {holderName.toUpperCase()}
                             </p>
                         </div>
                         <div className="text-right">
-                            <p className="text-[9px] uppercase tracking-widest opacity-60 font-semibold mb-0.5">Expires</p>
+                            <p className="text-[9px] uppercase tracking-widest opacity-60 font-semibold mb-0.5">{t.wallet.ends}</p>
                             <p className="font-mono font-medium tracking-wide text-sm">
                                 {formatDate(policy.endDate)}
                             </p>

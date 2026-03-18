@@ -11,7 +11,7 @@ interface EmptyStateProps {
 }
 
 export function EmptyState({ onAddManually }: EmptyStateProps) {
-    const { language } = useLanguage()
+    const { t } = useLanguage()
 
     return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
@@ -22,9 +22,7 @@ export function EmptyState({ onAddManually }: EmptyStateProps) {
                 className="max-w-lg w-full"
             >
                 <p className="text-lg text-black/60 dark:text-white/70 mb-12 font-medium">
-                    {language === 'el'
-                        ? 'Ξεκινήστε προσθέτοντας το πρώτο σας ασφαλιστήριο συμβόλαιο.'
-                        : 'Get started by adding your first insurance policy.'}
+                    {t.wallet.emptyState.intro}
                 </p>
 
                 <div className="relative mx-auto w-fit mb-12">
@@ -41,13 +39,13 @@ export function EmptyState({ onAddManually }: EmptyStateProps) {
 
                     <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap">
                         <p className="text-xs font-black text-black dark:text-white uppercase tracking-[0.3em] animate-in fade-in slide-in-from-bottom-2 duration-1000">
-                            {language === 'el' ? 'Προσθήκη Συμβολαίου' : 'Tap to Start'}
+                            {t.wallet.emptyState.cta}
                         </p>
                     </div>
                 </div>
 
                 <div className="mt-20 pt-10 border-t border-black/10 dark:border-white/15">
-                    <p className="text-[10px] font-black text-black/45 dark:text-white/55 uppercase tracking-widest mb-6">Supported Categories</p>
+                    <p className="text-[10px] font-black text-black/45 dark:text-white/55 uppercase tracking-widest mb-6">{t.wallet.emptyState.supportedCategories}</p>
                     <div className="flex flex-wrap justify-center gap-6 opacity-60 grayscale hover:grayscale-0 transition-all duration-700">
                         {[CarIcon, HeartIcon, HomeIcon, DocumentIcon, PlaneIcon].map((Icon, i) => (
                             <div key={i} className="w-8 h-8 text-black/70 dark:text-white/70 hover:scale-125 transition-transform">

@@ -13,6 +13,7 @@ import { dismissTour } from '@/app/onboarding/actions'
 import { useIsMobile } from "@/hooks/useResponsive"
 import { MobileAppShell } from "@/components/layout/MobileAppShell"
 import { BatchUploadModal } from "@/components/wallet/BatchUploadModal"
+import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 
 interface PolicyWalletClientProps {
     policies: Policy[]
@@ -37,22 +38,13 @@ interface PolicyWalletClientProps {
 
 export function PolicyWalletClient({ policies, user, agent, showTour = false }: PolicyWalletClientProps) {
     const router = useRouter()
-    const { t, language } = useLanguage()
+    const { t } = useLanguage()
     const isMobile = useIsMobile()
     const previousStatusesRef = useRef<Map<string, string>>(new Map())
     const announcedRef = useRef<Set<string>>(new Set())
     const [isBatchUploadOpen, setIsBatchUploadOpen] = React.useState(false)
 
-    const copy = {
-        analysisProgress: language === 'el' ? 'Η ανάλυση συμβολαίου εκτελείται' : 'Policy analysis is in progress',
-        notifyPrompt: language === 'el' ? 'Θέλετε ειδοποίηση όταν ολοκληρωθεί;' : 'Would you like a notification when it completes?',
-        notifyMe: language === 'el' ? 'Ειδοποίησέ με' : 'Notify me',
-        notificationsEnabled: language === 'el' ? 'Οι ειδοποιήσεις ενεργοποιήθηκαν.' : 'Notifications enabled.',
-        analysisComplete: language === 'el' ? 'Η ανάλυση συμβολαίου ολοκληρώθηκε' : 'Policy analysis completed',
-        analysisFailed: language === 'el' ? 'Η ανάλυση απέτυχε' : 'Analysis failed',
-        analysisFailedDesc: language === 'el' ? 'Μπορείτε να δοκιμάσετε ξανά.' : 'You can retry the analysis.',
-        view: language === 'el' ? 'Προβολή' : 'View',
-    }
+    const copy = t.wallet.analysisNotifications
 
     const fireBrowserNotification = (title: string, message: string, policyId: string) => {
         if (typeof window === 'undefined' || !('Notification' in window)) return
@@ -74,7 +66,7 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
         }, 3000)
 
         if ('Notification' in window && Notification.permission === 'default') {
-            toast(copy.analysisProgress, {
+            toast(copy.inProgress, {
                 description: copy.notifyPrompt,
                 action: {
                     label: copy.notifyMe,
@@ -91,7 +83,7 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
         }
 
         return () => clearInterval(interval)
-    }, [policies, router])
+    }, [policies, router, copy.inProgress, copy.notifyPrompt, copy.notifyMe, copy.notificationsEnabled])
 
     React.useEffect(() => {
         const previousStatuses = previousStatusesRef.current
@@ -107,23 +99,23 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
                 const summary = `${policy.insurerName} • ${policy.policyNumber}`
 
                 if (policy.status === 'action_needed') {
-                    toast.error(copy.analysisFailed, {
-                        description: copy.analysisFailedDesc,
+                    toast.error(copy.failed, {
+                        description: copy.failedDesc,
                         action: {
                             label: copy.view,
                             onClick: () => router.push(`/wallet/${policy.id}`),
                         },
                     })
-                    fireBrowserNotification(copy.analysisFailed, copy.analysisFailedDesc, policy.id)
+                    fireBrowserNotification(copy.failed, copy.failedDesc, policy.id)
                 } else {
-                    toast.success(copy.analysisComplete, {
+                    toast.success(copy.completed, {
                         description: summary,
                         action: {
                             label: copy.view,
                             onClick: () => router.push(`/wallet/${policy.id}`),
                         },
                     })
-                    fireBrowserNotification(copy.analysisComplete, summary, policy.id)
+                    fireBrowserNotification(copy.completed, summary, policy.id)
                 }
             }
         }
@@ -149,7 +141,7 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
                     if (announcedRef.current.has(key)) return
                     announcedRef.current.add(key)
 
-                    toast.success(completion.title || copy.analysisComplete, {
+                    toast.success(completion.title || copy.completed, {
                         description: completion.message,
                         action: {
                             label: copy.view,
@@ -157,7 +149,7 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
                         },
                     })
 
-                    fireBrowserNotification(completion.title || copy.analysisComplete, completion.message || '', completion.related_object_id)
+                    fireBrowserNotification(completion.title || copy.completed, completion.message || '', completion.related_object_id)
                 })
                 .catch(() => {
                     // Silent fallback: status update remains visible in wallet.
@@ -165,7 +157,7 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
         }
 
         previousStatusesRef.current = currentStatuses
-    }, [policies, router, copy.analysisComplete, copy.view])
+    }, [policies, router, copy.completed, copy.failed, copy.failedDesc, copy.view])
 
     if (isMobile) {
         return (
@@ -195,10 +187,7 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
                     const toastId = toast.loading(t.toast.analysisStarting)
                     const result = await runPolicyAnalysis(policyId)
                     if (result.error) {
-                        const friendlyError =
-                            result.error === "TOKEN_LIMIT_BLOCKED"
-                                ? (t.analysis?.errors?.tokenLimit || "Analysis is paused because your AI token limit was reached.")
-                                : result.error
+                        const friendlyError = mapWalletErrorToMessage(result.error, t, "analysis")
                         toast.error(friendlyError, { id: toastId })
                     } else {
                         toast.success(t.toast.analysisStarted, { id: toastId })
@@ -209,7 +198,7 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
                         const toastId = toast.loading(t.toast.policyDeleting)
                         const result = await deletePolicy(policyId)
                         if (result.error) {
-                            toast.error(result.error, { id: toastId })
+                            toast.error(mapWalletErrorToMessage(result.error, t, "deletePolicy"), { id: toastId })
                         } else {
                             toast.success(t.toast.policyDeleted, { id: toastId })
                             router.refresh()

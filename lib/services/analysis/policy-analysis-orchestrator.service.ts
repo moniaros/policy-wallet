@@ -1,19 +1,31 @@
 import fs from "fs/promises"
 import path from "path"
+import { randomUUID } from "crypto"
 import { db } from "@/lib/db"
 import { env } from "@/lib/env"
 import { logger } from "@/lib/logger"
 import { canUserUseTokens } from "@/lib/token-tracking"
-import { getAIService } from "@/lib/services/ai"
+import { getAIService, type AIServiceType } from "@/lib/services/ai"
 import { enrichExtractionPayload } from "@/lib/services/ai/extraction-enrichment"
 import type {
     AIDocument,
+    AICapabilityOperation,
     AIGapAnalysisResponse,
     AIPolicyClarityResponse,
     AIPolicyExtractionResponse,
     GapDefinitionForAI,
     PolicyMetadata,
 } from "@/lib/services/ai/ai-service.interface"
+import { classifyAnalysisFailure, type FailureClass } from "./failure-classifier"
+import {
+    isCriticalStep,
+    isDegradableStep,
+    isDegradedCompletionEnabled,
+    isFullFailoverAllowed,
+    isOpenAIFailoverEnabled,
+    isRemediationAlertingEnabled,
+} from "./remediation-policy"
+import { evaluateAnalysisIncidentThresholds } from "./incident-dispatcher"
 import {
     INSURANCE_CLARITY_CHECKLIST,
     INSURANCE_CLARITY_CHECKLIST_TOTAL_CHECKS,
@@ -22,6 +34,10 @@ import {
     estimatePolicyAnalysisTokenBudget,
     type PolicyAnalysisStepKey,
 } from "./token-budget-estimator"
+import {
+    emitAnalysisRunTelemetry,
+    emitAnalysisStepTelemetry,
+} from "./step-telemetry"
 
 const STEP_ORDER: Record<PolicyAnalysisStepKey, number> = {
     document_load_and_validation: 1,
@@ -37,6 +53,31 @@ const STEP_ORDER: Record<PolicyAnalysisStepKey, number> = {
 const MAX_STEP_ATTEMPTS = 3
 const MAX_RUN_ATTEMPTS = 5
 const STEP_BACKOFF_MS = [2000, 5000, 10000]
+const RUN_EXECUTION_LEASE_TTL_MS = 15 * 60 * 1000
+
+type RemediationType = "initial" | "retry" | "model_fallback" | "provider_failover"
+type ProviderAttemptOutcome = "success" | "failed"
+
+type ProviderAttemptRecord = {
+    stepKey: PolicyAnalysisStepKey
+    provider: AIServiceType
+    model?: string
+    attempt: number
+    remediationType: RemediationType
+    outcome: ProviderAttemptOutcome
+    failureCode?: string
+    failureClass?: FailureClass
+}
+
+type PipelineRemediationSummary = {
+    providerAttempts: ProviderAttemptRecord[]
+    degradedSteps: PolicyAnalysisStepKey[]
+    missingArtifacts: string[]
+    finalUserMessageKey: string
+    failoverUsed: boolean
+    retryScope?: "full" | "missing_only"
+    retrySourceRunId?: string
+}
 
 type StepExecutionPayload<T> = {
     result: T
@@ -48,6 +89,12 @@ type StepExecutionPayload<T> = {
         outputTokens: number
         totalTokens: number
     }
+    remediation?: {
+        providerAttempts: ProviderAttemptRecord[]
+        failureClass?: FailureClass
+        userMessageKey?: string
+        failureCode?: string
+    }
 }
 
 class OrchestrationError extends Error {
@@ -55,6 +102,9 @@ class OrchestrationError extends Error {
     retryable: boolean
     hardFailure: boolean
     blockedReason?: string
+    failureClass?: FailureClass
+    userMessageKey?: string
+    remediationProviderAttempts?: ProviderAttemptRecord[]
 
     constructor(
         message: string,
@@ -63,6 +113,9 @@ class OrchestrationError extends Error {
             retryable?: boolean
             hardFailure?: boolean
             blockedReason?: string
+            failureClass?: FailureClass
+            userMessageKey?: string
+            remediationProviderAttempts?: ProviderAttemptRecord[]
         }
     ) {
         super(message)
@@ -70,6 +123,9 @@ class OrchestrationError extends Error {
         this.retryable = options.retryable ?? false
         this.hardFailure = options.hardFailure ?? false
         this.blockedReason = options.blockedReason
+        this.failureClass = options.failureClass
+        this.userMessageKey = options.userMessageKey
+        this.remediationProviderAttempts = options.remediationProviderAttempts
     }
 }
 
@@ -104,6 +160,103 @@ function parseDateMaybe(input: string | undefined, fallback: Date): Date {
 
 function sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+function isAIBackedStep(stepKey: PolicyAnalysisStepKey): boolean {
+    return (
+        stepKey === "metadata_extraction_and_verification" ||
+        stepKey === "plain_language_translation" ||
+        stepKey === "gap_detection"
+    )
+}
+
+function capabilityOperationForStep(stepKey: PolicyAnalysisStepKey): AICapabilityOperation | null {
+    if (stepKey === "metadata_extraction_and_verification") return "extractPolicyData"
+    if (stepKey === "plain_language_translation") return "analyzePolicyClarity"
+    if (stepKey === "gap_detection") return "analyzeGaps"
+    return null
+}
+
+function getDefaultModelForStep(provider: AIServiceType, stepKey: PolicyAnalysisStepKey): string | undefined {
+    if (provider === "gemini") {
+        if (stepKey === "metadata_extraction_and_verification") return env.GEMINI_MODEL_EXTRACTION
+        if (stepKey === "plain_language_translation") return env.GEMINI_MODEL_CLARITY_ANALYSIS
+        if (stepKey === "gap_detection") return env.GEMINI_MODEL_GAP_ANALYSIS
+        return env.GEMINI_MODEL_CLARITY_ANALYSIS
+    }
+
+    if (provider === "openai") {
+        if (stepKey === "metadata_extraction_and_verification") return env.OPENAI_MODEL_EXTRACTION
+        if (stepKey === "plain_language_translation") return env.OPENAI_MODEL_CLARITY_ANALYSIS
+        if (stepKey === "gap_detection") return env.OPENAI_MODEL_GAP_ANALYSIS
+        return env.OPENAI_MODEL_CLARITY_ANALYSIS
+    }
+
+    return undefined
+}
+
+function fallbackModelForProvider(provider: AIServiceType): string | undefined {
+    if (provider === "gemini") return env.GEMINI_MODEL_FALLBACK
+    return undefined
+}
+
+function mapMissingArtifacts(stepKey: PolicyAnalysisStepKey): string[] {
+    switch (stepKey) {
+        case "plain_language_translation":
+            return ["plain_language_summary", "coverage_snapshot"]
+        case "coverage_mapping":
+            return ["coverage_map"]
+        case "gap_detection":
+            return ["gap_results"]
+        case "savings_detection":
+            return ["savings_opportunities"]
+        case "checklist_scoring_and_actions":
+            return ["checklist_scores", "priority_actions"]
+        default:
+            return [stepKey]
+    }
+}
+
+const FALLBACK_DEGRADED_SUMMARY = {
+    en: "Summary unavailable due to analysis degradation.",
+    el: "Η σύνοψη δεν είναι διαθέσιμη λόγω υποβάθμισης ανάλυσης.",
+}
+
+const FALLBACK_STORED_SUMMARY = {
+    en: "Summary unavailable",
+    el: "Μη διαθέσιμη σύνοψη",
+}
+
+function createFallbackClarity(): AIPolicyClarityResponse {
+    return {
+        plainLanguageSummary: FALLBACK_DEGRADED_SUMMARY,
+        coverageSnapshot: {
+            covered: [],
+            notCovered: [],
+            limits: [],
+            deductibles: [],
+            exclusions: [],
+        },
+        savingsOpportunities: [],
+        coverageGaps: [],
+        checklistScores: [],
+        priorityActions: [],
+    }
+}
+
+function createFallbackGapAnalysis(metadata: PolicyMetadata): AIGapAnalysisResponse {
+    return {
+        verifiedMetadata: {
+            insurerName: metadata.insurerName,
+            policyNumber: metadata.policyNumber,
+            lineOfBusiness: metadata.lineOfBusiness,
+            startDate: metadata.startDate.toISOString().split("T")[0],
+            endDate: metadata.endDate.toISOString().split("T")[0],
+            premiumAmount: metadata.premiumAmount ?? undefined,
+            coverageSummary: metadata.coverageSummary || undefined,
+        },
+        gapResults: [],
+    }
 }
 
 export class PolicyAnalysisOrchestratorService {
@@ -165,6 +318,18 @@ export class PolicyAnalysisOrchestratorService {
                     status: "action_needed",
                     acordData: {
                         ...(policy.acordData as any),
+                        analysis: {
+                            ...(((policy.acordData as any)?.analysis as Record<string, unknown>) || {}),
+                            pipeline: {
+                                ...(((policy.acordData as any)?.analysis?.pipeline as Record<string, unknown>) || {}),
+                                runId: run.id,
+                                provider: "gemini",
+                                status: "blocked",
+                                missingSections: [],
+                                lastFailureCode: "TOKEN_LIMIT_BLOCKED",
+                                lastFailureAt: new Date().toISOString(),
+                            },
+                        },
                         processingError: {
                             code: "TOKEN_LIMIT_BLOCKED",
                             message: `Policy analysis blocked due to token limits (${gate.reason || "insufficient tokens"})`,
@@ -205,84 +370,290 @@ export class PolicyAnalysisOrchestratorService {
         })
     }
 
-    async executeRun(runId: string, language: "en" | "el" = "en") {
+    private buildExecutionLeaseExpiry() {
+        return new Date(Date.now() + RUN_EXECUTION_LEASE_TTL_MS)
+    }
+
+    private async tryAcquireRunLease(runId: string, leaseId: string): Promise<boolean> {
+        const now = new Date()
+        const acquired = await db.policyAnalysisRun.updateMany({
+            where: {
+                id: runId,
+                OR: [
+                    { executionLeaseId: null },
+                    { executionLeaseExpiresAt: null },
+                    { executionLeaseExpiresAt: { lt: now } },
+                    { executionLeaseId: leaseId },
+                ],
+            },
+            data: {
+                executionLeaseId: leaseId,
+                executionLeaseExpiresAt: this.buildExecutionLeaseExpiry(),
+                leaseHeartbeatAt: now,
+            },
+        })
+        return acquired.count === 1
+    }
+
+    private async heartbeatRunLease(runId: string, leaseId: string): Promise<void> {
+        const now = new Date()
+        const refreshed = await db.policyAnalysisRun.updateMany({
+            where: {
+                id: runId,
+                executionLeaseId: leaseId,
+            },
+            data: {
+                executionLeaseExpiresAt: this.buildExecutionLeaseExpiry(),
+                leaseHeartbeatAt: now,
+            },
+        })
+
+        if (refreshed.count !== 1) {
+            throw new OrchestrationError("Run execution lease lost", {
+                code: "RUN_LEASE_LOST",
+                retryable: true,
+            })
+        }
+    }
+
+    private async releaseRunLease(runId: string, leaseId: string): Promise<void> {
+        await db.policyAnalysisRun.updateMany({
+            where: {
+                id: runId,
+                executionLeaseId: leaseId,
+            },
+            data: {
+                executionLeaseId: null,
+                executionLeaseExpiresAt: null,
+                leaseHeartbeatAt: new Date(),
+            },
+        })
+    }
+
+    async retryMissing(runId: string, userId: string, language: "en" | "el" = "en") {
+        const sourceRun = await db.policyAnalysisRun.findFirst({
+            where: {
+                id: runId,
+                userId,
+            },
+            include: {
+                policy: {
+                    include: {
+                        documents: true,
+                    },
+                },
+            },
+        })
+
+        if (!sourceRun) {
+            throw new Error("Analysis run not found")
+        }
+        if (sourceRun.status !== "completed_with_warnings") {
+            throw new Error("Retry missing is only available for degraded completed runs")
+        }
+
+        const summary =
+            (sourceRun.remediationSummary as PipelineRemediationSummary | null) ||
+            ((sourceRun.resultJson as any)?.remediation as PipelineRemediationSummary | null)
+        const degradedSteps = (summary?.degradedSteps || []).filter((step): step is PolicyAnalysisStepKey =>
+            isDegradableStep(step as PolicyAnalysisStepKey)
+        )
+
+        if (!degradedSteps.length) {
+            throw new Error("No missing degradable steps found for this run")
+        }
+
+        const rerun = await this.createRun(sourceRun.policyId, userId)
+        if (rerun.status === "blocked") {
+            return this.getRunStatus(rerun.id, userId)
+        }
+
+        await this.executeRun(rerun.id, language, {
+            retryOnlySteps: new Set(degradedSteps),
+            retrySourceRunId: sourceRun.id,
+        })
+
+        return this.getRunStatus(rerun.id, userId)
+    }
+
+    async executeRun(
+        runId: string,
+        language: "en" | "el" = "en",
+        options?: {
+            retryOnlySteps?: Set<PolicyAnalysisStepKey>
+            retrySourceRunId?: string
+        }
+    ) {
         const existing = await db.policyAnalysisRun.findUnique({
             where: { id: runId },
         })
         if (!existing) {
             throw new Error("Analysis run not found")
         }
-        if (existing.status === "blocked" || existing.status === "completed") {
+        if (
+            existing.status === "blocked" ||
+            existing.status === "completed" ||
+            existing.status === "completed_with_warnings"
+        ) {
             return existing
         }
 
-        let lastError: OrchestrationError | null = null
-
-        for (let runAttempt = existing.runAttempt; runAttempt <= MAX_RUN_ATTEMPTS; runAttempt++) {
-            await db.policyAnalysisRun.update({
+        const leaseId = randomUUID()
+        const leaseAcquired = await this.tryAcquireRunLease(runId, leaseId)
+        if (!leaseAcquired) {
+            const currentRun = await db.policyAnalysisRun.findUnique({
                 where: { id: runId },
-                data: {
-                    status: "running",
-                    runAttempt,
-                    startedAt: existing.startedAt || new Date(),
-                    failureCode: null,
-                    failureMessage: null,
+            })
+            logger("info", "Skipping duplicate policy analysis execution due to active lease", {
+                runId,
+                status: currentRun?.status || null,
+                executionLeaseId: currentRun?.executionLeaseId || null,
+                executionLeaseExpiresAt: currentRun?.executionLeaseExpiresAt || null,
+            })
+            return currentRun
+        }
+
+        let lastError: OrchestrationError | null = null
+        const runStartedAt = existing.startedAt || new Date()
+
+        try {
+            await this.heartbeatRunLease(runId, leaseId)
+
+            for (let runAttempt = existing.runAttempt; runAttempt <= MAX_RUN_ATTEMPTS; runAttempt++) {
+                await this.heartbeatRunLease(runId, leaseId)
+
+                const updatedToRunning = await db.policyAnalysisRun.updateMany({
+                    where: {
+                        id: runId,
+                        executionLeaseId: leaseId,
+                    },
+                    data: {
+                        status: "running",
+                        runAttempt,
+                        startedAt: runStartedAt,
+                        failureCode: null,
+                        failureMessage: null,
+                    },
+                })
+
+                if (updatedToRunning.count !== 1) {
+                    throw new OrchestrationError("Run execution lease lost while marking running", {
+                        code: "RUN_LEASE_LOST",
+                        retryable: true,
+                    })
+                }
+
+                try {
+                    const terminalRun = await this.executePipelineAttempt(runId, language, leaseId, options)
+                    if (
+                        terminalRun?.status === "completed" ||
+                        terminalRun?.status === "completed_with_warnings"
+                    ) {
+                        return terminalRun
+                    }
+                    return db.policyAnalysisRun.findUnique({ where: { id: runId } })
+                } catch (error) {
+                    const orchestrationError =
+                        error instanceof OrchestrationError
+                            ? error
+                            : new OrchestrationError(
+                                  error instanceof Error ? error.message : "Analysis pipeline failed",
+                                  {
+                                      code: "PIPELINE_ERROR",
+                                      retryable: isTransientError(error),
+                                  }
+                              )
+
+                    lastError = orchestrationError
+
+                    if (orchestrationError.blockedReason) {
+                        await this.failRun(runId, "blocked", orchestrationError, leaseId)
+                        break
+                    }
+
+                    if (
+                        orchestrationError.hardFailure ||
+                        !orchestrationError.retryable ||
+                        runAttempt >= MAX_RUN_ATTEMPTS
+                    ) {
+                        await this.failRun(runId, "failed", orchestrationError, leaseId)
+                        break
+                    }
+
+                    const delayMs = Math.min(2000 * Math.pow(2, runAttempt - 1), 20000)
+                    logger("warn", "Retrying policy analysis run after transient failure", {
+                        runId,
+                        runAttempt,
+                        delayMs,
+                        code: orchestrationError.code,
+                        message: orchestrationError.message,
+                    })
+                    await sleep(delayMs)
+                }
+            }
+
+            const terminalRun = await db.policyAnalysisRun.findUnique({
+                where: { id: runId },
+                include: {
+                    user: {
+                        select: { roles: true },
+                    },
                 },
             })
 
-            try {
-                await this.executePipelineAttempt(runId, language)
-                return db.policyAnalysisRun.findUnique({ where: { id: runId } })
-            } catch (error) {
-                const orchestrationError =
-                    error instanceof OrchestrationError
-                        ? error
-                        : new OrchestrationError(
-                              error instanceof Error ? error.message : "Analysis pipeline failed",
-                              {
-                                  code: "PIPELINE_ERROR",
-                                  retryable: isTransientError(error),
-                              }
-                          )
-
-                lastError = orchestrationError
-
-                if (orchestrationError.blockedReason) {
-                    await this.failRun(runId, "blocked", orchestrationError)
-                    return db.policyAnalysisRun.findUnique({ where: { id: runId } })
-                }
-
-                if (
-                    orchestrationError.hardFailure ||
-                    !orchestrationError.retryable ||
-                    runAttempt >= MAX_RUN_ATTEMPTS
-                ) {
-                    await this.failRun(runId, "failed", orchestrationError)
-                    return db.policyAnalysisRun.findUnique({ where: { id: runId } })
-                }
-
-                const delayMs = Math.min(2000 * Math.pow(2, runAttempt - 1), 20000)
-                logger("warn", "Retrying policy analysis run after transient failure", {
-                    runId,
-                    runAttempt,
-                    delayMs,
-                    code: orchestrationError.code,
-                    message: orchestrationError.message,
+            if (
+                terminalRun &&
+                isRemediationAlertingEnabled(terminalRun.userId, terminalRun.user?.roles) &&
+                (terminalRun.status === "completed_with_warnings" ||
+                    terminalRun.status === "failed" ||
+                    terminalRun.status === "blocked")
+            ) {
+                await evaluateAnalysisIncidentThresholds().catch((thresholdError) => {
+                    logger("warn", "Failed to evaluate remediation incident thresholds", {
+                        runId,
+                        error:
+                            thresholdError instanceof Error
+                                ? thresholdError.message
+                                : String(thresholdError),
+                    })
                 })
-                await sleep(delayMs)
             }
-        }
 
-        if (lastError) {
-            await this.failRun(runId, "failed", lastError)
+            if (terminalRun) {
+                return terminalRun
+            }
+            if (lastError) {
+                await this.failRun(runId, "failed", lastError, leaseId)
+            }
+            return db.policyAnalysisRun.findUnique({ where: { id: runId } })
+        } finally {
+            await this.releaseRunLease(runId, leaseId).catch((error) => {
+                logger("warn", "Failed to release policy analysis execution lease", {
+                    runId,
+                    leaseId,
+                    error: error instanceof Error ? error.message : String(error),
+                })
+            })
         }
-        return db.policyAnalysisRun.findUnique({ where: { id: runId } })
     }
 
-    private async executePipelineAttempt(runId: string, language: "en" | "el") {
+    private async executePipelineAttempt(
+        runId: string,
+        language: "en" | "el",
+        leaseId: string,
+        options?: {
+            retryOnlySteps?: Set<PolicyAnalysisStepKey>
+            retrySourceRunId?: string
+        }
+    ) {
         const run = await db.policyAnalysisRun.findUnique({
             where: { id: runId },
             include: {
+                user: {
+                    select: {
+                        roles: true,
+                    },
+                },
                 policy: {
                     include: {
                         documents: {
@@ -299,14 +670,28 @@ export class PolicyAnalysisOrchestratorService {
                 hardFailure: true,
             })
         }
+        await this.heartbeatRunLease(runId, leaseId)
 
         const policy = run.policy
-        const aiService = getAIService()
-        if (!aiService.isAvailable()) {
-            throw new OrchestrationError("AI service unavailable", {
-                code: "AI_UNAVAILABLE",
-                hardFailure: true,
-            })
+        const userRoles = run.user?.roles
+        const primaryProvider: AIServiceType =
+            run.provider === "gemini" || run.provider === "openai" || run.provider === "mock"
+                ? (run.provider as AIServiceType)
+                : "gemini"
+
+        const fallbackOpenAI = getAIService("openai")
+        const primaryService = getAIService(primaryProvider)
+        const failoverEnabled = isOpenAIFailoverEnabled(run.userId, userRoles)
+        const degradedEnabled = isDegradedCompletionEnabled(run.userId, userRoles)
+        const fullFailoverAllowed = isFullFailoverAllowed(run.userId, userRoles)
+
+        if (!primaryService.isAvailable()) {
+            if (!(failoverEnabled && fallbackOpenAI.isAvailable())) {
+                throw new OrchestrationError("AI service unavailable", {
+                    code: "AI_UNAVAILABLE",
+                    hardFailure: true,
+                })
+            }
         }
 
         const gapDefinitions = await this.getGapDefinitionsForPolicy(policy.lineOfBusiness)
@@ -316,16 +701,115 @@ export class PolicyAnalysisOrchestratorService {
             checklistPillarsCount: INSURANCE_CLARITY_CHECKLIST.length,
         })
 
+        const stepScores: number[] = []
         let totalInputTokens = 0
         let totalOutputTokens = 0
-        const stepScores: number[] = []
+
+        const providerAttempts: ProviderAttemptRecord[] = []
+        const degradedSteps = new Set<PolicyAnalysisStepKey>()
+        const missingArtifacts = new Set<string>()
+        let finalUserMessageKey = "analysis.status.completed"
+        let lastFailureCode: string | null = null
+        let lastFailureAt: string | null = null
+
+        const retryOnlySteps = options?.retryOnlySteps
+        const shouldRun = (stepKey: PolicyAnalysisStepKey) =>
+            !retryOnlySteps || retryOnlySteps.has(stepKey) || !isDegradableStep(stepKey)
+
+        const clarityDependentSteps = new Set<PolicyAnalysisStepKey>([
+            "plain_language_translation",
+            "coverage_mapping",
+            "savings_detection",
+            "checklist_scoring_and_actions",
+        ])
+        const shouldRunClarityGroup =
+            !retryOnlySteps ||
+            Array.from(clarityDependentSteps).some((stepKey) => retryOnlySteps.has(stepKey))
+
+        let sourceRunResult: Record<string, any> | null = null
+        if (options?.retrySourceRunId) {
+            const sourceRun = await db.policyAnalysisRun.findFirst({
+                where: {
+                    id: options.retrySourceRunId,
+                    policyId: policy.id,
+                },
+                select: { resultJson: true },
+            })
+            sourceRunResult = (sourceRun?.resultJson as Record<string, any>) || null
+        }
+
+        const storedClarity =
+            this.extractStoredClarity(policy.acordData as Record<string, unknown> | null) ||
+            createFallbackClarity()
+        const storedGapAnalysis =
+            this.extractStoredGapAnalysisFromResult(sourceRunResult) ||
+            createFallbackGapAnalysis(
+                this.buildMetadata(policy, {
+                    insurerName: policy.insurerName,
+                    policyNumber: policy.policyNumber,
+                    lineOfBusiness: policy.lineOfBusiness,
+                    startDate: policy.startDate.toISOString().split("T")[0],
+                    endDate: policy.endDate.toISOString().split("T")[0],
+                    premiumAmount: policy.premiumAmount ? Number(policy.premiumAmount) : 0,
+                    coverageSummary: policy.coverageSummary || "",
+                })
+            )
+
+        const absorbPayload = <T,>(payload: StepExecutionPayload<T>) => {
+            if (payload.usage) {
+                totalInputTokens += payload.usage.inputTokens
+                totalOutputTokens += payload.usage.outputTokens
+            }
+            if (payload.remediation?.providerAttempts?.length) {
+                providerAttempts.push(...payload.remediation.providerAttempts)
+            }
+            stepScores.push(payload.successPct)
+        }
+
+        const markDegraded = (stepKey: PolicyAnalysisStepKey, error: OrchestrationError) => {
+            degradedSteps.add(stepKey)
+            for (const item of mapMissingArtifacts(stepKey)) {
+                missingArtifacts.add(item)
+            }
+            finalUserMessageKey = "analysis.status.completedWithWarnings"
+            lastFailureCode = error.code
+            lastFailureAt = new Date().toISOString()
+            if (error.remediationProviderAttempts?.length) {
+                providerAttempts.push(...error.remediationProviderAttempts)
+            }
+        }
+
+        const createSkippedStep = async (stepKey: PolicyAnalysisStepKey, reason: string) => {
+            await db.policyAnalysisStep.create({
+                data: {
+                    runId,
+                    stepKey,
+                    stepOrder: STEP_ORDER[stepKey],
+                    status: "skipped",
+                    attempt: 1,
+                    successPct: 100,
+                    logMessage: reason,
+                    logJson: {
+                        retryMode: options?.retrySourceRunId ? "missing_only" : "full",
+                    },
+                    startedAt: new Date(),
+                    finishedAt: new Date(),
+                },
+            })
+        }
 
         const docStep = await this.executeStepWithRetry({
             runId,
+            leaseId,
+            policyId: policy.id,
             userId: run.userId,
+            userRoles,
             stepKey: "document_load_and_validation",
             estimatedTokens: tokenBudget.byStep.document_load_and_validation,
-            allowFallback: false,
+            allowFallbackModel: false,
+            allowProviderFailover: false,
+            preferredProvider: primaryProvider,
+            includesDocumentContext: false,
             execute: async () => {
                 const prepared = await this.prepareDocument(policy.id)
                 const checksPassed = prepared.document ? 3 : 1
@@ -340,19 +824,34 @@ export class PolicyAnalysisOrchestratorService {
                 }
             },
         })
-        stepScores.push(docStep.successPct)
+        absorbPayload(docStep)
 
         const extractionStep = await this.executeStepWithRetry({
             runId,
+            leaseId,
+            policyId: policy.id,
             userId: run.userId,
+            userRoles,
             stepKey: "metadata_extraction_and_verification",
             estimatedTokens: tokenBudget.byStep.metadata_extraction_and_verification,
-            allowFallback: true,
-            execute: async ({ modelOverride }) => {
-                const extraction = await aiService.extractPolicyData(docStep.result.document, {
+            allowFallbackModel: true,
+            allowProviderFailover: failoverEnabled,
+            preferredProvider: primaryProvider,
+            includesDocumentContext: true,
+            capabilityOperation: "extractPolicyData",
+            documentMimeType: docStep.result.document.mimeType,
+            failoverDataAllowed: fullFailoverAllowed,
+            execute: async ({ modelOverride, provider, service, remediationAttempt, remediationType }) => {
+                const extraction = await service.extractPolicyData(docStep.result.document, {
                     userId: run.userId,
                     policyId: policy.id,
                     modelOverride,
+                    provider,
+                    remediationAttempt,
+                    fallbackType:
+                        remediationType === "provider_failover" || remediationType === "model_fallback"
+                            ? remediationType
+                            : undefined,
                 })
 
                 const checks = [
@@ -373,189 +872,333 @@ export class PolicyAnalysisOrchestratorService {
                         insurerName: extraction.insurerName,
                         policyNumber: extraction.policyNumber,
                         lineOfBusiness: extraction.lineOfBusiness,
+                        provider,
                     },
                     usage: extraction.usage,
                 }
             },
         })
-        stepScores.push(extractionStep.successPct)
-        totalInputTokens += extractionStep.usage?.inputTokens || 0
-        totalOutputTokens += extractionStep.usage?.outputTokens || 0
-
+        absorbPayload(extractionStep)
         const metadata = this.buildMetadata(policy, extractionStep.result)
 
-        const clarityStep = await this.executeStepWithRetry({
-            runId,
-            userId: run.userId,
-            stepKey: "plain_language_translation",
-            estimatedTokens: tokenBudget.byStep.plain_language_translation,
-            allowFallback: true,
-            execute: async ({ modelOverride }) => {
-                const clarity = await aiService.analyzePolicyClarity(
-                    docStep.result.document,
-                    metadata,
-                    INSURANCE_CLARITY_CHECKLIST,
-                    {
-                        userId: run.userId,
-                        policyId: policy.id,
-                        modelOverride,
-                    }
-                )
-                const avgScore = clarity.checklistScores.length
-                    ? Math.round(
-                          clarity.checklistScores.reduce((sum, item) => sum + item.successPct, 0) /
-                              clarity.checklistScores.length
-                      )
-                    : 70
-                return {
-                    result: clarity,
-                    successPct: avgScore,
-                    logMessage: "Plain-language clarity generated",
-                    logJson: {
-                        checklistScores: clarity.checklistScores.length,
-                        savingsOpportunities: clarity.savingsOpportunities.length,
-                        coverageGaps: clarity.coverageGaps.length,
+        let clarityResult: AIPolicyClarityResponse = storedClarity
+        if (shouldRunClarityGroup && shouldRun("plain_language_translation")) {
+            try {
+                const clarityStep = await this.executeStepWithRetry({
+                    runId,
+                    leaseId,
+                    policyId: policy.id,
+                    userId: run.userId,
+                    userRoles,
+                    stepKey: "plain_language_translation",
+                    estimatedTokens: tokenBudget.byStep.plain_language_translation,
+                    allowFallbackModel: true,
+                    allowProviderFailover: failoverEnabled,
+                    preferredProvider: primaryProvider,
+                    includesDocumentContext: true,
+                    capabilityOperation: "analyzePolicyClarity",
+                    documentMimeType: docStep.result.document.mimeType,
+                    failoverDataAllowed: fullFailoverAllowed,
+                    execute: async ({ modelOverride, provider, service, remediationAttempt, remediationType }) => {
+                        const clarity = await service.analyzePolicyClarity(
+                            docStep.result.document,
+                            metadata,
+                            INSURANCE_CLARITY_CHECKLIST,
+                            {
+                                userId: run.userId,
+                                policyId: policy.id,
+                                modelOverride,
+                                provider,
+                                remediationAttempt,
+                                fallbackType:
+                                    remediationType === "provider_failover" ||
+                                    remediationType === "model_fallback"
+                                        ? remediationType
+                                        : undefined,
+                            }
+                        )
+                        const avgScore = clarity.checklistScores.length
+                            ? Math.round(
+                                  clarity.checklistScores.reduce(
+                                      (sum, item) => sum + item.successPct,
+                                      0
+                                  ) / clarity.checklistScores.length
+                              )
+                            : 70
+                        return {
+                            result: clarity,
+                            successPct: avgScore,
+                            logMessage: "Plain-language clarity generated",
+                            logJson: {
+                                checklistScores: clarity.checklistScores.length,
+                                savingsOpportunities: clarity.savingsOpportunities.length,
+                                coverageGaps: clarity.coverageGaps.length,
+                                provider,
+                            },
+                            usage: clarity.usage,
+                        }
                     },
-                    usage: clarity.usage,
+                })
+                absorbPayload(clarityStep)
+                clarityResult = clarityStep.result
+            } catch (error) {
+                if (!(error instanceof OrchestrationError) || !degradedEnabled) {
+                    throw error
                 }
-            },
-        })
-        stepScores.push(clarityStep.successPct)
-        totalInputTokens += clarityStep.usage?.inputTokens || 0
-        totalOutputTokens += clarityStep.usage?.outputTokens || 0
+                if (isCriticalStep("plain_language_translation")) {
+                    throw error
+                }
+                markDegraded("plain_language_translation", error)
+                logger("warn", "Degrading analysis after plain_language_translation failure", {
+                    runId,
+                    policyId: policy.id,
+                    code: error.code,
+                    message: error.message,
+                })
+            }
+        } else if (retryOnlySteps) {
+            await createSkippedStep("plain_language_translation", "Skipped in retry-missing execution")
+        }
 
-        const coverageMappingStep = await this.executeStepWithRetry({
-            runId,
-            userId: run.userId,
-            stepKey: "coverage_mapping",
-            estimatedTokens: tokenBudget.byStep.coverage_mapping,
-            allowFallback: false,
-            execute: async () => {
-                const snapshot = clarityStep.result.coverageSnapshot
-                const checks = [
-                    snapshot.covered.length > 0,
-                    snapshot.limits.length > 0 || snapshot.deductibles.length > 0,
-                    snapshot.exclusions.length >= 0,
-                ]
-                const checksPassed = checks.filter(Boolean).length
-                return {
-                    result: snapshot,
-                    successPct: Math.round((checksPassed / checks.length) * 100),
-                    logMessage: "Coverage map assembled from clarity output",
-                    logJson: {
-                        covered: snapshot.covered.length,
-                        notCovered: snapshot.notCovered.length,
-                        limits: snapshot.limits.length,
-                        deductibles: snapshot.deductibles.length,
+        if (shouldRun("coverage_mapping")) {
+            try {
+                const coverageMappingStep = await this.executeStepWithRetry({
+                    runId,
+                    leaseId,
+                    policyId: policy.id,
+                    userId: run.userId,
+                    userRoles,
+                    stepKey: "coverage_mapping",
+                    estimatedTokens: tokenBudget.byStep.coverage_mapping,
+                    allowFallbackModel: false,
+                    allowProviderFailover: false,
+                    preferredProvider: primaryProvider,
+                    includesDocumentContext: false,
+                    execute: async () => {
+                        const snapshot = clarityResult.coverageSnapshot
+                        const checks = [
+                            snapshot.covered.length > 0,
+                            snapshot.limits.length > 0 || snapshot.deductibles.length > 0,
+                            snapshot.exclusions.length >= 0,
+                        ]
+                        const checksPassed = checks.filter(Boolean).length
+                        return {
+                            result: snapshot,
+                            successPct: Math.round((checksPassed / checks.length) * 100),
+                            logMessage: "Coverage map assembled from clarity output",
+                            logJson: {
+                                covered: snapshot.covered.length,
+                                notCovered: snapshot.notCovered.length,
+                                limits: snapshot.limits.length,
+                                deductibles: snapshot.deductibles.length,
+                            },
+                        }
                     },
+                })
+                absorbPayload(coverageMappingStep)
+            } catch (error) {
+                if (!(error instanceof OrchestrationError) || !degradedEnabled) {
+                    throw error
                 }
-            },
-        })
-        stepScores.push(coverageMappingStep.successPct)
+                markDegraded("coverage_mapping", error)
+            }
+        } else if (retryOnlySteps) {
+            await createSkippedStep("coverage_mapping", "Skipped in retry-missing execution")
+        }
 
-        const gapStep = await this.executeStepWithRetry({
-            runId,
-            userId: run.userId,
-            stepKey: "gap_detection",
-            estimatedTokens: tokenBudget.byStep.gap_detection,
-            allowFallback: true,
-            execute: async ({ modelOverride }) => {
-                const gapResult = await aiService.analyzeGaps(
-                    docStep.result.document,
-                    metadata,
-                    gapDefinitions,
-                    {
-                        userId: run.userId,
-                        policyId: policy.id,
-                        modelOverride,
-                    }
-                )
-                const total = Math.max(gapDefinitions.length, 1)
-                const checksPassed = Math.min(gapResult.gapResults.length, total)
-                return {
-                    result: gapResult,
-                    successPct: Math.round((checksPassed / total) * 100),
-                    logMessage: "Gap detection completed",
-                    logJson: {
-                        checked: gapDefinitions.length,
-                        returned: gapResult.gapResults.length,
-                        detected: gapResult.gapResults.filter((item) => item.isDetected).length,
+        let gapResult: AIGapAnalysisResponse = storedGapAnalysis
+        if (shouldRun("gap_detection")) {
+            try {
+                const gapStep = await this.executeStepWithRetry({
+                    runId,
+                    leaseId,
+                    policyId: policy.id,
+                    userId: run.userId,
+                    userRoles,
+                    stepKey: "gap_detection",
+                    estimatedTokens: tokenBudget.byStep.gap_detection,
+                    allowFallbackModel: true,
+                    allowProviderFailover: failoverEnabled,
+                    preferredProvider: primaryProvider,
+                    includesDocumentContext: true,
+                    capabilityOperation: "analyzeGaps",
+                    documentMimeType: docStep.result.document.mimeType,
+                    failoverDataAllowed: fullFailoverAllowed,
+                    execute: async ({ modelOverride, provider, service, remediationAttempt, remediationType }) => {
+                        const gapAnalysis = await service.analyzeGaps(
+                            docStep.result.document,
+                            metadata,
+                            gapDefinitions,
+                            {
+                                userId: run.userId,
+                                policyId: policy.id,
+                                modelOverride,
+                                provider,
+                                remediationAttempt,
+                                fallbackType:
+                                    remediationType === "provider_failover" ||
+                                    remediationType === "model_fallback"
+                                        ? remediationType
+                                        : undefined,
+                            }
+                        )
+                        const total = Math.max(gapDefinitions.length, 1)
+                        const checksPassed = Math.min(gapAnalysis.gapResults.length, total)
+                        return {
+                            result: gapAnalysis,
+                            successPct: Math.round((checksPassed / total) * 100),
+                            logMessage: "Gap detection completed",
+                            logJson: {
+                                checked: gapDefinitions.length,
+                                returned: gapAnalysis.gapResults.length,
+                                detected: gapAnalysis.gapResults.filter((item) => item.isDetected).length,
+                                provider,
+                            },
+                            usage: gapAnalysis.usage,
+                        }
                     },
-                    usage: gapResult.usage,
+                })
+                absorbPayload(gapStep)
+                gapResult = gapStep.result
+            } catch (error) {
+                if (!(error instanceof OrchestrationError) || !degradedEnabled) {
+                    throw error
                 }
-            },
-        })
-        stepScores.push(gapStep.successPct)
-        totalInputTokens += gapStep.usage?.inputTokens || 0
-        totalOutputTokens += gapStep.usage?.outputTokens || 0
+                markDegraded("gap_detection", error)
+            }
+        } else if (retryOnlySteps) {
+            await createSkippedStep("gap_detection", "Skipped in retry-missing execution")
+        }
 
-        const savingsStep = await this.executeStepWithRetry({
-            runId,
-            userId: run.userId,
-            stepKey: "savings_detection",
-            estimatedTokens: tokenBudget.byStep.savings_detection,
-            allowFallback: false,
-            execute: async () => {
-                const savings = clarityStep.result.savingsOpportunities
-                const checksPassed = savings.length > 0 ? 3 : 2
-                return {
-                    result: savings,
-                    successPct: Math.round((checksPassed / 3) * 100),
-                    logMessage: "Savings opportunities scored",
-                    logJson: {
-                        count: savings.length,
-                        withEstimate: savings.filter((item) => item.estimatedAnnualSavingsEur !== null).length,
+        if (shouldRun("savings_detection")) {
+            try {
+                const savingsStep = await this.executeStepWithRetry({
+                    runId,
+                    leaseId,
+                    policyId: policy.id,
+                    userId: run.userId,
+                    userRoles,
+                    stepKey: "savings_detection",
+                    estimatedTokens: tokenBudget.byStep.savings_detection,
+                    allowFallbackModel: false,
+                    allowProviderFailover: false,
+                    preferredProvider: primaryProvider,
+                    includesDocumentContext: false,
+                    execute: async () => {
+                        const savings = clarityResult.savingsOpportunities
+                        const checksPassed = savings.length > 0 ? 3 : 2
+                        return {
+                            result: savings,
+                            successPct: Math.round((checksPassed / 3) * 100),
+                            logMessage: "Savings opportunities scored",
+                            logJson: {
+                                count: savings.length,
+                                withEstimate: savings.filter(
+                                    (item) => item.estimatedAnnualSavingsEur !== null
+                                ).length,
+                            },
+                        }
                     },
+                })
+                absorbPayload(savingsStep)
+            } catch (error) {
+                if (!(error instanceof OrchestrationError) || !degradedEnabled) {
+                    throw error
                 }
-            },
-        })
-        stepScores.push(savingsStep.successPct)
+                markDegraded("savings_detection", error)
+            }
+        } else if (retryOnlySteps) {
+            await createSkippedStep("savings_detection", "Skipped in retry-missing execution")
+        }
 
-        const checklistStep = await this.executeStepWithRetry({
-            runId,
-            userId: run.userId,
-            stepKey: "checklist_scoring_and_actions",
-            estimatedTokens: tokenBudget.byStep.checklist_scoring_and_actions,
-            allowFallback: false,
-            execute: async () => {
-                const checklistScores = clarityStep.result.checklistScores
-                const totalChecks = checklistScores.reduce((sum, item) => sum + item.checksTotal, 0)
-                const passedChecks = checklistScores.reduce((sum, item) => sum + item.checksPassed, 0)
-                const score = totalChecks > 0 ? Math.round((passedChecks / totalChecks) * 100) : 0
-                return {
-                    result: {
-                        checklistScores,
-                        priorityActions: clarityStep.result.priorityActions,
+        if (shouldRun("checklist_scoring_and_actions")) {
+            try {
+                const checklistStep = await this.executeStepWithRetry({
+                    runId,
+                    leaseId,
+                    policyId: policy.id,
+                    userId: run.userId,
+                    userRoles,
+                    stepKey: "checklist_scoring_and_actions",
+                    estimatedTokens: tokenBudget.byStep.checklist_scoring_and_actions,
+                    allowFallbackModel: false,
+                    allowProviderFailover: false,
+                    preferredProvider: primaryProvider,
+                    includesDocumentContext: false,
+                    execute: async () => {
+                        const checklistScores = clarityResult.checklistScores
+                        const totalChecks = checklistScores.reduce(
+                            (sum, item) => sum + item.checksTotal,
+                            0
+                        )
+                        const passedChecks = checklistScores.reduce(
+                            (sum, item) => sum + item.checksPassed,
+                            0
+                        )
+                        const score =
+                            totalChecks > 0 ? Math.round((passedChecks / totalChecks) * 100) : 0
+                        return {
+                            result: {
+                                checklistScores,
+                                priorityActions: clarityResult.priorityActions,
+                            },
+                            successPct: score,
+                            logMessage: "Checklist scoring and actions prepared",
+                            logJson: {
+                                pillars: checklistScores.length,
+                                checksPassed: passedChecks,
+                                checksTotal: totalChecks,
+                                expectedChecks: INSURANCE_CLARITY_CHECKLIST_TOTAL_CHECKS,
+                            },
+                        }
                     },
-                    successPct: score,
-                    logMessage: "Checklist scoring and actions prepared",
-                    logJson: {
-                        pillars: checklistScores.length,
-                        checksPassed: passedChecks,
-                        checksTotal: totalChecks,
-                        expectedChecks: INSURANCE_CLARITY_CHECKLIST_TOTAL_CHECKS,
-                    },
+                })
+                absorbPayload(checklistStep)
+            } catch (error) {
+                if (!(error instanceof OrchestrationError) || !degradedEnabled) {
+                    throw error
                 }
-            },
-        })
-        stepScores.push(checklistStep.successPct)
+                markDegraded("checklist_scoring_and_actions", error)
+            }
+        } else if (retryOnlySteps) {
+            await createSkippedStep(
+                "checklist_scoring_and_actions",
+                "Skipped in retry-missing execution"
+            )
+        }
+
+        const finalStatus =
+            degradedSteps.size > 0 ? "completed_with_warnings" : ("completed" as const)
 
         const persistenceStep = await this.executeStepWithRetry({
             runId,
+            leaseId,
+            policyId: policy.id,
             userId: run.userId,
+            userRoles,
             stepKey: "persistence_and_finalize",
             estimatedTokens: tokenBudget.byStep.persistence_and_finalize,
-            allowFallback: false,
+            allowFallbackModel: false,
+            allowProviderFailover: false,
+            preferredProvider: primaryProvider,
+            includesDocumentContext: false,
             execute: async () => {
                 await this.persistAnalysisArtifacts({
                     runId,
                     language,
                     policy,
                     extraction: extractionStep.result,
-                    clarity: clarityStep.result,
-                    gapAnalysis: gapStep.result,
+                    clarity: clarityResult,
+                    gapAnalysis: gapResult,
                     gapDefinitions,
                     metadata,
+                    pipeline: {
+                        status: finalStatus,
+                        missingSections: Array.from(missingArtifacts),
+                        lastFailureCode,
+                        lastFailureAt,
+                        provider: primaryProvider,
+                    },
                 })
                 return {
                     result: { persisted: true },
@@ -564,16 +1207,32 @@ export class PolicyAnalysisOrchestratorService {
                     logJson: {
                         runId,
                         policyId: policy.id,
+                        finalStatus,
                     },
                 }
             },
         })
-        stepScores.push(persistenceStep.successPct)
+        absorbPayload(persistenceStep)
 
         const actualTotalTokens = totalInputTokens + totalOutputTokens
         const overallSuccessPct = stepScores.length
             ? Math.round(stepScores.reduce((sum, value) => sum + value, 0) / stepScores.length)
             : 0
+
+        const remediationSummary: PipelineRemediationSummary = {
+            providerAttempts,
+            degradedSteps: Array.from(degradedSteps),
+            missingArtifacts: Array.from(missingArtifacts),
+            finalUserMessageKey:
+                finalStatus === "completed_with_warnings"
+                    ? "analysis.status.completedWithWarnings"
+                    : finalUserMessageKey,
+            failoverUsed: providerAttempts.some(
+                (attempt) => attempt.remediationType === "provider_failover"
+            ),
+            retryScope: options?.retrySourceRunId ? "missing_only" : "full",
+            retrySourceRunId: options?.retrySourceRunId,
+        }
 
         const resultJson = {
             metadata: {
@@ -585,57 +1244,140 @@ export class PolicyAnalysisOrchestratorService {
                 premiumAmount: metadata.premiumAmount,
                 coverageSummary: metadata.coverageSummary,
             },
-            plainLanguageSummary: clarityStep.result.plainLanguageSummary,
-            coverageSnapshot: clarityStep.result.coverageSnapshot,
-            savingsOpportunities: clarityStep.result.savingsOpportunities,
-            coverageGaps: clarityStep.result.coverageGaps,
-            checklistScores: clarityStep.result.checklistScores,
-            priorityActions: clarityStep.result.priorityActions,
-            gapResults: gapStep.result.gapResults,
+            plainLanguageSummary: clarityResult.plainLanguageSummary,
+            coverageSnapshot: clarityResult.coverageSnapshot,
+            savingsOpportunities: clarityResult.savingsOpportunities,
+            coverageGaps: clarityResult.coverageGaps,
+            checklistScores: clarityResult.checklistScores,
+            priorityActions: clarityResult.priorityActions,
+            gapResults: gapResult.gapResults,
             run: {
                 runId,
                 generatedAt: new Date().toISOString(),
+                status: finalStatus,
             },
+            remediation: remediationSummary,
         }
 
-        await db.policyAnalysisRun.update({
-            where: { id: runId },
+        await this.heartbeatRunLease(runId, leaseId)
+
+        const finalizeUpdate = await db.policyAnalysisRun.updateMany({
+            where: {
+                id: runId,
+                executionLeaseId: leaseId,
+            },
             data: {
-                status: "completed",
+                status: finalStatus,
                 overallSuccessPct,
                 actualInputTokens: totalInputTokens,
                 actualOutputTokens: totalOutputTokens,
                 actualTotalTokens,
+                failureCode: finalStatus === "completed_with_warnings" ? lastFailureCode : null,
+                failureMessage:
+                    finalStatus === "completed_with_warnings"
+                        ? "Analysis completed with missing sections"
+                        : null,
+                remediationSummary: remediationSummary as any,
                 resultJson: resultJson as any,
                 finishedAt: new Date(),
             },
         })
 
+        if (finalizeUpdate.count !== 1) {
+            throw new OrchestrationError("Run execution lease lost while finalizing", {
+                code: "RUN_LEASE_LOST",
+                retryable: true,
+            })
+        }
+
+        const updatedRun = await db.policyAnalysisRun.findUnique({
+            where: { id: runId },
+        })
+        if (!updatedRun) {
+            throw new OrchestrationError("Analysis run not found after finalize", {
+                code: "RUN_NOT_FOUND",
+                hardFailure: true,
+            })
+        }
+
         logger("info", "Policy analysis orchestration completed", {
             runId,
             policyId: policy.id,
+            status: finalStatus,
             overallSuccessPct,
             actualTotalTokens,
+            degradedSteps: remediationSummary.degradedSteps,
+            failoverUsed: remediationSummary.failoverUsed,
         })
-    }
 
+        const startedAtMs = updatedRun.startedAt?.getTime()
+        emitAnalysisRunTelemetry({
+            runId,
+            policyId: policy.id,
+            status: finalStatus,
+            provider: primaryProvider,
+            failoverUsed: remediationSummary.failoverUsed,
+            degradedCompletion: finalStatus === "completed_with_warnings",
+            degradedSteps: remediationSummary.degradedSteps,
+            overallSuccessPct,
+            actualTotalTokens,
+            durationMs: startedAtMs ? Math.max(0, Date.now() - startedAtMs) : undefined,
+        })
+
+        return updatedRun
+    }
     private async executeStepWithRetry<T>(params: {
         runId: string
+        leaseId: string
+        policyId: string
         userId: string
+        userRoles?: string
         stepKey: PolicyAnalysisStepKey
         estimatedTokens: number
-        allowFallback: boolean
-        execute: (options: { modelOverride?: string }) => Promise<StepExecutionPayload<T>>
+        allowFallbackModel: boolean
+        allowProviderFailover: boolean
+        preferredProvider: AIServiceType
+        includesDocumentContext: boolean
+        capabilityOperation?: AICapabilityOperation
+        documentMimeType?: string | null
+        failoverDataAllowed?: boolean
+        execute: (options: {
+            modelOverride?: string
+            provider: AIServiceType
+            service: ReturnType<typeof getAIService>
+            remediationType: RemediationType
+            remediationAttempt: number
+        }) => Promise<StepExecutionPayload<T>>
     }): Promise<StepExecutionPayload<T>> {
         let latestError: unknown = null
+        let latestClassified = classifyAnalysisFailure(new Error("Unknown step failure"))
+        const providerAttempts: ProviderAttemptRecord[] = []
+        let stepAttemptCounter = 0
 
-        for (let attempt = 1; attempt <= MAX_STEP_ATTEMPTS; attempt++) {
+        const runSingleAttempt = async (input: {
+            provider: AIServiceType
+            remediationType: RemediationType
+            modelOverride?: string
+        }): Promise<StepExecutionPayload<T> | null> => {
+            stepAttemptCounter += 1
+            const stepStartedAtMs = Date.now()
+            const resolvedModel =
+                input.modelOverride || getDefaultModelForStep(input.provider, params.stepKey)
+
+            await this.heartbeatRunLease(params.runId, params.leaseId)
+
             const preflight = await canUserUseTokens(params.userId, params.estimatedTokens)
             if (!preflight.allowed) {
+                const classified = classifyAnalysisFailure(
+                    new Error(`Token budget check failed: ${preflight.reason || "insufficient_tokens"}`)
+                )
                 throw new OrchestrationError("Insufficient tokens for step execution", {
-                    code: "TOKEN_LIMIT_BLOCKED",
+                    code: classified.code,
                     hardFailure: true,
                     blockedReason: preflight.reason || "insufficient_tokens",
+                    failureClass: classified.failureClass,
+                    userMessageKey: classified.userMessageKey,
+                    remediationProviderAttempts: providerAttempts,
                 })
             }
 
@@ -645,130 +1387,350 @@ export class PolicyAnalysisOrchestratorService {
                     stepKey: params.stepKey,
                     stepOrder: STEP_ORDER[params.stepKey],
                     status: "running",
-                    attempt,
-                    startedAt: new Date(),
+                    attempt: stepAttemptCounter,
+                    provider: input.provider,
+                    remediationType: input.remediationType,
+                    startedAt: new Date(stepStartedAtMs),
                     logMessage: `Running step ${params.stepKey}`,
                 },
             })
-
-            try {
-                const payload = await params.execute({})
-                await db.policyAnalysisStep.update({
-                    where: { id: step.id },
-                    data: {
-                        status: "completed",
-                        successPct: payload.successPct,
-                        inputTokens: payload.usage?.inputTokens || 0,
-                        outputTokens: payload.usage?.outputTokens || 0,
-                        totalTokens: payload.usage?.totalTokens || 0,
-                        logMessage: payload.logMessage,
-                        logJson: payload.logJson as any,
-                        finishedAt: new Date(),
-                    },
-                })
-                return payload
-            } catch (error) {
-                latestError = error
-                const transient = isTransientError(error)
-                const hasNextAttempt = transient && attempt < MAX_STEP_ATTEMPTS
-                await db.policyAnalysisStep.update({
-                    where: { id: step.id },
-                    data: {
-                        status: hasNextAttempt ? "retrying" : "failed",
-                        errorCode: transient ? "TRANSIENT_ERROR" : "STEP_ERROR",
-                        errorMessage: error instanceof Error ? error.message : String(error),
-                        logMessage: hasNextAttempt
-                            ? `Retrying step ${params.stepKey} after transient error`
-                            : `Step ${params.stepKey} failed`,
-                        finishedAt: new Date(),
-                    },
-                })
-
-                if (!hasNextAttempt) {
-                    break
-                }
-                await sleep(STEP_BACKOFF_MS[attempt - 1] || 10000)
-            }
-        }
-
-        if (params.allowFallback && isTransientError(latestError)) {
-            const preflight = await canUserUseTokens(params.userId, params.estimatedTokens)
-            if (!preflight.allowed) {
-                throw new OrchestrationError("Insufficient tokens for fallback attempt", {
-                    code: "TOKEN_LIMIT_BLOCKED",
-                    hardFailure: true,
-                    blockedReason: preflight.reason || "insufficient_tokens",
-                })
-            }
-
-            const fallbackAttempt = MAX_STEP_ATTEMPTS + 1
-            const step = await db.policyAnalysisStep.create({
-                data: {
-                    runId: params.runId,
-                    stepKey: params.stepKey,
-                    stepOrder: STEP_ORDER[params.stepKey],
-                    status: "running",
-                    attempt: fallbackAttempt,
-                    startedAt: new Date(),
-                    logMessage: `Fallback model retry for ${params.stepKey}`,
-                },
+            emitAnalysisStepTelemetry({
+                status: "started",
+                runId: params.runId,
+                policyId: params.policyId,
+                stepKey: params.stepKey,
+                attempt: stepAttemptCounter,
+                provider: input.provider,
+                remediationType: input.remediationType,
+                model: resolvedModel,
             })
 
-            try {
-                const payload = await params.execute({
-                    modelOverride: env.GEMINI_MODEL_FALLBACK,
+            const service = getAIService(input.provider)
+            if (!service.isAvailable() && params.stepKey !== "document_load_and_validation") {
+                const unavailableError = new Error(`${input.provider} AI provider unavailable`)
+                latestError = unavailableError
+                latestClassified = classifyAnalysisFailure(unavailableError)
+                providerAttempts.push({
+                    stepKey: params.stepKey,
+                    provider: input.provider,
+                    model: resolvedModel,
+                    attempt: stepAttemptCounter,
+                    remediationType: input.remediationType,
+                    outcome: "failed",
+                    failureCode: "AI_PROVIDER_UNAVAILABLE",
+                    failureClass: latestClassified.failureClass,
                 })
-                await db.policyAnalysisStep.update({
-                    where: { id: step.id },
-                    data: {
-                        status: "completed",
-                        successPct: payload.successPct,
-                        inputTokens: payload.usage?.inputTokens || 0,
-                        outputTokens: payload.usage?.outputTokens || 0,
-                        totalTokens: payload.usage?.totalTokens || 0,
-                        logMessage: `${payload.logMessage} (fallback model)`,
-                        logJson: {
-                            ...(payload.logJson || {}),
-                            fallbackModel: env.GEMINI_MODEL_FALLBACK,
-                        },
-                        finishedAt: new Date(),
-                    },
-                })
-                return payload
-            } catch (fallbackError) {
+
                 await db.policyAnalysisStep.update({
                     where: { id: step.id },
                     data: {
                         status: "failed",
-                        errorCode: "FALLBACK_FAILED",
-                        errorMessage:
-                            fallbackError instanceof Error
-                                ? fallbackError.message
-                                : String(fallbackError),
+                        errorCode: "AI_PROVIDER_UNAVAILABLE",
+                        errorMessage: unavailableError.message,
+                        logMessage: `${input.provider} provider unavailable for ${params.stepKey}`,
                         finishedAt: new Date(),
                     },
                 })
-                throw new OrchestrationError(
-                    fallbackError instanceof Error
-                        ? fallbackError.message
-                        : "Fallback step execution failed",
-                    {
-                        code: "FALLBACK_FAILED",
-                        retryable: true,
-                    }
-                )
+                emitAnalysisStepTelemetry({
+                    status: "failed",
+                    runId: params.runId,
+                    policyId: params.policyId,
+                    stepKey: params.stepKey,
+                    attempt: stepAttemptCounter,
+                    provider: input.provider,
+                    remediationType: input.remediationType,
+                    model: resolvedModel,
+                    durationMs: Date.now() - stepStartedAtMs,
+                    failureClass: latestClassified.failureClass,
+                    failureCode: "AI_PROVIDER_UNAVAILABLE",
+                    willRetry: false,
+                })
+                await this.heartbeatRunLease(params.runId, params.leaseId)
+                return null
+            }
+
+            const capabilityOperation =
+                params.capabilityOperation || capabilityOperationForStep(params.stepKey)
+            if (isAIBackedStep(params.stepKey) && capabilityOperation) {
+                const capability = service.checkCapabilities({
+                    operation: capabilityOperation,
+                    model: resolvedModel,
+                    hasDocument: params.includesDocumentContext,
+                    mimeType: params.documentMimeType || null,
+                })
+
+                if (!capability.supported) {
+                    const capabilityError = new Error(capability.reason)
+                    ;(capabilityError as Error & { code?: string }).code = capability.code
+
+                    latestError = capabilityError
+                    latestClassified = classifyAnalysisFailure({
+                        message: capability.reason,
+                        code: capability.code,
+                    })
+
+                    providerAttempts.push({
+                        stepKey: params.stepKey,
+                        provider: input.provider,
+                        model: resolvedModel,
+                        attempt: stepAttemptCounter,
+                        remediationType: input.remediationType,
+                        outcome: "failed",
+                        failureCode: capability.code,
+                        failureClass: latestClassified.failureClass,
+                    })
+
+                    await db.policyAnalysisStep.update({
+                        where: { id: step.id },
+                        data: {
+                            status: "failed",
+                            errorCode: capability.code,
+                            errorMessage: capability.reason,
+                            provider: input.provider,
+                            remediationType: input.remediationType,
+                            logMessage: `Capability check failed for ${params.stepKey}`,
+                            logJson: {
+                                failureClass: latestClassified.failureClass,
+                                userMessageKey: capability.userMessageKey,
+                                capabilityMetadata: capability.metadata as any,
+                            },
+                            finishedAt: new Date(),
+                        },
+                    })
+                    emitAnalysisStepTelemetry({
+                        status: "failed",
+                        runId: params.runId,
+                        policyId: params.policyId,
+                        stepKey: params.stepKey,
+                        attempt: stepAttemptCounter,
+                        provider: input.provider,
+                        remediationType: input.remediationType,
+                        model: resolvedModel,
+                        durationMs: Date.now() - stepStartedAtMs,
+                        failureClass: latestClassified.failureClass,
+                        failureCode: capability.code,
+                        willRetry: false,
+                    })
+
+                    await this.heartbeatRunLease(params.runId, params.leaseId)
+                    return null
+                }
+            }
+
+            try {
+                const payload = await params.execute({
+                    modelOverride: input.modelOverride,
+                    provider: input.provider,
+                    service,
+                    remediationType: input.remediationType,
+                    remediationAttempt: stepAttemptCounter,
+                })
+
+                providerAttempts.push({
+                    stepKey: params.stepKey,
+                    provider: input.provider,
+                    model: resolvedModel,
+                    attempt: stepAttemptCounter,
+                    remediationType: input.remediationType,
+                    outcome: "success",
+                })
+
+                await db.policyAnalysisStep.update({
+                    where: { id: step.id },
+                    data: {
+                        status: "completed",
+                        successPct: payload.successPct,
+                        inputTokens: payload.usage?.inputTokens || 0,
+                        outputTokens: payload.usage?.outputTokens || 0,
+                        totalTokens: payload.usage?.totalTokens || 0,
+                        provider: input.provider,
+                        remediationType: input.remediationType,
+                        logMessage: payload.logMessage,
+                        logJson: {
+                            ...(payload.logJson || {}),
+                            remediation: {
+                                provider: input.provider,
+                                remediationType: input.remediationType,
+                                model: resolvedModel,
+                            },
+                        },
+                        finishedAt: new Date(),
+                    },
+                })
+                emitAnalysisStepTelemetry({
+                    status: "completed",
+                    runId: params.runId,
+                    policyId: params.policyId,
+                    stepKey: params.stepKey,
+                    attempt: stepAttemptCounter,
+                    provider: input.provider,
+                    remediationType: input.remediationType,
+                    model: resolvedModel,
+                    durationMs: Date.now() - stepStartedAtMs,
+                    successPct: payload.successPct,
+                    tokens: payload.usage,
+                })
+                await this.heartbeatRunLease(params.runId, params.leaseId)
+
+                return {
+                    ...payload,
+                    remediation: {
+                        ...(payload.remediation || {}),
+                        providerAttempts: [
+                            ...(payload.remediation?.providerAttempts || []),
+                            ...providerAttempts,
+                        ],
+                    },
+                }
+            } catch (error) {
+                latestError = error
+                latestClassified = classifyAnalysisFailure(error)
+
+                providerAttempts.push({
+                    stepKey: params.stepKey,
+                    provider: input.provider,
+                    model: resolvedModel,
+                    attempt: stepAttemptCounter,
+                    remediationType: input.remediationType,
+                    outcome: "failed",
+                    failureCode: latestClassified.code,
+                    failureClass: latestClassified.failureClass,
+                })
+
+                const canRetryThisAttempt =
+                    latestClassified.failureClass === "transient" &&
+                    stepAttemptCounter < MAX_STEP_ATTEMPTS &&
+                    input.remediationType !== "model_fallback" &&
+                    input.remediationType !== "provider_failover"
+
+                await db.policyAnalysisStep.update({
+                    where: { id: step.id },
+                    data: {
+                        status: canRetryThisAttempt ? "retrying" : "failed",
+                        errorCode: latestClassified.code,
+                        errorMessage: error instanceof Error ? error.message : String(error),
+                        provider: input.provider,
+                        remediationType: input.remediationType,
+                        logMessage: canRetryThisAttempt
+                            ? `Retrying step ${params.stepKey} after ${latestClassified.failureClass} failure`
+                            : `Step ${params.stepKey} failed (${latestClassified.failureClass})`,
+                        logJson: {
+                            failureClass: latestClassified.failureClass,
+                            userMessageKey: latestClassified.userMessageKey,
+                        },
+                        finishedAt: new Date(),
+                    },
+                })
+                emitAnalysisStepTelemetry({
+                    status: "failed",
+                    runId: params.runId,
+                    policyId: params.policyId,
+                    stepKey: params.stepKey,
+                    attempt: stepAttemptCounter,
+                    provider: input.provider,
+                    remediationType: input.remediationType,
+                    model: resolvedModel,
+                    durationMs: Date.now() - stepStartedAtMs,
+                    failureClass: latestClassified.failureClass,
+                    failureCode: latestClassified.code,
+                    willRetry: canRetryThisAttempt,
+                })
+                await this.heartbeatRunLease(params.runId, params.leaseId)
+
+                if (latestClassified.failureClass === "token") {
+                    throw new OrchestrationError(
+                        error instanceof Error ? error.message : "Token limit blocked",
+                        {
+                            code: latestClassified.code,
+                            hardFailure: true,
+                            blockedReason: "insufficient_tokens",
+                            failureClass: latestClassified.failureClass,
+                            userMessageKey: latestClassified.userMessageKey,
+                            remediationProviderAttempts: providerAttempts,
+                        }
+                    )
+                }
+
+                if (canRetryThisAttempt) {
+                    await sleep(STEP_BACKOFF_MS[Math.min(stepAttemptCounter - 1, STEP_BACKOFF_MS.length - 1)] || 10000)
+                }
+
+                return null
             }
         }
+
+        for (let attempt = 1; attempt <= MAX_STEP_ATTEMPTS; attempt++) {
+            const payload = await runSingleAttempt({
+                provider: params.preferredProvider,
+                remediationType: attempt === 1 ? "initial" : "retry",
+            })
+            if (payload) {
+                return payload
+            }
+            if (latestClassified.failureClass !== "transient") {
+                break
+            }
+        }
+
+        if (
+            params.allowFallbackModel &&
+            isAIBackedStep(params.stepKey) &&
+            (latestClassified.failureClass === "transient" ||
+                latestClassified.failureClass === "schema")
+        ) {
+            const fallbackModel = fallbackModelForProvider(params.preferredProvider)
+            if (fallbackModel) {
+                const fallbackPayload = await runSingleAttempt({
+                    provider: params.preferredProvider,
+                    remediationType: "model_fallback",
+                    modelOverride: fallbackModel,
+                })
+                if (fallbackPayload) {
+                    return fallbackPayload
+                }
+            }
+        }
+
+        const providerFailoverAllowed =
+            params.allowProviderFailover &&
+            params.preferredProvider !== "openai" &&
+            isOpenAIFailoverEnabled(params.userId, params.userRoles) &&
+            latestClassified.shouldFailoverProvider
+
+        const canSendFailoverData =
+            !params.includesDocumentContext || params.failoverDataAllowed !== false
+
+        if (providerFailoverAllowed && canSendFailoverData) {
+            const failoverPayload = await runSingleAttempt({
+                provider: "openai",
+                remediationType: "provider_failover",
+            })
+            if (failoverPayload) {
+                return failoverPayload
+            }
+        }
+
+        const hardFailure =
+            latestClassified.failureClass === "auth" ||
+            latestClassified.failureClass === "document" ||
+            latestClassified.failureClass === "token"
 
         throw new OrchestrationError(
             latestError instanceof Error ? latestError.message : "Step execution failed",
             {
-                code: isTransientError(latestError) ? "TRANSIENT_STEP_FAILURE" : "STEP_FAILURE",
-                retryable: isTransientError(latestError),
+                code: latestClassified.code,
+                retryable: latestClassified.retryable,
+                hardFailure,
+                blockedReason:
+                    latestClassified.failureClass === "token"
+                        ? "insufficient_tokens"
+                        : undefined,
+                failureClass: latestClassified.failureClass,
+                userMessageKey: latestClassified.userMessageKey,
+                remediationProviderAttempts: providerAttempts,
             }
         )
     }
-
     private async prepareDocument(policyId: string): Promise<{
         document: AIDocument
         fileName: string
@@ -784,26 +1746,54 @@ export class PolicyAnalysisOrchestratorService {
             })
         }
 
-        let buffer: Buffer
-        if (document.fileUrl.startsWith("http")) {
-            const response = await fetch(document.fileUrl)
-            if (!response.ok) {
-                throw new OrchestrationError(
-                    `Failed to fetch document: ${response.status} ${response.statusText}`,
-                    {
-                        code: "DOCUMENT_FETCH_FAILED",
-                        retryable: true,
+        let buffer: Buffer | null = null
+        let lastDocumentError: unknown = null
+
+        for (let attempt = 1; attempt <= 2; attempt++) {
+            try {
+                if (document.fileUrl.startsWith("http")) {
+                    const response = await fetch(document.fileUrl)
+                    if (!response.ok) {
+                        throw new Error(
+                            `Failed to fetch document: ${response.status} ${response.statusText}`
+                        )
                     }
-                )
+                    const arrayBuffer = await response.arrayBuffer()
+                    buffer = Buffer.from(arrayBuffer)
+                } else {
+                    const relativePath = document.fileUrl.startsWith("/")
+                        ? document.fileUrl.slice(1)
+                        : document.fileUrl
+                    const filePath = path.join(process.cwd(), "public", relativePath)
+                    buffer = await fs.readFile(filePath)
+                }
+                break
+            } catch (error) {
+                lastDocumentError = error
+                if (attempt < 2) {
+                    logger("warn", "Document load failed, retrying once", {
+                        policyId,
+                        documentId: document.id,
+                        attempt,
+                        error: error instanceof Error ? error.message : String(error),
+                    })
+                    await sleep(500)
+                }
             }
-            const arrayBuffer = await response.arrayBuffer()
-            buffer = Buffer.from(arrayBuffer)
-        } else {
-            const relativePath = document.fileUrl.startsWith("/")
-                ? document.fileUrl.slice(1)
-                : document.fileUrl
-            const filePath = path.join(process.cwd(), "public", relativePath)
-            buffer = await fs.readFile(filePath)
+        }
+
+        if (!buffer) {
+            throw new OrchestrationError(
+                lastDocumentError instanceof Error
+                    ? lastDocumentError.message
+                    : "Failed to load document",
+                {
+                    code: "DOCUMENT_LOAD_FAILED",
+                    hardFailure: true,
+                    failureClass: "document",
+                    userMessageKey: "analysis.errors.document",
+                }
+            )
         }
 
         const lowerFileName = document.fileName.toLowerCase()
@@ -861,6 +1851,42 @@ export class PolicyAnalysisOrchestratorService {
         }))
     }
 
+    private extractStoredClarity(
+        acordData: Record<string, unknown> | null
+    ): AIPolicyClarityResponse | null {
+        const clarity = (acordData as any)?.analysis?.clarity
+        if (!clarity || typeof clarity !== "object") return null
+
+        return {
+            plainLanguageSummary: clarity.plainLanguageSummary || FALLBACK_STORED_SUMMARY,
+            coverageSnapshot: clarity.coverageSnapshot || {
+                covered: [],
+                notCovered: [],
+                limits: [],
+                deductibles: [],
+                exclusions: [],
+            },
+            savingsOpportunities: clarity.savingsOpportunities || [],
+            coverageGaps: clarity.coverageGaps || [],
+            checklistScores: clarity.checklistScores || [],
+            priorityActions: clarity.priorityActions || [],
+            acordData: clarity.acordData,
+        }
+    }
+
+    private extractStoredGapAnalysisFromResult(
+        resultJson: Record<string, any> | null
+    ): AIGapAnalysisResponse | null {
+        const gapResults = resultJson?.gapResults
+        if (!Array.isArray(gapResults)) return null
+
+        return {
+            verifiedMetadata: (resultJson?.metadata as any) || {},
+            gapResults,
+            acordData: resultJson?.acordData,
+        }
+    }
+
     private async persistAnalysisArtifacts(params: {
         runId: string
         language: "en" | "el"
@@ -870,6 +1896,13 @@ export class PolicyAnalysisOrchestratorService {
         gapAnalysis: AIGapAnalysisResponse
         gapDefinitions: GapDefinitionForAI[]
         metadata: PolicyMetadata
+        pipeline: {
+            status: "completed" | "completed_with_warnings"
+            missingSections: string[]
+            lastFailureCode: string | null
+            lastFailureAt: string | null
+            provider: AIServiceType
+        }
     }) {
         const {
             runId,
@@ -880,6 +1913,7 @@ export class PolicyAnalysisOrchestratorService {
             gapAnalysis,
             gapDefinitions,
             metadata,
+            pipeline,
         } = params
 
         const existingAcord = (policy.acordData as Record<string, any> | null) || {}
@@ -916,7 +1950,11 @@ export class PolicyAnalysisOrchestratorService {
                 clarity: compactClarity,
                 pipeline: {
                     runId,
-                    provider: "gemini",
+                    provider: pipeline.provider,
+                    status: pipeline.status,
+                    missingSections: pipeline.missingSections,
+                    lastFailureCode: pipeline.lastFailureCode,
+                    lastFailureAt: pipeline.lastFailureAt,
                     completedAt: new Date().toISOString(),
                 },
             },
@@ -1051,7 +2089,8 @@ export class PolicyAnalysisOrchestratorService {
     private async failRun(
         runId: string,
         status: "failed" | "blocked",
-        error: OrchestrationError
+        error: OrchestrationError,
+        leaseId?: string
     ) {
         const run = await db.policyAnalysisRun.findUnique({
             where: { id: runId },
@@ -1059,16 +2098,46 @@ export class PolicyAnalysisOrchestratorService {
         })
         if (!run) return
 
-        await db.policyAnalysisRun.update({
-            where: { id: runId },
+        const remediationSummary: PipelineRemediationSummary = {
+            providerAttempts: error.remediationProviderAttempts || [],
+            degradedSteps: [],
+            missingArtifacts: [],
+            finalUserMessageKey:
+                error.userMessageKey ||
+                (status === "blocked" ? "analysis.errors.tokenLimit" : "analysis.errors.generic"),
+            failoverUsed: (error.remediationProviderAttempts || []).some(
+                (attempt) => attempt.remediationType === "provider_failover"
+            ),
+            retryScope: "full",
+        }
+
+        const runUpdate = await db.policyAnalysisRun.updateMany({
+            where: leaseId
+                ? {
+                      id: runId,
+                      executionLeaseId: leaseId,
+                  }
+                : {
+                      id: runId,
+                  },
             data: {
                 status,
                 blockedReason: status === "blocked" ? error.blockedReason || error.code : null,
                 failureCode: error.code,
                 failureMessage: error.message,
+                remediationSummary: remediationSummary as any,
                 finishedAt: new Date(),
             },
         })
+
+        if (runUpdate.count !== 1) {
+            logger("warn", "Skipping failRun update due to lost execution lease", {
+                runId,
+                status,
+                leaseId: leaseId || null,
+            })
+            return
+        }
 
         await db.policy.update({
             where: { id: run.policyId },
@@ -1076,6 +2145,23 @@ export class PolicyAnalysisOrchestratorService {
                 status: "action_needed",
                 acordData: {
                     ...((run.policy.acordData as any) || {}),
+                    analysis: {
+                        ...((((run.policy.acordData as any)?.analysis as Record<string, unknown>) ||
+                            {}) as Record<string, unknown>),
+                        pipeline: {
+                            ...(((((run.policy.acordData as any)?.analysis?.pipeline as Record<
+                                string,
+                                unknown
+                            >) ||
+                                {}) as Record<string, unknown>)),
+                            runId,
+                            provider: run.provider,
+                            status,
+                            missingSections: [],
+                            lastFailureCode: error.code,
+                            lastFailureAt: new Date().toISOString(),
+                        },
+                    },
                     processingError: {
                         code: error.code,
                         message: error.message,
@@ -1097,6 +2183,20 @@ export class PolicyAnalysisOrchestratorService {
             status,
             code: error.code,
             message: error.message,
+        })
+
+        const startedAtMs = run.startedAt?.getTime()
+        emitAnalysisRunTelemetry({
+            runId,
+            policyId: run.policyId,
+            status,
+            provider: (run.provider as AIServiceType) || "gemini",
+            failoverUsed: remediationSummary.failoverUsed,
+            degradedCompletion: false,
+            degradedSteps: [],
+            actualTotalTokens: run.actualTotalTokens || 0,
+            durationMs: startedAtMs ? Math.max(0, Date.now() - startedAtMs) : undefined,
+            failureCode: error.code,
         })
     }
 
@@ -1136,3 +2236,5 @@ export class PolicyAnalysisOrchestratorService {
         throw new Error("Unauthorized access to policy")
     }
 }
+
+

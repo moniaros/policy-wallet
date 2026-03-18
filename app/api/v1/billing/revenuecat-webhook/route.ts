@@ -1,14 +1,16 @@
 
-import { NextRequest } from 'next/server';
 import { db } from '@/lib/db';
 import { logger } from '@/lib/logger';
 import { env } from '@/lib/env';
 import { z } from 'zod';
 import { createApiResponse, createApiError } from "@/lib/api-utils";
+import { withApiGuard } from "@/lib/api-guard";
+import { hasProcessedWebhookEvent, markWebhookEventProcessed } from "@/lib/services/billing/webhook-idempotency";
 
 // PUBLIC_ENDPOINT_AUTH_STRATEGY: bearer_webhook_secret + zod_payload_validation
 
 const revenueCatEventSchema = z.object({
+    id: z.string().optional(),
     app_user_id: z.string().min(1),
     type: z.string().min(1),
     product_id: z.string().min(1),
@@ -20,30 +22,49 @@ const revenueCatWebhookSchema = z.object({
     event: revenueCatEventSchema,
 });
 
-export async function POST(req: NextRequest) {
-    try {
-        if (!env.REVENUECAT_WEBHOOK_AUTH_VALUE) {
-            logger('error', 'RevenueCat webhook secret is not configured');
-            return createApiError("SERVICE_UNAVAILABLE", "Webhook auth not configured", 503);
-        }
-
-        const authHeader = req.headers.get('Authorization');
-        if (!authHeader?.startsWith('Bearer ')) {
-            return createApiError("UNAUTHORIZED", "Unauthorized", 401);
-        }
-        if (authHeader !== `Bearer ${env.REVENUECAT_WEBHOOK_AUTH_VALUE}`) {
-            return createApiError("UNAUTHORIZED", "Unauthorized", 401);
-        }
-
-        const { event } = revenueCatWebhookSchema.parse(await req.json());
+export const POST = withApiGuard(
+    {
+        auth: {
+            mode: "webhook",
+            verify: ({ req }) => {
+                if (!env.REVENUECAT_WEBHOOK_AUTH_VALUE) {
+                    logger('error', 'RevenueCat webhook secret is not configured')
+                    return createApiError("SERVICE_UNAVAILABLE", "Webhook auth not configured", 503)
+                }
+                const authHeader = req.headers.get('Authorization')
+                if (!authHeader?.startsWith('Bearer ')) {
+                    return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+                }
+                if (authHeader !== `Bearer ${env.REVENUECAT_WEBHOOK_AUTH_VALUE}`) {
+                    return createApiError("UNAUTHORIZED", "Unauthorized", 401)
+                }
+                return null
+            },
+        },
+        validation: { body: revenueCatWebhookSchema },
+        rateLimit: {
+            limit: 120,
+            windowMs: 60 * 1000,
+            key: ({ ip }) => `webhook:revenuecat:v1:${ip}`,
+        },
+    },
+    async ({ body }) => {
+        try {
+            const { event } = body!
 
         const userId = event.app_user_id;
         const type = event.type;
         const productIdentifier = event.product_id;
         const expirationAt = event.expiration_at_ms ? new Date(Number(event.expiration_at_ms)) : null;
         const purchaseDate = event.purchased_at_ms ? new Date(Number(event.purchased_at_ms)) : new Date();
+        const idempotencyEventId = event.id || `${userId}:${type}:${productIdentifier}:${event.purchased_at_ms || event.expiration_at_ms || "na"}`
 
         logger('info', 'RevenueCat Webhook Received', { type, userId, productIdentifier });
+
+        const duplicate = await hasProcessedWebhookEvent("revenuecat", idempotencyEventId)
+        if (duplicate) {
+            return createApiResponse({ received: true, duplicate: true });
+        }
 
         let planId = 'ph-free';
         if (productIdentifier.includes('pro')) planId = 'ph-pro';
@@ -97,12 +118,18 @@ export async function POST(req: NextRequest) {
                 logger('info', 'Unhandled RevenueCat event type', { type });
         }
 
-        return createApiResponse({ received: true });
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            return createApiError("VALIDATION_ERROR", "Invalid webhook payload", 400, error.issues);
+            await markWebhookEventProcessed({
+                provider: "revenuecat",
+                eventId: idempotencyEventId,
+                sourceRoute: "/api/v1/billing/revenuecat-webhook",
+                status: "processed",
+                result: { type, userId, productIdentifier },
+            })
+
+            return createApiResponse({ received: true });
+        } catch (error) {
+            logger('error', 'RevenueCat Webhook Error', { error });
+            return createApiError("INTERNAL_ERROR", "Internal Server Error", 500);
         }
-        logger('error', 'RevenueCat Webhook Error', { error });
-        return createApiError("INTERNAL_ERROR", "Internal Server Error", 500);
     }
-}
+)

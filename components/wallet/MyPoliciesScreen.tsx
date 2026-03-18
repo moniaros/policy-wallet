@@ -15,14 +15,14 @@ interface MyPoliciesScreenProps {
 }
 
 export function MyPoliciesScreen({ policies, onViewPolicy, onAddPolicy }: MyPoliciesScreenProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
     const roleCopy = getRoleCopy(language)
     const totalPremium = calculatePremiumFootprint(policies)
 
     const copy = {
         title: roleCopy.walletDashboard.noPoliciesYet,
         subtitle: roleCopy.walletDashboard.subtitle,
-        activePolicies: language === 'el' ? 'Ενεργά συμβόλαια' : 'Active policies',
+        activePolicies: t.wallet.myPoliciesScreen.activePolicies,
         yearlyFootprint: roleCopy.walletDashboard.yearlyFootprint,
         addPolicy: roleCopy.walletDashboard.addPolicyAria,
         emptyTitle: roleCopy.walletDashboard.emptyWalletTitle,

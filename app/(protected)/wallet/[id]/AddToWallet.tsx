@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
 import { WalletPassPreview } from "@/components/wallet"
@@ -6,6 +6,7 @@ import { Policy } from "@/components/wallet/types"
 import { toast } from "sonner"
 import { Loader2, WalletCards, X } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 
 interface AddToWalletProps {
     policy: Policy
@@ -26,7 +27,7 @@ export function AddToWallet({
     onOpenChange,
     trigger,
 }: AddToWalletProps) {
-    const { t, language } = useLanguage()
+    const { t } = useLanguage()
     const [internalOpen, setInternalOpen] = useState(initialOpen)
     const [loadingApple, setLoadingApple] = useState(false)
     const [loadingGoogle, setLoadingGoogle] = useState(false)
@@ -48,17 +49,17 @@ export function AddToWallet({
 
             if (contentType && contentType.includes("application/json")) {
                 const json = await res.json()
-                if (!res.ok) throw new Error(json.error?.message || `Failed to generate ${type} pass`)
+                if (!res.ok) throw new Error(json.error?.message || t.wallet.walletPass.generateFailed)
 
                 if (json.data?.pass_url) {
-                    toast.success(language === 'el' ? 'Μεταφορά στο Google Wallet...' : 'Redirecting to Google Wallet...')
+                    toast.success(t.wallet.walletPass.redirectingGoogle)
                     window.location.href = json.data.pass_url
                     return
                 }
 
-                toast.success(language === 'el' ? 'Το πάσο δημιουργήθηκε.' : 'Pass generated successfully.')
+                toast.success(t.wallet.walletPass.generated)
             } else {
-                if (!res.ok) throw new Error(language === 'el' ? 'Αποτυχία λήψης πάσου' : 'Failed to download pass file')
+                if (!res.ok) throw new Error(t.wallet.walletPass.downloadFailed)
 
                 const blob = await res.blob()
                 const url = window.URL.createObjectURL(blob)
@@ -70,10 +71,10 @@ export function AddToWallet({
                 window.URL.revokeObjectURL(url)
                 document.body.removeChild(a)
 
-                toast.success(language === 'el' ? 'Το πάσο Apple Wallet λήφθηκε.' : 'Apple Wallet pass downloaded.')
+                toast.success(t.wallet.walletPass.appleDownloaded)
             }
         } catch (err: any) {
-            toast.error(err.message)
+            toast.error(mapWalletErrorToMessage(err?.message || err, t, "generic"))
         } finally {
             if (type === 'apple') setLoadingApple(false)
             else setLoadingGoogle(false)
@@ -104,10 +105,10 @@ export function AddToWallet({
 
                     <div className="mt-6 flex gap-2">
                         <div className="h-8 px-3 rounded-lg bg-black/75 border border-white/20 flex items-center justify-center">
-                            <span className="text-[10px] font-bold">Apple Wallet</span>
+                            <span className="text-[10px] font-bold">{t.wallet.appleWallet}</span>
                         </div>
                         <div className="h-8 px-3 rounded-lg bg-black/75 border border-white/20 flex items-center justify-center">
-                            <span className="text-[10px] font-bold">Google Wallet</span>
+                            <span className="text-[10px] font-bold">{t.wallet.googleWallet}</span>
                         </div>
                     </div>
                 </div>

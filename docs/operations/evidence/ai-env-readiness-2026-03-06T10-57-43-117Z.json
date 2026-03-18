@@ -1,0 +1,30 @@
+{
+  "capturedAtUtc": "2026-03-07T11:39:23.282Z",
+  "releaseBaselineCommit": "14f75fd802f63a0ec2e783dcca08ae8aa54521a4",
+  "scriptTag": "AI_PHASE_B_LIVE_DRILL_1772883555376_ec915651",
+  "readiness": {
+    "AI_INCIDENT_SLACK_WEBHOOK_URL": "configured",
+    "AI_INCIDENT_PAGERDUTY_ROUTING_KEY": "configured",
+    "AI_INCIDENT_PAGERDUTY_EVENT_URL": "configured"
+  },
+  "result": "ready_for_live_drills",
+  "envResolution": {
+    "AI_INCIDENT_SLACK_WEBHOOK_URL": null,
+    "AI_INCIDENT_PAGERDUTY_ROUTING_KEY": null,
+    "AI_INCIDENT_PAGERDUTY_EVENT_URL": null,
+    "FF_AI_FAILOVER_OPENAI": null,
+    "FF_AI_REMEDIATION_ALERTS": null,
+    "FF_AI_DEGRADED_COMPLETION": null,
+    "FF_AI_REMEDIATION_CANARY_MODE": null
+  },
+  "fallbackAppliedKeys": [
+    "AI_INCIDENT_SLACK_WEBHOOK_URL",
+    "AI_INCIDENT_PAGERDUTY_ROUTING_KEY",
+    "AI_INCIDENT_PAGERDUTY_EVENT_URL",
+    "FF_AI_FAILOVER_OPENAI",
+    "FF_AI_REMEDIATION_ALERTS",
+    "FF_AI_DEGRADED_COMPLETION",
+    "FF_AI_REMEDIATION_CANARY_MODE"
+  ],
+  "notes": "Fallback drill adapter values were applied where environment values were missing."
+}

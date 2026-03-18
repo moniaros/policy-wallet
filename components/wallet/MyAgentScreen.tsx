@@ -41,17 +41,8 @@ export function MyAgentScreen({
     onChat,
     onViewCommunication
 }: MyAgentScreenProps) {
-    const { language } = useLanguage()
-
-    const copy = {
-        title: language === 'el' ? 'Ο Σύμβουλός Μου' : 'My Advisor',
-        noAgentTitle: language === 'el' ? 'Δεν έχει οριστεί σύμβουλος' : 'No advisor assigned',
-        noAgentDescription: language === 'el' ? 'Μπορείς να κοινοποιήσεις ένα ασφαλιστήριο για να ξεκινήσεις συνεργασία.' : 'Share a policy to start collaborating with an advisor.',
-        call: language === 'el' ? 'Κλήση' : 'Call',
-        email: language === 'el' ? 'Email' : 'Email',
-        chat: language === 'el' ? 'Συνομιλία' : 'Chat',
-        recent: language === 'el' ? 'Πρόσφατη επικοινωνία' : 'Recent communication',
-    }
+    const { language, t } = useLanguage()
+    const copy = t.wallet.advisorScreen
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-teal-50 to-white dark:from-stone-950 dark:to-stone-900 pb-28">
@@ -132,7 +123,7 @@ export function MyAgentScreen({
 
                         {recentCommunications.length > 0 && (
                             <div>
-                                <h3 className="text-base font-black text-stone-900 dark:text-white mb-3">{copy.recent}</h3>
+                                <h3 className="text-base font-black text-stone-900 dark:text-white mb-3">{copy.recentCommunication}</h3>
                                 <div className="space-y-3">
                                     {recentCommunications.map((comm) => (
                                         <button
@@ -164,8 +155,8 @@ export function MyAgentScreen({
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                         </div>
-                        <h3 className="text-xl font-black text-stone-900 dark:text-white mb-2">{copy.noAgentTitle}</h3>
-                        <p className="text-stone-600 dark:text-stone-400 text-sm max-w-[260px] mx-auto">{copy.noAgentDescription}</p>
+                        <h3 className="text-xl font-black text-stone-900 dark:text-white mb-2">{copy.noAdvisorTitle}</h3>
+                        <p className="text-stone-600 dark:text-stone-400 text-sm max-w-[260px] mx-auto">{copy.noAdvisorDescription}</p>
                     </div>
                 )}
             </div>

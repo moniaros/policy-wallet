@@ -1,12 +1,12 @@
 import { db } from "@/lib/db"
 import { z } from "zod"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
-import { rateLimit } from "@/lib/rate-limit"
 import { logger } from "@/lib/logger"
 import { createPolicySchema } from "@/lib/validations/policy"
 import * as Sentry from "@sentry/nextjs"
 import { requireApiUser } from "@/lib/api-auth"
 import { LINES_OF_BUSINESS } from "@/types/enums"
+import { withApiGuard } from "@/lib/api-guard"
 
 const policyQueryStatuses = [
     "active",
@@ -223,69 +223,65 @@ export async function GET(req: Request) {
  *       401:
  *         description: Unauthorized
  */
-export async function POST(req: Request) {
-    const authCheck = await requireApiUser()
-    if ("error" in authCheck) return authCheck.error
-    const authResult = authCheck.auth
+export const POST = withApiGuard(
+    {
+        auth: { mode: "user" },
+        validation: { body: createPolicySchema },
+        rateLimit: {
+            limit: 10,
+            windowMs: 60000,
+            key: ({ auth }) => `policy:create:${auth?.dbUser.id || "anonymous"}`,
+        },
+    },
+    async ({ auth, body }) => {
+        const authResult = auth!
+        try {
+            const validatedData = body!
 
-    // Rate limiting: max 10 policy creations per minute
-    const ip = req.headers.get("x-forwarded-for") || "127.0.0.1"
-    const limitCheck = await rateLimit(ip as string, 10, 60000)
-    if (!limitCheck.success) return limitCheck.error!
+            const policy = await db.policy.create({
+                data: {
+                    policyNumber: validatedData.policyNumber,
+                    insurerName: validatedData.insurerName,
+                    lineOfBusiness: validatedData.lineOfBusiness,
+                    startDate: new Date(validatedData.startDate),
+                    endDate: new Date(validatedData.endDate),
+                    premiumAmount: validatedData.premium,
+                    premiumCurrency: "EUR",
+                    coverageSummary: validatedData.coverageSummary,
+                    status: validatedData.status,
+                    ownerUserId: authResult.dbUser.id,
+                    createdByUserId: authResult.dbUser.id,
+                }
+            })
 
-    try {
-        const body = await req.json()
+            await (db.activityLog as any).create({
+                data: {
+                    adminUserId: authResult.dbUser.id,
+                    adminEmail: authResult.dbUser.email || "unknown",
+                    actionType: "POLICY_CREATED",
+                    description: `Manual policy creation: ${policy.policyNumber}`,
+                }
+            })
 
-        // Validate input with comprehensive schema
-        const validatedData = createPolicySchema.parse(body)
+            return createApiResponse({
+                ...policy,
+                openGapsCount: 0
+            })
+        } catch (error) {
+            // Log error to Sentry
+            Sentry.captureException(error, {
+                tags: {
+                    endpoint: '/api/v1/policies',
+                    method: 'POST',
+                    userId: authResult.dbUser.id
+                },
+                extra: {
+                    userEmail: authResult.dbUser.email
+                }
+            })
 
-        const policy = await db.policy.create({
-            data: {
-                policyNumber: validatedData.policyNumber,
-                insurerName: validatedData.insurerName,
-                lineOfBusiness: validatedData.lineOfBusiness,
-                startDate: new Date(validatedData.startDate),
-                endDate: new Date(validatedData.endDate),
-                premiumAmount: validatedData.premium,
-                premiumCurrency: "EUR",
-                coverageSummary: validatedData.coverageSummary,
-                status: validatedData.status,
-                ownerUserId: authResult.dbUser.id,
-                createdByUserId: authResult.dbUser.id,
-            }
-        })
-
-        await (db.activityLog as any).create({
-            data: {
-                adminUserId: authResult.dbUser.id,
-                adminEmail: authResult.dbUser.email || "unknown",
-                actionType: "POLICY_CREATED",
-                description: `Manual policy creation: ${policy.policyNumber}`,
-            }
-        })
-
-        return createApiResponse({
-            ...policy,
-            openGapsCount: 0
-        })
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            return createApiError("VALIDATION_ERROR", "Invalid policy data", 400, error.issues)
+            logger('error', 'Create policy failed', { userId: authResult.dbUser.id, error })
+            return createApiError("INTERNAL_ERROR", "Server error", 500)
         }
-
-        // Log error to Sentry
-        Sentry.captureException(error, {
-            tags: {
-                endpoint: '/api/v1/policies',
-                method: 'POST',
-                userId: authResult.dbUser.id
-            },
-            extra: {
-                userEmail: authResult.dbUser.email
-            }
-        })
-
-        logger('error', 'Create policy failed', { userId: authResult.dbUser.id, error })
-        return createApiError("INTERNAL_ERROR", "Server error", 500)
     }
-}
+)

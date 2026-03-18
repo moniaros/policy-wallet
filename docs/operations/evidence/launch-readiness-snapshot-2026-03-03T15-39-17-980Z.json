@@ -1,0 +1,168 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "generated_at": "2026-03-03T15:39:30.162Z",
+      "window_hours": 24,
+      "level": "red",
+      "blocker_count": 2,
+      "warning_count": 1,
+      "signals": [
+        {
+          "code": "SYNTHETIC_BILLING_CONFIGURATION",
+          "severity": "warning",
+          "message": "Synthetic check warning: billing_configuration"
+        },
+        {
+          "code": "BILLING_STRIPE_EXTERNAL_ID_MISSING",
+          "severity": "blocker",
+          "message": "Active Stripe subscriptions are missing external IDs."
+        },
+        {
+          "code": "BILLING_MISSING_RECENT_INVOICE",
+          "severity": "blocker",
+          "message": "Paid subscriptions without recent invoices were detected."
+        }
+      ],
+      "synthetic": {
+        "generatedAt": "2026-03-03T15:39:30.161Z",
+        "overallStatus": "warn",
+        "checks": [
+          {
+            "id": "database_connectivity",
+            "status": "pass",
+            "message": "Database connectivity check passed.",
+            "details": {
+              "latencyMs": 129
+            }
+          },
+          {
+            "id": "auth_configuration",
+            "status": "pass",
+            "message": "Auth configuration is present."
+          },
+          {
+            "id": "ai_configuration",
+            "status": "pass",
+            "message": "AI provider configuration is valid.",
+            "details": {
+              "hasGeminiKey": true,
+              "hasOpenAiKey": false,
+              "failoverEnabled": false
+            }
+          },
+          {
+            "id": "billing_configuration",
+            "status": "warn",
+            "message": "Stripe billing configuration is partially missing.",
+            "details": {
+              "hasStripeSecret": true,
+              "hasStripeWebhookSecret": false,
+              "hasRevenueCatWebhookAuth": true
+            }
+          },
+          {
+            "id": "cron_secret",
+            "status": "pass",
+            "message": "CRON_SECRET is configured."
+          },
+          {
+            "id": "dsr_backlog",
+            "status": "pass",
+            "message": "No stale DSR requests beyond 24h.",
+            "details": {
+              "staleOpenDsr": 0
+            }
+          },
+          {
+            "id": "webhook_failures",
+            "status": "pass",
+            "message": "No stale failed webhook events.",
+            "details": {
+              "staleFailedWebhooks": 0
+            }
+          }
+        ]
+      },
+      "billing": {
+        "generatedAt": "2026-03-03T15:39:29.528Z",
+        "windowHours": 24,
+        "summary": {
+          "activeSubscriptions": 8,
+          "activeStripeMissingExternalId": 8,
+          "activeRevenueCatMissingExternalId": 0,
+          "activePaidSubscriptionsWithoutRecentInvoice": 4,
+          "invoiceUserMismatches": 0,
+          "recentWebhookProcessed": 0,
+          "recentWebhookFailed": 0,
+          "staleFailedWebhookEvents": 0
+        },
+        "providerBreakdown": [],
+        "samples": {
+          "subscriptionsWithoutRecentInvoice": [
+            {
+              "subscriptionId": "cmlcrwk2a0006119mn7rf1nzi",
+              "userId": "cmlcogshu0000101vrbtkaxms",
+              "provider": "stripe",
+              "status": "active",
+              "currentPeriodEnd": "2026-02-21T20:35:01.906Z",
+              "lastInvoiceDate": null
+            },
+            {
+              "subscriptionId": "cmldmeoym000qfurk649efkp7",
+              "userId": "cmlbkg37q000d10pmzw9dvymc",
+              "provider": "stripe",
+              "status": "active",
+              "currentPeriodEnd": "2026-03-10T10:48:56.541Z",
+              "lastInvoiceDate": null
+            },
+            {
+              "subscriptionId": "cmlexlfqx000qnp9eblhghb4a",
+              "userId": "cmlbkg37q000d10pmzw9dvymc",
+              "provider": "stripe",
+              "status": "active",
+              "currentPeriodEnd": "2026-03-11T08:49:53.143Z",
+              "lastInvoiceDate": null
+            },
+            {
+              "subscriptionId": "cmm5bgiom0001pktf8k317egg",
+              "userId": "cmke9ce480001b8zq1j2okifk",
+              "provider": "stripe",
+              "status": "active",
+              "currentPeriodEnd": "2026-03-29T19:59:58.870Z",
+              "lastInvoiceDate": null
+            }
+          ],
+          "invoiceUserMismatches": [],
+          "failedWebhookEvents": []
+        },
+        "needsAttention": true
+      },
+      "dsr": {
+        "generatedAt": "2026-03-03T15:39:29.529Z",
+        "windowHours": 24,
+        "pendingSlaHours": 24,
+        "summary": {
+          "totalOpenRequests": 0,
+          "openDataExportRequests": 0,
+          "openDeletionRequests": 0,
+          "failedInWindow": 0,
+          "completedInWindow": 0,
+          "pendingBeyondSla": 0
+        },
+        "dataExportStatusBreakdown": [],
+        "deletionStatusBreakdown": [],
+        "samples": {
+          "failedRequests": [],
+          "oldestPending": []
+        },
+        "needsAttention": false
+      }
+    },
+    "meta": {
+      "request_id": "3f3bd8f9-2f97-44ad-bab9-35ac64744725",
+      "language": "el"
+    },
+    "error": null
+  }
+}

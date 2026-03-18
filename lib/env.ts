@@ -15,6 +15,19 @@ const envSchema = z.object({
     GEMINI_MODEL_CLARITY_ANALYSIS: z.string().default("gemini-2.0-flash-exp"),
     GEMINI_MODEL_QA: z.string().default("gemini-2.0-flash"),
     GEMINI_MODEL_FALLBACK: z.string().default("gemini-2.0-flash-exp"),
+    OPENAI_API_KEY: z.string().optional(),
+    OPENAI_MODEL_EXTRACTION: z.string().default("gpt-4.1-mini"),
+    OPENAI_MODEL_GAP_ANALYSIS: z.string().default("gpt-4.1-mini"),
+    OPENAI_MODEL_CLARITY_ANALYSIS: z.string().default("gpt-4.1-mini"),
+    OPENAI_MODEL_QA: z.string().default("gpt-4.1-mini"),
+    FF_AI_FAILOVER_OPENAI: z.string().default("false"),
+    FF_AI_DEGRADED_COMPLETION: z.string().default("true"),
+    FF_AI_REMEDIATION_ALERTS: z.string().default("false"),
+    FF_AI_REMEDIATION_CANARY_MODE: z.enum(["off", "internal", "10", "50", "100"]).default("internal"),
+    AI_ALLOW_FULL_FAILOVER: z.string().default("true"),
+    AI_INCIDENT_SLACK_WEBHOOK_URL: z.string().url().optional(),
+    AI_INCIDENT_PAGERDUTY_ROUTING_KEY: z.string().optional(),
+    AI_INCIDENT_PAGERDUTY_EVENT_URL: z.string().url().default("https://events.pagerduty.com/v2/enqueue"),
 
     // Storage (Optional - Defaults to local /public/uploads)
     STORAGE_BUCKET: z.string().optional(),
@@ -51,6 +64,22 @@ const envSchema = z.object({
     NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
 });
 
-export const env = envSchema.parse(process.env);
+const parsedEnv = envSchema.parse(process.env)
+
+if (parsedEnv.NODE_ENV === "production") {
+    const missing: string[] = []
+
+    if (parsedEnv.FF_AI_FAILOVER_OPENAI === "true" && !parsedEnv.OPENAI_API_KEY) {
+        missing.push("OPENAI_API_KEY")
+    }
+
+    if (missing.length > 0) {
+        throw new Error(
+            `Missing required production environment variables for enabled features: ${missing.join(", ")}`
+        )
+    }
+}
+
+export const env = parsedEnv
 
 export type Env = z.infer<typeof envSchema>;

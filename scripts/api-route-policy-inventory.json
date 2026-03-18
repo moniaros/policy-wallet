@@ -1,0 +1,1299 @@
+{
+  "version": 1,
+  "description": "Full API route policy inventory. Required controls are enforced by scripts/audit-api-auth.js.",
+  "routes": [
+    {
+      "route": "admin/tokens/analytics/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "admin/tokens/usage/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "auth/verify/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "public"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "auth-public"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "doc/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "public"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "health/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "public"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "notifications/mark-all-read/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "notifications/mark-read/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "notifications/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "policies/batch-create/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "policy-mutation"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "policies/extract/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "stripe/checkout/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "billing-mutation"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "stripe/portal/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "billing-mutation"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "stripe/webhook/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "webhook"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "webhook"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "user/language/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/access-grants/[id]/route.ts",
+      "methods": [
+        "DELETE"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/access-grants/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/activity-log/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/auth/logout/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/auth/magic-link/request/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "public"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "auth-public"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "v1/billing/checkout/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "billing-mutation"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "v1/billing/portal/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "billing-mutation"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/billing/revenuecat-webhook/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "webhook"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "webhook"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "v1/billing/webhook/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "webhook"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "webhook"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/collaboration/threads/[id]/actions/[actionId]/route.ts",
+      "methods": [
+        "PATCH"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/collaboration/threads/[id]/actions/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/collaboration/threads/[id]/messages/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/collaboration/threads/[id]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/collaboration/threads/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/consents/current/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "public"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "public-consent"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/consents/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "public"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "public-consent"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "v1/customers/bulk-import/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "agent",
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/gaps/[id]/acknowledge/route.ts",
+      "methods": [
+        "PATCH"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/invites/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/jobs/billing-reconciliation/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/jobs/collaboration-reminders/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/jobs/dsr-evidence-snapshot/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/jobs/launch-readiness-snapshot/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/jobs/process-policy/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/jobs/synthetic-launch-check/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/landing/waitlist/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "public"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/me/credits/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/me/data-export/[id]/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "gdpr-request"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "v1/me/data-export/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "gdpr-request"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/me/deletion-request/[id]/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "gdpr-request"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "v1/me/deletion-request/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "gdpr-request"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "v1/me/referral/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/me/route.ts",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/me/subscription/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/notifications/device-token/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/notifications/preferences/route.ts",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/notifications/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/policies/[id]/analysis-runs/[runId]/retry-missing/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "policy-mutation"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "v1/policies/[id]/analysis-runs/[runId]/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/policies/[id]/documents/[docId]/route.ts",
+      "methods": [
+        "DELETE"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "policy-mutation"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "v1/policies/[id]/documents/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "policy-mutation"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "v1/policies/[id]/gaps/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/policies/[id]/review/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "policy-mutation"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "v1/policies/[id]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH",
+        "DELETE"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "policy-mutation"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "v1/policies/[id]/wallet-pass/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/policies/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "policy-mutation"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "v1/policies/share/route.ts",
+      "methods": [
+        "POST",
+        "GET",
+        "DELETE"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "policy-mutation"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "v1/questionnaires/[id]/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/questionnaires/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/tokens/purchase/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/tokens/usage/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/wallet/[id]/pass/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    }
+  ]
+}

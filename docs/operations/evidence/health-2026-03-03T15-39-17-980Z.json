@@ -1,0 +1,15 @@
+{
+  "status": 200,
+  "body": {
+    "status": "healthy",
+    "timestamp": "2026-03-03T15:39:30.643Z",
+    "services": {
+      "database": "connected",
+      "api": "operational"
+    },
+    "performance": {
+      "responseTimeMs": 100
+    },
+    "version": "0.1.0"
+  }
+}

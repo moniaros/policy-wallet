@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start -p 3000 -H 0.0.0.0",
     "lint": "eslint",
+    "lint:i18n-changed": "node scripts/check-i18n-hardcoded.js",
     "postinstall": "prisma generate",
     "test": "vitest",
     "test:ui": "vitest --ui",
@@ -15,6 +16,7 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "type-check": "tsc --noEmit",
+    "lint:utf8": "node scripts/check-utf8.js",
     "lint:encoding": "node scripts/check-mojibake.js",
     "audit:api-auth": "node scripts/audit-api-auth.js",
     "verify:migrations": "node scripts/verify-migration-sync.js"
@@ -24,6 +26,7 @@
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.30",
+    "@ai-sdk/openai": "^3.0.0",
     "@ducanh2912/next-pwa": "^10.2.9",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",

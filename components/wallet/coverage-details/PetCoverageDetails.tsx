@@ -13,6 +13,8 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import type { AcordData } from "@/types/domain"
+import { getTranslations } from "@/lib/i18n"
+import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 
 interface PetCoverageDetailsProps {
   acordData: AcordData
@@ -20,34 +22,20 @@ interface PetCoverageDetailsProps {
 }
 
 export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsProps) {
-  const isGreek = language === "el"
+  const i18n = getTranslations(language)
+  const copy = i18n.coverageDetails
+  const petCopy = copy.pet
   const pet = acordData.pet
   if (!pet) return null
 
-  const copy = {
-    microchipNumber: isGreek ? "Αριθμός Microchip" : "Microchip Number",
-    annualLimit: isGreek ? "Ετήσιο Όριο" : "Annual Limit",
-    used: isGreek ? "Χρησιμοποιημένο" : "Used",
-    remaining: isGreek ? "Υπόλοιπο" : "Remaining",
-    leishmaniaCoverage: isGreek ? "Κάλυψη Λεϊσμανίασης" : "Leishmania Coverage",
-    covered: isGreek ? "Καλύπτεται" : "Covered",
-    notCovered: isGreek ? "Δεν καλύπτεται" : "Not covered",
-    breedDiseases: isGreek ? "Ασθένειες Φυλής" : "Breed-Specific Diseases",
-    directVetPayment: isGreek ? "Απευθείας Πληρωμή Κτηνιάτρου" : "Direct Vet Payment",
-    available: isGreek ? "Διαθέσιμη" : "Available",
-    notAvailable: isGreek ? "Μη διαθέσιμη" : "Not available",
-    waitingPeriods: isGreek ? "Περίοδοι Αναμονής" : "Waiting Periods",
-    daysRemaining: isGreek ? "ημέρες" : "days",
-    endsOn: isGreek ? "Λήγει" : "Ends",
-    copied: isGreek ? "Αντιγράφηκε" : "Copied",
-    tapToCopy: isGreek ? "Πατήστε για αντιγραφή" : "Tap to copy",
-  }
-
-  const hasAnyData = pet.microchipNumber || pet.annualLimitTotal !== undefined ||
+  const hasAnyData = Boolean(
+    pet.microchipNumber ||
+    pet.annualLimitTotal !== undefined ||
     pet.leishmaniaCovered !== undefined ||
     (pet.breedSpecificDiseases && pet.breedSpecificDiseases.length > 0) ||
     pet.directVetPayment !== undefined ||
     (pet.waitingPeriods && pet.waitingPeriods.length > 0)
+  )
 
   if (!hasAnyData) return null
 
@@ -57,7 +45,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
       await navigator.clipboard.writeText(pet.microchipNumber)
       toast.success(copy.copied)
     } catch {
-      toast.error("Failed to copy")
+      toast.error(mapWalletErrorToMessage("COPY_FAILED", i18n, "copy"))
     }
   }
 
@@ -66,7 +54,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
     : 0
 
   const formatCurrency = (value: number) =>
-    value.toLocaleString(isGreek ? "el-GR" : "en-GB", { style: "currency", currency: "EUR" })
+    value.toLocaleString(language === "el" ? "el-GR" : "en-GB", { style: "currency", currency: "EUR" })
 
   return (
     <div className="space-y-3">
@@ -80,7 +68,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
               <Heart className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div className="text-left">
-              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{copy.microchipNumber}</span>
+              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{petCopy.microchipNumber}</span>
               <p className="text-xs text-slate-500 dark:text-slate-400">{copy.tapToCopy}</p>
             </div>
           </div>
@@ -98,7 +86,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
               <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                 <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400" />
               </div>
-              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{copy.annualLimit}</span>
+              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{petCopy.annualLimit}</span>
             </div>
             <span className="text-sm font-bold text-slate-900 dark:text-white">{formatCurrency(pet.annualLimitTotal)}</span>
           </div>
@@ -139,7 +127,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
               pet.leishmaniaCovered
                 ? "text-emerald-700 dark:text-emerald-300"
                 : "text-red-700 dark:text-red-300"
-            }`}>{copy.leishmaniaCoverage}</span>
+            }`}>{petCopy.leishmaniaCoverage}</span>
           </div>
           {pet.leishmaniaCovered ? (
             <span className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
@@ -159,7 +147,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
             <div className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
               <Stethoscope className="w-4 h-4 text-violet-600 dark:text-violet-400" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{copy.breedDiseases}</span>
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{petCopy.breedSpecificDiseases}</span>
           </div>
           <div className="ml-10.5 flex flex-wrap gap-1.5">
             {pet.breedSpecificDiseases.map((disease, i) => (
@@ -177,7 +165,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
             <div className="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
               <CreditCard className="w-4 h-4 text-teal-600 dark:text-teal-400" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{copy.directVetPayment}</span>
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{petCopy.directVetPayment}</span>
           </div>
           {pet.directVetPayment ? (
             <span className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
@@ -197,7 +185,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
             <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
               <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{copy.waitingPeriods}</span>
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{petCopy.waitingPeriods}</span>
           </div>
           <div className="ml-10.5 space-y-1.5">
             {pet.waitingPeriods.map((wp, i) => (
@@ -205,7 +193,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
                 <span className="text-slate-600 dark:text-slate-400">{wp.type || "-"}</span>
                 <span className="text-slate-900 dark:text-white font-medium">
                   {wp.endDate
-                    ? `${copy.endsOn} ${new Date(wp.endDate).toLocaleDateString(isGreek ? "el-GR" : "en-GB")}`
+                    ? `${copy.endsOn} ${new Date(wp.endDate).toLocaleDateString(language === "el" ? "el-GR" : "en-GB")}`
                     : wp.durationDays
                       ? `${wp.durationDays} ${copy.daysRemaining}`
                       : "-"}

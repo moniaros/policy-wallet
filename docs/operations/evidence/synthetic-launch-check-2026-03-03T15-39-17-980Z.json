@@ -1,0 +1,70 @@
+{
+  "status": 200,
+  "body": {
+    "data": {
+      "generated_at": "2026-03-03T15:39:28.012Z",
+      "overall_status": "warn",
+      "checks": [
+        {
+          "id": "database_connectivity",
+          "status": "pass",
+          "message": "Database connectivity check passed.",
+          "details": {
+            "latencyMs": 120
+          }
+        },
+        {
+          "id": "auth_configuration",
+          "status": "pass",
+          "message": "Auth configuration is present."
+        },
+        {
+          "id": "ai_configuration",
+          "status": "pass",
+          "message": "AI provider configuration is valid.",
+          "details": {
+            "hasGeminiKey": true,
+            "hasOpenAiKey": false,
+            "failoverEnabled": false
+          }
+        },
+        {
+          "id": "billing_configuration",
+          "status": "warn",
+          "message": "Stripe billing configuration is partially missing.",
+          "details": {
+            "hasStripeSecret": true,
+            "hasStripeWebhookSecret": false,
+            "hasRevenueCatWebhookAuth": true
+          }
+        },
+        {
+          "id": "cron_secret",
+          "status": "pass",
+          "message": "CRON_SECRET is configured."
+        },
+        {
+          "id": "dsr_backlog",
+          "status": "pass",
+          "message": "No stale DSR requests beyond 24h.",
+          "details": {
+            "staleOpenDsr": 0
+          }
+        },
+        {
+          "id": "webhook_failures",
+          "status": "pass",
+          "message": "No stale failed webhook events.",
+          "details": {
+            "staleFailedWebhooks": 0
+          }
+        }
+      ]
+    },
+    "meta": {
+      "request_id": "68b1e4f6-b164-4d28-af41-4771042c29fa",
+      "language": "el"
+    },
+    "error": null
+  }
+}

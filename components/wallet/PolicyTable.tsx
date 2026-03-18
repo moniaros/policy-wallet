@@ -88,18 +88,17 @@ export function PolicyTable({
     }, [openMenuId])
 
     const label = {
-        cancelled: t.policyStatus?.cancelled || (language === 'el' ? 'Ακυρωμένο' : 'Cancelled'),
-        expired: t.policyStatus?.expired || (language === 'el' ? 'Έληξε' : 'EXPIRED'),
+        cancelled: t.policyStatus.cancelled,
+        expired: t.policyStatus.expired,
         analyzing: t.dashboard.statusLabels.analyzing,
-        actionNeeded: language === 'el' ? 'Απαιτείται ενέργεια' : 'MISSING INFO',
-        active: t.policyStatus?.active || (language === 'el' ? 'Ενεργό' : 'ACTIVE'),
-        renewalPending: language === 'el' ? 'Απαιτείται ανανέωση' : 'RENEWAL NEEDED',
-        unverified: language === 'el' ? 'Μη επαληθευμένο' : 'Unverified',
-        noIssues: language === 'el' ? 'Χωρίς θέματα' : 'No issues',
-        understandPolicy: t.dashboard.runAnalysis || (language === 'el' ? 'Κατανόηση συμβολαίου' : 'Understand policy'),
-        expiresOn: language === 'el' ? 'Λήξη' : 'Expiry',
-        premium: language === 'el' ? 'Ασφάλιστρο' : 'Premium',
-        assetFallback: language === 'el' ? 'Ασφαλισμένο αντικείμενο' : 'Insured asset',
+        actionNeeded: t.policyStatus.actionNeeded,
+        active: t.policyStatus.active,
+        renewalPending: t.policyStatus.renewalPending,
+        unverified: t.policyStatus.unverified,
+        noIssues: t.policyStatus.noIssues,
+        understandPolicy: t.dashboard.runAnalysis,
+        expiresOn: t.wallet.expiresDate,
+        premium: t.wallet.premium,
     }
 
     const getStatusBadge = (policy: Policy) => {
@@ -158,7 +157,7 @@ export function PolicyTable({
                 <table className="w-full min-w-[720px]">
                     <thead>
                         <tr className="bg-black/5 dark:bg-black border-b border-black/10 dark:border-white/15">
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 dark:text-white/70">{(t.dashboard as any).insuredItem || 'Insured Item'}</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 dark:text-white/70">{t.dashboard.insuredItem}</th>
                             <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 dark:text-white/70">{t.dashboard.insurer}</th>
                             <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 dark:text-white/70">{t.dashboard.status}</th>
                             <th className="px-6 py-4 text-right text-sm font-semibold text-black/80 dark:text-white/70">{t.dashboard.actions}</th>

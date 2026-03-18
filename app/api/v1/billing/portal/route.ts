@@ -1,0 +1,35 @@
+import { createApiError, createApiResponse } from "@/lib/api-utils"
+import { withApiGuard } from "@/lib/api-guard"
+import { stripe } from "@/lib/stripe"
+import { env } from "@/lib/env"
+
+export const POST = withApiGuard(
+    {
+        auth: { mode: "user" },
+        rateLimit: {
+            limit: 10,
+            windowMs: 60 * 1000,
+            key: ({ auth }) => `billing:portal:${auth?.dbUser.id || "anonymous"}`,
+        },
+    },
+    async ({ auth }) => {
+        const dbUser = auth!.dbUser
+        const language = (dbUser.preferredLanguage as "el" | "en") || "el"
+
+        if (!dbUser.stripeCustomerId) {
+            return createApiError("NOT_FOUND", "No billing profile found", 404, null, language)
+        }
+
+        const session = await stripe.billingPortal.sessions.create({
+            customer: dbUser.stripeCustomerId,
+            return_url: `${env.NEXTAUTH_URL || "http://localhost:3000"}/account`,
+        })
+
+        return createApiResponse(
+            {
+                portal_url: session.url,
+            },
+            language
+        )
+    }
+)

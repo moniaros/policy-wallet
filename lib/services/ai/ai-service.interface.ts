@@ -110,6 +110,7 @@ export interface AITokenUsage {
     outputTokens: number
     totalTokens: number
     model: string
+    provider?: "gemini" | "openai" | "mock"
 }
 
 export interface LocalizedText {
@@ -177,6 +178,37 @@ export interface AITrackingOptions {
     userId?: string
     policyId?: string
     modelOverride?: string
+    provider?: "gemini" | "openai" | "mock"
+    remediationAttempt?: number
+    fallbackType?: "model_fallback" | "provider_failover"
+}
+
+export type AICapabilityOperation =
+    | "extractPolicyData"
+    | "analyzeGaps"
+    | "analyzePolicyClarity"
+    | "askQuestion"
+
+export interface AICapabilityMetadata {
+    provider: "gemini" | "openai" | "mock"
+    supportsDocumentInput: boolean
+    supportedMimeTypes: string[]
+    modelPatterns: string[]
+}
+
+export interface AICapabilityCheckInput {
+    operation: AICapabilityOperation
+    model?: string
+    hasDocument?: boolean
+    mimeType?: string | null
+}
+
+export interface AICapabilityCheckResult {
+    supported: boolean
+    code: string
+    reason: string
+    userMessageKey: string
+    metadata: AICapabilityMetadata
 }
 
 /**
@@ -185,6 +217,17 @@ export interface AITrackingOptions {
  * All AI service implementations must implement this interface
  */
 export interface IAIService {
+    /**
+     * Returns provider capability metadata for model/media support checks.
+     */
+    getCapabilities(): AICapabilityMetadata
+
+    /**
+     * Validates whether the provider can execute a given operation with the
+     * requested model + media combination.
+     */
+    checkCapabilities(input: AICapabilityCheckInput): AICapabilityCheckResult
+
     /**
      * Extracts policy information from a document
      * 

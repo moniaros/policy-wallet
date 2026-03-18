@@ -23,7 +23,7 @@ export default async function AdminTypesPage() {
                                 name="name"
                                 type="text"
                                 required
-                                placeholder="e.g. Health (Î¥Î³ÎµÎ¯Î±)"
+                                placeholder="e.g. Health (Υγεία)"
                                 className="w-full px-4 py-2 bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-600 rounded-lg outline-none focus:ring-2 focus:ring-teal-500"
                             />
                         </div>

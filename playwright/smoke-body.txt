@@ -1,0 +1,122 @@
+PolicyWallet
+NAVIGATION
+Home
+Wallet
+AI Insights
+PLUS
+My Agent
+Settings
+Notifications
+Χρειάζεστε βοήθεια;
+SU
+Smoke User
+smoke_1772325123929@example.com
+My Wallet
+/
+SMOKE-1772325164625
+ΕΝΕΡΓΗ
+Smoke Insurer
+
+MOTOR
+
+POLICY ID
+
+SMOKE-1772325164625
+
+STARTS
+
+01/03/2026
+
+ENDS
+
+01/03/2027
+
+ANNUAL PREMIUM
+
+€1,234.56
+
+Add Policy to Wallet
+Share with agent or family
+Download contract
+Contact insurer
+POLICY SUMMARY
+
+Smoke coverage summary
+
+Re-analyze to see detailed coverage
+
+Type-specific coverage details will appear after a new AI analysis
+
+Analysis
+AI Q&A
+Collaboration
+Understand Policy
+AI Policy Insights
+ΑΝΑΛΥΣΗ ΑΣΦΑΛΙΣΤΙΚΩΝ ΚΕΝΩΝ
+
+Σαφής επεξήγηση της κάλυψής σας
+
+Κατανόηση συμβολαίου
+
+Η ανάλυση ολοκληρώθηκε με προειδοποιήσεις
+
+Λείπουν κάποιες ενότητες. Μπορείτε να επαναλάβετε μόνο τα ελλιπή τμήματα.
+
+Δημιουργία απλής σύνοψης
+Χαρτογράφηση καλύψεων
+Επανάληψη ελλιπών τμημάτων
+Επανάληψη πλήρους ανάλυσης
+
+Δεν εντοπίστηκαν ασφαλιστικά κενά. Εκτελέστε ανάλυση για έλεγχο κάλυψης.
+
+Κάντε κλικ στο "Κατανόηση" για να δείτε τι καλύπτεται
+
+NEXT BEST ACTIONS
+Ask one starter question
+Share with agent or family
+Review expiry and renewal
+AI PLAN USAGE
+0
+/ 10 analyses
+
+10 analyses remaining this month
+
+Upgrade Plan
+ITEMS REQUIRING ATTENTION
+Contact insurer
+Request renewal quote
+Download contract
+INSURED PEOPLE
+
+No insured names found.
+
+RENEWAL HISTORY
+
+No renewal history available yet.
+
+POLICY DOCUMENTS
+
+No documents found
+
+Συνεργασία
+
+Δεν έχει μοιραστεί ακόμα
+
+Πρόσκληση
+Δεν έχει μοιραστεί ακόμα
+
+Προσκαλέστε συνεργάτες για να διαχειριστούν μαζί σας αυτό το συμβόλαιο
+
+Πρόσκληση Συνεργάτη
+ΖΩΝΗ ΚΙΝΔΥΝΟΥ
+
+Μόνιμη διαγραφή αυτού του συμβολαίου και όλων των σχετικών εγγράφων. Η ενέργεια δεν αναιρείται.
+
+Διαγραφή συμβολαίου
+ΨΗΦΙΑΚΗ ΚΑΡΤΑ
+Προσθήκη στο Πορτοφόλι
+
+Αποκτήστε την ψηφιακή κάρτα ασφάλισης
+
+Apple Wallet
+Google Wallet

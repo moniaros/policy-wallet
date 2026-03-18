@@ -2,21 +2,32 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getAuthenticatedUserOrNull } from '@/lib/auth-helpers'
 import { getStripe } from '@/lib/stripe'
 import { db } from '@/lib/db'
+import { withLegacyBillingDeprecationHeaders } from '@/lib/api-deprecation'
+import { rateLimit } from '@/lib/rate-limit'
 
 const stripe = getStripe()
+
+function deprecated(response: NextResponse) {
+    return withLegacyBillingDeprecationHeaders(response, "/api/v1/billing/checkout")
+}
 
 export async function POST(req: NextRequest) {
     try {
         const user = await getAuthenticatedUserOrNull()
 
         if (!user) {
-            return NextResponse.json(
+            return deprecated(NextResponse.json(
                 { error: 'Unauthorized' },
                 { status: 401 }
-            )
+            ))
         }
 
         const { dbUser } = user
+        const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "anonymous"
+        const limitCheck = await rateLimit(`legacy:stripe:checkout:${dbUser.id}:${ip}`, 10, 60 * 1000)
+        if (!limitCheck.success) {
+            return deprecated(limitCheck.error || NextResponse.json({ error: "Too many requests" }, { status: 429 }))
+        }
         const body = await req.json()
         const tier = body.tier as 'plus' | 'pro'
 
@@ -28,10 +39,10 @@ export async function POST(req: NextRequest) {
         }
 
         if (!priceId) {
-            return NextResponse.json(
+            return deprecated(NextResponse.json(
                 { error: 'Invalid Price configuration' },
                 { status: 400 }
-            )
+            ))
         }
 
         // Check if user is eligible for trial (Use trial once)
@@ -74,12 +85,12 @@ export async function POST(req: NextRequest) {
             subscription_data: subscription_data,
         })
 
-        return NextResponse.json({ url: checkoutSession.url })
+        return deprecated(NextResponse.json({ url: checkoutSession.url }))
     } catch (error) {
         console.error('Stripe checkout error:', error)
-        return NextResponse.json(
+        return deprecated(NextResponse.json(
             { error: 'Failed to create checkout session' },
             { status: 500 }
-        )
+        ))
     }
 }

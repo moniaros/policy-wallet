@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { createPolicy } from "@/app/(protected)/wallet/actions"
+import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import {
     UploadCloud,
     FileText,
@@ -29,6 +30,7 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
     const [isPending, startTransition] = useTransition()
     const [selectedFiles, setSelectedFiles] = useState<File[]>([])
     const [dragActive, setDragActive] = useState(false)
+    const formCopy = t.wallet.addPolicyForm
 
     // Form Steps or just structured scroll? Let's do structured scroll for friction-less entry.
 
@@ -67,19 +69,19 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
         const supabase = createClient()
 
         if (selectedFiles.length === 0) {
-            toast.error("Please upload the policy document")
+            toast.error(formCopy.uploadDocumentRequired)
             return
         }
 
         // Validate required field (Coverage Type) manually just in case
         if (!formData.get("lineOfBusiness")) {
-            toast.error("Please select a Coverage Type")
+            toast.error(formCopy.coverageTypeRequired)
             return
         }
 
         // Inject defaults for optional fields if empty
         if (!formData.get("insurerName")) {
-            formData.set("insurerName", "Unknown Insurer")
+            formData.set("insurerName", formCopy.unknownInsurer)
         }
 
         if (!formData.get("policyNumber")) {
@@ -131,11 +133,11 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                 })
 
                 await createPolicy(formData)
-                toast.success("Policy added successfully")
+                toast.success(formCopy.addSuccess)
                 router.push("/wallet")
             } catch (error: any) {
                 console.error(error)
-                toast.error(error.message || "Failed to add policy")
+                toast.error(mapWalletErrorToMessage(error?.message || error, t, "addPolicy"))
             }
         })
     }
@@ -319,7 +321,7 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                                     <input
                                         type="text"
                                         name="policyNumber"
-                                        placeholder="e.g. POL-123456789"
+                                        placeholder={formCopy.policyNumberPlaceholder}
                                         className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl pl-10 pr-4 py-3.5 text-sm font-medium text-slate-900 dark:text-white focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-700 pointer-events-auto"
                                     />
                                 </div>

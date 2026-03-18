@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useState } from "react"
 import { askPolicyQuestion } from "@/app/(protected)/wallet/actions"
@@ -7,6 +7,7 @@ import { MessageCircle, Send, Sparkles, Loader2, Minus, Plus } from "lucide-reac
 import { useLanguage } from "@/contexts/LanguageContext"
 import { LimitReachedModal } from '@/components/account/LimitReachedModal'
 import { trackJourneyEvent } from "@/lib/journey/funnel"
+import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 
 interface Message {
     role: 'user' | 'assistant'
@@ -37,7 +38,7 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                 if (result.error === "LIMIT_REACHED") {
                     setLimitReached(true)
                 } else {
-                    toast.error(result.error)
+                    toast.error(mapWalletErrorToMessage(result.error, t, "question"))
                 }
                 setMessages((prev) => prev.slice(0, -1))
             } else if (result.answer) {
@@ -49,22 +50,15 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                 }
             }
         } catch {
-            toast.error(t.wallet.failedAnswer)
+            toast.error(mapWalletErrorToMessage("QUESTION_FAILED", t, "question"))
             setMessages((prev) => prev.slice(0, -1))
         } finally {
             setIsAsking(false)
         }
     }
 
-    const suggestedQuestions = t.wallet.suggestedQuestions || [
-        "What is covered under this policy?",
-        "What is my deductible?",
-        "When does this policy expire?",
-        "What is NOT covered?",
-        "How do I file a claim?",
-    ]
-
-    const toggleLabel = language === 'el' ? (showChat ? 'Κλείσιμο συνομιλίας' : 'Άνοιγμα συνομιλίας') : (showChat ? 'Collapse chat' : 'Open chat')
+    const suggestedQuestions = Array.isArray(t.wallet.suggestedQuestions) ? t.wallet.suggestedQuestions : []
+    const toggleLabel = showChat ? t.wallet.closeChat : t.wallet.openChat
 
     return (
         <div className="bg-white/90 dark:bg-black/90 backdrop-blur-xl rounded-2xl shadow-lg border border-black/10 dark:border-white/15 overflow-hidden transition-all duration-300 hover:shadow-xl">

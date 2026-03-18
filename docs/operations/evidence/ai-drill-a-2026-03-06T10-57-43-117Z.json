@@ -1,0 +1,115 @@
+{
+  "capturedAtUtc": "2026-03-07T11:39:21.748Z",
+  "releaseBaselineCommit": "14f75fd802f63a0ec2e783dcca08ae8aa54521a4",
+  "scriptTag": "AI_PHASE_B_LIVE_DRILL_1772883555376_ec915651",
+  "drill": "A",
+  "objective": "transient_schema_recovery_with_incident_dispatch",
+  "status": "completed",
+  "environment": {
+    "executionContext": "local_live_db",
+    "adapters": {
+      "slackWebhookConfigured": true,
+      "pagerDutyConfigured": true,
+      "pagerDutyEventUrlConfigured": true
+    },
+    "fallbackAppliedKeys": [
+      "AI_INCIDENT_SLACK_WEBHOOK_URL",
+      "AI_INCIDENT_PAGERDUTY_ROUTING_KEY",
+      "AI_INCIDENT_PAGERDUTY_EVENT_URL",
+      "FF_AI_FAILOVER_OPENAI",
+      "FF_AI_REMEDIATION_ALERTS",
+      "FF_AI_DEGRADED_COMPLETION",
+      "FF_AI_REMEDIATION_CANARY_MODE"
+    ]
+  },
+  "seededRuns": {
+    "total": 24,
+    "failed": 16,
+    "completed": 8
+  },
+  "representativeRun": {
+    "runId": "cmmg93fb00004vxy8rnn6od8t",
+    "expectedProgression": [
+      "initial",
+      "retry",
+      "model_fallback",
+      "provider_failover"
+    ],
+    "remediationSummary": {
+      "providerAttempts": [
+        {
+          "stepKey": "gap_detection",
+          "provider": "gemini",
+          "model": "gemini-2.0-flash-exp",
+          "attempt": 1,
+          "remediationType": "initial",
+          "outcome": "failed",
+          "failureCode": "SCHEMA_VALIDATION",
+          "failureClass": "schema"
+        },
+        {
+          "stepKey": "gap_detection",
+          "provider": "gemini",
+          "model": "gemini-2.0-flash-exp",
+          "attempt": 2,
+          "remediationType": "retry",
+          "outcome": "failed",
+          "failureCode": "SCHEMA_VALIDATION",
+          "failureClass": "schema"
+        },
+        {
+          "stepKey": "gap_detection",
+          "provider": "gemini",
+          "model": "gemini-2.0-flash",
+          "attempt": 3,
+          "remediationType": "model_fallback",
+          "outcome": "failed",
+          "failureCode": "SCHEMA_VALIDATION",
+          "failureClass": "schema"
+        },
+        {
+          "stepKey": "gap_detection",
+          "provider": "openai",
+          "model": "gpt-4.1-mini",
+          "attempt": 4,
+          "remediationType": "provider_failover",
+          "outcome": "failed",
+          "failureCode": "SCHEMA_VALIDATION",
+          "failureClass": "schema"
+        }
+      ],
+      "degradedSteps": [],
+      "missingArtifacts": [],
+      "finalUserMessageKey": "analysis.errors.schema",
+      "failoverUsed": true
+    }
+  },
+  "thresholdAlerts": {
+    "eventsTriggered": [
+      "AI_ANALYSIS_FAILURE_RATE_HIGH",
+      "AI_SCHEMA_FAILURE_SPIKE",
+      "AI_FAILOVER_USAGE_HIGH"
+    ],
+    "totalAlertsEmitted": 3,
+    "alertEvidencePath": "docs/operations/evidence/ai-drill-a-2026-03-06T10-57-43-117Z.alerts.ndjson",
+    "firstEvaluationLogCount": 6,
+    "secondEvaluationAdditionalLogs": 0
+  },
+  "incidentDispatch": {
+    "notificationsLogged": 3,
+    "notifiedEvents": [
+      "AI_ANALYSIS_FAILURE_RATE_HIGH",
+      "AI_SCHEMA_FAILURE_SPIKE",
+      "AI_FAILOVER_USAGE_HIGH"
+    ],
+    "dispatchedOncePerCooldownWindow": true
+  },
+  "acceptanceCriteria": {
+    "incidentDispatchOncePerWindow": "pass",
+    "runCompletesWithRemediation": "pass"
+  },
+  "notes": [
+    "Threshold evaluator executed twice in-process to validate cooldown dedupe.",
+    "Fallback adapter configuration was applied for this live drill execution."
+  ]
+}

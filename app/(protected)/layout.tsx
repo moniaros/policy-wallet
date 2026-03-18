@@ -7,7 +7,7 @@ import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { signOut } from "@/app/auth/actions"
 import type { NavigationSection, UserRole } from "@/types/navigation"
 
-import { Wallet, Shield, PieChart, Bell, LayoutDashboard, Users, Lightbulb, Settings, Building2, Gavel } from 'lucide-react'
+import { Wallet, Shield, PieChart, Bell, LayoutDashboard, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity } from 'lucide-react'
 
 export default async function ProtectedLayout({
     children,
@@ -24,22 +24,21 @@ export default async function ProtectedLayout({
     const navigation: NavigationSection[] = []
     const t = getTranslations(dbUser.preferredLanguage as 'en' | 'el' || 'el')
     const roleCopy = getRoleCopy((dbUser.preferredLanguage as 'en' | 'el') || 'el')
-    const isGreek = (dbUser.preferredLanguage as 'en' | 'el' || 'en') === "el"
 
     if (currentRole === "policyholder") {
         navigation.push({
-            title: isGreek ? "Πλοήγηση" : "Navigation",
+            title: t.nav.navigation,
             items: [
-                { label: isGreek ? "Αρχική" : "Home", href: "/home", icon: <LayoutDashboard className="w-5 h-5" /> },
+                { label: t.nav.home, href: "/home", icon: <LayoutDashboard className="w-5 h-5" /> },
                 { label: t.nav.wallet, href: "/wallet", icon: <Wallet className="w-5 h-5" /> },
                 {
-                    label: isGreek ? "AI Insights" : "AI Insights",
-                    href: "/coverage-insights", // Directing to the main insights page
+                    label: t.nav.coverageInsights,
+                    href: "/coverage-insights",
                     variant: 'plus',
-                    isLocked: false, // Unlocking for visibility, specific features can be locked inside
+                    isLocked: false,
                     icon: <Shield className="w-5 h-5" />
                 },
-                { label: isGreek ? "Ο Σύμβουλός μου" : "My Agent", href: "/agent", icon: <Users className="w-5 h-5" /> },
+                { label: t.nav.myAgent, href: "/agent", icon: <Users className="w-5 h-5" /> },
                 { label: t.userMenu.settings, href: "/account", icon: <Settings className="w-5 h-5" /> },
                 { label: t.nav.notifications, href: "/notifications", icon: <Bell className="w-5 h-5" /> },
             ]
@@ -51,7 +50,9 @@ export default async function ProtectedLayout({
                 { label: t.nav.dashboard, href: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
                 { label: t.nav.customers, href: "/customers", icon: <Users className="w-5 h-5" /> },
                 { label: t.nav.opportunities, href: "/opportunities", icon: <Lightbulb className="w-5 h-5" /> },
+                { label: t.tasks.actionCenter, href: "/tasks", icon: <ClipboardList className="w-5 h-5" /> },
                 { label: t.nav.insights, href: "/insights", icon: <PieChart className="w-5 h-5" /> },
+                { label: t.nav.activity, href: "/activity", icon: <Activity className="w-5 h-5" /> },
                 { label: t.nav.notifications, href: "/notifications", icon: <Bell className="w-5 h-5" /> },
                 { label: roleCopy.shell.agentProfile, href: "/agent/settings", icon: <Settings className="w-5 h-5" /> },
             ]
@@ -62,6 +63,9 @@ export default async function ProtectedLayout({
             items: [
                 { label: t.nav.dashboard, href: "/admin/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
                 { label: t.nav.users, href: "/admin/users", icon: <Users className="w-5 h-5" /> },
+                { label: t.nav.dsrQueue, href: "/admin/dsr", icon: <ShieldAlert className="w-5 h-5" /> },
+                { label: t.nav.billingReconciliation, href: "/admin/billing-reconciliation", icon: <ReceiptText className="w-5 h-5" /> },
+                { label: t.nav.launchReadiness, href: "/admin/launch-readiness", icon: <Shield className="w-5 h-5" /> },
                 { label: t.nav.insurers, href: "/admin/insurers", icon: <Building2 className="w-5 h-5" /> },
                 { label: t.nav.insuranceTypes, href: "/admin/types", icon: <Gavel className="w-5 h-5" /> },
             ]

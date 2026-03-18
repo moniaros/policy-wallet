@@ -4,6 +4,7 @@ import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { ensureOwnership } from "@/lib/security"
 import { logger } from "@/lib/logger"
 import { requireApiUser } from "@/lib/api-auth"
+import { withApiGuard } from "@/lib/api-guard"
 
 const UpdatePolicySchema = z.object({
     policyNumber: z.string().optional(),
@@ -12,6 +13,10 @@ const UpdatePolicySchema = z.object({
     endDate: z.string().pipe(z.coerce.date()).optional(),
     premiumAmount: z.number().optional(),
     status: z.string().optional(),
+})
+
+const policyIdParamsSchema = z.object({
+    id: z.string().min(1),
 })
 
 export async function GET(
@@ -72,70 +77,80 @@ export async function GET(
     }
 }
 
-export async function PATCH(
-    req: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
-    const authCheck = await requireApiUser()
-    if ("error" in authCheck) return authCheck.error
-    const authResult = authCheck.auth
+export const PATCH = withApiGuard(
+    {
+        auth: { mode: "user" },
+        validation: {
+            params: policyIdParamsSchema,
+            body: UpdatePolicySchema,
+        },
+        rateLimit: {
+            limit: 30,
+            windowMs: 60 * 1000,
+            key: ({ auth, params }) => `policy:update:${auth?.dbUser.id || "anonymous"}:${(params as { id: string }).id}`,
+        },
+    },
+    async ({ auth, params, body }) => {
+        const authResult = auth!
+        const { id } = params
 
-    const { id } = await params
+        const ownership = await ensureOwnership(db.policy, id, authResult.dbUser.id)
+        if (!ownership.success) return ownership.error!
 
-    const ownership = await ensureOwnership(db.policy, id, authResult.dbUser.id)
-    if (!ownership.success) return ownership.error!
+        try {
+            const policy = await db.policy.update({
+                where: { id },
+                data: body!
+            })
 
-    try {
-        const body = await req.json()
-        const validatedData = UpdatePolicySchema.parse(body)
-
-        const policy = await db.policy.update({
-            where: { id },
-            data: validatedData
-        })
-
-        return createApiResponse(policy)
-    } catch (error) {
-        console.error(error)
-        return createApiError("BAD_REQUEST", "Update failed", 400)
+            return createApiResponse(policy)
+        } catch (error) {
+            console.error(error)
+            return createApiError("BAD_REQUEST", "Update failed", 400)
+        }
     }
-}
+)
 
-export async function DELETE(
-    req: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
-    const authCheck = await requireApiUser()
-    if ("error" in authCheck) return authCheck.error
-    const authResult = authCheck.auth
+export const DELETE = withApiGuard(
+    {
+        auth: { mode: "user" },
+        validation: { params: policyIdParamsSchema },
+        rateLimit: {
+            limit: 20,
+            windowMs: 60 * 1000,
+            key: ({ auth, params }) => `policy:delete:${auth?.dbUser.id || "anonymous"}:${(params as { id: string }).id}`,
+        },
+    },
+    async ({ auth, params }) => {
+        const authResult = auth!
+        const { id } = params
 
-    const { id } = await params
+        const ownership = await ensureOwnership(db.policy, id, authResult.dbUser.id)
+        if (!ownership.success) return ownership.error!
 
-    const ownership = await ensureOwnership(db.policy, id, authResult.dbUser.id)
-    if (!ownership.success) return ownership.error!
+        try {
+            await db.policy.update({
+                where: { id },
+                data: { status: "deleted" }
+            })
 
-    try {
-        await db.policy.update({
-            where: { id },
-            data: { status: "deleted" }
-        })
+            // Log Activity
+            await (db.activityLog as any).create({
+                data: {
+                    adminUserId: authResult.dbUser.id,
+                    adminEmail: authResult.dbUser.email || "unknown",
+                    actionType: "POLICY_DELETED",
+                    description: `Soft-deleted policy ${id}`,
+                    metadata: { policyId: id }
+                }
+            })
 
-        // Log Activity
-        await (db.activityLog as any).create({
-            data: {
-                adminUserId: authResult.dbUser.id,
-                adminEmail: authResult.dbUser.email || "unknown",
-                actionType: "POLICY_DELETED",
-                description: `Soft-deleted policy ${id}`,
-                metadata: { policyId: id }
-            }
-        })
+            logger('info', 'Policy soft-deleted', { id, userId: authResult.dbUser.id })
 
-        logger('info', 'Policy soft-deleted', { id, userId: authResult.dbUser.id })
-
-        return createApiResponse({ message: "Policy deleted successfully" })
-    } catch (error) {
-        logger('error', 'Delete policy failed', { id, error, userId: authResult.dbUser.id })
-        return createApiError("INTERNAL_ERROR", "Delete failed", 500)
+            return createApiResponse({ message: "Policy deleted successfully" })
+        } catch (error) {
+            logger('error', 'Delete policy failed', { id, error, userId: authResult.dbUser.id })
+            return createApiError("INTERNAL_ERROR", "Delete failed", 500)
+        }
     }
-}
+)

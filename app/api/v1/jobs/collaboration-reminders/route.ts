@@ -5,7 +5,17 @@ import { runCollaborationReminderJobs } from "@/lib/services/collaboration-remin
 export async function POST(req: Request) {
     const cronSecret = process.env.CRON_SECRET
     const headerSecret = req.headers.get("x-cron-secret")
-    const isCronAuthorized = Boolean(cronSecret && headerSecret && headerSecret === cronSecret)
+    const authHeader = req.headers.get("authorization")
+    const bearerSecret = authHeader?.startsWith("Bearer ")
+        ? authHeader.slice("Bearer ".length)
+        : null
+    const isCronAuthorized = Boolean(
+        cronSecret &&
+        (
+            (headerSecret && headerSecret === cronSecret) ||
+            (bearerSecret && bearerSecret === cronSecret)
+        )
+    )
 
     if (!isCronAuthorized) {
         const authCheck = await requireApiUser({ roles: ["admin"] })

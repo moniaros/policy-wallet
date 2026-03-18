@@ -9,6 +9,9 @@ import { logger } from '@/lib/logger'
 import type {
     IAIService,
     AIDocument,
+    AICapabilityCheckInput,
+    AICapabilityCheckResult,
+    AICapabilityMetadata,
     PolicyMetadata,
     GapDefinitionForAI,
     AIPolicyExtractionResponse,
@@ -39,6 +42,31 @@ export class MockAIService implements IAIService {
      */
     getServiceName(): string {
         return 'Mock AI (Testing)'
+    }
+
+    getCapabilities(): AICapabilityMetadata {
+        return {
+            provider: "mock",
+            supportsDocumentInput: true,
+            supportedMimeTypes: [
+                "application/pdf",
+                "image/png",
+                "image/jpeg",
+                "image/webp",
+            ],
+            modelPatterns: [".*"],
+        }
+    }
+
+    checkCapabilities(input: AICapabilityCheckInput): AICapabilityCheckResult {
+        const capabilities = this.getCapabilities()
+        return {
+            supported: true,
+            code: "OK",
+            reason: `Mock provider supports operation ${input.operation}`,
+            userMessageKey: "analysis.status.inProgress",
+            metadata: capabilities,
+        }
     }
 
     /**

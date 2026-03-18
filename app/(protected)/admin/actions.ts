@@ -4,7 +4,14 @@ import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
+import { buildUserDataExportPayload } from "@/lib/services/compliance.service"
+import { getBillingReconciliationSnapshot } from "@/lib/services/billing/reconciliation.service"
+import { getLaunchReadinessSnapshot } from "@/lib/services/ops/launch-readiness.service"
 import * as Sentry from "@sentry/nextjs"
+import { Prisma } from "@prisma/client"
+
+const EXPORT_DOWNLOAD_TTL_MS = 7 * 24 * 60 * 60 * 1000
+const OPEN_DELETION_STATUSES = ["requested", "in_review", "approved", "processing"] as const
 
 /**
  * ROLE VERIFICATION HELPER
@@ -61,62 +68,52 @@ export async function getDashboardMetrics() {
     const admin = await verifyAdminRole()
 
     try {
-        // Get user counts by role
-        const totalUsers = await db.user.count()
-        const policyholderCount = await db.user.count({
-            where: { roles: { contains: "policyholder" } }
-        })
-        const agentCount = await db.user.count({
-            where: { roles: { contains: "agent" } }
-        })
-        const adminCount = await db.user.count({
-            where: { roles: { contains: "admin" } }
-        })
+        const thirtyDaysAgo = new Date()
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 
-        // Get policy statistics
-        const totalPolicies = await db.policy.count()
-        const activePolicies = await db.policy.count({
-            where: { status: "active" }
-        })
-
-        // Get agent verification queue
-        const pendingAgents = await db.agentProfile.count({
-            where: { verificationStatus: "pending" }
-        })
-
-        // Get subscription statistics (if applicable)
-        const activeSubscriptions = await db.subscription.count({
-            where: { status: "active" }
-        })
-
-        // Calculate MRR (Monthly Recurring Revenue)
-        const subscriptions = await db.subscription.findMany({
-            where: { status: "active" },
-            include: { plan: true }
-        })
+        const [
+            totalUsers,
+            policyholderCount,
+            agentCount,
+            adminCount,
+            totalPolicies,
+            activePolicies,
+            pendingAgents,
+            activeSubscriptions,
+            subscriptions,
+            newUsersLast30Days,
+            newPoliciesLast30Days,
+            totalGaps,
+            openGaps,
+            pendingDataExports,
+            openDeletionRequests,
+            approvedDeletionRequests,
+        ] = await Promise.all([
+            db.user.count(),
+            db.user.count({ where: { roles: { contains: "policyholder" } } }),
+            db.user.count({ where: { roles: { contains: "agent" } } }),
+            db.user.count({ where: { roles: { contains: "admin" } } }),
+            db.policy.count(),
+            db.policy.count({ where: { status: "active" } }),
+            db.agentProfile.count({ where: { verificationStatus: "pending" } }),
+            db.subscription.count({ where: { status: "active" } }),
+            db.subscription.findMany({
+                where: { status: "active" },
+                include: { plan: true }
+            }),
+            db.user.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+            db.policy.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
+            db.gapInstance.count(),
+            db.gapInstance.count({ where: { status: "open" } }),
+            db.dataExportRequest.count({ where: { status: { in: ["requested", "processing", "failed"] } } }),
+            db.deletionRequest.count({ where: { status: { in: [...OPEN_DELETION_STATUSES] } } }),
+            db.deletionRequest.count({ where: { status: "approved" } }),
+        ])
 
         const mrr = subscriptions.reduce((total, sub) => {
             const planPrice = Number(sub.plan.price)
             return total + (sub.plan.billingPeriod === "monthly" ? planPrice : planPrice / 12)
         }, 0)
-
-        // Get recent activity (last 30 days)
-        const thirtyDaysAgo = new Date()
-        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-
-        const newUsersLast30Days = await db.user.count({
-            where: { createdAt: { gte: thirtyDaysAgo } }
-        })
-
-        const newPoliciesLast30Days = await db.policy.count({
-            where: { createdAt: { gte: thirtyDaysAgo } }
-        })
-
-        // Get gap statistics
-        const totalGaps = await db.gapInstance.count()
-        const openGaps = await db.gapInstance.count({
-            where: { status: "open" }
-        })
 
         return {
             users: {
@@ -142,6 +139,12 @@ export async function getDashboardMetrics() {
             gaps: {
                 total: totalGaps,
                 open: openGaps
+            },
+            dsr: {
+                pendingDataExports,
+                openDeletionRequests,
+                approvedDeletionRequests,
+                totalOpen: pendingDataExports + openDeletionRequests
             }
         }
     } catch (error) {
@@ -556,6 +559,630 @@ export async function rejectAgent(agentProfileId: string, reason: string) {
     } catch (error) {
         Sentry.captureException(error)
         throw new Error("Failed to reject agent")
+    }
+}
+
+type DataExportStatusFilter = "all" | "requested" | "processing" | "completed" | "failed" | "expired"
+type DeletionStatusFilter =
+    | "all"
+    | "requested"
+    | "in_review"
+    | "approved"
+    | "processing"
+    | "completed"
+    | "rejected"
+    | "failed"
+
+function toErrorMessage(error: unknown): string {
+    if (error instanceof Error) {
+        return error.message
+    }
+
+    return String(error)
+}
+
+function appendOperatorNote(existingNotes: string | null, note?: string): string | null {
+    if (!note || !note.trim()) {
+        return existingNotes || null
+    }
+
+    const stampedNote = `${new Date().toISOString()} - ${note.trim()}`
+    return existingNotes ? `${existingNotes}\n${stampedNote}` : stampedNote
+}
+
+function getAnonymizedEmail(userId: string): string {
+    return `deleted+${userId}.${Date.now()}@deleted.policywallet.local`
+}
+
+async function executeDeletionAnonymization(userId: string) {
+    const anonymizedEmail = getAnonymizedEmail(userId)
+
+    return db.$transaction(async (tx) => {
+        const [
+            deletedPolicies,
+            deletedOauthAccounts,
+            deletedSessions,
+            deletedActiveSessions,
+            deletedPasskeys,
+            deletedChallenges,
+            deletedNotificationPreferences,
+            deletedNotificationEvents,
+            deletedSecurityEvents,
+            deletedAccessGrants,
+            deletedInvites,
+            cancelledSubscriptions,
+            sanitizedPolicyholderProfiles,
+            sanitizedAgentProfiles,
+        ] = await Promise.all([
+            tx.policy.deleteMany({ where: { ownerUserId: userId } }),
+            tx.account.deleteMany({ where: { userId } }),
+            tx.session.deleteMany({ where: { userId } }),
+            tx.activeSession.deleteMany({ where: { userId } }),
+            tx.passkeyCredential.deleteMany({ where: { userId } }),
+            tx.webAuthnChallenge.deleteMany({ where: { userId } }),
+            tx.notificationPreference.deleteMany({ where: { userId } }),
+            tx.notificationEvent.deleteMany({ where: { userId } }),
+            tx.securityEvent.deleteMany({ where: { userId } }),
+            tx.accessGrant.deleteMany({
+                where: {
+                    OR: [{ granterUserId: userId }, { granteeUserId: userId }],
+                },
+            }),
+            tx.invite.deleteMany({
+                where: {
+                    OR: [{ inviterUserId: userId }, { inviteeUserId: userId }],
+                },
+            }),
+            tx.subscription.updateMany({
+                where: {
+                    userId,
+                    status: "active",
+                },
+                data: {
+                    status: "cancelled",
+                    autoRenew: false,
+                },
+            }),
+            tx.policyholderProfile.updateMany({
+                where: { userId },
+                data: { preferences: Prisma.JsonNull },
+            }),
+            tx.agentProfile.updateMany({
+                where: { userId },
+                data: {
+                    agencyName: null,
+                    licenseNumber: null,
+                    logoUrl: null,
+                    website: null,
+                    phone: null,
+                    documents: Prisma.JsonNull,
+                },
+            }),
+        ])
+
+        await tx.user.update({
+            where: { id: userId },
+            data: {
+                email: anonymizedEmail,
+                name: "Deleted User",
+                image: null,
+                phoneNumber: null,
+                pushToken: null,
+                password: null,
+                stripeCustomerId: null,
+                emailVerified: null,
+                termsVersionAccepted: null,
+                privacyVersionAccepted: null,
+                cookieConsentVersion: null,
+                consentUpdatedAt: null,
+                consentLocale: null,
+            },
+        })
+
+        return {
+            anonymizedEmail,
+            deletedPolicies: deletedPolicies.count,
+            deletedOauthAccounts: deletedOauthAccounts.count,
+            deletedSessions: deletedSessions.count,
+            deletedActiveSessions: deletedActiveSessions.count,
+            deletedPasskeys: deletedPasskeys.count,
+            deletedChallenges: deletedChallenges.count,
+            deletedNotificationPreferences: deletedNotificationPreferences.count,
+            deletedNotificationEvents: deletedNotificationEvents.count,
+            deletedSecurityEvents: deletedSecurityEvents.count,
+            deletedAccessGrants: deletedAccessGrants.count,
+            deletedInvites: deletedInvites.count,
+            cancelledSubscriptions: cancelledSubscriptions.count,
+            sanitizedPolicyholderProfiles: sanitizedPolicyholderProfiles.count,
+            sanitizedAgentProfiles: sanitizedAgentProfiles.count,
+        }
+    })
+}
+
+/**
+ * DSR WORKFLOW
+ */
+export async function getDsrQueue(options?: {
+    dataExportStatus?: DataExportStatusFilter
+    deletionStatus?: DeletionStatusFilter
+    limit?: number
+}) {
+    await verifyAdminRole()
+
+    const safeLimit = Math.min(Math.max(options?.limit ?? 50, 1), 200)
+    const dataExportStatus = options?.dataExportStatus || "all"
+    const deletionStatus = options?.deletionStatus || "all"
+
+    const dataExportWhere =
+        dataExportStatus === "all"
+            ? {}
+            : {
+                status: dataExportStatus,
+            }
+
+    const deletionWhere =
+        deletionStatus === "all"
+            ? {}
+            : {
+                status: deletionStatus,
+            }
+
+    const [dataExports, deletionRequests, pendingDataExports, openDeletionRequests, approvedDeletionRequests] =
+        await Promise.all([
+            db.dataExportRequest.findMany({
+                where: dataExportWhere,
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                        },
+                    },
+                },
+                orderBy: { requestedAt: "asc" },
+                take: safeLimit,
+            }),
+            db.deletionRequest.findMany({
+                where: deletionWhere,
+                include: {
+                    user: {
+                        select: {
+                            id: true,
+                            name: true,
+                            email: true,
+                            roles: true,
+                        },
+                    },
+                },
+                orderBy: { requestedAt: "asc" },
+                take: safeLimit,
+            }),
+            db.dataExportRequest.count({
+                where: {
+                    status: {
+                        in: ["requested", "processing", "failed"],
+                    },
+                },
+            }),
+            db.deletionRequest.count({
+                where: {
+                    status: {
+                        in: [...OPEN_DELETION_STATUSES],
+                    },
+                },
+            }),
+            db.deletionRequest.count({
+                where: {
+                    status: "approved",
+                },
+            }),
+        ])
+
+    return {
+        dataExports: dataExports.map((request) => ({
+            id: request.id,
+            userId: request.userId,
+            userName: request.user.name,
+            userEmail: request.user.email,
+            status: request.status,
+            requestSource: request.requestSource,
+            requestedAt: request.requestedAt.toISOString(),
+            startedAt: request.startedAt?.toISOString() || null,
+            completedAt: request.completedAt?.toISOString() || null,
+            expiresAt: request.expiresAt?.toISOString() || null,
+            errorMessage: request.errorMessage,
+        })),
+        deletionRequests: deletionRequests.map((request) => ({
+            id: request.id,
+            userId: request.userId,
+            userName: request.user.name,
+            userEmail: request.user.email,
+            userRoles: request.user.roles,
+            status: request.status,
+            legalBasis: request.legalBasis,
+            retentionNotes: request.retentionNotes,
+            operatorNotes: request.operatorNotes,
+            requestedAt: request.requestedAt.toISOString(),
+            reviewedAt: request.reviewedAt?.toISOString() || null,
+            completedAt: request.completedAt?.toISOString() || null,
+            errorMessage: request.errorMessage,
+        })),
+        summary: {
+            pendingDataExports,
+            openDeletionRequests,
+            approvedDeletionRequests,
+            totalOpen: pendingDataExports + openDeletionRequests,
+        },
+    }
+}
+
+export async function executeDataExportRequestAsAdmin(requestId: string) {
+    const admin = await verifyAdminRole()
+
+    if (!requestId?.trim()) {
+        return { success: false, error: "Missing request id" }
+    }
+
+    const request = await db.dataExportRequest.findUnique({
+        where: { id: requestId },
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    email: true,
+                },
+            },
+        },
+    })
+
+    if (!request) {
+        return { success: false, error: "Data export request not found" }
+    }
+
+    if (request.status === "processing") {
+        return { success: false, error: "Data export request is already processing" }
+    }
+
+    try {
+        await db.dataExportRequest.update({
+            where: { id: requestId },
+            data: {
+                status: "processing",
+                startedAt: new Date(),
+                errorMessage: null,
+            },
+        })
+
+        const payload = await buildUserDataExportPayload(request.userId)
+        const completedAt = new Date()
+        const expiresAt = new Date(completedAt.getTime() + EXPORT_DOWNLOAD_TTL_MS)
+        const downloadToken = crypto.randomUUID().replace(/-/g, "")
+
+        await db.dataExportRequest.update({
+            where: { id: requestId },
+            data: {
+                status: "completed",
+                payloadJson: payload as any,
+                completedAt,
+                expiresAt,
+                downloadToken,
+                errorMessage: null,
+            },
+        })
+
+        await logAdminAction(
+            admin.id,
+            admin.email,
+            "EXECUTE_DATA_EXPORT_REQUEST",
+            `Executed data export request ${requestId} for ${request.user.email}`,
+            {
+                requestId,
+                userId: request.userId,
+                userEmail: request.user.email,
+            }
+        )
+
+        revalidatePath("/admin/dsr")
+        revalidatePath("/admin/dashboard")
+        return { success: true }
+    } catch (error) {
+        const errorMessage = toErrorMessage(error)
+        Sentry.captureException(error)
+
+        await db.dataExportRequest.update({
+            where: { id: requestId },
+            data: {
+                status: "failed",
+                errorMessage,
+            },
+        })
+
+        await logAdminAction(
+            admin.id,
+            admin.email,
+            "EXECUTE_DATA_EXPORT_REQUEST_FAILED",
+            `Failed executing data export request ${requestId} for ${request.user.email}`,
+            {
+                requestId,
+                userId: request.userId,
+                userEmail: request.user.email,
+                errorMessage,
+            }
+        )
+
+        revalidatePath("/admin/dsr")
+        revalidatePath("/admin/dashboard")
+        return { success: false, error: "Failed to execute data export request" }
+    }
+}
+
+export async function markDeletionRequestInReview(requestId: string, note?: string) {
+    const admin = await verifyAdminRole()
+
+    const request = await db.deletionRequest.findUnique({
+        where: { id: requestId },
+        include: {
+            user: {
+                select: {
+                    email: true,
+                },
+            },
+        },
+    })
+
+    if (!request) {
+        return { success: false, error: "Deletion request not found" }
+    }
+
+    if (request.status !== "requested" && request.status !== "failed") {
+        return { success: false, error: "Only requested or failed requests can move to in review" }
+    }
+
+    await db.deletionRequest.update({
+        where: { id: requestId },
+        data: {
+            status: "in_review",
+            reviewedAt: new Date(),
+            operatorNotes: appendOperatorNote(request.operatorNotes, note),
+            errorMessage: null,
+        },
+    })
+
+    await logAdminAction(
+        admin.id,
+        admin.email,
+        "DELETION_REQUEST_IN_REVIEW",
+        `Marked deletion request ${requestId} as in review for ${request.user.email}`,
+        {
+            requestId,
+            userId: request.userId,
+            userEmail: request.user.email,
+            note: note || null,
+        }
+    )
+
+    revalidatePath("/admin/dsr")
+    revalidatePath("/admin/dashboard")
+    return { success: true }
+}
+
+export async function approveDeletionRequest(requestId: string, note?: string) {
+    const admin = await verifyAdminRole()
+
+    const request = await db.deletionRequest.findUnique({
+        where: { id: requestId },
+        include: {
+            user: {
+                select: {
+                    email: true,
+                },
+            },
+        },
+    })
+
+    if (!request) {
+        return { success: false, error: "Deletion request not found" }
+    }
+
+    if (request.status !== "requested" && request.status !== "in_review") {
+        return { success: false, error: "Only requested or in-review requests can be approved" }
+    }
+
+    await db.deletionRequest.update({
+        where: { id: requestId },
+        data: {
+            status: "approved",
+            reviewedAt: new Date(),
+            operatorNotes: appendOperatorNote(request.operatorNotes, note),
+            errorMessage: null,
+        },
+    })
+
+    await logAdminAction(
+        admin.id,
+        admin.email,
+        "APPROVE_DELETION_REQUEST",
+        `Approved deletion request ${requestId} for ${request.user.email}`,
+        {
+            requestId,
+            userId: request.userId,
+            userEmail: request.user.email,
+            note: note || null,
+        }
+    )
+
+    revalidatePath("/admin/dsr")
+    revalidatePath("/admin/dashboard")
+    return { success: true }
+}
+
+export async function rejectDeletionRequest(requestId: string, reason: string) {
+    const admin = await verifyAdminRole()
+
+    if (!reason?.trim()) {
+        return { success: false, error: "Rejection reason is required" }
+    }
+
+    const request = await db.deletionRequest.findUnique({
+        where: { id: requestId },
+        include: {
+            user: {
+                select: {
+                    email: true,
+                },
+            },
+        },
+    })
+
+    if (!request) {
+        return { success: false, error: "Deletion request not found" }
+    }
+
+    if (request.status === "completed" || request.status === "rejected") {
+        return { success: false, error: "This deletion request is already finalized" }
+    }
+
+    await db.deletionRequest.update({
+        where: { id: requestId },
+        data: {
+            status: "rejected",
+            reviewedAt: new Date(),
+            operatorNotes: appendOperatorNote(request.operatorNotes, `Rejected: ${reason.trim()}`),
+            errorMessage: null,
+        },
+    })
+
+    await logAdminAction(
+        admin.id,
+        admin.email,
+        "REJECT_DELETION_REQUEST",
+        `Rejected deletion request ${requestId} for ${request.user.email}`,
+        {
+            requestId,
+            userId: request.userId,
+            userEmail: request.user.email,
+            reason: reason.trim(),
+        }
+    )
+
+    revalidatePath("/admin/dsr")
+    revalidatePath("/admin/dashboard")
+    return { success: true }
+}
+
+export async function executeDeletionRequest(requestId: string) {
+    const admin = await verifyAdminRole()
+
+    const request = await db.deletionRequest.findUnique({
+        where: { id: requestId },
+        include: {
+            user: {
+                select: {
+                    email: true,
+                },
+            },
+        },
+    })
+
+    if (!request) {
+        return { success: false, error: "Deletion request not found" }
+    }
+
+    if (request.status !== "approved" && request.status !== "failed") {
+        return { success: false, error: "Only approved or failed requests can be executed" }
+    }
+
+    await db.deletionRequest.update({
+        where: { id: requestId },
+        data: {
+            status: "processing",
+            reviewedAt: request.reviewedAt || new Date(),
+            completedAt: null,
+            errorMessage: null,
+        },
+    })
+
+    try {
+        const summary = await executeDeletionAnonymization(request.userId)
+        const completionNote = `Execution completed. Deleted policies: ${summary.deletedPolicies}, cancelled subscriptions: ${summary.cancelledSubscriptions}.`
+
+        await db.deletionRequest.update({
+            where: { id: requestId },
+            data: {
+                status: "completed",
+                completedAt: new Date(),
+                errorMessage: null,
+                operatorNotes: appendOperatorNote(request.operatorNotes, completionNote),
+            },
+        })
+
+        await logAdminAction(
+            admin.id,
+            admin.email,
+            "EXECUTE_DELETION_REQUEST",
+            `Executed deletion request ${requestId} for ${request.user.email}`,
+            {
+                requestId,
+                userId: request.userId,
+                userEmail: request.user.email,
+                summary,
+            }
+        )
+
+        revalidatePath("/admin/dsr")
+        revalidatePath("/admin/dashboard")
+        return { success: true }
+    } catch (error) {
+        const errorMessage = toErrorMessage(error)
+        Sentry.captureException(error)
+
+        await db.deletionRequest.update({
+            where: { id: requestId },
+            data: {
+                status: "failed",
+                errorMessage,
+            },
+        })
+
+        await logAdminAction(
+            admin.id,
+            admin.email,
+            "EXECUTE_DELETION_REQUEST_FAILED",
+            `Failed to execute deletion request ${requestId} for ${request.user.email}`,
+            {
+                requestId,
+                userId: request.userId,
+                userEmail: request.user.email,
+                errorMessage,
+            }
+        )
+
+        revalidatePath("/admin/dsr")
+        revalidatePath("/admin/dashboard")
+        return { success: false, error: "Failed to execute deletion request" }
+    }
+}
+
+export async function getBillingReconciliation(windowHours: number = 24) {
+    await verifyAdminRole()
+
+    try {
+        return await getBillingReconciliationSnapshot({ windowHours })
+    } catch (error) {
+        Sentry.captureException(error)
+        throw new Error("Failed to fetch billing reconciliation snapshot")
+    }
+}
+
+export async function getLaunchReadiness(windowHours: number = 24) {
+    await verifyAdminRole()
+
+    try {
+        return await getLaunchReadinessSnapshot({ windowHours })
+    } catch (error) {
+        Sentry.captureException(error)
+        throw new Error("Failed to fetch launch readiness snapshot")
     }
 }
 

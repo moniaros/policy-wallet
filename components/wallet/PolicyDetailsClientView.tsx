@@ -75,33 +75,31 @@ export function PolicyDetailsClient({
     const [activeTab, setActiveTab] = useState<"analysis" | "qa" | "collaboration">("analysis")
 
     const locale = t.common?.locale || "en-US"
-    const detailsCopy = t.wallet?.policyDetailsPage || {}
+    const detailsCopy = t.wallet.policyDetailsPage
 
     const copy = {
-        nextBestActions: detailsCopy.nextBestActions || "Next best actions",
-        askStarter: detailsCopy.askStarter || "Ask one starter question",
-        sharePolicy: detailsCopy.sharePolicy || "Share with agent or family",
-        reviewRenewal: detailsCopy.reviewRenewal || "Review expiry and renewal",
-        contactInsurer: detailsCopy.contactInsurer || "Contact insurer",
-        requestRenewal: detailsCopy.requestRenewal || "Request renewal quote",
-        renewalRequested: detailsCopy.renewalRequested || "Renewal request sent.",
-        noInsurerPhone: detailsCopy.noInsurerPhone || "No insurer phone number available.",
-        documentsArea: detailsCopy.documentsArea || "Policy documents",
-        shareCanceled: detailsCopy.shareCanceled || "Share canceled.",
-        shareUnavailable: detailsCopy.shareUnavailable || "Share is not supported.",
-        linkCopied: detailsCopy.linkCopied || "Link copied.",
-        copyFailed: detailsCopy.copyFailed || "Failed to copy the link.",
-        tabAnalysis: detailsCopy.tabAnalysis || "Analysis",
-        tabQa: detailsCopy.tabQa || "AI Q&A",
-        tabCollaboration: detailsCopy.tabCollaboration || "Collaboration",
-        insuredPeople: detailsCopy.insuredPeople || "Insured people",
-        noInsuredPeople: detailsCopy.noInsuredPeople || "No insured names found.",
-        renewalHistory: detailsCopy.renewalHistory || "Renewal history",
-        noRenewalHistory: detailsCopy.noRenewalHistory || "No renewal history available yet.",
-        reanalyzeToSeeCoverage: detailsCopy.reanalyzeToSeeCoverage || "Re-analyze to see detailed coverage",
-        reanalyzeToSeeCoverageHint:
-            detailsCopy.reanalyzeToSeeCoverageHint ||
-            "Type-specific coverage details will appear after a new AI analysis",
+        nextBestActions: detailsCopy.nextBestActions,
+        askStarter: detailsCopy.askStarter,
+        sharePolicy: detailsCopy.sharePolicy,
+        reviewRenewal: detailsCopy.reviewRenewal,
+        contactInsurer: detailsCopy.contactInsurer,
+        requestRenewal: detailsCopy.requestRenewal,
+        renewalRequested: detailsCopy.renewalRequested,
+        noInsurerPhone: detailsCopy.noInsurerPhone,
+        documentsArea: detailsCopy.documentsArea,
+        shareCanceled: detailsCopy.shareCanceled,
+        shareUnavailable: detailsCopy.shareUnavailable,
+        linkCopied: detailsCopy.linkCopied,
+        copyFailed: detailsCopy.copyFailed,
+        tabAnalysis: detailsCopy.tabAnalysis,
+        tabQa: detailsCopy.tabQa,
+        tabCollaboration: detailsCopy.tabCollaboration,
+        insuredPeople: detailsCopy.insuredPeople,
+        noInsuredPeople: detailsCopy.noInsuredPeople,
+        renewalHistory: detailsCopy.renewalHistory,
+        noRenewalHistory: detailsCopy.noRenewalHistory,
+        reanalyzeToSeeCoverage: detailsCopy.reanalyzeToSeeCoverage,
+        reanalyzeToSeeCoverageHint: detailsCopy.reanalyzeToSeeCoverageHint,
     }
 
     const canShowCollaborationTimeline = Boolean(relationshipId)
@@ -201,7 +199,7 @@ export function PolicyDetailsClient({
         aiSuggestion: gap.aiSuggestion || null,
         aiSuggestionEl: gap.aiSuggestionEl || null,
         definition: {
-            title: gap.definition?.title || t.analysis?.unknownGap || "Unknown Gap",
+            title: gap.definition?.title || t.analysis.unknownGap,
             severity: gap.definition?.severity || "medium",
         },
     }))
@@ -462,6 +460,7 @@ export function PolicyDetailsClient({
                                 lastAnalyzedAt={policy.lastAnalyzedAt}
                                 policyStatus={policy.status}
                                 processingError={policy.acordData?.processingError || null}
+                                analysisPipeline={policy.acordData?.analysis?.pipeline || null}
                             />
                         )}
 

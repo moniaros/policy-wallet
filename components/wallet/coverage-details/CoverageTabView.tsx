@@ -4,6 +4,7 @@ import { useState } from "react"
 import { ShieldCheck, ShieldOff, CheckCircle2, XCircle, AlertTriangle } from "lucide-react"
 import type { AcordData } from "@/types/domain"
 import type { LineOfBusiness } from "@/types/enums"
+import { getTranslations } from "@/lib/i18n"
 import { HealthCoverageDetails } from "./HealthCoverageDetails"
 import { MotorCoverageDetails } from "./MotorCoverageDetails"
 import { HomeCoverageDetails } from "./HomeCoverageDetails"
@@ -18,21 +19,8 @@ interface CoverageTabViewProps {
 
 export function CoverageTabView({ acordData, lineOfBusiness, language }: CoverageTabViewProps) {
   const [activeTab, setActiveTab] = useState<"covered" | "not_covered">("covered")
-  const isGreek = language === "el"
-
-  const copy = {
-    covered: isGreek ? "Τι Καλύπτεται" : "What's Covered",
-    notCovered: isGreek ? "Τι ΔΕΝ Καλύπτεται" : "What's NOT Covered",
-    noCoverageData: isGreek ? "Δεν βρέθηκαν δεδομένα κάλυψης" : "No coverage data found",
-    noCoverageDataDesc: isGreek
-      ? "Τα δεδομένα κάλυψης θα εμφανιστούν μετά την ανάλυση AI"
-      : "Coverage data will appear after AI analysis",
-    noExclusions: isGreek ? "Δεν βρέθηκαν εξαιρέσεις" : "No exclusions found",
-    noExclusionsDesc: isGreek
-      ? "Δεν εντοπίστηκαν εξαιρέσεις σε αυτό το ασφαλιστήριο"
-      : "No exclusions were identified in this policy",
-    structuredCoverages: isGreek ? "Δομημένες Καλύψεις" : "Structured Coverages",
-  }
+  const i18n = getTranslations(language)
+  const copy = i18n.coverageDetails
 
   const renderTypeSpecificDetails = () => {
     switch (lineOfBusiness) {
@@ -51,8 +39,8 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
     }
   }
 
-  const hasCoverages = acordData.coverages && acordData.coverages.length > 0
-  const hasExclusions = acordData.exclusions && acordData.exclusions.length > 0
+  const hasCoverages = Boolean(acordData.coverages && acordData.coverages.length > 0)
+  const hasExclusions = Boolean(acordData.exclusions && acordData.exclusions.length > 0)
   const typeSpecific = renderTypeSpecificDetails()
   const hasCoveredContent = typeSpecific !== null || hasCoverages
 
@@ -68,7 +56,7 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
           }`}
         >
           <ShieldCheck className="w-4 h-4" />
-          {copy.covered}
+          {copy.whatsCovered}
         </button>
         <button
           onClick={() => setActiveTab("not_covered")}
@@ -79,7 +67,7 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
           }`}
         >
           <ShieldOff className="w-4 h-4" />
-          {copy.notCovered}
+          {copy.whatsNotCovered}
           {hasExclusions && (
             <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800">
               {acordData.exclusions!.length}
@@ -109,29 +97,25 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                        {coverage.name}
-                      </p>
+                      <p className="text-sm font-semibold text-slate-900 dark:text-white">{coverage.name}</p>
                       {coverage.description && (
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                          {coverage.description}
-                        </p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{coverage.description}</p>
                       )}
                       {coverage.explanation && (
                         <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                          {isGreek ? coverage.explanation.el : coverage.explanation.en}
+                          {language === "el" ? coverage.explanation.el : coverage.explanation.en}
                         </p>
                       )}
                       {(coverage.limit || coverage.deductible) && (
                         <div className="flex flex-wrap gap-2 mt-1.5">
                           {coverage.limit && (
                             <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
-                              {isGreek ? "Όριο" : "Limit"}: {coverage.limit}
+                              {copy.limit}: {coverage.limit}
                             </span>
                           )}
                           {coverage.deductible && (
                             <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60">
-                              {isGreek ? "Απαλλαγή" : "Deductible"}: {coverage.deductible}
+                              {copy.deductible}: {coverage.deductible}
                             </span>
                           )}
                         </div>
@@ -172,11 +156,7 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
               ))}
               <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-50/60 dark:bg-amber-900/10 border border-amber-200/40 dark:border-amber-800/30">
                 <AlertTriangle className="w-4 h-4 text-amber-500 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-amber-700 dark:text-amber-400">
-                  {isGreek
-                    ? "Αυτές οι εξαιρέσεις εξήχθησαν από το ασφαλιστήριό σας. Συμβουλευτείτε τον ασφαλιστή σας για λεπτομέρειες."
-                    : "These exclusions were extracted from your policy document. Consult your insurer for full details."}
-                </p>
+                <p className="text-xs text-amber-700 dark:text-amber-400">{copy.exclusionsDisclaimer}</p>
               </div>
             </>
           ) : (

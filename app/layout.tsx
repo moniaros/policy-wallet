@@ -8,6 +8,7 @@ import NextTopLoader from 'nextjs-toploader';
 import { OfflineProvider } from "@/components/providers/OfflineProvider";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { GoogleAnalyticsWebVitals } from "@/components/analytics/GoogleAnalyticsWebVitals";
+import { CookieConsentBanner } from "@/components/compliance/CookieConsentBanner";
 
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
@@ -50,6 +51,7 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               {children}
+              <CookieConsentBanner />
             </ThemeProvider>
           </OfflineProvider>
         </LanguageProvider>

@@ -14,6 +14,9 @@ import { env } from '@/lib/env'
 import type {
   IAIService,
   AIDocument,
+  AICapabilityCheckInput,
+  AICapabilityCheckResult,
+  AICapabilityMetadata,
   PolicyMetadata,
   GapDefinitionForAI,
   AIPolicyExtractionResponse,
@@ -28,6 +31,17 @@ import { AcordDataSchema } from '../../schemas/acord-data'
 const AI_CALL_TIMEOUT_MS = 60_000
 const MAX_RETRIES = 1
 const INITIAL_BACKOFF_MS = 2_000
+const GEMINI_SUPPORTED_MIME_TYPES = [
+  'application/pdf',
+  'image/png',
+  'image/jpeg',
+  'image/webp',
+]
+const GEMINI_MODEL_PATTERNS = ['^gemini-']
+
+function matchesAnyPattern(value: string, patterns: string[]): boolean {
+  return patterns.some((pattern) => new RegExp(pattern, 'i').test(value))
+}
 
 function isTransientError(error: unknown): boolean {
   if (error instanceof Error) {
@@ -77,6 +91,7 @@ function parseUsage(usage: any, model: string) {
     outputTokens,
     totalTokens: inputTokens + outputTokens,
     model,
+    provider: 'gemini' as const,
   }
 }
 
@@ -121,6 +136,51 @@ export class GeminiAIService implements IAIService {
    */
   getServiceName(): string {
     return 'Gemini AI'
+  }
+
+  getCapabilities(): AICapabilityMetadata {
+    return {
+      provider: 'gemini',
+      supportsDocumentInput: true,
+      supportedMimeTypes: GEMINI_SUPPORTED_MIME_TYPES,
+      modelPatterns: GEMINI_MODEL_PATTERNS,
+    }
+  }
+
+  checkCapabilities(input: AICapabilityCheckInput): AICapabilityCheckResult {
+    const capabilities = this.getCapabilities()
+    const model = (input.model || '').trim()
+
+    if (model && !matchesAnyPattern(model, capabilities.modelPatterns)) {
+      return {
+        supported: false,
+        code: 'AI_CAPABILITY_UNSUPPORTED_MODEL',
+        reason: `Model '${model}' is not supported by provider gemini`,
+        userMessageKey: 'analysis.errors.unavailable',
+        metadata: capabilities,
+      }
+    }
+
+    if (input.hasDocument) {
+      const mimeType = (input.mimeType || '').trim().toLowerCase()
+      if (!mimeType || !capabilities.supportedMimeTypes.includes(mimeType)) {
+        return {
+          supported: false,
+          code: 'AI_CAPABILITY_UNSUPPORTED_MIME',
+          reason: `MIME type '${mimeType || 'unknown'}' is not supported by provider gemini`,
+          userMessageKey: 'analysis.errors.document',
+          metadata: capabilities,
+        }
+      }
+    }
+
+    return {
+      supported: true,
+      code: 'OK',
+      reason: 'Capability check passed',
+      userMessageKey: 'analysis.status.inProgress',
+      metadata: capabilities,
+    }
   }
 
   /**

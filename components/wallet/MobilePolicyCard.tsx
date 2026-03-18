@@ -19,10 +19,12 @@ interface MobilePolicyCardProps {
 
 export function MobilePolicyCard({ policy, variant = 'compact', onView }: MobilePolicyCardProps) {
     const { t, language } = useLanguage()
+    const locale = language === 'el' ? 'el-GR' : 'en-US'
+    const copy = t.wallet.mobileCard
 
     const formatDate = (dateStr: string | null) => {
         if (!dateStr) return '-'
-        return new Date(dateStr).toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US', {
+        return new Date(dateStr).toLocaleDateString(locale, {
             day: 'numeric',
             month: 'short',
             year: 'numeric'
@@ -31,7 +33,7 @@ export function MobilePolicyCard({ policy, variant = 'compact', onView }: Mobile
 
     const formatCurrency = (amount: number | null | undefined) => {
         if (!amount) return '-'
-        return new Intl.NumberFormat(language === 'el' ? 'el-GR' : 'en-US', {
+        return new Intl.NumberFormat(locale, {
             style: 'currency',
             currency: 'EUR',
             minimumFractionDigits: 0
@@ -101,7 +103,7 @@ export function MobilePolicyCard({ policy, variant = 'compact', onView }: Mobile
         if (policy.status === 'cancelled') {
             return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-black/5 dark:bg-black text-black/65 dark:text-white/70 border border-black/10 dark:border-white/15 rounded-full">{t.policyStatus.cancelled}</span>
         }
-        return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-black/5 dark:bg-black text-black/65 dark:text-white/70 border border-black/10 dark:border-white/15 rounded-full">{language === 'el' ? 'Ελλιπές' : 'Incomplete'}</span>
+        return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-black/5 dark:bg-black text-black/65 dark:text-white/70 border border-black/10 dark:border-white/15 rounded-full">{t.policyStatus.incomplete}</span>
     }
 
     const daysLeft = getDaysUntilExpiry()
@@ -114,7 +116,7 @@ export function MobilePolicyCard({ policy, variant = 'compact', onView }: Mobile
             <div
                 className="relative bg-gradient-to-br from-white to-black/5 dark:from-black dark:to-[#111111] border border-black/10 dark:border-white/15 rounded-3xl p-5 shadow-sm"
                 role="article"
-                aria-label={`${policy.insurerName} ${language === 'el' ? 'συμβόλαιο' : 'policy'} ${policy.policyNumber}`}
+                aria-label={`${policy.insurerName} ${copy.policyWord} ${policy.policyNumber}`}
             >
                 <div className="flex items-start gap-3 mb-4">
                     <div className="flex-shrink-0 w-11 h-11 bg-black/5 dark:bg-black rounded-xl flex items-center justify-center border border-black/10 dark:border-white/15">
@@ -131,7 +133,7 @@ export function MobilePolicyCard({ policy, variant = 'compact', onView }: Mobile
                     {gapCount > 0 && (
                         <span className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 rounded-full">
                             <Sparkles className="w-3 h-3" />
-                            {gapCount} {language === 'el' ? 'κενά' : 'gaps'}
+                            {gapCount} {copy.gaps}
                         </span>
                     )}
                 </div>
@@ -139,18 +141,18 @@ export function MobilePolicyCard({ policy, variant = 'compact', onView }: Mobile
                 <div className="grid grid-cols-2 gap-3 mb-4">
                     {coverageAmount && (
                         <div className="bg-white dark:bg-black rounded-xl p-3 border border-black/10 dark:border-white/15">
-                            <p className="text-xs text-black/55 dark:text-white/65 mb-1">{language === 'el' ? 'Κάλυψη' : 'Coverage'}</p>
+                            <p className="text-xs text-black/55 dark:text-white/65 mb-1">{copy.coverage}</p>
                             <p className="text-base font-bold text-black dark:text-white">{formatCurrency(coverageAmount)}</p>
                         </div>
                     )}
                     {premiumAmount > 0 && (
                         <div className="bg-white dark:bg-black rounded-xl p-3 border border-black/10 dark:border-white/15">
-                            <p className="text-xs text-black/55 dark:text-white/65 mb-1">{language === 'el' ? 'Ασφάλιστρο' : 'Premium'}</p>
+                            <p className="text-xs text-black/55 dark:text-white/65 mb-1">{copy.premium}</p>
                             <p className="text-base font-bold text-[#19b870] dark:text-[#7de8ba]">{formatCurrency(premiumAmount)}</p>
                         </div>
                     )}
                     <div className="bg-white dark:bg-black rounded-xl p-3 border border-black/10 dark:border-white/15">
-                        <p className="text-xs text-black/55 dark:text-white/65 mb-1">{language === 'el' ? 'Λήξη' : 'Expires'}</p>
+                        <p className="text-xs text-black/55 dark:text-white/65 mb-1">{copy.expires}</p>
                         <p className="text-base font-bold text-black dark:text-white">{formatDate(policy.endDate)}</p>
                     </div>
                 </div>
@@ -159,10 +161,10 @@ export function MobilePolicyCard({ policy, variant = 'compact', onView }: Mobile
                     <div className={`mb-4 p-3 rounded-xl border ${daysLeft <= 7 ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300' : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300'}`}>
                         <p className="text-xs font-bold">
                             {daysLeft === 0
-                                ? (language === 'el' ? 'Λήγει σήμερα' : 'Expires today')
+                                ? copy.expiresToday
                                 : daysLeft === 1
-                                    ? (language === 'el' ? 'Λήγει αύριο' : 'Expires tomorrow')
-                                    : `${daysLeft} ${language === 'el' ? 'ημέρες απομένουν' : 'days remaining'}`}
+                                    ? copy.expiresTomorrow
+                                    : `${daysLeft} ${copy.daysRemaining}`}
                         </p>
                     </div>
                 )}
@@ -174,7 +176,7 @@ export function MobilePolicyCard({ policy, variant = 'compact', onView }: Mobile
                     }}
                     className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-black dark:bg-white text-white dark:text-black rounded-xl font-bold hover:opacity-90 transition-opacity active:scale-[0.98] cursor-pointer"
                 >
-                    {language === 'el' ? 'Προβολή λεπτομερειών' : 'View details'}
+                    {copy.viewDetails}
                     <ChevronRightIcon className="w-5 h-5" />
                 </button>
             </div>
@@ -193,7 +195,7 @@ export function MobilePolicyCard({ policy, variant = 'compact', onView }: Mobile
                     onView?.()
                 }
             }}
-            aria-label={`${policy.insurerName} ${language === 'el' ? 'συμβόλαιο' : 'policy'} ${policy.policyNumber}`}
+            aria-label={`${policy.insurerName} ${copy.policyWord} ${policy.policyNumber}`}
         >
             <div className="flex items-start gap-3">
                 <div className="flex-shrink-0 w-10 h-10 bg-black/5 dark:bg-black rounded-lg flex items-center justify-center mt-0.5 border border-black/10 dark:border-white/15">
@@ -220,7 +222,7 @@ export function MobilePolicyCard({ policy, variant = 'compact', onView }: Mobile
                     <div className="flex items-center gap-2 text-xs text-black/65 dark:text-white/70">
                         {premiumAmount > 0 && <span className="font-bold text-[#19b870] dark:text-[#7de8ba]">{formatCurrency(premiumAmount)}</span>}
                         {premiumAmount > 0 && <span>•</span>}
-                        <span>{language === 'el' ? 'Λήγει' : 'Expires'} {formatDate(policy.endDate)}</span>
+                        <span>{copy.expires} {formatDate(policy.endDate)}</span>
                     </div>
                 </div>
             </div>

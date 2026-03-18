@@ -61,110 +61,124 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 py-8">
-            <header className="mb-8">
-                <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100">Opportunities</h1>
-                <p className="mt-2 text-stone-600 dark:text-stone-400">
-                    Track potential sales and coverage improvements for your customers.
-                </p>
-            </header>
+        <div className="pw-page-shell min-h-screen">
+            <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-12 lg:py-16">
+                <header className="mb-10 text-center sm:text-left">
+                    <span className="pw-kicker inline-block mb-2">PIPELINE</span>
+                    <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-3">
+                        Opportunities
+                    </h1>
+                    <p className="max-w-xl text-lg text-slate-600 dark:text-slate-400">
+                        Track potential sales and coverage improvements for your customers.
+                    </p>
+                </header>
 
-            {/* Filters */}
-            <div className="mb-6 flex gap-2 overflow-x-auto pb-2">
-                {[
-                    { key: 'all', label: 'All', count: statusCounts.all },
-                    { key: 'open', label: 'Open', count: statusCounts.open },
-                    { key: 'contacted', label: 'Contacted', count: statusCounts.contacted },
-                    { key: 'quoted', label: 'Quoted', count: statusCounts.quoted },
-                    { key: 'won', label: 'Won', count: statusCounts.won },
-                    { key: 'lost', label: 'Lost', count: statusCounts.lost },
-                ].map(({ key, label, count }) => (
-                    <button
-                        key={key}
-                        onClick={() => setFilter(key)}
-                        className={`px-4 py-2 rounded-xl font-semibold text-sm whitespace-nowrap transition-all ${filter === key
-                            ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/30'
-                            : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-700'
-                            }`}
-                    >
-                        {label} {count > 0 && `(${count})`}
-                    </button>
-                ))}
-            </div>
+                {/* Filters */}
+                <div className="mb-8 flex gap-2 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+                    {[
+                        { key: 'all', label: 'All', count: statusCounts.all },
+                        { key: 'open', label: 'Open', count: statusCounts.open },
+                        { key: 'contacted', label: 'Contacted', count: statusCounts.contacted },
+                        { key: 'quoted', label: 'Quoted', count: statusCounts.quoted },
+                        { key: 'won', label: 'Won', count: statusCounts.won },
+                        { key: 'lost', label: 'Lost', count: statusCounts.lost },
+                    ].map(({ key, label, count }) => (
+                        <button
+                            key={key}
+                            onClick={() => setFilter(key)}
+                            className={`px-5 py-2.5 rounded-full font-bold text-sm tracking-wide whitespace-nowrap transition-all duration-300 ${filter === key
+                                ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-xl shadow-slate-900/10'
+                                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 dark:bg-slate-900/50 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white shadow-sm'
+                                }`}
+                        >
+                            {label} {count > 0 && <span className="ml-1.5 opacity-60 text-xs">({count})</span>}
+                        </button>
+                    ))}
+                </div>
 
-            {/* Opportunities Table */}
-            <div className="bg-white dark:bg-stone-800 rounded-3xl shadow-lg border border-stone-200 dark:border-stone-700 overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                        <thead>
-                            <tr className="bg-stone-50 dark:bg-stone-900/50 border-b border-stone-100 dark:border-stone-700">
-                                <th className="px-6 py-5 text-xs font-black text-stone-400 uppercase tracking-widest pl-8">Customer</th>
-                                <th className="px-6 py-5 text-xs font-black text-stone-400 uppercase tracking-widest">Opportunity</th>
-                                <th className="px-6 py-5 text-xs font-black text-stone-400 uppercase tracking-widest">Status</th>
-                                <th className="px-6 py-5 text-xs font-black text-stone-400 uppercase tracking-widest">Next Action</th>
-                                <th className="px-6 py-5 text-xs font-black text-stone-400 uppercase tracking-widest text-right pr-8">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-stone-100 dark:divide-stone-700/50">
-                            {filteredOpportunities.length === 0 ? (
-                                <tr>
-                                    <td colSpan={5} className="px-6 py-12 text-center text-stone-400 italic">
-                                        {filter === 'all'
-                                            ? 'No active opportunities. Run gap detection to find new ones!'
-                                            : `No ${filter} opportunities.`
-                                        }
-                                    </td>
+                {/* Opportunities Table */}
+                <div className="arc-card overflow-hidden border-t-4 border-t-[#1fdc86]">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="bg-slate-50/50 dark:bg-slate-900/20 border-b border-slate-100 dark:border-slate-800/60">
+                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-8">Customer</th>
+                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Opportunity</th>
+                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Status</th>
+                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Next Action</th>
+                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest text-right pr-8">Actions</th>
                                 </tr>
-                            ) : (
-                                filteredOpportunities.map((opp) => (
-                                    <tr key={opp.id} className="hover:bg-stone-50 dark:hover:bg-stone-700/30 transition-colors group">
-                                        <td className="px-6 py-5 pl-8">
-                                            <div className="font-bold text-stone-900 dark:text-white capitalize">{opp.customerName}</div>
-                                            <div className="text-xs font-medium text-stone-500 dark:text-stone-400">{opp.customerEmail}</div>
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <div className="text-sm font-medium text-stone-700 dark:text-stone-300">{opp.title}</div>
-                                            {opp.notes && (
-                                                <div className="text-xs text-stone-500 dark:text-stone-400 mt-1 line-clamp-1">
-                                                    {opp.notes}
-                                                </div>
-                                            )}
-                                        </td>
-                                        <td className="px-6 py-5">
-                                            <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-full ${opp.status === 'won' ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-100 dark:border-green-800' :
-                                                opp.status === 'lost' ? 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-100 dark:border-red-800' :
-                                                    opp.status === 'quoted' ? 'bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-100 dark:border-purple-800' :
-                                                        opp.status === 'contacted' ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-100 dark:border-blue-800' :
-                                                            'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-100 dark:border-amber-800'
-                                                }`}>
-                                                {opp.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-5 text-sm font-bold text-stone-500">
-                                            {opp.nextActionAt ? new Date(opp.nextActionAt).toLocaleDateString() : '—'}
-                                        </td>
-                                        <td className="px-6 py-5 text-right pr-8">
-                                            <button
-                                                onClick={() => setSelectedOpp(opp)}
-                                                className="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 font-bold text-sm bg-teal-50 dark:bg-teal-900/20 px-4 py-2 rounded-xl transition-colors opacity-0 group-hover:opacity-100"
-                                            >
-                                                Update
-                                            </button>
-
-                                            {opp.policyId && (
-                                                <a
-                                                    href={`/wallet/${opp.policyId}`}
-                                                    className="ml-2 text-stone-500 hover:text-teal-600 font-bold text-sm bg-stone-50 dark:bg-stone-900/20 px-4 py-2 rounded-xl transition-colors opacity-0 group-hover:opacity-100 dark:text-stone-400 dark:hover:text-teal-400 inline-block"
-                                                >
-                                                    View Policy
-                                                </a>
-                                            )}
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
+                                {filteredOpportunities.length === 0 ? (
+                                    <tr>
+                                        <td colSpan={5} className="px-6 py-20 text-center">
+                                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-slate-100 dark:bg-slate-800 text-slate-400 mb-4">
+                                                <svg className="w-8 h-8 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </div>
+                                            <p className="text-slate-500 dark:text-slate-400 font-medium tracking-tight">
+                                                {filter === 'all'
+                                                    ? 'No active opportunities. Run gap detection to find new ones!'
+                                                    : `No ${filter} opportunities.`
+                                                }
+                                            </p>
                                         </td>
                                     </tr>
-                                ))
-                            )}
-                        </tbody>
-                    </table>
+                                ) : (
+                                    filteredOpportunities.map((opp) => (
+                                        <tr key={opp.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-colors group">
+                                            <td className="px-6 py-6 pl-8">
+                                                <div className="font-bold text-slate-900 dark:text-white capitalize tracking-tight">{opp.customerName}</div>
+                                                <div className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">{opp.customerEmail}</div>
+                                            </td>
+                                            <td className="px-6 py-6">
+                                                <div className="text-sm font-bold text-slate-800 dark:text-slate-200">{opp.title}</div>
+                                                {opp.notes && (
+                                                    <div className="text-[13px] text-slate-500 dark:text-slate-400 mt-1.5 line-clamp-1 max-w-[300px]">
+                                                        {opp.notes}
+                                                    </div>
+                                                )}
+                                            </td>
+                                            <td className="px-6 py-6">
+                                                <span className={`pw-pill uppercase tracking-widest ${opp.status === 'won' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400' :
+                                                    opp.status === 'lost' ? 'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400' :
+                                                        opp.status === 'quoted' ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400' :
+                                                            opp.status === 'contacted' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
+                                                                'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400'
+                                                    }`}>
+                                                    {opp.status}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-6 text-sm font-bold text-slate-500 dark:text-slate-400">
+                                                {opp.nextActionAt ? new Date(opp.nextActionAt).toLocaleDateString() : '—'}
+                                            </td>
+                                            <td className="px-6 py-6 text-right pr-8">
+                                                <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <button
+                                                        onClick={() => setSelectedOpp(opp)}
+                                                        className="arc-btn bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 px-4 py-2 text-[13px]"
+                                                    >
+                                                        Update
+                                                    </button>
+
+                                                    {opp.policyId && (
+                                                        <a
+                                                            href={`/wallet/${opp.policyId}`}
+                                                            className="arc-btn arc-btn-primary px-4 py-2 text-[13px]"
+                                                        >
+                                                            View
+                                                        </a>
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                )}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 

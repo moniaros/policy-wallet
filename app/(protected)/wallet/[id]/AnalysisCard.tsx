@@ -8,6 +8,7 @@ import { LimitReachedModal } from "@/components/account/LimitReachedModal"
 
 import { useLanguage } from "@/contexts/LanguageContext"
 import { toGreekUppercaseNoAccents } from "@/lib/i18n/text-format"
+import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 
 interface Gap {
     id: string
@@ -26,9 +27,22 @@ interface AnalysisCardProps {
     gaps: Gap[]
     policyStatus?: string
     processingError?: { code?: string; message?: string } | null
+    analysisPipeline?: {
+        runId?: string
+        status?: string
+        missingSections?: string[]
+        lastFailureCode?: string | null
+        lastFailureAt?: string | null
+    } | null
 }
 
-export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: AnalysisCardProps) {
+export function AnalysisCard({
+    policyId,
+    gaps,
+    policyStatus,
+    processingError,
+    analysisPipeline,
+}: AnalysisCardProps) {
     const [analyzing, setAnalyzing] = useState(false)
     const [runId, setRunId] = useState<string | null>(null)
     const [runStatus, setRunStatus] = useState<string>(policyStatus === "analyzing" ? "running" : "idle")
@@ -36,25 +50,30 @@ export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: 
     const [runStepLabel, setRunStepLabel] = useState<string | null>(null)
     const [runStepHint, setRunStepHint] = useState<string | null>(null)
     const [analysisError, setAnalysisError] = useState<string | null>(null)
+    const [analysisWarning, setAnalysisWarning] = useState<string | null>(null)
+    const [missingArtifacts, setMissingArtifacts] = useState<string[]>([])
+    const [lastCompletedRunId, setLastCompletedRunId] = useState<string | null>(null)
+    const [retryingMissing, setRetryingMissing] = useState(false)
     const [ignoring, setIgnoring] = useState<string | null>(null)
     const [notifying, setNotifying] = useState<string | null>(null)
     const [gapLimitReached, setGapLimitReached] = useState(false)
     const router = useRouter()
     const { t, language } = useLanguage()
     const analysisTitle = toGreekUppercaseNoAccents(t.analysis.title, t.common?.locale || 'el-GR')
-    const stepsCopy = t.analysis?.steps || {}
-    const statusCopy = t.analysis?.status || {}
-    const errorCopy = t.analysis?.errors || {}
+    const stepsCopy = t.analysis.steps
+    const statusCopy = t.analysis.status
+    const errorCopy = t.analysis.errors
+    const actionCopy = t.analysis.actions
     const stepLabels = useMemo(
         () => ({
-            document_load_and_validation: stepsCopy.document_load_and_validation || "Loading policy document",
-            metadata_extraction_and_verification: stepsCopy.metadata_extraction_and_verification || "Extracting core policy details",
-            plain_language_translation: stepsCopy.plain_language_translation || "Generating plain-language summary",
-            coverage_mapping: stepsCopy.coverage_mapping || "Mapping policy coverages",
-            gap_detection: stepsCopy.gap_detection || "Checking coverage gaps",
-            savings_detection: stepsCopy.savings_detection || "Detecting savings opportunities",
-            checklist_scoring_and_actions: stepsCopy.checklist_scoring_and_actions || "Scoring checklist and actions",
-            persistence_and_finalize: stepsCopy.persistence_and_finalize || "Saving analysis results",
+            document_load_and_validation: stepsCopy.document_load_and_validation,
+            metadata_extraction_and_verification: stepsCopy.metadata_extraction_and_verification,
+            plain_language_translation: stepsCopy.plain_language_translation,
+            coverage_mapping: stepsCopy.coverage_mapping,
+            gap_detection: stepsCopy.gap_detection,
+            savings_detection: stepsCopy.savings_detection,
+            checklist_scoring_and_actions: stepsCopy.checklist_scoring_and_actions,
+            persistence_and_finalize: stepsCopy.persistence_and_finalize,
         }),
         [stepsCopy.checklist_scoring_and_actions, stepsCopy.coverage_mapping, stepsCopy.document_load_and_validation, stepsCopy.gap_detection, stepsCopy.metadata_extraction_and_verification, stepsCopy.persistence_and_finalize, stepsCopy.plain_language_translation, stepsCopy.savings_detection]
     )
@@ -67,15 +86,47 @@ export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: 
             normalizedFallback.includes("monthly_limit_reached") ||
             normalizedFallback.includes("insufficient_tokens")
         ) {
-            return errorCopy.tokenLimit || "Analysis is paused because token limits were reached. Upgrade or buy credits to continue."
+            return errorCopy.tokenLimit
         }
         if (normalizedCode.includes("TIMEOUT") || normalizedFallback.toLowerCase().includes("timeout")) {
-            return errorCopy.timeout || "Analysis took longer than expected. Please retry in a moment."
+            return errorCopy.timeout
+        }
+        if (normalizedCode.includes("SCHEMA")) {
+            return errorCopy.schema
+        }
+        if (normalizedCode.includes("DOCUMENT")) {
+            return errorCopy.document
+        }
+        if (normalizedCode.includes("AUTH")) {
+            return errorCopy.auth
         }
         if (normalizedCode.includes("EXTERNAL_SERVICE")) {
-            return errorCopy.unavailable || "AI service is temporarily unavailable. Please try again shortly."
+            return errorCopy.unavailable
         }
-        return fallback || errorCopy.generic || "Analysis failed. Please retry."
+        return errorCopy.generic
+    }
+
+    const resolveUserMessageKey = (messageKey?: string | null) => {
+        if (!messageKey) return null
+        if (messageKey === "analysis.errors.tokenLimit") return errorCopy.tokenLimit
+        if (messageKey === "analysis.errors.schema") return errorCopy.schema
+        if (messageKey === "analysis.errors.document") return errorCopy.document
+        if (messageKey === "analysis.errors.auth") return errorCopy.auth
+        if (messageKey === "analysis.errors.timeout") return errorCopy.timeout
+        if (messageKey === "analysis.status.completedWithWarnings") {
+            return statusCopy.completedWithWarningsHint
+        }
+        return null
+    }
+
+    const missingArtifactLabels: Record<string, string> = {
+        plain_language_summary: stepLabels.plain_language_translation,
+        coverage_snapshot: stepLabels.coverage_mapping,
+        coverage_map: stepLabels.coverage_mapping,
+        gap_results: stepLabels.gap_detection,
+        savings_opportunities: stepLabels.savings_detection,
+        checklist_scores: stepLabels.checklist_scoring_and_actions,
+        priority_actions: stepLabels.checklist_scoring_and_actions,
     }
 
     const backgroundInProgress = policyStatus === "analyzing" && !runId && !analyzing
@@ -101,28 +152,49 @@ export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: 
     useEffect(() => {
         if (backgroundInProgress && !analyzing) {
             setRunStatus("running")
-            setRunStepLabel(statusCopy.background || "Background analysis is running")
-            setRunStepHint(statusCopy.backgroundHint || "This may take a few minutes for larger documents.")
+            setRunStepLabel(statusCopy.background)
+            setRunStepHint(statusCopy.backgroundHint)
             setRunProgress((prev) => (prev > 0 ? prev : 20))
         }
     }, [backgroundInProgress, analyzing, statusCopy.background, statusCopy.backgroundHint])
 
     useEffect(() => {
         if (!analysisInProgress && processingError) {
+            setAnalysisWarning(null)
             setAnalysisError(resolveErrorMessage(processingError.code, processingError.message))
         }
     }, [analysisInProgress, processingError])
 
+    useEffect(() => {
+        if (analysisInProgress || !analysisPipeline) return
+        const status = String(analysisPipeline.status || "")
+        if (status === "completed_with_warnings") {
+            const warningMessage = statusCopy.completedWithWarningsHint
+            setAnalysisError(null)
+            setAnalysisWarning(warningMessage)
+            setMissingArtifacts(
+                Array.isArray(analysisPipeline.missingSections)
+                    ? analysisPipeline.missingSections
+                    : []
+            )
+            setLastCompletedRunId(analysisPipeline.runId || null)
+            setRunStatus(status)
+        }
+    }, [analysisInProgress, analysisPipeline, statusCopy.completedWithWarningsHint])
+
     const handleAnalyze = async () => {
         setAnalysisError(null)
+        setAnalysisWarning(null)
+        setMissingArtifacts([])
+        setLastCompletedRunId(null)
         setAnalyzing(true)
         setRunId(null)
         setRunStatus("queued")
         setRunProgress(5)
-        setRunStepLabel(statusCopy.queued || "Queued for analysis")
-        setRunStepHint(statusCopy.starting || "Preparing your document for AI analysis...")
+        setRunStepLabel(statusCopy.queued)
+        setRunStepHint(statusCopy.starting)
 
-        const toastId = toast.loading(t.toast?.analysisStarting || statusCopy.starting || t.analysis.analyzing)
+        const toastId = toast.loading(t.toast.analysisStarting)
         const res = await runPolicyAnalysis(policyId)
 
         if ("error" in res && res.error) {
@@ -144,16 +216,54 @@ export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: 
 
         if ("runId" in res && res.runId) {
             setRunId(res.runId)
-            toast.success(
-                t.toast?.analysisStarted || statusCopy.inProgress || "Analysis started. Progress will update below.",
-                { id: toastId }
-            )
+            toast.success(t.toast.analysisStarted, { id: toastId })
         } else {
             setAnalyzing(false)
             setRunStatus("failed")
-            const fallback = errorCopy.generic || "Analysis failed. Please retry."
-            setAnalysisError(fallback)
-            toast.error(fallback, { id: toastId })
+            setAnalysisError(errorCopy.generic)
+            toast.error(errorCopy.generic, { id: toastId })
+        }
+    }
+
+    const handleRetryMissing = async () => {
+        if (!lastCompletedRunId) return
+        setRetryingMissing(true)
+        setAnalysisError(null)
+        setAnalysisWarning(null)
+
+        try {
+            const response = await fetch(
+                `/api/v1/policies/${policyId}/analysis-runs/${lastCompletedRunId}/retry-missing`,
+                {
+                    method: "POST",
+                }
+            )
+            const payload = await response.json()
+            if (!response.ok) {
+                const message = payload?.error?.message || payload?.message || null
+                const friendly = resolveErrorMessage("RETRY_MISSING_FAILED", message) || statusCopy.retryFailed
+                setAnalysisError(friendly)
+                toast.error(friendly)
+                return
+            }
+
+            const newRunId = payload?.data?.run_id
+            if (newRunId) {
+                setRunId(String(newRunId))
+                setRunStatus("queued")
+                setRunProgress(10)
+                setRunStepLabel(statusCopy.queued)
+                setRunStepHint(statusCopy.retryMissingHint)
+                setAnalyzing(true)
+                toast.success(statusCopy.retryMissingStarted)
+                return
+            }
+
+            setAnalysisError(errorCopy.generic)
+        } catch {
+            setAnalysisError(errorCopy.generic)
+        } finally {
+            setRetryingMissing(false)
         }
     }
 
@@ -178,6 +288,7 @@ export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: 
                 if (!run || cancelled) return
 
                 const status = String(run.status || "running")
+                const resolvedRunId = String(run.run_id || runId)
                 setRunStatus(status)
 
                 const steps = Array.isArray(run.steps) ? run.steps : []
@@ -200,27 +311,54 @@ export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: 
 
                 if (status === "queued") {
                     setRunProgress(10)
-                    setRunStepLabel(statusCopy.queued || "Queued for analysis")
-                    setRunStepHint(statusCopy.starting || "Preparing your document for AI analysis...")
+                    setRunStepLabel(statusCopy.queued)
+                    setRunStepHint(statusCopy.starting)
                 } else if (status === "running") {
                     setRunProgress(Math.max(12, Math.min(95, overallProgress || 0)))
                     if (runningStep?.key) {
-                        setRunStepLabel(stepLabels[runningStep.key] || runningStep.key)
+                        setRunStepLabel(
+                            stepLabels[runningStep.key as keyof typeof stepLabels] || statusCopy.inProgress
+                        )
                     } else {
-                        setRunStepLabel(statusCopy.inProgress || "AI analysis in progress")
+                        setRunStepLabel(statusCopy.inProgress)
                     }
-                    setRunStepHint(runningStep?.log_message || statusCopy.inProgressHint || "We are validating and extracting policy insights.")
+                    setRunStepHint(runningStep?.log_message || statusCopy.inProgressHint)
                 } else if (status === "completed") {
                     setRunProgress(100)
-                    setRunStepLabel(statusCopy.completed || "Analysis completed")
-                    setRunStepHint(statusCopy.completedHint || "Refreshing insights...")
+                    setRunStepLabel(statusCopy.completed)
+                    setRunStepHint(statusCopy.completedHint)
                     setAnalyzing(false)
                     setRunId(null)
-                    toast.success(statusCopy.completed || "Analysis completed")
+                    setLastCompletedRunId(resolvedRunId)
+                    setAnalysisWarning(null)
+                    setMissingArtifacts([])
+                    toast.success(statusCopy.completed)
+                    router.refresh()
+                } else if (status === "completed_with_warnings") {
+                    const warningMessage =
+                        resolveUserMessageKey(run.final_user_message_key) ||
+                        statusCopy.completedWithWarningsHint
+                    const missing = Array.isArray(run.missing_artifacts)
+                        ? (run.missing_artifacts as string[])
+                        : []
+                    setRunProgress(100)
+                    setRunStepLabel(statusCopy.completedWithWarnings)
+                    setRunStepHint(warningMessage)
+                    setAnalyzing(false)
+                    setRunId(null)
+                    setLastCompletedRunId(resolvedRunId)
+                    setAnalysisError(null)
+                    setAnalysisWarning(warningMessage)
+                    setMissingArtifacts(missing)
+                    toast.warning(statusCopy.completedWithWarnings)
                     router.refresh()
                 } else if (status === "blocked" || status === "failed") {
-                    const message = resolveErrorMessage(run.failure_code, run.failure_message)
+                    const message =
+                        resolveUserMessageKey(run.final_user_message_key) ||
+                        resolveErrorMessage(run.failure_code, run.failure_message)
                     setAnalysisError(message)
+                    setAnalysisWarning(null)
+                    setMissingArtifacts([])
                     setAnalyzing(false)
                     setRunId(null)
                     if (status === "blocked") {
@@ -231,7 +369,7 @@ export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: 
                 }
             } catch {
                 if (!cancelled) {
-                    setRunStepHint(statusCopy.inProgressHint || "We are still processing your analysis.")
+                    setRunStepHint(statusCopy.stillProcessingHint)
                 }
             }
         }
@@ -243,7 +381,26 @@ export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: 
             cancelled = true
             clearInterval(interval)
         }
-    }, [runId, policyId, router, statusCopy.completed, statusCopy.completedHint, statusCopy.inProgress, statusCopy.inProgressHint, statusCopy.queued, statusCopy.starting, stepLabels])
+    }, [
+        errorCopy.auth,
+        errorCopy.document,
+        errorCopy.generic,
+        errorCopy.schema,
+        errorCopy.timeout,
+        errorCopy.tokenLimit,
+        policyId,
+        router,
+        runId,
+        statusCopy.completed,
+        statusCopy.completedHint,
+        statusCopy.completedWithWarnings,
+        statusCopy.completedWithWarningsHint,
+        statusCopy.inProgress,
+        statusCopy.inProgressHint,
+        statusCopy.queued,
+        statusCopy.starting,
+        stepLabels,
+    ])
 
     const handleIgnore = async (gapId: string) => {
         setIgnoring(gapId)
@@ -251,9 +408,9 @@ export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: 
         setIgnoring(null)
 
         if (res.error) {
-            toast.error(res.error)
+            toast.error(mapWalletErrorToMessage(res.error, t, "analysis"))
         } else {
-            toast.success(language === 'el' ? 'Η ειδοποίηση αποκρύφθηκε' : 'Alert hidden')
+            toast.success(actionCopy.hidden)
             router.refresh()
         }
     }
@@ -264,9 +421,9 @@ export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: 
         setNotifying(null)
 
         if (res.error) {
-            toast.error(res.error)
+            toast.error(mapWalletErrorToMessage(res.error, t, "analysis"))
         } else {
-            toast.success(res.message || (language === 'el' ? 'Ο ασφαλιστής ενημερώθηκε' : 'Agent notified'))
+            toast.success(actionCopy.agentNotified)
         }
     }
 
@@ -287,7 +444,7 @@ export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: 
                     disabled={analysisInProgress}
                     className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-xl font-bold transition-all disabled:opacity-50 backdrop-blur-sm border border-white/30 hover:shadow-lg"
                 >
-                    {analysisInProgress ? (statusCopy.inProgress || t.analysis.analyzing) : t.analysis.runAnalysis}
+                    {analysisInProgress ? statusCopy.inProgress : t.analysis.runAnalysis}
                 </button>
             </div>
             {analysisInProgress && (
@@ -297,10 +454,10 @@ export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: 
                             <Loader2 className="mt-0.5 h-4 w-4 animate-spin text-emerald-700 dark:text-emerald-300" />
                             <div className="min-w-0 flex-1">
                                 <p className="text-sm font-bold text-emerald-900 dark:text-emerald-100">
-                                    {runStepLabel || statusCopy.inProgress || "AI analysis in progress"}
+                                    {runStepLabel || statusCopy.inProgress}
                                 </p>
                                 <p className="mt-1 text-xs text-emerald-800/85 dark:text-emerald-200/90">
-                                    {runStepHint || statusCopy.inProgressHint || "Your results will refresh automatically when this run finishes."}
+                                    {runStepHint || statusCopy.autoRefreshHint}
                                 </p>
                             </div>
                             <span className="text-xs font-bold text-emerald-900 dark:text-emerald-100">
@@ -316,6 +473,56 @@ export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: 
                     </div>
                 </div>
             )}
+            {analysisWarning && !analysisInProgress && (
+                <div className="px-6 pt-5">
+                    <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 dark:border-amber-700/60 dark:bg-amber-950/20">
+                        <div className="flex items-start gap-3">
+                            <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-700 dark:text-amber-300" />
+                            <div className="flex-1">
+                                <p className="text-sm font-bold text-amber-900 dark:text-amber-100">
+                                    {statusCopy.completedWithWarnings}
+                                </p>
+                                <p className="mt-1 text-xs text-amber-800/90 dark:text-amber-200/90">
+                                    {analysisWarning}
+                                </p>
+                                {missingArtifacts.length > 0 && (
+                                    <div className="mt-3 flex flex-wrap gap-2">
+                                        {missingArtifacts.map((artifact) => (
+                                            <span
+                                                key={artifact}
+                                                className="rounded-full border border-amber-300/70 bg-white px-2 py-0.5 text-[10px] font-bold text-amber-900 dark:border-amber-600/70 dark:bg-amber-900/40 dark:text-amber-100"
+                                            >
+                                                {missingArtifactLabels[artifact as keyof typeof missingArtifactLabels] || actionCopy.unknownSection}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="flex gap-2">
+                                {lastCompletedRunId && (
+                                    <button
+                                        onClick={handleRetryMissing}
+                                        disabled={retryingMissing}
+                                        className="inline-flex items-center gap-1 rounded-lg border border-amber-400/60 bg-white px-2.5 py-1 text-xs font-bold text-amber-900 transition-colors hover:bg-amber-100 disabled:opacity-60 dark:border-amber-600/60 dark:bg-amber-900/50 dark:text-amber-100 dark:hover:bg-amber-900/80"
+                                    >
+                                        <RefreshCw className="h-3 w-3" />
+                                        {retryingMissing
+                                            ? statusCopy.retrying
+                                            : statusCopy.retryMissing}
+                                    </button>
+                                )}
+                                <button
+                                    onClick={handleAnalyze}
+                                    className="inline-flex items-center gap-1 rounded-lg border border-amber-400/60 bg-white px-2.5 py-1 text-xs font-bold text-amber-900 transition-colors hover:bg-amber-100 dark:border-amber-600/60 dark:bg-amber-900/50 dark:text-amber-100 dark:hover:bg-amber-900/80"
+                                >
+                                    <RefreshCw className="h-3 w-3" />
+                                    {statusCopy.retryFull || statusCopy.retry}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
             {analysisError && !analysisInProgress && (
                 <div className="px-6 pt-5">
                     <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 dark:border-amber-700/60 dark:bg-amber-950/20">
@@ -323,7 +530,7 @@ export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: 
                             <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-700 dark:text-amber-300" />
                             <div className="flex-1">
                                 <p className="text-sm font-bold text-amber-900 dark:text-amber-100">
-                                    {statusCopy.attention || "Action required"}
+                                    {statusCopy.attention}
                                 </p>
                                 <p className="mt-1 text-xs text-amber-800/90 dark:text-amber-200/90">
                                     {analysisError}
@@ -334,7 +541,7 @@ export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: 
                                 className="inline-flex items-center gap-1 rounded-lg border border-amber-400/60 bg-white px-2.5 py-1 text-xs font-bold text-amber-900 transition-colors hover:bg-amber-100 dark:border-amber-600/60 dark:bg-amber-900/50 dark:text-amber-100 dark:hover:bg-amber-900/80"
                             >
                                 <RefreshCw className="h-3 w-3" />
-                                {statusCopy.retry || "Retry"}
+                                {statusCopy.retry}
                             </button>
                         </div>
                     </div>
@@ -379,7 +586,7 @@ export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: 
                                                         onClick={() => handleIgnore(gap.id)}
                                                         disabled={ignoring === gap.id}
                                                         className="p-1.5 rounded-lg text-slate-400 hover:bg-white/50 hover:text-slate-600 dark:hover:bg-slate-800/50 dark:hover:text-slate-300 transition-colors"
-                                                        title={language === 'el' ? 'Απόκρυψη' : 'Hide'}
+                                                        title={actionCopy.hide}
                                                     >
                                                         <EyeOff className="w-4 h-4" />
                                                     </button>
@@ -413,8 +620,8 @@ export function AnalysisCard({ policyId, gaps, policyStatus, processingError }: 
                                                 >
                                                     <MessageSquare className="w-3.5 h-3.5" />
                                                     {notifying === gap.id
-                                                        ? (language === 'el' ? 'Αποστολή...' : 'Sending...')
-                                                        : (language === 'el' ? 'Περισσότερες λεπτομέρειες' : 'View more details')}
+                                                        ? actionCopy.sending
+                                                        : actionCopy.viewMoreDetails}
                                                 </button>
                                             </div>
                                         </div>

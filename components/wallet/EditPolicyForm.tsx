@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import { updatePolicy } from "@/app/(protected)/wallet/actions"
+import { useLanguage } from "@/contexts/LanguageContext"
+import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 
 interface EditPolicyFormProps {
     policy: {
@@ -21,39 +23,39 @@ interface EditPolicyFormProps {
 }
 
 export function EditPolicyForm({ policy, t }: EditPolicyFormProps) {
+    const { t: contextT } = useLanguage()
+    const i18n = t || contextT
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
 
-    // Form State
     const [formData, setFormData] = useState({
         insurerName: policy.insurerName,
         policyNumber: policy.policyNumber,
         lineOfBusiness: policy.lineOfBusiness,
-        startDate: policy.startDate ? new Date(policy.startDate).toISOString().split('T')[0] : '',
-        endDate: policy.endDate ? new Date(policy.endDate).toISOString().split('T')[0] : '',
-        premiumAmount: policy.premiumAmount ? String(policy.premiumAmount) : '',
-        coverageSummary: policy.coverageSummary || '',
+        startDate: policy.startDate ? new Date(policy.startDate).toISOString().split("T")[0] : "",
+        endDate: policy.endDate ? new Date(policy.endDate).toISOString().split("T")[0] : "",
+        premiumAmount: policy.premiumAmount ? String(policy.premiumAmount) : "",
+        coverageSummary: policy.coverageSummary || "",
     })
 
     const copy = {
-        save: t?.common?.save || "Save",
-        saving: t?.common?.saving || "Saving...",
-        cancel: t?.common?.cancel || "Cancel",
-        success: t?.wallet?.updateSuccess || "Policy updated successfully",
+        save: i18n.common.save,
+        saving: i18n.common.saving,
+        cancel: i18n.common.cancel,
+        success: i18n.wallet.editPolicyForm.updateSuccess,
         labels: {
-            insurer: t?.wallet?.insurer || "Insurer Name",
-            number: t?.wallet?.policyNumber || "Policy Number",
-            type: t?.wallet?.type || "Insurance Type",
-            start: t?.wallet?.starts || "Start Date",
-            end: t?.wallet?.ends || "End Date",
-            premium: t?.wallet?.premium || "Premium Amount",
-            summary: t?.wallet?.summary || "Coverage Summary",
-        }
+            insurer: i18n.wallet.insurer,
+            number: i18n.wallet.policyNumber,
+            type: i18n.wallet.type,
+            start: i18n.wallet.starts,
+            end: i18n.wallet.ends,
+            summary: i18n.wallet.summary,
+        },
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target
-        setFormData(prev => ({ ...prev, [name]: value }))
+        setFormData((prev) => ({ ...prev, [name]: value }))
     }
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -71,7 +73,7 @@ export function EditPolicyForm({ policy, t }: EditPolicyFormProps) {
             const result = await updatePolicy(policy.id, data)
 
             if (result.error) {
-                toast.error(result.error)
+                toast.error(mapWalletErrorToMessage(result.error, i18n, "updatePolicy"))
             } else {
                 toast.success(copy.success)
                 router.push(`/wallet/${policy.id}`)
@@ -80,17 +82,7 @@ export function EditPolicyForm({ policy, t }: EditPolicyFormProps) {
         })
     }
 
-    const policyTypes = [
-        { value: "motor", label: "Motor / Vehicle" },
-        { value: "health", label: "Health / Medical" },
-        { value: "home", label: "Home / Property" },
-        { value: "life", label: "Life Insurance" },
-        { value: "travel", label: "Travel & Flight" },
-        { value: "business", label: "Business / Commercial" },
-        { value: "liability", label: "Liability" },
-        { value: "pet", label: "Pet Insurance" },
-        { value: "other", label: "Other" },
-    ]
+    const policyTypes = ["motor", "health", "home", "life", "travel", "business", "liability", "pet", "other"] as const
 
     const inputClass = "flex h-10 w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-400 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
     const labelClass = "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-stone-700"
@@ -136,10 +128,10 @@ export function EditPolicyForm({ policy, t }: EditPolicyFormProps) {
                             disabled={isPending}
                             required
                         >
-                            <option value="" disabled>Select type</option>
+                            <option value="" disabled>{i18n.wallet.editPolicyForm.selectType}</option>
                             {policyTypes.map((type) => (
-                                <option key={type.value} value={type.value}>
-                                    {type.label}
+                                <option key={type} value={type}>
+                                    {i18n.policyTypes[type] || type}
                                 </option>
                             ))}
                         </select>
@@ -176,7 +168,7 @@ export function EditPolicyForm({ policy, t }: EditPolicyFormProps) {
                 </div>
 
                 <div className="grid gap-2">
-                    <label htmlFor="premiumAmount" className={labelClass}>{copy.labels.premium} (€)</label>
+                    <label htmlFor="premiumAmount" className={labelClass}>{i18n.wallet.editPolicyForm.premiumCurrency}</label>
                     <input
                         id="premiumAmount"
                         name="premiumAmount"

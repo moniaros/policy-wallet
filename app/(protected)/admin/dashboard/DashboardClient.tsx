@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { Users, FileText, TrendingUp, UserCheck, AlertCircle, Activity } from "lucide-react"
 
 interface DashboardMetrics {
@@ -27,6 +26,12 @@ interface DashboardMetrics {
     gaps: {
         total: number
         open: number
+    }
+    dsr: {
+        pendingDataExports: number
+        openDeletionRequests: number
+        approvedDeletionRequests: number
+        totalOpen: number
     }
 }
 
@@ -70,6 +75,23 @@ export default function DashboardClient({ metrics, activityLogs, pendingAgentsCo
                             className="text-sm text-amber-700 dark:text-amber-300 underline hover:no-underline"
                         >
                             Review now →
+                        </a>
+                    </div>
+                </div>
+            )}
+
+            {metrics.dsr.totalOpen > 0 && (
+                <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg flex items-center gap-3">
+                    <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    <div>
+                        <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                            {metrics.dsr.totalOpen} DSR request{metrics.dsr.totalOpen !== 1 ? "s" : ""} require admin action
+                        </p>
+                        <a
+                            href="/admin/dsr"
+                            className="text-sm text-blue-700 dark:text-blue-300 underline hover:no-underline"
+                        >
+                            Open DSR queue →
                         </a>
                     </div>
                 </div>

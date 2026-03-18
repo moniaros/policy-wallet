@@ -389,36 +389,44 @@ export async function deleteAccount() {
     const userId = authResult.dbUser.id
 
     try {
-        await db.$transaction([
-            // Delete sessions first
-            db.activeSession.deleteMany({ where: { userId } }),
-            // Soft delete user
-            db.user.update({
-                where: { id: userId },
-                data: {
-                    email: `deleted_${userId}@policywallet.gr`, // Anonymize
-                    name: "Deleted User"
-                }
-            })
-        ])
+        const existingOpenRequest = await db.deletionRequest.findFirst({
+            where: {
+                userId,
+                status: {
+                    in: ["requested", "in_review", "approved", "processing"],
+                },
+            },
+        })
+
+        if (existingOpenRequest) {
+            return { error: "A deletion request is already in progress." }
+        }
+
+        const request = await db.deletionRequest.create({
+            data: {
+                userId,
+                status: "requested",
+                legalBasis: "GDPR_ARTICLE_17",
+            },
+        })
 
         // High priority audit log
         await (db.activityLog as any).create({
             data: {
                 adminUserId: userId,
                 adminEmail: "security",
-                actionType: "ACCOUNT_DELETED",
-                description: `User account ${userId} requested deletion and was anonymized.`,
+                actionType: "ACCOUNT_DELETION_REQUESTED",
+                description: `User account ${userId} requested GDPR deletion. Request id: ${request.id}`,
                 isBreakGlass: true
             }
         })
 
-        logger('info', 'Account deleted', { userId })
+        logger('info', 'Account deletion requested', { userId, requestId: request.id })
 
-        return { success: true }
+        return { success: true, requestId: request.id }
     } catch (error) {
-        logger('error', 'Account deletion failed', { userId, error })
-        return { error: "Failed to delete account" }
+        logger('error', 'Account deletion request failed', { userId, error })
+        return { error: "Failed to create deletion request" }
     }
 }
 

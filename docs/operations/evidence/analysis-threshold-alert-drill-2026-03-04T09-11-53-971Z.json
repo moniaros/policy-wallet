@@ -1,0 +1,47 @@
+{
+  "capturedAt": "2026-03-04T09:11:59.252Z",
+  "drillTag": "SRE_ALERT_DRILL_1772615516719",
+  "targetUser": "sre.drill.admin.1772615290190@example.com",
+  "targetPolicyId": "cmm70n59e0002dsbunjk1oj9a",
+  "insertedRuns": 30,
+  "expectedThresholds": [
+    "AI_ANALYSIS_FAILURE_RATE_HIGH",
+    "AI_SCHEMA_FAILURE_SPIKE",
+    "AI_FAILOVER_USAGE_HIGH",
+    "AI_TOKEN_BLOCK_SPIKE"
+  ],
+  "cooldownValidation": "Evaluator invoked twice in same process; second invocation should not emit duplicate threshold logs within cooldown window.",
+  "sampleRuns": [
+    {
+      "id": "cmmbtif8p000188rh2bzfaxg4",
+      "status": "failed",
+      "failureCode": "SCHEMA_OUTPUT_MISMATCH",
+      "createdAt": "2026-03-04T09:11:57.864Z"
+    },
+    {
+      "id": "cmmbtif8p000288rh25hdscpc",
+      "status": "failed",
+      "failureCode": "SCHEMA_OUTPUT_MISMATCH",
+      "createdAt": "2026-03-04T09:11:57.864Z"
+    },
+    {
+      "id": "cmmbtif8p000388rhxog1a570",
+      "status": "failed",
+      "failureCode": "SCHEMA_OUTPUT_MISMATCH",
+      "createdAt": "2026-03-04T09:11:57.864Z"
+    },
+    {
+      "id": "cmmbtif8p000488rhtnnjmkax",
+      "status": "failed",
+      "failureCode": "SCHEMA_OUTPUT_MISMATCH",
+      "createdAt": "2026-03-04T09:11:57.864Z"
+    },
+    {
+      "id": "cmmbtif8p000088rhzvwmt7x0",
+      "status": "failed",
+      "failureCode": "SCHEMA_OUTPUT_MISMATCH",
+      "createdAt": "2026-03-04T09:11:57.864Z"
+    }
+  ],
+  "cleanupRemainingRuns": 0
+}

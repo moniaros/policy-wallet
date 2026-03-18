@@ -22,6 +22,14 @@ export const TOKEN_COSTS = {
         input: 0.00035,
         output: 0.0014,
     },
+    'gpt-4.1-mini': {
+        input: 0.0004,
+        output: 0.0016,
+    },
+    'gpt-4o-mini': {
+        input: 0.00015,
+        output: 0.0006,
+    },
 } as const
 
 export type AIModel = keyof typeof TOKEN_COSTS

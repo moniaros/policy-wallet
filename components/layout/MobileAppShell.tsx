@@ -28,7 +28,7 @@ interface MobileAppShellProps {
 export function MobileAppShell({ policies, user }: MobileAppShellProps) {
     const router = useRouter()
     const pathname = usePathname()
-    const { language } = useLanguage()
+    const { t } = useLanguage()
 
     const activeTab = (() => {
         if (pathname === '/home' || pathname === '/wallet' || pathname === '/') return 'home'
@@ -39,15 +39,7 @@ export function MobileAppShell({ policies, user }: MobileAppShellProps) {
         return 'home'
     })()
 
-    const copy = {
-        allTasksDone: language === 'el' ? 'Όλες οι εργασίες ολοκληρώθηκαν' : 'All tasks complete',
-        checkLater: language === 'el' ? 'Επιστρέψτε αργότερα για νέες ενέργειες.' : 'Check back later for new items.',
-        coverageTitle: language === 'el' ? 'Ανάλυση καλύψεων' : 'Coverage analysis',
-        coverageDesc: language === 'el' ? 'Δείτε τα κενά και τις προτεραιότητες του χαρτοφυλακίου σας.' : 'Review your portfolio gaps and priorities.',
-        openInsights: language === 'el' ? 'Άνοιγμα coverage insights' : 'Open coverage insights',
-        allCaughtUp: language === 'el' ? 'Είσαι ενημερωμένος' : 'All caught up',
-        noWarnings: language === 'el' ? 'Δεν υπάρχουν εκκρεμείς ειδοποιήσεις.' : 'No pending warnings or tasks.',
-    }
+    const copy = t.wallet.mobileShell
 
     return (
         <div className="pw-page-shell">

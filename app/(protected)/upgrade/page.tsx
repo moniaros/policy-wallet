@@ -36,7 +36,7 @@ export default function PricingPage() {
                     source: 'protected_upgrade_page',
                     tier: planId,
                 })
-                toast.success(language === 'el' ? 'ÎœÎµÏ„Î±Ï†Î¿ÏÎ¬ ÏƒÏ„Î¿ Stripe...' : 'Redirecting to Stripe...')
+                toast.success(language === 'el' ? 'Μεταφορά στο Stripe...' : 'Redirecting to Stripe...')
                 // Wait a moment for the toast
                 setTimeout(() => {
                     window.location.href = result.url!
@@ -46,12 +46,12 @@ export default function PricingPage() {
                     source: 'protected_upgrade_page',
                     tier: planId,
                 })
-                toast.success(language === 'el' ? 'Î¤Î¿ Ï€Î»Î¬Î½Î¿ ÎµÎ½Î·Î¼ÎµÏÏŽÎ¸Î·ÎºÎµ!' : 'Plan updated successfully!')
+                toast.success(language === 'el' ? 'Το πλάνο ενημερώθηκε!' : 'Plan updated successfully!')
                 router.refresh()
                 router.back()
             }
         } catch (error) {
-            toast.error(language === 'el' ? 'ÎšÎ¬Ï„Î¹ Ï€Î®Î³Îµ ÏƒÏ„ÏÎ±Î²Î¬. Î”Î¿ÎºÎ¹Î¼Î¬ÏƒÏ„Îµ Î¾Î±Î½Î¬.' : "Something went wrong. Please try again.")
+            toast.error(language === 'el' ? 'Κάτι πήγε στραβά. Δοκιμάστε ξανά.' : "Something went wrong. Please try again.")
         } finally {
             setLoadingPlanId(null)
         }

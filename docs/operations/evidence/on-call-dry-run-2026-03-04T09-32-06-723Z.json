@@ -1,0 +1,105 @@
+{
+  "capturedAt": "2026-03-04T09:32:12.791Z",
+  "drillType": "on_call_dry_run",
+  "sourceAlertEvidence": "docs/operations/evidence/analysis-threshold-alert-drill-2026-03-04T09-31-26-883Z.alerts.ndjson",
+  "incidentSummary": {
+    "detectedAt": "2026-03-04T09:31:32.820Z",
+    "acknowledgedAt": "2026-03-04T09:32:10.227Z",
+    "acknowledgedBy": "Codex (Execution Agent)",
+    "triggerEvents": [
+      "AI_ANALYSIS_FAILURE_RATE_HIGH",
+      "AI_SCHEMA_FAILURE_SPIKE",
+      "AI_FAILOVER_USAGE_HIGH",
+      "AI_TOKEN_BLOCK_SPIKE"
+    ],
+    "escalationPolicy": "Threshold-based remediation incident evaluation"
+  },
+  "containmentActions": [
+    "Validated AI remediation threshold events and ratios from alert evidence.",
+    "Validated failover/degraded-alert feature-flag state visibility in runtime env.",
+    "Executed synthetic launch checks for post-alert validation.",
+    "Executed launch-readiness snapshot for aggregate blocker/warning validation."
+  ],
+  "featureFlags": {
+    "FF_AI_FAILOVER_OPENAI": null,
+    "FF_AI_DEGRADED_COMPLETION": null,
+    "FF_AI_REMEDIATION_ALERTS": null
+  },
+  "validation": {
+    "syntheticChecks": [
+      {
+        "id": "database_connectivity",
+        "status": "pass",
+        "message": "Database connectivity check passed.",
+        "details": {
+          "latencyMs": 768
+        }
+      },
+      {
+        "id": "auth_configuration",
+        "status": "pass",
+        "message": "Auth configuration is present."
+      },
+      {
+        "id": "ai_configuration",
+        "status": "pass",
+        "message": "AI provider configuration is valid.",
+        "details": {
+          "hasGeminiKey": true,
+          "hasOpenAiKey": false,
+          "failoverEnabled": false
+        }
+      },
+      {
+        "id": "billing_configuration",
+        "status": "warn",
+        "message": "Stripe billing configuration is partially missing.",
+        "details": {
+          "hasStripeSecret": true,
+          "hasStripeWebhookSecret": false,
+          "hasRevenueCatWebhookAuth": true
+        }
+      },
+      {
+        "id": "cron_secret",
+        "status": "warn",
+        "message": "CRON_SECRET is not configured."
+      },
+      {
+        "id": "dsr_backlog",
+        "status": "pass",
+        "message": "No stale DSR requests beyond 24h.",
+        "details": {
+          "staleOpenDsr": 0
+        }
+      },
+      {
+        "id": "webhook_failures",
+        "status": "pass",
+        "message": "No stale failed webhook events.",
+        "details": {
+          "staleFailedWebhooks": 0
+        }
+      }
+    ],
+    "launchReadinessLevel": "red",
+    "blockerCount": 2,
+    "warningCount": 2,
+    "signalCodes": [
+      "SYNTHETIC_BILLING_CONFIGURATION",
+      "SYNTHETIC_CRON_SECRET",
+      "BILLING_STRIPE_EXTERNAL_ID_MISSING",
+      "BILLING_MISSING_RECENT_INVOICE"
+    ]
+  },
+  "timelineMinutes": {
+    "detectToAck": 1,
+    "ackToValidationComplete": 0
+  },
+  "decision": {
+    "drillCompleted": true,
+    "escalationPathValidated": true,
+    "launchGateStatus": "hold",
+    "notes": "Operational drill succeeded, but launch gate remains on hold due non-SRE blockers in readiness snapshot."
+  }
+}

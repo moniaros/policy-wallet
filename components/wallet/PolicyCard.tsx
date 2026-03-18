@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom'
 import type { Policy } from './types'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { Sparkles } from 'lucide-react'
+import { toast } from 'sonner'
 import { CarIcon, HeartIcon, HomeIcon, ShieldIcon, PlaneIcon, DocumentIcon } from '@/components/icons/PolicyIcons'
 
 interface PolicyCardProps {
@@ -34,6 +35,7 @@ export function PolicyCard({
     const [showInsights, setShowInsights] = useState(false)
     const [menuPosition, setMenuPosition] = useState<{ top: number, left: number, origin: 'top right' | 'bottom right' } | null>(null)
     const { t, language } = useLanguage()
+    const cardCopy = t.wallet.mobileCard
 
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat(language === 'el' ? 'el-GR' : 'en-US', {
@@ -149,7 +151,7 @@ export function PolicyCard({
                 return (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest bg-black/5 dark:bg-black text-black/70 dark:text-white/60 border border-black/10 dark:border-white/15 rounded-full">
                         <span className="w-1.5 h-1.5 bg-black/35 dark:bg-white/35 rounded-full"></span>
-                        Incomplete
+                        {t.policyStatus.incomplete}
                     </span>
                 )
             case 'action_needed':
@@ -163,7 +165,7 @@ export function PolicyCard({
                 return (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest bg-black/5 dark:bg-white/10 text-black/80 dark:text-white/75 border border-black/15 dark:border-white/20 rounded-full">
                         <span className="w-2 h-2 border-2 border-[#1FDC86] border-t-transparent rounded-full animate-spin"></span>
-                        {language === 'el' ? 'ΑΝΑΛΥΣΗ...' : 'ANALYZING...'}
+                        {t.policyStatus.analyzing}
                     </span>
                 )
             default:
@@ -216,7 +218,7 @@ export function PolicyCard({
                     <svg className="w-3 h-3 text-[#1FDC86] dark:text-[#1FDC86]" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-[#19b870] dark:text-[#7de8ba]">Verified by AI</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-[#19b870] dark:text-[#7de8ba]">{cardCopy.verifiedByAi}</span>
                 </div>
             )}
 
@@ -271,7 +273,7 @@ export function PolicyCard({
                             </div>
                         ) : (
                             <h2 className="text-xl font-black text-black dark:text-white leading-tight mt-1 capitalize">
-                                {policy.lineOfBusiness} Policy
+                                {`${t.policyTypes?.[policy.lineOfBusiness as keyof typeof t.policyTypes] || policy.lineOfBusiness} ${cardCopy.policyWord}`}
                             </h2>
                         )}
 
@@ -286,18 +288,17 @@ export function PolicyCard({
                     {daysLeft !== null && daysLeft >= 0 && daysLeft <= 60 && (
                         <div className="flex items-center gap-2">
                             <span className={`text-xs font-bold uppercase tracking-wider ${daysLeft <= 7 ? 'text-red-500' : 'text-amber-600 dark:text-amber-400'}`}>
-                                {daysLeft} Days Left
+                                {daysLeft} {cardCopy.daysLeft}
                             </span>
                             {daysLeft <= 30 && (
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation()
-                                        // Trigger renewal
-                                        alert("Renewal request sent to agent!")
+                                        toast.success(t.wallet.policyDetailsPage.renewalRequested)
                                     }}
                                     className="px-2 py-1 bg-[#111111] dark:bg-white text-white dark:text-black text-[10px] font-black uppercase tracking-wider rounded-lg hover:-translate-y-[1px] hover:shadow-sm transition-all arc-btn"
                                 >
-                                    Renew
+                                    {cardCopy.renew}
                                 </button>
                             )}
                         </div>
@@ -322,7 +323,7 @@ export function PolicyCard({
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                                 </svg>
-                                {showInsights ? 'Hide Insights' : t.dashboard.runAnalysis}
+                                {showInsights ? cardCopy.hideInsights : t.dashboard.runAnalysis}
                             </button>
                         )}
                     </div>
@@ -364,7 +365,7 @@ export function PolicyCard({
                                         <span className="text-xs text-black/60">{t.policyCard.youPay}</span>
                                         <div className="text-lg font-black text-black dark:text-white">{formatCurrency(policy.aiInsights.premiumBenchmark.current)}</div>
                                     </div>
-                                    <div className="mb-1 text-black/35 dark:text-white/75">vs</div>
+                                    <div className="mb-1 text-black/35 dark:text-white/75">/</div>
                                     <div>
                                         <span className="text-xs text-black/60">{t.policyCard.localAvg}</span>
                                         <div className="text-lg font-bold text-black/60">{formatCurrency(policy.aiInsights.premiumBenchmark.localAverage)}</div>
@@ -393,7 +394,7 @@ export function PolicyCard({
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                     </svg>
-                    Wallet
+                    {t.wallet.addToWallet}
                 </button>
                 <button
                     onClick={(e) => {
@@ -405,7 +406,7 @@ export function PolicyCard({
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                     </svg>
-                    Share
+                    {t.wallet.share}
                 </button>
                 <button
                     onClick={(e) => handleMenuOpen(e)}
@@ -455,7 +456,7 @@ export function PolicyCard({
                         >
                             {/* Understand */}
                             <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-black/45">
-                                {t.dashboard.actionGroups?.understand || 'Understand'}
+                                {t.dashboard.actionGroups.understand}
                             </div>
                             <button
                                 onClick={() => {
@@ -486,7 +487,7 @@ export function PolicyCard({
 
                             {/* Act */}
                             <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-black/45 mt-1">
-                                {t.dashboard.actionGroups?.act || 'Act'}
+                                {t.dashboard.actionGroups.act}
                             </div>
                             <button
                                 onClick={() => {
@@ -512,12 +513,12 @@ export function PolicyCard({
                                 <div className="w-8 h-8 bg-black/5 dark:bg-white/10 rounded-lg flex items-center justify-center text-black/75 dark:text-white/75">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
                                 </div>
-                                Add to Wallet
+                                {t.wallet.addToWallet}
                             </button>
 
                             {/* Review */}
                             <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-black/45 mt-1">
-                                {t.dashboard.actionGroups?.review || 'Review'}
+                                {t.dashboard.actionGroups.review}
                             </div>
                             <button
                                 onClick={() => {
@@ -535,7 +536,7 @@ export function PolicyCard({
 
                             {/* Danger */}
                             <div className="px-4 py-2 text-[10px] font-black uppercase tracking-widest text-red-300 mt-1">
-                                {t.dashboard.actionGroups?.danger || 'Danger Zone'}
+                                {t.dashboard.actionGroups.danger}
                             </div>
                             <button
                                 onClick={() => {
@@ -565,6 +566,8 @@ export function PolicyCard({
         </div>
     )
 }
+
+
 
 
 

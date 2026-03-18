@@ -11,6 +11,7 @@ import {
   CreditCard,
 } from "lucide-react"
 import type { AcordData } from "@/types/domain"
+import { getTranslations } from "@/lib/i18n"
 
 interface MotorCoverageDetailsProps {
   acordData: AcordData
@@ -18,31 +19,21 @@ interface MotorCoverageDetailsProps {
 }
 
 export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetailsProps) {
-  const isGreek = language === "el"
+  const i18n = getTranslations(language)
+  const copy = i18n.coverageDetails
+  const motorCopy = copy.motor
   const motor = acordData.motor
   if (!motor) return null
 
-  const copy = {
-    coverageTier: isGreek ? "Βαθμίδα Κάλυψης" : "Coverage Tier",
-    accidentDeclaration: isGreek ? "Δήλωση Ατυχήματος" : "Accident Declaration",
-    roadsideAssistance: isGreek ? "Οδική Βοήθεια" : "Roadside Assistance",
-    namedDrivers: isGreek ? "Κατονομαζόμενοι Οδηγοί" : "Named Drivers",
-    greenCard: isGreek ? "Πράσινη Κάρτα" : "Green Card",
-    ownVehicleDamage: isGreek ? "Ίδιες Ζημιές" : "Own Vehicle Damage",
-    glassBreakage: isGreek ? "Θραύση Κρυστάλλων" : "Glass Breakage",
-    expires: isGreek ? "Λήγει" : "Expires",
-    expiringSoon: isGreek ? "Λήγει σύντομα" : "Expiring soon",
-    expired: isGreek ? "Έχει λήξει" : "Expired",
-    valid: isGreek ? "Σε ισχύ" : "Valid",
-    covered: isGreek ? "Καλύπτεται" : "Covered",
-    notCovered: isGreek ? "Δεν καλύπτεται" : "Not covered",
-    call: isGreek ? "Κλήση" : "Call",
-    license: isGreek ? "Δίπλωμα" : "License",
-  }
-
-  const hasAnyData = motor.coverageTier || motor.accidentDeclarationPhone ||
-    motor.roadsideAssistancePhone || (motor.namedDrivers && motor.namedDrivers.length > 0) ||
-    motor.greenCardExpiry || motor.ownVehicleDamage !== undefined || motor.glassBreakage !== undefined
+  const hasAnyData = Boolean(
+    motor.coverageTier ||
+    motor.accidentDeclarationPhone ||
+    motor.roadsideAssistancePhone ||
+    (motor.namedDrivers && motor.namedDrivers.length > 0) ||
+    motor.greenCardExpiry ||
+    motor.ownVehicleDamage !== undefined ||
+    motor.glassBreakage !== undefined
+  )
 
   if (!hasAnyData) return null
 
@@ -64,7 +55,7 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
             <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
               <Shield className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{copy.coverageTier}</span>
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{motorCopy.coverageTier}</span>
           </div>
           <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 capitalize">
             {motor.coverageTier.replace(/_/g, " ")}
@@ -82,7 +73,7 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
               <AlertTriangle className="w-4 h-4 text-red-600 dark:text-red-400" />
             </div>
             <div>
-              <span className="text-sm font-bold text-red-700 dark:text-red-300">{copy.accidentDeclaration}</span>
+              <span className="text-sm font-bold text-red-700 dark:text-red-300">{motorCopy.accidentDeclaration}</span>
               <p className="text-xs text-red-600/80 dark:text-red-400/80">{copy.call}</p>
             </div>
           </div>
@@ -103,7 +94,7 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
               <Car className="w-4 h-4 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
-              <span className="text-sm font-bold text-amber-700 dark:text-amber-300">{copy.roadsideAssistance}</span>
+              <span className="text-sm font-bold text-amber-700 dark:text-amber-300">{motorCopy.roadsideAssistance}</span>
               <p className="text-xs text-amber-600/80 dark:text-amber-400/80">{copy.call}</p>
             </div>
           </div>
@@ -120,7 +111,7 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
             <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
               <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{copy.namedDrivers}</span>
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{motorCopy.namedDrivers}</span>
           </div>
           <div className="ml-10.5 space-y-1.5">
             {motor.namedDrivers.map((driver, i) => (
@@ -128,7 +119,7 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
                 <span className="text-slate-900 dark:text-white font-medium">{driver.name || "-"}</span>
                 {driver.licenseNumber && (
                   <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
-                    {copy.license}: {driver.licenseNumber}
+                    {motorCopy.license}: {driver.licenseNumber}
                   </span>
                 )}
               </div>
@@ -144,9 +135,9 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
               <CreditCard className="w-4 h-4 text-green-600 dark:text-green-400" />
             </div>
             <div>
-              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{copy.greenCard}</span>
+              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{motorCopy.greenCard}</span>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                {copy.expires}: {new Date(motor.greenCardExpiry).toLocaleDateString(isGreek ? "el-GR" : "en-GB")}
+                {copy.expires}: {new Date(motor.greenCardExpiry).toLocaleDateString(language === "el" ? "el-GR" : "en-GB")}
               </p>
             </div>
           </div>
@@ -168,7 +159,7 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
             <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
               <Car className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{copy.ownVehicleDamage}</span>
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{motorCopy.ownVehicleDamage}</span>
           </div>
           {motor.ownVehicleDamage ? (
             <span className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
@@ -188,7 +179,7 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
             <div className="w-8 h-8 rounded-lg bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center">
               <Shield className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{copy.glassBreakage}</span>
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{motorCopy.glassBreakage}</span>
           </div>
           {motor.glassBreakage ? (
             <span className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">

@@ -1,0 +1,17 @@
+
+> policy-wallet@0.1.0 dev
+> next dev -p 3000 -H 0.0.0.0
+
+▲ Next.js 16.1.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://0.0.0.0:3000
+- Environments: .env.local, .env
+- Experiments (use with caution):
+  · clientTraceMetadata
+
+✓ Starting...
+Creating turbopack project {
+  dir: 'C:\\Users\\admin\\Documents\\GitHub\\PolicyWalletPlatform\\New folder\\product-plan\\policy-wallet',
+  testMode: true
+}
+✓ Ready in 4.5s

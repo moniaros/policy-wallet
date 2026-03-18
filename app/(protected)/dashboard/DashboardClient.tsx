@@ -1,21 +1,22 @@
 "use client"
 
 import { useState } from "react"
-import { Dashboard, InviteModal } from "@/components/agent"
-import { DashboardSummary, Priority, AccessScope } from "@/components/agent/types"
+import { DesktopDashboard, InviteModal } from "@/components/agent"
+import { Priority, AccessScope } from "@/components/agent/types"
 import { createAgentInvite } from "../agent/actions"
 import { useRouter } from "next/navigation"
 import { resendVerificationEmail } from "@/app/auth/actions"
 import { AlertCircle, CheckCircle, Loader2, X } from "lucide-react"
 
 interface Props {
-    initialSummary: DashboardSummary
-    initialPriorities: Priority[]
+    stats: any
+    priorities: any
+    recentActivity: any
     isEmailVerified?: boolean
     userEmail?: string
 }
 
-export function DashboardClient({ initialSummary, initialPriorities, isEmailVerified = true, userEmail }: Props) {
+export function DashboardClient({ stats, priorities, recentActivity, isEmailVerified = true, userEmail }: Props) {
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
     const [showBanner, setShowBanner] = useState(!isEmailVerified)
     const [isResending, setIsResending] = useState(false)
@@ -101,9 +102,10 @@ export function DashboardClient({ initialSummary, initialPriorities, isEmailVeri
                 </div>
             )}
 
-            <Dashboard
-                summary={initialSummary}
-                priorities={initialPriorities}
+            <DesktopDashboard
+                stats={stats}
+                priorities={priorities}
+                recentActivity={recentActivity}
                 onInviteCustomer={() => setIsInviteModalOpen(true)}
                 onPriorityClick={handlePriorityClick}
             />

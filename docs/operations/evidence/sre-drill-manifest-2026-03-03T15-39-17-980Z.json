@@ -1,0 +1,15 @@
+{
+  "capturedAt": "2026-03-03T15:39:34.952Z",
+  "baseUrl": "http://localhost:3000",
+  "drillUser": "sre.drill.admin.1772552357981@example.com",
+  "syntheticPath": "docs\\operations\\evidence\\synthetic-launch-check-2026-03-03T15-39-17-980Z.json",
+  "launchReadinessPath": "docs\\operations\\evidence\\launch-readiness-snapshot-2026-03-03T15-39-17-980Z.json",
+  "healthPath": "docs\\operations\\evidence\\health-2026-03-03T15-39-17-980Z.json",
+  "adminScreenshotPath": "docs\\operations\\evidence\\admin-launch-readiness-2026-03-03T15-39-17-980Z.png",
+  "syntheticStatus": 200,
+  "launchReadinessStatus": 200,
+  "healthStatus": 200,
+  "launchReadinessLevel": "red",
+  "blockerCount": 2,
+  "warningCount": 1
+}

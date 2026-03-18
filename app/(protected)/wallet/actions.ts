@@ -814,6 +814,25 @@ export async function ignoreGap(gapId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
+    const gap = await db.gapInstance.findUnique({
+        where: { id: gapId },
+        include: { policy: true }
+    })
+    if (!gap) return { error: "Gap not found" }
+
+    const isOwner = gap.policy.ownerUserId === authResult.dbUser.id
+    if (!isOwner) {
+        const hasAccess = await db.accessGrant.findFirst({
+            where: {
+                granterUserId: gap.policy.ownerUserId,
+                granteeUserId: authResult.dbUser.id,
+                scope: `policy:${gap.policyId}`,
+                status: 'active'
+            }
+        })
+        if (!hasAccess) return { error: "Unauthorized" }
+    }
+
     await db.gapInstance.update({
         where: { id: gapId },
         data: { status: 'ignored' }
@@ -826,6 +845,21 @@ export async function ignoreGap(gapId: string) {
 export async function notifyAgentAboutGap(gapId: string, policyId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
+
+    // Verify ownership or access
+    const policy = await db.policy.findUnique({ where: { id: policyId } })
+    if (!policy) return { error: "Policy not found" }
+    if (policy.ownerUserId !== authResult.dbUser.id) {
+        const hasAccess = await db.accessGrant.findFirst({
+            where: {
+                granterUserId: policy.ownerUserId,
+                granteeUserId: authResult.dbUser.id,
+                scope: `policy:${policy.id}`,
+                status: 'active'
+            }
+        })
+        if (!hasAccess) return { error: "Unauthorized" }
+    }
 
     // Find active relationship
     const relationship = await db.customerRelationship.findFirst({

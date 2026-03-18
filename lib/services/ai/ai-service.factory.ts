@@ -9,15 +9,16 @@ import { logger } from '@/lib/logger'
 import type { IAIService } from './ai-service.interface'
 import { GeminiAIService } from './gemini-ai.service'
 import { MockAIService } from './mock-ai.service'
+import { OpenAIAIService } from './openai-ai.service'
 
-export type AIServiceType = 'gemini' | 'mock'
+export type AIServiceType = 'gemini' | 'openai' | 'mock'
 
 /**
  * Factory for creating AI service instances
  */
 export class AIServiceFactory {
-    private static instance: IAIService | null = null
-    private static serviceType: AIServiceType | null = null
+    private static instances: Partial<Record<AIServiceType, IAIService>> = {}
+    private static defaultServiceType: AIServiceType | null = null
 
     /**
      * Gets the current AI service instance
@@ -29,29 +30,22 @@ export class AIServiceFactory {
      * @returns AI service instance
      */
     static getService(forceType?: AIServiceType): IAIService {
-        // If forcing a type or no instance exists, create new
-        if (forceType && forceType !== this.serviceType) {
-            this.instance = this.createService(forceType)
-            this.serviceType = forceType
-            return this.instance
+        const serviceType = forceType || this.defaultServiceType || this.determineServiceType()
+
+        if (!forceType && !this.defaultServiceType) {
+            this.defaultServiceType = serviceType
         }
 
-        // Return existing instance if available
-        if (this.instance) {
-            return this.instance
+        if (!this.instances[serviceType]) {
+            const service = this.createService(serviceType)
+            this.instances[serviceType] = service
+            logger('info', 'AI service initialized', {
+                serviceType,
+                serviceName: service.getServiceName()
+            })
         }
 
-        // Determine which service to use
-        const serviceType = this.determineServiceType()
-        this.instance = this.createService(serviceType)
-        this.serviceType = serviceType
-
-        logger('info', 'AI service initialized', {
-            serviceType,
-            serviceName: this.instance.getServiceName()
-        })
-
-        return this.instance
+        return this.instances[serviceType] as IAIService
     }
 
     /**
@@ -64,6 +58,8 @@ export class AIServiceFactory {
         switch (type) {
             case 'gemini':
                 return new GeminiAIService()
+            case 'openai':
+                return new OpenAIAIService()
             case 'mock':
                 return new MockAIService()
             default:
@@ -85,7 +81,7 @@ export class AIServiceFactory {
     private static determineServiceType(): AIServiceType {
         // Check environment variable
         const envType = process.env.AI_SERVICE_TYPE?.toLowerCase()
-        if (envType === 'gemini' || envType === 'mock') {
+        if (envType === 'gemini' || envType === 'openai' || envType === 'mock') {
             return envType as AIServiceType
         }
 
@@ -93,10 +89,13 @@ export class AIServiceFactory {
         if (process.env.GEMINI_API_KEY) {
             return 'gemini'
         }
+        if (process.env.OPENAI_API_KEY) {
+            return 'openai'
+        }
 
         // Fallback to mock
         logger('warn', 'No AI service configured, using mock', {
-            reason: 'GEMINI_API_KEY not found'
+            reason: 'GEMINI_API_KEY / OPENAI_API_KEY not found'
         })
         return 'mock'
     }
@@ -105,15 +104,15 @@ export class AIServiceFactory {
      * Resets the factory (useful for testing)
      */
     static reset(): void {
-        this.instance = null
-        this.serviceType = null
+        this.instances = {}
+        this.defaultServiceType = null
     }
 
     /**
      * Gets the current service type
      */
     static getCurrentServiceType(): AIServiceType | null {
-        return this.serviceType
+        return this.defaultServiceType
     }
 
     /**

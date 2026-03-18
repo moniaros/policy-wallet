@@ -5,6 +5,7 @@ import { NextResponse } from "next/server"
 export type AppRole = "admin" | "agent" | "policyholder"
 
 type AuthResult = NonNullable<Awaited<ReturnType<typeof getAuthenticatedUserOrNull>>>
+export type ApiAuthResult = AuthResult
 
 function isAppRole(role: string): role is AppRole {
     return role === "admin" || role === "agent" || role === "policyholder"

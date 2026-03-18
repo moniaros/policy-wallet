@@ -164,7 +164,7 @@ export function StatusSummary({
                                             <span className={`text-[10px] font-normal ${urgency === 'critical' ? 'text-red-600 dark:text-red-500 font-bold' :
                                                 'text-amber-600 dark:text-amber-500'
                                                 }`}>
-                                                {urgency === 'critical' ? (t.policyStatus || {}).actionNeeded || 'Act Now' : (t.status as any).attentionNeeded || 'Attention'}
+                                                {urgency === 'critical' ? t.policyStatus.actionNeeded : t.status.attentionNeeded}
                                             </span>
                                         )}
                                     </div>

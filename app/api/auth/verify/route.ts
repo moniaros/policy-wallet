@@ -1,6 +1,6 @@
 import { db } from "@/lib/db"
-import { NextRequest, NextResponse } from "next/server"
-import { rateLimit } from "@/lib/rate-limit"
+import { NextResponse } from "next/server"
+import { withApiGuard } from "@/lib/api-guard"
 import { z } from "zod"
 
 const verifyEmailPayloadSchema = z.object({
@@ -8,41 +8,92 @@ const verifyEmailPayloadSchema = z.object({
     email: z.string().email(),
 })
 
-export async function POST(request: NextRequest) {
-    try {
-        const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
-            || request.headers.get("x-real-ip")
-            || "127.0.0.1"
-        const limitCheck = await rateLimit(`auth:verify-email:${ip}`, 10, 15 * 60 * 1000)
-        if (!limitCheck.success) {
-            return NextResponse.json(
-                { success: false, error: "Too many verification attempts. Please try again later." },
-                { status: 429 }
-            )
-        }
+export const POST = withApiGuard(
+    {
+        auth: { mode: "public" },
+        validation: { body: verifyEmailPayloadSchema },
+        rateLimit: {
+            limit: 10,
+            windowMs: 15 * 60 * 1000,
+            key: ({ ip }) => `auth:verify-email:${ip}`,
+        },
+    },
+    async ({ body }) => {
+        try {
+            const { token, email } = body!
 
-        const { token, email } = verifyEmailPayloadSchema.parse(await request.json())
-
-        // 1. Find the verification token in database
-        const verificationRecord = await db.verificationToken.findUnique({
-            where: {
-                identifier_token: {
-                    identifier: email,
-                    token: token
+            // 1. Find the verification token in database
+            const verificationRecord = await db.verificationToken.findUnique({
+                where: {
+                    identifier_token: {
+                        identifier: email,
+                        token: token
+                    }
                 }
+            })
+
+            if (!verificationRecord) {
+                return NextResponse.json(
+                    { success: false, error: 'Invalid or expired verification link' },
+                    { status: 400 }
+                )
             }
-        })
 
-        if (!verificationRecord) {
-            return NextResponse.json(
-                { success: false, error: 'Invalid or expired verification link' },
-                { status: 400 }
-            )
-        }
+            // 2. Check if token has expired (15 minutes)
+            if (new Date() > verificationRecord.expires) {
+                // Delete expired token
+                await db.verificationToken.delete({
+                    where: {
+                        identifier_token: {
+                            identifier: email,
+                            token: token
+                        }
+                    }
+                })
 
-        // 2. Check if token has expired (15 minutes)
-        if (new Date() > verificationRecord.expires) {
-            // Delete expired token
+                return NextResponse.json(
+                    { success: false, error: 'Verification link has expired. Please request a new one.' },
+                    { status: 400 }
+                )
+            }
+
+            // 3. Mark user as verified in local database
+            await db.user.update({
+                where: { email },
+                data: { emailVerified: new Date() }
+            })
+
+            // 4. Also update Supabase Auth to mark email as verified
+            const { createAdminClient } = await import("@/lib/supabase/admin")
+            const supabaseAdmin = createAdminClient()
+
+            // Get the user by email from Supabase Auth
+            const { data: { users }, error: getUserError } = await supabaseAdmin.auth.admin.listUsers()
+
+            if (!getUserError && users) {
+                const user = users.find(u => u.email === email)
+                if (user) {
+                    // Update user to mark email as confirmed
+                    const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
+                        user.id,
+                        {
+                            email_confirm: true,
+                            user_metadata: {
+                                ...user.user_metadata,
+                                email_verified: true
+                            }
+                        }
+                    )
+
+                    if (updateError) {
+                        console.error('Error confirming email in Supabase:', updateError)
+                    }
+                }
+            } else {
+                console.error('Error listing users from Supabase:', getUserError)
+            }
+
+            // 5. Delete the used token
             await db.verificationToken.delete({
                 where: {
                     identifier_token: {
@@ -52,74 +103,16 @@ export async function POST(request: NextRequest) {
                 }
             })
 
+            return NextResponse.json({
+                success: true,
+                message: 'Email verified successfully'
+            })
+        } catch (error) {
+            console.error('Verification API error:', error)
             return NextResponse.json(
-                { success: false, error: 'Verification link has expired. Please request a new one.' },
-                { status: 400 }
+                { success: false, error: 'Internal server error' },
+                { status: 500 }
             )
         }
-
-        // 3. Mark user as verified in local database
-        await db.user.update({
-            where: { email },
-            data: { emailVerified: new Date() }
-        })
-
-        // 4. Also update Supabase Auth to mark email as verified
-        const { createAdminClient } = await import("@/lib/supabase/admin")
-        const supabaseAdmin = createAdminClient()
-
-        // Get the user by email from Supabase Auth
-        const { data: { users }, error: getUserError } = await supabaseAdmin.auth.admin.listUsers()
-
-        if (!getUserError && users) {
-            const user = users.find(u => u.email === email)
-            if (user) {
-                // Update user to mark email as confirmed
-                const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(
-                    user.id,
-                    {
-                        email_confirm: true,
-                        user_metadata: {
-                            ...user.user_metadata,
-                            email_verified: true
-                        }
-                    }
-                )
-
-                if (updateError) {
-                    console.error('Error confirming email in Supabase:', updateError)
-                }
-            }
-        } else {
-            console.error('Error listing users from Supabase:', getUserError)
-        }
-
-        // 5. Delete the used token
-        await db.verificationToken.delete({
-            where: {
-                identifier_token: {
-                    identifier: email,
-                    token: token
-                }
-            }
-        })
-
-        return NextResponse.json({
-            success: true,
-            message: 'Email verified successfully'
-        })
-
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            return NextResponse.json(
-                { success: false, error: 'Invalid verification parameters', details: error.issues },
-                { status: 400 }
-            )
-        }
-        console.error('Verification API error:', error)
-        return NextResponse.json(
-            { success: false, error: 'Internal server error' },
-            { status: 500 }
-        )
     }
-}
+)

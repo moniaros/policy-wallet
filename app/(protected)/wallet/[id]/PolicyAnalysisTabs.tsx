@@ -12,6 +12,13 @@ interface PolicyAnalysisTabsProps {
     lastAnalyzedAt?: string
     policyStatus?: string
     processingError?: { code?: string; message?: string } | null
+    analysisPipeline?: {
+        runId?: string
+        status?: string
+        missingSections?: string[]
+        lastFailureCode?: string | null
+        lastFailureAt?: string | null
+    } | null
 }
 
 export function PolicyAnalysisTabs({
@@ -22,6 +29,7 @@ export function PolicyAnalysisTabs({
     lastAnalyzedAt,
     policyStatus,
     processingError,
+    analysisPipeline,
 }: PolicyAnalysisTabsProps) {
     const [activeTab, setActiveTab] = useState<'insights' | 'gaps'>('gaps')
 
@@ -48,7 +56,7 @@ export function PolicyAnalysisTabs({
                         : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
                         }`}
                 >
-                    {t.wallet.aiAnalysis || 'Gap Analysis'}
+                    {t.wallet.aiAnalysis}
                     {gaps.length > 0 && (
                         <span className="ml-2 px-2 py-0.5 text-[10px] bg-red-100 text-red-700 rounded-full">
                             {gaps.length}
@@ -63,7 +71,7 @@ export function PolicyAnalysisTabs({
                         : 'text-black/60 dark:text-white/60 hover:text-black dark:hover:text-white'
                         } ${!hasAcordData ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                    {t.wallet.aiPolicyInsights || 'Policy Insights'}
+                    {t.wallet.aiPolicyInsights}
                 </button>
             </div>
 
@@ -75,6 +83,7 @@ export function PolicyAnalysisTabs({
                             gaps={gaps}
                             policyStatus={policyStatus}
                             processingError={processingError}
+                            analysisPipeline={analysisPipeline}
                         />
                     </div>
                 )}

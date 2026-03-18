@@ -4,6 +4,7 @@ import { requireApiUser } from '@/lib/api-auth'
 import { z } from 'zod'
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { sendPolicySharedAccessEmail } from "@/lib/email/invite-emails"
+import { withApiGuard } from '@/lib/api-guard'
 
 const sharePolicySchema = z.object({
     policyId: z.string().min(1),
@@ -11,98 +12,107 @@ const sharePolicySchema = z.object({
     permissions: z.string().min(1),
 })
 
-export async function POST(req: Request) {
-    const authCheck = await requireApiUser()
-    if ("error" in authCheck) return authCheck.error
-    const authResult = authCheck.auth
+const revokeShareQuerySchema = z.object({
+    grantId: z.string().min(1),
+})
 
-    try {
-        const { policyId, email, permissions } = sharePolicySchema.parse(await req.json())
+export const POST = withApiGuard(
+    {
+        auth: { mode: "user" },
+        validation: { body: sharePolicySchema },
+        rateLimit: {
+            limit: 30,
+            windowMs: 60 * 1000,
+            key: ({ auth }) => `policy:share:create:${auth?.dbUser.id || "anonymous"}`,
+        },
+    },
+    async ({ auth, body }) => {
+        const authResult = auth!
+        try {
+            const { policyId, email, permissions } = body!
 
-        // Verify the user owns this policy
-        const policy = await db.policy.findUnique({
-            where: { id: policyId },
-            select: { ownerUserId: true, policyNumber: true }
-        })
-
-        if (!policy || policy.ownerUserId !== authResult.dbUser.id) {
-            return createApiError("NOT_FOUND", "Policy not found or access denied", 404)
-        }
-
-        // Find or create the grantee user
-        let granteeUser = await db.user.findUnique({
-            where: { email }
-        })
-
-        if (!granteeUser) {
-            // Create placeholder user
-            granteeUser = await db.user.create({
-                data: {
-                    email,
-                    name: email.split('@')[0],
-                    roles: 'policyholder'
-                }
+            // Verify the user owns this policy
+            const policy = await db.policy.findUnique({
+                where: { id: policyId },
+                select: { ownerUserId: true, policyNumber: true }
             })
-        }
 
-        // Check if grant already exists
-        const existingGrant = await db.accessGrant.findFirst({
-            where: {
-                granterUserId: authResult.dbUser.id,
-                granteeUserId: granteeUser.id,
-                scope: `policy:${policyId}`,
-                status: 'active'
+            if (!policy || policy.ownerUserId !== authResult.dbUser.id) {
+                return createApiError("NOT_FOUND", "Policy not found or access denied", 404)
             }
-        })
 
-        if (existingGrant) {
-            // Update existing grant
-            await db.accessGrant.update({
-                where: { id: existingGrant.id },
-                data: { permissions }
+            // Find or create the grantee user
+            let granteeUser = await db.user.findUnique({
+                where: { email }
             })
-        } else {
-            // Create new grant
-            await db.accessGrant.create({
-                data: {
+
+            if (!granteeUser) {
+                // Create placeholder user
+                granteeUser = await db.user.create({
+                    data: {
+                        email,
+                        name: email.split('@')[0],
+                        roles: 'policyholder'
+                    }
+                })
+            }
+
+            // Check if grant already exists
+            const existingGrant = await db.accessGrant.findFirst({
+                where: {
                     granterUserId: authResult.dbUser.id,
                     granteeUserId: granteeUser.id,
                     scope: `policy:${policyId}`,
-                    permissions,
                     status: 'active'
                 }
             })
-        }
 
-        try {
-            await sendPolicySharedAccessEmail({
-                to: email,
-                inviterName: authResult.dbUser.name || authResult.dbUser.email,
-                policyNumber: policy.policyNumber,
-                language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
-            })
-        } catch (emailError) {
-            console.error("Failed to send policy share email", emailError)
-        }
-
-        return createApiResponse({
-            message: `Policy shared with ${email}`
-        })
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            return createApiError("VALIDATION_ERROR", "Invalid payload", 400, error.issues)
-        }
-        Sentry.captureException(error, {
-            tags: {
-                endpoint: '/api/v1/policies/share',
-                method: 'POST',
-                userId: authResult.dbUser.id
+            if (existingGrant) {
+                // Update existing grant
+                await db.accessGrant.update({
+                    where: { id: existingGrant.id },
+                    data: { permissions }
+                })
+            } else {
+                // Create new grant
+                await db.accessGrant.create({
+                    data: {
+                        granterUserId: authResult.dbUser.id,
+                        granteeUserId: granteeUser.id,
+                        scope: `policy:${policyId}`,
+                        permissions,
+                        status: 'active'
+                    }
+                })
             }
-        })
 
-        return createApiError("INTERNAL_ERROR", "Failed to share policy", 500)
+            try {
+                await sendPolicySharedAccessEmail({
+                    to: email,
+                    inviterName: authResult.dbUser.name || authResult.dbUser.email,
+                    policyNumber: policy.policyNumber,
+                    language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
+                })
+            } catch (emailError) {
+                console.error("Failed to send policy share email", emailError)
+            }
+
+            return createApiResponse({
+                message: `Policy shared with ${email}`
+            })
+        } catch (error) {
+            Sentry.captureException(error, {
+                tags: {
+                    endpoint: '/api/v1/policies/share',
+                    method: 'POST',
+                    userId: authResult.dbUser.id
+                }
+            })
+
+            return createApiError("INTERNAL_ERROR", "Failed to share policy", 500)
+        }
     }
-}
+)
 
 // Get shared policies for current user
 export async function GET(req: Request) {
@@ -168,48 +178,52 @@ export async function GET(req: Request) {
 }
 
 // Revoke access
-export async function DELETE(req: Request) {
-    const authCheck = await requireApiUser()
-    if ("error" in authCheck) return authCheck.error
-    const authResult = authCheck.auth
+export const DELETE = withApiGuard(
+    {
+        auth: { mode: "user" },
+        validation: { query: revokeShareQuerySchema },
+        rateLimit: {
+            limit: 30,
+            windowMs: 60 * 1000,
+            key: ({ auth }) => `policy:share:revoke:${auth?.dbUser.id || "anonymous"}`,
+        },
+    },
+    async ({ auth, query }) => {
+        const authResult = auth!
+        const { grantId } = query
 
-    try {
-        const { searchParams } = new URL(req.url)
-        const grantId = z.string().min(1).parse(searchParams.get('grantId'))
+        try {
+            // Verify the user owns this grant
+            const grant = await db.accessGrant.findUnique({
+                where: { id: grantId }
+            })
 
-        // Verify the user owns this grant
-        const grant = await db.accessGrant.findUnique({
-            where: { id: grantId }
-        })
-
-        if (!grant || grant.granterUserId !== authResult.dbUser.id) {
-            return createApiError("NOT_FOUND", "Grant not found or access denied", 404)
-        }
-
-        // Revoke the grant
-        await db.accessGrant.update({
-            where: { id: grantId },
-            data: {
-                status: 'revoked',
-                revokedAt: new Date()
+            if (!grant || grant.granterUserId !== authResult.dbUser.id) {
+                return createApiError("NOT_FOUND", "Grant not found or access denied", 404)
             }
-        })
 
-        return createApiResponse({
-            message: 'Access revoked'
-        })
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            return createApiError("VALIDATION_ERROR", "Missing or invalid grantId", 400)
+            // Revoke the grant
+            await db.accessGrant.update({
+                where: { id: grantId },
+                data: {
+                    status: 'revoked',
+                    revokedAt: new Date()
+                }
+            })
+
+            return createApiResponse({
+                message: 'Access revoked'
+            })
+        } catch (error) {
+            Sentry.captureException(error, {
+                tags: {
+                    endpoint: '/api/v1/policies/share',
+                    method: 'DELETE',
+                    userId: authResult.dbUser.id
+                }
+            })
+
+            return createApiError("INTERNAL_ERROR", "Failed to revoke access", 500)
         }
-        Sentry.captureException(error, {
-            tags: {
-                endpoint: '/api/v1/policies/share',
-                method: 'DELETE',
-                userId: authResult.dbUser.id
-            }
-        })
-
-        return createApiError("INTERNAL_ERROR", "Failed to revoke access", 500)
     }
-}
+)

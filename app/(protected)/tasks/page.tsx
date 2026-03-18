@@ -22,8 +22,8 @@ export default async function TasksPage() {
     return (
         <div className="min-h-screen bg-transparent">
             <PageHeader
-                title={t.tasks.actionCenter || "Action Center"}
-                subtitle={t.tasks.manageTasks || "Review and complete your pending insurance requirements."}
+                title={t.tasks.actionCenter}
+                subtitle={t.tasks.manageTasks}
             />
             <TasksClient
                 actionItems={serializedItems}

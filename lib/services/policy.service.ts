@@ -365,9 +365,17 @@ export class PolicyService extends BaseService {
                 return
             }
 
-            if (run.status !== 'completed') {
+            if (run.status !== 'completed' && run.status !== 'completed_with_warnings') {
                 const reason = run?.failureMessage || run?.blockedReason || 'analysis_orchestration_failed'
                 throw new Error(`Analysis run did not complete: ${reason}`)
+            }
+
+            if (run.status === 'completed_with_warnings') {
+                logger('warn', 'Background policy analysis completed with warnings', {
+                    policyId,
+                    userId,
+                    runId: run.id
+                })
             }
 
             // 2. Post-Analysis Deduplication

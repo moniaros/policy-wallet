@@ -1,4 +1,4 @@
-export const runtime = 'nodejs'
+﻿export const runtime = 'nodejs'
 
 import Link from "next/link"
 import { redirect } from "next/navigation"
@@ -122,13 +122,13 @@ export default async function PolicyholderHomePage() {
             <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                 <div className="mb-8">
                     <p className="pw-kicker">
-                        {t("Î‘ÏÏ‡Î¹ÎºÎ®", "Home")}
+                        {t("Αρχική", "Home")}
                     </p>
                     <h1 className="mt-2 text-3xl font-semibold tracking-tight text-black dark:text-white">
-                        {t("Î Î¯Î½Î±ÎºÎ±Ï‚ Ï€ÏÎ¿ÏƒÏ„Î±ÏƒÎ¯Î±Ï‚", "Protection dashboard")}
+                        {t("Πίνακας προστασίας", "Protection dashboard")}
                     </h1>
                     <p className="mt-2 text-sm text-black/65 dark:text-white/70">
-                        {t("Î— ÏƒÏ…Î½Î¿Î»Î¹ÎºÎ® ÎµÎ¹ÎºÏŒÎ½Î± Ï„Ï‰Î½ Î±ÏƒÏ†Î±Î»Î¯ÏƒÎµÏŽÎ½ ÏƒÎ¿Ï… ÏƒÎµ Î­Î½Î± ÏƒÎ·Î¼ÎµÎ¯Î¿.", "Your complete insurance overview in one place.")}
+                        {t("Η συνολική εικόνα των ασφαλίσεών σου σε ένα σημείο.", "Your complete insurance overview in one place.")}
                     </p>
                 </div>
 
@@ -138,7 +138,7 @@ export default async function PolicyholderHomePage() {
                         className="pw-card rounded-3xl p-6"
                     >
                         <p className="pw-kicker">
-                            {t("Î•Î½ÎµÏÎ³Î¬ ÏƒÏ…Î¼Î²ÏŒÎ»Î±Î¹Î±", "Active policies")}
+                            {t("Ενεργά συμβόλαια", "Active policies")}
                         </p>
                         <div className="mt-3 flex items-center justify-between">
                             <p className="text-4xl font-semibold text-black dark:text-white">{activePolicies.length}</p>
@@ -151,7 +151,7 @@ export default async function PolicyholderHomePage() {
                         className="pw-card rounded-3xl p-6"
                     >
                         <p className="pw-kicker">
-                            {t("ÎšÏÎºÎ»Î¿Ï‚ ÎºÎ¬Î»Ï…ÏˆÎ·Ï‚", "Coverage progress")}
+                            {t("Κύκλος κάλυψης", "Coverage progress")}
                         </p>
                         <div className="mt-3 flex items-center gap-4">
                             <div className="relative h-14 w-14">
@@ -170,18 +170,18 @@ export default async function PolicyholderHomePage() {
                                 </span>
                             </div>
                             <p className="text-sm text-black/65 dark:text-white/70">
-                                {t("Î†Î½Î¿Î¹Î³Î¼Î± AI Insights", "Open AI Insights")}
+                                {t("Άνοιγμα AI Insights", "Open AI Insights")}
                             </p>
                         </div>
                     </Link>
 
                     <div className="pw-card rounded-3xl p-6">
                         <p className="pw-kicker">
-                            {t("Î‘Î½Î±Î½ÎµÏŽÏƒÎµÎ¹Ï‚ ÏƒÏÎ½Ï„Î¿Î¼Î±", "Upcoming renewals")}
+                            {t("Ανανεώσεις σύντομα", "Upcoming renewals")}
                         </p>
                         <div className="mt-3">
                             {upcomingRenewals.length === 0 ? (
-                                <p className="text-sm text-black/55 dark:text-white/65">{t("Î”ÎµÎ½ Ï…Ï€Î¬ÏÏ‡Î¿Ï…Î½ Î±Î½Î±Î½ÎµÏŽÏƒÎµÎ¹Ï‚.", "No upcoming renewals.")}</p>
+                                <p className="text-sm text-black/55 dark:text-white/65">{t("Δεν υπάρχουν ανανεώσεις.", "No upcoming renewals.")}</p>
                             ) : (
                                 <div className="-mx-2 flex snap-x gap-3 overflow-x-auto px-2 pb-1">
                                     {upcomingRenewals.map((policy) => {
@@ -204,7 +204,7 @@ export default async function PolicyholderHomePage() {
                                                         </div>
                                                     </div>
                                                     <p className="text-[11px] font-semibold text-amber-700 dark:text-amber-300">
-                                                        {daysUntil(policy.endDate)} {t("Î·Î¼.", "days")}
+                                                        {daysUntil(policy.endDate)} {t("ημ.", "days")}
                                                     </p>
                                                 </div>
                                                 <div className="mt-3 flex items-center justify-between text-xs">
@@ -212,7 +212,7 @@ export default async function PolicyholderHomePage() {
                                                         {policy.endDate.toLocaleDateString(isGreek ? "el-GR" : "en-GB")}
                                                     </p>
                                                     <p className="font-semibold text-black dark:text-white">
-                                                        {premiumLabel || t("Ï‡Ï‰ÏÎ¯Ï‚ premium", "premium n/a")}
+                                                        {premiumLabel || t("χωρίς premium", "premium n/a")}
                                                     </p>
                                                 </div>
                                             </div>
@@ -236,8 +236,8 @@ export default async function PolicyholderHomePage() {
                             <Sparkles className="mt-0.5 h-5 w-5 text-[#1FDC86]" />
                             <p className="text-sm text-black/80 dark:text-white/80">
                                 {openGapCount > 0
-                                    ? t(`Î•Î½Ï„Î¿Ï€Î¯ÏƒÏ„Î·ÎºÎ±Î½ ${openGapCount} ÏƒÎ·Î¼ÎµÎ¯Î± Ï€Î¿Ï… Î±Î¾Î¯Î¶Î¿Ï…Î½ Î­Î»ÎµÎ³Ï‡Î¿.`, `${openGapCount} coverage points need review.`)
-                                    : t("Î— ÎºÎ¬Î»Ï…ÏˆÎ® ÏƒÎ¿Ï… Ï†Î±Î¯Î½ÎµÏ„Î±Î¹ ÏƒÏ„Î±Î¸ÎµÏÎ® ÏƒÎ®Î¼ÎµÏÎ±.", "Your coverage looks stable today.")}
+                                    ? t(`Εντοπίστηκαν ${openGapCount} σημεία που αξίζουν έλεγχο.`, `${openGapCount} coverage points need review.`)
+                                    : t("Η κάλυψή σου φαίνεται σταθερή σήμερα.", "Your coverage looks stable today.")}
                             </p>
                         </div>
                     </Link>
@@ -247,25 +247,25 @@ export default async function PolicyholderHomePage() {
                         className="pw-card rounded-3xl p-6"
                     >
                         <p className="pw-kicker">
-                            {t("Î“ÏÎ®Î³Î¿ÏÎ¿ Upload", "Quick upload")}
+                            {t("Γρήγορο Upload", "Quick upload")}
                         </p>
                         <div className="mt-3 flex items-center gap-3">
                             <div className="grid h-10 w-10 place-items-center rounded-xl bg-[#1FDC86] text-white">
                                 <Upload className="h-5 w-5" />
                             </div>
                             <p className="text-sm text-black/80 dark:text-white/80">
-                                {t("Î ÏÏŒÏƒÎ¸ÎµÏƒÎµ Î½Î­Î¿ ÏƒÏ…Î¼Î²ÏŒÎ»Î±Î¹Î¿", "Add a new policy")}
+                                {t("Πρόσθεσε νέο συμβόλαιο", "Add a new policy")}
                             </p>
                         </div>
                     </Link>
 
                     <div className="pw-card rounded-3xl p-6">
                         <p className="pw-kicker">
-                            {t("Î ÏÏŒÏƒÏ†Î±Ï„Î± Î­Î³Î³ÏÎ±Ï†Î±", "Recent documents")}
+                            {t("Πρόσφατα έγγραφα", "Recent documents")}
                         </p>
                         <div className="mt-3">
                             {recentDocuments.length === 0 ? (
-                                <p className="text-sm text-black/55 dark:text-white/65">{t("Î”ÎµÎ½ Î²ÏÎ­Î¸Î·ÎºÎ±Î½ Î­Î³Î³ÏÎ±Ï†Î±.", "No documents yet.")}</p>
+                                <p className="text-sm text-black/55 dark:text-white/65">{t("Δεν βρέθηκαν έγγραφα.", "No documents yet.")}</p>
                             ) : (
                                 <div className="-mx-2 flex snap-x gap-2 overflow-x-auto px-2 pb-1">
                                     {recentDocuments.map((document) => (
@@ -295,7 +295,7 @@ export default async function PolicyholderHomePage() {
                         className="pw-card rounded-3xl p-6"
                     >
                         <p className="pw-kicker">
-                            {t("ÎšÎ±Ï„Î¬ÏƒÏ„Î±ÏƒÎ· ÏƒÏ…Î¼Î²Î¿ÏÎ»Î¿Ï…", "Agent link status")}
+                            {t("Κατάσταση συμβούλου", "Agent link status")}
                         </p>
                         <div className="mt-3 flex items-center gap-3">
                             <span
@@ -305,22 +305,22 @@ export default async function PolicyholderHomePage() {
                             />
                             <p className="text-sm text-black/80 dark:text-white/80">
                                 {customerRelationship
-                                    ? t(`Î£Ï…Î½Î´ÎµÎ´ÎµÎ¼Î­Î½Î¿Ï‚: ${customerRelationship.agent.name || customerRelationship.agent.email}`, `Connected: ${customerRelationship.agent.name || customerRelationship.agent.email}`)
-                                    : t("Î”ÎµÎ½ Ï…Ï€Î¬ÏÏ‡ÎµÎ¹ ÏƒÏÎ½Î´ÎµÏƒÎ· ÏƒÏ…Î¼Î²Î¿ÏÎ»Î¿Ï….", "No agent connected yet.")}
+                                    ? t(`Συνδεδεμένος: ${customerRelationship.agent.name || customerRelationship.agent.email}`, `Connected: ${customerRelationship.agent.name || customerRelationship.agent.email}`)
+                                    : t("Δεν υπάρχει σύνδεση συμβούλου.", "No agent connected yet.")}
                             </p>
                         </div>
                     </Link>
 
                     <div className="pw-card rounded-3xl p-6">
                         <p className="pw-kicker">
-                            {t("Î¥Ï€ÎµÎ½Î¸ÏÎ¼Î¹ÏƒÎ· check-up", "Health check-up reminder")}
+                            {t("Υπενθύμιση check-up", "Health check-up reminder")}
                         </p>
                         <div className="mt-3 flex items-start gap-3">
                             <HeartPulse className="mt-0.5 h-5 w-5 text-[#1FDC86]" />
                             <p className="text-sm text-black/80 dark:text-white/80">
                                 {hasHealthPolicy
-                                    ? t("Î¤Î¿ ÎµÏ„Î®ÏƒÎ¹Î¿ check-up ÏƒÎ¿Ï… ÎµÎ¯Î½Î±Î¹ Î´Î¹Î±Î¸Î­ÏƒÎ¹Î¼Î¿.", "Your annual check-up benefit is available.")
-                                    : t("Î ÏÏŒÏƒÎ¸ÎµÏƒÎµ health policy Î³Î¹Î± Ï€ÏÎ¿Î»Î·Ï€Ï„Î¹ÎºÎ­Ï‚ Ï…Ï€ÎµÎ½Î¸Ï…Î¼Î¯ÏƒÎµÎ¹Ï‚.", "Add a health policy to unlock preventive reminders.")}
+                                    ? t("Το ετήσιο check-up σου είναι διαθέσιμο.", "Your annual check-up benefit is available.")
+                                    : t("Πρόσθεσε health policy για προληπτικές υπενθυμίσεις.", "Add a health policy to unlock preventive reminders.")}
                             </p>
                         </div>
                     </div>
@@ -329,17 +329,15 @@ export default async function PolicyholderHomePage() {
                         href="/coverage-insights"
                         className="pw-card rounded-3xl p-6"
                     >
-                        <p className="pw-kicker">
-                            {t("Î•Ï…ÎºÎ±Î¹ÏÎ¯ÎµÏ‚ ÎµÎ¾Î¿Î¹ÎºÎ¿Î½ÏŒÎ¼Î·ÏƒÎ·Ï‚", "Savings opportunities")}
-                        </p>
+                        <p className="pw-kicker">{t("Savings opportunities", "Savings opportunities")}</p>
                         <div className="mt-3 flex items-center justify-between">
                             <p className="text-sm text-black/80 dark:text-white/80">
                                 {savingsEstimate > 0
-                                    ? t(`Î Î¹Î¸Î±Î½Î® ÎµÎ¾Î¿Î¹ÎºÎ¿Î½ÏŒÎ¼Î·ÏƒÎ· â‚¬${savingsEstimate}/Î­Ï„Î¿Ï‚`, `Potential savings â‚¬${savingsEstimate}/year`)
-                                    : t("Î”ÎµÎ½ Ï…Ï€Î¬ÏÏ‡Î¿Ï…Î½ Î¬Î¼ÎµÏƒÎµÏ‚ ÎµÏ…ÎºÎ±Î¹ÏÎ¯ÎµÏ‚ ÏƒÎ®Î¼ÎµÏÎ±.", "No immediate savings opportunities today.")}
+                                    ? t(`Potential savings EUR ${savingsEstimate}/year`, `Potential savings EUR ${savingsEstimate}/year`)
+                                    : t("No immediate savings opportunities today.", "No immediate savings opportunities today.")}
                             </p>
                             <span className="rounded-full bg-[#1FDC86]/20 px-2 py-1 text-xs font-semibold text-black dark:text-[#1FDC86]">
-                                â‚¬
+                                EUR
                             </span>
                         </div>
                     </Link>
@@ -353,11 +351,11 @@ export default async function PolicyholderHomePage() {
                         <div className="flex items-center gap-3">
                             <CircleHelp className="h-5 w-5 text-black/60 dark:text-white/65" />
                             <p className="text-sm font-semibold text-black dark:text-white">
-                                {t("Î’Î¿Î®Î¸ÎµÎ¹Î± ÎºÎ±Î¹ Ï…Ï€Î¿ÏƒÏ„Î®ÏÎ¹Î¾Î·", "Help and support")}
+                                {t("Βοήθεια και υποστήριξη", "Help and support")}
                             </p>
                         </div>
                         <p className="text-xs text-black/55 dark:text-white/65">
-                            {t("Î†Î½Î¿Î¹Î³Î¼Î± Help Center", "Open Help Center")}
+                            {t("Άνοιγμα Help Center", "Open Help Center")}
                         </p>
                     </Link>
                 </div>
@@ -366,7 +364,7 @@ export default async function PolicyholderHomePage() {
             <Link
                 href="/wallet/add"
                 className="fixed bottom-24 left-1/2 z-30 grid h-14 w-14 -translate-x-1/2 place-items-center rounded-2xl bg-[#1FDC86] text-white shadow-xl transition hover:bg-[#19b870] lg:bottom-6 lg:left-auto lg:right-6 lg:translate-x-0"
-                aria-label={t("Î“ÏÎ®Î³Î¿ÏÎ¿ upload", "Quick upload")}
+                aria-label={t("Γρήγορο upload", "Quick upload")}
             >
                 <Upload className="h-6 w-6" />
             </Link>
@@ -374,21 +372,21 @@ export default async function PolicyholderHomePage() {
             {!customerRelationship && (
                 <div className="fixed bottom-24 left-6 hidden items-center gap-2 rounded-xl bg-amber-100 px-3 py-2 text-xs font-bold text-amber-800 shadow-md lg:flex">
                     <AlertCircle className="h-4 w-4" />
-                    {t("Î£Ï…Î½Î´Î­ÏƒÎ¿Ï… Î¼Îµ ÏƒÏÎ¼Î²Î¿Ï…Î»Î¿ Î³Î¹Î± Ï„Î±Ï‡ÏÏ„ÎµÏÎ· Ï…Ï€Î¿ÏƒÏ„Î®ÏÎ¹Î¾Î·.", "Connect with an agent for faster support.")}
+                    {t("Συνδέσου με σύμβουλο για ταχύτερη υποστήριξη.", "Connect with an agent for faster support.")}
                     <Link href="/agent" className="underline">
-                        {t("Î£ÏÎ½Î´ÎµÏƒÎ·", "Connect")}
+                        {t("Σύνδεση", "Connect")}
                     </Link>
                 </div>
             )}
 
             <div className="fixed bottom-6 left-6 hidden items-center gap-2 rounded-xl bg-white px-3 py-2 text-xs font-bold text-black/80 shadow-md lg:flex dark:bg-black dark:text-white/85">
                 <CalendarClock className="h-4 w-4 text-[#1FDC86]" />
-                {t("Î ÏÎ¿Ï„ÎµÏÎ±Î¹ÏŒÏ„Î·Ï„Î±: ÎµÏ€ÏŒÎ¼ÎµÎ½Î· Î±Î½Î±Î½Î­Ï‰ÏƒÎ·", "Priority: next renewal")}
+                {t("Προτεραιότητα: επόμενη ανανέωση", "Priority: next renewal")}
             </div>
 
             <div className="fixed bottom-6 right-24 hidden items-center gap-2 rounded-xl bg-white px-3 py-2 text-xs font-bold text-black/80 shadow-md lg:flex dark:bg-black dark:text-white/85">
                 <Users className="h-4 w-4 text-[#1FDC86]" />
-                {t("My Agent ÎºÎ±Î¹ Î¿Î¹ÎºÎ¿Î³Î­Î½ÎµÎ¹Î± Î±Ï€ÏŒ Settings", "My Agent and family controls in Settings")}
+                {t("My Agent και οικογένεια από Settings", "My Agent and family controls in Settings")}
             </div>
         </div>
     )

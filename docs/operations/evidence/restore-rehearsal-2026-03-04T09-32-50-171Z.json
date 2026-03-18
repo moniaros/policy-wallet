@@ -1,0 +1,32 @@
+{
+  "capturedAt": "2026-03-04T09:32:54.610Z",
+  "drillType": "restore_rehearsal_record_level",
+  "drillId": "SRE_RESTORE_DRILL_1772616772936",
+  "targetTable": "policy_analysis_runs",
+  "checkpointId": "restore_1772616773745",
+  "targetPolicyId": "cmm70n59e0002dsbunjk1oj9a",
+  "durationsMs": {
+    "createCheckpoint": 172,
+    "backupSnapshot": 158,
+    "deleteCheckpoint": 150,
+    "restoreCheckpoint": 157,
+    "validateRestore": 75,
+    "cleanup": 75,
+    "endToEnd": 1674
+  },
+  "verification": {
+    "deleteConfirmed": true,
+    "restoreConfirmed": true,
+    "cleanupConfirmed": true
+  },
+  "rtoAssessment": {
+    "objectiveMinutes": 15,
+    "measuredMinutes": 0.03,
+    "withinObjective": true,
+    "scope": "Record-level restore simulation (non-destructive) executed in production-like DB connection."
+  },
+  "notes": [
+    "This rehearsal validates operational restore mechanics for critical analysis-run records without full database rollback.",
+    "Full infrastructure backup/restore drill remains required for final go/no-go sign-off if mandated by operations policy."
+  ]
+}

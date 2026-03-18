@@ -31,37 +31,38 @@ export function MyProfileScreen({
     onHelp,
     onLogout
 }: MyProfileScreenProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
+    const copy = t.wallet.profileScreen
 
     const menuItems = [
         {
             icon: <User className="w-5 h-5" />,
-            label: language === 'el' ? 'Προσωπικά στοιχεία' : 'Personal profile',
+            label: copy.personalProfile,
             sublabel: user?.name || '',
             onClick: onEditProfile
         },
         {
             icon: <CreditCard className="w-5 h-5" />,
-            label: language === 'el' ? 'Μέθοδοι πληρωμής' : 'Payment methods',
-            sublabel: language === 'el' ? 'Κάρτες και χρεώσεις' : 'Cards and billing',
+            label: copy.paymentMethods,
+            sublabel: copy.cardsAndBilling,
             onClick: onPaymentMethods
         },
         {
             icon: <Settings className="w-5 h-5" />,
-            label: language === 'el' ? 'Ρυθμίσεις' : 'Settings',
-            sublabel: language === 'el' ? 'Γλώσσα και ειδοποιήσεις' : 'Language and notifications',
+            label: copy.settings,
+            sublabel: copy.languageAndNotifications,
             onClick: onSettings
         },
         {
             icon: <HelpCircle className="w-5 h-5" />,
-            label: language === 'el' ? 'Βοήθεια' : 'Help',
-            sublabel: language === 'el' ? 'Υποστήριξη και οδηγοί' : 'Support and guides',
+            label: copy.help,
+            sublabel: copy.supportAndGuides,
             onClick: onHelp
         },
         {
             icon: <LogOut className="w-5 h-5" />,
-            label: language === 'el' ? 'Αποσύνδεση' : 'Sign out',
-            sublabel: language === 'el' ? 'Τερματισμός συνεδρίας' : 'End session',
+            label: copy.signOut,
+            sublabel: copy.endSession,
             onClick: onLogout,
             danger: true
         }
@@ -87,7 +88,7 @@ export function MyProfileScreen({
                                 />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-[#1FDC86] text-white">
-                                    <span className="text-2xl font-black">{(user?.name || 'U')[0]}</span>
+                                    <span className="text-2xl font-black">{(user?.name || copy.defaultUser)[0]}</span>
                                 </div>
                             )}
                         </div>
@@ -98,7 +99,7 @@ export function MyProfileScreen({
 
                     <div className="min-w-0">
                         <h1 className="text-2xl font-black text-black dark:text-white tracking-tight truncate">
-                            {user?.name || (language === 'el' ? 'Χρήστης' : 'User')}
+                            {user?.name || copy.defaultUser}
                         </h1>
                         <p className="text-black/55 dark:text-white/65 text-sm truncate">{user?.email}</p>
                     </div>
