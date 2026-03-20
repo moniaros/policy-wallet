@@ -7,11 +7,12 @@
 
 import { logger } from '@/lib/logger'
 import type { IAIService } from './ai-service.interface'
+import { AnthropicAIService } from './anthropic-ai.service'
 import { GeminiAIService } from './gemini-ai.service'
 import { MockAIService } from './mock-ai.service'
 import { OpenAIAIService } from './openai-ai.service'
 
-export type AIServiceType = 'gemini' | 'openai' | 'mock'
+export type AIServiceType = 'gemini' | 'openai' | 'anthropic' | 'mock'
 
 /**
  * Factory for creating AI service instances
@@ -60,6 +61,8 @@ export class AIServiceFactory {
                 return new GeminiAIService()
             case 'openai':
                 return new OpenAIAIService()
+            case 'anthropic':
+                return new AnthropicAIService()
             case 'mock':
                 return new MockAIService()
             default:
@@ -81,7 +84,7 @@ export class AIServiceFactory {
     private static determineServiceType(): AIServiceType {
         // Check environment variable
         const envType = process.env.AI_SERVICE_TYPE?.toLowerCase()
-        if (envType === 'gemini' || envType === 'openai' || envType === 'mock') {
+        if (envType === 'gemini' || envType === 'openai' || envType === 'anthropic' || envType === 'mock') {
             return envType as AIServiceType
         }
 
@@ -89,13 +92,16 @@ export class AIServiceFactory {
         if (process.env.GEMINI_API_KEY) {
             return 'gemini'
         }
+        if (process.env.ANTHROPIC_API_KEY) {
+            return 'anthropic'
+        }
         if (process.env.OPENAI_API_KEY) {
             return 'openai'
         }
 
         // Fallback to mock
         logger('warn', 'No AI service configured, using mock', {
-            reason: 'GEMINI_API_KEY / OPENAI_API_KEY not found'
+            reason: 'GEMINI_API_KEY / ANTHROPIC_API_KEY / OPENAI_API_KEY not found'
         })
         return 'mock'
     }

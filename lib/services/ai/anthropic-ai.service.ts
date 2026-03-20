@@ -1,10 +1,12 @@
 /**
- * OpenAI AI Service Implementation
+ * Anthropic AI Service Implementation
  *
- * Secondary provider used for remediation failover and canary rollout.
+ * Premium failover provider using Claude models.
+ * Activates when Gemini fails or for Pro-tier users.
+ * Failover chain: Gemini -> Claude -> OpenAI.
  */
 
-import { createOpenAI } from "@ai-sdk/openai"
+import { createAnthropic } from "@ai-sdk/anthropic"
 import { generateObject, generateText } from "ai"
 import { z } from "zod"
 import { env } from "@/lib/env"
@@ -27,27 +29,35 @@ import { AcordDataSchema } from "@/lib/schemas/acord-data"
 import { enrichExtractionPayload } from "./extraction-enrichment"
 import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from "./shared-utils"
 
-const OPENAI_SUPPORTED_MIME_TYPES = [
+const ANTHROPIC_SUPPORTED_MIME_TYPES = [
     "application/pdf",
     "image/png",
     "image/jpeg",
     "image/webp",
 ]
-const OPENAI_MODEL_PATTERNS = ["^gpt-", "^o[1-9]", "^text-", "^chatgpt-"]
+const ANTHROPIC_MODEL_PATTERNS = ["^claude-"]
 
 function parseUsage(usage: any, model: string) {
-    return parseUsageShared(usage, model, "openai")
+    return parseUsageShared(usage, model, "anthropic")
 }
 
-export class OpenAIAIService implements IAIService {
+export class AnthropicAIService implements IAIService {
     private apiKey: string | null = null
-    private aiProvider: ReturnType<typeof createOpenAI> | null = null
+    private aiProvider: ReturnType<typeof createAnthropic> | null = null
 
     constructor(apiKey?: string) {
-        const key = apiKey || process.env.OPENAI_API_KEY
-        if (key && typeof key === "string" && key.trim().length > 0) {
+        const key = apiKey || process.env.ANTHROPIC_API_KEY
+        if (key && typeof key === "string" && key.trim().length > 0 && key !== "undefined" && key !== "null") {
             this.apiKey = key.trim()
-            this.aiProvider = createOpenAI({ apiKey: this.apiKey })
+            try {
+                this.aiProvider = createAnthropic({ apiKey: this.apiKey })
+            } catch (err) {
+                logger("error", "Failed to initialize Anthropic SDK", {
+                    error: err instanceof Error ? err.message : String(err),
+                })
+                this.aiProvider = null
+                this.apiKey = null
+            }
         }
     }
 
@@ -56,15 +66,15 @@ export class OpenAIAIService implements IAIService {
     }
 
     getServiceName(): string {
-        return "OpenAI"
+        return "Anthropic Claude"
     }
 
     getCapabilities(): AICapabilityMetadata {
         return {
-            provider: "openai",
+            provider: "anthropic",
             supportsDocumentInput: true,
-            supportedMimeTypes: OPENAI_SUPPORTED_MIME_TYPES,
-            modelPatterns: OPENAI_MODEL_PATTERNS,
+            supportedMimeTypes: ANTHROPIC_SUPPORTED_MIME_TYPES,
+            modelPatterns: ANTHROPIC_MODEL_PATTERNS,
         }
     }
 
@@ -76,7 +86,7 @@ export class OpenAIAIService implements IAIService {
             return {
                 supported: false,
                 code: "AI_CAPABILITY_UNSUPPORTED_MODEL",
-                reason: `Model '${model}' is not supported by provider openai`,
+                reason: `Model '${model}' is not supported by provider anthropic`,
                 userMessageKey: "analysis.errors.unavailable",
                 metadata: capabilities,
             }
@@ -88,7 +98,7 @@ export class OpenAIAIService implements IAIService {
                 return {
                     supported: false,
                     code: "AI_CAPABILITY_UNSUPPORTED_MIME",
-                    reason: `MIME type '${mimeType || "unknown"}' is not supported by provider openai`,
+                    reason: `MIME type '${mimeType || "unknown"}' is not supported by provider anthropic`,
                     userMessageKey: "analysis.errors.document",
                     metadata: capabilities,
                 }
@@ -105,28 +115,33 @@ export class OpenAIAIService implements IAIService {
     }
 
     async extractPolicyData(document: AIDocument, options?: AITrackingOptions): Promise<AIPolicyExtractionResponse> {
-        if (!this.aiProvider) throw new Error("OpenAI service not available")
-        const modelName = options?.modelOverride || env.OPENAI_MODEL_EXTRACTION
+        if (!this.aiProvider) throw new Error("Anthropic service not available")
+        const modelName = options?.modelOverride || env.CLAUDE_MODEL_EXTRACTION
 
         const ExtractionSchema = z.object({
-            insurerName: z.string().optional(),
-            policyNumber: z.string().optional(),
-            lineOfBusiness: z.string().optional(),
-            startDate: z.string().optional(),
-            endDate: z.string().optional(),
-            premiumAmount: z.number().optional(),
-            coverageSummary: z.string().optional(),
+            insurerName: z.string().optional().describe("Insurance company name"),
+            policyNumber: z.string().optional().describe("Policy number"),
+            lineOfBusiness: z.string().optional().describe("One of: motor, health, home, life, travel, liability, pet, other"),
+            startDate: z.string().optional().describe("Policy start date YYYY-MM-DD"),
+            endDate: z.string().optional().describe("Policy end date YYYY-MM-DD"),
+            premiumAmount: z.number().optional().describe("Annual premium, numeric only"),
+            coverageSummary: z.string().optional().describe("Brief summary of main coverages, max 200 chars"),
             customerName: z.string().optional(),
             customerSurname: z.string().optional(),
             customerEmail: z.string().optional(),
-            exclusions: z.array(z.string()).optional(),
+            exclusions: z.array(z.string()).optional().describe("Top exclusions found"),
             extractionConfidence: z.object({
-                overall: z.number(),
+                overall: z.number().describe("0-100 confidence score"),
                 requiresReview: z.boolean(),
                 fields: z.record(z.string(), z.number()),
             }).optional(),
-            acordData: AcordDataSchema.optional(),
+            acordData: AcordDataSchema.optional().describe("Type-specific structured data matching the detected lineOfBusiness"),
         })
+
+        const prompt = `Extract ALL insurance policy data from this document into structured JSON.
+Rules: Extract exactly as shown. Dates: YYYY-MM-DD. Amounts: numeric only. Unknown fields: null.
+Handle both Greek (Ασφάλιστρο, Απαλλαγή, Εξαιρέσεις, Ισχύς) and English documents.
+Only populate the type-specific ACORD section matching the detected lineOfBusiness.`
 
         const result = await withTimeoutAndRetry(
             () =>
@@ -137,11 +152,7 @@ export class OpenAIAIService implements IAIService {
                         {
                             role: "user",
                             content: [
-                                {
-                                    type: "text",
-                                    text:
-                                        "Extract policy metadata and coverage summary from the provided insurance document. Return only structured data.",
-                                },
+                                { type: "text", text: prompt },
                                 {
                                     type: "file",
                                     data: document.data,
@@ -153,7 +164,7 @@ export class OpenAIAIService implements IAIService {
                     ],
                     temperature: 0.1,
                 }),
-            "OpenAI extraction generateObject"
+            "Anthropic extraction generateObject"
         )
 
         const extracted = result.object
@@ -168,8 +179,14 @@ export class OpenAIAIService implements IAIService {
                 inputTokens: parsedUsage.inputTokens,
                 outputTokens: parsedUsage.outputTokens,
                 model: modelName as any,
-            }).catch((err) => logger("error", "Failed to track OpenAI extraction token usage", { error: err }))
+            }).catch((err) => logger("error", "Failed to track Anthropic extraction token usage", { error: err }))
         }
+
+        logger("info", "Anthropic extraction successful", {
+            fileName: document.fileName,
+            insurerName: extracted.insurerName,
+            policyNumber: extracted.policyNumber,
+        })
 
         return {
             insurerName: extracted.insurerName || "Unknown Insurer",
@@ -195,8 +212,8 @@ export class OpenAIAIService implements IAIService {
         gapDefinitions: GapDefinitionForAI[],
         options?: AITrackingOptions
     ): Promise<AIGapAnalysisResponse> {
-        if (!this.aiProvider) throw new Error("OpenAI service not available")
-        const modelName = options?.modelOverride || env.OPENAI_MODEL_GAP_ANALYSIS
+        if (!this.aiProvider) throw new Error("Anthropic service not available")
+        const modelName = options?.modelOverride || env.CLAUDE_MODEL_GAP_ANALYSIS
         const hasStructuredContext = !!options?.structuredContext
 
         const GapAnalysisSchema = z.object({
@@ -220,7 +237,6 @@ export class OpenAIAIService implements IAIService {
             acordData: AcordDataSchema.optional(),
         })
 
-        // When structured context is available, use compact JSON instead of re-sending the PDF
         let prompt: string
         if (hasStructuredContext && !document) {
             const ctx = options!.structuredContext!
@@ -235,8 +251,7 @@ ${ctx.acordData ? `- ACORD Data: ${JSON.stringify(ctx.acordData)}` : ""}
 Gap definitions:
 ${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
         } else {
-            prompt = `Analyze insurance metadata and identify coverage gaps from the provided definitions.
-Use the document as source of truth when available.
+            prompt = `Analyze insurance policy and identify coverage gaps.
 Provide explanations in BOTH English (en) and Greek (el).
 Current metadata:
 - Insurer: ${metadata.insurerName} | Policy: ${metadata.policyNumber} | Type: ${metadata.lineOfBusiness}
@@ -264,7 +279,7 @@ ${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
                     messages: [{ role: "user", content: parts }],
                     temperature: 0.2,
                 }),
-            "OpenAI gap analysis"
+            "Anthropic gap analysis"
         )
 
         const parsedUsage = parseUsage(result.usage, modelName)
@@ -276,7 +291,7 @@ ${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
                 inputTokens: parsedUsage.inputTokens,
                 outputTokens: parsedUsage.outputTokens,
                 model: modelName as any,
-            }).catch((err) => logger("error", "Failed to track OpenAI gap token usage", { error: err }))
+            }).catch((err) => logger("error", "Failed to track Anthropic gap token usage", { error: err }))
         }
 
         return {
@@ -298,8 +313,8 @@ ${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
         }>,
         options?: AITrackingOptions
     ): Promise<AIPolicyClarityResponse> {
-        if (!this.aiProvider) throw new Error("OpenAI service not available")
-        const modelName = options?.modelOverride || env.OPENAI_MODEL_CLARITY_ANALYSIS
+        if (!this.aiProvider) throw new Error("Anthropic service not available")
+        const modelName = options?.modelOverride || env.CLAUDE_MODEL_CLARITY_ANALYSIS
         const hasStructuredContext = !!options?.structuredContext
 
         const ClaritySchema = z.object({
@@ -351,7 +366,6 @@ ${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
             .map((pillar) => `- ${pillar.key}: ${pillar.title.en}; checks: ${pillar.checks.join(", ")}`)
             .join("\n")
 
-        // When structured context is available, use compact JSON instead of re-sending the PDF
         let prompt: string
         if (hasStructuredContext && !document) {
             const ctx = options!.structuredContext!
@@ -394,7 +408,7 @@ Metadata:
                     messages: [{ role: "user", content: parts }],
                     temperature: 0.2,
                 }),
-            "OpenAI clarity analysis"
+            "Anthropic clarity analysis"
         )
 
         const parsedUsage = parseUsage(result.usage, modelName)
@@ -406,7 +420,7 @@ Metadata:
                 inputTokens: parsedUsage.inputTokens,
                 outputTokens: parsedUsage.outputTokens,
                 model: modelName as any,
-            }).catch((err) => logger("error", "Failed to track OpenAI clarity token usage", { error: err }))
+            }).catch((err) => logger("error", "Failed to track Anthropic clarity token usage", { error: err }))
         }
 
         return {
@@ -421,24 +435,19 @@ Metadata:
         question: string,
         options?: AITrackingOptions
     ): Promise<string> {
-        if (!this.aiProvider) throw new Error("OpenAI service not available")
-        const modelName = options?.modelOverride || env.OPENAI_MODEL_QA
+        if (!this.aiProvider) throw new Error("Anthropic service not available")
+        const modelName = options?.modelOverride || env.CLAUDE_MODEL_QA
 
         const parts: any[] = [
             {
                 type: "text",
-                text: `
-You are an insurance advisor. Answer the user question based on policy metadata and optional document.
+                text: `You are an insurance advisor. Answer the user question based on policy metadata and optional document.
+Respond in the same language as the question.
 Policy:
-- Insurer: ${metadata.insurerName}
-- Policy Number: ${metadata.policyNumber}
-- Type: ${metadata.lineOfBusiness}
-- Start Date: ${metadata.startDate.toISOString().split("T")[0]}
-- End Date: ${metadata.endDate.toISOString().split("T")[0]}
-- Premium: ${metadata.premiumAmount ?? "N/A"}
-- Summary: ${metadata.coverageSummary || "N/A"}
-Question: ${question}
-                `,
+- Insurer: ${metadata.insurerName} | Policy: ${metadata.policyNumber} | Type: ${metadata.lineOfBusiness}
+- Dates: ${metadata.startDate.toISOString().split("T")[0]} to ${metadata.endDate.toISOString().split("T")[0]}
+- Premium: ${metadata.premiumAmount ?? "N/A"} | Summary: ${metadata.coverageSummary || "N/A"}
+Question: ${question}`,
             },
         ]
 
@@ -458,7 +467,7 @@ Question: ${question}
                     messages: [{ role: "user", content: parts }],
                     temperature: 0.3,
                 }),
-            "OpenAI Q&A"
+            "Anthropic Q&A"
         )
 
         const parsedUsage = parseUsage(result.usage, modelName)
@@ -470,7 +479,7 @@ Question: ${question}
                 inputTokens: parsedUsage.inputTokens,
                 outputTokens: parsedUsage.outputTokens,
                 model: modelName as any,
-            }).catch((err) => logger("error", "Failed to track OpenAI Q&A token usage", { error: err }))
+            }).catch((err) => logger("error", "Failed to track Anthropic Q&A token usage", { error: err }))
         }
 
         return result.text

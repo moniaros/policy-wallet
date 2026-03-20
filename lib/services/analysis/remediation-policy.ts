@@ -65,6 +65,11 @@ export function isOpenAIFailoverEnabled(userId: string, roles: string | undefine
     return isInCanary(userId, roles, process.env.FF_AI_REMEDIATION_CANARY_MODE)
 }
 
+export function isAnthropicFailoverEnabled(userId: string, roles: string | undefined): boolean {
+    if (!process.env.ANTHROPIC_API_KEY) return false
+    return isInCanary(userId, roles, process.env.FF_AI_REMEDIATION_CANARY_MODE)
+}
+
 export function isDegradedCompletionEnabled(userId: string, roles: string | undefined): boolean {
     if (!parseFlag(process.env.FF_AI_DEGRADED_COMPLETION, true)) return false
     return isInCanary(userId, roles, process.env.FF_AI_REMEDIATION_CANARY_MODE)

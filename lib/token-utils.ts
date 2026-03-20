@@ -30,6 +30,14 @@ export const TOKEN_COSTS = {
         input: 0.00015,
         output: 0.0006,
     },
+    'claude-sonnet-4-20250514': {
+        input: 0.003,   // €3.00 per 1M tokens
+        output: 0.015,  // €15.00 per 1M tokens
+    },
+    'claude-haiku-4-20250414': {
+        input: 0.0008,  // €0.80 per 1M tokens
+        output: 0.004,  // €4.00 per 1M tokens
+    },
 } as const
 
 export type AIModel = keyof typeof TOKEN_COSTS

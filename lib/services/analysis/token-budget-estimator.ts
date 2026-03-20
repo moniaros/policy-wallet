@@ -23,14 +23,17 @@ export function estimatePolicyAnalysisTokenBudget(input: EstimateInput): {
     const gapFactor = Math.max(input.gapDefinitionsCount, 1)
     const checklistFactor = Math.max(input.checklistPillarsCount, 1)
 
+    // Post Phase 1A: clarity and gap steps now receive structured JSON context (~3-5K tokens)
+    // instead of the full PDF (~50-100K tokens), dramatically reducing their budgets.
+    // Only the extraction step still processes the raw document.
     const raw: Record<PolicyAnalysisStepKey, number> = {
         document_load_and_validation: 1_000,
         metadata_extraction_and_verification: input.hasDocument ? 85_000 : 20_000,
-        plain_language_translation: input.hasDocument ? 70_000 : 25_000,
-        coverage_mapping: 8_000,
-        gap_detection: 25_000 + gapFactor * 1_500,
-        savings_detection: 10_000 + checklistFactor * 1_000,
-        checklist_scoring_and_actions: 8_000 + checklistFactor * 500,
+        plain_language_translation: 18_000, // was 70K with PDF; now uses structured context
+        coverage_mapping: 5_000,
+        gap_detection: 15_000 + gapFactor * 1_000, // was 25K base with PDF
+        savings_detection: 8_000 + checklistFactor * 800,
+        checklist_scoring_and_actions: 6_000 + checklistFactor * 400,
         persistence_and_finalize: 2_000,
     }
 

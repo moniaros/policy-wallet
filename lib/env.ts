@@ -20,6 +20,12 @@ const envSchema = z.object({
     OPENAI_MODEL_GAP_ANALYSIS: z.string().default("gpt-4.1-mini"),
     OPENAI_MODEL_CLARITY_ANALYSIS: z.string().default("gpt-4.1-mini"),
     OPENAI_MODEL_QA: z.string().default("gpt-4.1-mini"),
+    // Anthropic / Claude (premium failover)
+    ANTHROPIC_API_KEY: z.string().optional(),
+    CLAUDE_MODEL_EXTRACTION: z.string().default("claude-sonnet-4-20250514"),
+    CLAUDE_MODEL_GAP_ANALYSIS: z.string().default("claude-sonnet-4-20250514"),
+    CLAUDE_MODEL_CLARITY_ANALYSIS: z.string().default("claude-sonnet-4-20250514"),
+    CLAUDE_MODEL_QA: z.string().default("claude-haiku-4-20250414"),
     FF_AI_FAILOVER_OPENAI: z.string().default("false"),
     FF_AI_DEGRADED_COMPLETION: z.string().default("true"),
     FF_AI_REMEDIATION_ALERTS: z.string().default("false"),

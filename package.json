@@ -25,6 +25,7 @@
     "seed": "ts-node -P prisma/tsconfig.seed.json prisma/seed.ts"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^1.0.0",
     "@ai-sdk/google": "^3.0.30",
     "@ai-sdk/openai": "^3.0.0",
     "@ducanh2912/next-pwa": "^10.2.9",

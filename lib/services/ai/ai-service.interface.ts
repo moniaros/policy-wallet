@@ -110,7 +110,7 @@ export interface AITokenUsage {
     outputTokens: number
     totalTokens: number
     model: string
-    provider?: "gemini" | "openai" | "mock"
+    provider?: "gemini" | "openai" | "anthropic" | "mock"
 }
 
 export interface LocalizedText {
@@ -178,9 +178,13 @@ export interface AITrackingOptions {
     userId?: string
     policyId?: string
     modelOverride?: string
-    provider?: "gemini" | "openai" | "mock"
+    provider?: "gemini" | "openai" | "anthropic" | "mock"
     remediationAttempt?: number
     fallbackType?: "model_fallback" | "provider_failover"
+    /** Pre-extracted structured policy data to use instead of re-sending the PDF document.
+     *  When provided with document=null, AI services should build context from this JSON
+     *  rather than requiring the raw document, saving 50-100K input tokens per call. */
+    structuredContext?: AIPolicyExtractionResponse
 }
 
 export type AICapabilityOperation =
@@ -190,7 +194,7 @@ export type AICapabilityOperation =
     | "askQuestion"
 
 export interface AICapabilityMetadata {
-    provider: "gemini" | "openai" | "mock"
+    provider: "gemini" | "openai" | "anthropic" | "mock"
     supportsDocumentInput: boolean
     supportedMimeTypes: string[]
     modelPatterns: string[]

@@ -18,6 +18,7 @@ import type {
 } from "@/lib/services/ai/ai-service.interface"
 import { classifyAnalysisFailure, type FailureClass } from "./failure-classifier"
 import {
+    isAnthropicFailoverEnabled,
     isCriticalStep,
     isDegradableStep,
     isDegradedCompletionEnabled,
@@ -190,6 +191,13 @@ function getDefaultModelForStep(provider: AIServiceType, stepKey: PolicyAnalysis
         if (stepKey === "plain_language_translation") return env.OPENAI_MODEL_CLARITY_ANALYSIS
         if (stepKey === "gap_detection") return env.OPENAI_MODEL_GAP_ANALYSIS
         return env.OPENAI_MODEL_CLARITY_ANALYSIS
+    }
+
+    if (provider === "anthropic") {
+        if (stepKey === "metadata_extraction_and_verification") return env.CLAUDE_MODEL_EXTRACTION
+        if (stepKey === "plain_language_translation") return env.CLAUDE_MODEL_CLARITY_ANALYSIS
+        if (stepKey === "gap_detection") return env.CLAUDE_MODEL_GAP_ANALYSIS
+        return env.CLAUDE_MODEL_CLARITY_ANALYSIS
     }
 
     return undefined
@@ -895,13 +903,14 @@ export class PolicyAnalysisOrchestratorService {
                     allowFallbackModel: true,
                     allowProviderFailover: failoverEnabled,
                     preferredProvider: primaryProvider,
-                    includesDocumentContext: true,
+                    // Use structured extraction context instead of re-sending the PDF (~50-100K token savings)
+                    includesDocumentContext: false,
                     capabilityOperation: "analyzePolicyClarity",
-                    documentMimeType: docStep.result.document.mimeType,
+                    documentMimeType: docStep.result.document?.mimeType,
                     failoverDataAllowed: fullFailoverAllowed,
                     execute: async ({ modelOverride, provider, service, remediationAttempt, remediationType }) => {
                         const clarity = await service.analyzePolicyClarity(
-                            docStep.result.document,
+                            null, // No PDF re-send: use structuredContext instead
                             metadata,
                             INSURANCE_CLARITY_CHECKLIST,
                             {
@@ -915,6 +924,7 @@ export class PolicyAnalysisOrchestratorService {
                                     remediationType === "model_fallback"
                                         ? remediationType
                                         : undefined,
+                                structuredContext: extractionStep.result,
                             }
                         )
                         const avgScore = clarity.checklistScores.length
@@ -1020,13 +1030,14 @@ export class PolicyAnalysisOrchestratorService {
                     allowFallbackModel: true,
                     allowProviderFailover: failoverEnabled,
                     preferredProvider: primaryProvider,
-                    includesDocumentContext: true,
+                    // Use structured extraction context instead of re-sending the PDF (~50-100K token savings)
+                    includesDocumentContext: false,
                     capabilityOperation: "analyzeGaps",
-                    documentMimeType: docStep.result.document.mimeType,
+                    documentMimeType: docStep.result.document?.mimeType,
                     failoverDataAllowed: fullFailoverAllowed,
                     execute: async ({ modelOverride, provider, service, remediationAttempt, remediationType }) => {
                         const gapAnalysis = await service.analyzeGaps(
-                            docStep.result.document,
+                            null, // No PDF re-send: use structuredContext instead
                             metadata,
                             gapDefinitions,
                             {
@@ -1040,6 +1051,7 @@ export class PolicyAnalysisOrchestratorService {
                                     remediationType === "model_fallback"
                                         ? remediationType
                                         : undefined,
+                                structuredContext: extractionStep.result,
                             }
                         )
                         const total = Math.max(gapDefinitions.length, 1)
@@ -1691,22 +1703,41 @@ export class PolicyAnalysisOrchestratorService {
             }
         }
 
-        const providerFailoverAllowed =
-            params.allowProviderFailover &&
-            params.preferredProvider !== "openai" &&
-            isOpenAIFailoverEnabled(params.userId, params.userRoles) &&
-            latestClassified.shouldFailoverProvider
-
         const canSendFailoverData =
             !params.includesDocumentContext || params.failoverDataAllowed !== false
 
-        if (providerFailoverAllowed && canSendFailoverData) {
-            const failoverPayload = await runSingleAttempt({
-                provider: "openai",
-                remediationType: "provider_failover",
-            })
-            if (failoverPayload) {
-                return failoverPayload
+        // Failover chain: Gemini -> Claude -> OpenAI
+        if (
+            params.allowProviderFailover &&
+            latestClassified.shouldFailoverProvider &&
+            canSendFailoverData
+        ) {
+            // Try Anthropic first (if not already the preferred provider)
+            if (
+                params.preferredProvider !== "anthropic" &&
+                isAnthropicFailoverEnabled(params.userId, params.userRoles)
+            ) {
+                const anthropicPayload = await runSingleAttempt({
+                    provider: "anthropic",
+                    remediationType: "provider_failover",
+                })
+                if (anthropicPayload) {
+                    return anthropicPayload
+                }
+            }
+
+            // Then try OpenAI (if not already the preferred provider)
+            if (
+                params.preferredProvider !== "openai" &&
+                isOpenAIFailoverEnabled(params.userId, params.userRoles)
+            ) {
+                const openaiPayload = await runSingleAttempt({
+                    provider: "openai",
+                    remediationType: "provider_failover",
+                })
+                if (openaiPayload) {
+                    return openaiPayload
+                }
             }
         }
 

@@ -27,10 +27,8 @@ import type {
 import { trackTokenUsage } from '@/lib/token-tracking'
 import { enrichExtractionPayload } from './extraction-enrichment'
 import { AcordDataSchema } from '../../schemas/acord-data'
+import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from './shared-utils'
 
-const AI_CALL_TIMEOUT_MS = 60_000
-const MAX_RETRIES = 1
-const INITIAL_BACKOFF_MS = 2_000
 const GEMINI_SUPPORTED_MIME_TYPES = [
   'application/pdf',
   'image/png',
@@ -39,60 +37,8 @@ const GEMINI_SUPPORTED_MIME_TYPES = [
 ]
 const GEMINI_MODEL_PATTERNS = ['^gemini-']
 
-function matchesAnyPattern(value: string, patterns: string[]): boolean {
-  return patterns.some((pattern) => new RegExp(pattern, 'i').test(value))
-}
-
-function isTransientError(error: unknown): boolean {
-  if (error instanceof Error) {
-    const msg = error.message.toLowerCase()
-    if (msg.includes('timeout') || msg.includes('aborted') || msg.includes('deadline')) return true
-    if (msg.includes('503') || msg.includes('500') || msg.includes('429') || msg.includes('service unavailable')) return true
-    if (msg.includes('internal') || msg.includes('temporarily') || msg.includes('overloaded')) return true
-  }
-  return false
-}
-
-async function withTimeoutAndRetry<T>(
-  fn: () => Promise<T>,
-  context: string
-): Promise<T> {
-  let lastError: unknown
-  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
-    try {
-      const result = await Promise.race([
-        fn(),
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error(`AI call timed out after ${AI_CALL_TIMEOUT_MS}ms`)), AI_CALL_TIMEOUT_MS)
-        ),
-      ])
-      return result
-    } catch (error) {
-      lastError = error
-      if (attempt < MAX_RETRIES && isTransientError(error)) {
-        const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt)
-        logger('warn', `${context}: transient failure, retrying in ${backoff}ms (attempt ${attempt + 1}/${MAX_RETRIES})`, {
-          error: error instanceof Error ? error.message : String(error),
-        })
-        await new Promise(resolve => setTimeout(resolve, backoff))
-      } else {
-        throw error
-      }
-    }
-  }
-  throw lastError
-}
-
 function parseUsage(usage: any, model: string) {
-  const inputTokens = Number(usage?.inputTokens ?? usage?.promptTokens ?? 0)
-  const outputTokens = Number(usage?.outputTokens ?? usage?.completionTokens ?? 0)
-  return {
-    inputTokens,
-    outputTokens,
-    totalTokens: inputTokens + outputTokens,
-    model,
-    provider: 'gemini' as const,
-  }
+  return parseUsageShared(usage, model, 'gemini')
 }
 
 export class GeminiAIService implements IAIService {
@@ -195,40 +141,12 @@ export class GeminiAIService implements IAIService {
     try {
       const modelName = options?.modelOverride || env.GEMINI_MODEL_EXTRACTION
 
-      const prompt = `
-You are an expert insurance document analyst with deep knowledge of ACORD standards and European insurance policies.
-
-TASK: Analyze this insurance policy document (PDF or image) and extract ALL available information into a structured JSON format.
-
-CRITICAL INSTRUCTIONS:
-1. Extract data EXACTLY as it appears in the document - do not invent or assume values
-2. For dates, use YYYY-MM-DD format
-3. For monetary amounts, extract the numeric value only (no currency symbols)
-4. If a field is not visible or unclear, use null
-
-TYPE-SPECIFIC EXTRACTION INSTRUCTIONS:
-- Only populate the type-specific section that matches the lineOfBusiness (e.g., populate "health" only for health policies)
-- For Health policies: Look for hospital class (Κλάση Νοσηλείας), coordination centre (Κέντρο Συντονισμού), waiting periods (Περίοδοι Αναμονής), outpatient limits
-- For Motor policies: Look for coverage tier (Τρίτων/Μικτή), green card (Πράσινη Κάρτα), roadside assistance (Οδική Βοήθεια), accident declaration phone (Δήλωση Ατυχήματος), named drivers
-- For Home policies: Check for fire+earthquake+flood coverage to compute ENFIA eligibility, look for technical assistance (Τεχνική Βοήθεια), insured vs replacement values, contents vs structure coverage
-- For Life policies: Look for fund value, growth rates, tax-free maturity status, guaranteed vs unit-linked split, surrender value (Αξία Εξαγοράς), beneficiary details
-- For Pet policies: Look for microchip number, annual limits, breed-specific disease coverage, leishmania coverage (Λεϊσμανίαση), direct vet payment, waiting periods
-
-EXTRACTION PRIORITIES:
-1. Look for policy number in headers, footers, or labeled fields
-2. Identify insurer from logos, letterheads, or company names
-3. Find effective/expiration dates (often labeled as "Period", "Validity", "Ισχύς")
-4. Extract premium from payment sections (look for "Premium", "Ασφάλιστρο", "Amount Due")
-5. Identify coverage type from policy title or type field
-6. For vehicle policies: extract make, model, year, plate number
-7. For property policies: extract address, type, square meters
-8. Extract deductibles (often labeled "Excess", "Απαλλαγή")
-9. Extract exclusions from sections titled "Exclusions", "Δεν καλύπτεται", "Εξαιρέσεις", "Αποκλεισμοί"
-
-LANGUAGE SUPPORT:
-- Handle both Greek and English documents
-- Common Greek terms: Ασφάλιστρο (Premium), Απαλλαγή (Deductible), Ασφαλιζόμενο (Insured)
-`
+      // Optimized prompt: field-level instructions moved to Zod .describe() annotations
+      // Reduced from ~600 tokens to ~200 tokens (~65% prompt savings)
+      const prompt = `Extract ALL insurance policy data from this document into structured JSON.
+Rules: Extract exactly as shown. Dates: YYYY-MM-DD. Amounts: numeric only. Unknown fields: null.
+Handle both Greek (Ασφάλιστρο, Απαλλαγή, Εξαιρέσεις, Ισχύς) and English documents.
+Only populate the type-specific ACORD section matching the detected lineOfBusiness.`
 
       logger('info', 'Starting Gemini 2.0 Flash extraction with UI Zod Schema', {
         fileName: document.fileName,
@@ -236,25 +154,26 @@ LANGUAGE SUPPORT:
         model: modelName
       })
 
+      // Schema-driven extraction: .describe() annotations guide the AI on what to look for
       const ExtractionSchema = z.object({
-        insurerName: z.string().optional(),
-        policyNumber: z.string().optional(),
-        lineOfBusiness: z.string().optional(),
-        startDate: z.string().optional(),
-        endDate: z.string().optional(),
-        premiumAmount: z.number().optional(),
-        premiumCurrency: z.string().optional(),
-        coverageSummary: z.string().optional(),
-        customerName: z.string().optional(),
-        customerSurname: z.string().optional(),
+        insurerName: z.string().optional().describe("Insurance company name from logo, letterhead, or header"),
+        policyNumber: z.string().optional().describe("Policy number from headers, footers, or labeled fields"),
+        lineOfBusiness: z.string().optional().describe("One of: motor, health, home, life, travel, liability, pet, other"),
+        startDate: z.string().optional().describe("Policy start date in YYYY-MM-DD (look for Ισχύς, Period, Validity)"),
+        endDate: z.string().optional().describe("Policy end date in YYYY-MM-DD"),
+        premiumAmount: z.number().optional().describe("Annual premium amount, numeric only (look for Ασφάλιστρο, Premium)"),
+        premiumCurrency: z.string().optional().describe("Currency code, e.g. EUR"),
+        coverageSummary: z.string().optional().describe("Brief summary of main coverages, max 200 chars"),
+        customerName: z.string().optional().describe("Policyholder first name"),
+        customerSurname: z.string().optional().describe("Policyholder surname"),
         customerEmail: z.string().optional(),
-        exclusions: z.array(z.string()).optional(),
+        exclusions: z.array(z.string()).optional().describe("Top exclusions from Εξαιρέσεις/Exclusions sections"),
         extractionConfidence: z.object({
-          overall: z.number().describe("0-100 score"),
-          requiresReview: z.boolean(),
-          fields: z.record(z.string(), z.number())
+          overall: z.number().describe("0-100 confidence score"),
+          requiresReview: z.boolean().describe("True if overall < 80 or critical fields missing"),
+          fields: z.record(z.string(), z.number()).describe("Per-field confidence scores 0-100")
         }).optional(),
-        acordData: AcordDataSchema.optional()
+        acordData: AcordDataSchema.optional().describe("Type-specific structured data matching the detected lineOfBusiness")
       })
 
       const result = await withTimeoutAndRetry(
@@ -347,35 +266,44 @@ LANGUAGE SUPPORT:
 
     try {
       const modelName = options?.modelOverride || env.GEMINI_MODEL_GAP_ANALYSIS
+      const hasStructuredContext = !!options?.structuredContext
+      const hasDocument = !!document
 
-      const prompt = `
-You are an expert insurance analyst with deep knowledge of ACORD standards and European insurance policies.
+      // When structured context is available, use compact JSON instead of re-sending the PDF
+      // This saves ~50-100K input tokens per call
+      let prompt: string
+      if (hasStructuredContext && !hasDocument) {
+        const ctx = options!.structuredContext!
+        prompt = `You are an expert insurance analyst. Analyze the following pre-extracted policy data to identify coverage gaps.
+Provide explanations in BOTH English (en) and Greek (el).
 
-        TASK: Analyze the provided policy document and metadata to identify coverage gaps.
-
-          CRITICAL: The DOCUMENT is the SOURCE OF TRUTH.
-Current metadata may be incomplete or incorrect - verify against the document.
-
-        Step 1: Data Verification
-          - Extract Insurer, Policy Number, Dates, and Premium from the DOCUMENT
-            - If document is missing / unreadable, use Current Metadata
-
-Step 2: Gap Analysis
-        - Check for gaps using VERIFIED data from Step 1
-          - Provide clear explanations based on document clauses
-            - Provide explanations in BOTH English(en) and Greek(el)
-
-Current Metadata(Reference Only):
-      Insurer: ${metadata.insurerName}
-Policy Number: ${metadata.policyNumber}
-      Type: ${metadata.lineOfBusiness}
-      Dates: ${metadata.startDate.toISOString().split('T')[0]} to ${metadata.endDate.toISOString().split('T')[0]}
-      Premium: ${metadata.premiumAmount}
-      Summary: ${metadata.coverageSummary || 'N/A'}
+Extracted Policy Data:
+- Insurer: ${ctx.insurerName}
+- Policy Number: ${ctx.policyNumber}
+- Line of Business: ${ctx.lineOfBusiness}
+- Period: ${ctx.startDate} to ${ctx.endDate}
+- Premium: ${ctx.premiumAmount}
+- Summary: ${ctx.coverageSummary || 'N/A'}
+- Exclusions: ${ctx.exclusions?.join(', ') || 'None extracted'}
+${ctx.acordData ? `- ACORD Data: ${JSON.stringify(ctx.acordData)}` : ''}
 
 Potential Gaps to Check:
-${gapDefinitions.map(g => `- Slug: ${g.slug} (${g.name}): ${g.checkCriteria}`).join('\n')}
-      `
+${gapDefinitions.map(g => `- ${g.slug}: ${g.checkCriteria}`).join('\n')}`
+      } else {
+        prompt = `You are an expert insurance analyst with deep knowledge of ACORD standards and European insurance policies.
+TASK: Analyze the provided policy document and metadata to identify coverage gaps.
+CRITICAL: The DOCUMENT is the SOURCE OF TRUTH. Current metadata may be incomplete or incorrect - verify against the document.
+Step 1: Verify Insurer, Policy Number, Dates, and Premium from the DOCUMENT. If document is missing, use Current Metadata.
+Step 2: Check for gaps and provide explanations in BOTH English (en) and Greek (el).
+
+Current Metadata (Reference Only):
+Insurer: ${metadata.insurerName} | Policy: ${metadata.policyNumber} | Type: ${metadata.lineOfBusiness}
+Dates: ${metadata.startDate.toISOString().split('T')[0]} to ${metadata.endDate.toISOString().split('T')[0]}
+Premium: ${metadata.premiumAmount} | Summary: ${metadata.coverageSummary || 'N/A'}
+
+Potential Gaps to Check:
+${gapDefinitions.map(g => `- ${g.slug}: ${g.checkCriteria}`).join('\n')}`
+      }
 
       const parts: any[] = [{ type: 'text', text: prompt }]
       if (document) {
@@ -390,7 +318,8 @@ ${gapDefinitions.map(g => `- Slug: ${g.slug} (${g.name}): ${g.checkCriteria}`).j
       logger('info', 'Starting Gemini Zod Flash gap analysis', {
         policyNumber: metadata.policyNumber,
         gapsToCheck: gapDefinitions.length,
-        hasDocument: !!document,
+        hasDocument,
+        hasStructuredContext,
         model: modelName
       })
 
@@ -500,35 +429,43 @@ ${gapDefinitions.map(g => `- Slug: ${g.slug} (${g.name}): ${g.checkCriteria}`).j
     }
 
     const modelName = options?.modelOverride || env.GEMINI_MODEL_CLARITY_ANALYSIS
+    const hasStructuredContext = !!options?.structuredContext
+    const hasDocument = !!document
 
     const checklistPrompt = checklist
       .map((pillar) => `- ${pillar.key}: ${pillar.title.en} | checks: ${pillar.checks.join(', ')}`)
       .join('\n')
 
-    const prompt = `
-You are an insurance clarity analyst for policyholders.
+    // When structured context is available, use compact JSON instead of re-sending the PDF
+    let prompt: string
+    if (hasStructuredContext && !hasDocument) {
+      const ctx = options!.structuredContext!
+      prompt = `You are an insurance clarity analyst for policyholders.
+Goal: 1) Plain-language insights 2) Savings opportunities 3) Coverage gaps 4) Checklist scoring.
+Use the extracted data below as source of truth. If details are missing, say so and lower confidence.
 
-Goal:
-1) Translate policy language into plain-language insights.
-2) Surface practical savings opportunities.
-3) Detect coverage gaps and prioritize action.
-4) Score each checklist pillar.
-
-Use the document as source of truth. If details are missing, say so explicitly and lower confidence.
-
-Current metadata:
-- Insurer: ${metadata.insurerName}
-- Policy Number: ${metadata.policyNumber}
-- Line of Business: ${metadata.lineOfBusiness}
-- Period: ${metadata.startDate.toISOString().split('T')[0]} to ${metadata.endDate.toISOString().split('T')[0]}
-- Premium: ${metadata.premiumAmount ?? 'N/A'}
-- Summary: ${metadata.coverageSummary || 'N/A'}
+Extracted Policy Data:
+- Insurer: ${ctx.insurerName} | Policy: ${ctx.policyNumber} | Type: ${ctx.lineOfBusiness}
+- Period: ${ctx.startDate} to ${ctx.endDate} | Premium: ${ctx.premiumAmount}
+- Summary: ${ctx.coverageSummary || 'N/A'}
+- Exclusions: ${ctx.exclusions?.join(', ') || 'None extracted'}
+${ctx.acordData ? `- ACORD Data: ${JSON.stringify(ctx.acordData)}` : ''}
 
 Checklist pillars:
-${checklistPrompt}
+${checklistPrompt}`
+    } else {
+      prompt = `You are an insurance clarity analyst for policyholders.
+Goal: 1) Plain-language insights 2) Savings opportunities 3) Coverage gaps 4) Checklist scoring.
+Use the document as source of truth. If details are missing, say so and lower confidence.
 
-Return strict JSON only.
-`
+Current metadata:
+- Insurer: ${metadata.insurerName} | Policy: ${metadata.policyNumber} | Type: ${metadata.lineOfBusiness}
+- Period: ${metadata.startDate.toISOString().split('T')[0]} to ${metadata.endDate.toISOString().split('T')[0]}
+- Premium: ${metadata.premiumAmount ?? 'N/A'} | Summary: ${metadata.coverageSummary || 'N/A'}
+
+Checklist pillars:
+${checklistPrompt}`
+    }
 
     const ClaritySchema = z.object({
       plainLanguageSummary: z.object({
