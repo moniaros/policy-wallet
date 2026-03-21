@@ -155,7 +155,7 @@ npm start
 3. Configure environment variables
 4. Deploy!
 
-See `DEPLOYMENT_CHECKLIST.md` for detailed deployment instructions.
+See `docs/operations/DEPLOYMENT_GUIDE.md` for detailed deployment instructions.
 
 ### Other Platforms
 
@@ -167,13 +167,48 @@ The app can be deployed to any platform that supports Next.js:
 
 ## 📚 Documentation
 
-- **IMPROVEMENT_SUGGESTIONS.md** - Comprehensive improvement roadmap
-- **ACTION_PLAN.md** - 30-day implementation plan
-- **QUICK_WINS.md** - Immediate actionable improvements
-- **DEPLOYMENT_CHECKLIST.md** - Production deployment guide
-- **docs/COLLABORATION_REMINDERS_CRON_WORKFLOW.md** - Vercel cron setup and operations guide for collaboration reminder jobs
-- **MIGRATION_PROGRESS.md** - Supabase migration status
-- **AI_ANALYSIS_PLAN.md** - AI feature roadmap
+```
+docs/
+├── planning/           # Roadmaps, specs, plans
+│   ├── V2_SPEC_ROADMAP_STATUS.md    # v2 delivery tracker
+│   ├── AI_ANALYSIS_PLAN.md          # AI feature roadmap
+│   ├── AI_PROJECT_BRIEF.md          # Agent orientation doc
+│   ├── PLAN_ai_analysis_improvements.md
+│   ├── PLAN_b4_launch.md            # Greece GA launch plan
+│   ├── PAGE_INVENTORY.md            # Route map
+│   ├── LANDING_CONVERSION_SEO_CONTENT_BRIEF.md
+│   ├── UI_UX_ENHANCEMENT_PLAN.md
+│   ├── pending.md                   # Agent experience tracker
+│   └── RealityReport.md             # Gap analysis & 90-day plan
+├── architecture/       # Technical system docs
+│   ├── AI_PIPELINE.md               # Gemini processing pipeline
+│   ├── AI_ANALYSIS_SYSTEM.md        # 3-tier AI system docs
+│   ├── mobileApp.md                 # Mobile API spec
+│   └── COLLABORATION.md             # Sharing feature docs
+├── design/             # UI/UX specifications
+│   ├── PRODUCT_SPEC_V2.md           # v2 product specification
+│   ├── POLICYHOLDER_ONBOARDING_DESIGN.md
+│   ├── NOTIFICATIONS_ACCOUNT_REDESIGN.md
+│   └── REDESIGN_IMPLEMENTATION_SUMMARY.md
+├── operations/         # Runbooks, deployment, monitoring
+│   ├── DEPLOYMENT_GUIDE.md
+│   ├── SENTRY_SETUP.md
+│   ├── BREVO_SMTP_SETUP.md
+│   ├── RUNBOOK_*.md                 # Incident runbooks
+│   └── SRE_DRILL_EVIDENCE_*.md
+├── compliance/         # Legal, GDPR, billing compliance
+├── governance/         # Release governance & evidence
+├── uat/                # UAT sign-off & evidence
+├── launch/             # Go/no-go & evidence index
+│   ├── GO_NO_GO_SIGNOFF_PACKET_GR-GA-2026.03.md
+│   └── EVIDENCE_INDEX_GR-GA-2026.03.md
+├── testing/            # Test plans
+│   └── USER_JOURNEY_TEST_PLAN.md
+└── reference/          # Glossary & guidelines
+    └── BILINGUAL_GUIDELINES.md      # Greek/English voice & terminology
+```
+
+See also: `design-system/policywallet/MASTER.md` for the canonical design system.
 
 ## 🔧 Available Scripts
 
@@ -226,12 +261,7 @@ For issues and questions:
 
 ## 🎯 Roadmap
 
-See `ACTION_PLAN.md` for the 30-day improvement roadmap including:
-- Testing infrastructure
-- Enhanced security
-- Performance optimization
-- Advanced AI features
-- Mobile app development
+See `docs/planning/V2_SPEC_ROADMAP_STATUS.md` for the current delivery tracker and `docs/planning/RealityReport.md` for the strategic 90-day roadmap.
 
 ---
 
