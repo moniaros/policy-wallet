@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { createApiResponse, createApiError } from "@/lib/api-utils";
 import { withApiGuard } from "@/lib/api-guard";
 import { hasProcessedWebhookEvent, markWebhookEventProcessed } from "@/lib/services/billing/webhook-idempotency";
+import { daysFromNow, SUBSCRIPTION_PERIOD_DAYS } from "@/lib/constants/time";
 
 // PUBLIC_ENDPOINT_AUTH_STRATEGY: bearer_webhook_secret + zod_payload_validation
 
@@ -83,7 +84,7 @@ export const POST = withApiGuard(
                     update: {
                         status: 'active',
                         planId,
-                        currentPeriodEnd: expirationAt || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                        currentPeriodEnd: expirationAt || daysFromNow(SUBSCRIPTION_PERIOD_DAYS),
                         autoRenew: true,
                         provider: 'revenue_cat'
                     },
@@ -93,7 +94,7 @@ export const POST = withApiGuard(
                         provider: 'revenue_cat',
                         status: 'active',
                         currentPeriodStart: purchaseDate,
-                        currentPeriodEnd: expirationAt || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                        currentPeriodEnd: expirationAt || daysFromNow(SUBSCRIPTION_PERIOD_DAYS),
                         revenueCatIdentifier: productIdentifier
                     }
                 });

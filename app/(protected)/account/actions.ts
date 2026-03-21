@@ -8,6 +8,7 @@ import { logger } from "@/lib/logger"
 import { stripe } from "@/lib/stripe"
 import { env } from "@/lib/env"
 import { syncRevenueCatSubscription } from "@/lib/services/revenuecat.service"
+import { daysFromNow, TRIAL_PERIOD_DAYS } from "@/lib/constants/time"
 
 export async function getAccountData() {
     const authResult = await getAuthenticatedUserOrNull()
@@ -130,7 +131,7 @@ export async function getAccountData() {
         plan_id: finalPlan.plan_id,
         status: 'active' as const,
         current_period_start: user.createdAt.toISOString(),
-        current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        current_period_end: daysFromNow(TRIAL_PERIOD_DAYS).toISOString(),
         next_billing_date: null,
         created_at: user.createdAt.toISOString()
     }

@@ -2,6 +2,7 @@ import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { withApiGuard } from "@/lib/api-guard"
 import { z } from "zod"
+import { msFromNow, SIGNED_URL_EXPIRY_MS } from "@/lib/constants/time"
 
 const policyDocumentParamsSchema = z.object({
     id: z.string().min(1),
@@ -73,7 +74,7 @@ export const POST = withApiGuard(
                 file_size: document.fileSize,
                 file_url: document.fileUrl,
                 signed_url: document.fileUrl, // Stub
-                signed_url_expires_at: new Date(Date.now() + 3600000),
+                signed_url_expires_at: msFromNow(SIGNED_URL_EXPIRY_MS),
                 processing_status: document.processingStatus,
                 uploaded_at: document.uploadedAt
             })

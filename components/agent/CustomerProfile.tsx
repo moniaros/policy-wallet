@@ -17,6 +17,72 @@ import {
     ChevronRight, Upload, UserPlus, Send, Briefcase,
     ShieldCheck, ShieldAlert, Plus
 } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageContext'
+
+const copy = {
+    en: {
+        memberSince: "Member since",
+        inviteToWallet: "Invite to Wallet",
+        sendReminder: "Send Reminder",
+        uploadPolicy: "Upload Policy",
+        portfolioSummary: "Portfolio Summary",
+        activePolicies: "Active Policies",
+        opportunities: "Opportunities",
+        accessLevel: "Access Level",
+        fullAccess: "Full Portfolio Access",
+        limitedAccess: "Limited Access",
+        items: "items",
+        priority: "Priority",
+        statusOpen: "Open",
+        statusContacted: "Contacted",
+        statusWon: "Won (Sold)",
+        statusLost: "Lost",
+        riskNote: "Risk detected based on coverage intelligence. Consider recommending umbrella insurance.",
+        goodCoverage: "Good coverage!",
+        noOpportunities: "No open opportunities detected.",
+        policies: "Policies",
+        addPolicy: "+ Add Policy",
+        renews: "Renews:",
+        noPolicies: "No policies linked yet.",
+        uploadFirst: "Upload First Policy",
+        customerNeeds: "Customer Needs",
+        missingCoverage: "Missing Coverage",
+        essential: "Essential",
+        activityLog: "Activity Log",
+        viewFullHistory: "View Full History",
+    },
+    el: {
+        memberSince: "Μέλος από",
+        inviteToWallet: "Πρόσκληση στο Wallet",
+        sendReminder: "Αποστολή Υπενθύμισης",
+        uploadPolicy: "Μεταφόρτωση Ασφαλιστηρίου",
+        portfolioSummary: "Σύνοψη Χαρτοφυλακίου",
+        activePolicies: "Ενεργά Ασφαλιστήρια",
+        opportunities: "Ευκαιρίες",
+        accessLevel: "Επίπεδο Πρόσβασης",
+        fullAccess: "Πλήρης Πρόσβαση Χαρτοφυλακίου",
+        limitedAccess: "Περιορισμένη Πρόσβαση",
+        items: "στοιχεία",
+        priority: "Προτεραιότητα",
+        statusOpen: "Ανοιχτή",
+        statusContacted: "Επικοινωνήθηκε",
+        statusWon: "Κερδήθηκε",
+        statusLost: "Χάθηκε",
+        riskNote: "Εντοπίστηκε κίνδυνος βάσει ανάλυσης κάλυψης. Εξετάστε σύσταση ομπρέλας ασφάλισης.",
+        goodCoverage: "Καλή κάλυψη!",
+        noOpportunities: "Δεν εντοπίστηκαν ανοιχτές ευκαιρίες.",
+        policies: "Ασφαλιστήρια",
+        addPolicy: "+ Προσθήκη",
+        renews: "Ανανέωση:",
+        noPolicies: "Δεν υπάρχουν συνδεδεμένα ασφαλιστήρια.",
+        uploadFirst: "Μεταφόρτωση Πρώτου Ασφαλιστηρίου",
+        customerNeeds: "Ανάγκες Πελάτη",
+        missingCoverage: "Κενά Κάλυψης",
+        essential: "Απαραίτητο",
+        activityLog: "Ιστορικό Δραστηριότητας",
+        viewFullHistory: "Προβολή Πλήρους Ιστορικού",
+    },
+} as const
 
 const PROFILE_ANIMATION_CSS = `
 @keyframes profFadeUp {
@@ -39,6 +105,8 @@ export function CustomerProfile({
     onViewPolicy,
     onBack
 }: CustomerProfileProps) {
+    const { language } = useLanguage()
+    const t = copy[language === "el" ? "el" : "en"]
     const [updatingOpportunityId, setUpdatingOpportunityId] = useState<string | null>(null)
 
     const handleStatusChange = (opportunityId: string, status: OpportunityStatus) => {
@@ -178,7 +246,7 @@ export function CustomerProfile({
                                             )}
                                             <span className="flex items-center gap-1.5">
                                                 <Calendar className="w-4 h-4" />
-                                                Member since {formatDate(customer.createdAt || new Date().toISOString())}
+                                                {t.memberSince} {formatDate(customer.createdAt || new Date().toISOString())}
                                             </span>
                                         </div>
                                     </div>
@@ -190,7 +258,7 @@ export function CustomerProfile({
                                                 className="group inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl text-sm font-semibold shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40 transition-all cursor-pointer"
                                             >
                                                 <UserPlus className="w-4 h-4" />
-                                                Invite to Wallet
+                                                {t.inviteToWallet}
                                             </button>
                                         ) : (
                                             <button
@@ -198,7 +266,7 @@ export function CustomerProfile({
                                                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-semibold transition-all cursor-pointer"
                                             >
                                                 <Send className="w-4 h-4" />
-                                                Send Reminder
+                                                {t.sendReminder}
                                             </button>
                                         )}
                                         <button
@@ -206,7 +274,7 @@ export function CustomerProfile({
                                             className="inline-flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-semibold transition-all cursor-pointer"
                                         >
                                             <Upload className="w-4 h-4" />
-                                            Upload Policy
+                                            {t.uploadPolicy}
                                         </button>
                                     </div>
                                 </div>
@@ -221,30 +289,30 @@ export function CustomerProfile({
                             <div>
                                 <h3 className="text-xs font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4 flex items-center gap-1.5">
                                     <Briefcase className="w-3.5 h-3.5" />
-                                    Portfolio Summary
+                                    {t.portfolioSummary}
                                 </h3>
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="p-3.5 bg-slate-50/80 dark:bg-slate-800/80 rounded-xl">
                                         <div className="text-2xl font-black text-slate-900 dark:text-white">
                                             {policies.length}
                                         </div>
-                                        <div className="text-[11px] text-slate-400 font-semibold">Active Policies</div>
+                                        <div className="text-[11px] text-slate-400 font-semibold">{t.activePolicies}</div>
                                     </div>
                                     <div className="p-3.5 bg-slate-50/80 dark:bg-slate-800/80 rounded-xl">
                                         <div className="text-2xl font-black text-slate-900 dark:text-white">
                                             {opportunities.length}
                                         </div>
-                                        <div className="text-[11px] text-slate-400 font-semibold">Opportunities</div>
+                                        <div className="text-[11px] text-slate-400 font-semibold">{t.opportunities}</div>
                                     </div>
                                 </div>
                             </div>
                             <div className="mt-5 pt-4 border-t border-slate-100/80 dark:border-slate-800/60">
                                 <div className="flex items-center gap-2 mb-1.5">
                                     <Shield className="w-4 h-4 text-emerald-500" />
-                                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">Access Level</span>
+                                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-400">{t.accessLevel}</span>
                                 </div>
                                 <p className="text-sm font-semibold text-slate-900 dark:text-white">
-                                    {customer.accessScope === 'portfolio' ? 'Full Portfolio Access' : 'Limited Access'}
+                                    {customer.accessScope === 'portfolio' ? t.fullAccess : t.limitedAccess}
                                 </p>
                             </div>
                         </div>
@@ -259,10 +327,10 @@ export function CustomerProfile({
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                                         <TrendingUp className="w-5 h-5 text-amber-500" />
-                                        Opportunities
+                                        {t.opportunities}
                                     </h3>
                                     <span className="text-xs font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
-                                        {opportunities.length} items
+                                        {opportunities.length} {t.items}
                                     </span>
                                 </div>
 
@@ -285,7 +353,7 @@ export function CustomerProfile({
                                                                 <h4 className="font-bold text-slate-900 dark:text-white">{opp.gapTitle}</h4>
                                                                 <span className={`inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider ${severity.badge}`}>
                                                                     <span className={`w-1.5 h-1.5 rounded-full ${severity.dot}`} />
-                                                                    {opp.severity} Priority
+                                                                    {opp.severity} {t.priority}
                                                                 </span>
                                                             </div>
                                                         </div>
@@ -296,14 +364,14 @@ export function CustomerProfile({
                                                             onChange={(e) => handleStatusChange(opp.opportunityId, e.target.value as OpportunityStatus)}
                                                             className="bg-slate-50/80 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 text-sm rounded-xl p-2.5 focus:ring-2 focus:ring-blue-500/40 outline-none cursor-pointer transition-all"
                                                         >
-                                                            <option value="open">Open</option>
-                                                            <option value="contacted">Contacted</option>
-                                                            <option value="won">Won (Sold)</option>
-                                                            <option value="lost">Lost</option>
+                                                            <option value="open">{t.statusOpen}</option>
+                                                            <option value="contacted">{t.statusContacted}</option>
+                                                            <option value="won">{t.statusWon}</option>
+                                                            <option value="lost">{t.statusLost}</option>
                                                         </select>
                                                     </div>
                                                     <div className="bg-slate-50/80 dark:bg-slate-800/50 rounded-xl p-3 text-sm text-slate-600 dark:text-slate-400">
-                                                        Risk detected based on coverage intelligence. Consider recommending umbrella insurance.
+                                                        {t.riskNote}
                                                     </div>
                                                 </div>
                                             )
@@ -314,8 +382,8 @@ export function CustomerProfile({
                                         <div className="mx-auto w-14 h-14 bg-gradient-to-br from-emerald-100 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/20 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
                                             <Sparkles className="w-7 h-7" />
                                         </div>
-                                        <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-1">Good coverage!</h4>
-                                        <p className="text-slate-500 dark:text-slate-400 text-sm">No open opportunities detected.</p>
+                                        <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{t.goodCoverage}</h4>
+                                        <p className="text-slate-500 dark:text-slate-400 text-sm">{t.noOpportunities}</p>
                                     </div>
                                 )}
                             </section>
@@ -325,10 +393,10 @@ export function CustomerProfile({
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                                         <FileText className="w-5 h-5 text-blue-500" />
-                                        Policies
+                                        {t.policies}
                                     </h3>
                                     <button onClick={() => onUploadPolicy?.(customer.id)} className="text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 flex items-center gap-1 cursor-pointer">
-                                        + Add Policy
+                                        {t.addPolicy}
                                     </button>
                                 </div>
 
@@ -356,7 +424,7 @@ export function CustomerProfile({
                                                 <div className="flex items-center justify-between text-xs text-slate-400 pt-3 border-t border-slate-100/80 dark:border-slate-800/60">
                                                     <span className="flex items-center gap-1">
                                                         <Calendar className="w-3 h-3" />
-                                                        Renews: {formatDate(policy.endDate)}
+                                                        {t.renews} {formatDate(policy.endDate)}
                                                     </span>
                                                     <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-blue-500" />
                                                 </div>
@@ -365,10 +433,10 @@ export function CustomerProfile({
                                     </div>
                                 ) : (
                                     <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl p-10 text-center border border-dashed border-slate-200/60 dark:border-slate-800/60">
-                                        <p className="text-slate-500 mb-4">No policies linked yet.</p>
+                                        <p className="text-slate-500 mb-4">{t.noPolicies}</p>
                                         <button onClick={() => onUploadPolicy?.(customer.id)} className="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold rounded-xl shadow-lg shadow-blue-600/25 transition-all cursor-pointer">
                                             <Upload className="w-4 h-4" />
-                                            Upload First Policy
+                                            {t.uploadFirst}
                                         </button>
                                     </div>
                                 )}
@@ -380,7 +448,7 @@ export function CustomerProfile({
                                     <div className="flex items-center justify-between mb-4">
                                         <h3 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                                             <Sparkles className="w-5 h-5 text-teal-500" />
-                                            Customer Needs
+                                            {t.customerNeeds}
                                         </h3>
                                         <div className="flex items-center gap-2">
                                             <div className="h-2 w-20 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -407,7 +475,7 @@ export function CustomerProfile({
                                         </div>
 
                                         {/* Missing lines */}
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Missing Coverage</p>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">{t.missingCoverage}</p>
                                         <div className="space-y-2">
                                             {customer.crossSell.missingLines.slice(0, 5).map((line) => (
                                                 <div
@@ -421,12 +489,12 @@ export function CustomerProfile({
                                                     <ShieldAlert className={`w-4 h-4 mt-0.5 flex-shrink-0 ${line.essential ? 'text-amber-500' : 'text-slate-400'}`} />
                                                     <div className="min-w-0 flex-1">
                                                         <div className="flex items-center gap-2">
-                                                            <span className="text-sm font-bold text-slate-900 dark:text-white">{line.label.en}</span>
+                                                            <span className="text-sm font-bold text-slate-900 dark:text-white">{language === "el" ? line.label.el : line.label.en}</span>
                                                             {line.essential && (
-                                                                <span className="text-[9px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">Essential</span>
+                                                                <span className="text-[9px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">{t.essential}</span>
                                                             )}
                                                         </div>
-                                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">{line.reason.en}</p>
+                                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">{language === "el" ? line.reason.el : line.reason.en}</p>
                                                     </div>
                                                 </div>
                                             ))}
@@ -444,7 +512,7 @@ export function CustomerProfile({
                             <section>
                                 <h3 className="text-xs font-extrabold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-4 flex items-center gap-1.5">
                                     <Activity className="w-3.5 h-3.5" />
-                                    Activity Log
+                                    {t.activityLog}
                                 </h3>
 
                                 <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl border border-slate-200/60 dark:border-slate-800/60 p-5 shadow-sm">
@@ -472,7 +540,7 @@ export function CustomerProfile({
                                         ))}
                                     </div>
                                     <button className="w-full mt-5 text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 text-center transition-colors flex items-center justify-center gap-1 cursor-pointer">
-                                        View Full History
+                                        {t.viewFullHistory}
                                         <ChevronRight className="w-3 h-3" />
                                     </button>
                                 </div>

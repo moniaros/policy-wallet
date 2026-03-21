@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 interface AddPolicyForCustomerModalProps {
     isOpen: boolean
@@ -84,6 +85,8 @@ export function AddPolicyForCustomerModal({
     customerName
 }: AddPolicyForCustomerModalProps) {
     const router = useRouter()
+    const { language } = useLanguage()
+    const isEl = language === "el"
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isScanning, setIsScanning] = useState(false)
     const [step, setStep] = useState<'type' | 'details' | 'confirm'>('type')
@@ -118,14 +121,14 @@ export function AddPolicyForCustomerModal({
                     endDate: data.endDate || "",
                     premiumAmount: data.premiumAmount?.toString() || ""
                 }))
-                toast.success("Policy scanned successfully!")
+                toast.success(isEl ? "Το ασφαλιστήριο σαρώθηκε επιτυχώς!" : "Policy scanned successfully!")
                 setStep('details')
             } else {
-                toast.error(result.error || "Failed to parse document")
+                toast.error(result.error || (isEl ? "Αποτυχία ανάλυσης εγγράφου" : "Failed to parse document"))
             }
         } catch (e) {
             console.error(e)
-            toast.error("An error occurred during scanning")
+            toast.error(isEl ? "Προέκυψε σφάλμα κατά τη σάρωση" : "An error occurred during scanning")
         } finally {
             setIsScanning(false)
         }
@@ -165,15 +168,15 @@ export function AddPolicyForCustomerModal({
             })
 
             if (result.success) {
-                toast.success("Policy added successfully!")
+                toast.success(isEl ? "Το ασφαλιστήριο προστέθηκε επιτυχώς!" : "Policy added successfully!")
                 router.refresh()
                 handleClose()
             } else {
-                toast.error(result.error || "Failed to add policy")
+                toast.error(result.error || (isEl ? "Αποτυχία προσθήκης ασφαλιστηρίου" : "Failed to add policy"))
             }
         } catch (error) {
             console.error(error)
-            toast.error("An error occurred while adding the policy")
+            toast.error(isEl ? "Προέκυψε σφάλμα κατά την προσθήκη" : "An error occurred while adding the policy")
         } finally {
             setIsSubmitting(false)
         }

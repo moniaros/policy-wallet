@@ -1,5 +1,6 @@
 import { db } from "./db"
 import { stripe } from "./stripe"
+import { daysFromNow, SUBSCRIPTION_PERIOD_DAYS } from "@/lib/constants/time"
 
 export interface VATInfo {
     rate: number
@@ -80,7 +81,7 @@ export async function handleSubscriptionSuccess(userId: string, planId: string, 
             planId,
             status: 'active',
             currentPeriodStart: new Date(),
-            currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // +30 days
+            currentPeriodEnd: daysFromNow(SUBSCRIPTION_PERIOD_DAYS), // +30 days
         }
     })
 

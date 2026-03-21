@@ -4,6 +4,7 @@ import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { rateLimit } from "@/lib/rate-limit"
 import { requireApiUser } from "@/lib/api-auth"
 import { sendPolicyInviteEmail } from "@/lib/email/invite-emails"
+import { daysFromNow, INVITE_EXPIRY_DAYS } from "@/lib/constants/time"
 
 const InviteSchema = z.object({
     invitee_email: z.string().email(),
@@ -48,7 +49,7 @@ export async function POST(req: Request) {
                 inviteType: "access_grant",
                 scope: scope,
                 token: token,
-                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+                expiresAt: daysFromNow(INVITE_EXPIRY_DAYS), // 7 days
                 requestedPermissions: JSON.stringify(policy_ids || [])
             }
         })

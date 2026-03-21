@@ -15,15 +15,15 @@ function sanitizeName(name?: string | null) {
 function buildInviteCopy(language: Language) {
     if (language === "el") {
         return {
-            inviteSubject: "Invitation from PolicyWallet",
-            inviteTitle: "You have been invited to collaborate",
-            inviteBody: "Open the secure invitation link below to accept access.",
-            accessSubject: "A policy was shared with you",
-            accessTitle: "A policy was shared with your wallet",
-            accessBody: "Sign in to review the shared policy details.",
-            actionInvite: "Open invitation",
-            actionAccess: "Open wallet",
-            footer: "This secure link expires soon for your safety.",
+            inviteSubject: "Πρόσκληση από το PolicyWallet",
+            inviteTitle: "Έχετε προσκληθεί για συνεργασία",
+            inviteBody: "Ανοίξτε τον ασφαλή σύνδεσμο πρόσκλησης παρακάτω για να αποδεχτείτε την πρόσβαση.",
+            accessSubject: "Κοινοποιήθηκε ένα ασφαλιστήριο μαζί σας",
+            accessTitle: "Κοινοποιήθηκε ένα ασφαλιστήριο στο πορτοφόλι σας",
+            accessBody: "Συνδεθείτε για να δείτε τα στοιχεία του κοινοποιημένου ασφαλιστηρίου.",
+            actionInvite: "Άνοιγμα πρόσκλησης",
+            actionAccess: "Άνοιγμα πορτοφολιού",
+            footer: "Αυτός ο ασφαλής σύνδεσμος λήγει σύντομα για την προστασία σας.",
         }
     }
 

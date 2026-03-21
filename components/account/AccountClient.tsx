@@ -119,7 +119,7 @@ export function AccountClient({ initialData, userLanguage = 'en' }: AccountClien
             if (res.error) toast.error(res.error)
             else if (res.url) window.location.href = res.url
         } catch (err) {
-            toast.error("Failed to open billing portal")
+            toast.error(lang === 'el' ? "Αποτυχία ανοίγματος πύλης χρέωσης" : "Failed to open billing portal")
         } finally {
             setIsPortalLoading(false)
         }
@@ -131,9 +131,9 @@ export function AccountClient({ initialData, userLanguage = 'en' }: AccountClien
             const res = await upgradeSubscription(planId)
             if (res.error) toast.error(res.error)
             else if (res.url) window.location.href = res.url
-            else if (res.success) toast.success("Subscription updated!")
+            else if (res.success) toast.success(lang === 'el' ? "Η συνδρομή ενημερώθηκε!" : "Subscription updated!")
         } catch (err) {
-            toast.error("Upgrade failed")
+            toast.error(lang === 'el' ? "Αποτυχία αναβάθμισης" : "Upgrade failed")
         } finally {
             setIsActionLoading(null)
         }
@@ -163,28 +163,28 @@ export function AccountClient({ initialData, userLanguage = 'en' }: AccountClien
     const onLogoutSession = async (sid: string) => {
         try {
             await logoutSession(sid)
-            toast.success("Session terminated")
+            toast.success(lang === 'el' ? "Η συνεδρία τερματίστηκε" : "Session terminated")
         } catch (e) {
-            toast.error("Failed to logout session")
+            toast.error(lang === 'el' ? "Αποτυχία αποσύνδεσης" : "Failed to logout session")
         }
     }
 
     const onToggleNotif = async (type: string, channel: string, current: boolean) => {
         try {
             await toggleNotificationPreference(type, channel, !current)
-            toast.success("Preference updated")
+            toast.success(lang === 'el' ? "Η προτίμηση ενημερώθηκε" : "Preference updated")
         } catch (e) {
-            toast.error("Failed to update preference")
+            toast.error(lang === 'el' ? "Αποτυχία ενημέρωσης προτίμησης" : "Failed to update preference")
         }
     }
 
     const onUpdatePassword = async () => {
         if (passwordForm.new !== passwordForm.confirm) {
-            toast.error("Passwords do not match")
+            toast.error(lang === 'el' ? "Οι κωδικοί δεν ταιριάζουν" : "Passwords do not match")
             return
         }
         if (!passwordForm.new || passwordForm.new.length < 6) {
-            toast.error("Password must be at least 6 characters")
+            toast.error(lang === 'el' ? "Ο κωδικός πρέπει να έχει τουλάχιστον 6 χαρακτήρες" : "Password must be at least 6 characters")
             return
         }
         setIsActionLoading('password')

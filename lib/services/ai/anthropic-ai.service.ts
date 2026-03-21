@@ -29,6 +29,7 @@ import { AcordDataSchema } from "@/lib/schemas/acord-data"
 import { enrichExtractionPayload } from "./extraction-enrichment"
 import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from "./shared-utils"
 import { wrapGapResultsBilingual, wrapClarityResultsBilingual } from "../translation/greek-to-bilingual"
+import { daysFromNow, DEFAULT_POLICY_DURATION_DAYS } from "@/lib/constants/time"
 
 const ANTHROPIC_SUPPORTED_MIME_TYPES = [
     "application/pdf",
@@ -194,7 +195,7 @@ Only populate the type-specific ACORD section matching the detected lineOfBusine
             policyNumber: extracted.policyNumber || `PENDING-${Date.now()}`,
             lineOfBusiness: extracted.lineOfBusiness || "other",
             startDate: extracted.startDate || new Date().toISOString().split("T")[0],
-            endDate: extracted.endDate || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+            endDate: extracted.endDate || daysFromNow(DEFAULT_POLICY_DURATION_DAYS).toISOString().split("T")[0],
             premiumAmount: extracted.premiumAmount || 0,
             coverageSummary: extracted.coverageSummary || "Extracted from document",
             customerName: extracted.customerName,

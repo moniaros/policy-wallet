@@ -22,6 +22,7 @@ import { after } from 'next/server'
 import { collaborationService } from "@/lib/services/collaboration.service"
 import { sendPolicyInviteEmail, sendPolicySharedAccessEmail } from "@/lib/email/invite-emails"
 import { PolicyAnalysisOrchestratorService } from "@/lib/services/analysis/policy-analysis-orchestrator.service"
+import { daysFromNow, POLICY_SHARE_EXPIRY_DAYS } from "@/lib/constants/time"
 
 const PolicySchema = z.object({
     insurerName: z.string().min(1, "Insurer name is required"),
@@ -293,7 +294,7 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
                 inviteType: 'share',
                 scope: `policy:${policyId}`,
                 requestedPermissions: permissions,
-                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+                expiresAt: daysFromNow(POLICY_SHARE_EXPIRY_DAYS)
             }
         })
 

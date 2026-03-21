@@ -4,6 +4,7 @@ import { db } from "@/lib/db"
 import { createClient } from "@/lib/supabase/server"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
+import { daysFromNow, INVITE_EXPIRY_DAYS } from "@/lib/constants/time"
 
 const AgentProfileSchema = z.object({
     agencyName: z.string().optional(),
@@ -109,7 +110,7 @@ export async function sendClientInvite(agentUserId: string, clientEmail: string)
                 inviteeEmail: normalizedEmail,
                 token: crypto.randomUUID().replace(/-/g, ""),
                 inviteType: "signup",
-                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                expiresAt: daysFromNow(INVITE_EXPIRY_DAYS),
             },
         })
 
@@ -141,9 +142,10 @@ export async function generateDemoProposal(file: File) {
     //    b. Call GapAnalysisService.analyzePolicy() (or a new analyzeDocument() method)
     //    c. Generate a proposal based on gaps
 
-    // For now, return a mocked "Real AI" response structure
+    // Demo data — clearly marked so UI can show disclaimer
     return {
         success: true,
+        isDemoData: true,
         data: {
             policySummary: {
                 insurer: "Allianz",

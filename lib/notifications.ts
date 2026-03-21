@@ -57,7 +57,7 @@ export async function sendNotification({
     if (finalChannels.length === 0) return []
 
     // 3. Create Event Records & 4. Trigger Actual Delivery
-    const user = await (db.user.findUnique as any)({ where: { id: userId }, select: { email: true, pushToken: true } })
+    const user = await (db.user.findUnique as any)({ where: { id: userId }, select: { email: true, pushToken: true, preferredLanguage: true } })
     if (!user) return []
 
     const eventPromises = finalChannels.map(async (channel) => {
@@ -66,9 +66,10 @@ export async function sendNotification({
 
         try {
             if (channel === 'email' && user.email) {
+                const language = user.preferredLanguage === 'el' ? 'el' : 'en'
                 const template = (templates as any)[eventType.toUpperCase()]
-                const emailSubject = template ? template({ id: relatedObjectId }).subject : title
-                const emailHtml = template ? template({ id: relatedObjectId }).html : message
+                const emailSubject = template ? template({ id: relatedObjectId, language }).subject : title
+                const emailHtml = template ? template({ id: relatedObjectId, language }).html : message
 
                 const result = await sendEmail({
                     to: user.email,

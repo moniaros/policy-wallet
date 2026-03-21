@@ -4,6 +4,7 @@ import { PolicyAnalysisOrchestratorService } from "@/lib/services/analysis/polic
 import { after } from "next/server"
 import { withApiGuard } from "@/lib/api-guard"
 import { z } from "zod"
+import { msFromNow, COMPLETION_ESTIMATE_MS } from "@/lib/constants/time"
 
 const policyReviewParamsSchema = z.object({
     id: z.string().min(1),
@@ -69,7 +70,7 @@ export const POST = withApiGuard(
                 run_id: run.id,
                 status: "queued",
                 message: "Policy review started. Results will be available shortly.",
-                estimated_completion: new Date(Date.now() + 120000),
+                estimated_completion: msFromNow(COMPLETION_ESTIMATE_MS),
                 estimated_tokens: run.estimatedTokens
             })
         } catch (error) {

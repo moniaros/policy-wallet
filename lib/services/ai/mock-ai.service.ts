@@ -20,6 +20,7 @@ import type {
     AITrackingOptions
 } from './ai-service.interface'
 import { enrichExtractionPayload } from './extraction-enrichment'
+import { daysFromNow, DEFAULT_POLICY_DURATION_DAYS } from '@/lib/constants/time'
 
 export class MockAIService implements IAIService {
     private shouldFail: boolean = false
@@ -89,7 +90,7 @@ export class MockAIService implements IAIService {
             policyNumber: `MOCK-${Date.now()}`,
             lineOfBusiness: 'motor',
             startDate: new Date().toISOString().split('T')[0],
-            endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+            endDate: daysFromNow(DEFAULT_POLICY_DURATION_DAYS).toISOString().split('T')[0],
             premiumAmount: 500,
             coverageSummary: 'Mock policy with standard coverage',
             customerName: 'John',

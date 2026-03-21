@@ -19,6 +19,7 @@ import type {
     PolicyDetailView,
     UserSummary
 } from '@/types'
+import { daysFromNow, POLICY_SHARE_EXPIRY_DAYS, DEFAULT_POLICY_DURATION_DAYS } from '@/lib/constants/time'
 
 export interface UploadAndParseResult {
     policy: Policy
@@ -305,7 +306,7 @@ export class PolicyService extends BaseService {
             policyNumber: `PENDING-${Math.random().toString(36).substring(7).toUpperCase()}`,
             lineOfBusiness: 'other',
             startDate: new Date().toISOString(),
-            endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+            endDate: daysFromNow(DEFAULT_POLICY_DURATION_DAYS).toISOString(),
             premiumAmount: 0,
             status: 'analyzing', // Marks it for background processing
             documents: [{
@@ -827,7 +828,7 @@ export class PolicyService extends BaseService {
                     scope: `policy:${policyId}`,
                     requestedPermissions: 'view',
                     token,
-                    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+                    expiresAt: daysFromNow(POLICY_SHARE_EXPIRY_DAYS) // 7 days
                 }
             })
 

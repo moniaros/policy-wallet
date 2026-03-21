@@ -2,6 +2,7 @@ import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { requireApiUser } from "@/lib/api-auth"
+import { daysFromNow, SUBSCRIPTION_PERIOD_DAYS } from "@/lib/constants/time"
 
 export async function GET() {
     const authCheck = await requireApiUser()
@@ -56,7 +57,7 @@ export async function GET() {
                     id: subscription?.id || "sub_free_default",
                     plan: finalPlan,
                     status: entitlements.status,
-                    current_period_end: subscription?.currentPeriodEnd || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                    current_period_end: subscription?.currentPeriodEnd || daysFromNow(SUBSCRIPTION_PERIOD_DAYS),
                     auto_renew: subscription?.autoRenew ?? true
                 },
                 entitlements: {

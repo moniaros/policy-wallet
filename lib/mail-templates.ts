@@ -1,3 +1,5 @@
+export type Language = "el" | "en"
+
 export type EmailTemplateData = {
     title: string;
     description: string;
@@ -41,7 +43,7 @@ export function getBaseTemplate({ title, description, actionUrl, actionLabel, fo
             ` : ''}
         </div>
         <div class="footer">
-            <p>${footerText || '© 2024 PolicyWallet. All rights reserved.'}</p>
+            <p>${footerText || `© ${new Date().getFullYear()} PolicyWallet. All rights reserved.`}</p>
         </div>
     </div>
 </body>
@@ -50,40 +52,72 @@ export function getBaseTemplate({ title, description, actionUrl, actionLabel, fo
 }
 
 export const templates = {
-    GAP_DETECTED: (data: { policyName: string, gapTitle: string, url: string }) => ({
-        subject: `Security Alert: Coverage Gap Detected in ${data.policyName}`,
-        html: getBaseTemplate({
-            title: 'Coverage Gap Detected',
-            description: `Our AI has identified a potential coverage gap in your <strong>${data.policyName}</strong> policy: <strong>${data.gapTitle}</strong>. Review this now to ensure you are fully protected.`,
-            actionUrl: data.url,
-            actionLabel: 'View Details & Recommendations'
-        })
-    }),
-    PAYMENT_SUCCESS: (data: { amount: string, invoiceUrl: string }) => ({
-        subject: `Payment Successful: ${data.amount}`,
-        html: getBaseTemplate({
-            title: 'Payment Successful',
-            description: `We've successfully processed your payment of ${data.amount}. Your insurance wallet remains active and protected.`,
-            actionUrl: data.invoiceUrl,
-            actionLabel: 'Download Invoice'
-        })
-    }),
-    POLICY_EXPIRING: (data: { policyName: string, daysLeft: number, expiryDate: string, url: string }) => ({
-        subject: `Renewal Reminder: ${data.policyName} expires in ${data.daysLeft} days`,
-        html: getBaseTemplate({
-            title: `Your policy expires in ${data.daysLeft} days`,
-            description: `Your <strong>${data.policyName}</strong> policy expires on <strong>${data.expiryDate}</strong>. Review your renewal options now to ensure continuous coverage.`,
-            actionUrl: data.url,
-            actionLabel: 'Review Policy',
-        })
-    }),
-    RENEWAL_MILESTONE: (data: { customerName: string, policyName: string, daysLeft: number, expiryDate: string, url: string }) => ({
-        subject: `Renewal Alert: ${data.customerName} — ${data.policyName} (${data.daysLeft} days)`,
-        html: getBaseTemplate({
-            title: `Renewal action needed — ${data.daysLeft} days`,
-            description: `<strong>${data.customerName}</strong>'s <strong>${data.policyName}</strong> policy expires on <strong>${data.expiryDate}</strong>. Contact the customer to discuss renewal options and secure the commission.`,
-            actionUrl: data.url,
-            actionLabel: 'Manage Renewal',
-        })
-    }),
+    GAP_DETECTED: (data: { policyName: string, gapTitle: string, url: string, language?: Language }) => {
+        const isEl = data.language === "el"
+        return {
+            subject: isEl
+                ? `Ειδοποίηση: Κενό Κάλυψης στο ${data.policyName}`
+                : `Security Alert: Coverage Gap Detected in ${data.policyName}`,
+            html: getBaseTemplate({
+                title: isEl ? 'Εντοπίστηκε Κενό Κάλυψης' : 'Coverage Gap Detected',
+                description: isEl
+                    ? `Η AI ανάλυσή μας εντόπισε πιθανό κενό κάλυψης στο ασφαλιστήριο <strong>${data.policyName}</strong>: <strong>${data.gapTitle}</strong>. Ελέγξτε τώρα για πλήρη προστασία.`
+                    : `Our AI has identified a potential coverage gap in your <strong>${data.policyName}</strong> policy: <strong>${data.gapTitle}</strong>. Review this now to ensure you are fully protected.`,
+                actionUrl: data.url,
+                actionLabel: isEl ? 'Προβολή Λεπτομερειών' : 'View Details & Recommendations',
+            })
+        }
+    },
+    PAYMENT_SUCCESS: (data: { amount: string, invoiceUrl: string, language?: Language }) => {
+        const isEl = data.language === "el"
+        return {
+            subject: isEl
+                ? `Επιτυχής Πληρωμή: ${data.amount}`
+                : `Payment Successful: ${data.amount}`,
+            html: getBaseTemplate({
+                title: isEl ? 'Επιτυχής Πληρωμή' : 'Payment Successful',
+                description: isEl
+                    ? `Η πληρωμή σας ύψους ${data.amount} ολοκληρώθηκε επιτυχώς. Το ασφαλιστικό σας πορτοφόλι παραμένει ενεργό και προστατευμένο.`
+                    : `We've successfully processed your payment of ${data.amount}. Your insurance wallet remains active and protected.`,
+                actionUrl: data.invoiceUrl,
+                actionLabel: isEl ? 'Λήψη Τιμολογίου' : 'Download Invoice',
+            })
+        }
+    },
+    POLICY_EXPIRING: (data: { policyName: string, daysLeft: number, expiryDate: string, url: string, language?: Language }) => {
+        const isEl = data.language === "el"
+        return {
+            subject: isEl
+                ? `Υπενθύμιση Ανανέωσης: Το ${data.policyName} λήγει σε ${data.daysLeft} ημέρες`
+                : `Renewal Reminder: ${data.policyName} expires in ${data.daysLeft} days`,
+            html: getBaseTemplate({
+                title: isEl
+                    ? `Το ασφαλιστήριό σας λήγει σε ${data.daysLeft} ημέρες`
+                    : `Your policy expires in ${data.daysLeft} days`,
+                description: isEl
+                    ? `Το ασφαλιστήριο <strong>${data.policyName}</strong> λήγει στις <strong>${data.expiryDate}</strong>. Ελέγξτε τις επιλογές ανανέωσης τώρα.`
+                    : `Your <strong>${data.policyName}</strong> policy expires on <strong>${data.expiryDate}</strong>. Review your renewal options now to ensure continuous coverage.`,
+                actionUrl: data.url,
+                actionLabel: isEl ? 'Έλεγχος Ασφαλιστηρίου' : 'Review Policy',
+            })
+        }
+    },
+    RENEWAL_MILESTONE: (data: { customerName: string, policyName: string, daysLeft: number, expiryDate: string, url: string, language?: Language }) => {
+        const isEl = data.language === "el"
+        return {
+            subject: isEl
+                ? `Ανανέωση: ${data.customerName} — ${data.policyName} (${data.daysLeft} ημέρες)`
+                : `Renewal Alert: ${data.customerName} — ${data.policyName} (${data.daysLeft} days)`,
+            html: getBaseTemplate({
+                title: isEl
+                    ? `Απαιτείται ενέργεια ανανέωσης — ${data.daysLeft} ημέρες`
+                    : `Renewal action needed — ${data.daysLeft} days`,
+                description: isEl
+                    ? `Το ασφαλιστήριο <strong>${data.policyName}</strong> του/της <strong>${data.customerName}</strong> λήγει στις <strong>${data.expiryDate}</strong>. Επικοινωνήστε με τον πελάτη για ανανέωση.`
+                    : `<strong>${data.customerName}</strong>'s <strong>${data.policyName}</strong> policy expires on <strong>${data.expiryDate}</strong>. Contact the customer to discuss renewal options and secure the commission.`,
+                actionUrl: data.url,
+                actionLabel: isEl ? 'Διαχείριση Ανανέωσης' : 'Manage Renewal',
+            })
+        }
+    },
 };

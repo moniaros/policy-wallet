@@ -18,6 +18,35 @@ const LOB_ICONS: Record<string, typeof Car> = {
     pet: PawPrint,
 }
 
+const copy = {
+    en: {
+        sendRequest: "Send Request",
+        gatherInsights: "Gather Insights",
+        requestInfo: "Request structured information from",
+        identifyGaps: "to identify potential coverage gaps.",
+        selectTemplate: "Select Questionnaire Template",
+        requestSent: "Request sent successfully!",
+        followUpWhatsApp: "Follow up via WhatsApp",
+        sendFailed: "Failed to send. Please try again.",
+        cancel: "Cancel",
+        sendInsightsRequest: "Send Insights Request",
+        sending: "Sending...",
+    },
+    el: {
+        sendRequest: "Αποστολή Αιτήματος",
+        gatherInsights: "Συλλογή Πληροφοριών",
+        requestInfo: "Ζητήστε δομημένες πληροφορίες από",
+        identifyGaps: "για τον εντοπισμό κενών κάλυψης.",
+        selectTemplate: "Επιλέξτε Πρότυπο Ερωτηματολογίου",
+        requestSent: "Το αίτημα στάλθηκε επιτυχώς!",
+        followUpWhatsApp: "Παρακολούθηση μέσω WhatsApp",
+        sendFailed: "Αποτυχία αποστολής. Δοκιμάστε ξανά.",
+        cancel: "Ακύρωση",
+        sendInsightsRequest: "Αποστολή Αιτήματος",
+        sending: "Αποστολή...",
+    },
+} as const
+
 export function QuestionnaireSender({ relationshipId, customerName }: QuestionnaireSenderProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [templates, setTemplates] = useState<any[]>([])
@@ -25,6 +54,7 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
     const [isSending, setIsSending] = useState(false)
     const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
     const { language } = useLanguage()
+    const t = copy[language === "el" ? "el" : "en"]
 
     useEffect(() => {
         if (isOpen) {
@@ -60,7 +90,7 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
-                Send Request
+                {t.sendRequest}
             </button>
 
             {isOpen && (
@@ -79,16 +109,16 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
                             </div>
 
                             <h3 className="text-3xl font-black text-stone-900 dark:text-white tracking-tight mb-3">
-                                Gather Insights
+                                {t.gatherInsights}
                             </h3>
                             <p className="text-stone-500 dark:text-stone-400 text-sm mb-10 leading-relaxed">
-                                Request structured information from <span className="font-bold text-stone-900 dark:text-white">{customerName}</span> to identify potential coverage gaps.
+                                {t.requestInfo} <span className="font-bold text-stone-900 dark:text-white">{customerName}</span> {t.identifyGaps}
                             </p>
 
                             <div className="space-y-6">
                                 <div>
                                     <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-3">
-                                        Select Questionnaire Template
+                                        {t.selectTemplate}
                                     </label>
                                     <div className="grid grid-cols-1 gap-3">
                                         {templates.map(t => {
@@ -133,7 +163,7 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
                                 <div className="mt-6 flex flex-col gap-4 animate-in fade-in slide-in-from-top-2">
                                     <div className="p-4 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 rounded-2xl text-sm font-bold flex items-center gap-3">
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="2" /></svg>
-                                        Request sent successfully!
+                                        {t.requestSent}
                                     </div>
                                     <a
                                         href={`https://wa.me/?text=${encodeURIComponent(`Γεια σας ${customerName}, σας έστειλα ένα ερωτηματολόγιο στο PolicyWallet για να δούμε αν υπάρχουν κενά στην κάλυψή σας. Θα το βρείτε στην ενότητα "Pending Tasks". Ευχαριστώ!`)}`}
@@ -142,13 +172,13 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
                                         className="flex items-center justify-center gap-2 py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-green-500/20"
                                     >
                                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" /></svg>
-                                        Follow up via WhatsApp
+                                        {t.followUpWhatsApp}
                                     </a>
                                 </div>
                             )}
                             {status === 'error' && (
                                 <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-2xl text-sm font-bold animate-in fade-in slide-in-from-top-2">
-                                    Failed to send. Please try again.
+                                    {t.sendFailed}
                                 </div>
                             )}
                         </div>
@@ -159,7 +189,7 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
                                 disabled={isSending}
                                 className="flex-1 px-6 py-4 text-sm font-bold text-stone-500 hover:text-stone-700 transition-colors disabled:opacity-50"
                             >
-                                Cancel
+                                {t.cancel}
                             </button>
                             <button
                                 onClick={handleSend}
@@ -172,9 +202,9 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
-                                        Sending...
+                                        {t.sending}
                                     </div>
-                                ) : "Send Insights Request"}
+                                ) : t.sendInsightsRequest}
                             </button>
                         </div>
                     </div>

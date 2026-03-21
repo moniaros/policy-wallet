@@ -1,6 +1,7 @@
 
 import { db } from "@/lib/db";
 import { logger } from "@/lib/logger";
+import { daysFromNow, SUBSCRIPTION_PERIOD_DAYS } from "@/lib/constants/time";
 
 const REVENUECAT_API_KEY = process.env.REVENUECAT_API_KEY;
 
@@ -68,7 +69,7 @@ export async function syncRevenueCatSubscription(userId: string) {
                 data: {
                     status: 'active',
                     planId: planId,
-                    currentPeriodEnd: expirationDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                    currentPeriodEnd: expirationDate || daysFromNow(SUBSCRIPTION_PERIOD_DAYS),
                     autoRenew: (activeEntitlement as any).will_renew,
                     revenueCatIdentifier: productIdentifier,
                     updatedAt: new Date()
@@ -82,7 +83,7 @@ export async function syncRevenueCatSubscription(userId: string) {
                     provider: 'revenue_cat',
                     status: 'active',
                     currentPeriodStart: new Date((activeEntitlement as any).purchase_date),
-                    currentPeriodEnd: expirationDate || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                    currentPeriodEnd: expirationDate || daysFromNow(SUBSCRIPTION_PERIOD_DAYS),
                     autoRenew: (activeEntitlement as any).will_renew,
                     revenueCatIdentifier: productIdentifier
                 }

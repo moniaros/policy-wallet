@@ -21,6 +21,7 @@ import { AIServiceFactory, getAIService } from "@/lib/services/ai/ai-service.fac
 import { CustomerService } from "@/lib/services/customer.service";
 import { collaborationService } from "@/lib/services/collaboration.service";
 import { sendPolicyInviteEmail } from "@/lib/email/invite-emails";
+import { daysFromNow, INVITE_EXPIRY_DAYS } from "@/lib/constants/time";
 
 const customerService = new CustomerService(db);
 
@@ -306,7 +307,7 @@ export async function createAgentInvite(email: string, scope: AccessScope) {
             token: Math.random().toString(36).substring(7),
             inviteType: 'signup',
             scope,
-            expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+            expiresAt: daysFromNow(INVITE_EXPIRY_DAYS)
         }
     })
 
@@ -534,10 +535,12 @@ export async function sendQuestionnaire(relationshipId: string, templateId: stri
 
     const relationship = await db.customerRelationship.findUnique({
         where: { id: relationshipId },
-        select: { policyholderUserId: true }
+        select: { policyholderUserId: true, agentUserId: true }
     })
 
-    if (!relationship) throw new Error("Relationship not found")
+    if (!relationship || relationship.agentUserId !== authResult.dbUser.id) {
+        throw new Error("Relationship not found")
+    }
 
     const instance = await db.questionnaireInstance.create({
         data: {

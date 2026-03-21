@@ -3,6 +3,7 @@ import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { env } from "@/lib/env"
 import { enrichExtractionPayload } from "@/lib/services/ai/extraction-enrichment"
+import { daysFromNow, DEFAULT_POLICY_DURATION_DAYS } from "@/lib/constants/time"
 
 export async function POST(request: NextRequest) {
     const authResult = await getAuthenticatedUserOrNull()
@@ -109,7 +110,7 @@ export async function POST(request: NextRequest) {
                 policyNumber: extracted.policyNumber || `TEMP-${Date.now()}`,
                 lineOfBusiness: extracted.lineOfBusiness || "motor",
                 startDate: extracted.startDate || new Date().toISOString().split('T')[0],
-                endDate: extracted.endDate || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                endDate: extracted.endDate || daysFromNow(DEFAULT_POLICY_DURATION_DAYS).toISOString().split('T')[0],
                 premiumAmount: extracted.premiumAmount || null,
                 coverageSummary: extracted.coverageSummary || null,
                 exclusions: enriched.exclusions,

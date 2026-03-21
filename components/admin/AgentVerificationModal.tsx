@@ -5,6 +5,7 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { approveAgent, rejectAgent } from "@/app/(protected)/admin/actions"
 import { useRouter } from "next/navigation"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 interface AgentProfile {
     id: string
@@ -29,6 +30,8 @@ interface AgentVerificationModalProps {
 
 export default function AgentVerificationModal({ agent, onClose }: AgentVerificationModalProps) {
     const router = useRouter()
+    const { language } = useLanguage()
+    const isEl = language === "el"
     const [isApproving, setIsApproving] = useState(false)
     const [isRejecting, setIsRejecting] = useState(false)
     const [notes, setNotes] = useState("")
@@ -39,11 +42,11 @@ export default function AgentVerificationModal({ agent, onClose }: AgentVerifica
         setIsApproving(true)
         try {
             await approveAgent(agent.id, notes)
-            toast.success("Agent approved successfully")
+            toast.success(isEl ? "Ο ασφαλιστής εγκρίθηκε" : "Agent approved successfully")
             router.refresh()
             onClose()
         } catch (error) {
-            toast.error("Failed to approve agent")
+            toast.error(isEl ? "Αποτυχία έγκρισης" : "Failed to approve agent")
         } finally {
             setIsApproving(false)
         }
@@ -51,18 +54,18 @@ export default function AgentVerificationModal({ agent, onClose }: AgentVerifica
 
     const handleReject = async () => {
         if (!rejectionReason.trim()) {
-            toast.error("Please provide a rejection reason")
+            toast.error(isEl ? "Παρακαλώ δώστε λόγο απόρριψης" : "Please provide a rejection reason")
             return
         }
 
         setIsRejecting(true)
         try {
             await rejectAgent(agent.id, rejectionReason)
-            toast.success("Agent rejected")
+            toast.success(isEl ? "Ο ασφαλιστής απορρίφθηκε" : "Agent rejected")
             router.refresh()
             onClose()
         } catch (error) {
-            toast.error("Failed to reject agent")
+            toast.error(isEl ? "Αποτυχία απόρριψης" : "Failed to reject agent")
         } finally {
             setIsRejecting(false)
         }
