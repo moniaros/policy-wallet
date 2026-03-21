@@ -1,0 +1,206 @@
+/**
+ * Greek-to-Bilingual Mapper
+ *
+ * Converts Greek-only AI service outputs to the bilingual LocalizedText format
+ * expected by the interface types. Initially sets the English field to the Greek
+ * text as a placeholder — the orchestrator later replaces with proper translations
+ * via the batch translator.
+ *
+ * This approach allows the AI services to return the correct interface types
+ * while generating Greek-only output (saving ~25-35% output tokens).
+ */
+
+import type {
+    AIGapResult,
+    AIPolicyClarityResponse,
+    LocalizedText,
+    ClaritySavingsOpportunity,
+    ClarityCoverageGap,
+    ClarityChecklistScore,
+    ClarityPriorityAction,
+} from "../ai/ai-service.interface"
+
+function toLocalized(greekText: string): LocalizedText {
+    return { en: greekText, el: greekText }
+}
+
+/**
+ * Wraps Greek-only gap results into bilingual format.
+ * English field is set to Greek as placeholder.
+ */
+export function wrapGapResultsBilingual(
+    rawResults: Array<{
+        slug: string
+        isDetected: boolean
+        explanation: string
+        suggestion: string
+    }>
+): AIGapResult[] {
+    return rawResults.map((r) => ({
+        slug: r.slug,
+        isDetected: r.isDetected,
+        explanation: toLocalized(r.explanation),
+        suggestion: toLocalized(r.suggestion),
+    }))
+}
+
+/**
+ * Wraps Greek-only clarity results into bilingual format.
+ * English fields are set to Greek as placeholder.
+ */
+export function wrapClarityResultsBilingual(raw: {
+    plainLanguageSummary: string
+    coverageSnapshot: AIPolicyClarityResponse["coverageSnapshot"]
+    savingsOpportunities: Array<{
+        action: string
+        rationale: string
+        estimatedAnnualSavingsEur: number | null
+        confidence: number
+    }>
+    coverageGaps: Array<{
+        slug: string
+        severity: "low" | "medium" | "high" | "critical"
+        evidence: string
+        recommendation: string
+    }>
+    checklistScores: Array<{
+        pillarKey: string
+        pillarName: string
+        checksPassed: number
+        checksTotal: number
+        successPct: number
+        notes: string
+    }>
+    priorityActions: Array<{
+        priority: "high" | "medium" | "low"
+        action: string
+        reason: string
+    }>
+    acordData?: any
+    usage?: any
+}): AIPolicyClarityResponse {
+    return {
+        plainLanguageSummary: toLocalized(raw.plainLanguageSummary),
+        coverageSnapshot: raw.coverageSnapshot,
+        savingsOpportunities: raw.savingsOpportunities.map((s) => ({
+            action: toLocalized(s.action),
+            rationale: toLocalized(s.rationale),
+            estimatedAnnualSavingsEur: s.estimatedAnnualSavingsEur,
+            confidence: s.confidence,
+        })),
+        coverageGaps: raw.coverageGaps.map((g) => ({
+            slug: g.slug,
+            severity: g.severity,
+            evidence: toLocalized(g.evidence),
+            recommendation: toLocalized(g.recommendation),
+        })),
+        checklistScores: raw.checklistScores.map((c) => ({
+            pillarKey: c.pillarKey,
+            pillarName: toLocalized(c.pillarName),
+            checksPassed: c.checksPassed,
+            checksTotal: c.checksTotal,
+            successPct: c.successPct,
+            notes: toLocalized(c.notes),
+        })),
+        priorityActions: raw.priorityActions.map((p) => ({
+            priority: p.priority,
+            action: toLocalized(p.action),
+            reason: toLocalized(p.reason),
+        })),
+        acordData: raw.acordData,
+        usage: raw.usage,
+    }
+}
+
+/**
+ * Collects all Greek texts from a bilingual clarity response that need translation.
+ * Returns a flat array of strings and a rebuild function that takes the English
+ * translations and returns a new response with proper bilingual fields.
+ */
+export function collectClarityTextsForTranslation(
+    clarity: AIPolicyClarityResponse
+): { texts: string[]; rebuild: (englishTexts: string[]) => AIPolicyClarityResponse } {
+    const texts: string[] = []
+
+    // plainLanguageSummary
+    texts.push(clarity.plainLanguageSummary.el)
+
+    // savingsOpportunities
+    for (const s of clarity.savingsOpportunities) {
+        texts.push(s.action.el)
+        texts.push(s.rationale.el)
+    }
+
+    // coverageGaps
+    for (const g of clarity.coverageGaps) {
+        texts.push(g.evidence.el)
+        texts.push(g.recommendation.el)
+    }
+
+    // checklistScores
+    for (const c of clarity.checklistScores) {
+        texts.push(c.pillarName.el)
+        texts.push(c.notes.el)
+    }
+
+    // priorityActions
+    for (const p of clarity.priorityActions) {
+        texts.push(p.action.el)
+        texts.push(p.reason.el)
+    }
+
+    function rebuild(en: string[]): AIPolicyClarityResponse {
+        let i = 0
+        return {
+            ...clarity,
+            plainLanguageSummary: { en: en[i++], el: clarity.plainLanguageSummary.el },
+            savingsOpportunities: clarity.savingsOpportunities.map((s) => ({
+                ...s,
+                action: { en: en[i++], el: s.action.el },
+                rationale: { en: en[i++], el: s.rationale.el },
+            })),
+            coverageGaps: clarity.coverageGaps.map((g) => ({
+                ...g,
+                evidence: { en: en[i++], el: g.evidence.el },
+                recommendation: { en: en[i++], el: g.recommendation.el },
+            })),
+            checklistScores: clarity.checklistScores.map((c) => ({
+                ...c,
+                pillarName: { en: en[i++], el: c.pillarName.el },
+                notes: { en: en[i++], el: c.notes.el },
+            })),
+            priorityActions: clarity.priorityActions.map((p) => ({
+                ...p,
+                action: { en: en[i++], el: p.action.el },
+                reason: { en: en[i++], el: p.reason.el },
+            })),
+        }
+    }
+
+    return { texts, rebuild }
+}
+
+/**
+ * Collects all Greek texts from bilingual gap results that need translation.
+ */
+export function collectGapTextsForTranslation(
+    gaps: AIGapResult[]
+): { texts: string[]; rebuild: (englishTexts: string[]) => AIGapResult[] } {
+    const texts: string[] = []
+
+    for (const g of gaps) {
+        texts.push(g.explanation.el)
+        texts.push(g.suggestion.el)
+    }
+
+    function rebuild(en: string[]): AIGapResult[] {
+        let i = 0
+        return gaps.map((g) => ({
+            ...g,
+            explanation: { en: en[i++], el: g.explanation.el },
+            suggestion: { en: en[i++], el: g.suggestion.el },
+        }))
+    }
+
+    return { texts, rebuild }
+}

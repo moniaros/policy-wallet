@@ -395,6 +395,110 @@ async function main() {
                 check: "Does the policy explicitly cover 'Earthquake' damage?"
             },
             isActive: true
+        },
+        // ─── Greek-market gap definitions (Phase 3B) ───────────────────
+        {
+            slug: 'missing_enfia_components',
+            name: 'ENFIA Coverage Components',
+            title: 'Incomplete ENFIA Coverage',
+            description: 'Greek property tax (ENFIA) insurance requires fire, earthquake, AND flood coverage. One or more components are missing.',
+            lineOfBusiness: 'home',
+            severity: 'high',
+            defaultSeverity: 'high',
+            ruleId: 'acord_deterministic',
+            detectionLogic: {
+                rules: [
+                    {
+                        type: 'acord_field_check',
+                        field: 'property',
+                        operator: 'all_false',
+                        fields: [
+                            'property.fireCoverageIncluded',
+                            'property.earthquakeCoverageIncluded',
+                            'property.floodCoverageIncluded'
+                        ]
+                    }
+                ],
+                operator: 'AND'
+            },
+            isActive: true
+        },
+        {
+            slug: 'missing_coordination_centre',
+            name: 'Coordination Centre',
+            title: 'Missing Coordination Centre',
+            description: 'Greek health policies should specify a coordination centre (κέντρο συντονισμού) with a phone number for pre-authorization of hospital admissions.',
+            lineOfBusiness: 'health',
+            severity: 'medium',
+            defaultSeverity: 'medium',
+            ruleId: 'acord_deterministic',
+            detectionLogic: {
+                rules: [
+                    {
+                        type: 'acord_field_check',
+                        field: 'health.coordinationCentre.phone',
+                        operator: 'missing'
+                    }
+                ],
+                operator: 'AND'
+            },
+            isActive: true
+        },
+        {
+            slug: 'missing_leishmaniasis',
+            name: 'Leishmaniasis Coverage',
+            title: 'No Leishmaniasis Protection',
+            description: 'Leishmaniasis (Λεϊσμανίαση) is endemic in Greece. Pet insurance without leishmaniasis coverage leaves a critical gap for dogs.',
+            lineOfBusiness: 'pet',
+            severity: 'high',
+            defaultSeverity: 'high',
+            ruleId: 'acord_deterministic',
+            detectionLogic: {
+                rules: [
+                    {
+                        type: 'acord_field_check',
+                        field: 'pet.leishmaniaCovered',
+                        operator: 'is_false'
+                    }
+                ],
+                operator: 'AND'
+            },
+            isActive: true
+        },
+        {
+            slug: 'green_card_expiring',
+            name: 'Green Card Expiry',
+            title: 'Green Card Expiring Soon',
+            description: 'Your international motor insurance certificate (Green Card / Πράσινη Κάρτα) expires within 30 days. Renew before traveling abroad.',
+            lineOfBusiness: 'motor',
+            severity: 'medium',
+            defaultSeverity: 'medium',
+            ruleId: 'acord_deterministic',
+            detectionLogic: {
+                rules: [
+                    {
+                        type: 'date_within_days',
+                        field: 'vehicle.greenCardExpiryDate',
+                        withinDays: 30
+                    }
+                ],
+                operator: 'AND'
+            },
+            isActive: true
+        },
+        {
+            slug: 'low_deductible_premium_waste',
+            name: 'Low Deductible Waste',
+            title: 'Potential Premium Savings',
+            description: 'Your deductible is at the minimum level, which means you may be paying higher premiums than necessary. Consider raising the deductible to reduce costs.',
+            lineOfBusiness: 'all',
+            severity: 'low',
+            defaultSeverity: 'low',
+            ruleId: 'ai_check',
+            detectionLogic: {
+                check: "Is the policy deductible/excess at the minimum available level for this type of coverage? If so, suggest raising it to reduce premium costs."
+            },
+            isActive: true
         }
     ]
 

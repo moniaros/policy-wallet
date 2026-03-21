@@ -110,7 +110,65 @@ function evaluateSingleRule(policy: Policy, rule: any): boolean {
 
     if (rule.type === 'always') return true
 
+    // Greek-market deterministic rules using ACORD data
+    if (rule.type === 'acord_field_check') {
+        const acordData = (policy as any).acordData
+        if (!acordData) return false
+        return evaluateAcordFieldCheck(acordData, rule)
+    }
+
+    if (rule.type === 'date_within_days') {
+        const acordData = (policy as any).acordData
+        if (!acordData) return false
+        const dateStr = getNestedField(acordData, rule.field)
+        if (!dateStr) return false
+        const target = new Date(dateStr)
+        const now = new Date()
+        const daysUntil = (target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+        return daysUntil >= 0 && daysUntil <= (rule.withinDays || 30)
+    }
+
+    if (rule.type === 'payment_frequency_check') {
+        const premium = (policy as any).premium || (policy as any).acordData?.policy?.premium
+        if (!premium) return false
+        const freq = (premium.frequency || '').toLowerCase()
+        return freq === 'monthly' || freq === 'quarterly'
+    }
+
     return false
+}
+
+function getNestedField(obj: any, path: string): any {
+    return path.split('.').reduce((o, key) => o?.[key], obj)
+}
+
+function evaluateAcordFieldCheck(acordData: any, rule: any): boolean {
+    const { field, operator, value } = rule
+    const actual = getNestedField(acordData, field)
+
+    switch (operator) {
+        case 'equals':
+            return actual === value
+        case 'not_equals':
+            return actual !== value
+        case 'is_false':
+        case 'falsy':
+            return !actual
+        case 'is_true':
+        case 'truthy':
+            return !!actual
+        case 'missing':
+            return actual === undefined || actual === null || actual === ''
+        case 'less_than':
+            return typeof actual === 'number' && actual < (value as number)
+        case 'all_false': {
+            // Check multiple boolean fields — gap if NOT all true
+            const fields = (rule.fields || []) as string[]
+            return !fields.every((f: string) => !!getNestedField(acordData, f))
+        }
+        default:
+            return false
+    }
 }
 
 /**

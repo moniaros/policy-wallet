@@ -16,6 +16,17 @@ import type {
     GapDefinitionForAI,
     PolicyMetadata,
 } from "@/lib/services/ai/ai-service.interface"
+import { batchTranslateToEnglish } from "@/lib/services/translation/batch-translator"
+import {
+    collectClarityTextsForTranslation,
+    collectGapTextsForTranslation,
+} from "@/lib/services/translation/greek-to-bilingual"
+import {
+    hashDocumentBuffer,
+    getCachedExtraction,
+    setCachedExtraction,
+    setDocumentHash,
+} from "./extraction-cache"
 import { classifyAnalysisFailure, type FailureClass } from "./failure-classifier"
 import {
     isAnthropicFailoverEnabled,
@@ -35,6 +46,9 @@ import {
     estimatePolicyAnalysisTokenBudget,
     type PolicyAnalysisStepKey,
 } from "./token-budget-estimator"
+import { getModelForStep } from "@/lib/services/ai/model-router"
+import { detectDeterministicSavings } from "./deterministic-savings"
+import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import {
     emitAnalysisRunTelemetry,
     emitAnalysisStepTelemetry,
@@ -178,29 +192,13 @@ function capabilityOperationForStep(stepKey: PolicyAnalysisStepKey): AICapabilit
     return null
 }
 
+/**
+ * Delegates model selection to the smart model router.
+ * The router uses a cost-optimized routing table keyed by (operation, provider, tier).
+ * Falls back to env-based defaults configured in the routing table.
+ */
 function getDefaultModelForStep(provider: AIServiceType, stepKey: PolicyAnalysisStepKey): string | undefined {
-    if (provider === "gemini") {
-        if (stepKey === "metadata_extraction_and_verification") return env.GEMINI_MODEL_EXTRACTION
-        if (stepKey === "plain_language_translation") return env.GEMINI_MODEL_CLARITY_ANALYSIS
-        if (stepKey === "gap_detection") return env.GEMINI_MODEL_GAP_ANALYSIS
-        return env.GEMINI_MODEL_CLARITY_ANALYSIS
-    }
-
-    if (provider === "openai") {
-        if (stepKey === "metadata_extraction_and_verification") return env.OPENAI_MODEL_EXTRACTION
-        if (stepKey === "plain_language_translation") return env.OPENAI_MODEL_CLARITY_ANALYSIS
-        if (stepKey === "gap_detection") return env.OPENAI_MODEL_GAP_ANALYSIS
-        return env.OPENAI_MODEL_CLARITY_ANALYSIS
-    }
-
-    if (provider === "anthropic") {
-        if (stepKey === "metadata_extraction_and_verification") return env.CLAUDE_MODEL_EXTRACTION
-        if (stepKey === "plain_language_translation") return env.CLAUDE_MODEL_CLARITY_ANALYSIS
-        if (stepKey === "gap_detection") return env.CLAUDE_MODEL_GAP_ANALYSIS
-        return env.CLAUDE_MODEL_CLARITY_ANALYSIS
-    }
-
-    return undefined
+    return getModelForStep(provider, stepKey)
 }
 
 function fallbackModelForProvider(provider: AIServiceType): string | undefined {
@@ -286,6 +284,10 @@ export class PolicyAnalysisOrchestratorService {
             checklistPillarsCount: INSURANCE_CLARITY_CHECKLIST.length,
         })
 
+        // Resolve tier for priority queue: pro=2, plus=1, free=0
+        const userEntitlements = await resolveUserEntitlements(userId)
+        const queuePriority = userEntitlements.tier === "pro" ? 2 : userEntitlements.tier === "plus" ? 1 : 0
+
         const run = await db.policyAnalysisRun.create({
             data: {
                 policyId,
@@ -293,6 +295,7 @@ export class PolicyAnalysisOrchestratorService {
                 provider: "gemini",
                 model: env.GEMINI_MODEL_CLARITY_ANALYSIS,
                 status: "queued",
+                priority: queuePriority,
                 estimatedTokens: estimation.totalEstimatedTokens,
             },
         })
@@ -834,59 +837,109 @@ export class PolicyAnalysisOrchestratorService {
         })
         absorbPayload(docStep)
 
-        const extractionStep = await this.executeStepWithRetry({
-            runId,
-            leaseId,
-            policyId: policy.id,
-            userId: run.userId,
-            userRoles,
-            stepKey: "metadata_extraction_and_verification",
-            estimatedTokens: tokenBudget.byStep.metadata_extraction_and_verification,
-            allowFallbackModel: true,
-            allowProviderFailover: failoverEnabled,
-            preferredProvider: primaryProvider,
-            includesDocumentContext: true,
-            capabilityOperation: "extractPolicyData",
-            documentMimeType: docStep.result.document.mimeType,
-            failoverDataAllowed: fullFailoverAllowed,
-            execute: async ({ modelOverride, provider, service, remediationAttempt, remediationType }) => {
-                const extraction = await service.extractPolicyData(docStep.result.document, {
-                    userId: run.userId,
-                    policyId: policy.id,
-                    modelOverride,
-                    provider,
-                    remediationAttempt,
-                    fallbackType:
-                        remediationType === "provider_failover" || remediationType === "model_fallback"
-                            ? remediationType
-                            : undefined,
-                })
+        // Check extraction cache before running AI extraction
+        const cachedExtraction = await getCachedExtraction(
+            policy.id,
+            docStep.result.documentHash
+        )
 
-                const checks = [
-                    Boolean(extraction.insurerName),
-                    Boolean(extraction.policyNumber),
-                    Boolean(extraction.lineOfBusiness),
-                    Boolean(extraction.startDate),
-                    Boolean(extraction.endDate),
-                    extraction.premiumAmount !== undefined,
-                ]
-                const checksPassed = checks.filter(Boolean).length
+        let extractionStep: StepExecutionPayload<AIPolicyExtractionResponse>
+        if (cachedExtraction) {
+            logger("info", "Using cached extraction — skipping AI call", {
+                runId,
+                policyId: policy.id,
+                documentHash: docStep.result.documentHash.slice(0, 12),
+            })
 
-                return {
-                    result: extraction,
-                    successPct: Math.round((checksPassed / checks.length) * 100),
-                    logMessage: "Metadata extracted and verified",
-                    logJson: {
-                        insurerName: extraction.insurerName,
-                        policyNumber: extraction.policyNumber,
-                        lineOfBusiness: extraction.lineOfBusiness,
+            const checks = [
+                Boolean(cachedExtraction.insurerName),
+                Boolean(cachedExtraction.policyNumber),
+                Boolean(cachedExtraction.lineOfBusiness),
+                Boolean(cachedExtraction.startDate),
+                Boolean(cachedExtraction.endDate),
+                cachedExtraction.premiumAmount !== undefined,
+            ]
+            const checksPassed = checks.filter(Boolean).length
+
+            extractionStep = {
+                result: cachedExtraction,
+                successPct: Math.round((checksPassed / checks.length) * 100),
+                logMessage: "Metadata loaded from extraction cache",
+                logJson: {
+                    insurerName: cachedExtraction.insurerName,
+                    policyNumber: cachedExtraction.policyNumber,
+                    lineOfBusiness: cachedExtraction.lineOfBusiness,
+                    cached: true,
+                },
+            }
+            stepScores.push(extractionStep.successPct)
+        } else {
+            extractionStep = await this.executeStepWithRetry({
+                runId,
+                leaseId,
+                policyId: policy.id,
+                userId: run.userId,
+                userRoles,
+                stepKey: "metadata_extraction_and_verification",
+                estimatedTokens: tokenBudget.byStep.metadata_extraction_and_verification,
+                allowFallbackModel: true,
+                allowProviderFailover: failoverEnabled,
+                preferredProvider: primaryProvider,
+                includesDocumentContext: true,
+                capabilityOperation: "extractPolicyData",
+                documentMimeType: docStep.result.document.mimeType,
+                failoverDataAllowed: fullFailoverAllowed,
+                execute: async ({ modelOverride, provider, service, remediationAttempt, remediationType }) => {
+                    const extraction = await service.extractPolicyData(docStep.result.document, {
+                        userId: run.userId,
+                        policyId: policy.id,
+                        modelOverride,
                         provider,
-                    },
-                    usage: extraction.usage,
-                }
-            },
-        })
-        absorbPayload(extractionStep)
+                        remediationAttempt,
+                        fallbackType:
+                            remediationType === "provider_failover" || remediationType === "model_fallback"
+                                ? remediationType
+                                : undefined,
+                    })
+
+                    const checks = [
+                        Boolean(extraction.insurerName),
+                        Boolean(extraction.policyNumber),
+                        Boolean(extraction.lineOfBusiness),
+                        Boolean(extraction.startDate),
+                        Boolean(extraction.endDate),
+                        extraction.premiumAmount !== undefined,
+                    ]
+                    const checksPassed = checks.filter(Boolean).length
+
+                    return {
+                        result: extraction,
+                        successPct: Math.round((checksPassed / checks.length) * 100),
+                        logMessage: "Metadata extracted and verified",
+                        logJson: {
+                            insurerName: extraction.insurerName,
+                            policyNumber: extraction.policyNumber,
+                            lineOfBusiness: extraction.lineOfBusiness,
+                            provider,
+                        },
+                        usage: extraction.usage,
+                    }
+                },
+            })
+            absorbPayload(extractionStep)
+
+            // Cache the extraction result for future re-analysis
+            setCachedExtraction(
+                policy.id,
+                docStep.result.documentHash,
+                extractionStep.result
+            ).catch((err) => {
+                logger("warn", "Failed to cache extraction result", {
+                    runId,
+                    error: err instanceof Error ? err.message : String(err),
+                })
+            })
+        }
         const metadata = this.buildMetadata(policy, extractionStep.result)
 
         let clarityResult: AIPolicyClarityResponse = storedClarity
@@ -1097,7 +1150,20 @@ export class PolicyAnalysisOrchestratorService {
                     preferredProvider: primaryProvider,
                     includesDocumentContext: false,
                     execute: async () => {
-                        const savings = clarityResult.savingsOpportunities
+                        const aiSavings = clarityResult.savingsOpportunities
+
+                        // Merge deterministic (zero-cost) savings with AI-generated ones
+                        const deterministicSavings = detectDeterministicSavings({
+                            acordData: extractionStep.result.acordData ?? null,
+                            lineOfBusiness: policy.lineOfBusiness,
+                            premiumAmount: policy.premiumAmount ? Number(policy.premiumAmount) : null,
+                            startDate: policy.startDate,
+                        })
+                        const savings = [...aiSavings, ...deterministicSavings]
+
+                        // Update clarityResult so downstream persistence sees merged savings
+                        clarityResult = { ...clarityResult, savingsOpportunities: savings }
+
                         const checksPassed = savings.length > 0 ? 3 : 2
                         return {
                             result: savings,
@@ -1105,6 +1171,8 @@ export class PolicyAnalysisOrchestratorService {
                             logMessage: "Savings opportunities scored",
                             logJson: {
                                 count: savings.length,
+                                aiCount: aiSavings.length,
+                                deterministicCount: deterministicSavings.length,
                                 withEstimate: savings.filter(
                                     (item) => item.estimatedAnnualSavingsEur !== null
                                 ).length,
@@ -1181,6 +1249,41 @@ export class PolicyAnalysisOrchestratorService {
 
         const finalStatus =
             degradedSteps.size > 0 ? "completed_with_warnings" : ("completed" as const)
+
+        // Batch translate Greek-only AI outputs to bilingual (Greek + English)
+        // This replaces the placeholder English text with proper translations
+        try {
+            const clarityCollection = collectClarityTextsForTranslation(clarityResult)
+            const gapCollection = collectGapTextsForTranslation(gapResult.gapResults)
+
+            const allGreekTexts = [...clarityCollection.texts, ...gapCollection.texts]
+            if (allGreekTexts.length > 0) {
+                const allEnglish = await batchTranslateToEnglish(allGreekTexts)
+                const clarityEnglish = allEnglish.slice(0, clarityCollection.texts.length)
+                const gapEnglish = allEnglish.slice(clarityCollection.texts.length)
+
+                clarityResult = {
+                    ...clarityCollection.rebuild(clarityEnglish),
+                    acordData: clarityResult.acordData,
+                    usage: clarityResult.usage,
+                }
+                gapResult = {
+                    ...gapResult,
+                    gapResults: gapCollection.rebuild(gapEnglish),
+                }
+
+                logger("info", "Batch translation completed for analysis results", {
+                    runId,
+                    textsTranslated: allGreekTexts.length,
+                })
+            }
+        } catch (translationError) {
+            logger("warn", "Batch translation failed, using Greek as fallback for English fields", {
+                runId,
+                error: translationError instanceof Error ? translationError.message : String(translationError),
+            })
+            // Graceful degradation: English fields remain as Greek text
+        }
 
         const persistenceStep = await this.executeStepWithRetry({
             runId,
@@ -1765,6 +1868,8 @@ export class PolicyAnalysisOrchestratorService {
     private async prepareDocument(policyId: string): Promise<{
         document: AIDocument
         fileName: string
+        documentId: string
+        documentHash: string
     }> {
         const document = await db.policyDocument.findFirst({
             where: { policyId },
@@ -1833,8 +1938,14 @@ export class PolicyAnalysisOrchestratorService {
         if (lowerFileName.endsWith(".jpg") || lowerFileName.endsWith(".jpeg")) mimeType = "image/jpeg"
         if (lowerFileName.endsWith(".webp")) mimeType = "image/webp"
 
+        // Compute document hash for extraction caching
+        const docHash = await hashDocumentBuffer(buffer)
+        await setDocumentHash(document.id, docHash)
+
         return {
             fileName: document.fileName,
+            documentId: document.id,
+            documentHash: docHash,
             document: {
                 data: buffer.toString("base64"),
                 mimeType,

@@ -28,6 +28,7 @@ import { trackTokenUsage } from '@/lib/token-tracking'
 import { enrichExtractionPayload } from './extraction-enrichment'
 import { AcordDataSchema } from '../../schemas/acord-data'
 import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from './shared-utils'
+import { wrapGapResultsBilingual, wrapClarityResultsBilingual } from '../translation/greek-to-bilingual'
 
 const GEMINI_SUPPORTED_MIME_TYPES = [
   'application/pdf',
@@ -275,7 +276,7 @@ Only populate the type-specific ACORD section matching the detected lineOfBusine
       if (hasStructuredContext && !hasDocument) {
         const ctx = options!.structuredContext!
         prompt = `You are an expert insurance analyst. Analyze the following pre-extracted policy data to identify coverage gaps.
-Provide explanations in BOTH English (en) and Greek (el).
+Respond in Greek (Ελληνικά) only. All explanation and suggestion fields must be in Greek.
 
 Extracted Policy Data:
 - Insurer: ${ctx.insurerName}
@@ -294,7 +295,7 @@ ${gapDefinitions.map(g => `- ${g.slug}: ${g.checkCriteria}`).join('\n')}`
 TASK: Analyze the provided policy document and metadata to identify coverage gaps.
 CRITICAL: The DOCUMENT is the SOURCE OF TRUTH. Current metadata may be incomplete or incorrect - verify against the document.
 Step 1: Verify Insurer, Policy Number, Dates, and Premium from the DOCUMENT. If document is missing, use Current Metadata.
-Step 2: Check for gaps and provide explanations in BOTH English (en) and Greek (el).
+Step 2: Check for gaps. Respond in Greek (Ελληνικά) only. All explanation and suggestion fields must be in Greek.
 
 Current Metadata (Reference Only):
 Insurer: ${metadata.insurerName} | Policy: ${metadata.policyNumber} | Type: ${metadata.lineOfBusiness}
@@ -342,8 +343,8 @@ ${gapDefinitions.map(g => `- ${g.slug}: ${g.checkCriteria}`).join('\n')}`
         gapResults: z.array(z.object({
           slug: z.string(),
           isDetected: z.boolean(),
-          explanation: z.object({ en: z.string(), el: z.string() }),
-          suggestion: z.object({ en: z.string(), el: z.string() })
+          explanation: z.string().describe("Gap explanation in Greek"),
+          suggestion: z.string().describe("Remediation suggestion in Greek")
         })),
         acordData: AcordDataSchema.optional()
       })
@@ -391,7 +392,7 @@ ${gapDefinitions.map(g => `- ${g.slug}: ${g.checkCriteria}`).join('\n')}`
 
       const response: AIGapAnalysisResponse = {
         verifiedMetadata: analysisRaw.verifiedMetadata as any,
-        gapResults: analysisRaw.gapResults,
+        gapResults: wrapGapResultsBilingual(analysisRaw.gapResults),
         acordData: enriched.acordData,
         usage: parsedUsage
       }
@@ -442,6 +443,7 @@ ${gapDefinitions.map(g => `- ${g.slug}: ${g.checkCriteria}`).join('\n')}`
       const ctx = options!.structuredContext!
       prompt = `You are an insurance clarity analyst for policyholders.
 Goal: 1) Plain-language insights 2) Savings opportunities 3) Coverage gaps 4) Checklist scoring.
+Respond in Greek (Ελληνικά) only. All text fields must be in Greek.
 Use the extracted data below as source of truth. If details are missing, say so and lower confidence.
 
 Extracted Policy Data:
@@ -456,6 +458,7 @@ ${checklistPrompt}`
     } else {
       prompt = `You are an insurance clarity analyst for policyholders.
 Goal: 1) Plain-language insights 2) Savings opportunities 3) Coverage gaps 4) Checklist scoring.
+Respond in Greek (Ελληνικά) only. All text fields must be in Greek.
 Use the document as source of truth. If details are missing, say so and lower confidence.
 
 Current metadata:
@@ -468,10 +471,7 @@ ${checklistPrompt}`
     }
 
     const ClaritySchema = z.object({
-      plainLanguageSummary: z.object({
-        en: z.string(),
-        el: z.string(),
-      }),
+      plainLanguageSummary: z.string().describe("Plain-language summary in Greek"),
       coverageSnapshot: z.object({
         covered: z.array(z.string()).default([]),
         notCovered: z.array(z.string()).default([]),
@@ -486,29 +486,29 @@ ${checklistPrompt}`
         exclusions: z.array(z.string()).default([]),
       }),
       savingsOpportunities: z.array(z.object({
-        action: z.object({ en: z.string(), el: z.string() }),
-        rationale: z.object({ en: z.string(), el: z.string() }),
+        action: z.string().describe("Savings action in Greek"),
+        rationale: z.string().describe("Rationale in Greek"),
         estimatedAnnualSavingsEur: z.number().nullable(),
         confidence: z.number().min(0).max(100),
       })).default([]),
       coverageGaps: z.array(z.object({
         slug: z.string(),
         severity: z.enum(['low', 'medium', 'high', 'critical']),
-        evidence: z.object({ en: z.string(), el: z.string() }),
-        recommendation: z.object({ en: z.string(), el: z.string() }),
+        evidence: z.string().describe("Gap evidence in Greek"),
+        recommendation: z.string().describe("Recommendation in Greek"),
       })).default([]),
       checklistScores: z.array(z.object({
         pillarKey: z.string(),
-        pillarName: z.object({ en: z.string(), el: z.string() }),
+        pillarName: z.string().describe("Pillar name in Greek"),
         checksPassed: z.number().int().min(0),
         checksTotal: z.number().int().min(1),
         successPct: z.number().int().min(0).max(100),
-        notes: z.object({ en: z.string(), el: z.string() }),
+        notes: z.string().describe("Notes in Greek"),
       })).default([]),
       priorityActions: z.array(z.object({
         priority: z.enum(['high', 'medium', 'low']),
-        action: z.object({ en: z.string(), el: z.string() }),
-        reason: z.object({ en: z.string(), el: z.string() }),
+        action: z.string().describe("Action in Greek"),
+        reason: z.string().describe("Reason in Greek"),
       })).default([]),
       acordData: AcordDataSchema.optional(),
     })
@@ -550,7 +550,7 @@ ${checklistPrompt}`
       })
     }
 
-    return {
+    return wrapClarityResultsBilingual({
       plainLanguageSummary: object.plainLanguageSummary,
       coverageSnapshot: object.coverageSnapshot,
       savingsOpportunities: object.savingsOpportunities,
@@ -559,7 +559,7 @@ ${checklistPrompt}`
       priorityActions: object.priorityActions,
       acordData: object.acordData,
       usage: parsedUsage,
-    }
+    })
   }
 
   /**
@@ -594,24 +594,27 @@ Policy Information:
       - Coverage Summary: ${metadata.coverageSummary || 'N/A'}
       `
 
+      // Build detailed context from structuredContext (ACORD data) when available
+      const acordContext = options?.structuredContext?.acordData
+          ? `\n\nDetailed Policy Data (ACORD):\n${JSON.stringify(options.structuredContext.acordData, null, 2)}`
+          : ''
+
       const parts: any[] = []
 
-      // Add the prompt
       const prompt = `
 You are an expert insurance advisor helping a policyholder understand their insurance policy.
 
-        ${context}
+        ${context}${acordContext}
 
 User Question: ${question}
 
       Instructions:
-      1. Answer the question based on the policy document and metadata provided
+      1. Answer the question based on the policy data provided
       2. Be clear, concise, and helpful
-      3. If the information is not available in the document, say so
-      4. Provide specific references to policy sections when possible
-      5. Use simple language that a non - expert can understand
-      6. If the question is about coverage, explain what IS and IS NOT covered
-      7. For Greek policies, you may respond in Greek if the question is in Greek
+      3. If the information is not available, say so
+      4. Use simple language that a non-expert can understand
+      5. If the question is about coverage, explain what IS and IS NOT covered
+      6. For Greek policies, you may respond in Greek if the question is in Greek
 
 Answer the user's question:
         `

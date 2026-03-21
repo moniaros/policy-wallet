@@ -7,6 +7,7 @@ import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
 
 export const TOKEN_PACKAGES = {
+    topup: { tokens: 100_000, priceEur: 1.99, label: "100K tokens" },
     small: { tokens: 500_000, priceEur: 0.49, label: "500K tokens" },
     medium: { tokens: 1_000_000, priceEur: 0.99, label: "1M tokens" },
     large: { tokens: 5_000_000, priceEur: 4.99, label: "5M tokens" },

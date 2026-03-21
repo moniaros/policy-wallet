@@ -269,20 +269,24 @@ model Policy {
 }
 
 model PolicyDocument {
-  id               String   @id @default(cuid()) @map("document_id")
-  policyId         String   @map("policy_id")
-  fileUrl          String   @map("file_url")
-  fileName         String   @map("file_name")
-  fileSize         Int      @map("file_size")
+  id               String    @id @default(cuid()) @map("document_id")
+  policyId         String    @map("policy_id")
+  fileUrl          String    @map("file_url")
+  fileName         String    @map("file_name")
+  fileSize         Int       @map("file_size")
   source           String
-  processingStatus String   @default("pending") @map("processing_status")
-  uploadedByUserId String   @map("uploaded_by_user_id")
-  uploadedAt       DateTime @default(now()) @map("uploaded_at")
-  policy           Policy   @relation(fields: [policyId], references: [id], onDelete: Cascade)
-  uploader         User     @relation(fields: [uploadedByUserId], references: [id])
+  processingStatus String    @default("pending") @map("processing_status")
+  uploadedByUserId String    @map("uploaded_by_user_id")
+  uploadedAt       DateTime  @default(now()) @map("uploaded_at")
+  documentHash     String?   @map("document_hash")
+  extractionCache  Json?     @map("extraction_cache")
+  extractedAt      DateTime? @map("extracted_at")
+  policy           Policy    @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  uploader         User      @relation(fields: [uploadedByUserId], references: [id])
 
   @@index([policyId])
   @@index([uploadedByUserId])
+  @@index([documentHash])
   @@map("policy_documents")
 }
 
@@ -751,6 +755,7 @@ model PolicyAnalysisRun {
   provider         String
   model            String
   status           AnalysisRunStatus @default(queued)
+  priority         Int               @default(0) @map("priority") // 0=standard, 1=plus, 2=pro (higher = sooner)
   runAttempt       Int               @default(1) @map("run_attempt")
   overallSuccessPct Int?             @map("overall_success_pct")
   estimatedTokens  Int?              @map("estimated_tokens")
@@ -777,6 +782,7 @@ model PolicyAnalysisRun {
   @@index([policyId, createdAt])
   @@index([userId, createdAt])
   @@index([status, executionLeaseExpiresAt])
+  @@index([status, priority, createdAt])
   @@map("policy_analysis_runs")
 }
 
@@ -998,4 +1004,16 @@ model WebAuthnChallenge {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("webauthn_challenges")
+}
+
+model TranslationCache {
+  id          String   @id @default(cuid())
+  contentHash String   @unique @map("content_hash")
+  sourceLang  String   @default("el") @map("source_lang")
+  targetLang  String   @default("en") @map("target_lang")
+  sourceText  String   @map("source_text")
+  translated  String   @map("translated_text")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("translation_cache")
 }

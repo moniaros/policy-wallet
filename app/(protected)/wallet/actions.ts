@@ -641,7 +641,7 @@ export async function askPolicyQuestion(policyId: string, question: string) {
         return { error: "Please enter a valid question" }
     }
 
-    // Fetch policy with documents
+    // Fetch policy with documents and ACORD data for Q&A context
     const policy = await db.policy.findUnique({
         where: { id: policyId },
         include: { documents: true }
@@ -704,8 +704,23 @@ export async function askPolicyQuestion(policyId: string, question: string) {
     }
 
     try {
+        // Build structuredContext from stored ACORD data so the AI has full
+        // policy detail without re-sending the PDF (saves ~50-100K tokens).
+        const structuredContext = policy.acordData
+            ? {
+                insurerName: policy.insurerName,
+                policyNumber: policy.policyNumber,
+                lineOfBusiness: policy.lineOfBusiness,
+                startDate: policy.startDate.toISOString(),
+                endDate: policy.endDate.toISOString(),
+                premiumAmount: policy.premiumAmount ? Number(policy.premiumAmount) : 0,
+                coverageSummary: policy.coverageSummary ?? "",
+                acordData: policy.acordData,
+              } as import("@/lib/services/ai/ai-service.interface").AIPolicyExtractionResponse
+            : undefined
+
         const answer = await aiService.askQuestion(
-            null, // No document for now
+            null,
             {
                 insurerName: policy.insurerName,
                 policyNumber: policy.policyNumber,
@@ -718,7 +733,8 @@ export async function askPolicyQuestion(policyId: string, question: string) {
             question,
             {
                 userId: authResult.dbUser.id,
-                policyId: policy.id
+                policyId: policy.id,
+                structuredContext,
             }
         )
 

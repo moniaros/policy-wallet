@@ -26,6 +26,7 @@ import type {
 import { AcordDataSchema } from "@/lib/schemas/acord-data"
 import { enrichExtractionPayload } from "./extraction-enrichment"
 import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from "./shared-utils"
+import { wrapGapResultsBilingual, wrapClarityResultsBilingual } from "../translation/greek-to-bilingual"
 
 const OPENAI_SUPPORTED_MIME_TYPES = [
     "application/pdf",
@@ -213,8 +214,8 @@ export class OpenAIAIService implements IAIService {
                 z.object({
                     slug: z.string(),
                     isDetected: z.boolean(),
-                    explanation: z.object({ en: z.string(), el: z.string() }),
-                    suggestion: z.object({ en: z.string(), el: z.string() }),
+                    explanation: z.string().describe("Gap explanation in Greek"),
+                    suggestion: z.string().describe("Remediation suggestion in Greek"),
                 })
             ),
             acordData: AcordDataSchema.optional(),
@@ -225,7 +226,7 @@ export class OpenAIAIService implements IAIService {
         if (hasStructuredContext && !document) {
             const ctx = options!.structuredContext!
             prompt = `Analyze pre-extracted insurance policy data and identify coverage gaps.
-Provide explanations in BOTH English (en) and Greek (el).
+Respond in Greek (Ελληνικά) only. All explanation and suggestion fields must be in Greek.
 Extracted Policy Data:
 - Insurer: ${ctx.insurerName} | Policy: ${ctx.policyNumber} | Type: ${ctx.lineOfBusiness}
 - Period: ${ctx.startDate} to ${ctx.endDate} | Premium: ${ctx.premiumAmount}
@@ -237,7 +238,7 @@ ${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
         } else {
             prompt = `Analyze insurance metadata and identify coverage gaps from the provided definitions.
 Use the document as source of truth when available.
-Provide explanations in BOTH English (en) and Greek (el).
+Respond in Greek (Ελληνικά) only. All explanation and suggestion fields must be in Greek.
 Current metadata:
 - Insurer: ${metadata.insurerName} | Policy: ${metadata.policyNumber} | Type: ${metadata.lineOfBusiness}
 - Dates: ${metadata.startDate.toISOString().split("T")[0]} to ${metadata.endDate.toISOString().split("T")[0]}
@@ -281,7 +282,7 @@ ${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
 
         return {
             verifiedMetadata: result.object.verifiedMetadata,
-            gapResults: result.object.gapResults,
+            gapResults: wrapGapResultsBilingual(result.object.gapResults),
             acordData: result.object.acordData,
             usage: parsedUsage,
         }
@@ -303,7 +304,7 @@ ${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
         const hasStructuredContext = !!options?.structuredContext
 
         const ClaritySchema = z.object({
-            plainLanguageSummary: z.object({ en: z.string(), el: z.string() }),
+            plainLanguageSummary: z.string().describe("Plain-language summary in Greek"),
             coverageSnapshot: z.object({
                 covered: z.array(z.string()).default([]),
                 notCovered: z.array(z.string()).default([]),
@@ -313,8 +314,8 @@ ${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
             }),
             savingsOpportunities: z.array(
                 z.object({
-                    action: z.object({ en: z.string(), el: z.string() }),
-                    rationale: z.object({ en: z.string(), el: z.string() }),
+                    action: z.string().describe("Savings action in Greek"),
+                    rationale: z.string().describe("Rationale in Greek"),
                     estimatedAnnualSavingsEur: z.number().nullable(),
                     confidence: z.number().min(0).max(100),
                 })
@@ -323,25 +324,25 @@ ${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
                 z.object({
                     slug: z.string(),
                     severity: z.enum(["low", "medium", "high", "critical"]),
-                    evidence: z.object({ en: z.string(), el: z.string() }),
-                    recommendation: z.object({ en: z.string(), el: z.string() }),
+                    evidence: z.string().describe("Gap evidence in Greek"),
+                    recommendation: z.string().describe("Recommendation in Greek"),
                 })
             ).default([]),
             checklistScores: z.array(
                 z.object({
                     pillarKey: z.string(),
-                    pillarName: z.object({ en: z.string(), el: z.string() }),
+                    pillarName: z.string().describe("Pillar name in Greek"),
                     checksPassed: z.number().int().min(0),
                     checksTotal: z.number().int().min(1),
                     successPct: z.number().int().min(0).max(100),
-                    notes: z.object({ en: z.string(), el: z.string() }),
+                    notes: z.string().describe("Notes in Greek"),
                 })
             ).default([]),
             priorityActions: z.array(
                 z.object({
                     priority: z.enum(["high", "medium", "low"]),
-                    action: z.object({ en: z.string(), el: z.string() }),
-                    reason: z.object({ en: z.string(), el: z.string() }),
+                    action: z.string().describe("Action in Greek"),
+                    reason: z.string().describe("Reason in Greek"),
                 })
             ).default([]),
             acordData: AcordDataSchema.optional(),
@@ -356,6 +357,7 @@ ${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
         if (hasStructuredContext && !document) {
             const ctx = options!.structuredContext!
             prompt = `Create a plain-language policy clarity report with checklist scoring.
+Respond in Greek (Ελληνικά) only. All text fields must be in Greek.
 Use the extracted data below as source of truth.
 Extracted Policy Data:
 - Insurer: ${ctx.insurerName} | Policy: ${ctx.policyNumber} | Type: ${ctx.lineOfBusiness}
@@ -367,6 +369,7 @@ Checklist:
 ${checklistPrompt}`
         } else {
             prompt = `Create a plain-language policy clarity report with checklist scoring.
+Respond in Greek (Ελληνικά) only. All text fields must be in Greek.
 Use the document as source of truth when available.
 Checklist:
 ${checklistPrompt}
@@ -409,10 +412,10 @@ Metadata:
             }).catch((err) => logger("error", "Failed to track OpenAI clarity token usage", { error: err }))
         }
 
-        return {
+        return wrapClarityResultsBilingual({
             ...result.object,
             usage: parsedUsage,
-        }
+        })
     }
 
     async askQuestion(
@@ -424,11 +427,15 @@ Metadata:
         if (!this.aiProvider) throw new Error("OpenAI service not available")
         const modelName = options?.modelOverride || env.OPENAI_MODEL_QA
 
+        const acordContext = options?.structuredContext?.acordData
+            ? `\nDetailed Policy Data (ACORD):\n${JSON.stringify(options.structuredContext.acordData, null, 2)}`
+            : ""
+
         const parts: any[] = [
             {
                 type: "text",
                 text: `
-You are an insurance advisor. Answer the user question based on policy metadata and optional document.
+You are an insurance advisor. Answer the user question based on policy data provided.
 Policy:
 - Insurer: ${metadata.insurerName}
 - Policy Number: ${metadata.policyNumber}
@@ -436,7 +443,7 @@ Policy:
 - Start Date: ${metadata.startDate.toISOString().split("T")[0]}
 - End Date: ${metadata.endDate.toISOString().split("T")[0]}
 - Premium: ${metadata.premiumAmount ?? "N/A"}
-- Summary: ${metadata.coverageSummary || "N/A"}
+- Summary: ${metadata.coverageSummary || "N/A"}${acordContext}
 Question: ${question}
                 `,
             },

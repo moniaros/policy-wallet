@@ -15,6 +15,10 @@ export const ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> = {
         advancedAnalytics: false,
         agentCollaboration: false,
         interactiveQA: true,
+        analysisComparison: false,
+        portfolioGapView: false,
+        priorityQueue: false,
+        savingsReportExport: false,
     },
     plus: {
         policies: 10,
@@ -25,6 +29,10 @@ export const ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> = {
         advancedAnalytics: false,
         agentCollaboration: true,
         interactiveQA: true,
+        analysisComparison: true,
+        portfolioGapView: true,
+        priorityQueue: false,
+        savingsReportExport: false,
     },
     pro: {
         policies: null,
@@ -35,6 +43,10 @@ export const ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> = {
         advancedAnalytics: true,
         agentCollaboration: true,
         interactiveQA: true,
+        analysisComparison: true,
+        portfolioGapView: true,
+        priorityQueue: true,
+        savingsReportExport: true,
     },
 }
 

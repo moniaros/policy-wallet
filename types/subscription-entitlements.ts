@@ -16,6 +16,14 @@ export interface EntitlementLimits {
     advancedAnalytics: boolean
     agentCollaboration: boolean
     interactiveQA: boolean
+    /** Historical comparison between analysis runs (Plus+) */
+    analysisComparison: boolean
+    /** Cross-policy portfolio gap view (Plus+) */
+    portfolioGapView: boolean
+    /** Priority analysis queue (Pro only) */
+    priorityQueue: boolean
+    /** Savings report PDF export (Pro only) */
+    savingsReportExport: boolean
 }
 
 export interface UserEntitlements {

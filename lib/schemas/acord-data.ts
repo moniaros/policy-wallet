@@ -1,55 +1,183 @@
 import { z } from "zod";
 
-// The definitive contract for UI visualization components
+/**
+ * ACORD Data Schema v2
+ *
+ * Unified Zod schema for structured insurance policy data extracted by AI.
+ * Enriched with Greek-market-specific fields (ENFIA, coordination centres,
+ * leishmaniasis, green card, etc.) and deeper per-section detail.
+ *
+ * This is the single source of truth — the TypeScript type is derived via z.infer.
+ */
 export const AcordDataSchema = z.object({
-    // Section 6: Motor & Liability (Market Value Meters)
+    _version: z.literal(2).default(2),
+
+    // ─── Motor & Liability ──────────────────────────────────────────────
     vehicle: z.object({
         make: z.string().optional(),
         model: z.string().optional(),
         year: z.number().optional(),
-        estimatedMarketValue: z.number().optional(), // Drives Market Value Meter UI
+        plateNumber: z.string().optional(),
+        vin: z.string().optional(),
+        usage: z.string().optional().describe("e.g. personal, commercial, rideshare"),
+        estimatedMarketValue: z.number().optional(),
         deductible: z.number().optional(),
         hasRoadsideAssistance: z.boolean().default(false),
-        namedDrivers: z.array(z.string()).optional(),
-        greenCardExpiryDate: z.string().optional(),
+        roadsideAssistancePhone: z.string().optional(),
+        namedDrivers: z.array(z.object({
+            name: z.string(),
+            licenseNumber: z.string().optional(),
+        })).optional(),
+        greenCardExpiryDate: z.string().optional().describe("ISO date — Greek green card expiry"),
+        coverageTier: z.string().optional().describe("e.g. third-party, third-party-fire-theft, comprehensive"),
+        accidentDeclarationPhone: z.string().optional(),
+        ownVehicleDamage: z.boolean().optional(),
+        glassBreakage: z.boolean().optional(),
     }).optional(),
 
-    // Section 7: Property & Home (Replacement Cost Sliders)
+    // ─── Property & Home ────────────────────────────────────────────────
     property: z.object({
         address: z.string().optional(),
+        type: z.string().optional().describe("e.g. apartment, house, office"),
         squareMeters: z.number().optional(),
         yearBuilt: z.number().optional(),
-        estimatedRebuildCost: z.number().optional(), // Drives Replacement Cost Slider UI
-        fireCoverageIncluded: z.boolean().default(false), // Required for ENFIA checklist
+        estimatedRebuildCost: z.number().optional(),
+        fireCoverageIncluded: z.boolean().default(false),
         earthquakeCoverageIncluded: z.boolean().default(false),
         floodCoverageIncluded: z.boolean().default(false),
+        // Greek-market specific
+        enfiaEligible: z.boolean().optional().describe("True if fire+earthquake+flood all covered (ENFIA requirement)"),
+        mortgageeBank: z.string().optional(),
+        technicalAssistancePhone: z.string().optional(),
+        theftCoverageLimit: z.number().optional(),
+        insuredValue: z.number().optional(),
+        replacementValue: z.number().optional(),
+        contentsVsStructure: z.string().optional().describe("e.g. structure-only, contents-only, both"),
     }).optional(),
 
-    // Section 8: Health & Life (Timeline Projections & Radial Charts)
+    // ─── Health ─────────────────────────────────────────────────────────
     health: z.object({
         annualLimit: z.number().optional(),
         roomAndBoardLimit: z.number().optional(),
-        outOfPocketMax: z.number().optional(), // Drives Health Radial Charts
-        coordinationCentreName: z.string().optional(), // Greek market specific
-        directBillingAvailable: z.boolean().default(false), // Greek market specific
+        outOfPocketMax: z.number().optional(),
+        hospitalClass: z.string().optional().describe("e.g. A, B, C or private, semi-private"),
+        // Greek-market specific
+        coordinationCentre: z.object({
+            name: z.string().optional(),
+            phone: z.string().optional(),
+        }).optional().describe("Greek health insurance coordination centre"),
+        coordinationCentreName: z.string().optional().describe("Deprecated — use coordinationCentre.name"),
+        directBillingAvailable: z.boolean().default(false),
+        annualCheckupIncluded: z.boolean().optional(),
+        waitingPeriods: z.array(z.object({
+            type: z.string().optional(),
+            durationDays: z.number().optional(),
+            endDate: z.string().optional(),
+        })).optional(),
+        outpatientLimit: z.number().optional(),
+        deductiblePerClaim: z.number().optional(),
     }).optional(),
 
+    // ─── Life & Investment ──────────────────────────────────────────────
     lifeAndInvestment: z.object({
         deathBenefit: z.number().optional(),
-        cashValue: z.number().optional(), // Drives Investment Goal Timelines
+        cashValue: z.number().optional(),
         maturityDate: z.string().optional(),
         beneficiaries: z.array(z.string()).optional(),
+        // Greek-market enrichment
+        currentFundValue: z.number().optional(),
+        ytdGrowth: z.number().optional().describe("Year-to-date growth percentage"),
+        taxFreeAtMaturity: z.boolean().optional(),
+        guaranteedPercentage: z.number().optional(),
+        unitLinkedPercentage: z.number().optional(),
+        surrenderValue: z.number().optional(),
+        lastPremiumDate: z.string().optional(),
+        lastPremiumAmount: z.number().optional(),
     }).optional(),
 
-    // Pet Specific (Breed Condition Radar Charts)
+    // ─── Pet ────────────────────────────────────────────────────────────
     pet: z.object({
         name: z.string().optional(),
         species: z.enum(["Dog", "Cat", "Other", "UNKNOWN"]).default("UNKNOWN"),
         breed: z.string().optional(),
         age: z.number().optional(),
         annualLimit: z.number().optional(),
-        leishmaniaCovered: z.boolean().default(false), // Critical for Greek pet policies
-        preExistingConditionsExcluded: z.array(z.string()).default([]), // Drives Radar Chart weaknesses
+        annualLimitTotal: z.number().optional().describe("Legacy alias for annualLimit"),
+        annualLimitUsed: z.number().optional(),
+        microchipNumber: z.string().optional(),
+        leishmaniaCovered: z.boolean().default(false).describe("Critical for Greek pet policies — Leishmania is endemic"),
+        directVetPayment: z.boolean().optional(),
+        breedSpecificDiseases: z.array(z.string()).optional(),
+        preExistingConditionsExcluded: z.array(z.string()).default([]),
+        waitingPeriods: z.array(z.object({
+            type: z.string().optional(),
+            durationDays: z.number().optional(),
+            endDate: z.string().optional(),
+        })).optional(),
+    }).optional(),
+
+    // ─── Cross-section fields ───────────────────────────────────────────
+    beneficiaries: z.array(z.object({
+        name: z.string().optional(),
+        relationship: z.string().optional(),
+        percentage: z.number().optional(),
+    })).optional(),
+
+    coverages: z.array(z.object({
+        name: z.string(),
+        type: z.string().optional(),
+        limit: z.string().optional(),
+        deductible: z.string().optional(),
+        description: z.string().optional(),
+        explanation: z.object({
+            en: z.string(),
+            el: z.string(),
+        }).optional(),
+    })).optional(),
+
+    exclusions: z.array(z.string()).optional(),
+
+    // ─── Legacy aliases for backward compatibility with UI components ───
+    // These map to the canonical section names above. AI extraction should
+    // populate the canonical sections; these exist only so that stored data
+    // with the old key names still type-checks.
+    motor: z.object({
+        coverageTier: z.string().optional(),
+        greenCardExpiry: z.string().optional(),
+        namedDrivers: z.array(z.object({
+            name: z.string().optional(),
+            licenseNumber: z.string().optional(),
+        })).optional(),
+        accidentDeclarationPhone: z.string().optional(),
+        roadsideAssistancePhone: z.string().optional(),
+        ownVehicleDamage: z.boolean().optional(),
+        glassBreakage: z.boolean().optional(),
+    }).optional(),
+
+    home: z.object({
+        enfiaEligible: z.boolean().optional(),
+        catastropheCoverage: z.object({
+            fire: z.boolean().optional(),
+            earthquake: z.boolean().optional(),
+            flood: z.boolean().optional(),
+        }).optional(),
+        mortgageeBank: z.string().optional(),
+        technicalAssistancePhone: z.string().optional(),
+        theftCoverageLimit: z.number().optional(),
+        insuredValue: z.number().optional(),
+        replacementValue: z.number().optional(),
+        contentsVsStructure: z.string().optional(),
+    }).optional(),
+
+    life: z.object({
+        currentFundValue: z.number().optional(),
+        ytdGrowth: z.number().optional(),
+        taxFreeAtMaturity: z.boolean().optional(),
+        guaranteedPercentage: z.number().optional(),
+        unitLinkedPercentage: z.number().optional(),
+        surrenderValue: z.number().optional(),
+        lastPremiumDate: z.string().optional(),
+        lastPremiumAmount: z.number().optional(),
     }).optional(),
 });
 

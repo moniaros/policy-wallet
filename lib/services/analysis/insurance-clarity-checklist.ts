@@ -143,6 +143,23 @@ export const INSURANCE_CLARITY_CHECKLIST: InsuranceClarityChecklistPillar[] = [
             "next_review_action_defined",
         ],
     },
+    {
+        key: "greek_market_specifics",
+        title: {
+            en: "Greek market compliance",
+            el: "Συμμόρφωση Ελληνικής αγοράς",
+        },
+        description: {
+            en: "Validates Greek-market-specific requirements: ENFIA eligibility, coordination centres, leishmaniasis coverage, and green card validity.",
+            el: "Ελέγχει απαιτήσεις της ελληνικής αγοράς: ΕΝΦΙΑ, κέντρα συντονισμού, λεϊσμανίαση και πράσινη κάρτα.",
+        },
+        checks: [
+            "enfia_eligibility_checked",
+            "coordination_centre_present",
+            "leishmaniasis_coverage_for_pets",
+            "green_card_validity",
+        ],
+    },
 ]
 
 export const INSURANCE_CLARITY_CHECKLIST_TOTAL_CHECKS = INSURANCE_CLARITY_CHECKLIST.reduce(
