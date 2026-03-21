@@ -23,6 +23,29 @@ export async function POST(req: Request) {
     try {
         const { customers } = bulkImportSchema.parse(await req.json())
 
+        // Check bulk import limit
+        const { resolveAgentEntitlements } = await import("@/lib/subscription-entitlements")
+        const agentEntitlements = await resolveAgentEntitlements(authResult.dbUser.id)
+        const bulkLimit = agentEntitlements.limits.bulkImportLimit
+        if (bulkLimit !== null && customers.length > bulkLimit) {
+            return createApiError(
+                "FORBIDDEN",
+                `Bulk import limited to ${bulkLimit} rows on your plan. Upgrade for higher limits.`,
+                403
+            )
+        }
+
+        // Check customer limit
+        const { canAgentAddCustomer } = await import("@/lib/subscription-entitlements")
+        const customerCheck = await canAgentAddCustomer(authResult.dbUser.id)
+        if (!customerCheck.allowed) {
+            return createApiError(
+                "FORBIDDEN",
+                `Customer limit reached (${customerCheck.current}/${customerCheck.limit}). Upgrade your plan.`,
+                403
+            )
+        }
+
         let imported = 0
         const errors: string[] = []
 

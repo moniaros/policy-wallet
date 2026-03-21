@@ -32,7 +32,6 @@ const policyholderApiGroups = [
             'GET|POST /api/v1/policies',
             'GET|PATCH|DELETE /api/v1/policies/[id]',
             'GET|POST /api/v1/policies/[id]/documents',
-            'POST /api/v1/policies/[id]/wallet-pass',
         ],
     },
     {

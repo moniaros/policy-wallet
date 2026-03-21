@@ -20,7 +20,6 @@ export function PolicyWallet({
     onUploadDocument,
     onBatchUpload,
     onShareWithAgent,
-    onAddToWallet,
     onViewDocuments,
     onRunAnalysis,
     onDeletePolicy,
@@ -237,7 +236,6 @@ export function PolicyWallet({
                         onRunAnalysis={onRunAnalysis}
                         onDelete={onDeletePolicy}
                         onShare={onShareWithAgent}
-                        onAddToWallet={onAddToWallet}
                         onViewDocuments={onViewDocuments}
                     />
                 ) : (
@@ -248,7 +246,6 @@ export function PolicyWallet({
                                 policy={policy}
                                 onView={() => onViewPolicy?.(policy.id)}
                                 onShare={() => onShareWithAgent?.(policy.id)}
-                                onAddToWallet={() => onAddToWallet?.(policy.id)}
                                 onViewDocuments={() => onViewDocuments?.(policy.id)}
                                 onRunAnalysis={() => onRunAnalysis?.(policy.id)}
                                 onDelete={() => onDeletePolicy?.(policy.id)}

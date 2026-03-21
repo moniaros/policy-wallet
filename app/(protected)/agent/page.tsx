@@ -24,25 +24,50 @@ export default async function AgentPage() {
         }
     })
 
-    // Fetch agent relationship
+    // Fetch agent relationship + branding
     const customerRelationship = await db.customerRelationship.findFirst({
         where: {
             policyholderUserId: dbUser.id,
             status: 'active'
         },
         include: {
-            agent: true
+            agent: {
+                include: {
+                    agentProfile: {
+                        select: {
+                            agencyName: true,
+                            licenseNumber: true,
+                            logoUrl: true,
+                            brandColor: true,
+                            website: true,
+                            phone: true,
+                            verificationStatus: true,
+                        },
+                    },
+                },
+            },
         }
     })
 
-    const agent = customerRelationship?.agent ? {
-        id: customerRelationship.agent.id,
-        name: customerRelationship.agent.name || roleCopy.defaults.agentName,
-        phone: customerRelationship.agent.phoneNumber || '',
-        email: customerRelationship.agent.email,
-        company: roleCopy.defaults.agentCompany,
-        photoUrl: customerRelationship.agent.image || undefined,
-        isOnline: true
+    const agentUser = customerRelationship?.agent
+    const agentProfile = agentUser?.agentProfile
+
+    const agent = agentUser ? {
+        id: agentUser.id,
+        name: agentUser.name || roleCopy.defaults.agentName,
+        phone: agentProfile?.phone || agentUser.phoneNumber || '',
+        email: agentUser.email,
+        company: agentProfile?.agencyName || roleCopy.defaults.agentCompany,
+        photoUrl: agentProfile?.logoUrl || agentUser.image || undefined,
+        isOnline: true,
+        branding: agentProfile ? {
+            agencyName: agentProfile.agencyName,
+            licenseNumber: agentProfile.licenseNumber,
+            logoUrl: agentProfile.logoUrl,
+            brandColor: agentProfile.brandColor || "#10b981",
+            website: agentProfile.website,
+            verified: agentProfile.verificationStatus === "verified",
+        } : undefined,
     } : undefined
 
     const user = {

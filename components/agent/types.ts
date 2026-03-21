@@ -11,6 +11,9 @@ export type InteractionType =
     | 'questionnaire_sent'
     | 'opportunity_contacted'
     | 'reminder_sent'
+    | 'message_sent'
+    | 'note_added'
+    | 'relationship_created'
 export type PriorityType = 'follow_up' | 'open_opportunity' | 'pending_invite'
 
 export interface Policy {
@@ -43,6 +46,19 @@ export interface Interaction {
     timestamp: string
 }
 
+export interface CrossSellLine {
+    lob: string
+    label: { en: string; el: string }
+    essential: boolean
+    reason: { en: string; el: string }
+}
+
+export interface CustomerCrossSell {
+    existingLines: string[]
+    missingLines: CrossSellLine[]
+    coverageScore: number
+}
+
 export interface Customer {
     id: string
     relationshipId: string
@@ -57,12 +73,13 @@ export interface Customer {
     openGapsCount: number
     lastInteractionDate: string
     createdAt: string
-    avatar?: string // Added
+    avatar?: string
     inviteStatus?: InviteStatus
     inviteSentDate?: string
     policies?: Policy[]
     opportunities?: Opportunity[]
     interactions?: Interaction[]
+    crossSell?: CustomerCrossSell
 }
 
 export interface DashboardSummary {

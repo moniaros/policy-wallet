@@ -13,7 +13,10 @@ import {
     BarChart3,
     Target,
     Zap,
+    RefreshCw,
+    AlertTriangle,
 } from "lucide-react"
+import Link from "next/link"
 import type { InsightsData } from "./actions"
 
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -438,6 +441,50 @@ export function InsightsClient({ data }: InsightsClientProps) {
                         )}
                     </FadeIn>
                 </div>
+
+                {/* ── Renewal Metrics ── */}
+                {data.renewalMetrics && (
+                    <FadeIn delay={0.7} className="arc-card p-6 mb-6">
+                        <div className="flex items-center justify-between mb-5">
+                            <h2 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                                <RefreshCw className="w-5 h-5 text-teal-500" />
+                                {language === "el" ? "Μετρικές Ανανεώσεων" : "Renewal Metrics"}
+                            </h2>
+                            <Link
+                                href="/renewals"
+                                className="text-xs font-bold text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
+                            >
+                                {language === "el" ? "Διαχείριση Ανανεώσεων →" : "Manage Renewals →"}
+                            </Link>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
+                            {[
+                                { label: language === "el" ? "Σύνολο" : "Tracked", value: data.renewalMetrics.totalTracked, color: "text-slate-900 dark:text-white" },
+                                { label: language === "el" ? "Εκκρεμείς" : "Pending", value: data.renewalMetrics.pendingRenewals, color: "text-amber-600 dark:text-amber-400" },
+                                { label: language === "el" ? "Ληξιπρόθεσμες" : "Overdue", value: data.renewalMetrics.overdueRenewals, color: "text-rose-600 dark:text-rose-400" },
+                                { label: language === "el" ? "Ανανεώθηκαν" : "Renewed", value: data.renewalMetrics.renewedThisMonth, color: "text-emerald-600 dark:text-emerald-400" },
+                                { label: language === "el" ? "Εκπνοή" : "Lapsed", value: data.renewalMetrics.lapsedThisMonth, color: "text-rose-600 dark:text-rose-400" },
+                                { label: language === "el" ? "Ποσοστό Ανανέωσης" : "Renewal Rate", value: `${data.renewalMetrics.renewalRate}%`, color: "text-teal-600 dark:text-teal-400" },
+                                { label: language === "el" ? "Ασφάλιστρα σε κίνδυνο" : "Premium at Risk", value: fmt(data.renewalMetrics.premiumAtRisk, language || "en"), color: "text-orange-600 dark:text-orange-400" },
+                            ].map((metric) => (
+                                <div key={metric.label} className="text-center">
+                                    <p className={`text-2xl font-black ${metric.color}`}>{metric.value}</p>
+                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{metric.label}</p>
+                                </div>
+                            ))}
+                        </div>
+                        {data.renewalMetrics.overdueRenewals > 0 && (
+                            <div className="mt-4 flex items-center gap-2 text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-xl px-4 py-2.5">
+                                <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                                <span className="font-bold">
+                                    {language === "el"
+                                        ? `${data.renewalMetrics.overdueRenewals} ασφαλιστήρια έχουν λήξει χωρίς ενέργεια`
+                                        : `${data.renewalMetrics.overdueRenewals} policies expired without action`}
+                                </span>
+                            </div>
+                        )}
+                    </FadeIn>
+                )}
 
                 {/* ── Coverage Gaps Summary ── */}
                 <FadeIn delay={0.75} className="arc-card p-6">

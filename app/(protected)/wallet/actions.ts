@@ -801,6 +801,19 @@ export async function runPolicyAnalysis(policyId: string) {
 
     const language = (authResult.dbUser.preferredLanguage as 'en' | 'el') || 'en'
 
+    // Agent-specific analysis limit check
+    if (authResult.dbUser.roles?.includes("agent")) {
+        const { canAgentRunAnalysis } = await import("@/lib/subscription-entitlements")
+        const analysisCheck = await canAgentRunAnalysis(authResult.dbUser.id)
+        if (!analysisCheck.allowed) {
+            return {
+                error: language === "el"
+                    ? `Φτάσατε το μηνιαίο όριο αναλύσεων (${analysisCheck.used}/${analysisCheck.limit}). Αναβαθμίστε το πλάνο σας.`
+                    : `Monthly analysis limit reached (${analysisCheck.used}/${analysisCheck.limit}). Upgrade your plan.`,
+            }
+        }
+    }
+
     try {
         const orchestrator = new PolicyAnalysisOrchestratorService()
         const run = await orchestrator.createRun(policyId, authResult.dbUser.id)

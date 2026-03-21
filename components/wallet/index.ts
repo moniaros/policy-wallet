@@ -6,7 +6,5 @@ export { MyAgentScreen } from './MyAgentScreen'
 export { MyProfileScreen } from './MyProfileScreen'
 export { PolicyCard } from './PolicyCard'
 export { PolicyWallet } from './PolicyWallet'
-export { WalletPassPreview } from './WalletPassPreview'
-
 // Types
 export type { Policy, PolicyWalletProps } from './types'

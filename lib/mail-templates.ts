@@ -68,4 +68,22 @@ export const templates = {
             actionLabel: 'Download Invoice'
         })
     }),
+    POLICY_EXPIRING: (data: { policyName: string, daysLeft: number, expiryDate: string, url: string }) => ({
+        subject: `Renewal Reminder: ${data.policyName} expires in ${data.daysLeft} days`,
+        html: getBaseTemplate({
+            title: `Your policy expires in ${data.daysLeft} days`,
+            description: `Your <strong>${data.policyName}</strong> policy expires on <strong>${data.expiryDate}</strong>. Review your renewal options now to ensure continuous coverage.`,
+            actionUrl: data.url,
+            actionLabel: 'Review Policy',
+        })
+    }),
+    RENEWAL_MILESTONE: (data: { customerName: string, policyName: string, daysLeft: number, expiryDate: string, url: string }) => ({
+        subject: `Renewal Alert: ${data.customerName} — ${data.policyName} (${data.daysLeft} days)`,
+        html: getBaseTemplate({
+            title: `Renewal action needed — ${data.daysLeft} days`,
+            description: `<strong>${data.customerName}</strong>'s <strong>${data.policyName}</strong> policy expires on <strong>${data.expiryDate}</strong>. Contact the customer to discuss renewal options and secure the commission.`,
+            actionUrl: data.url,
+            actionLabel: 'Manage Renewal',
+        })
+    }),
 };

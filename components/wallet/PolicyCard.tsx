@@ -12,7 +12,6 @@ interface PolicyCardProps {
     policy: Policy
     onView?: () => void
     onShare?: () => void
-    onAddToWallet?: () => void
     onViewDocuments?: () => void
     onRunAnalysis?: () => void
     onDelete?: () => void
@@ -24,7 +23,6 @@ export function PolicyCard({
     policy,
     onView,
     onShare,
-    onAddToWallet,
     onViewDocuments,
     onRunAnalysis,
     onDelete,
@@ -387,18 +385,6 @@ export function PolicyCard({
                 <button
                     onClick={(e) => {
                         e.stopPropagation()
-                        onAddToWallet?.()
-                    }}
-                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-black/5 dark:bg-black text-black/80 dark:text-white/70 border border-black/10 dark:border-white/15 rounded-xl text-xs font-bold hover:bg-black/5 dark:hover:bg-white/10 transition-colors arc-btn"
-                >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                    {t.wallet.addToWallet}
-                </button>
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation()
                         onShare?.()
                     }}
                     className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[#FFFFFF] dark:bg-[#111111] text-black dark:text-white border border-black/10 dark:border-white/15 rounded-xl text-xs font-bold hover:bg-black/5 dark:hover:bg-black/80 transition-colors arc-btn"
@@ -501,19 +487,6 @@ export function PolicyCard({
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
                                 </div>
                                 {t.wallet.shareWithAgent}
-                            </button>
-                            <button
-                                onClick={() => {
-                                    onAddToWallet?.()
-                                    closeMenu()
-                                }}
-                                role="menuitem"
-                                className="w-full px-4 py-2 text-left text-sm font-medium text-black/80 dark:text-white/85 hover:bg-black/5 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:bg-black/5 dark:focus-visible:bg-white/10 transition-colors flex items-center gap-3"
-                            >
-                                <div className="w-8 h-8 bg-black/5 dark:bg-white/10 rounded-lg flex items-center justify-center text-black/75 dark:text-white/75">
-                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
-                                </div>
-                                {t.wallet.addToWallet}
                             </button>
 
                             {/* Review */}

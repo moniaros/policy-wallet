@@ -1,28 +1,60 @@
 "use client"
 
 import { useState } from "react"
-import { Shield, Building, CreditCard, Save, CheckCircle, AlertCircle } from "lucide-react"
+import { Shield, Building, CreditCard, Save, CheckCircle, AlertCircle, ArrowUpRight, Percent } from "lucide-react"
+import Link from "next/link"
 import { updateAgentProfile } from "../actions"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
 
+const LOB_OPTIONS = [
+    { key: "motor", en: "Motor", el: "Αυτοκίνητο" },
+    { key: "home", en: "Home", el: "Κατοικία" },
+    { key: "health", en: "Health", el: "Υγεία" },
+    { key: "life", en: "Life", el: "Ζωή" },
+    { key: "travel", en: "Travel", el: "Ταξίδι" },
+    { key: "pet", en: "Pet", el: "Κατοικίδιο" },
+    { key: "liability", en: "Liability", el: "Αστική Ευθύνη" },
+    { key: "legal_expenses", en: "Legal Expenses", el: "Νομική Προστασία" },
+] as const
+
 interface Props {
     initialAgencyName?: string | null
     initialLicenseNumber?: string | null
+    initialCommissionRates?: Record<string, number>
     verificationStatus?: string
+    subscription?: {
+        tier: string
+        isPaid: boolean
+        maxCustomers: number | null
+        currentCustomers: number
+        aiAnalysesPerMonth: number | null
+    }
 }
 
-export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, verificationStatus }: Props) {
+export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, initialCommissionRates, verificationStatus, subscription }: Props) {
     const [agencyName, setAgencyName] = useState(initialAgencyName || "")
     const [licenseNumber, setLicenseNumber] = useState(initialLicenseNumber || "")
+    const [commissionRates, setCommissionRates] = useState<Record<string, number>>(initialCommissionRates || {})
     const [isSaving, setIsSaving] = useState(false)
     const { language } = useLanguage()
     const roleCopy = getRoleCopy(language)
 
+    const handleCommissionChange = (lob: string, value: string) => {
+        const num = parseFloat(value)
+        if (value === "" || isNaN(num)) {
+            const next = { ...commissionRates }
+            delete next[lob]
+            setCommissionRates(next)
+        } else {
+            setCommissionRates({ ...commissionRates, [lob]: Math.min(Math.max(num, 0), 100) })
+        }
+    }
+
     const handleSave = async () => {
         setIsSaving(true)
-        const result = await updateAgentProfile({ agencyName, licenseNumber })
+        const result = await updateAgentProfile({ agencyName, licenseNumber, commissionRates })
         setIsSaving(false)
 
         if (result.success) {
@@ -83,6 +115,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, v
                             </div>
                         </div>
 
+                        {/* Agency Profile */}
                         <div className="arc-card p-8 space-y-8 border-t-4 border-t-[#1fdc86]">
                             <div className="space-y-6">
                                 <div className="space-y-2">
@@ -119,6 +152,105 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, v
                                 </button>
                             </div>
                         </div>
+
+                        {/* Commission Rates */}
+                        <div className="arc-card p-8 space-y-6 border-t-4 border-t-emerald-500">
+                            <div>
+                                <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
+                                    <Percent className="w-4 h-4 text-emerald-500" />
+                                    {language === "el" ? "Ποσοστά Προμήθειας" : "Commission Rates"}
+                                </h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                    {language === "el"
+                                        ? "Ορίστε τα ποσοστά προμήθειας ανά κλάδο ασφάλισης"
+                                        : "Set your commission percentage per line of business"}
+                                </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                {LOB_OPTIONS.map((lob) => (
+                                    <div key={lob.key} className="flex items-center gap-3 bg-slate-50 dark:bg-slate-800 rounded-xl px-4 py-3">
+                                        <span className="text-sm font-bold text-slate-700 dark:text-slate-300 flex-1">
+                                            {language === "el" ? lob.el : lob.en}
+                                        </span>
+                                        <div className="flex items-center gap-1">
+                                            <input
+                                                type="number"
+                                                min={0}
+                                                max={100}
+                                                step={0.5}
+                                                value={commissionRates[lob.key] ?? ""}
+                                                onChange={(e) => handleCommissionChange(lob.key, e.target.value)}
+                                                placeholder="—"
+                                                className="w-16 bg-white dark:bg-slate-700 border-none rounded-lg px-2 py-1.5 text-sm font-bold text-center text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500 outline-none"
+                                            />
+                                            <span className="text-xs font-bold text-slate-400">%</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+                                <button
+                                    onClick={handleSave}
+                                    disabled={isSaving}
+                                    className="arc-btn bg-emerald-600 hover:bg-emerald-700 text-white w-full md:w-auto px-8 flex items-center justify-center gap-2 disabled:opacity-50"
+                                >
+                                    <Save className="w-4 h-4" />
+                                    {isSaving
+                                        ? roleCopy.agentSettings.saving
+                                        : language === "el" ? "Αποθήκευση Προμηθειών" : "Save Commission Rates"}
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Subscription */}
+                        {subscription && (
+                            <div className="arc-card p-8 space-y-4 border-t-4 border-t-teal-500">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">
+                                        {language === "el" ? "Συνδρομή" : "Subscription"}
+                                    </h3>
+                                    <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${
+                                        subscription.isPaid
+                                            ? "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400"
+                                            : "bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400"
+                                    }`}>
+                                        {subscription.tier.replace(/_/g, " ")}
+                                    </span>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                                            {language === "el" ? "Πελάτες" : "Customers"}
+                                        </p>
+                                        <p className="text-lg font-black text-slate-900 dark:text-white">
+                                            {subscription.currentCustomers}
+                                            <span className="text-sm font-medium text-slate-400">
+                                                /{subscription.maxCustomers ?? "∞"}
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                                            {language === "el" ? "AI Αναλύσεις/μήνα" : "AI Analyses/mo"}
+                                        </p>
+                                        <p className="text-lg font-black text-slate-900 dark:text-white">
+                                            {subscription.aiAnalysesPerMonth ?? "∞"}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <Link
+                                    href="/agent/pricing"
+                                    className="inline-flex items-center gap-2 text-sm font-bold text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
+                                >
+                                    {language === "el" ? "Αναβάθμιση πλάνου" : "Upgrade plan"}
+                                    <ArrowUpRight className="w-4 h-4" />
+                                </Link>
+                            </div>
+                        )}
 
                         {/* Danger Zone */}
                         <div className="arc-card p-8 border border-rose-100 dark:border-rose-900/30 bg-rose-50/50 dark:bg-rose-900/10">

@@ -50,7 +50,6 @@ export interface PolicyWalletProps {
     onUploadDocument?: () => void
     onBatchUpload?: () => void
     onShareWithAgent?: (policyId: string) => void
-    onAddToWallet?: (policyId: string) => void
     onViewDocuments?: (policyId: string) => void
     onEditPolicy?: (policyId: string) => void
     user?: {

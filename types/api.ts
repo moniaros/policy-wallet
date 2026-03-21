@@ -105,12 +105,20 @@ export interface CreateOpportunityInput {
     gapInstanceId?: string
     notes?: string
     nextActionAt?: string
+    estimatedPremium?: number
+    estimatedCommission?: number
+    lineOfBusiness?: string
 }
 
 export interface UpdateOpportunityInput {
     status?: string
     notes?: string
     nextActionAt?: string
+    estimatedPremium?: number
+    estimatedCommission?: number
+    quotedPremium?: number
+    wonPremium?: number
+    lineOfBusiness?: string
 }
 
 export interface SendQuestionnaireInput {

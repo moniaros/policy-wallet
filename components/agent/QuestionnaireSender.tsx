@@ -2,10 +2,20 @@
 
 import { useState, useEffect } from "react"
 import { getQuestionnaireTemplates, sendQuestionnaire } from "@/app/(protected)/agent/actions"
+import { useLanguage } from "@/contexts/LanguageContext"
+import { Car, Home, HeartPulse, Shield, PawPrint, FileQuestion } from "lucide-react"
 
 interface QuestionnaireSenderProps {
     relationshipId: string
     customerName: string
+}
+
+const LOB_ICONS: Record<string, typeof Car> = {
+    motor: Car,
+    home: Home,
+    health: HeartPulse,
+    life: Shield,
+    pet: PawPrint,
 }
 
 export function QuestionnaireSender({ relationshipId, customerName }: QuestionnaireSenderProps) {
@@ -14,6 +24,7 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
     const [selectedTemplate, setSelectedTemplate] = useState("")
     const [isSending, setIsSending] = useState(false)
     const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
+    const { language } = useLanguage()
 
     useEffect(() => {
         if (isOpen) {
@@ -80,30 +91,40 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
                                         Select Questionnaire Template
                                     </label>
                                     <div className="grid grid-cols-1 gap-3">
-                                        {templates.map(t => (
-                                            <button
-                                                key={t.id}
-                                                onClick={() => setSelectedTemplate(t.id)}
-                                                className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all text-left ${selectedTemplate === t.id
-                                                    ? 'border-teal-600 bg-teal-50 dark:bg-teal-900/20'
-                                                    : 'border-stone-100 dark:border-stone-700 hover:border-stone-200 bg-stone-50 dark:bg-stone-900/50'
-                                                    }`}
-                                            >
-                                                <div>
-                                                    <p className={`font-bold text-sm ${selectedTemplate === t.id ? 'text-teal-900 dark:text-teal-100' : 'text-stone-900 dark:text-white'}`}>
-                                                        {t.name}
-                                                    </p>
-                                                    <p className="text-[10px] text-stone-500 uppercase tracking-widest mt-1">
-                                                        Line: {t.lineOfBusiness}
-                                                    </p>
-                                                </div>
-                                                {selectedTemplate === t.id && (
-                                                    <div className="w-5 h-5 bg-teal-600 rounded-full flex items-center justify-center text-white">
-                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" /></svg>
+                                        {templates.map(t => {
+                                            const Icon = LOB_ICONS[t.lineOfBusiness] || FileQuestion
+                                            const questionCount = Array.isArray(t.questions) ? t.questions.length : 0
+                                            return (
+                                                <button
+                                                    key={t.id}
+                                                    onClick={() => setSelectedTemplate(t.id)}
+                                                    className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all text-left ${selectedTemplate === t.id
+                                                        ? 'border-teal-600 bg-teal-50 dark:bg-teal-900/20'
+                                                        : 'border-stone-100 dark:border-stone-700 hover:border-stone-200 bg-stone-50 dark:bg-stone-900/50'
+                                                        }`}
+                                                >
+                                                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${selectedTemplate === t.id
+                                                        ? 'bg-teal-600 text-white'
+                                                        : 'bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400'
+                                                        }`}>
+                                                        <Icon className="w-4 h-4" />
                                                     </div>
-                                                )}
-                                            </button>
-                                        ))}
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className={`font-bold text-sm ${selectedTemplate === t.id ? 'text-teal-900 dark:text-teal-100' : 'text-stone-900 dark:text-white'}`}>
+                                                            {t.name}
+                                                        </p>
+                                                        <p className="text-[10px] text-stone-500 uppercase tracking-widest mt-0.5">
+                                                            {t.lineOfBusiness} · {questionCount} {language === 'el' ? 'ερωτήσεις' : 'questions'}
+                                                        </p>
+                                                    </div>
+                                                    {selectedTemplate === t.id && (
+                                                        <div className="w-5 h-5 bg-teal-600 rounded-full flex items-center justify-center text-white flex-shrink-0">
+                                                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" /></svg>
+                                                        </div>
+                                                    )}
+                                                </button>
+                                            )
+                                        })}
                                     </div>
                                 </div>
                             </div>

@@ -8,7 +8,7 @@ import { RoleSwitcher } from './RoleSwitcher'
 import { ThemeToggle } from '../ThemeToggle'
 import { PolicyWalletLogo } from '@/components/branding/Logo'
 import { InstallPrompt } from "@/components/pwa/InstallPrompt"
-import { Users, Lightbulb, LayoutDashboard, MoreHorizontal, Wallet, Shield, Settings } from 'lucide-react'
+import { Users, Lightbulb, LayoutDashboard, MoreHorizontal, Wallet, Shield, Settings, TrendingUp } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
 import { track } from '@vercel/analytics'
@@ -67,12 +67,14 @@ const getBottomNavItems = (role: UserRole['role'], t: any) => {
             dashboard: t.nav.dashboard,
             customers: t.nav.customers,
             opportunities: t.nav.opportunities,
+            insights: t.nav.insights,
             more: t.common.actions
         }
         return [
             { href: '/dashboard', icon: LayoutDashboard, label: translations.dashboard, id: 'dashboard' },
             { href: '/customers', icon: Users, label: translations.customers, id: 'customers' },
-            { href: '/opportunities', icon: Lightbulb, label: translations.opportunities, id: 'opportunities' },
+            { href: '/opportunities', icon: TrendingUp, label: translations.opportunities, id: 'opportunities' },
+            { href: '/insights', icon: Lightbulb, label: translations.insights, id: 'insights' },
             { href: '/account', icon: MoreHorizontal, label: translations.more, id: 'more' }
         ]
     }

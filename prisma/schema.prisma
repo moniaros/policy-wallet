@@ -110,6 +110,8 @@ model User {
   collaborationMessages           CollaborationMessage[]
   collaborationActionsAssigned    CollaborationAction[]    @relation("CollaborationActionAssignee")
   collaborationParticipants       CollaborationParticipant[]
+  policyRenewals                  PolicyRenewal[]
+  tenantMemberships               TenantMembership[]
   passkeyCredentials              PasskeyCredential[]
   webAuthnChallenges              WebAuthnChallenge[]
   consents                        ConsentAudit[]
@@ -171,6 +173,9 @@ model AgentProfile {
   phone              String?
   documents          Json?    // [{ type: "license", url: "..." }]
 
+  // Commission rates per LoB: { "motor": 15, "health": 20, ... } (percentage)
+  commissionRates    Json?    @map("commission_rates")
+
   onboardingCompletedAt DateTime? @map("onboarding_completed_at")
   submittedAt           DateTime  @default(now()) @map("submitted_at")
   createdAt             DateTime  @default(now()) @map("created_at")
@@ -216,7 +221,13 @@ model InsuranceType {
 model Tenant {
   id        String             @id @default(cuid()) @map("tenant_id")
   name      String
-  type      String             @default("personal")
+  type      String             @default("agency") // agency | personal
+  logoUrl   String?            @map("logo_url")
+  brandColor String?           @map("brand_color") @default("#10b981")
+  website   String?
+  phone     String?
+  address   String?
+  taxId     String?            @map("tax_id") // ΑΦΜ for Greek agencies
   createdAt DateTime           @default(now()) @map("created_at")
   updatedAt DateTime           @updatedAt @map("updated_at")
   members   TenantMembership[]
@@ -225,15 +236,21 @@ model Tenant {
 }
 
 model TenantMembership {
-  id        String   @id @default(cuid()) @map("membership_id")
-  tenantId  String   @map("tenant_id")
-  userId    String   @map("user_id")
-  role      String   @default("member")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  id          String    @id @default(cuid()) @map("membership_id")
+  tenantId    String    @map("tenant_id")
+  userId      String    @map("user_id")
+  role        String    @default("member") // owner | manager | member
+  status      String    @default("active") // active | suspended | invited
+  invitedBy   String?   @map("invited_by")
+  invitedAt   DateTime? @map("invited_at")
+  joinedAt    DateTime? @map("joined_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, userId])
+  @@index([userId])
   @@map("tenant_memberships")
 }
 
@@ -262,9 +279,11 @@ model Policy {
   tokenUsages     TokenUsage[]     @relation("PolicyTokenUsage")
   analysisRuns    PolicyAnalysisRun[]
   collaborationThreads CollaborationThread[]
+  renewals        PolicyRenewal[]
 
   @@index([ownerUserId])
   @@index([createdByUserId])
+  @@index([endDate])
   @@map("policies")
 }
 
@@ -383,39 +402,49 @@ model Invite {
 }
 
 model Opportunity {
-  id               String               @id @default(cuid()) @map("opportunity_id")
-  relationshipId   String               @map("relationship_id")
-  policyId         String?              @map("policy_id")
-  gapInstanceId    String?              @map("gap_instance_id")
-  status           String               @default("open")
-  nextActionAt     DateTime?            @map("next_action_at")
-  notes            String?
-  ownerAgentUserId String               @map("owner_agent_user_id")
-  createdAt        DateTime             @default(now()) @map("created_at")
-  updatedAt        DateTime             @updatedAt @map("updated_at")
-  gapInstance      GapInstance?         @relation(fields: [gapInstanceId], references: [id])
-  owner            User                 @relation(fields: [ownerAgentUserId], references: [id])
-  policy           Policy?              @relation(fields: [policyId], references: [id])
-  relationship     CustomerRelationship @relation(fields: [relationshipId], references: [id])
+  id                  String               @id @default(cuid()) @map("opportunity_id")
+  relationshipId      String               @map("relationship_id")
+  policyId            String?              @map("policy_id")
+  gapInstanceId       String?              @map("gap_instance_id")
+  status              String               @default("open")
+  nextActionAt        DateTime?            @map("next_action_at")
+  notes               String?
+  ownerAgentUserId    String               @map("owner_agent_user_id")
+  estimatedPremium    Decimal?             @map("estimated_premium")
+  estimatedCommission Decimal?             @map("estimated_commission")
+  quotedPremium       Decimal?             @map("quoted_premium")
+  wonPremium          Decimal?             @map("won_premium")
+  currency            String               @default("EUR")
+  lineOfBusiness      String?              @map("line_of_business")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+  gapInstance         GapInstance?         @relation(fields: [gapInstanceId], references: [id])
+  owner               User                 @relation(fields: [ownerAgentUserId], references: [id])
+  policy              Policy?              @relation(fields: [policyId], references: [id])
+  relationship        CustomerRelationship @relation(fields: [relationshipId], references: [id])
   collaborationThreads CollaborationThread[]
 
   @@index([relationshipId])
   @@index([policyId])
   @@index([ownerAgentUserId])
+  @@index([status])
   @@map("opportunities")
 }
 
 model QuestionnaireTemplate {
-  id             String                  @id @default(cuid()) @map("template_id")
-  name           String
-  lineOfBusiness String                  @map("line_of_business")
-  version        Int                     @default(1)
-  questions      Json
-  isActive       Boolean                 @default(true) @map("is_active")
-  createdAt      DateTime                @default(now()) @map("created_at")
-  updatedAt      DateTime                @updatedAt @map("updated_at")
-  instances      QuestionnaireInstance[]
+  id              String                  @id @default(cuid()) @map("template_id")
+  name            String
+  lineOfBusiness  String                  @map("line_of_business")
+  version         Int                     @default(1)
+  questions       Json
+  isActive        Boolean                 @default(true) @map("is_active")
+  isSystem        Boolean                 @default(false) @map("is_system")
+  createdByUserId String?                 @map("created_by_user_id")
+  createdAt       DateTime                @default(now()) @map("created_at")
+  updatedAt       DateTime                @updatedAt @map("updated_at")
+  instances       QuestionnaireInstance[]
 
+  @@index([createdByUserId])
   @@map("questionnaire_templates")
 }
 
@@ -1016,4 +1045,46 @@ model TranslationCache {
   createdAt   DateTime @default(now()) @map("created_at")
 
   @@map("translation_cache")
+}
+
+// ============================================================================
+// RENEWAL TRACKING
+// ============================================================================
+
+model PolicyRenewal {
+  id                  String    @id @default(cuid()) @map("renewal_id")
+  policyId            String    @map("policy_id")
+  ownerUserId         String    @map("owner_user_id")
+  agentUserId         String?   @map("agent_user_id")
+
+  // Renewal timeline
+  policyEndDate       DateTime  @map("policy_end_date")
+  daysBeforeExpiry    Int       @map("days_before_expiry")
+
+  // Status tracking: pending → contacted → renewed / lapsed / cancelled
+  status              String    @default("pending")
+  outcome             String?   // renewed_same_insurer | renewed_different_insurer | lapsed | cancelled
+  outcomeNotes        String?   @map("outcome_notes")
+  outcomeAt           DateTime? @map("outcome_at")
+
+  // Notification tracking
+  remindersSent       Json      @default("[]") @map("reminders_sent") // array of { milestone: number, sentAt: string }
+  lastReminderAt      DateTime? @map("last_reminder_at")
+
+  // Linked records
+  taskId              String?   @map("task_id")
+  opportunityId       String?   @map("opportunity_id")
+
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  policy              Policy    @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  owner               User      @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+
+  @@unique([policyId, policyEndDate])
+  @@index([ownerUserId])
+  @@index([agentUserId])
+  @@index([status])
+  @@index([policyEndDate])
+  @@map("policy_renewals")
 }

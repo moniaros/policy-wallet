@@ -13,7 +13,6 @@ interface MobilePolicyCardProps {
     variant?: 'hero' | 'compact'
     onView?: () => void
     onShare?: () => void
-    onAddToWallet?: () => void
     onViewDocuments?: () => void
 }
 

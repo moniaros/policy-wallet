@@ -42,11 +42,19 @@ export default async function DashboardPage() {
     // 3. conversionRate
     const opportunities = await prisma.opportunity.findMany({
         where: { ownerAgentUserId: agentId },
-        select: { status: true }
+        select: { status: true, estimatedPremium: true, wonPremium: true }
     })
     const totalOps = opportunities.length
     const wonOps = opportunities.filter((o: any) => o.status === 'won').length
     const conversionRate = totalOps === 0 ? 0 : Math.round((wonOps / totalOps) * 100)
+
+    // Pipeline value: sum of estimated premiums on active (non-closed) opportunities
+    const pipelineValue = opportunities
+        .filter(o => o.status !== 'won' && o.status !== 'lost')
+        .reduce((sum, o) => sum + Number(o.estimatedPremium ?? 0), 0)
+    const wonRevenue = opportunities
+        .filter(o => o.status === 'won')
+        .reduce((sum, o) => sum + Number(o.wonPremium ?? o.estimatedPremium ?? 0), 0)
 
     // 4. real activity feed
     const feed = await getActivityFeed(10)
@@ -73,16 +81,18 @@ export default async function DashboardPage() {
         totalPolicies,
         totalPremium,
         monthlyGrowth,
-        conversionRate
+        conversionRate,
+        pipelineValue,
+        wonRevenue,
     }
 
     const priorities = (data.priorities || []).map(p => ({
         id: p.id || Math.random().toString(),
-        type: p.type === 'follow_up' ? 'follow_up' : 
+        type: p.type === 'follow_up' ? 'follow_up' :
               p.type === 'open_opportunity' ? 'opportunity' : 'renewal',
         customerName: p.customerName || 'Customer',
         description: p.message || 'Action required',
-        dueDate: new Date(Date.now() + 86400000).toISOString(),
+        dueDate: p.dueDate ? new Date(p.dueDate).toISOString() : new Date().toISOString(),
         priority: p.priority > 3 ? 'high' : p.priority > 1 ? 'medium' : 'low'
     }))
 

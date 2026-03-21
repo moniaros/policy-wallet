@@ -31,6 +31,8 @@ interface DashboardStats {
     totalPremium: number
     monthlyGrowth: number
     conversionRate: number
+    pipelineValue?: number
+    wonRevenue?: number
 }
 
 interface Priority {
@@ -84,11 +86,11 @@ export function DesktopDashboard({ stats, priorities, recentActivity, onPriority
             trend: "up" as const,
         },
         {
-            label: roleCopy.agentDashboard.conversionRate,
-            value: `${stats.conversionRate}%`,
-            change: 3.2,
+            label: language === "el" ? "Pipeline" : "Pipeline Value",
+            value: new Intl.NumberFormat(language === "el" ? "el-GR" : "en-US", { style: "currency", currency: "EUR", notation: "compact" }).format(stats.pipelineValue ?? 0),
+            change: stats.conversionRate,
             icon: Target,
-            trend: "up" as const,
+            trend: (stats.pipelineValue ?? 0) > 0 ? "up" as const : "down" as const,
         },
     ], [stats, language, roleCopy])
 

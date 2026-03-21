@@ -1,0 +1,560 @@
+"use client"
+
+import { useState } from "react"
+import { useLanguage } from "@/contexts/LanguageContext"
+import {
+    Users, UserPlus, Crown, Shield, User, ArrowRightLeft,
+    TrendingUp, DollarSign, Briefcase, Building2, MoreVertical,
+    ChevronDown, X, AlertCircle
+} from "lucide-react"
+import type { TeamOverview } from "@/lib/services/team.service"
+import {
+    createAgencyAction, inviteMemberAction, removeMemberAction,
+    updateRoleAction, transferCustomerAction
+} from "./actions"
+
+const copy = {
+    en: {
+        kicker: "AGENCY",
+        title: "Team Management",
+        subtitle: "Manage your agency team, assign customers, and track performance.",
+        noTeam: "No Agency Created",
+        noTeamDesc: "Create an agency to invite team members, share customers, and track pipeline across your brokerage.",
+        createAgency: "Create Agency",
+        agencyName: "Agency Name",
+        website: "Website",
+        phone: "Phone",
+        address: "Address",
+        taxId: "Tax ID (ΑΦΜ)",
+        members: "Team Members",
+        invite: "Invite Member",
+        email: "Email address",
+        role: "Role",
+        owner: "Owner",
+        manager: "Manager",
+        member: "Member",
+        invited: "Invited",
+        active: "Active",
+        suspended: "Suspended",
+        customers: "Customers",
+        pipeline: "Pipeline",
+        won: "Won",
+        remove: "Remove",
+        changeRole: "Change Role",
+        teamStats: "Team Overview",
+        totalMembers: "Total Members",
+        totalCustomers: "Total Customers",
+        totalPipeline: "Pipeline Value",
+        totalWon: "Won Revenue",
+        sharedPipeline: "Shared Pipeline",
+        agent: "Agent",
+        customer: "Customer",
+        status: "Status",
+        value: "Value",
+        lob: "LoB",
+        noOpps: "No opportunities in the pipeline yet.",
+        transfer: "Transfer",
+        transferCustomer: "Transfer Customer",
+        transferTo: "Transfer to",
+        cancel: "Cancel",
+        confirm: "Confirm",
+    },
+    el: {
+        kicker: "ΠΡΑΚΤΟΡΕΙΟ",
+        title: "Διαχείριση Ομάδας",
+        subtitle: "Διαχειριστείτε την ομάδα σας, αναθέστε πελάτες και παρακολουθήστε την απόδοση.",
+        noTeam: "Δεν έχει δημιουργηθεί πρακτορείο",
+        noTeamDesc: "Δημιουργήστε ένα πρακτορείο για να προσκαλέσετε μέλη, να μοιραστείτε πελάτες και να παρακολουθείτε τη ροή εργασίας.",
+        createAgency: "Δημιουργία Πρακτορείου",
+        agencyName: "Όνομα Πρακτορείου",
+        website: "Ιστοσελίδα",
+        phone: "Τηλέφωνο",
+        address: "Διεύθυνση",
+        taxId: "ΑΦΜ",
+        members: "Μέλη Ομάδας",
+        invite: "Πρόσκληση Μέλους",
+        email: "Διεύθυνση email",
+        role: "Ρόλος",
+        owner: "Ιδιοκτήτης",
+        manager: "Διαχειριστής",
+        member: "Μέλος",
+        invited: "Προσκεκλημένο",
+        active: "Ενεργό",
+        suspended: "Αναστολή",
+        customers: "Πελάτες",
+        pipeline: "Σωλήνας",
+        won: "Κερδ.",
+        remove: "Αφαίρεση",
+        changeRole: "Αλλαγή Ρόλου",
+        teamStats: "Επισκόπηση Ομάδας",
+        totalMembers: "Σύνολο Μελών",
+        totalCustomers: "Σύνολο Πελατών",
+        totalPipeline: "Αξία Pipeline",
+        totalWon: "Κερδισμένα Έσοδα",
+        sharedPipeline: "Κοινός Σωλήνας",
+        agent: "Πράκτορας",
+        customer: "Πελάτης",
+        status: "Κατάσταση",
+        value: "Αξία",
+        lob: "Κλάδος",
+        noOpps: "Δεν υπάρχουν ευκαιρίες ακόμα.",
+        transfer: "Μεταφορά",
+        transferCustomer: "Μεταφορά Πελάτη",
+        transferTo: "Μεταφορά σε",
+        cancel: "Ακύρωση",
+        confirm: "Επιβεβαίωση",
+    },
+}
+
+interface PipelineItem {
+    id: string
+    status: string
+    lineOfBusiness: string | null
+    estimatedPremium: number | null
+    wonPremium: number | null
+    customerName: string
+    agentName: string
+    agentId: string
+    agentPhoto: string | null
+    updatedAt: string
+    notes: string | null
+}
+
+interface Props {
+    team: TeamOverview | null
+    pipeline: PipelineItem[]
+}
+
+export function TeamClient({ team, pipeline }: Props) {
+    const { language } = useLanguage()
+    const t = copy[language === "el" ? "el" : "en"]
+
+    const fmt = (n: number) =>
+        new Intl.NumberFormat(language === "el" ? "el-GR" : "en-US", {
+            style: "currency",
+            currency: "EUR",
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        }).format(n)
+
+    if (!team) {
+        return <CreateAgencyView t={t} />
+    }
+
+    return (
+        <div className="pw-page-shell min-h-screen">
+            <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+                {/* Header */}
+                <div className="mb-10 text-center sm:text-left">
+                    <span className="pw-kicker inline-block mb-2">{t.kicker}</span>
+                    <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-3">
+                        {t.title}
+                    </h1>
+                    <p className="max-w-xl text-lg text-slate-600 dark:text-slate-400">
+                        {t.subtitle}
+                    </p>
+                </div>
+
+                {/* Team Stats */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <StatCard
+                        icon={<Users className="w-5 h-5 text-violet-500" />}
+                        label={t.totalMembers}
+                        value={String(team.stats.totalMembers)}
+                        color="violet"
+                    />
+                    <StatCard
+                        icon={<Briefcase className="w-5 h-5 text-blue-500" />}
+                        label={t.totalCustomers}
+                        value={String(team.stats.totalCustomers)}
+                        color="blue"
+                    />
+                    <StatCard
+                        icon={<TrendingUp className="w-5 h-5 text-amber-500" />}
+                        label={t.totalPipeline}
+                        value={fmt(team.stats.totalPipeline)}
+                        color="amber"
+                    />
+                    <StatCard
+                        icon={<DollarSign className="w-5 h-5 text-emerald-500" />}
+                        label={t.totalWon}
+                        value={fmt(team.stats.totalWon)}
+                        color="emerald"
+                    />
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Team Members */}
+                    <div className="lg:col-span-1">
+                        <MembersPanel team={team} t={t} fmt={fmt} />
+                    </div>
+
+                    {/* Shared Pipeline */}
+                    <div className="lg:col-span-2">
+                        <PipelinePanel pipeline={pipeline} team={team} t={t} fmt={fmt} />
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+// ── Sub-components ──
+
+function StatCard({ icon, label, value, color }: {
+    icon: React.ReactNode
+    label: string
+    value: string
+    color: string
+}) {
+    return (
+        <div className="arc-card p-5">
+            <div className="flex items-center gap-3 mb-2">
+                <div className={`w-9 h-9 rounded-xl bg-${color}-50 dark:bg-${color}-900/20 flex items-center justify-center`}>
+                    {icon}
+                </div>
+            </div>
+            <p className="text-2xl font-black text-slate-900 dark:text-white">{value}</p>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{label}</p>
+        </div>
+    )
+}
+
+function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en; fmt: (n: number) => string }) {
+    const [showInvite, setShowInvite] = useState(false)
+    const [inviteEmail, setInviteEmail] = useState("")
+    const [inviteRole, setInviteRole] = useState<"member" | "manager">("member")
+    const [inviteLoading, setInviteLoading] = useState(false)
+    const [inviteError, setInviteError] = useState("")
+    const [menuOpen, setMenuOpen] = useState<string | null>(null)
+
+    const handleInvite = async () => {
+        if (!inviteEmail) return
+        setInviteLoading(true)
+        setInviteError("")
+        const result = await inviteMemberAction(inviteEmail, inviteRole)
+        setInviteLoading(false)
+        if (result.error) {
+            setInviteError(result.error)
+        } else {
+            setInviteEmail("")
+            setShowInvite(false)
+        }
+    }
+
+    const roleIcon = (role: string) => {
+        if (role === "owner") return <Crown className="w-3.5 h-3.5 text-amber-500" />
+        if (role === "manager") return <Shield className="w-3.5 h-3.5 text-blue-500" />
+        return <User className="w-3.5 h-3.5 text-slate-400" />
+    }
+
+    const roleLabel = (role: string) => {
+        if (role === "owner") return t.owner
+        if (role === "manager") return t.manager
+        return t.member
+    }
+
+    const statusBadge = (status: string) => {
+        if (status === "invited") return <span className="text-[9px] font-black text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-2 py-0.5 rounded-full uppercase tracking-widest">{t.invited}</span>
+        if (status === "suspended") return <span className="text-[9px] font-black text-red-600 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-full uppercase tracking-widest">{t.suspended}</span>
+        return null
+    }
+
+    return (
+        <div className="arc-card p-6">
+            <div className="flex items-center justify-between mb-5">
+                <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
+                    <Users className="w-4 h-4 text-violet-500" />
+                    {t.members}
+                </h3>
+                <button
+                    onClick={() => setShowInvite(!showInvite)}
+                    className="text-[10px] font-black text-emerald-600 hover:text-emerald-700 uppercase tracking-widest flex items-center gap-1"
+                >
+                    <UserPlus className="w-3.5 h-3.5" />
+                    {t.invite}
+                </button>
+            </div>
+
+            {/* Invite form */}
+            {showInvite && (
+                <div className="mb-5 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 space-y-3">
+                    <input
+                        type="email"
+                        placeholder={t.email}
+                        value={inviteEmail}
+                        onChange={(e) => setInviteEmail(e.target.value)}
+                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-medium"
+                    />
+                    <select
+                        value={inviteRole}
+                        onChange={(e) => setInviteRole(e.target.value as "member" | "manager")}
+                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-medium"
+                    >
+                        <option value="member">{t.member}</option>
+                        <option value="manager">{t.manager}</option>
+                    </select>
+                    {inviteError && (
+                        <p className="text-xs text-red-600 font-bold flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" /> {inviteError}
+                        </p>
+                    )}
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => setShowInvite(false)}
+                            className="flex-1 px-3 py-2 text-xs font-bold text-slate-500 hover:text-slate-700"
+                        >
+                            {t.cancel}
+                        </button>
+                        <button
+                            onClick={handleInvite}
+                            disabled={inviteLoading || !inviteEmail}
+                            className="flex-1 px-3 py-2 bg-emerald-600 text-white rounded-xl text-xs font-black hover:bg-emerald-700 disabled:opacity-50"
+                        >
+                            {inviteLoading ? "..." : t.invite}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Members list */}
+            <div className="space-y-3">
+                {team.members.map((m) => (
+                    <div key={m.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors relative">
+                        {m.photoUrl ? (
+                            <img src={m.photoUrl} alt={m.name} className="w-10 h-10 rounded-xl object-cover" />
+                        ) : (
+                            <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-sm font-black text-slate-500">
+                                {m.name.charAt(0)}
+                            </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                                <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{m.name}</p>
+                                {roleIcon(m.role)}
+                                {statusBadge(m.status)}
+                            </div>
+                            <div className="flex items-center gap-3 mt-0.5">
+                                <span className="text-[10px] font-bold text-slate-400">
+                                    {m.customerCount} {t.customers}
+                                </span>
+                                <span className="text-[10px] font-bold text-emerald-500">
+                                    {fmt(m.wonValue)}
+                                </span>
+                            </div>
+                        </div>
+                        {m.role !== "owner" && (
+                            <button
+                                onClick={() => setMenuOpen(menuOpen === m.id ? null : m.id)}
+                                className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400"
+                            >
+                                <MoreVertical className="w-4 h-4" />
+                            </button>
+                        )}
+
+                        {/* Context menu */}
+                        {menuOpen === m.id && (
+                            <div className="absolute right-0 top-full z-10 mt-1 w-44 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                                <button
+                                    onClick={async () => {
+                                        const newRole = m.role === "manager" ? "member" : "manager"
+                                        await updateRoleAction(m.userId, newRole)
+                                        setMenuOpen(null)
+                                    }}
+                                    className="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
+                                >
+                                    <ArrowRightLeft className="w-3.5 h-3.5" />
+                                    {t.changeRole}
+                                </button>
+                                <button
+                                    onClick={async () => {
+                                        await removeMemberAction(m.userId)
+                                        setMenuOpen(null)
+                                    }}
+                                    className="w-full px-4 py-2.5 text-left text-xs font-bold text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-2"
+                                >
+                                    <X className="w-3.5 h-3.5" />
+                                    {t.remove}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+}
+
+function PipelinePanel({ pipeline, team, t, fmt }: {
+    pipeline: PipelineItem[]
+    team: TeamOverview
+    t: typeof copy.en
+    fmt: (n: number) => string
+}) {
+    const statusColor: Record<string, string> = {
+        open: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+        contacted: "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400",
+        quoted: "bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400",
+        won: "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400",
+        lost: "bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400",
+    }
+
+    return (
+        <div className="arc-card p-6">
+            <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest mb-5 flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-teal-500" />
+                {t.sharedPipeline}
+            </h3>
+
+            {pipeline.length === 0 ? (
+                <div className="py-12 text-center">
+                    <p className="text-sm text-slate-400">{t.noOpps}</p>
+                </div>
+            ) : (
+                <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                        <thead>
+                            <tr className="border-b border-slate-100 dark:border-slate-800">
+                                <th className="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest pb-3">{t.customer}</th>
+                                <th className="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest pb-3">{t.agent}</th>
+                                <th className="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest pb-3">{t.lob}</th>
+                                <th className="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest pb-3">{t.status}</th>
+                                <th className="text-right text-[10px] font-black text-slate-400 uppercase tracking-widest pb-3">{t.value}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {pipeline.map((item) => (
+                                <tr key={item.id} className="border-b border-slate-50 dark:border-slate-800/50">
+                                    <td className="py-3 font-bold text-slate-900 dark:text-white">{item.customerName}</td>
+                                    <td className="py-3">
+                                        <div className="flex items-center gap-2">
+                                            {item.agentPhoto ? (
+                                                <img src={item.agentPhoto} alt="" className="w-6 h-6 rounded-lg object-cover" />
+                                            ) : (
+                                                <div className="w-6 h-6 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-slate-500">
+                                                    {item.agentName.charAt(0)}
+                                                </div>
+                                            )}
+                                            <span className="text-sm text-slate-600 dark:text-slate-400">{item.agentName}</span>
+                                        </div>
+                                    </td>
+                                    <td className="py-3 text-slate-500 capitalize">{(item.lineOfBusiness || "—").replace(/_/g, " ")}</td>
+                                    <td className="py-3">
+                                        <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full ${statusColor[item.status] || statusColor.open}`}>
+                                            {item.status}
+                                        </span>
+                                    </td>
+                                    <td className="py-3 text-right font-bold text-slate-900 dark:text-white">
+                                        {item.estimatedPremium ? fmt(item.wonPremium || item.estimatedPremium) : "—"}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </div>
+    )
+}
+
+function CreateAgencyView({ t }: { t: typeof copy.en }) {
+    const [name, setName] = useState("")
+    const [website, setWebsite] = useState("")
+    const [phone, setPhone] = useState("")
+    const [address, setAddress] = useState("")
+    const [taxId, setTaxId] = useState("")
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState("")
+
+    const handleCreate = async () => {
+        if (!name.trim()) return
+        setLoading(true)
+        setError("")
+        const result = await createAgencyAction({ name, website, phone, address, taxId })
+        setLoading(false)
+        if (result.error) setError(result.error)
+    }
+
+    return (
+        <div className="pw-page-shell min-h-screen">
+            <div className="max-w-lg mx-auto px-4 py-16">
+                <div className="arc-card p-8 text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-violet-50 dark:bg-violet-900/20 flex items-center justify-center mx-auto mb-6">
+                        <Building2 className="w-8 h-8 text-violet-500" />
+                    </div>
+                    <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">
+                        {t.noTeam}
+                    </h2>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 max-w-sm mx-auto">
+                        {t.noTeamDesc}
+                    </p>
+
+                    <div className="space-y-3 text-left">
+                        <div>
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">{t.agencyName} *</label>
+                            <input
+                                type="text"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
+                                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-medium"
+                                placeholder="Ασφαλιστικό Πρακτορείο..."
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">{t.phone}</label>
+                                <input
+                                    type="tel"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-medium"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">{t.taxId}</label>
+                                <input
+                                    type="text"
+                                    value={taxId}
+                                    onChange={(e) => setTaxId(e.target.value)}
+                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-medium"
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">{t.website}</label>
+                            <input
+                                type="url"
+                                value={website}
+                                onChange={(e) => setWebsite(e.target.value)}
+                                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-medium"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">{t.address}</label>
+                            <input
+                                type="text"
+                                value={address}
+                                onChange={(e) => setAddress(e.target.value)}
+                                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-medium"
+                            />
+                        </div>
+                    </div>
+
+                    {error && (
+                        <p className="mt-4 text-xs text-red-600 font-bold flex items-center justify-center gap-1">
+                            <AlertCircle className="w-3 h-3" /> {error}
+                        </p>
+                    )}
+
+                    <button
+                        onClick={handleCreate}
+                        disabled={loading || !name.trim()}
+                        className="mt-6 w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-4 rounded-2xl text-sm font-black hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
+                    >
+                        {loading ? "..." : t.createAgency}
+                    </button>
+                </div>
+            </div>
+        </div>
+    )
+}

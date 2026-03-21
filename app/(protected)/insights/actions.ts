@@ -36,6 +36,7 @@ export interface InsightsData {
         lost: number
         conversionRate: number
         totalPotentialValue: number
+        totalWonValue: number
     }
     premiumSummary: {
         totalPremium: number
@@ -50,6 +51,15 @@ export interface InsightsData {
         policyNumber: string
         detectedAt: string
     }[]
+    renewalMetrics: {
+        totalTracked: number
+        pendingRenewals: number
+        overdueRenewals: number
+        renewedThisMonth: number
+        lapsedThisMonth: number
+        renewalRate: number
+        premiumAtRisk: number
+    }
 }
 
 export async function getInsightsData(): Promise<InsightsData | null> {
@@ -137,6 +147,8 @@ export async function getInsightsData(): Promise<InsightsData | null> {
         select: {
             id: true,
             status: true,
+            estimatedPremium: true,
+            wonPremium: true,
         }
     })
 
@@ -147,6 +159,15 @@ export async function getInsightsData(): Promise<InsightsData | null> {
     const oppWon = opportunities.filter(o => o.status === 'won').length
     const oppLost = opportunities.filter(o => o.status === 'lost').length
     const conversionRate = oppTotal > 0 ? Math.round((oppWon / oppTotal) * 100) : 0
+
+    // Calculate pipeline value from estimated premiums on active opportunities
+    const totalPotentialValue = opportunities
+        .filter(o => o.status !== 'won' && o.status !== 'lost')
+        .reduce((sum, o) => sum + Number(o.estimatedPremium ?? 0), 0)
+
+    const totalWonValue = opportunities
+        .filter(o => o.status === 'won')
+        .reduce((sum, o) => sum + Number(o.wonPremium ?? o.estimatedPremium ?? 0), 0)
 
     // 5. Premium summary
     const totalPremium = policies.reduce((sum, p) => sum + ((p.premiumAmount as number) || 0), 0)
@@ -172,6 +193,31 @@ export async function getInsightsData(): Promise<InsightsData | null> {
         take: 10,
     })
 
+    // 7. Renewal metrics
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+
+    const [totalTracked, pendingRenewals, overdueRenewals, renewedThisMonth, lapsedThisMonth, atRiskRenewals] = await Promise.all([
+        db.policyRenewal.count({ where: { agentUserId: agentId } }),
+        db.policyRenewal.count({ where: { agentUserId: agentId, status: "pending" } }),
+        db.policyRenewal.count({ where: { agentUserId: agentId, status: "overdue" } }),
+        db.policyRenewal.count({
+            where: { agentUserId: agentId, status: "completed", outcomeAt: { gte: monthStart } },
+        }),
+        db.policyRenewal.count({
+            where: { agentUserId: agentId, outcome: "lapsed", outcomeAt: { gte: monthStart } },
+        }),
+        db.policyRenewal.findMany({
+            where: { agentUserId: agentId, status: { in: ["pending", "overdue"] } },
+            include: { policy: { select: { premiumAmount: true } } },
+        }),
+    ])
+
+    const premiumAtRisk = atRiskRenewals.reduce(
+        (sum, r) => sum + (r.policy.premiumAmount ? Number(r.policy.premiumAmount) : 0), 0
+    )
+    const totalResolved = renewedThisMonth + lapsedThisMonth
+    const renewalRate = totalResolved > 0 ? Math.round((renewedThisMonth / totalResolved) * 100) : 0
+
     return {
         portfolioHealth: {
             totalCustomers,
@@ -190,7 +236,8 @@ export async function getInsightsData(): Promise<InsightsData | null> {
             won: oppWon,
             lost: oppLost,
             conversionRate,
-            totalPotentialValue: 0,
+            totalPotentialValue: Math.round(totalPotentialValue),
+            totalWonValue: Math.round(totalWonValue),
         },
         premiumSummary: {
             totalPremium,
@@ -205,5 +252,14 @@ export async function getInsightsData(): Promise<InsightsData | null> {
             policyNumber: g.policy.policyNumber || 'N/A',
             detectedAt: g.detectedAt.toISOString(),
         })),
+        renewalMetrics: {
+            totalTracked,
+            pendingRenewals,
+            overdueRenewals,
+            renewedThisMonth,
+            lapsedThisMonth,
+            renewalRate,
+            premiumAtRisk: Math.round(premiumAtRisk),
+        },
     }
 }

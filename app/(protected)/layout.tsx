@@ -7,7 +7,7 @@ import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { signOut } from "@/app/auth/actions"
 import type { NavigationSection, UserRole } from "@/types/navigation"
 
-import { Wallet, Shield, PieChart, Bell, LayoutDashboard, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity } from 'lucide-react'
+import { Wallet, Shield, PieChart, Bell, LayoutDashboard, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, DollarSign, UsersRound, FileQuestion } from 'lucide-react'
 
 export default async function ProtectedLayout({
     children,
@@ -50,9 +50,12 @@ export default async function ProtectedLayout({
                 { label: t.nav.dashboard, href: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
                 { label: t.nav.customers, href: "/customers", icon: <Users className="w-5 h-5" /> },
                 { label: t.nav.opportunities, href: "/opportunities", icon: <Lightbulb className="w-5 h-5" /> },
+                { label: t.nav.renewals, href: "/renewals", icon: <RefreshCw className="w-5 h-5" /> },
+                { label: t.nav.commissions, href: "/commissions", icon: <DollarSign className="w-5 h-5" /> },
+                { label: t.nav.questionnaires, href: "/questionnaires", icon: <FileQuestion className="w-5 h-5" /> },
                 { label: t.tasks.actionCenter, href: "/tasks", icon: <ClipboardList className="w-5 h-5" /> },
                 { label: t.nav.insights, href: "/insights", icon: <PieChart className="w-5 h-5" /> },
-                { label: t.nav.activity, href: "/activity", icon: <Activity className="w-5 h-5" /> },
+                { label: t.nav.team, href: "/team", icon: <UsersRound className="w-5 h-5" /> },
                 { label: t.nav.notifications, href: "/notifications", icon: <Bell className="w-5 h-5" /> },
                 { label: roleCopy.shell.agentProfile, href: "/agent/settings", icon: <Settings className="w-5 h-5" /> },
             ]

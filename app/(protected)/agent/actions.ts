@@ -7,6 +7,7 @@ import { redirect } from "next/navigation"
 import {
     ActivationStatus,
     AccessScope,
+    InteractionType,
     OpportunityStatus,
     Priority,
     Customer,
@@ -93,15 +94,65 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
 
         const nameParts = (profile.customer.name || 'Unknown').split(' ')
 
-        // Mock interactions for now as service doesn't return them directly in this format yet
-        const interactions = [
-            {
-                id: 'i1',
-                type: 'invite_sent' as const,
-                message: 'Digital wallet invitation dispatched.',
-                timestamp: profile.relationship.joinedAt.toISOString()
-            }
-        ]
+        // Build real interaction timeline from collaboration messages + invite events
+        const [messages, invites] = await Promise.all([
+            db.collaborationMessage.findMany({
+                where: {
+                    thread: { relationshipId: profile.relationship.id },
+                },
+                orderBy: { createdAt: 'desc' },
+                take: 10,
+                select: { id: true, messageType: true, body: true, createdAt: true },
+            }),
+            db.invite.findMany({
+                where: {
+                    inviterUserId: authResult.dbUser.id,
+                    inviteeEmail: profile.customer.email ?? undefined,
+                },
+                orderBy: { createdAt: 'desc' },
+                take: 5,
+                select: { id: true, createdAt: true, consumedAt: true },
+            }),
+        ])
+
+        const interactions: Array<{ id: string; type: InteractionType; message: string; timestamp: string }> = []
+
+        for (const inv of invites) {
+            interactions.push({
+                id: inv.id,
+                type: 'invite_sent',
+                message: inv.consumedAt ? 'Invitation accepted.' : 'Digital wallet invitation dispatched.',
+                timestamp: inv.createdAt.toISOString(),
+            })
+        }
+
+        for (const msg of messages) {
+            interactions.push({
+                id: msg.id,
+                type: msg.messageType === 'note' ? 'note_added' : 'message_sent',
+                message: msg.body.length > 80 ? msg.body.slice(0, 80) + '...' : msg.body,
+                timestamp: msg.createdAt.toISOString(),
+            })
+        }
+
+        // Sort by most recent first
+        interactions.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+
+        // Always include the relationship creation as the first event if no invites found
+        if (invites.length === 0) {
+            interactions.push({
+                id: profile.relationship.id,
+                type: 'relationship_created',
+                message: 'Customer relationship established.',
+                timestamp: profile.relationship.joinedAt.toISOString(),
+            })
+        }
+
+        // Cross-sell analysis
+        const { analyzePortfolioGaps, calculateCoverageScore } = await import("@/lib/services/cross-sell.service")
+        const existingLines = [...new Set(profile.policies.map(p => (p.type || 'other').toLowerCase()))]
+        const missingLines = analyzePortfolioGaps(existingLines)
+        const coverageScore = calculateCoverageScore(existingLines)
 
         return {
             id: profile.customer.id,
@@ -117,6 +168,7 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
             openGapsCount: profile.policies.reduce((ts, p) => ts + p.gaps, 0),
             lastInteractionDate: profile.relationship.lastInteraction ? new Date(profile.relationship.lastInteraction).toISOString() : new Date(profile.relationship.joinedAt).toISOString(),
             createdAt: new Date(profile.relationship.joinedAt).toISOString(),
+            crossSell: { existingLines, missingLines, coverageScore },
             policies: profile.policies.map(p => ({
                 policyId: p.id,
                 policyNumber: p.number,
@@ -201,6 +253,16 @@ export async function inviteCustomer(formData: FormData) {
 export async function createAgentInvite(email: string, scope: AccessScope) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { success: false, error: "Unauthorized" }
+
+    // Check customer limit
+    const { canAgentAddCustomer } = await import("@/lib/subscription-entitlements")
+    const customerCheck = await canAgentAddCustomer(authResult.dbUser.id)
+    if (!customerCheck.allowed) {
+        return {
+            success: false,
+            error: `Customer limit reached (${customerCheck.current}/${customerCheck.limit}). Upgrade your plan to add more customers.`,
+        }
+    }
 
     // 1. Ensure User exists (Placeholder if new)
     let customer = await db.user.findUnique({
@@ -531,6 +593,7 @@ export async function sendReminder(customerId: string) {
 export async function updateAgentProfile(data: {
     agencyName?: string;
     licenseNumber?: string;
+    commissionRates?: Record<string, number>;
 }) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
@@ -538,17 +601,21 @@ export async function updateAgentProfile(data: {
     const agentId = authResult.dbUser.id
 
     try {
+        const updateData: Record<string, unknown> = {
+            updatedAt: new Date(),
+        }
+        if (data.agencyName !== undefined) updateData.agencyName = data.agencyName
+        if (data.licenseNumber !== undefined) updateData.licenseNumber = data.licenseNumber
+        if (data.commissionRates !== undefined) updateData.commissionRates = data.commissionRates
+
         await db.agentProfile.upsert({
             where: { userId: agentId },
-            update: {
-                agencyName: data.agencyName,
-                licenseNumber: data.licenseNumber,
-                updatedAt: new Date()
-            },
+            update: updateData,
             create: {
                 userId: agentId,
                 agencyName: data.agencyName,
                 licenseNumber: data.licenseNumber,
+                commissionRates: data.commissionRates ?? undefined,
                 verificationStatus: 'pending'
             }
         })
@@ -559,4 +626,27 @@ export async function updateAgentProfile(data: {
         console.error(e)
         return { error: "Failed to update profile" }
     }
+}
+
+/**
+ * CROSS-SELL INTELLIGENCE
+ */
+
+export async function getCustomerCrossSell(customerId: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return null
+
+    const { runCrossSellForCustomer } = await import("@/lib/services/cross-sell.service")
+    return runCrossSellForCustomer(authResult.dbUser.id, customerId, false)
+}
+
+export async function createCrossSellOpportunities(customerId: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    const { runCrossSellForCustomer } = await import("@/lib/services/cross-sell.service")
+    const result = await runCrossSellForCustomer(authResult.dbUser.id, customerId, true)
+
+    revalidatePath(`/customers/${customerId}`)
+    return { success: true, opportunitiesCreated: result.opportunitiesCreated }
 }

@@ -27,7 +27,6 @@ interface PolicyTableProps {
     onRunAnalysis?: (policyId: string) => void
     onDelete?: (policyId: string) => void
     onShare?: (policyId: string) => void
-    onAddToWallet?: (policyId: string) => void
     onViewDocuments?: (policyId: string) => void
 }
 

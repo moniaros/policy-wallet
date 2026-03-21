@@ -7,13 +7,15 @@ import {
     OpportunityStatus,
     Policy,
     Interaction,
-    CustomerProfileProps
+    CustomerProfileProps,
+    CustomerCrossSell
 } from './types'
 import {
     Mail, Phone, Calendar, Clock, Shield, AlertTriangle,
     FileText, CheckCircle, XCircle, ArrowLeft, MoreHorizontal,
     TrendingUp, Activity, Download, ExternalLink, Sparkles,
-    ChevronRight, Upload, UserPlus, Send, Briefcase
+    ChevronRight, Upload, UserPlus, Send, Briefcase,
+    ShieldCheck, ShieldAlert, Plus
 } from 'lucide-react'
 
 const PROFILE_ANIMATION_CSS = `
@@ -371,6 +373,67 @@ export function CustomerProfile({
                                     </div>
                                 )}
                             </section>
+
+                            {/* Cross-Sell Needs */}
+                            {customer.crossSell && customer.crossSell.missingLines.length > 0 && (
+                                <section style={{ animation: 'profFadeUp .5s ease-out 450ms both' }}>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                                            <Sparkles className="w-5 h-5 text-teal-500" />
+                                            Customer Needs
+                                        </h3>
+                                        <div className="flex items-center gap-2">
+                                            <div className="h-2 w-20 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                                <div
+                                                    className="h-full bg-teal-500 rounded-full transition-all"
+                                                    style={{ width: `${customer.crossSell.coverageScore}%` }}
+                                                />
+                                            </div>
+                                            <span className="text-xs font-bold text-slate-500">
+                                                {customer.crossSell.coverageScore}%
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl border border-slate-200/60 dark:border-slate-800/60 p-5 shadow-sm">
+                                        {/* Existing coverage */}
+                                        <div className="flex flex-wrap gap-1.5 mb-4">
+                                            {customer.crossSell.existingLines.map((lob) => (
+                                                <span key={lob} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
+                                                    <ShieldCheck className="w-3 h-3" />
+                                                    {lob}
+                                                </span>
+                                            ))}
+                                        </div>
+
+                                        {/* Missing lines */}
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Missing Coverage</p>
+                                        <div className="space-y-2">
+                                            {customer.crossSell.missingLines.slice(0, 5).map((line) => (
+                                                <div
+                                                    key={line.lob}
+                                                    className={`flex items-start gap-3 px-3 py-2.5 rounded-xl ${
+                                                        line.essential
+                                                            ? 'bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-800/30'
+                                                            : 'bg-slate-50 dark:bg-slate-800/50'
+                                                    }`}
+                                                >
+                                                    <ShieldAlert className={`w-4 h-4 mt-0.5 flex-shrink-0 ${line.essential ? 'text-amber-500' : 'text-slate-400'}`} />
+                                                    <div className="min-w-0 flex-1">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-sm font-bold text-slate-900 dark:text-white">{line.label.en}</span>
+                                                            {line.essential && (
+                                                                <span className="text-[9px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">Essential</span>
+                                                            )}
+                                                        </div>
+                                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1">{line.reason.en}</p>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </section>
+                            )}
                         </div>
 
                         {/* ──── Right Column (Timeline) ──── */}

@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react"
 import Link from "next/link"
 import { toast } from "sonner"
-import { AddToWallet } from "@/app/(protected)/wallet/[id]/AddToWallet"
 import { CollaborationPanel } from "@/components/wallet/CollaborationPanel"
 import { DeletePolicy } from "@/components/wallet/DeletePolicy"
 import { PolicyAnalysisTabs } from "@/app/(protected)/wallet/[id]/PolicyAnalysisTabs"
@@ -22,7 +21,6 @@ import {
     Shield,
     Sparkles,
     TrendingUp,
-    WalletCards,
 } from "lucide-react"
 
 interface PolicyDetailsClientProps {
@@ -71,7 +69,8 @@ export function PolicyDetailsClient({
     relationshipId,
     t,
 }: PolicyDetailsClientProps) {
-    const [showWalletModal, setShowWalletModal] = useState(shouldOpenWallet)
+    // wallet pass feature removed — parked for future
+    void shouldOpenWallet
     const [activeTab, setActiveTab] = useState<"analysis" | "qa" | "collaboration">("analysis")
 
     const locale = t.common?.locale || "en-US"
@@ -346,14 +345,6 @@ export function PolicyDetailsClient({
                         </div>
 
                         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                            <button
-                                onClick={() => setShowWalletModal(true)}
-                                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#1FDC86] px-5 text-sm font-bold text-white transition-colors hover:bg-[#19b870] cursor-pointer"
-                            >
-                                <WalletCards className="h-4 w-4" />
-                                {t.wallet.addToWalletAction}
-                            </button>
-
                             <button
                                 onClick={handleShare}
                                 className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/30 bg-white/5 px-5 text-sm font-semibold text-white transition-colors hover:bg-white/10 cursor-pointer"
@@ -643,14 +634,6 @@ export function PolicyDetailsClient({
                 </div>
             </div>
 
-            <AddToWallet
-                policy={walletPolicy}
-                holderName={holderName}
-                plateNumber={policy.acordData?.vehicle?.plateNumber}
-                open={showWalletModal}
-                onOpenChange={setShowWalletModal}
-                trigger={null}
-            />
         </div>
     )
 }

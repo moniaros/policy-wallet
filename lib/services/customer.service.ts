@@ -306,6 +306,7 @@ export class CustomerService extends BaseService {
             customerName: string;
             message: string;
             priority: number;
+            dueDate: Date | null;
         }> = [];
 
         // 1. Open Opportunities
@@ -332,7 +333,8 @@ export class CustomerService extends BaseService {
                 customerId: opp.relationship.policyholderUserId,
                 customerName: opp.relationship.customer?.name || 'Unknown',
                 message: `New risk gap detected: ${opp.gapInstance?.definition.title || 'Coverage Gap'}`,
-                priority: opp.gapInstance?.severity === 'critical' || opp.gapInstance?.severity === 'high' ? 1 : 2
+                priority: opp.gapInstance?.severity === 'critical' || opp.gapInstance?.severity === 'high' ? 1 : 2,
+                dueDate: opp.nextActionAt ?? opp.createdAt,
             });
         });
 
@@ -354,7 +356,8 @@ export class CustomerService extends BaseService {
                 customerId: rel.policyholderUserId,
                 customerName: rel.customer?.name || 'Unknown',
                 message: "Customer hasn't been contacted in over a week.",
-                priority: 3
+                priority: 3,
+                dueDate: rel.lastInteractionAt ? new Date(rel.lastInteractionAt.getTime() + 7 * 24 * 60 * 60 * 1000) : null,
             });
         });
 
@@ -375,7 +378,8 @@ export class CustomerService extends BaseService {
                 customerId: '',
                 customerName: inv.inviteeEmail,
                 message: "Invitation sent 3+ days ago but not yet opened.",
-                priority: 4
+                priority: 4,
+                dueDate: inv.expiresAt,
             });
         });
 
