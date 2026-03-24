@@ -8,7 +8,7 @@ import { z } from "zod"
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { AnimatePresence, motion } from "framer-motion"
-import { AlertCircle, CheckCircle2, Eye, EyeOff, Loader2, ShieldCheck, Sparkles } from "lucide-react"
+import { AlertCircle, Briefcase, CheckCircle2, Eye, EyeOff, Loader2, Shield, ShieldCheck, Sparkles } from "lucide-react"
 import { registerUser } from "../actions"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { trackLandingEvent } from "@/lib/landing/analytics"
@@ -97,10 +97,11 @@ function SignUpForm() {
     const { language, setLanguage } = useLanguage()
     const t = (el: string, en: string) => (language === "el" ? el : en)
 
-    const role = searchParams.get("role") === "agent" ? "agent" : "policyholder"
+    const initialRole = searchParams.get("role") === "agent" ? "agent" : "policyholder"
     const source = searchParams.get("source") || "signup_direct"
     const token = searchParams.get("token") || ""
 
+    const [role, setRole] = useState<"policyholder" | "agent">(initialRole)
     const [showPassword, setShowPassword] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [serverError, setServerError] = useState<string | null>(null)
@@ -242,6 +243,50 @@ function SignUpForm() {
                             EN
                         </button>
                     </div>
+                </div>
+
+                {/* Role Selection */}
+                <div className="mb-5 grid grid-cols-2 gap-3">
+                    <button
+                        type="button"
+                        onClick={() => setRole("policyholder")}
+                        className={`flex items-center gap-2.5 rounded-xl border-2 px-4 py-3 text-left transition-all ${role === "policyholder"
+                            ? "border-[#1FDC86] bg-emerald-50/50 dark:bg-emerald-900/10"
+                            : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-slate-600"
+                            }`}
+                    >
+                        <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${role === "policyholder" ? "bg-emerald-100 dark:bg-emerald-900/30" : "bg-slate-100 dark:bg-slate-800"}`}>
+                            <Shield className={`h-4 w-4 ${role === "policyholder" ? "text-emerald-600" : "text-slate-400"}`} />
+                        </div>
+                        <div>
+                            <p className={`text-xs font-bold ${role === "policyholder" ? "text-slate-900 dark:text-white" : "text-slate-600 dark:text-slate-400"}`}>
+                                {t("Ασφαλισμένος", "Policyholder")}
+                            </p>
+                            <p className="text-[10px] text-slate-500">
+                                {t("Διαχείριση συμβολαίων", "Manage my policies")}
+                            </p>
+                        </div>
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setRole("agent")}
+                        className={`flex items-center gap-2.5 rounded-xl border-2 px-4 py-3 text-left transition-all ${role === "agent"
+                            ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-900/10"
+                            : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-slate-600"
+                            }`}
+                    >
+                        <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${role === "agent" ? "bg-indigo-100 dark:bg-indigo-900/30" : "bg-slate-100 dark:bg-slate-800"}`}>
+                            <Briefcase className={`h-4 w-4 ${role === "agent" ? "text-indigo-600" : "text-slate-400"}`} />
+                        </div>
+                        <div>
+                            <p className={`text-xs font-bold ${role === "agent" ? "text-slate-900 dark:text-white" : "text-slate-600 dark:text-slate-400"}`}>
+                                {t("Ασφαλιστικός Σύμβουλος", "Insurance Agent")}
+                            </p>
+                            <p className="text-[10px] text-slate-500">
+                                {t("Διαχείριση πελατών", "Manage my clients")}
+                            </p>
+                        </div>
+                    </button>
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

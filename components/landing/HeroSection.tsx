@@ -1,7 +1,8 @@
 "use client"
 
-import { motion } from "framer-motion"
-import { ArrowRight, Play, Shield } from "lucide-react"
+import { useState } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import { ArrowRight, Play, Shield, X, Upload, Sparkles, BarChart3, Users, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
 
 interface HeroSectionProps {
@@ -17,6 +18,7 @@ interface HeroSectionProps {
 }
 
 export function HeroSection({ t }: HeroSectionProps) {
+    const [showDemo, setShowDemo] = useState(false)
     return (
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-violet-50">
             {/* Decorative Elements */}
@@ -85,7 +87,11 @@ export function HeroSection({ t }: HeroSectionProps) {
                         </Link>
 
                         {/* Secondary CTA */}
-                        <button className="group px-8 py-4 bg-white border-2 border-slate-200 text-slate-700 rounded-xl font-semibold text-lg hover:border-indigo-300 hover:bg-indigo-50/50 transition-all duration-200 flex items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={() => setShowDemo(true)}
+                            className="group px-8 py-4 bg-white border-2 border-slate-200 text-slate-700 rounded-xl font-semibold text-lg hover:border-indigo-300 hover:bg-indigo-50/50 transition-all duration-200 flex items-center gap-2"
+                        >
                             <Play className="w-5 h-5" />
                             {t.ctaSecondary}
                         </button>
@@ -100,18 +106,16 @@ export function HeroSection({ t }: HeroSectionProps) {
                     >
                         <p className="text-sm text-slate-500">{t.trustedBy}</p>
 
-                        {/* Trust Badges */}
-                        <div className="flex items-center gap-6 opacity-60">
-                            {/* You can add actual company logos here */}
-                            <div className="h-8 px-6 bg-slate-200 rounded-md flex items-center justify-center">
-                                <span className="text-xs font-medium text-slate-500">ETHNIKI</span>
-                            </div>
-                            <div className="h-8 px-6 bg-slate-200 rounded-md flex items-center justify-center">
-                                <span className="text-xs font-medium text-slate-500">INTERAMERICAN</span>
-                            </div>
-                            <div className="h-8 px-6 bg-slate-200 rounded-md flex items-center justify-center">
-                                <span className="text-xs font-medium text-slate-500">NN HELLAS</span>
-                            </div>
+                        {/* Trust Badges — Greek Insurers */}
+                        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+                            {["Ethniki", "Interamerican", "NN Hellas", "Generali", "Eurolife", "Allianz"].map((name) => (
+                                <div
+                                    key={name}
+                                    className="h-9 px-5 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-lg flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300"
+                                >
+                                    <span className="text-xs font-semibold tracking-wide text-slate-600">{name}</span>
+                                </div>
+                            ))}
                         </div>
                     </motion.div>
 
@@ -125,37 +129,85 @@ export function HeroSection({ t }: HeroSectionProps) {
                         <div className="relative max-w-5xl mx-auto">
                             {/* Glass Card Container */}
                             <div className="relative bg-white/80 backdrop-blur-xl rounded-3xl border border-white/50 shadow-2xl p-2 sm:p-4">
-                                {/* Screenshot Placeholder */}
-                                <div className="relative aspect-video bg-gradient-to-br from-indigo-100 via-purple-50 to-violet-100 rounded-2xl overflow-hidden">
-                                    {/* You can replace this with actual app screenshot */}
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <div className="text-center">
-                                            <Shield className="w-24 h-24 text-indigo-300 mx-auto mb-4" />
-                                            <p className="text-slate-400 text-lg">App Dashboard Preview</p>
+                                {/* Dashboard Mockup */}
+                                <div className="relative aspect-video bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 rounded-2xl overflow-hidden p-4 sm:p-6">
+                                    {/* Mock Dashboard Grid */}
+                                    <div className="grid grid-cols-3 gap-3 sm:gap-4 h-full">
+                                        {/* KPI Cards Row */}
+                                        <div className="bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-slate-200/50 flex flex-col justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                                                    <Shield className="w-4 h-4 text-emerald-600" />
+                                                </div>
+                                                <span className="text-[10px] sm:text-xs font-medium text-slate-500">Active Policies</span>
+                                            </div>
+                                            <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">7</p>
+                                        </div>
+
+                                        <div className="bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-slate-200/50 flex flex-col justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center">
+                                                    <BarChart3 className="w-4 h-4 text-indigo-600" />
+                                                </div>
+                                                <span className="text-[10px] sm:text-xs font-medium text-slate-500">Coverage</span>
+                                            </div>
+                                            <div className="flex items-end gap-1">
+                                                <p className="text-xl sm:text-2xl font-bold text-emerald-600">87%</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-slate-200/50 flex flex-col justify-between">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center">
+                                                    <Sparkles className="w-4 h-4 text-violet-600" />
+                                                </div>
+                                                <span className="text-[10px] sm:text-xs font-medium text-slate-500">AI Insights</span>
+                                            </div>
+                                            <p className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">3</p>
+                                        </div>
+
+                                        {/* Main Content Area */}
+                                        <div className="col-span-2 bg-white dark:bg-slate-800 rounded-xl p-3 shadow-sm border border-slate-200/50">
+                                            <p className="text-[10px] sm:text-xs font-semibold text-slate-500 mb-2">Renewal Timeline</p>
+                                            <div className="space-y-2">
+                                                {[
+                                                    { name: "Motor", days: 12, color: "bg-red-500" },
+                                                    { name: "Home", days: 45, color: "bg-amber-500" },
+                                                    { name: "Health", days: 89, color: "bg-emerald-500" },
+                                                ].map((r) => (
+                                                    <div key={r.name} className="flex items-center gap-2">
+                                                        <div className={`w-1.5 h-6 ${r.color} rounded-full`} />
+                                                        <span className="text-[10px] sm:text-xs text-slate-700 dark:text-slate-300 flex-1">{r.name}</span>
+                                                        <span className="text-[10px] sm:text-xs font-medium text-slate-500">{r.days}d</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Savings Card */}
+                                        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-3 shadow-sm flex flex-col justify-between text-white">
+                                            <p className="text-[10px] sm:text-xs font-medium text-emerald-100">Savings Found</p>
+                                            <p className="text-lg sm:text-xl font-bold">€450<span className="text-xs font-normal text-emerald-200">/yr</span></p>
                                         </div>
                                     </div>
 
-                                    {/* Floating Elements (optional decoration) */}
-                                    <div className="absolute top-4 left-4 bg-white rounded-lg shadow-lg p-3">
+                                    {/* Floating AI Analysis Card */}
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: 1, duration: 0.5 }}
+                                        className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-white dark:bg-slate-800 rounded-lg shadow-lg p-2.5 sm:p-3 border border-emerald-200"
+                                    >
                                         <div className="flex items-center gap-2">
-                                            <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
-                                                <span className="text-emerald-600 font-bold">✓</span>
+                                            <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center">
+                                                <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                                             </div>
                                             <div>
-                                                <p className="text-xs font-semibold text-slate-700">AI Analysis Complete</p>
-                                                <p className="text-xs text-slate-500">3 gaps found</p>
+                                                <p className="text-[10px] sm:text-xs font-semibold text-slate-700 dark:text-slate-200">AI Analysis Complete</p>
+                                                <p className="text-[10px] text-slate-500">3 gaps identified</p>
                                             </div>
                                         </div>
-                                    </div>
-
-                                    <div className="absolute bottom-4 right-4 bg-white rounded-lg shadow-lg p-3">
-                                        <div className="flex items-center gap-2">
-                                            <div className="text-right">
-                                                <p className="text-xs text-slate-500">Potential savings</p>
-                                                <p className="text-lg font-bold text-emerald-600">€450/year</p>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    </motion.div>
                                 </div>
                             </div>
 
@@ -184,6 +236,67 @@ export function HeroSection({ t }: HeroSectionProps) {
                     </div>
                 </div>
             </motion.div>
+
+            {/* Demo Modal */}
+            <AnimatePresence>
+                {showDemo && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+                    >
+                        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowDemo(false)} />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="relative z-10 w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden"
+                        >
+                            <div className="flex items-center justify-between p-6 border-b border-slate-100">
+                                <h2 className="text-xl font-bold text-slate-900">How PolicyWallet Works</h2>
+                                <button type="button" onClick={() => setShowDemo(false)} aria-label="Close" className="p-2 rounded-full hover:bg-slate-100 transition-colors">
+                                    <X className="w-5 h-5 text-slate-500" />
+                                </button>
+                            </div>
+
+                            <div className="p-6 space-y-6">
+                                {[
+                                    { icon: Upload, color: "bg-indigo-100 text-indigo-600", title: "1. Upload Your Policies", desc: "Take a photo or upload a PDF of any insurance policy. Our AI reads it instantly." },
+                                    { icon: Sparkles, color: "bg-violet-100 text-violet-600", title: "2. AI Analyzes Coverage", desc: "Our AI extracts key details, detects coverage gaps, and finds savings opportunities." },
+                                    { icon: BarChart3, color: "bg-emerald-100 text-emerald-600", title: "3. Track & Optimize", desc: "Monitor all policies in one dashboard. Get renewal alerts and coverage insights." },
+                                    { icon: Users, color: "bg-teal-100 text-teal-600", title: "4. Connect With Your Agent", desc: "Collaborate with your insurance advisor directly through the app." },
+                                ].map((step, i) => (
+                                    <motion.div
+                                        key={step.title}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: i * 0.15 }}
+                                        className="flex items-start gap-4"
+                                    >
+                                        <div className={`w-12 h-12 rounded-xl ${step.color} flex items-center justify-center flex-shrink-0`}>
+                                            <step.icon className="w-6 h-6" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-slate-900">{step.title}</h3>
+                                            <p className="text-sm text-slate-600 mt-0.5">{step.desc}</p>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </div>
+
+                            <div className="p-6 bg-slate-50 border-t border-slate-100">
+                                <Link
+                                    href="/auth/signup"
+                                    className="block w-full px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold text-center hover:shadow-lg transition-all"
+                                >
+                                    Get Started Free <ArrowRight className="w-5 h-5 inline ml-1" />
+                                </Link>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </section>
     )
 }

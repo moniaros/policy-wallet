@@ -3,34 +3,44 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, ArrowRight, Check } from "lucide-react"
-import { completeOnboardingStep } from "@/app/onboarding/actions" // Wait, server action? Client component can import server actions.
+import { completeOnboardingStep } from "@/app/onboarding/actions"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 interface DashboardTourProps {
     onComplete: () => void
 }
 
-const steps = [
+interface TourStep {
+    targetId: string
+    title: { el: string; en: string }
+    content: { el: string; en: string }
+    position: string
+}
+
+const steps: TourStep[] = [
     {
         targetId: "tour-policy-card-0",
-        title: "Your First Policy!",
-        content: "Here lies your newly added policy. Tap it to see full details, documents, and AI insights.",
+        title: { el: "Το Πρώτο σας Συμβόλαιο!", en: "Your First Policy!" },
+        content: { el: "Εδώ βρίσκεται το νέο σας συμβόλαιο. Πατήστε για πλήρη στοιχεία, έγγραφα και AI ανάλυση.", en: "Here lies your newly added policy. Tap it to see full details, documents, and AI insights." },
         position: "bottom"
     },
     {
         targetId: "tour-fab",
-        title: "Add More Policies",
-        content: "Use this button to add more policies anytime—supports PDF, photos, or manual entry.",
+        title: { el: "Προσθήκη Συμβολαίων", en: "Add More Policies" },
+        content: { el: "Χρησιμοποιήστε αυτό το κουμπί για να προσθέσετε συμβόλαια — υποστηρίζει PDF, φωτογραφίες ή χειροκίνητη εισαγωγή.", en: "Use this button to add more policies anytime—supports PDF, photos, or manual entry." },
         position: "top-left"
     },
     {
         targetId: "tour-search",
-        title: "Find & Filter",
-        content: "Quickly find any policy by searching or filtering by category.",
+        title: { el: "Αναζήτηση & Φίλτρα", en: "Find & Filter" },
+        content: { el: "Βρείτε γρήγορα οποιοδήποτε συμβόλαιο με αναζήτηση ή φίλτρα κατηγορίας.", en: "Quickly find any policy by searching or filtering by category." },
         position: "bottom"
     }
 ]
 
 export default function DashboardTour({ onComplete }: DashboardTourProps) {
+    const { language } = useLanguage()
+    const lang = language === "el" ? "el" : "en"
     const [currentStep, setCurrentStep] = useState(0)
     const [position, setPosition] = useState({ top: 0, left: 0, width: 0, height: 0 })
     const [isVisible, setIsVisible] = useState(false)
@@ -154,7 +164,9 @@ export default function DashboardTour({ onComplete }: DashboardTourProps) {
                 }}
             >
                 <button
+                    type="button"
                     onClick={onComplete}
+                    aria-label={lang === "el" ? "Κλείσιμο" : "Close"}
                     className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                 >
                     <X className="w-4 h-4" />
@@ -162,16 +174,16 @@ export default function DashboardTour({ onComplete }: DashboardTourProps) {
 
                 <div className="flex items-center gap-2 mb-2">
                     <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
-                        Tip {currentStep + 1}/{steps.length}
+                        {lang === "el" ? "Συμβουλή" : "Tip"} {currentStep + 1}/{steps.length}
                     </span>
                 </div>
 
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
-                    {stepData.title}
+                    {stepData.title[lang]}
                 </h3>
 
                 <p className="text-slate-600 dark:text-slate-300 mb-6 text-sm">
-                    {stepData.content}
+                    {stepData.content[lang]}
                 </p>
 
                 <div className="flex justify-between items-center">
@@ -185,10 +197,13 @@ export default function DashboardTour({ onComplete }: DashboardTourProps) {
                     </div>
 
                     <button
+                        type="button"
                         onClick={handleNext}
                         className="flex items-center gap-2 px-4 py-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-lg text-sm font-medium hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors"
                     >
-                        {currentStep === steps.length - 1 ? 'Finish' : 'Next'}
+                        {currentStep === steps.length - 1
+                            ? (lang === "el" ? "Τέλος" : "Finish")
+                            : (lang === "el" ? "Επόμενο" : "Next")}
                         {currentStep === steps.length - 1 ? <Check className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
                     </button>
                 </div>

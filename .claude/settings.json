@@ -1,7 +1,17 @@
 {
   "permissions": {
     "allow": [
-      "Bash(ls \"C:/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/app/\\(protected\\)/\")"
+      "Bash(ls \"C:/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/app/\\(protected\\)/\")",
+      "Bash(ls -la \"/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/app/\\(public\\)\")",
+      "Bash(find '/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/app/auth' -type f -name *.tsx -o -name *.ts)",
+      "Bash(find \"/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/app/\\(public\\)\" -type f -name \"page.tsx\")",
+      "Bash(xargs wc:*)",
+      "Bash(grep -r \"TODO\\\\|FIXME\\\\|stubbed\\\\|placeholder\" '/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet' --include=*.tsx --include=*.ts)",
+      "Bash(find '/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet' -name *.ts -type f -path *prisma*schema*)",
+      "Bash(grep -r \"TODO\\\\|FIXME\\\\|BUG\\\\|HACK\" '/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/lib' --include=*.ts)",
+      "Bash(find '/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet' -name *.tsx -path *components/account* -type f)",
+      "Bash(find \"/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/app/\\(protected\\)/agent\" -type f -name \"*.tsx\")",
+      "Bash(find \"/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/app/\\(public\\)\" -name \"*.tsx\" -o -name \"*.ts\")"
     ]
   }
 }

@@ -124,13 +124,23 @@ export default async function PolicyholderHomePage() {
         return acc
     }, {} as Record<string, number>)
 
-    const openGapCount = await db.gapInstance.count({
+    const openGaps = await db.gapInstance.findMany({
         where: {
             policy: { ownerUserId: dbUser.id },
             status: { in: ["open", "detected", "acknowledged"] },
         },
+        select: { severity: true },
     })
-    const healthScore = policies.length === 0 ? 0 : Math.max(0, Math.min(100, Math.round((activePolicies.length / policies.length) * 100)))
+    const openGapCount = openGaps.length
+
+    // Gap-based health score: start at 100, penalize by severity
+    const criticalGaps = openGaps.filter(g => g.severity === "critical").length
+    const highGaps = openGaps.filter(g => g.severity === "high").length
+    const mediumGaps = openGaps.filter(g => g.severity === "medium").length
+    const lowGaps = openGaps.filter(g => g.severity === "low").length
+    const healthScore = policies.length === 0
+        ? 0
+        : Math.max(0, Math.min(100, 100 - (criticalGaps * 25 + highGaps * 15 + mediumGaps * 8 + lowGaps * 3)))
 
     return (
         <div className="pw-page-shell">
