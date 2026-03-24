@@ -1,22 +1,39 @@
 "use client"
 
 import { useState } from "react"
-import { DesktopDashboard, InviteModal } from "@/components/agent"
-import { Priority, AccessScope } from "@/components/agent/types"
+import { DesktopDashboard } from "@/components/agent/DesktopDashboard"
+import { InviteModal } from "@/components/agent"
+import type { AccessScope } from "@/components/agent/types"
+import type { ActionQueueItem, AgentDashboardData } from "@/components/agent/types"
+import type { AgentTier } from "@/types/subscription-entitlements"
 import { createAgentInvite } from "../agent/actions"
 import { useRouter } from "next/navigation"
 import { resendVerificationEmail } from "@/app/auth/actions"
 import { AlertCircle, CheckCircle, Loader2, X } from "lucide-react"
 
 interface Props {
-    stats: any
-    priorities: any
-    recentActivity: any
+    dashboardData: AgentDashboardData
+    recentActivity: Array<{
+        id: string
+        type: string
+        customerName: string
+        timestamp: string
+        details: string
+    }>
+    agentTier: AgentTier
+    agentName?: string
     isEmailVerified?: boolean
     userEmail?: string
 }
 
-export function DashboardClient({ stats, priorities, recentActivity, isEmailVerified = true, userEmail }: Props) {
+export function DashboardClient({
+    dashboardData,
+    recentActivity,
+    agentTier,
+    agentName,
+    isEmailVerified = true,
+    userEmail,
+}: Props) {
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
     const [showBanner, setShowBanner] = useState(!isEmailVerified)
     const [isResending, setIsResending] = useState(false)
@@ -28,26 +45,33 @@ export function DashboardClient({ stats, priorities, recentActivity, isEmailVeri
         const result = await createAgentInvite(email, scope)
         if (result.success) {
             router.refresh()
-            alert("Invitation sent successfully!")
-        } else {
-            alert("Failed to send invitation.")
         }
     }
 
-    const handlePriorityClick = (customerId: string) => {
-        if (customerId) {
-            router.push(`/customers/${customerId}`)
+    const handleActionQueueItem = (item: ActionQueueItem) => {
+        if (item.clientId) {
+            router.push(`/customers/${item.clientId}`)
+        }
+    }
+
+    const handleClientClick = (clientId: string) => {
+        router.push(`/customers/${clientId}`)
+    }
+
+    const handleQuickAdd = (type: "client" | "policy" | "document_request") => {
+        if (type === "client") {
+            setIsInviteModalOpen(true)
+        } else if (type === "policy") {
+            router.push("/wallet/add")
         }
     }
 
     const handleResendVerification = async () => {
         if (!userEmail || isResending) return
-
         setResendError(null)
         setIsResending(true)
         const result = await resendVerificationEmail(userEmail, "en")
         setIsResending(false)
-
         if (result.success) {
             setResendSuccess(true)
             setTimeout(() => setResendSuccess(false), 5000)
@@ -68,9 +92,9 @@ export function DashboardClient({ stats, priorities, recentActivity, isEmailVeri
                                     <p className="text-sm text-amber-900 dark:text-amber-100">
                                         <span className="font-bold">Verify your email address.</span> Please check your inbox ({userEmail}) to unlock full account protection.
                                     </p>
-                                    {resendError ? (
+                                    {resendError && (
                                         <p className="text-xs font-medium text-rose-700 dark:text-rose-300">{resendError}</p>
-                                    ) : null}
+                                    )}
                                 </div>
                             </div>
                             <button
@@ -81,14 +105,13 @@ export function DashboardClient({ stats, priorities, recentActivity, isEmailVeri
                                 <X className="w-4 h-4" />
                             </button>
                         </div>
-
                         <div className="mt-3 flex items-center gap-3">
-                            {resendSuccess ? (
+                            {resendSuccess && (
                                 <span className="inline-flex items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-xs font-semibold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-300">
                                     <CheckCircle className="w-3.5 h-3.5" />
                                     Verification email sent
                                 </span>
-                            ) : null}
+                            )}
                             <button
                                 onClick={handleResendVerification}
                                 disabled={isResending}
@@ -103,11 +126,14 @@ export function DashboardClient({ stats, priorities, recentActivity, isEmailVeri
             )}
 
             <DesktopDashboard
-                stats={stats}
-                priorities={priorities}
+                data={dashboardData}
                 recentActivity={recentActivity}
+                agentTier={agentTier}
+                agentName={agentName}
+                onActionQueueItem={handleActionQueueItem}
+                onClientClick={handleClientClick}
                 onInviteCustomer={() => setIsInviteModalOpen(true)}
-                onPriorityClick={handlePriorityClick}
+                onQuickAdd={handleQuickAdd}
             />
             <InviteModal
                 isOpen={isInviteModalOpen}

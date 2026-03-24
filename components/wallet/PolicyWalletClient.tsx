@@ -14,6 +14,7 @@ import { useIsMobile } from "@/hooks/useResponsive"
 import { MobileAppShell } from "@/components/layout/MobileAppShell"
 import { BatchUploadModal } from "@/components/wallet/BatchUploadModal"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
+import { PolicyComparison } from "@/components/wallet/PolicyComparison"
 
 interface PolicyWalletClientProps {
     policies: Policy[]
@@ -34,15 +35,28 @@ interface PolicyWalletClientProps {
         isOnline?: boolean
     }
     showTour?: boolean
+    tier?: 'free' | 'plus' | 'pro'
 }
 
-export function PolicyWalletClient({ policies, user, agent, showTour = false }: PolicyWalletClientProps) {
+export function PolicyWalletClient({ policies, user, agent, showTour = false, tier = 'free' }: PolicyWalletClientProps) {
     const router = useRouter()
     const { t } = useLanguage()
     const isMobile = useIsMobile()
     const previousStatusesRef = useRef<Map<string, string>>(new Map())
     const announcedRef = useRef<Set<string>>(new Set())
     const [isBatchUploadOpen, setIsBatchUploadOpen] = React.useState(false)
+    const [isCompareOpen, setIsCompareOpen] = React.useState(false)
+
+    // Check if any LOB has 2+ active policies (comparison eligible)
+    const hasComparablePolicies = React.useMemo(() => {
+        const lobCounts = new Map<string, number>()
+        for (const p of policies) {
+            if (p.status === 'active' || p.status === 'expiring_soon') {
+                lobCounts.set(p.lineOfBusiness, (lobCounts.get(p.lineOfBusiness) || 0) + 1)
+            }
+        }
+        return [...lobCounts.values()].some(count => count >= 2)
+    }, [policies])
 
     const copy = t.wallet.analysisNotifications
 
@@ -57,13 +71,31 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
         }
     }
 
+    // Polling with backoff: 2s for first 30s, 5s until 2min, 10s after
+    const pollingStartRef = useRef<number>(0)
+
     React.useEffect(() => {
         const hasAnalyzing = policies.some((p) => p.status === 'analyzing')
-        if (!hasAnalyzing) return
+        if (!hasAnalyzing) {
+            pollingStartRef.current = 0
+            return
+        }
 
-        const interval = setInterval(() => {
+        if (pollingStartRef.current === 0) pollingStartRef.current = Date.now()
+
+        const getInterval = () => {
+            const elapsed = Date.now() - pollingStartRef.current
+            if (elapsed < 30_000) return 2000
+            if (elapsed < 120_000) return 5000
+            return 10_000
+        }
+
+        let timeout: ReturnType<typeof setTimeout>
+        const poll = () => {
             router.refresh()
-        }, 3000)
+            timeout = setTimeout(poll, getInterval())
+        }
+        timeout = setTimeout(poll, getInterval())
 
         if ('Notification' in window && Notification.permission === 'default') {
             toast(copy.inProgress, {
@@ -82,7 +114,7 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
             })
         }
 
-        return () => clearInterval(interval)
+        return () => clearTimeout(timeout)
     }, [policies, router, copy.inProgress, copy.notifyPrompt, copy.notifyMe, copy.notificationsEnabled])
 
     React.useEffect(() => {
@@ -175,6 +207,21 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
 
             <PageHeader title={user?.name ? `${t.auth.welcomeBack}, ${user.name.split(' ')[0]}!` : t.wallet.title} subtitle={t.wallet.manageTrack} />
 
+            {hasComparablePolicies && (
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-4">
+                    <button
+                        type="button"
+                        onClick={() => setIsCompareOpen(true)}
+                        className="inline-flex items-center gap-2 rounded-full border border-black/15 bg-white px-4 py-2.5 text-sm font-bold text-black transition-colors hover:bg-black/5 dark:border-white/20 dark:bg-black dark:text-white dark:hover:bg-white/10 cursor-pointer"
+                    >
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        {t.wallet.comparePolicies || 'Compare policies'}
+                    </button>
+                </div>
+            )}
+
             <PolicyWallet
                 policies={policies}
                 user={user}
@@ -215,6 +262,25 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false }: 
                     router.refresh()
                 }}
             />
+
+            {hasComparablePolicies && (
+                <PolicyComparison
+                    policies={policies.filter(p => p.status === 'active' || p.status === 'expiring_soon').map(p => ({
+                        id: p.id,
+                        policyNumber: p.policyNumber,
+                        insurerName: p.insurerName,
+                        lineOfBusiness: p.lineOfBusiness,
+                        status: p.status,
+                        startDate: p.startDate,
+                        endDate: p.endDate,
+                        premiumAmount: p.premiumAmount,
+                        premiumCurrency: p.premiumCurrency,
+                        acordData: p.acordData as any,
+                    }))}
+                    isOpen={isCompareOpen}
+                    onClose={() => setIsCompareOpen(false)}
+                />
+            )}
 
             {showTour && <DashboardTour onComplete={() => dismissTour()} />}
         </div>

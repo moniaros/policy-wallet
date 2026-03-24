@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
-
-type ViewerRole = "agent" | "policyholder"
+import { FileText, MessageSquare, FileUp, Lock } from "lucide-react"
+import type { ViewerRole, ThreadType } from "./types"
 
 type Thread = {
     id: string
@@ -13,6 +13,7 @@ type Thread = {
     category: string
     status: string
     priority: "low" | "medium" | "high"
+    threadType?: ThreadType
     createdByUserId: string
     assignedToUserId: string | null
     lastActivityAt: string
@@ -26,6 +27,7 @@ type ThreadDetail = Thread & {
         id: string
         body: string
         messageType: string
+        isPrivate?: boolean
         createdAt: string
         sender: { id: string; name: string | null; email: string }
     }>
@@ -38,6 +40,19 @@ type ThreadDetail = Thread & {
         assignee: { id: string; name: string | null; email: string }
     }>
 }
+
+const THREAD_TYPE_CONFIG: Record<ThreadType, { icon: React.ElementType; label: string; color: string }> = {
+    message: { icon: MessageSquare, label: "Message", color: "text-blue-500" },
+    document_request: { icon: FileUp, label: "Document Request", color: "text-amber-500" },
+    proposal: { icon: FileText, label: "Proposal", color: "text-emerald-500" },
+}
+
+const MESSAGE_TEMPLATES = [
+    { label: "Follow up", body: "Hi, just following up on this. Please let me know if you need anything." },
+    { label: "Document reminder", body: "Friendly reminder: we're still waiting on the document mentioned above. Could you upload it at your earliest convenience?" },
+    { label: "Renewal notice", body: "Your policy is approaching its renewal date. I'd like to discuss your options — shall we schedule a call?" },
+    { label: "Thank you", body: "Thank you for your prompt response. I'll review and get back to you shortly." },
+]
 
 interface CollaborationTimelineProps {
     policyId?: string
@@ -70,6 +85,8 @@ export function CollaborationTimeline({
     const [threadCategory, setThreadCategory] = useState("general")
     const [threadPriority, setThreadPriority] = useState<"low" | "medium" | "high">("medium")
     const [message, setMessage] = useState("")
+    const [isPrivateMessage, setIsPrivateMessage] = useState(false)
+    const [showTemplates, setShowTemplates] = useState(false)
     const [actionTitle, setActionTitle] = useState("")
     const [actionDueDate, setActionDueDate] = useState("")
     const [actionAssigneeId, setActionAssigneeId] = useState("")
@@ -151,7 +168,10 @@ export function CollaborationTimeline({
         const res = await fetch(`/api/v1/collaboration/threads/${selectedId}/messages`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ body: message.trim() }),
+            body: JSON.stringify({
+                body: message.trim(),
+                ...(isPrivateMessage && viewerRole === "agent" ? { isPrivate: true } : {}),
+            }),
         })
         const json = await res.json()
         if (!res.ok || json?.error) {
@@ -159,9 +179,18 @@ export function CollaborationTimeline({
             return
         }
         setMessage("")
+        setIsPrivateMessage(false)
+        setShowTemplates(false)
         await loadThreadDetail(selectedId)
         await loadThreads()
     }
+
+    // Filter private messages from policyholder view
+    const visibleMessages = useMemo(() => {
+        if (!selected) return []
+        if (viewerRole === "agent") return selected.messages
+        return selected.messages.filter((m) => !m.isPrivate)
+    }, [selected, viewerRole])
 
     async function addAction() {
         if (!selectedId || !actionTitle.trim() || !actionAssigneeId) return
@@ -272,6 +301,9 @@ export function CollaborationTimeline({
                                 const waitingOnYou = isWaitingOnYou(thread.status, viewerRole)
                                 const elapsedMs = Date.now() - new Date(thread.lastActivityAt).getTime()
                                 const overdue = elapsedMs > getSlaHours(thread.priority) * 60 * 60 * 1000 && thread.status !== "resolved" && thread.status !== "closed"
+                                const threadTypeKey = (thread.threadType || "message") as ThreadType
+                                const typeConfig = THREAD_TYPE_CONFIG[threadTypeKey]
+                                const TypeIcon = typeConfig.icon
                                 return (
                                     <button
                                         key={thread.id}
@@ -283,11 +315,14 @@ export function CollaborationTimeline({
                                         }`}
                                     >
                                         <div className="flex items-center justify-between gap-2">
-                                            <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{thread.subject}</p>
+                                            <div className="flex items-center gap-2 min-w-0">
+                                                <TypeIcon className={`w-4 h-4 flex-shrink-0 ${typeConfig.color}`} />
+                                                <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{thread.subject}</p>
+                                            </div>
                                             <span className="text-[10px] uppercase font-bold text-slate-500">{thread.priority}</span>
                                         </div>
                                         <div className="mt-1 flex gap-2 items-center flex-wrap">
-                                            <span className="text-xs text-slate-500">{thread.category}</span>
+                                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${typeConfig.color} bg-slate-100 dark:bg-slate-800`}>{typeConfig.label}</span>
                                             <span className="text-xs text-slate-500">{thread.status}</span>
                                             {waitingOnYou ? (
                                                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-bold">Waiting on you</span>
@@ -317,27 +352,109 @@ export function CollaborationTimeline({
                                 </div>
                             </div>
 
+                            {/* Thread type header */}
+                            {selected.threadType && selected.threadType !== "message" && (
+                                <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
+                                    selected.threadType === "document_request"
+                                        ? "bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40"
+                                        : "bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/40"
+                                }`}>
+                                    {(() => {
+                                        const cfg = THREAD_TYPE_CONFIG[selected.threadType as ThreadType]
+                                        const Icon = cfg.icon
+                                        return (
+                                            <>
+                                                <Icon className={`w-4 h-4 ${cfg.color}`} />
+                                                <span className={`text-xs font-semibold ${cfg.color}`}>{cfg.label}</span>
+                                            </>
+                                        )
+                                    })()}
+                                </div>
+                            )}
+
                             <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-3 max-h-[220px] overflow-auto space-y-2">
-                                {selected.messages.length === 0 ? (
+                                {visibleMessages.length === 0 ? (
                                     <p className="text-xs text-slate-500">No messages yet.</p>
                                 ) : (
-                                    selected.messages.map((item) => (
-                                        <div key={item.id} className="text-sm">
-                                            <p className="font-semibold text-slate-800 dark:text-slate-200">{item.sender.name || item.sender.email}</p>
+                                    visibleMessages.map((item) => (
+                                        <div
+                                            key={item.id}
+                                            className={`text-sm ${item.isPrivate ? "border-l-2 border-amber-400 pl-2 bg-amber-50/50 dark:bg-amber-950/10 rounded-r" : ""}`}
+                                        >
+                                            <div className="flex items-center gap-1.5">
+                                                <p className="font-semibold text-slate-800 dark:text-slate-200">{item.sender.name || item.sender.email}</p>
+                                                {item.isPrivate && (
+                                                    <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                                                        <Lock className="w-3 h-3" />
+                                                        Private
+                                                    </span>
+                                                )}
+                                                {item.messageType === "system" && (
+                                                    <span className="text-[10px] font-bold text-slate-400 uppercase">System</span>
+                                                )}
+                                            </div>
                                             <p className="text-slate-600 dark:text-slate-300">{item.body}</p>
                                         </div>
                                     ))
                                 )}
                             </div>
 
-                            <div className="flex gap-2">
-                                <input
-                                    value={message}
-                                    onChange={(e) => setMessage(e.target.value)}
-                                    placeholder="Post update..."
-                                    className="flex-1 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm bg-white dark:bg-slate-950"
-                                />
-                                <button onClick={addMessage} className="rounded-lg bg-slate-800 hover:bg-slate-900 text-white text-sm px-3 py-2">Send</button>
+                            {/* Message input with templates and private toggle */}
+                            <div className="space-y-2">
+                                {/* Templates dropdown (agent only) */}
+                                {viewerRole === "agent" && showTemplates && (
+                                    <div className="grid grid-cols-2 gap-1.5 p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+                                        {MESSAGE_TEMPLATES.map((tpl) => (
+                                            <button
+                                                key={tpl.label}
+                                                type="button"
+                                                onClick={() => { setMessage(tpl.body); setShowTemplates(false) }}
+                                                className="text-left text-xs px-2 py-1.5 rounded hover:bg-white dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-300 font-medium"
+                                            >
+                                                {tpl.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                                <div className="flex gap-2">
+                                    <div className="flex-1 flex flex-col gap-1">
+                                        <input
+                                            value={message}
+                                            onChange={(e) => setMessage(e.target.value)}
+                                            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); addMessage() } }}
+                                            placeholder={isPrivateMessage ? "Private note (agent-only)..." : "Post update..."}
+                                            className={`w-full rounded-lg border px-3 py-2 text-sm bg-white dark:bg-slate-950 ${
+                                                isPrivateMessage
+                                                    ? "border-amber-300 dark:border-amber-700"
+                                                    : "border-slate-300 dark:border-slate-600"
+                                            }`}
+                                        />
+                                        {viewerRole === "agent" && (
+                                            <div className="flex items-center gap-3">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowTemplates(!showTemplates)}
+                                                    className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                                                >
+                                                    {showTemplates ? "Hide templates" : "Templates"}
+                                                </button>
+                                                <label className="flex items-center gap-1 cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isPrivateMessage}
+                                                        onChange={(e) => setIsPrivateMessage(e.target.checked)}
+                                                        className="w-3 h-3 rounded border-slate-300 text-amber-500 focus:ring-amber-500"
+                                                    />
+                                                    <span className="text-[10px] font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-0.5">
+                                                        <Lock className="w-3 h-3" />
+                                                        Private note
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <button type="button" onClick={addMessage} className="rounded-lg bg-slate-800 hover:bg-slate-900 text-white text-sm px-3 py-2 self-start">Send</button>
+                                </div>
                             </div>
 
                             <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-3">

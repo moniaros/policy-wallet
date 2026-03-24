@@ -9,6 +9,7 @@ import { getTranslations } from "@/lib/i18n"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { getAIUsageStats } from "../actions"
 import { PolicyDetailsClient } from "./PolicyDetailsClient"
+import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 
 export default async function PolicyDetailPage({
     params,
@@ -25,7 +26,7 @@ export default async function PolicyDetailPage({
     const t = getTranslations(language)
     const roleCopy = getRoleCopy(language)
 
-    const [policy, sharesResult, aiUsageStats] = await Promise.all([
+    const [policy, sharesResult, aiUsageStats, entitlements] = await Promise.all([
         db.policy.findUnique({
             where: { id: policyId },
             include: {
@@ -42,7 +43,8 @@ export default async function PolicyDetailPage({
             console.error("Failed to load policy shares:", error)
             return []
         }),
-        getAIUsageStats()
+        getAIUsageStats(),
+        resolveUserEntitlements(dbUser.id)
     ])
 
     if (!policy) {
@@ -162,6 +164,8 @@ export default async function PolicyDetailPage({
             isOwner={isOwner}
             relationshipId={relationshipId}
             t={t}
+            tier={entitlements.tier}
+            tierLimits={entitlements.limits}
         />
     )
 }

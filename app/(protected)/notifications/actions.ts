@@ -81,6 +81,7 @@ export async function getNotificationData() {
         related_customer_relationship_id: (e.relatedObjectId && e.relatedObjectType === 'customer' ? e.relatedObjectId : null) as string | null,
         related_customer_name: null as string | null,
         sent_at: e.sentAt?.toISOString() || null,
+        read_at: e.readAt?.toISOString() || null,
         created_at: e.createdAt.toISOString()
     }))
 
@@ -162,6 +163,39 @@ export async function getNotificationData() {
         relationships: uiRelationships,
         preferences: uiPreferences
     }
+}
+
+export async function markNotificationRead(notificationId: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    await db.notificationEvent.updateMany({
+        where: {
+            id: notificationId,
+            userId: authResult.dbUser.id,
+            readAt: null,
+        },
+        data: { readAt: new Date() },
+    })
+
+    revalidatePath("/notifications")
+    return { success: true }
+}
+
+export async function markAllNotificationsRead() {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    await db.notificationEvent.updateMany({
+        where: {
+            userId: authResult.dbUser.id,
+            readAt: null,
+        },
+        data: { readAt: new Date() },
+    })
+
+    revalidatePath("/notifications")
+    return { success: true }
 }
 
 export async function toggleNotificationPreference(eventType: string, channel: 'email' | 'push', enabled: boolean, role: 'policyholder' | 'agent') {

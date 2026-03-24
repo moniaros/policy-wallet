@@ -12,8 +12,10 @@ import { CollaborationTimeline } from "@/components/collaboration/CollaborationT
 import { CoverageTabView } from "@/components/wallet/coverage-details/CoverageTabView"
 import {
     Calendar,
+    Crown,
     Download,
     FileText,
+    Lock,
     MessageCircle,
     Phone,
     RefreshCw,
@@ -22,6 +24,7 @@ import {
     Sparkles,
     TrendingUp,
 } from "lucide-react"
+import { DocumentPreview, DocumentPreviewButton } from "@/components/wallet/DocumentPreview"
 
 interface PolicyDetailsClientProps {
     policy: any
@@ -41,6 +44,15 @@ interface PolicyDetailsClientProps {
     isOwner: boolean
     relationshipId?: string | null
     t: any
+    tier?: 'free' | 'plus' | 'pro'
+    tierLimits?: {
+        interactiveQA: boolean
+        advancedAnalytics: boolean
+        agentCollaboration: boolean
+        analysisComparison: boolean
+        notifications: boolean
+        [key: string]: any
+    }
 }
 
 function parseDate(value: unknown): Date | null {
@@ -68,10 +80,13 @@ export function PolicyDetailsClient({
     isOwner,
     relationshipId,
     t,
+    tier = 'free',
+    tierLimits,
 }: PolicyDetailsClientProps) {
     // wallet pass feature removed — parked for future
     void shouldOpenWallet
     const [activeTab, setActiveTab] = useState<"analysis" | "qa" | "collaboration">("analysis")
+    const [previewDoc, setPreviewDoc] = useState<{ fileName: string; fileUrl: string } | null>(null)
 
     const locale = t.common?.locale || "en-US"
     const detailsCopy = t.wallet.policyDetailsPage
@@ -101,8 +116,11 @@ export function PolicyDetailsClient({
         reanalyzeToSeeCoverageHint: detailsCopy.reanalyzeToSeeCoverageHint,
     }
 
-    const canShowCollaborationTimeline = Boolean(relationshipId)
-    const canShowCollaborationPanel = isOwner || (serializedShares?.length ?? 0) > 0
+    const canShowCollaborationTimeline = Boolean(relationshipId) && (tierLimits?.agentCollaboration !== false)
+    const canShowCollaborationPanel = (isOwner || (serializedShares?.length ?? 0) > 0) && (tierLimits?.agentCollaboration !== false)
+    const isFreeTier = tier === 'free'
+    const canUseCollaboration = tierLimits?.agentCollaboration !== false
+    const canUseAdvancedAnalytics = tierLimits?.advancedAnalytics === true
 
     const getInsurerName = () => policy.acordData?.policy?.insurerName || policy.insurerName
     const getPolicyNumber = () => policy.acordData?.policy?.policyNumber || policy.policyNumber
@@ -258,6 +276,13 @@ export function PolicyDetailsClient({
     const localizedType = t.policyTypes[coverageType as keyof typeof t.policyTypes] || coverageType
     const policyNumber = getPolicyNumber()
 
+    // Detect placeholder data that should not be shown to the user
+    const isAnalyzing = policy.status === 'analyzing'
+    const isPendingInsurer = !getInsurerName() || getInsurerName() === '__PENDING_EXTRACTION__' || getInsurerName() === 'Unknown Insurer' || getInsurerName() === 'Άγνωστος ασφαλιστής'
+    const isPendingPolicyNumber = !policyNumber || policyNumber.startsWith('PENDING-')
+    const displayInsurer = isPendingInsurer ? localizedType : getInsurerName()
+    const displayPolicyNumber = isPendingPolicyNumber ? null : policyNumber
+
     return (
         <div className="pw-page-shell">
             <div className="mx-auto max-w-7xl px-4 pb-20 pt-6 sm:px-6 lg:px-8">
@@ -269,7 +294,7 @@ export function PolicyDetailsClient({
                         {t.wallet.title}
                     </Link>
                     <span className="text-black/35 dark:text-white/40">/</span>
-                    <span className="font-semibold text-black dark:text-white">{policyNumber}</span>
+                    <span className="font-semibold text-black dark:text-white">{displayPolicyNumber || localizedType}</span>
                 </nav>
 
                 <section className="relative overflow-hidden rounded-[28px] border border-white/10 bg-black p-6 text-white shadow-2xl sm:p-8 lg:p-10">
@@ -297,19 +322,27 @@ export function PolicyDetailsClient({
                                     </div>
                                     <div className="min-w-0">
                                         <h1 className="text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl">
-                                            {getInsurerName()}
+                                            {displayInsurer}
                                         </h1>
-                                        <p className="mt-2 text-sm font-bold uppercase tracking-[0.2em] text-[#9cf0c9]">
-                                            {localizedType}
-                                        </p>
+                                        {isAnalyzing && isPendingInsurer ? (
+                                            <p className="mt-2 text-sm font-bold uppercase tracking-[0.2em] text-[#9cf0c9] animate-pulse">
+                                                {t.policyStatus?.analyzing || 'Analyzing'}...
+                                            </p>
+                                        ) : (
+                                            <p className="mt-2 text-sm font-bold uppercase tracking-[0.2em] text-[#9cf0c9]">
+                                                {localizedType}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                                    <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3">
-                                        <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-white/65">{t.wallet.policyId}</p>
-                                        <p className="font-mono text-sm font-bold text-white">{policyNumber}</p>
-                                    </div>
+                                    {displayPolicyNumber && (
+                                        <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3">
+                                            <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-white/65">{t.wallet.policyId}</p>
+                                            <p className="font-mono text-sm font-bold text-white">{displayPolicyNumber}</p>
+                                        </div>
+                                    )}
 
                                     {policy.acordData?.vehicle?.plateNumber ? (
                                         <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3">
@@ -318,57 +351,79 @@ export function PolicyDetailsClient({
                                         </div>
                                     ) : null}
 
-                                    <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3">
-                                        <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-white/65">{t.wallet.starts}</p>
-                                        <p className="text-sm font-bold text-white">{formatDate(getStartDate(), locale)}</p>
-                                    </div>
+                                    {!isAnalyzing && (
+                                        <>
+                                            <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3">
+                                                <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-white/65">{t.wallet.starts}</p>
+                                                <p className="text-sm font-bold text-white">{formatDate(getStartDate(), locale)}</p>
+                                            </div>
 
-                                    <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3">
-                                        <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-white/65">{t.wallet.ends}</p>
-                                        <p className="text-sm font-bold text-white">{formatDate(getEndDate(), locale)}</p>
-                                    </div>
+                                            <div className="rounded-2xl border border-white/15 bg-white/5 px-4 py-3">
+                                                <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-white/65">{t.wallet.ends}</p>
+                                                <p className="text-sm font-bold text-white">{formatDate(getEndDate(), locale)}</p>
+                                            </div>
+                                        </>
+                                    )}
+
+                                    {isAnalyzing && isPendingInsurer && (
+                                        <div className="rounded-2xl border border-[#1FDC86]/25 bg-[#1FDC86]/8 px-4 py-3 sm:col-span-2">
+                                            <div className="flex items-center gap-2">
+                                                <Sparkles className="h-4 w-4 text-[#9cf0c9] animate-pulse" />
+                                                <p className="text-sm font-bold text-[#9cf0c9]">
+                                                    {detailsCopy.analyzingDocument || t.policyStatus?.analyzing || 'Analyzing your document'}...
+                                                </p>
+                                            </div>
+                                            <p className="mt-1 text-xs text-white/55">
+                                                {detailsCopy.analyzingHint || 'Details will appear automatically once extraction completes.'}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
-                            <div className="w-full max-w-xs rounded-3xl border border-white/15 bg-[#111111] p-5 shadow-lg">
-                                <p className="mb-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/65">
-                                    <TrendingUp className="h-3.5 w-3.5 text-[#9cf0c9]" />
-                                    {t.wallet.annualPremium}
-                                </p>
-                                <p className="text-4xl font-black leading-none text-white">
-                                    {getPremiumAmount().toLocaleString(locale, {
-                                        style: "currency",
-                                        currency: getPremiumCurrency(),
-                                    })}
-                                </p>
+                            {getPremiumAmount() > 0 && (
+                                <div className="w-full max-w-xs rounded-3xl border border-white/15 bg-[#111111] p-5 shadow-lg">
+                                    <p className="mb-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/65">
+                                        <TrendingUp className="h-3.5 w-3.5 text-[#9cf0c9]" />
+                                        {t.wallet.annualPremium}
+                                    </p>
+                                    <p className="text-4xl font-black leading-none text-white">
+                                        {getPremiumAmount().toLocaleString(locale, {
+                                            style: "currency",
+                                            currency: getPremiumCurrency(),
+                                        })}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+
+                        {!isAnalyzing && (
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                                <button
+                                    onClick={handleShare}
+                                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/30 bg-white/5 px-5 text-sm font-semibold text-white transition-colors hover:bg-white/10 cursor-pointer"
+                                >
+                                    <Share2 className="h-4 w-4" />
+                                    {copy.sharePolicy}
+                                </button>
+
+                                <button
+                                    onClick={handleDownloadPrimaryDoc}
+                                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/30 bg-white/5 px-5 text-sm font-semibold text-white transition-colors hover:bg-white/10 cursor-pointer"
+                                >
+                                    <Download className="h-4 w-4" />
+                                    {t.wallet.downloadContract}
+                                </button>
+
+                                <button
+                                    onClick={handleCallInsurer}
+                                    className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/30 bg-white/5 px-5 text-sm font-semibold text-white transition-colors hover:bg-white/10 cursor-pointer"
+                                >
+                                    <Phone className="h-4 w-4" />
+                                    {copy.contactInsurer}
+                                </button>
                             </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                            <button
-                                onClick={handleShare}
-                                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/30 bg-white/5 px-5 text-sm font-semibold text-white transition-colors hover:bg-white/10 cursor-pointer"
-                            >
-                                <Share2 className="h-4 w-4" />
-                                {copy.sharePolicy}
-                            </button>
-
-                            <button
-                                onClick={handleDownloadPrimaryDoc}
-                                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/30 bg-white/5 px-5 text-sm font-semibold text-white transition-colors hover:bg-white/10 cursor-pointer"
-                            >
-                                <Download className="h-4 w-4" />
-                                {t.wallet.downloadContract}
-                            </button>
-
-                            <button
-                                onClick={handleCallInsurer}
-                                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-white/30 bg-white/5 px-5 text-sm font-semibold text-white transition-colors hover:bg-white/10 cursor-pointer"
-                            >
-                                <Phone className="h-4 w-4" />
-                                {copy.contactInsurer}
-                            </button>
-                        </div>
+                        )}
                     </div>
                 </section>
 
@@ -429,15 +484,18 @@ export function PolicyDetailsClient({
                                 </button>
 
                                 <button
-                                    onClick={() => setActiveTab("collaboration")}
-                                    disabled={!canShowCollaborationTimeline}
+                                    onClick={() => !isFreeTier && setActiveTab("collaboration")}
+                                    disabled={!canShowCollaborationTimeline && !isFreeTier}
                                     className={`rounded-xl px-3 py-2.5 text-sm font-bold transition-colors ${
                                         activeTab === "collaboration"
                                             ? "bg-black text-white"
                                             : "bg-black/5 text-black/70 hover:bg-black/10 dark:bg-white/10 dark:text-white/75 dark:hover:bg-white/15"
-                                    } ${!canShowCollaborationTimeline ? "cursor-not-allowed opacity-45" : "cursor-pointer"}`}
+                                    } ${(!canShowCollaborationTimeline || isFreeTier) ? "cursor-not-allowed opacity-45" : "cursor-pointer"}`}
                                 >
-                                    {copy.tabCollaboration}
+                                    <span className="flex items-center gap-1.5">
+                                        {isFreeTier && <Lock className="h-3 w-3" />}
+                                        {copy.tabCollaboration}
+                                    </span>
                                 </button>
                             </div>
                         </div>
@@ -471,6 +529,31 @@ export function PolicyDetailsClient({
                     </section>
 
                     <aside className="space-y-6">
+                        {/* Tier upgrade banner for free users */}
+                        {isFreeTier && !isAnalyzing && (
+                            <div className="pw-card relative overflow-hidden border-[#1FDC86]/30 p-6">
+                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#1FDC86]/8 to-transparent" />
+                                <div className="relative">
+                                    <div className="mb-3 flex items-center gap-2">
+                                        <Crown className="h-4 w-4 text-[#1FDC86]" />
+                                        <h3 className="text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+                                            {t.wallet.upgradePlan}
+                                        </h3>
+                                    </div>
+                                    <p className="mb-4 text-xs leading-relaxed text-black/60 dark:text-white/65">
+                                        {detailsCopy.upgradeHint || 'Unlock agent collaboration, advanced analytics, and unlimited AI questions.'}
+                                    </p>
+                                    <a
+                                        href="/account"
+                                        className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full bg-[#1FDC86] px-4 text-sm font-bold text-white transition-colors hover:bg-[#19b870]"
+                                    >
+                                        <Crown className="h-4 w-4" />
+                                        {t.wallet.upgradePlan}
+                                    </a>
+                                </div>
+                            </div>
+                        )}
+
                         <div className="pw-card p-6">
                             <h3 className="mb-4 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
                                 {copy.nextBestActions}
@@ -486,13 +569,15 @@ export function PolicyDetailsClient({
                                     {copy.askStarter}
                                 </a>
 
-                                <button
-                                    onClick={handleShare}
-                                    className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-black/15 bg-white px-4 text-sm font-semibold text-black transition-colors hover:bg-black/5 dark:border-white/20 dark:bg-black dark:text-white dark:hover:bg-white/10 cursor-pointer"
-                                >
-                                    <Share2 className="h-4 w-4" />
-                                    {copy.sharePolicy}
-                                </button>
+                                {!isFreeTier && (
+                                    <button
+                                        onClick={handleShare}
+                                        className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-black/15 bg-white px-4 text-sm font-semibold text-black transition-colors hover:bg-black/5 dark:border-white/20 dark:bg-black dark:text-white dark:hover:bg-white/10 cursor-pointer"
+                                    >
+                                        <Share2 className="h-4 w-4" />
+                                        {copy.sharePolicy}
+                                    </button>
+                                )}
 
                                 <div className="rounded-2xl border border-amber-300/55 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800 dark:bg-amber-950/25 dark:text-amber-200">
                                     {copy.reviewRenewal}
@@ -540,52 +625,58 @@ export function PolicyDetailsClient({
                             </div>
                         </div>
 
-                        <div className="pw-card p-6">
-                            <h3 className="mb-3 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
-                                {copy.insuredPeople}
-                            </h3>
+                        {/* Only show insured people if data exists or not analyzing */}
+                        {(insuredNames.length > 0 || !isAnalyzing) && (
+                            <div className="pw-card p-6">
+                                <h3 className="mb-3 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+                                    {copy.insuredPeople}
+                                </h3>
 
-                            {insuredNames.length === 0 ? (
-                                <p className="text-sm text-black/65 dark:text-white/70">{copy.noInsuredPeople}</p>
-                            ) : (
-                                <ul className="space-y-2">
-                                    {insuredNames.map((name) => (
-                                        <li
-                                            key={name}
-                                            className="rounded-xl border border-black/10 bg-black/5 px-3 py-2 text-sm text-black/80 dark:border-white/15 dark:bg-white/5 dark:text-white/85"
-                                        >
-                                            {name}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
+                                {insuredNames.length === 0 ? (
+                                    <p className="text-sm text-black/65 dark:text-white/70">{copy.noInsuredPeople}</p>
+                                ) : (
+                                    <ul className="space-y-2">
+                                        {insuredNames.map((name) => (
+                                            <li
+                                                key={name}
+                                                className="rounded-xl border border-black/10 bg-black/5 px-3 py-2 text-sm text-black/80 dark:border-white/15 dark:bg-white/5 dark:text-white/85"
+                                            >
+                                                {name}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+                        )}
 
-                        <div className="pw-card p-6">
-                            <h3 className="mb-3 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
-                                {copy.renewalHistory}
-                            </h3>
+                        {/* Only show renewal history if data exists or not analyzing */}
+                        {(renewalHistory.length > 0 || !isAnalyzing) && (
+                            <div className="pw-card p-6">
+                                <h3 className="mb-3 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+                                    {copy.renewalHistory}
+                                </h3>
 
-                            {renewalHistory.length === 0 ? (
-                                <p className="text-sm text-black/65 dark:text-white/70">{copy.noRenewalHistory}</p>
-                            ) : (
-                                <ul className="space-y-2">
-                                    {renewalHistory.map((entry: any) => (
-                                        <li
-                                            key={entry.id}
-                                            className="rounded-xl border border-black/10 bg-black/5 px-3 py-2 dark:border-white/15 dark:bg-white/5"
-                                        >
-                                            <p className="text-sm font-semibold text-black dark:text-white">
-                                                {formatDate(entry.startDate, locale)} - {formatDate(entry.endDate, locale)}
-                                            </p>
-                                            {entry.sourceDocumentName ? (
-                                                <p className="mt-1 text-xs text-black/65 dark:text-white/65">{entry.sourceDocumentName}</p>
-                                            ) : null}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-                        </div>
+                                {renewalHistory.length === 0 ? (
+                                    <p className="text-sm text-black/65 dark:text-white/70">{copy.noRenewalHistory}</p>
+                                ) : (
+                                    <ul className="space-y-2">
+                                        {renewalHistory.map((entry: any) => (
+                                            <li
+                                                key={entry.id}
+                                                className="rounded-xl border border-black/10 bg-black/5 px-3 py-2 dark:border-white/15 dark:bg-white/5"
+                                            >
+                                                <p className="text-sm font-semibold text-black dark:text-white">
+                                                    {formatDate(entry.startDate, locale)} - {formatDate(entry.endDate, locale)}
+                                                </p>
+                                                {entry.sourceDocumentName ? (
+                                                    <p className="mt-1 text-xs text-black/65 dark:text-white/65">{entry.sourceDocumentName}</p>
+                                                ) : null}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+                        )}
 
                         <div className="pw-card p-6">
                             <h3 className="mb-4 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
@@ -597,27 +688,50 @@ export function PolicyDetailsClient({
                                 <p className="text-sm text-black/65 dark:text-white/70">{t.wallet.noDocuments}</p>
                             ) : (
                                 <ul className="space-y-3">
-                                    {policy.documents.map((doc: any) => (
-                                        <li key={doc.id}>
-                                            <a
-                                                href={doc.fileUrl}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="flex items-center gap-3 rounded-xl border border-black/10 bg-white px-3 py-3 transition-colors hover:bg-black/5 dark:border-white/15 dark:bg-black dark:hover:bg-white/10"
-                                            >
-                                                <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-black/10 bg-black/5 dark:border-white/15 dark:bg-white/10">
-                                                    <FileText className="h-4 w-4 text-black/75 dark:text-white/80" />
-                                                </div>
-                                                <div className="min-w-0 flex-1">
-                                                    <p className="truncate text-sm font-semibold text-black dark:text-white">{doc.fileName}</p>
-                                                    <p className="text-xs text-black/55 dark:text-white/60">{t.wallet.contract}</p>
-                                                </div>
-                                                <Download className="h-4 w-4 shrink-0 text-black/45 dark:text-white/55" />
-                                            </a>
-                                        </li>
-                                    ))}
+                                    {policy.documents.map((doc: any) => {
+                                        const isPdf = doc.fileName?.toLowerCase().endsWith('.pdf')
+                                        const isImage = /\.(jpe?g|png|gif|webp|bmp|svg)$/i.test(doc.fileName || '')
+                                        const canPreview = isPdf || isImage
+                                        const isPreviewLocked = isPdf && isFreeTier
+
+                                        return (
+                                            <li key={doc.id} className="flex items-center gap-2">
+                                                <a
+                                                    href={doc.fileUrl}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="flex flex-1 items-center gap-3 rounded-xl border border-black/10 bg-white px-3 py-3 transition-colors hover:bg-black/5 dark:border-white/15 dark:bg-black dark:hover:bg-white/10"
+                                                >
+                                                    <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-black/10 bg-black/5 dark:border-white/15 dark:bg-white/10">
+                                                        <FileText className="h-4 w-4 text-black/75 dark:text-white/80" />
+                                                    </div>
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className="truncate text-sm font-semibold text-black dark:text-white">{doc.fileName}</p>
+                                                        <p className="text-xs text-black/55 dark:text-white/60">{t.wallet.contract}</p>
+                                                    </div>
+                                                    <div className="flex items-center gap-1.5">
+                                                        {canPreview && (
+                                                            <DocumentPreviewButton
+                                                                onClick={() => setPreviewDoc({ fileName: doc.fileName, fileUrl: doc.fileUrl })}
+                                                                isLocked={isPreviewLocked}
+                                                                label={t.wallet.preview || 'Preview'}
+                                                                lockedLabel={t.wallet.upgradeToPlusPreview || 'Upgrade to Plus to preview PDFs'}
+                                                            />
+                                                        )}
+                                                        <Download className="h-4 w-4 shrink-0 text-black/45 dark:text-white/55" />
+                                                    </div>
+                                                </a>
+                                            </li>
+                                        )
+                                    })}
                                 </ul>
                             )}
+
+                            <DocumentPreview
+                                isOpen={!!previewDoc}
+                                onClose={() => setPreviewDoc(null)}
+                                document={previewDoc}
+                            />
                         </div>
 
                         {canShowCollaborationPanel && (

@@ -1,3 +1,15 @@
+-- Add missing Stripe/RevenueCat columns to plans and subscriptions
+ALTER TABLE "plans" ADD COLUMN IF NOT EXISTS "stripe_price_id" TEXT;
+
+ALTER TABLE "subscriptions" ADD COLUMN IF NOT EXISTS "revenue_cat_identifier" TEXT;
+ALTER TABLE "subscriptions" ADD COLUMN IF NOT EXISTS "stripe_subscription_id" TEXT;
+ALTER TABLE "subscriptions" ADD COLUMN IF NOT EXISTS "stripe_price_id" TEXT;
+ALTER TABLE "subscriptions" ADD COLUMN IF NOT EXISTS "stripe_status" TEXT;
+
+-- Unique constraints for Stripe/RevenueCat identifiers
+CREATE UNIQUE INDEX IF NOT EXISTS "subscriptions_revenue_cat_identifier_key" ON "subscriptions"("revenue_cat_identifier");
+CREATE UNIQUE INDEX IF NOT EXISTS "subscriptions_stripe_subscription_id_key" ON "subscriptions"("stripe_subscription_id");
+
 -- Seed agent subscription plans
 -- Stripe price IDs are placeholders — replace with real IDs after creating products in Stripe dashboard
 

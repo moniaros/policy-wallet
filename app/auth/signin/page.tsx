@@ -72,9 +72,9 @@ export default function SignInPage() {
         resendSent: roleCopy.auth.resendSent,
         genericError: t.errors.somethingWentWrong,
         biometricPrimary: language === "el" ? "Βιομετρική σύνδεση (κύρια)" : "Biometric sign-in (primary)",
-        pinFallback: language === "el" ? "PIN fallback" : "PIN fallback",
+        pinFallback: language === "el" ? "Εναλλακτικό PIN" : "PIN fallback",
         quickUnlockHint: language === "el"
-            ? "Χρησιμοποίησε βιομετρικό ή PIN πρώτα. Το email/password παραμένει διαθέσιμο ως δευτερεύουσα μέθοδος."
+            ? "Χρησιμοποιήστε βιομετρικό ή PIN πρώτα. Το email/password παραμένει διαθέσιμο ως δευτερεύουσα μέθοδος."
             : "Use biometrics or PIN first. Email/password remains available as a secondary method.",
         useBiometric: language === "el" ? "Χρήση Βιομετρικού" : "Use Biometric",
         usePin: language === "el" ? "Χρήση PIN" : "Use PIN",
@@ -213,7 +213,9 @@ export default function SignInPage() {
                 }
 
                 router.refresh()
-                router.push("/home")
+                const params = new URLSearchParams(window.location.search)
+                const callbackUrl = params.get("callbackUrl")
+                router.push(callbackUrl || "/home")
             }
         } catch (err) {
             setError(copy.genericError)

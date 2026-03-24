@@ -1,12 +1,15 @@
-﻿"use client"
+"use client"
 
 import type { Policy } from './types'
 import { useLanguage } from '@/contexts/LanguageContext'
 import {
     CarIcon, HeartIcon, HomeIcon, ShieldIcon, PlaneIcon,
-    ScaleIcon, DocumentIcon, PawIcon, BriefcaseIcon, ChevronRightIcon
+    DocumentIcon,
 } from '@/components/icons/PolicyIcons'
-import { Sparkles } from 'lucide-react'
+import { ChevronRight, BadgeCheck, Sparkles } from 'lucide-react'
+import { Skeleton } from '@/components/ui/skeleton'
+
+// ── Props ────────────────────────────────────────────────────────────────────
 
 interface MobilePolicyCardProps {
     policy: Policy
@@ -16,214 +19,131 @@ interface MobilePolicyCardProps {
     onViewDocuments?: () => void
 }
 
-export function MobilePolicyCard({ policy, variant = 'compact', onView }: MobilePolicyCardProps) {
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+const LOB_ICONS: Record<string, React.ElementType> = {
+    motor: CarIcon,
+    health: HeartIcon,
+    home: HomeIcon,
+    life: ShieldIcon,
+    travel: PlaneIcon,
+}
+
+function getLobIcon(lob: string) {
+    return LOB_ICONS[lob] || DocumentIcon
+}
+
+function formatRelativeExpiry(endDate: string | null, locale: 'el' | 'en'): string {
+    if (!endDate) return '-'
+    const days = Math.ceil((new Date(endDate).getTime() - Date.now()) / 86400000)
+    if (days <= 0) return locale === 'el' ? 'Έληξε' : 'Expired'
+    if (days <= 60) return locale === 'el' ? `σε ${days} ημέρες` : `in ${days} days`
+    return new Date(endDate).toLocaleDateString(locale === 'el' ? 'el-GR' : 'en-US')
+}
+
+function getStatusStyle(status: string): string {
+    const styles: Record<string, string> = {
+        active: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
+        expiring_soon: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
+        action_needed: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
+        analyzing: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 animate-pulse',
+        cancelled: 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
+    }
+    return styles[status] || 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+}
+
+// ── Component ────────────────────────────────────────────────────────────────
+
+export function MobilePolicyCard({ policy, onView }: MobilePolicyCardProps) {
     const { t, language } = useLanguage()
-    const locale = language === 'el' ? 'el-GR' : 'en-US'
-    const copy = t.wallet.mobileCard
+    const locale = language as 'el' | 'en'
 
-    const formatDate = (dateStr: string | null) => {
-        if (!dateStr) return '-'
-        return new Date(dateStr).toLocaleDateString(locale, {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-        })
-    }
-
-    const formatCurrency = (amount: number | null | undefined) => {
-        if (!amount) return '-'
-        return new Intl.NumberFormat(locale, {
-            style: 'currency',
-            currency: 'EUR',
-            minimumFractionDigits: 0
-        }).format(amount)
-    }
-
-    const getDaysUntilExpiry = () => {
-        if (!policy.endDate) return null
-        const now = new Date()
-        const end = new Date(policy.endDate)
-        return Math.ceil((end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-    }
-
-    const getPolicyIcon = () => {
-        const iconClass = 'w-7 h-7 text-[#1FDC86]'
-        switch (policy.lineOfBusiness) {
-            case 'motor':
-                return <CarIcon className={iconClass} />
-            case 'health':
-                return <HeartIcon className={iconClass} />
-            case 'home':
-                return <HomeIcon className={iconClass} />
-            case 'life':
-                return <ShieldIcon className={iconClass} />
-            case 'travel':
-                return <PlaneIcon className={iconClass} />
-            case 'liability':
-                return <ScaleIcon className={iconClass} />
-            case 'pet':
-                return <PawIcon className={iconClass} />
-            case 'professional':
-                return <BriefcaseIcon className={iconClass} />
-            default:
-                return <DocumentIcon className={iconClass} />
-        }
-    }
-
-    const getCoverageAmount = () => {
-        if (policy.acordData && typeof policy.acordData === 'object') {
-            const data = policy.acordData as any
-            return data.coverageAmount || data.sumInsured || null
-        }
-        return null
-    }
-
-    const getPremiumAmount = () => {
-        const data = policy.acordData as any
-        const aiPremium = data?.policy?.premium?.amount
-        if (aiPremium) return Number(aiPremium)
-        return Number(policy.premiumAmount?.toString() || 0)
-    }
-
-    const getGapCount = () => {
-        return (policy as any).gapCount || 0
-    }
-
-    const getStatusBadge = () => {
-        if (policy.status === 'active') {
-            return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-[#1FDC86]/12 dark:bg-[#1FDC86]/15 text-[#19b870] dark:text-[#7de8ba] border border-[#1FDC86]/30 dark:border-[#1FDC86]/35 rounded-full">{t.policyStatus.active}</span>
-        }
-        if (policy.status === 'expiring_soon') {
-            return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800 rounded-full">{t.policyStatus.expiringSoon}</span>
-        }
-        if (policy.status === 'action_needed') {
-            return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 rounded-full">{t.policyStatus.actionNeeded}</span>
-        }
-        if (policy.status === 'cancelled') {
-            return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-black/5 dark:bg-black text-black/65 dark:text-white/70 border border-black/10 dark:border-white/15 rounded-full">{t.policyStatus.cancelled}</span>
-        }
-        return <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-black/5 dark:bg-black text-black/65 dark:text-white/70 border border-black/10 dark:border-white/15 rounded-full">{t.policyStatus.incomplete}</span>
-    }
-
-    const daysLeft = getDaysUntilExpiry()
-    const coverageAmount = getCoverageAmount()
-    const premiumAmount = getPremiumAmount()
-    const gapCount = getGapCount()
-
-    if (variant === 'hero') {
-        return (
-            <div
-                className="relative bg-gradient-to-br from-white to-black/5 dark:from-black dark:to-[#111111] border border-black/10 dark:border-white/15 rounded-3xl p-5 shadow-sm"
-                role="article"
-                aria-label={`${policy.insurerName} ${copy.policyWord} ${policy.policyNumber}`}
-            >
-                <div className="flex items-start gap-3 mb-4">
-                    <div className="flex-shrink-0 w-11 h-11 bg-black/5 dark:bg-black rounded-xl flex items-center justify-center border border-black/10 dark:border-white/15">
-                        {getPolicyIcon()}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-black text-black dark:text-white truncate">{policy.insurerName}</h3>
-                        <p className="text-xs font-mono text-black/55 dark:text-white/65 truncate">{policy.policyNumber}</p>
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-2 mb-4 flex-wrap">
-                    {getStatusBadge()}
-                    {gapCount > 0 && (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-bold uppercase tracking-wider bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 rounded-full">
-                            <Sparkles className="w-3 h-3" />
-                            {gapCount} {copy.gaps}
-                        </span>
-                    )}
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 mb-4">
-                    {coverageAmount && (
-                        <div className="bg-white dark:bg-black rounded-xl p-3 border border-black/10 dark:border-white/15">
-                            <p className="text-xs text-black/55 dark:text-white/65 mb-1">{copy.coverage}</p>
-                            <p className="text-base font-bold text-black dark:text-white">{formatCurrency(coverageAmount)}</p>
-                        </div>
-                    )}
-                    {premiumAmount > 0 && (
-                        <div className="bg-white dark:bg-black rounded-xl p-3 border border-black/10 dark:border-white/15">
-                            <p className="text-xs text-black/55 dark:text-white/65 mb-1">{copy.premium}</p>
-                            <p className="text-base font-bold text-[#19b870] dark:text-[#7de8ba]">{formatCurrency(premiumAmount)}</p>
-                        </div>
-                    )}
-                    <div className="bg-white dark:bg-black rounded-xl p-3 border border-black/10 dark:border-white/15">
-                        <p className="text-xs text-black/55 dark:text-white/65 mb-1">{copy.expires}</p>
-                        <p className="text-base font-bold text-black dark:text-white">{formatDate(policy.endDate)}</p>
-                    </div>
-                </div>
-
-                {daysLeft !== null && daysLeft >= 0 && daysLeft <= 30 && (
-                    <div className={`mb-4 p-3 rounded-xl border ${daysLeft <= 7 ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300' : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300'}`}>
-                        <p className="text-xs font-bold">
-                            {daysLeft === 0
-                                ? copy.expiresToday
-                                : daysLeft === 1
-                                    ? copy.expiresTomorrow
-                                    : `${daysLeft} ${copy.daysRemaining}`}
-                        </p>
-                    </div>
-                )}
-
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation()
-                        onView?.()
-                    }}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-black dark:bg-white text-white dark:text-black rounded-xl font-bold hover:opacity-90 transition-opacity active:scale-[0.98] cursor-pointer"
-                >
-                    {copy.viewDetails}
-                    <ChevronRightIcon className="w-5 h-5" />
-                </button>
-            </div>
-        )
-    }
+    const isAnalyzing = policy.status === 'analyzing'
+    const isPendingInsurer = !policy.insurerName || policy.insurerName === '__PENDING_EXTRACTION__' || policy.insurerName === 'Unknown Insurer' || policy.insurerName === 'Άγνωστος ασφαλιστής'
+    const localizedLob = t.policyTypes?.[policy.lineOfBusiness as keyof typeof t.policyTypes] || policy.lineOfBusiness
+    const displayInsurer = isPendingInsurer ? localizedLob : policy.insurerName
+    const statusLabel = t.policyStatus?.[policy.status as keyof typeof t.policyStatus] || policy.status
+    const LobIcon = getLobIcon(policy.lineOfBusiness)
 
     return (
-        <div
+        <button
+            type="button"
             onClick={onView}
-            className="relative bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl p-4 transition-all cursor-pointer active:scale-[0.98]"
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    onView?.()
-                }
-            }}
-            aria-label={`${policy.insurerName} ${copy.policyWord} ${policy.policyNumber}`}
+            className="group w-full text-left rounded-2xl bg-white p-4 shadow-sm transition-all active:scale-[0.98] dark:bg-slate-900"
+            aria-label={`${displayInsurer} — ${localizedLob}`}
         >
-            <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-10 h-10 bg-black/5 dark:bg-black rounded-lg flex items-center justify-center mt-0.5 border border-black/10 dark:border-white/15">
-                    {getPolicyIcon()}
+            <div className="flex items-center gap-3.5">
+                {/* LOB Icon */}
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+                    {isAnalyzing ? (
+                        <Sparkles className="h-5 w-5 animate-pulse" />
+                    ) : (
+                        <LobIcon className="h-5 w-5" />
+                    )}
                 </div>
 
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                        <div className="flex-1 min-w-0">
-                            <h4 className="text-base font-bold text-black dark:text-white truncate">{policy.insurerName}</h4>
-                            <p className="text-xs font-mono text-black/55 dark:text-white/65 truncate">{policy.policyNumber}</p>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                            {getStatusBadge()}
-                            {gapCount > 0 && (
-                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[9px] font-bold bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 rounded-full">
-                                    <Sparkles className="w-2.5 h-2.5" />
-                                    {gapCount}
-                                </span>
+                {/* Content */}
+                <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                        <div className="flex min-w-0 items-center gap-1.5">
+                            <span className="truncate text-sm font-bold text-black dark:text-white">
+                                {displayInsurer}
+                            </span>
+                            {policy.verified && !isAnalyzing && (
+                                <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
                             )}
                         </div>
+                        <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${getStatusStyle(policy.status)}`}>
+                            {statusLabel}
+                        </span>
                     </div>
 
-                    <div className="flex items-center gap-2 text-xs text-black/65 dark:text-white/70">
-                        {premiumAmount > 0 && <span className="font-bold text-[#19b870] dark:text-[#7de8ba]">{formatCurrency(premiumAmount)}</span>}
-                        {premiumAmount > 0 && <span>•</span>}
-                        <span>{copy.expires} {formatDate(policy.endDate)}</span>
-                    </div>
+                    <p className="mt-0.5 text-xs text-black/50 dark:text-white/50">
+                        {localizedLob}
+                    </p>
                 </div>
+
+                {/* Chevron */}
+                <ChevronRight className="h-4 w-4 shrink-0 text-black/20 dark:text-white/20" />
+            </div>
+
+            {/* Expiry row */}
+            {!isAnalyzing && (
+                <div className="mt-2.5 flex items-center justify-between border-t border-black/5 pt-2.5 dark:border-white/5">
+                    <span className="text-[11px] font-medium text-black/40 dark:text-white/40">
+                        {formatRelativeExpiry(policy.endDate, locale)}
+                    </span>
+                </div>
+            )}
+
+            {isAnalyzing && (
+                <div className="mt-2.5 border-t border-black/5 pt-2.5 dark:border-white/5">
+                    <p className="text-[11px] text-blue-500 animate-pulse">
+                        {t.policyStatus?.analyzing || 'Analyzing...'}
+                    </p>
+                </div>
+            )}
+        </button>
+    )
+}
+
+// ── Skeleton ─────────────────────────────────────────────────────────────────
+
+export function MobilePolicyCardSkeleton() {
+    return (
+        <div className="rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900">
+            <div className="flex items-center gap-3.5">
+                <Skeleton className="h-11 w-11 rounded-2xl" />
+                <div className="flex-1 space-y-2">
+                    <div className="flex items-center justify-between">
+                        <Skeleton className="h-4 w-28" />
+                        <Skeleton className="h-4 w-14 rounded-full" />
+                    </div>
+                    <Skeleton className="h-3 w-32" />
+                </div>
+            </div>
+            <div className="mt-2.5 border-t border-black/5 pt-2.5 dark:border-white/5">
+                <Skeleton className="h-3 w-20" />
             </div>
         </div>
     )

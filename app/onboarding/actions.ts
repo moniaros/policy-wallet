@@ -208,6 +208,59 @@ export async function getOnboardingState() {
     }
 }
 
+export async function redeemInviteCode(code: string) {
+    const { dbUser } = await getAuthenticatedUser()
+
+    // Find invite by token
+    const invite = await db.invite.findUnique({ where: { token: code } })
+    if (!invite) {
+        return { success: false, error: "invalid" as const }
+    }
+    if (invite.consumedAt) {
+        return { success: false, error: "already_used" as const }
+    }
+    if (invite.expiresAt < new Date()) {
+        return { success: false, error: "expired" as const }
+    }
+
+    // Redeem invite — create relationship
+    await db.invite.update({
+        where: { id: invite.id },
+        data: { consumedAt: new Date(), inviteeUserId: dbUser.id },
+    })
+
+    // Activate or create customer relationship
+    const existingRelationship = await db.customerRelationship.findFirst({
+        where: {
+            agentUserId: invite.inviterUserId,
+            policyholderUserId: dbUser.id,
+        },
+    })
+
+    if (existingRelationship) {
+        await db.customerRelationship.update({
+            where: { id: existingRelationship.id },
+            data: { status: "active" },
+        })
+    } else {
+        await db.customerRelationship.create({
+            data: {
+                agentUserId: invite.inviterUserId,
+                policyholderUserId: dbUser.id,
+                status: "active",
+            },
+        })
+    }
+
+    // Get agent name for confirmation
+    const agent = await db.user.findUnique({
+        where: { id: invite.inviterUserId },
+        select: { name: true },
+    })
+
+    return { success: true, agentName: agent?.name || "Your advisor" }
+}
+
 export async function dismissTour() {
     const { dbUser } = await getAuthenticatedUser()
 

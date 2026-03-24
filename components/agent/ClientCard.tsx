@@ -1,0 +1,177 @@
+"use client"
+
+import React from "react"
+import { ChevronRight, Shield, Clock, UserPlus } from "lucide-react"
+import { BrandCard } from "@/components/ui/brand/BrandCard"
+import { BrandActionButton } from "@/components/ui/brand/BrandActionButton"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useLanguage } from "@/contexts/LanguageContext"
+import { getHealthScoreDotColor } from "@/lib/agent/health-score"
+import { formatRelativeDate, getUrgencyTierDisplay } from "@/lib/agent/format"
+import type { ClientCardData, UrgencyTier } from "./types"
+
+interface ClientCardProps {
+    client: ClientCardData
+    onClick: (clientId: string) => void
+}
+
+function getInitials(name: string, surname: string): string {
+    return `${name.charAt(0)}${surname.charAt(0)}`.toUpperCase()
+}
+
+export function ClientCard({ client, onClick }: ClientCardProps) {
+    const { language } = useLanguage()
+    const dotColor = getHealthScoreDotColor(client.healthScore)
+
+    return (
+        <button
+            type="button"
+            onClick={() => onClick(client.id)}
+            className="flex w-full items-center gap-3 rounded-xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-3 text-left transition-all hover:shadow-md hover:border-teal-300 dark:hover:border-teal-700 cursor-pointer"
+        >
+            {/* Avatar */}
+            <div className="relative shrink-0">
+                {client.avatar ? (
+                    <img
+                        src={client.avatar}
+                        alt={`${client.name} ${client.surname}`}
+                        className="h-10 w-10 rounded-full object-cover"
+                    />
+                ) : (
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-100 text-sm font-bold text-teal-700 dark:bg-teal-900/40 dark:text-teal-300">
+                        {getInitials(client.name, client.surname)}
+                    </div>
+                )}
+                {/* Health score dot */}
+                <span
+                    className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white dark:border-slate-900 ${dotColor}`}
+                    title={`${language === "el" ? "Βαθμός υγείας" : "Health score"}: ${client.healthScore}`}
+                />
+            </div>
+
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                    {client.name} {client.surname}
+                </p>
+                <div className="flex items-center gap-2 mt-0.5">
+                    <span className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+                        <Shield className="h-3 w-3" />
+                        {client.policyCount} {language === "el" ? "ασφ." : "pol."}
+                    </span>
+                    {client.nextActionDue && (
+                        <span className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+                            <Clock className="h-3 w-3" />
+                            {client.nextActionLabel || formatRelativeDate(client.nextActionDue, language)}
+                        </span>
+                    )}
+                </div>
+            </div>
+
+            {/* Arrow */}
+            <ChevronRight className="h-4 w-4 shrink-0 text-slate-400" />
+        </button>
+    )
+}
+
+// ── Grouped client list by urgency tier ────────────────────────────────
+
+interface ClientListGroupedProps {
+    clients: {
+        needs_attention: ClientCardData[]
+        on_track: ClientCardData[]
+        inactive: ClientCardData[]
+    }
+    onClientClick: (clientId: string) => void
+    onInviteClient?: () => void
+    isLoading?: boolean
+}
+
+export function ClientListGrouped({ clients, onClientClick, onInviteClient, isLoading }: ClientListGroupedProps) {
+    const { language } = useLanguage()
+
+    if (isLoading) return <ClientListGroupedSkeleton />
+
+    const tiers: UrgencyTier[] = ["needs_attention", "on_track", "inactive"]
+    const allEmpty = tiers.every((tier) => clients[tier].length === 0)
+
+    if (allEmpty) {
+        return (
+            <BrandCard className="p-8">
+                <div className="flex flex-col items-center text-center">
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-teal-100 dark:bg-teal-900/30">
+                        <UserPlus className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                    </div>
+                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        {language === "el"
+                            ? "Προσκαλέστε τον πρώτο σας πελάτη"
+                            : "Invite your first client"}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                        {language === "el"
+                            ? "Ξεκινήστε να χτίζετε το χαρτοφυλάκιό σας"
+                            : "Start building your portfolio"}
+                    </p>
+                    {onInviteClient && (
+                        <BrandActionButton
+                            onClick={onInviteClient}
+                            className="mt-4 text-sm"
+                        >
+                            <UserPlus className="h-4 w-4" />
+                            {language === "el" ? "Πρόσκληση Πελάτη" : "Invite Client"}
+                        </BrandActionButton>
+                    )}
+                </div>
+            </BrandCard>
+        )
+    }
+
+    return (
+        <div className="space-y-4">
+            {tiers.map((tier) => {
+                const tierClients = clients[tier]
+                if (tierClients.length === 0) return null
+                const display = getUrgencyTierDisplay(tier, language)
+                return (
+                    <div key={tier}>
+                        <div className="flex items-center gap-2 mb-2 px-1">
+                            <span className={`h-2 w-2 rounded-full ${display.dotColor}`} />
+                            <h3 className={`text-xs font-semibold uppercase tracking-wider ${display.color}`}>
+                                {display.label}
+                            </h3>
+                            <span className="text-xs text-slate-400">
+                                ({tierClients.length})
+                            </span>
+                        </div>
+                        <div className="space-y-1.5">
+                            {tierClients.map((client) => (
+                                <ClientCard
+                                    key={client.id}
+                                    client={client}
+                                    onClick={onClientClick}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                )
+            })}
+        </div>
+    )
+}
+
+export function ClientListGroupedSkeleton() {
+    return (
+        <div className="space-y-4">
+            {[1, 2].map((group) => (
+                <div key={group}>
+                    <Skeleton className="h-3 w-28 mb-2 ml-1" />
+                    <div className="space-y-1.5">
+                        {[1, 2, 3].map((i) => (
+                            <Skeleton key={i} className="h-16 w-full rounded-xl" />
+                        ))}
+                    </div>
+                </div>
+            ))}
+        </div>
+    )
+}

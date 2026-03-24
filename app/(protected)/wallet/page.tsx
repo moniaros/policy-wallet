@@ -5,11 +5,15 @@ import { db } from "@/lib/db"
 import { PolicyWalletClient } from "@/components/wallet/PolicyWalletClient"
 import type { Policy } from "@/components/wallet/types"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
+import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 
 export default async function WalletPage() {
     const { dbUser } = await getAuthenticatedUser()
     const language = (dbUser.preferredLanguage as 'el' | 'en') || 'el'
     const roleCopy = getRoleCopy(language)
+
+    const entitlements = await resolveUserEntitlements(dbUser.id)
+    const tier = entitlements.tier
 
     const profile = await db.policyholderProfile.findUnique({
         where: { userId: dbUser.id }
@@ -138,7 +142,7 @@ export default async function WalletPage() {
 
     return (
         <div className="pw-page-shell">
-            <PolicyWalletClient policies={mappedPolicies} user={user} agent={agent} showTour={showTour} />
+            <PolicyWalletClient policies={mappedPolicies} user={user} agent={agent} showTour={showTour} tier={tier} />
         </div>
     )
 }

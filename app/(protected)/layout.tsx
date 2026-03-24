@@ -5,6 +5,7 @@ import { AppShell } from "@/components/shell"
 import { getTranslations } from "@/lib/i18n"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { signOut } from "@/app/auth/actions"
+import { db } from "@/lib/db"
 import type { NavigationSection, UserRole } from "@/types/navigation"
 
 import { Wallet, Shield, PieChart, Bell, LayoutDashboard, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, DollarSign, UsersRound, FileQuestion } from 'lucide-react'
@@ -16,6 +17,11 @@ export default async function ProtectedLayout({
 }) {
     const { dbUser } = await getAuthenticatedUser()
     const isPayingUser = await getIsPayingUser(dbUser)
+
+    // Query unread notification count
+    const unreadNotificationCount = await db.notificationEvent.count({
+        where: { userId: dbUser.id, readAt: null }
+    })
 
     // Construct navigation based on roles
     const roles = dbUser.roles?.split(",") || ["policyholder"]
@@ -40,7 +46,7 @@ export default async function ProtectedLayout({
                 },
                 { label: t.nav.myAgent, href: "/agent", icon: <Users className="w-5 h-5" /> },
                 { label: t.userMenu.settings, href: "/account", icon: <Settings className="w-5 h-5" /> },
-                { label: t.nav.notifications, href: "/notifications", icon: <Bell className="w-5 h-5" /> },
+                { label: t.nav.notifications, href: "/notifications", icon: <Bell className="w-5 h-5" />, badge: unreadNotificationCount || undefined },
             ]
         })
     } else if (currentRole === "agent") {
@@ -56,7 +62,7 @@ export default async function ProtectedLayout({
                 { label: t.tasks.actionCenter, href: "/tasks", icon: <ClipboardList className="w-5 h-5" /> },
                 { label: t.nav.insights, href: "/insights", icon: <PieChart className="w-5 h-5" /> },
                 { label: t.nav.team, href: "/team", icon: <UsersRound className="w-5 h-5" /> },
-                { label: t.nav.notifications, href: "/notifications", icon: <Bell className="w-5 h-5" /> },
+                { label: t.nav.notifications, href: "/notifications", icon: <Bell className="w-5 h-5" />, badge: unreadNotificationCount || undefined },
                 { label: roleCopy.shell.agentProfile, href: "/agent/settings", icon: <Settings className="w-5 h-5" /> },
             ]
         })
@@ -96,6 +102,7 @@ export default async function ProtectedLayout({
             currentRole={userRoleObj}
             availableRoles={roles.map(r => ({ role: r as UserRole, label: t.roles[r as keyof typeof t.roles] || r }))}
             navigation={navigation}
+            notificationCount={unreadNotificationCount}
             onLogout={signOut}
         >
             {children}

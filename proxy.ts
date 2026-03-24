@@ -1,8 +1,22 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
+import { rateLimit } from "@/lib/rate-limit"
 
 export async function proxy(request: NextRequest) {
     const { nextUrl } = request
+
+    // Rate limit API routes (except stripe webhooks)
+    if (nextUrl.pathname.startsWith("/api/") && !nextUrl.pathname.includes("/stripe/webhook")) {
+        // @ts-ignore
+        const ip = request.ip || request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "127.0.0.1"
+        const limitCheck = await rateLimit(ip, 60, 60000)
+        if (!limitCheck.success) {
+            return new NextResponse(
+                JSON.stringify({ error: { code: "TOO_MANY_REQUESTS", message: "Global rate limit exceeded. Please try again later." } }),
+                { status: 429, headers: { "Content-Type": "application/json" } }
+            )
+        }
+    }
 
     let response = NextResponse.next({
         request: {
@@ -108,6 +122,37 @@ export async function proxy(request: NextRequest) {
 
         const encodedCallbackUrl = encodeURIComponent(callbackUrl)
         return NextResponse.redirect(new URL(`/auth/signin?callbackUrl=${encodedCallbackUrl}`, nextUrl))
+    }
+
+    // Role-based route protection for authenticated users
+    if (isLoggedIn && user) {
+        const userRole = (user.user_metadata?.role as string) || ""
+
+        const policyholderRoutes = ["/home", "/wallet", "/coverage-insights"]
+        const agentRoutes = ["/dashboard", "/customers", "/opportunities", "/renewals", "/commissions", "/questionnaires", "/tasks", "/insights", "/team"]
+
+        // /agent path is shared: /agent is policyholder's "My Agent", /agent/settings is agent settings
+        const isPolicyholderAgentPage = nextUrl.pathname === "/agent" || nextUrl.pathname === "/agent/"
+
+        // Agent trying to access policyholder-only routes
+        if (userRole === "agent") {
+            if (policyholderRoutes.some(r => nextUrl.pathname.startsWith(r)) || isPolicyholderAgentPage) {
+                return NextResponse.redirect(new URL("/dashboard", nextUrl))
+            }
+        }
+
+        // Policyholder trying to access agent-only routes
+        if (userRole === "policyholder") {
+            if (agentRoutes.some(r => nextUrl.pathname.startsWith(r))) {
+                return NextResponse.redirect(new URL("/home", nextUrl))
+            }
+        }
+
+        // Non-admin trying to access admin routes (already handled above for unauthenticated)
+        if (nextUrl.pathname.startsWith("/admin") && userRole !== "admin") {
+            const redirectTarget = userRole === "agent" ? "/dashboard" : "/home"
+            return NextResponse.redirect(new URL(redirectTarget, nextUrl))
+        }
     }
 
     return response

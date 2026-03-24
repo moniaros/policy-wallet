@@ -77,6 +77,11 @@ export const AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlementLimits>
         savingsReportExport: false,
         priorityQueue: false,
         crossSellIntelligence: false,
+        proposalFlow: false,
+        documentRequestFlow: false,
+        sharedPolicyRoom: false,
+        asyncMessaging: true,
+        privateNotes: false,
     },
     agent_starter: {
         maxCustomers: 100,
@@ -97,6 +102,11 @@ export const AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlementLimits>
         savingsReportExport: false,
         priorityQueue: false,
         crossSellIntelligence: false,
+        proposalFlow: true,
+        documentRequestFlow: true,
+        sharedPolicyRoom: true,
+        asyncMessaging: true,
+        privateNotes: false,
     },
     agent_pro: {
         maxCustomers: 500,
@@ -117,6 +127,11 @@ export const AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlementLimits>
         savingsReportExport: true,
         priorityQueue: true,
         crossSellIntelligence: true,
+        proposalFlow: true,
+        documentRequestFlow: true,
+        sharedPolicyRoom: true,
+        asyncMessaging: true,
+        privateNotes: true,
     },
     agency: {
         maxCustomers: null,
@@ -137,7 +152,28 @@ export const AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlementLimits>
         savingsReportExport: true,
         priorityQueue: true,
         crossSellIntelligence: true,
+        proposalFlow: true,
+        documentRequestFlow: true,
+        sharedPolicyRoom: true,
+        asyncMessaging: true,
+        privateNotes: true,
     },
+}
+
+// ── Agent Tier Hierarchy (for plan gating) ─────────────────────────
+
+export const AGENT_TIER_HIERARCHY: Record<AgentTier, number> = {
+    agent_free: 0,
+    agent_starter: 1,
+    agent_pro: 2,
+    agency: 3,
+}
+
+export function isAgentTierSufficient(
+    currentTier: AgentTier,
+    requiredTier: AgentTier
+): boolean {
+    return AGENT_TIER_HIERARCHY[currentTier] >= AGENT_TIER_HIERARCHY[requiredTier]
 }
 
 // ── B2B Agent Pricing ────────────────────────────────────────────────

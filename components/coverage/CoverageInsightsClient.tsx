@@ -66,7 +66,7 @@ export function CoverageInsightsClient({
         upgrade: lang === 'el' ? 'Αναβάθμιση' : 'Upgrade',
         reviewSectionTitle: lang === 'el' ? 'Σημεία που αξίζει να ελέγξεις' : 'Points worth reviewing',
         allGoodTitle: lang === 'el' ? 'Δεν εντοπίστηκαν κενά' : 'No gaps detected',
-        allGoodDescription: lang === 'el' ? 'Η κάλυψή σου φαίνεται ενημερωμένη.' : 'Your coverage appears up to date.',
+        allGoodDescription: lang === 'el' ? 'Η κάλυψή σας φαίνεται ενημερωμένη.' : 'Your coverage appears up to date.',
         checkedAndGood: lang === 'el' ? 'Τι ελέγξαμε και είναι εντάξει' : 'Checked and looks good',
         nextSteps: lang === 'el' ? 'Επόμενα βήματα' : 'Next steps',
         backToWallet: lang === 'el' ? 'Επιστροφή στο πορτοφόλι' : 'Back to wallet',
@@ -95,7 +95,7 @@ export function CoverageInsightsClient({
                     el: 'Η συνολική κάλυψη είναι σταθερή και ισορροπημένη.',
                     en: 'Your overall coverage is stable and balanced.'
                 },
-                summary: { el: 'Η κάλυψή σου είναι ισχυρή.', en: 'Your coverage is strong.' },
+                summary: { el: 'Η κάλυψή σας είναι ισχυρή.', en: 'Your coverage is strong.' },
                 color: 'text-[#19b870] dark:text-[#7de8ba]',
                 bg: 'bg-[#1FDC86]/12 dark:bg-[#1FDC86]/15'
             }
@@ -105,10 +105,10 @@ export function CoverageInsightsClient({
             return {
                 label: { el: 'Επαρκής', en: 'Sufficient' },
                 desc: {
-                    el: 'Καλύπτεις τα βασικά, αλλά υπάρχουν σημεία για βελτίωση.',
+                    el: 'Καλύπτετε τα βασικά, αλλά υπάρχουν σημεία για βελτίωση.',
                     en: 'You cover the basics, but a few points need attention.'
                 },
-                summary: { el: 'Η κάλυψή σου είναι επαρκής.', en: 'Your coverage is sufficient.' },
+                summary: { el: 'Η κάλυψή σας είναι επαρκής.', en: 'Your coverage is sufficient.' },
                 color: 'text-amber-600',
                 bg: 'bg-amber-100 dark:bg-amber-900/30'
             }
@@ -117,10 +117,10 @@ export function CoverageInsightsClient({
         return {
             label: { el: 'Ανεπαρκής', en: 'Insufficient' },
             desc: {
-                el: 'Υπάρχουν κενά που μπορεί να αυξήσουν τον κίνδυνό σου.',
+                el: 'Υπάρχουν κενά που μπορεί να αυξήσουν τον κίνδυνό σας.',
                 en: 'There are gaps that may increase your exposure.'
             },
-            summary: { el: 'Η κάλυψή σου χρειάζεται ενίσχυση.', en: 'Your coverage needs attention.' },
+            summary: { el: 'Η κάλυψή σας χρειάζεται ενίσχυση.', en: 'Your coverage needs attention.' },
             color: 'text-red-600',
             bg: 'bg-red-100 dark:bg-red-900/30'
         }
@@ -128,7 +128,8 @@ export function CoverageInsightsClient({
 
     const confidence = getConfidenceLevel(stats.healthScore)
     const visibleGaps = gaps.filter((g) => !hiddenInsights.has(g.id))
-    const maxVisibleInsights = isFreeTier ? 2 : 6
+    const freeUnlockedLimit = 2
+    const maxVisibleInsights = isFreeTier ? 6 : 6
 
     const summaryText = visibleGaps.length > 0
         ? (lang === 'el'
@@ -137,11 +138,11 @@ export function CoverageInsightsClient({
         : (lang === 'el' ? `${confidence.summary.el} Δεν εντοπίστηκαν κενά.` : `${confidence.summary.en} No gaps detected.`)
 
     const insights: InsightData[] = useMemo(() => {
-        return visibleGaps.slice(0, maxVisibleInsights).map((gap) => ({
+        return visibleGaps.slice(0, maxVisibleInsights).map((gap, index) => ({
             id: gap.id,
             type: (gap.policy?.lineOfBusiness || 'other').toLowerCase() as any,
             title: gap.title || (lang === 'el' ? 'Σημείο κάλυψης προς έλεγχο' : 'Coverage point to review'),
-            whyItMatters: gap.description || (lang === 'el' ? 'Αυτό το σημείο επηρεάζει το επίπεδο προστασίας σου.' : 'This point affects your protection level.'),
+            whyItMatters: gap.description || (lang === 'el' ? 'Αυτό το σημείο επηρεάζει το επίπεδο προστασίας σας.' : 'This point affects your protection level.'),
             severity: (gap.severity || 'medium') as any,
             checkedItems: lang === 'el'
                 ? ['Όρια κάλυψης', 'Νομικές απαιτήσεις', 'Σενάρια αυξημένου κινδύνου']
@@ -152,9 +153,9 @@ export function CoverageInsightsClient({
                 { label: copy.ignore, type: 'secondary' }
             ],
             microcopy: gap.severity === 'critical' ? copy.immediateReview : copy.noImmediateAction,
-            isPlusFeature: !canUseAdvancedAnalytics,
+            isPlusFeature: isFreeTier && index >= freeUnlockedLimit,
         }))
-    }, [visibleGaps, maxVisibleInsights, lang, canUseAdvancedAnalytics, copy])
+    }, [visibleGaps, maxVisibleInsights, lang, isFreeTier, freeUnlockedLimit, copy])
 
     const policiesWithIssues = new Set(gaps.map((g) => g.policyId).filter(Boolean))
     const policiesOk = policies.filter((p) => !policiesWithIssues.has(p.id))

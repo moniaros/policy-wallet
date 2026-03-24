@@ -1,7 +1,7 @@
 'use server'
 
 import { getAuthenticatedUserOrNull } from '@/lib/auth-helpers'
-import { prisma } from '@/lib/prisma'
+import { db as prisma } from '@/lib/db'
 
 export type ActivityCategory = 'policy' | 'customer' | 'opportunity' | 'system'
 

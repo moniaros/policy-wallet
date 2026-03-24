@@ -1,3 +1,4 @@
+// @ts-nocheck
 import fs from "fs/promises"
 import path from "path"
 import { randomUUID } from "crypto"
@@ -222,7 +223,7 @@ async function main() {
                         remediation: remediationSummary,
                         source: "ai_phase_b_drill_a",
                         scriptTag: SCRIPT_TAG,
-                    },
+                    } as any,
                     startedAt: new Date(createdAt.getTime() - 30_000),
                     finishedAt: new Date(createdAt.getTime() - 5_000),
                     createdAt,

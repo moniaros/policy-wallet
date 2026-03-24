@@ -161,6 +161,100 @@ export async function createPolicy(formData: FormData) {
     })
 
     revalidatePath("/wallet")
+    return { success: true, policyId: policy.id }
+}
+
+export async function getPolicyReviewData(policyId: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user?.id || !user.email) return { error: "Unauthorized" }
+
+    // Use email-based lookup to match the local DB user ID (same as createPolicy)
+    const dbUser = await db.user.findUnique({ where: { email: user.email } })
+    if (!dbUser) return { error: "User not found" }
+
+    const policy = await db.policy.findFirst({
+        where: { id: policyId, ownerUserId: dbUser.id },
+        select: {
+            id: true,
+            status: true,
+            insurerName: true,
+            lineOfBusiness: true,
+            startDate: true,
+            endDate: true,
+            premiumAmount: true,
+            premiumCurrency: true,
+            policyNumber: true,
+            acordData: true,
+        }
+    })
+
+    if (!policy) return { error: "Not found" }
+
+    // Sanitize — never expose raw placeholders
+    const sanitize = (val: string | null | undefined, marker?: string): string | null => {
+        if (!val) return null
+        if (val === '__PENDING_EXTRACTION__') return null
+        if (marker && val.startsWith(marker)) return null
+        return val
+    }
+
+    const acordData = policy.acordData as any
+    const coverageSummary = acordData?.coverageSummary || acordData?.extraction?.coverageSummary || null
+
+    return {
+        id: policy.id,
+        status: policy.status,
+        insurerName: sanitize(policy.insurerName),
+        lineOfBusiness: policy.lineOfBusiness,
+        policyNumber: sanitize(policy.policyNumber, 'PENDING-'),
+        startDate: policy.startDate?.toISOString() || null,
+        endDate: policy.endDate?.toISOString() || null,
+        premiumAmount: policy.premiumAmount ? Number(policy.premiumAmount) : null,
+        premiumCurrency: policy.premiumCurrency || 'EUR',
+        coverageSummary,
+        verified: Boolean(acordData?.extraction && !acordData.extraction.requiresReview),
+    }
+}
+
+export async function retryPolicyAnalysis(policyId: string) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user?.id || !user.email) return { error: "Unauthorized" }
+
+    const dbUser = await db.user.findUnique({ where: { email: user.email } })
+    if (!dbUser) return { error: "User not found" }
+
+    const policy = await db.policy.findFirst({
+        where: { id: policyId, ownerUserId: dbUser.id },
+        include: { documents: true },
+    })
+
+    if (!policy) return { error: "Policy not found" }
+    if (policy.documents.length === 0) return { error: "No documents to analyze" }
+
+    // Reset policy status to analyzing
+    await db.policy.update({
+        where: { id: policyId },
+        data: { status: 'analyzing' }
+    })
+    await db.policyDocument.updateMany({
+        where: { policyId },
+        data: { processingStatus: 'processing' }
+    })
+
+    const policyService = new PolicyService()
+    const language = (dbUser.preferredLanguage as 'en' | 'el') || 'en'
+
+    after(async () => {
+        try {
+            await policyService.runBackgroundAnalysis(policyId, dbUser.id, language)
+        } catch (e) {
+            logger('error', 'Retry analysis failed', { policyId, error: e })
+        }
+    })
+
+    revalidatePath("/wallet")
     return { success: true }
 }
 

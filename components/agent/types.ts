@@ -143,3 +143,78 @@ export interface InviteModalProps {
     onClose?: () => void
     onSendInvite?: (email: string, accessScope: AccessScope) => void
 }
+
+// ── Agent Dashboard Types ─────────────────────────────────────────────
+
+export type UrgencyTier = "needs_attention" | "on_track" | "inactive"
+
+export type ActionQueueItemType =
+    | "expiring_policy"
+    | "unsigned_document"
+    | "unanswered_request"
+    | "incomplete_profile"
+    | "inbound_lead"
+    | "scheduled_followup"
+
+export type OneTapAction =
+    | "renew"
+    | "follow_up"
+    | "send_reminder"
+    | "view_document"
+    | "complete_profile"
+    | "accept_lead"
+
+export interface ActionQueueItem {
+    id: string
+    type: ActionQueueItemType
+    clientId: string
+    clientName: string
+    description: string
+    dueDate: string
+    urgency: "low" | "medium" | "high"
+    oneTapAction: OneTapAction
+    policyId?: string
+    metadata?: Record<string, unknown>
+}
+
+export interface RevenueMetrics {
+    mrr: number
+    renewalsDueThisMonth: number
+    renewalsDueAmount: number
+    commissionPipeline: number
+    monthlyGrowthPercent: number
+}
+
+export interface PortfolioHealth {
+    totalClients: number
+    coverageGapPercent: number
+    completeProfilePercent: number
+    atRiskCount: number
+}
+
+export interface ClientCardData {
+    id: string
+    relationshipId: string
+    name: string
+    surname: string
+    email: string
+    avatar?: string
+    policyCount: number
+    healthScore: number
+    urgencyTier: UrgencyTier
+    nextActionDue?: string | null
+    nextActionLabel?: string | null
+    activationStatus: ActivationStatus
+}
+
+export interface AgentDashboardData {
+    actionQueue: ActionQueueItem[]
+    revenue: RevenueMetrics
+    portfolioHealth: PortfolioHealth
+    clientsByUrgency: {
+        needs_attention: ClientCardData[]
+        on_track: ClientCardData[]
+        inactive: ClientCardData[]
+    }
+    todaysFollowUps: ActionQueueItem[]
+}

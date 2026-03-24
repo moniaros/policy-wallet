@@ -94,7 +94,7 @@ export default async function CoverageInsightsPage() {
             canUseAgentCollaboration={entitlements.limits.agentCollaboration}
             policies={policies.map(p => ({
                 id: p.id,
-                insurerName: (p as any).insurerName || 'Unknown Insurer',
+                insurerName: ((p as any).insurerName && (p as any).insurerName !== '__PENDING_EXTRACTION__') ? (p as any).insurerName : (p.lineOfBusiness || 'Policy'),
                 lineOfBusiness: {
                     // Try to get from acordData first (more specific), then fallback to top-level field
                     code: (p.acordData as any)?.policy?.lineOfBusiness?.code || p.lineOfBusiness || 'other',

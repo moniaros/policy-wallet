@@ -75,6 +75,16 @@ export interface AgentEntitlementLimits {
     priorityQueue: boolean
     /** Cross-sell / upsell intelligence */
     crossSellIntelligence: boolean
+    /** Proposal creation and sending */
+    proposalFlow: boolean
+    /** Document request flow */
+    documentRequestFlow: boolean
+    /** Shared policy room workspace */
+    sharedPolicyRoom: boolean
+    /** Async messaging threads */
+    asyncMessaging: boolean
+    /** Private agent-only notes on threads */
+    privateNotes: boolean
 }
 
 // ── Entitlement result types ─────────────────────────────────────────

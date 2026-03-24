@@ -33,20 +33,20 @@ export default function ForgotPasswordPage() {
     const copy = {
         title: isGreek ? "Επαναφορά κωδικού" : "Reset your password",
         subtitle: isGreek
-            ? "Στείλε το email σου και θα σου στείλουμε ασφαλή σύνδεσμο επαναφοράς."
+            ? "Εισάγετε το email σας και θα σας στείλουμε ασφαλή σύνδεσμο επαναφοράς."
             : "Enter your email and we will send a secure reset link.",
         emailLabel: isGreek ? "Email λογαριασμού" : "Account email",
         emailPlaceholder: "name@example.com",
         send: isGreek ? "Αποστολή συνδέσμου" : "Send reset link",
         sending: isGreek ? "Αποστολή..." : "Sending...",
-        sentTitle: isGreek ? "Έλεγξε το inbox σου" : "Check your inbox",
+        sentTitle: isGreek ? "Ελέγξτε το inbox σας" : "Check your inbox",
         sentBody: isGreek
             ? "Αν υπάρχει λογαριασμός για αυτό το email, στάλθηκε σύνδεσμος επαναφοράς."
             : "If an account exists for this email, we have sent a reset link.",
         sentHint: isGreek ? "Ο σύνδεσμος ισχύει για 30 λεπτά." : "The reset link is valid for 30 minutes.",
         backToSignIn: isGreek ? "Επιστροφή στη σύνδεση" : "Back to sign in",
         trust: isGreek ? "Τραπεζικού επιπέδου ασφάλεια" : "Bank-grade security",
-        genericError: isGreek ? "Κάτι πήγε στραβά. Δοκίμασε ξανά." : "Something went wrong. Please try again.",
+        genericError: isGreek ? "Κάτι πήγε στραβά. Δοκιμάστε ξανά." : "Something went wrong. Please try again.",
     }
 
     const {

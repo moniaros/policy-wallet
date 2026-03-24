@@ -452,19 +452,23 @@ export async function addPolicyForCustomer(data: {
             }
         })
 
-        // 5. Trigger background analysis for gaps
-        const { PolicyService } = await import("@/lib/services/policy.service")
-        const policyService = new PolicyService()
-        // Determine language from agent's preference for now
-        const language = (authResult.dbUser as any).preferredLanguage || 'en'
+        // 5. Trigger background analysis only if documents exist
+        const docCount = await db.policyDocument.count({ where: { policyId: policy.id } })
+        if (docCount > 0) {
+            const { PolicyService } = await import("@/lib/services/policy.service")
+            const policyService = new PolicyService()
+            const language = (authResult.dbUser as any).preferredLanguage || 'en'
 
-        // We use 'after' if available or just run it backgroundly
-        try {
-            // Since this is a server action, 'after' is preferred if supported
-            // If not, we still want to trigger it.
-            await policyService.runBackgroundAnalysis(policy.id, data.customerId, language)
-        } catch (e) {
-            console.error("Failed to trigger background analysis", e)
+            await db.policy.update({
+                where: { id: policy.id },
+                data: { status: 'analyzing' }
+            })
+
+            try {
+                await policyService.runBackgroundAnalysis(policy.id, data.customerId, language)
+            } catch (e) {
+                console.error("Failed to trigger background analysis", e)
+            }
         }
 
         revalidatePath(`/customers/${data.customerId}`)

@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import AgentOnboardingFlow from './AgentOnboardingFlow'
+import { LeftColumnContent } from './LeftColumnContent'
 
 export const metadata: Metadata = {
     title: 'Agent Setup | PolicyWallet',
@@ -21,16 +22,7 @@ export default function AgentOnboardingPage() {
                 </div>
 
                 <div className="relative z-10 max-w-lg">
-                    <h2 className="text-4xl font-bold mb-6">Your digital insurance office.</h2>
-                    <p className="text-lg text-slate-300 mb-8">
-                        Manage clients, analyze policies with AI, and grow your business with a professional toolset designed for modern agents.
-                    </p>
-
-                    <div className="space-y-4">
-                        <FeatureRow text="AI-powered gap analysis" />
-                        <FeatureRow text="Branded client portal" />
-                        <FeatureRow text="Automated renewal tracking" />
-                    </div>
+                    <LeftColumnContent />
                 </div>
 
                 <div className="relative z-10 text-sm text-slate-500">
@@ -42,19 +34,6 @@ export default function AgentOnboardingPage() {
             <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-12">
                 <AgentOnboardingFlow />
             </div>
-        </div>
-    )
-}
-
-function FeatureRow({ text }: { text: string }) {
-    return (
-        <div className="flex items-center gap-3">
-            <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-            </div>
-            <span className="font-medium text-slate-200">{text}</span>
         </div>
     )
 }

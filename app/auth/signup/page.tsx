@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import { useEffect, useMemo, useState, Suspense } from "react"
 import Link from "next/link"
@@ -21,13 +21,27 @@ const ibmPlexSans = IBM_Plex_Sans({
 })
 
 const signupSchema = z.object({
-    mobileNumber: z.string().min(1, "Mobile number is required").refine((value) => Boolean(normalizeGreekMobile(value)), "Enter a valid Greek mobile"),
-    email: z.string().trim().toLowerCase().refine((value) => !value || z.email().safeParse(value).success, "Invalid email"),
-    password: z.string().min(8, "Use at least 8 characters"),
-    termsAccepted: z.boolean().refine((value) => value, "You must accept Terms & Privacy"),
+    mobileNumber: z.string().min(1, "mobile_required").refine((value) => Boolean(normalizeGreekMobile(value)), "mobile_invalid"),
+    email: z.string().trim().toLowerCase().refine((value) => !value || z.email().safeParse(value).success, "email_invalid"),
+    password: z.string().min(8, "password_short"),
+    termsAccepted: z.boolean().refine((value) => value, "terms_required"),
 })
 
 type SignupFormValues = z.infer<typeof signupSchema>
+
+const zodErrors: Record<string, { el: string; en: string }> = {
+    mobile_required: { el: "Ο αριθμός κινητού είναι υποχρεωτικός", en: "Mobile number is required" },
+    mobile_invalid: { el: "Εισάγετε ένα έγκυρο ελληνικό κινητό", en: "Enter a valid Greek mobile" },
+    email_invalid: { el: "Μη έγκυρο email", en: "Invalid email" },
+    password_short: { el: "Χρησιμοποιήστε τουλάχιστον 8 χαρακτήρες", en: "Use at least 8 characters" },
+    terms_required: { el: "Πρέπει να αποδεχτείτε τους Όρους και το Απόρρητο", en: "You must accept Terms & Privacy" },
+}
+
+function getZodError(message: string | undefined, language: "el" | "en"): string {
+    if (!message) return ""
+    const entry = zodErrors[message]
+    return entry ? entry[language] : message
+}
 
 function formatPhoneInput(value: string): string {
     const digitsOnly = value.replace(/\D/g, "")
@@ -66,7 +80,7 @@ function ConfettiBurst() {
                     style={{
                         left: `${15 + i * 6}%`,
                         top: "55%",
-                        backgroundColor: i % 3 === 0 ? "#1E3A8A" : i % 3 === 1 ? "#22C55E" : "#06B6D4",
+                        backgroundColor: i % 3 === 0 ? "#1FDC86" : i % 3 === 1 ? "#29685B" : "#06B6D4",
                     }}
                     initial={{ opacity: 0, y: 0, scale: 0.6 }}
                     animate={{ opacity: [0, 1, 0], y: -80 - (i % 4) * 12, x: (i % 2 === 0 ? 1 : -1) * (12 + i), scale: [0.6, 1, 0.6] }}
@@ -80,7 +94,8 @@ function ConfettiBurst() {
 function SignUpForm() {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const { language } = useLanguage()
+    const { language, setLanguage } = useLanguage()
+    const t = (el: string, en: string) => (language === "el" ? el : en)
 
     const role = searchParams.get("role") === "agent" ? "agent" : "policyholder"
     const source = searchParams.get("source") || "signup_direct"
@@ -162,7 +177,7 @@ function SignUpForm() {
             if (!result.success) {
                 const err = typeof result.error === "string"
                     ? result.error
-                    : Object.values((result.error || {}) as Record<string, string[]>).flat().join(", ") || "Signup failed"
+                    : Object.values((result.error || {}) as Record<string, string[]>).flat().join(", ") || t("Η εγγραφή απέτυχε", "Signup failed")
                 setServerError(err)
                 setIsSubmitting(false)
                 return
@@ -188,7 +203,7 @@ function SignUpForm() {
                 router.push(result.redirect || "/onboarding")
             }, 900)
         } catch {
-            setServerError("Something went wrong. Please try again.")
+            setServerError(t("Κάτι πήγε στραβά. Δοκιμάστε ξανά.", "Something went wrong. Please try again."))
             setIsSubmitting(false)
         }
     }
@@ -205,8 +220,28 @@ function SignUpForm() {
                     <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 shadow-sm">
                         <PolicyWalletLogo size="md" language={language} />
                     </div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Your Insurance Wallet</h1>
-                    <p className="mt-1.5 text-sm text-slate-600 dark:text-slate-400">All your policies. One secure place.</p>
+                    <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                        {t("Το Ασφαλιστικό σας Πορτοφόλι", "Your Insurance Wallet")}
+                    </h1>
+                    <p className="mt-1.5 text-sm text-slate-600 dark:text-slate-400">
+                        {t("Όλα τα συμβόλαιά σας. Σε ένα ασφαλές μέρος.", "All your policies. One secure place.")}
+                    </p>
+                    <div className="mt-4 inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-800">
+                        <button
+                            type="button"
+                            onClick={() => setLanguage("el")}
+                            className={`rounded-md px-2.5 py-1 text-xs font-bold transition-colors ${language === "el" ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
+                        >
+                            EL
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setLanguage("en")}
+                            className={`rounded-md px-2.5 py-1 text-xs font-bold transition-colors ${language === "en" ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
+                        >
+                            EN
+                        </button>
+                    </div>
                 </div>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -220,7 +255,9 @@ function SignUpForm() {
                     </AnimatePresence>
 
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
-                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">Mobile number</label>
+                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            {t("Αριθμός κινητού", "Mobile number")}
+                        </label>
                         <div className="relative">
                             <input
                                 type="tel"
@@ -232,24 +269,30 @@ function SignUpForm() {
                             />
                             {isMobileValid ? <CheckCircle2 className="absolute right-3 top-3.5 h-4 w-4 text-slate-500" /> : null}
                         </div>
-                        {errors.mobileNumber ? <p className="mt-1 text-xs text-rose-600">{errors.mobileNumber.message}</p> : null}
+                        {errors.mobileNumber ? <p className="mt-1 text-xs text-rose-600">{getZodError(errors.mobileNumber.message, language)}</p> : null}
                     </motion.div>
 
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }}>
-                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">Email (optional)</label>
+                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            {t("Email (προαιρετικό)", "Email (optional)")}
+                        </label>
                         <div className="relative">
                             <input type="email" placeholder="name@example.com" {...register("email")} className={`${inputBase} ${errors.email ? "border-rose-300" : "border-slate-300"}`} />
                             {isEmailValid ? <CheckCircle2 className="absolute right-3 top-3.5 h-4 w-4 text-slate-500" /> : null}
                         </div>
-                        <p className="mt-1 text-xs text-slate-500">Optional, used for account recovery and alerts.</p>
-                        {errors.email ? <p className="mt-1 text-xs text-rose-600">{errors.email.message}</p> : null}
+                        <p className="mt-1 text-xs text-slate-500">
+                            {t("Προαιρετικό, χρησιμοποιείται για ανάκτηση λογαριασμού και ειδοποιήσεις.", "Optional, used for account recovery and alerts.")}
+                        </p>
+                        {errors.email ? <p className="mt-1 text-xs text-rose-600">{getZodError(errors.email.message, language)}</p> : null}
                     </motion.div>
 
                     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.11 }}>
-                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">Password</label>
+                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            {t("Κωδικός πρόσβασης", "Password")}
+                        </label>
                         <div className="relative">
-                            <input type={showPassword ? "text" : "password"} placeholder="Create password" {...register("password")} className={`${inputBase} pr-11 ${errors.password ? "border-rose-300" : "border-slate-300"}`} />
-                            <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-2 top-2.5 rounded-md p-1.5 text-slate-500 transition hover:bg-slate-100" aria-label={showPassword ? "Hide password" : "Show password"}>
+                            <input type={showPassword ? "text" : "password"} placeholder={t("Δημιουργία κωδικού", "Create password")} {...register("password")} className={`${inputBase} pr-11 ${errors.password ? "border-rose-300" : "border-slate-300"}`} />
+                            <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-2 top-2.5 rounded-md p-1.5 text-slate-500 transition hover:bg-slate-100" aria-label={showPassword ? t("Απόκρυψη κωδικού", "Hide password") : t("Εμφάνιση κωδικού", "Show password")}>
                                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                             </button>
                         </div>
@@ -261,37 +304,39 @@ function SignUpForm() {
                                 />
                             ))}
                         </div>
-                        {isPasswordValid ? <p className="mt-1 text-xs text-slate-600">Strong enough</p> : null}
-                        {errors.password ? <p className="mt-1 text-xs text-rose-600">{errors.password.message}</p> : null}
+                        {isPasswordValid ? <p className="mt-1 text-xs text-slate-600">{t("Αρκετά ισχυρός", "Strong enough")}</p> : null}
+                        {errors.password ? <p className="mt-1 text-xs text-rose-600">{getZodError(errors.password.message, language)}</p> : null}
                     </motion.div>
 
                     <motion.label initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700">
                         <input type="checkbox" {...register("termsAccepted")} className="mt-0.5 h-4 w-4 rounded border-slate-300 text-[#29685B] focus:ring-[#29685B]" />
                         <span>
-                            I agree to <Link href="/terms" className="font-semibold text-[#29685B] hover:underline">Terms</Link> and <Link href="/privacy" className="font-semibold text-[#29685B] hover:underline">Privacy</Link>
+                            {t("Αποδέχομαι τους ", "I agree to ")}<Link href="/terms" className="font-semibold text-[#29685B] hover:underline">{t("Όρους", "Terms")}</Link>{t(" και το ", " and ")}<Link href="/privacy" className="font-semibold text-[#29685B] hover:underline">{t("Απόρρητο", "Privacy")}</Link>
                         </span>
                     </motion.label>
-                    {errors.termsAccepted ? <p className="-mt-2 text-xs text-rose-600">{errors.termsAccepted.message}</p> : null}
+                    {errors.termsAccepted ? <p className="-mt-2 text-xs text-rose-600">{getZodError(errors.termsAccepted.message, language)}</p> : null}
 
                     <AnimatePresence>
                         {isMobileValid && strength >= 2 ? (
                             <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="inline-flex items-center gap-1.5 rounded-full border border-[#89D9B2] bg-[#89D9B2]/10 px-3 py-1 text-xs font-medium text-[#1C4E44]">
                                 <ShieldCheck className="h-3.5 w-3.5" />
-                                Use FaceID after first signup
+                                {t("Χρήση FaceID μετά την πρώτη εγγραφή", "Use FaceID after first signup")}
                             </motion.div>
                         ) : null}
                     </AnimatePresence>
 
                     <motion.button initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} type="submit" disabled={isSubmitting || signupSuccess} className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-transparent bg-[#1FDC86] px-4 py-4 text-[16px] font-bold text-slate-900 transition-all hover:-translate-y-[2px] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86] flex-shrink-0 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-[#1FDC86] dark:text-slate-900">
                         {isSubmitting || signupSuccess ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                        {signupSuccess ? "Wallet Created" : "Create My Wallet"}
+                        {signupSuccess ? t("Πορτοφόλι δημιουργήθηκε", "Wallet Created") : t("Δημιουργία Πορτοφολιού", "Create My Wallet")}
                     </motion.button>
 
-                    <p className="text-center text-xs text-slate-500">Takes 90 seconds. Cancel anytime.</p>
+                    <p className="text-center text-xs text-slate-500">
+                        {t("Χρειάζονται 90 δευτερόλεπτα. Ακυρώστε οποτεδήποτε.", "Takes 90 seconds. Cancel anytime.")}
+                    </p>
                 </form>
 
                 <div className="mt-5 border-t border-slate-200 pt-4 text-center text-sm text-slate-600">
-                    Already have account? <Link href="/auth/signin" className="font-semibold text-[#1FDC86] hover:underline">Login</Link>
+                    {t("Έχετε ήδη λογαριασμό;", "Already have account?")} <Link href="/auth/signin" className="font-semibold text-[#1FDC86] hover:underline">{t("Σύνδεση", "Login")}</Link>
                 </div>
 
             </motion.div>
@@ -301,7 +346,7 @@ function SignUpForm() {
 
 export default function SignUpPage() {
     return (
-        <Suspense fallback={<div className={`${ibmPlexSans.className} flex min-h-screen items-center justify-center`}><Loader2 className="h-7 w-7 animate-spin text-blue-700" /></div>}>
+        <Suspense fallback={<div className={`${ibmPlexSans.className} flex min-h-screen items-center justify-center`}><Loader2 className="h-7 w-7 animate-spin text-[#1FDC86]" /></div>}>
             <SignUpForm />
         </Suspense>
     )

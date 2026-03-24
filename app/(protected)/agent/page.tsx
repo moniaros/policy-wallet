@@ -101,7 +101,14 @@ export default async function AgentPage() {
         acordData: p.acordData
     }))
 
-    return <AgentClient policies={mappedPolicies} user={user} agent={agent} />
+    return (
+        <AgentClient
+            policies={mappedPolicies}
+            user={user}
+            agent={agent}
+            relationshipId={customerRelationship?.id || null}
+        />
+    )
 }
 
 function mapStatus(dbStatus: string, endDate: Date): 'active' | 'expiring_soon' | 'incomplete' | 'action_needed' {

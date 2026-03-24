@@ -72,7 +72,7 @@ export async function getInsightsData(): Promise<InsightsData | null> {
     const relationships = await db.customerRelationship.findMany({
         where: { agentUserId: agentId },
         include: {
-            policyholder: {
+            customer: {
                 select: { id: true, name: true, email: true }
             }
         }
@@ -106,7 +106,7 @@ export async function getInsightsData(): Promise<InsightsData | null> {
         const lob = p.lineOfBusiness || 'other'
         const existing = lobMap.get(lob) || { count: 0, totalPremium: 0 }
         existing.count++
-        existing.totalPremium += (p.premiumAmount as number) || 0
+        existing.totalPremium += Number(p.premiumAmount ?? 0)
         lobMap.set(lob, existing)
     }
 
@@ -122,7 +122,7 @@ export async function getInsightsData(): Promise<InsightsData | null> {
     const now = new Date()
     const ninetyDaysOut = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000)
 
-    const customerMap = new Map(relationships.map(r => [r.policyholderUserId, r.policyholder?.name || 'Unknown']))
+    const customerMap = new Map(relationships.map(r => [r.policyholderUserId, r.customer?.name || 'Unknown']))
 
     const renewalTimeline = policies
         .filter(p => p.endDate >= now && p.endDate <= ninetyDaysOut)
@@ -135,7 +135,7 @@ export async function getInsightsData(): Promise<InsightsData | null> {
             lineOfBusiness: p.lineOfBusiness || 'other',
             endDate: p.endDate.toISOString(),
             daysUntilExpiry: Math.ceil((p.endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),
-            premiumAmount: (p.premiumAmount as number) || 0,
+            premiumAmount: Number(p.premiumAmount ?? 0),
         }))
         .sort((a, b) => a.daysUntilExpiry - b.daysUntilExpiry)
 
@@ -170,7 +170,7 @@ export async function getInsightsData(): Promise<InsightsData | null> {
         .reduce((sum, o) => sum + Number(o.wonPremium ?? o.estimatedPremium ?? 0), 0)
 
     // 5. Premium summary
-    const totalPremium = policies.reduce((sum, p) => sum + ((p.premiumAmount as number) || 0), 0)
+    const totalPremium = policies.reduce((sum, p) => sum + (Number(p.premiumAmount ?? 0)), 0)
     const avgPremiumPerCustomer = totalCustomers > 0 ? totalPremium / totalCustomers : 0
     const avgPoliciesPerCustomer = totalCustomers > 0 ? policies.length / totalCustomers : 0
 

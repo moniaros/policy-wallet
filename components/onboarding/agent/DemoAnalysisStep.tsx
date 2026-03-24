@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { ArrowRight, BarChart3, AlertTriangle, FileUp, Wand2, Check } from "lucide-react"
 import { motion } from "framer-motion"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 import { generateDemoProposal } from "@/app/onboarding/agent/actions"
 
@@ -12,6 +13,8 @@ interface StepProps {
 }
 
 export function DemoAnalysisStep({ onNext, onBack }: StepProps) {
+    const { language } = useLanguage()
+    const t = (el: string, en: string) => (language === "el" ? el : en)
     const [analyzing, setAnalyzing] = useState(false)
     const [analysisComplete, setAnalysisComplete] = useState(false)
     const [proposalData, setProposalData] = useState<any>(null)
@@ -42,10 +45,13 @@ export function DemoAnalysisStep({ onNext, onBack }: StepProps) {
 
                     <div>
                         <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-                            See the power of AI.
+                            {t("Δείτε τη δύναμη του AI.", "See the power of AI.")}
                         </h1>
                         <p className="text-slate-600 dark:text-slate-400 text-lg">
-                            Upload a client policy or use our demo portfolio to instantly identify coverage gaps.
+                            {t(
+                                "Ανεβάστε ένα συμβόλαιο πελάτη ή χρησιμοποιήστε το demo χαρτοφυλάκιο για να εντοπίσετε άμεσα κενά κάλυψης.",
+                                "Upload a client policy or use our demo portfolio to instantly identify coverage gaps."
+                            )}
                         </p>
                     </div>
 
@@ -68,8 +74,12 @@ export function DemoAnalysisStep({ onNext, onBack }: StepProps) {
                                     <BarChart3 className={`w-6 h-6 ${analyzing ? 'text-emerald-500 animate-pulse' : 'text-slate-400 group-hover:text-emerald-500'}`} />
                                 </div>
                                 <div>
-                                    <p className="font-bold text-slate-900 dark:text-white">Run Demo Analysis</p>
-                                    <p className="text-sm text-slate-500">Use a sample portfolio to see instant insights.</p>
+                                    <p className="font-bold text-slate-900 dark:text-white">
+                                        {t("Εκτέλεση Demo Ανάλυσης", "Run Demo Analysis")}
+                                    </p>
+                                    <p className="text-sm text-slate-500">
+                                        {t("Χρησιμοποιήστε ένα δείγμα χαρτοφυλακίου για άμεσα αποτελέσματα.", "Use a sample portfolio to see instant insights.")}
+                                    </p>
                                 </div>
                             </div>
                         </button>
@@ -80,8 +90,12 @@ export function DemoAnalysisStep({ onNext, onBack }: StepProps) {
                                     <FileUp className="w-6 h-6 text-slate-400" />
                                 </div>
                                 <div>
-                                    <p className="font-bold text-slate-900 dark:text-white">Upload Client Policy</p>
-                                    <p className="text-sm text-slate-500">PDF analysis enabled after setup.</p>
+                                    <p className="font-bold text-slate-900 dark:text-white">
+                                        {t("Ανέβασμα Συμβολαίου Πελάτη", "Upload Client Policy")}
+                                    </p>
+                                    <p className="text-sm text-slate-500">
+                                        {t("Η ανάλυση PDF ενεργοποιείται μετά τη ρύθμιση.", "PDF analysis enabled after setup.")}
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -99,9 +113,11 @@ export function DemoAnalysisStep({ onNext, onBack }: StepProps) {
                                 <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                             </div>
                             <div>
-                                <h3 className="font-bold text-emerald-900 dark:text-emerald-100">Analysis Complete</h3>
+                                <h3 className="font-bold text-emerald-900 dark:text-emerald-100">
+                                    {t("Η Ανάλυση Ολοκληρώθηκε", "Analysis Complete")}
+                                </h3>
                                 <p className="text-xs text-emerald-700 dark:text-emerald-300">
-                                    Analyzed {proposalData?.policySummary?.type} ({proposalData?.policySummary?.insurer})
+                                    {t("Αναλύθηκε", "Analyzed")} {proposalData?.policySummary?.type} ({proposalData?.policySummary?.insurer})
                                 </p>
                             </div>
                         </div>
@@ -116,7 +132,7 @@ export function DemoAnalysisStep({ onNext, onBack }: StepProps) {
                                         {gap.severity === 'high' && (
                                             <div className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded">
                                                 <Wand2 className="w-3 h-3" />
-                                                Proposal Generated
+                                                {t("Πρόταση Δημιουργήθηκε", "Proposal Generated")}
                                             </div>
                                         )}
                                     </div>
@@ -130,13 +146,13 @@ export function DemoAnalysisStep({ onNext, onBack }: StepProps) {
                             onClick={() => { setAnalysisComplete(false); setAnalyzing(false); }}
                             className="px-6 py-4 rounded-xl font-bold text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-all"
                         >
-                            Reset
+                            {t("Επαναφορά", "Reset")}
                         </button>
                         <button
                             onClick={onNext}
                             className="flex-1 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg hover:-translate-y-1"
                         >
-                            Continue <ArrowRight className="w-5 h-5" />
+                            {t("Συνέχεια", "Continue")} <ArrowRight className="w-5 h-5" />
                         </button>
                     </div>
                 </motion.div>
@@ -148,13 +164,13 @@ export function DemoAnalysisStep({ onNext, onBack }: StepProps) {
                         onClick={onBack}
                         className="px-6 py-4 rounded-xl font-bold text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 transition-all"
                     >
-                        Back
+                        {t("Πίσω", "Back")}
                     </button>
                     <button
                         onClick={onNext}
                         className="flex-1 bg-white border-2 border-slate-200 hover:bg-slate-50 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold py-4 rounded-xl transition-all"
                     >
-                        Skip Demo
+                        {t("Παράλειψη Demo", "Skip Demo")}
                     </button>
                 </div>
             )}

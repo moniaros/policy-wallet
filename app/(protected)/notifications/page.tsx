@@ -24,17 +24,15 @@ export default async function NotificationsPage() {
         <NotificationsClient
             initialData={{
                 history: data.history.map(e => ({
-                    id: e.event_id,
+                    event_id: e.event_id,
                     event_type: e.event_type,
                     channel: e.channel,
-                    title: e.subject,
+                    subject: e.subject,
                     message: e.message,
                     created_at: e.created_at,
-                    read_at: undefined, // Default to unread as backend doesn't support read status yet
-                    priority: 'medium',
-                    category: (['system_confirmation', 'reminder', 'intelligence'].includes(e.event_category) ? e.event_category : 'system_confirmation') as any,
-                    related_object_type: e.related_policy_id ? 'policy' : undefined,
-                    related_object_id: e.related_policy_id || undefined
+                    read_at: e.read_at || null,
+                    related_policy_id: e.related_policy_id,
+                    related_policy_name: e.related_policy_name,
                 })),
                 preferences: data.preferences.map(p => ({
                     event_type: p.event_type,

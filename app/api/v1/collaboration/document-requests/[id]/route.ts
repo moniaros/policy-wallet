@@ -1,0 +1,78 @@
+import { withApiGuard } from "@/lib/api-guard"
+import { db as prisma } from "@/lib/db"
+import { NextResponse } from "next/server"
+
+// PATCH — Update document request (upload, expire)
+export const PATCH = withApiGuard(
+    {
+        auth: { mode: "user" },
+    },
+    async ({ req, auth, params }) => {
+        const id = (params as { id: string }).id
+        const body = (await req.json()) as {
+            status?: string
+            uploadedDocumentUrl?: string
+        }
+
+        const documentRequest = await prisma.documentRequest.findUnique({
+            where: { id },
+            include: {
+                relationship: true,
+                thread: true,
+            },
+        })
+
+        if (!documentRequest) {
+            return NextResponse.json({ error: "Not found" }, { status: 404 })
+        }
+
+        // Verify access
+        const userId = auth!.dbUser.id
+        const isAgent = documentRequest.relationship.agentUserId === userId
+        const isClient = documentRequest.relationship.policyholderUserId === userId
+
+        if (!isAgent && !isClient) {
+            return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+        }
+
+        const updateData: Record<string, unknown> = {}
+        if (body.status) updateData.status = body.status
+        if (body.uploadedDocumentUrl) {
+            updateData.uploadedDocumentUrl = body.uploadedDocumentUrl
+            updateData.status = "uploaded"
+            updateData.completedAt = new Date()
+        }
+
+        const updated = await prisma.$transaction(async (tx) => {
+            const result = await tx.documentRequest.update({
+                where: { id },
+                data: updateData,
+            })
+
+            // Add system message
+            if (body.uploadedDocumentUrl) {
+                await tx.collaborationMessage.create({
+                    data: {
+                        threadId: documentRequest.threadId,
+                        senderUserId: userId,
+                        messageType: "system",
+                        body: `Document uploaded: ${documentRequest.documentType}`,
+                    },
+                })
+
+                // Update thread
+                await tx.collaborationThread.update({
+                    where: { id: documentRequest.threadId },
+                    data: {
+                        status: "resolved",
+                        lastActivityAt: new Date(),
+                    },
+                })
+            }
+
+            return result
+        })
+
+        return NextResponse.json(updated)
+    }
+)

@@ -1,11 +1,11 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
-import { Loader2, Sparkles, Upload, Wallet } from "lucide-react"
+import { Loader2, Sparkles, Upload, Wallet, Users, Check } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { fixMojibakeText } from "@/lib/i18n/fix-mojibake"
-import { completeOnboardingStep, uploadOnboardingPolicy } from "./actions"
+import { completeOnboardingStep, uploadOnboardingPolicy, redeemInviteCode } from "./actions"
 
 type GoalType = "save_money" | "health_family" | "my_car"
 
@@ -22,7 +22,7 @@ interface OnboardingFlowProps {
     }
 }
 
-const TOTAL_STEPS = 3
+const TOTAL_STEPS = 4
 
 function mapGoalToLegacy(goal: GoalType): string {
     if (goal === "health_family") return "understand_coverage"
@@ -43,9 +43,12 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
     const [uploadedPolicyId, setUploadedPolicyId] = useState<string | null>(null)
     const [uploadedFileName, setUploadedFileName] = useState<string | null>(null)
     const [simulatingAi, setSimulatingAi] = useState(true)
+    const [inviteCode, setInviteCode] = useState("")
+    const [connectedAgentName, setConnectedAgentName] = useState<string | null>(null)
+    const [inviteError, setInviteError] = useState<string | null>(null)
 
     const stepLabel = t(`Βήμα ${step} από ${TOTAL_STEPS}`, `Step ${step} of ${TOTAL_STEPS}`)
-    const displayName = initialState.name || (isGreek ? "εκεί" : "there")
+    const displayName = initialState.name || ""
 
     useEffect(() => {
         if (step !== 3) return
@@ -60,7 +63,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
         if (!goal) return null
         if (goal === "save_money") return t("Θα ξεκινήσουμε με ευκαιρίες εξοικονόμησης.", "We will prioritize savings opportunities first.")
         if (goal === "health_family") return t("Θα δώσουμε έμφαση σε υγεία και οικογενειακή κάλυψη.", "We will prioritize health and family coverage first.")
-        return t("Θα ξεκινήσουμε από την ασφάλιση αυτοκινήτου σου.", "We will start from your motor coverage first.")
+        return t("Θα ξεκινήσουμε από την ασφάλιση αυτοκινήτου σας.", "We will start from your motor coverage first.")
     }, [goal, isGreek])
 
     const continueFromStep1 = async () => {
@@ -73,7 +76,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
             })
             setStep(2)
         } catch {
-            toast.error(t("Δεν αποθηκεύτηκε η επιλογή σου.", "Could not save your choice."))
+            toast.error(t("Δεν αποθηκεύτηκε η επιλογή σας.", "Could not save your choice."))
         } finally {
             setBusy(false)
         }
@@ -113,15 +116,52 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
         }
     }
 
+    const continueFromStep3 = async () => {
+        setBusy(true)
+        try {
+            await completeOnboardingStep(3, {})
+            setStep(4)
+        } catch {
+            toast.error(t("Σφάλμα.", "Error."))
+        } finally {
+            setBusy(false)
+        }
+    }
+
+    const handleRedeemInvite = async () => {
+        if (!inviteCode.trim()) return
+        setBusy(true)
+        setInviteError(null)
+        try {
+            const result = await redeemInviteCode(inviteCode.trim())
+            if (result.success) {
+                setConnectedAgentName(result.agentName || null)
+            } else {
+                const err = 'error' in result ? String(result.error) : ""
+                const errorMessages: Record<string, string> = {
+                    invalid: t("Μη έγκυρος κωδικός πρόσκλησης.", "Invalid invite code."),
+                    already_used: t("Ο κωδικός έχει ήδη χρησιμοποιηθεί.", "This code has already been used."),
+                    expired: t("Ο κωδικός έχει λήξει.", "This code has expired."),
+                }
+                setInviteError(errorMessages[err] || t("Σφάλμα.", "Error."))
+            }
+        } catch {
+            setInviteError(t("Σφάλμα σύνδεσης.", "Connection error."))
+        } finally {
+            setBusy(false)
+        }
+    }
+
     const finishOnboarding = async () => {
         setBusy(true)
         try {
-            await completeOnboardingStep(3, {
+            await completeOnboardingStep(4, {
                 markCompleted: true,
                 redirectTo: "/home",
                 onboardingCompletionLocation: "home_dashboard",
                 onboardingGoals: goal ? [mapGoalToLegacy(goal)] : initialState.onboardingGoals,
                 onboardingUploadedPolicyId: uploadedPolicyId,
+                onboardingConnectedAgent: connectedAgentName,
             })
         } catch {
             toast.error(t("Δεν ολοκληρώθηκε το onboarding.", "Could not finish onboarding."))
@@ -136,7 +176,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                     <div className="mb-6">
                         <p className="text-xs font-black uppercase tracking-widest text-stone-500">{stepLabel}</p>
                         <h1 className="mt-2 text-3xl font-black tracking-tight text-stone-900 dark:text-white">
-                            {t(`Καλώς ήρθες, ${displayName}`, `Welcome, ${displayName}`)}
+                            {displayName ? t(`Καλώς ήρθατε, ${displayName}`, `Welcome, ${displayName}`) : t("Καλώς ήρθατε", "Welcome")}
                         </h1>
                         <div className="mt-4 h-2 w-full rounded-full bg-stone-100 dark:bg-stone-800">
                             <div
@@ -150,7 +190,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                         <div className="space-y-6">
                             <div>
                                 <h2 className="text-xl font-black text-stone-900 dark:text-white">
-                                    {t("Τι έχει μεγαλύτερη σημασία για εσένα;", "What matters most to you?")}
+                                    {t("Τι έχει μεγαλύτερη σημασία για εσάς;", "What matters most to you?")}
                                 </h2>
                                 <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">
                                     {t("Η επιλογή αυτή προσαρμόζει το dashboard και τα πρώτα AI insights.", "This choice personalizes your dashboard and first AI insights.")}
@@ -214,7 +254,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                         <div className="space-y-6">
                             <div>
                                 <h2 className="text-xl font-black text-stone-900 dark:text-white">
-                                    {t("Ανέβασε το πρώτο σου συμβόλαιο", "Upload your first policy")}
+                                    {t("Ανεβάστε το πρώτο σας συμβόλαιο", "Upload your first policy")}
                                 </h2>
                                 <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">
                                     {t("Το έγγραφο κρυπτογραφείται και παραμένει ιδιωτικό.", "Your document is encrypted and stays private.")}
@@ -263,7 +303,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                     {t("AI Σύνοψη", "AI Summary")}
                                 </h2>
                                 <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">
-                                    {t("Η πρώτη σου ανάλυση ετοιμάστηκε.", "Your first analysis is ready.")}
+                                    {t("Η πρώτη σας ανάλυση ετοιμάστηκε.", "Your first analysis is ready.")}
                                 </p>
                             </div>
 
@@ -271,7 +311,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 {simulatingAi ? (
                                     <div className="flex items-center gap-3 text-sm text-stone-700 dark:text-stone-200">
                                         <Loader2 className="h-4 w-4 animate-spin text-teal-600" />
-                                        {t("Το AI διαβάζει το συμβόλαιό σου...", "AI is reading your policy...")}
+                                        {t("Το AI διαβάζει το συμβόλαιό σας...", "AI is reading your policy...")}
                                     </div>
                                 ) : (
                                     <div className="space-y-3 text-sm text-stone-700 dark:text-stone-200">
@@ -294,13 +334,91 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
 
                             <button
                                 type="button"
-                                onClick={finishOnboarding}
+                                onClick={continueFromStep3}
                                 disabled={busy || simulatingAi}
+                                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-stone-900 px-4 py-3 text-sm font-black text-white transition hover:bg-stone-800 disabled:opacity-60 dark:bg-white dark:text-stone-900"
+                            >
+                                {busy ? t("Αποθήκευση...", "Saving...") : t("Συνέχεια", "Continue")}
+                            </button>
+                        </div>
+                    )}
+
+                    {step === 4 && (
+                        <div className="space-y-6">
+                            <div>
+                                <h2 className="text-xl font-black text-stone-900 dark:text-white">
+                                    {t("Σύνδεση με Σύμβουλο", "Connect with Your Advisor")}
+                                </h2>
+                                <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">
+                                    {t(
+                                        "Αν έχετε κωδικό πρόσκλησης από τον ασφαλιστικό σας σύμβουλο, εισάγετέ τον εδώ.",
+                                        "If you have an invite code from your insurance advisor, enter it here."
+                                    )}
+                                </p>
+                            </div>
+
+                            {connectedAgentName ? (
+                                <div className="rounded-2xl border border-teal-200 bg-teal-50 p-5 dark:border-teal-900/40 dark:bg-teal-900/20">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-600 text-white">
+                                            <Check className="h-5 w-5" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-black text-stone-900 dark:text-white">
+                                                {t("Συνδεθήκατε!", "Connected!")}
+                                            </p>
+                                            <p className="text-xs text-stone-600 dark:text-stone-300">
+                                                {t(`Σύμβουλος: ${connectedAgentName}`, `Advisor: ${connectedAgentName}`)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={inviteCode}
+                                            onChange={(e) => { setInviteCode(e.target.value); setInviteError(null) }}
+                                            placeholder={t("Εισάγετε κωδικό πρόσκλησης...", "Enter invite code...")}
+                                            className="flex-1 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm dark:border-stone-700 dark:bg-stone-800 dark:text-white placeholder:text-stone-400"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={handleRedeemInvite}
+                                            disabled={busy || !inviteCode.trim()}
+                                            aria-label={t("Σύνδεση", "Connect")}
+                                            className="rounded-xl bg-teal-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-teal-500 disabled:opacity-60"
+                                        >
+                                            <Users className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                    {inviteError && (
+                                        <p className="text-xs text-red-600 dark:text-red-400">{inviteError}</p>
+                                    )}
+                                </div>
+                            )}
+
+                            <button
+                                type="button"
+                                onClick={finishOnboarding}
+                                disabled={busy}
                                 className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-600 px-4 py-3 text-sm font-black text-white transition hover:bg-teal-500 disabled:opacity-60"
                             >
                                 <Wallet className="h-4 w-4" />
                                 {busy ? t("Ολοκλήρωση...", "Finishing...") : t("Μετάβαση στην Αρχική", "Go to Home Dashboard")}
                             </button>
+
+                            {!connectedAgentName && (
+                                <button
+                                    type="button"
+                                    onClick={finishOnboarding}
+                                    disabled={busy}
+                                    className="w-full text-center text-sm font-semibold text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200 transition"
+                                >
+                                    {t("Παράλειψη", "Skip for now")}
+                                </button>
+                            )}
                         </div>
                     )}
                 </div>

@@ -1,271 +1,250 @@
 "use client"
 
-import React, { useMemo } from "react"
+import React from "react"
 import {
-    TrendingUp,
-    Users,
-    FileText,
-    AlertCircle,
-    ArrowUp,
-    ArrowDown,
-    Calendar,
-    DollarSign,
-    Target,
-    Clock,
-    CheckCircle2,
     Briefcase,
-    ChevronRight,
-    Sparkles,
+    Users,
+    Clock,
+    Calendar,
+    CheckCircle2,
+    AlertCircle,
     Activity,
     ArrowUpRight,
+    Plus,
+    UserPlus,
+    FileText,
+    Send,
 } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
-
-interface DashboardStats {
-    totalCustomers: number
-    activeCustomers: number
-    invitedCustomers: number
-    inactiveCustomers: number
-    totalPolicies: number
-    totalPremium: number
-    monthlyGrowth: number
-    conversionRate: number
-    pipelineValue?: number
-    wonRevenue?: number
-}
-
-interface Priority {
-    id: string
-    type: "renewal" | "follow_up" | "claim" | "opportunity"
-    customerName: string
-    description: string
-    dueDate: string
-    priority: "high" | "medium" | "low"
-    value?: number
-}
+import { formatRelativeDate } from "@/lib/agent/format"
+import { ActionQueueCard } from "./ActionQueueCard"
+import { RevenuePulse } from "./RevenuePulse"
+import { PortfolioHealth } from "./PortfolioHealth"
+import { ClientListGrouped } from "./ClientCard"
+import { AgentPlanGate } from "./AgentPlanGate"
+import type {
+    ActionQueueItem,
+    RevenueMetrics,
+    PortfolioHealth as PortfolioHealthData,
+    ClientCardData,
+    AgentDashboardData,
+} from "./types"
+import type { AgentTier } from "@/types/subscription-entitlements"
 
 interface DesktopDashboardProps {
-    stats: DashboardStats
-    priorities: Priority[]
+    data: AgentDashboardData
     recentActivity: Array<{
         id: string
-        type: "policy_added" | "customer_invited" | "renewal_completed" | "claim_filed"
+        type: string
         customerName: string
         timestamp: string
         details: string
     }>
-    onPriorityClick: (id: string) => void
+    agentTier: AgentTier
+    agentName?: string
+    onActionQueueItem: (item: ActionQueueItem) => void
+    onClientClick: (clientId: string) => void
     onInviteCustomer: () => void
+    onQuickAdd?: (type: "client" | "policy" | "document_request") => void
+    isLoading?: boolean
 }
 
-export function DesktopDashboard({ stats, priorities, recentActivity, onPriorityClick, onInviteCustomer }: DesktopDashboardProps) {
+const ACTIVITY_ICONS: Record<string, React.ElementType> = {
+    policy_added: CheckCircle2,
+    customer_invited: Users,
+    renewal_completed: Calendar,
+    claim_filed: AlertCircle,
+}
+
+const ACTIVITY_COLORS: Record<string, string> = {
+    policy_added: "text-emerald-500",
+    customer_invited: "text-blue-500",
+    renewal_completed: "text-violet-500",
+    claim_filed: "text-amber-500",
+}
+
+export function DesktopDashboard({
+    data,
+    recentActivity,
+    agentTier,
+    agentName,
+    onActionQueueItem,
+    onClientClick,
+    onInviteCustomer,
+    onQuickAdd,
+    isLoading,
+}: DesktopDashboardProps) {
     const { language, t } = useLanguage()
     const roleCopy = getRoleCopy(language)
 
-    const statCards = useMemo(() => [
-        {
-            label: roleCopy.agentDashboard.totalClients,
-            value: stats.totalCustomers,
-            change: stats.monthlyGrowth,
-            icon: Users,
-            trend: stats.monthlyGrowth > 0 ? "up" as const : "down" as const,
-        },
-        {
-            label: roleCopy.agentDashboard.activePolicies,
-            value: stats.totalPolicies,
-            change: 12,
-            icon: FileText,
-            trend: "up" as const,
-        },
-        {
-            label: language === "el" ? "Συνολικό Ασφάλιστρο" : "Total Premium",
-            value: new Intl.NumberFormat(language === "el" ? "el-GR" : "en-US", { style: "currency", currency: "EUR", notation: "compact" }).format(stats.totalPremium),
-            change: 8.5,
-            icon: DollarSign,
-            trend: "up" as const,
-        },
-        {
-            label: language === "el" ? "Pipeline" : "Pipeline Value",
-            value: new Intl.NumberFormat(language === "el" ? "el-GR" : "en-US", { style: "currency", currency: "EUR", notation: "compact" }).format(stats.pipelineValue ?? 0),
-            change: stats.conversionRate,
-            icon: Target,
-            trend: (stats.pipelineValue ?? 0) > 0 ? "up" as const : "down" as const,
-        },
-    ], [stats, language, roleCopy])
-
-    const getPriorityColor = (priority: Priority["priority"]) => {
-        switch (priority) {
-            case "high": return "border-l-red-500 bg-red-50/50 dark:bg-red-950/20"
-            case "medium": return "border-l-amber-500 bg-amber-50/50 dark:bg-amber-950/20"
-            case "low": return "border-l-blue-500 bg-blue-50/50 dark:bg-blue-950/20"
-        }
-    }
-
-    const getPriorityIcon = (type: Priority["type"]) => {
-        const cls = "w-5 h-5"
-        switch (type) {
-            case "renewal": return <Calendar className={cls} />
-            case "follow_up": return <Clock className={cls} />
-            case "claim": return <AlertCircle className={cls} />
-            case "opportunity": return <TrendingUp className={cls} />
-        }
-    }
-
-    const priorityLabel = (priority: Priority["priority"]) => {
-        if (priority === "high") return roleCopy.agentDashboard.high
-        if (priority === "medium") return roleCopy.agentDashboard.medium
-        return language === "el" ? "Χαμηλό" : "Low"
-    }
-
-    const getActivityIcon = (type: typeof recentActivity[0]["type"]) => {
-        switch (type) {
-            case "policy_added": return <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            case "customer_invited": return <Users className="w-4 h-4 text-blue-500" />
-            case "renewal_completed": return <Calendar className="w-4 h-4 text-violet-500" />
-            case "claim_filed": return <AlertCircle className="w-4 h-4 text-amber-500" />
-        }
-    }
+    const greeting = getGreeting(language)
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+            {/* Header */}
             <div className="relative overflow-hidden bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/60">
-                <div className="max-w-[1400px] mx-auto px-8 py-6 relative">
+                <div className="max-w-[1400px] mx-auto px-8 py-6">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                            <div className="relative bg-gradient-to-br from-blue-600 to-indigo-600 text-white p-3 rounded-2xl shadow-lg shadow-blue-600/25">
+                            <div className="relative bg-gradient-to-br from-teal-600 to-emerald-600 text-white p-3 rounded-2xl shadow-lg shadow-teal-600/25">
                                 <Briefcase className="w-6 h-6" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{roleCopy.agentDashboard.dashboardTitle}</h1>
-                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{roleCopy.agentDashboard.dashboardSubtitle}</p>
+                                <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                                    {greeting}{agentName ? `, ${agentName}` : ""}
+                                </h1>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                                    {data.actionQueue.length > 0
+                                        ? (language === "el"
+                                            ? `${data.actionQueue.length} στοιχεία χρειάζονται την προσοχή σας`
+                                            : `${data.actionQueue.length} items need your attention`)
+                                        : (language === "el"
+                                            ? "Κανένα εκκρεμές στοιχείο σήμερα"
+                                            : "No pending items today")}
+                                </p>
                             </div>
                         </div>
-                        <button
-                            onClick={onInviteCustomer}
-                            className="group inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40 hover:-translate-y-0.5 transition-all cursor-pointer"
-                        >
-                            <Users className="w-5 h-5" />
-                            {t.dashboard.inviteCustomer}
-                            <ArrowUpRight className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
-                        </button>
+                        <div className="flex items-center gap-3">
+                            <button
+                                type="button"
+                                onClick={onInviteCustomer}
+                                className="group inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-semibold rounded-xl shadow-lg shadow-teal-600/25 hover:shadow-teal-600/40 hover:-translate-y-0.5 transition-all cursor-pointer text-sm"
+                            >
+                                <UserPlus className="w-4 h-4" />
+                                {language === "el" ? "Νέος Πελάτης" : "New Client"}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div className="max-w-[1400px] mx-auto px-8 py-8">
-                <div className="grid grid-cols-4 gap-5 mb-8">
-                    {statCards.map((stat) => {
-                        const Icon = stat.icon
-                        return (
-                            <div key={stat.label} className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border border-slate-200/60 dark:border-slate-800/60 rounded-2xl p-6">
-                                <div className="flex items-start justify-between mb-4">
-                                    <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-800">
-                                        <Icon className="w-5 h-5 text-slate-700 dark:text-slate-200" />
-                                    </div>
-                                    <div className={`flex items-center gap-1 text-sm font-bold ${stat.trend === "up" ? "text-emerald-600" : "text-red-500"}`}>
-                                        {stat.trend === "up" ? <ArrowUp className="w-3.5 h-3.5" /> : <ArrowDown className="w-3.5 h-3.5" />}
-                                        {stat.change}%
-                                    </div>
-                                </div>
-                                <p className="text-sm text-slate-500 dark:text-slate-400 mb-1 font-medium">{stat.label}</p>
-                                <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{stat.value}</p>
-                            </div>
-                        )
-                    })}
+            <div className="max-w-[1400px] mx-auto px-8 py-6 space-y-6">
+                {/* ── Above the fold: Action Queue + Revenue Pulse ──────── */}
+                <div className="grid grid-cols-12 gap-5">
+                    <div className="col-span-7">
+                        <ActionQueueCard
+                            items={data.actionQueue}
+                            onAction={onActionQueueItem}
+                            isLoading={isLoading}
+                        />
+                    </div>
+                    <div className="col-span-5">
+                        <AgentPlanGate
+                            currentTier={agentTier}
+                            requiredTier="agent_starter"
+                            featureLabel={language === "el" ? "Παλμός Εσόδων" : "Revenue Pulse"}
+                        >
+                            <RevenuePulse
+                                metrics={data.revenue}
+                                isLoading={isLoading}
+                                isPipelineGated={agentTier === "agent_free" || agentTier === "agent_starter"}
+                            />
+                        </AgentPlanGate>
+                    </div>
                 </div>
 
-                <div className="grid grid-cols-12 gap-6">
-                    <div className="col-span-8">
-                        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border border-slate-200/60 dark:border-slate-800/60 rounded-2xl p-6 shadow-sm">
-                            <div className="flex items-center justify-between mb-6">
-                                <h2 className="text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                                    <Activity className="w-5 h-5 text-amber-500" />
-                                    {t.dashboard.priorityQueue}
-                                </h2>
-                                <span className="text-xs font-mono text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-lg">
-                                    {priorities.length} {priorities.length === 1 ? t.dashboard.item : t.dashboard.items}
-                                </span>
-                            </div>
+                {/* ── Mid fold: Portfolio Health + Today's Follow-ups ──── */}
+                <div className="grid grid-cols-12 gap-5">
+                    <div className="col-span-5">
+                        <PortfolioHealth
+                            health={data.portfolioHealth}
+                            isLoading={isLoading}
+                        />
+                    </div>
+                    <div className="col-span-7">
+                        <TodaysFollowUps
+                            items={data.todaysFollowUps}
+                            language={language}
+                            onAction={onActionQueueItem}
+                        />
+                    </div>
+                </div>
 
-                            <div className="space-y-3">
-                                {priorities.length === 0 ? (
-                                    <div className="text-center py-14">
-                                        <div className="mx-auto w-14 h-14 bg-gradient-to-br from-emerald-100 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/20 text-emerald-500 rounded-2xl flex items-center justify-center mb-4">
-                                            <Sparkles className="w-7 h-7" />
-                                        </div>
-                                        <p className="text-lg font-bold text-slate-900 dark:text-white mb-1">{t.dashboard.allClear}</p>
-                                        <p className="text-slate-500 dark:text-slate-400 text-sm">{roleCopy.agentDashboard.allCaughtUpSubtext}</p>
-                                    </div>
-                                ) : (
-                                    priorities.map((priority) => (
-                                        <div
-                                            key={priority.id}
-                                            onClick={() => onPriorityClick(priority.id)}
-                                            className={`border-l-4 ${getPriorityColor(priority.priority)} rounded-xl p-4 hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer group`}
-                                        >
-                                            <div className="flex items-start justify-between">
-                                                <div className="flex items-start gap-3 flex-1">
-                                                    <div className="p-2.5 bg-white dark:bg-slate-800 rounded-xl shadow-sm">{getPriorityIcon(priority.type)}</div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex items-center gap-2 mb-1">
-                                                            <h3 className="font-bold text-slate-900 dark:text-white text-[15px]">{priority.customerName}</h3>
-                                                            <span className="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider bg-slate-200/50 text-slate-700 dark:text-slate-300">
-                                                                {priorityLabel(priority.priority)}
-                                                            </span>
-                                                        </div>
-                                                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-2 line-clamp-2">{priority.description}</p>
-                                                        <div className="flex items-center gap-4 text-xs text-slate-400">
-                                                            <span className="flex items-center gap-1">
-                                                                <Clock className="w-3 h-3" />
-                                                                {roleCopy.agentDashboard.due}: {new Date(priority.dueDate).toLocaleDateString(language === "el" ? "el-GR" : "en-US")}
-                                                            </span>
-                                                            {priority.value && (
-                                                                <span className="flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
-                                                                    <DollarSign className="w-3 h-3" />
-                                                                    {new Intl.NumberFormat(language === "el" ? "el-GR" : "en-US", { style: "currency", currency: "EUR" }).format(priority.value)}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <ChevronRight className="w-5 h-5 text-slate-300 dark:text-slate-600 opacity-0 group-hover:opacity-100 transition-all self-center" />
-                                            </div>
-                                        </div>
-                                    ))
-                                )}
+                {/* ── Below the fold: Clients + Activity Feed ─────────── */}
+                <div className="grid grid-cols-12 gap-5">
+                    <div className="col-span-8">
+                        <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-5">
+                            <div className="flex items-center justify-between mb-4">
+                                <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                    <Users className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                                    {language === "el" ? "Πελάτες" : "Clients"}
+                                </h2>
                             </div>
+                            <ClientListGrouped
+                                clients={data.clientsByUrgency}
+                                onClientClick={onClientClick}
+                                onInviteClient={onInviteCustomer}
+                                isLoading={isLoading}
+                            />
                         </div>
                     </div>
 
-                    <div className="col-span-4">
-                        <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm border border-slate-200/60 dark:border-slate-800/60 rounded-2xl p-6 shadow-sm">
-                            <h2 className="text-lg font-extrabold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                                <Activity className="w-4.5 h-4.5 text-violet-500" style={{ width: 18, height: 18 }} />
-                                {roleCopy.agentDashboard.recentActivity}
+                    <div className="col-span-4 space-y-5">
+                        {/* Activity Feed */}
+                        <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-5">
+                            <h2 className="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                                <Activity className="h-4 w-4 text-violet-500" />
+                                {language === "el" ? "Πρόσφατη Δραστηριότητα" : "Recent Activity"}
                             </h2>
-
-                            <div className="space-y-5">
-                                {recentActivity.map((activity, i) => (
-                                    <div key={activity.id} className="flex items-start gap-3 group/item">
-                                        <div className="relative mt-0.5">
-                                            <div className="p-2 bg-slate-50 dark:bg-slate-800 rounded-xl">{getActivityIcon(activity.type)}</div>
-                                            {i < recentActivity.length - 1 && (
-                                                <div className="absolute left-1/2 top-[36px] -translate-x-1/2 w-px h-4 bg-slate-200 dark:bg-slate-800" />
-                                            )}
+                            <div className="space-y-4">
+                                {recentActivity.slice(0, 6).map((activity, i) => {
+                                    const Icon = ACTIVITY_ICONS[activity.type] || Activity
+                                    const color = ACTIVITY_COLORS[activity.type] || "text-slate-500"
+                                    return (
+                                        <div key={activity.id} className="flex items-start gap-3">
+                                            <div className="relative mt-0.5">
+                                                <div className="p-1.5 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                                                    <Icon className={`w-3.5 h-3.5 ${color}`} />
+                                                </div>
+                                                {i < recentActivity.length - 1 && (
+                                                    <div className="absolute left-1/2 top-8 -translate-x-1/2 w-px h-3 bg-slate-200 dark:bg-slate-800" />
+                                                )}
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-xs font-semibold text-slate-900 dark:text-white truncate">
+                                                    {activity.customerName}
+                                                </p>
+                                                <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                                                    {activity.details}
+                                                </p>
+                                                <p className="text-[10px] text-slate-400 mt-0.5">
+                                                    {formatRelativeDate(activity.timestamp, language)}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{activity.customerName}</p>
-                                            <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">{activity.details}</p>
-                                            <p className="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
-                                                <Clock className="w-3 h-3" />
-                                                {new Date(activity.timestamp).toLocaleTimeString(language === "el" ? "el-GR" : "en-US")}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))}
+                                    )
+                                })}
                             </div>
                         </div>
+
+                        {/* Quick Add */}
+                        {onQuickAdd && (
+                            <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-4">
+                                <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
+                                    {language === "el" ? "Γρήγορη Προσθήκη" : "Quick Add"}
+                                </h3>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {[
+                                        { type: "client" as const, icon: UserPlus, label: language === "el" ? "Πελάτης" : "Client" },
+                                        { type: "policy" as const, icon: FileText, label: language === "el" ? "Ασφαλιστήριο" : "Policy" },
+                                        { type: "document_request" as const, icon: Send, label: language === "el" ? "Αίτημα" : "Request" },
+                                    ].map(({ type, icon: Icon, label }) => (
+                                        <button
+                                            key={type}
+                                            type="button"
+                                            onClick={() => onQuickAdd(type)}
+                                            className="flex flex-col items-center gap-1.5 rounded-xl border border-[var(--brand-border-subtle)] p-3 text-center transition hover:bg-[var(--brand-surface-elevated)] hover:shadow-sm cursor-pointer"
+                                        >
+                                            <Icon className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                                            <span className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                                                {label}
+                                            </span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -273,3 +252,76 @@ export function DesktopDashboard({ stats, priorities, recentActivity, onPriority
     )
 }
 
+// ── Today's Follow-ups sub-component ──────────────────────────────────
+
+function TodaysFollowUps({
+    items,
+    language,
+    onAction,
+}: {
+    items: ActionQueueItem[]
+    language: string
+    onAction: (item: ActionQueueItem) => void
+}) {
+    return (
+        <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-5">
+            <div className="flex items-center gap-2 mb-4">
+                <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                    {language === "el" ? "Σημερινά Follow-ups" : "Today's Follow-ups"}
+                </h2>
+                {items.length > 0 && (
+                    <span className="text-xs text-slate-400 ml-1">({items.length})</span>
+                )}
+            </div>
+            {items.length === 0 ? (
+                <div className="flex flex-col items-center py-6 text-center">
+                    <CheckCircle2 className="h-8 w-8 text-emerald-400 mb-2" />
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                        {language === "el"
+                            ? "Κανένα follow-up για σήμερα"
+                            : "No follow-ups scheduled for today"}
+                    </p>
+                </div>
+            ) : (
+                <div className="space-y-2">
+                    {items.map((item) => (
+                        <div
+                            key={item.id}
+                            className="flex items-center gap-3 rounded-xl border border-slate-200/60 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-800/50 p-3"
+                        >
+                            <Clock className="h-4 w-4 text-blue-500 shrink-0" />
+                            <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                                    {item.clientName}
+                                </p>
+                                <p className="text-xs text-slate-500 truncate">{item.description}</p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => onAction(item)}
+                                className="shrink-0 rounded-lg bg-teal-50 dark:bg-teal-900/30 px-3 py-1.5 text-xs font-semibold text-teal-700 dark:text-teal-300 transition hover:bg-teal-100 dark:hover:bg-teal-900/50 cursor-pointer"
+                            >
+                                {language === "el" ? "Δράση" : "Action"}
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    )
+}
+
+// ── Greeting helper ──────────────────────────────────────────────────
+
+function getGreeting(language: string): string {
+    const hour = new Date().getHours()
+    if (language === "el") {
+        if (hour < 12) return "Καλημέρα"
+        if (hour < 18) return "Καλό απόγευμα"
+        return "Καλό βράδυ"
+    }
+    if (hour < 12) return "Good morning"
+    if (hour < 18) return "Good afternoon"
+    return "Good evening"
+}

@@ -12,6 +12,7 @@ import { FirstClientInviteStep } from "@/components/onboarding/agent/FirstClient
 
 export default function AgentOnboardingFlow() {
     const { language } = useLanguage()
+    const t = (el: string, en: string) => (language === "el" ? el : en)
     const [step, setStep] = useState(1)
 
     // Animation variants
@@ -37,7 +38,7 @@ export default function AgentOnboardingFlow() {
                     ))}
                 </div>
                 <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    Step {step} of 5
+                    {t(`Βήμα ${step} από 5`, `Step ${step} of 5`)}
                 </span>
             </div>
 
@@ -55,7 +56,7 @@ export default function AgentOnboardingFlow() {
                     {step === 2 && <AgencyBrandingStep onNext={nextStep} onBack={prevStep} />}
                     {step === 3 && <LicenseVerificationStep onNext={nextStep} onBack={prevStep} />}
                     {step === 4 && <DemoAnalysisStep onNext={nextStep} onBack={prevStep} />}
-                    {step === 5 && <FirstClientInviteStep onNext={() => window.location.href = '/agent/dashboard'} onBack={prevStep} />}
+                    {step === 5 && <FirstClientInviteStep onNext={() => window.location.href = '/dashboard'} onBack={prevStep} />}
                 </motion.div>
             </AnimatePresence>
         </div>

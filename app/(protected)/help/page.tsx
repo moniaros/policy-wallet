@@ -21,6 +21,10 @@ import {
     Sparkles,
 } from 'lucide-react'
 
+function stripDiacritics(str: string): string {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+}
+
 type CategoryKey = 'all' | 'gettingStarted' | 'policyManagement' | 'accountSecure' | 'billing' | 'mobileApp'
 
 interface HelpArticleCard {
@@ -107,14 +111,14 @@ export default function HelpPage() {
     }, [articles])
 
     const filtered = useMemo(() => {
-        const q = query.trim().toLowerCase()
+        const q = stripDiacritics(query.trim().toLowerCase())
 
         return articles.filter((a) => {
             const byQuery =
                 q.length === 0 ||
-                a.title.toLowerCase().includes(q) ||
-                a.subtitle.toLowerCase().includes(q) ||
-                a.categoryLabel.toLowerCase().includes(q)
+                stripDiacritics(a.title.toLowerCase()).includes(q) ||
+                stripDiacritics(a.subtitle.toLowerCase()).includes(q) ||
+                stripDiacritics(a.categoryLabel.toLowerCase()).includes(q)
 
             const byCategory = activeCategory === 'all' || a.categoryKey === activeCategory
 

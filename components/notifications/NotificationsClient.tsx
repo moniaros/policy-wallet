@@ -1,8 +1,8 @@
 "use client"
 
-import { useMemo, useState, type ComponentType } from "react"
+import { useMemo, useState, useCallback, type ComponentType } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { BellRing, CheckCircle2, Loader2, Mail, MessageCircle, Settings2, Smartphone } from "lucide-react"
+import { BellRing, CheckCircle2, CheckCheck, Loader2, Mail, MessageCircle, Settings2, Smartphone } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { fixMojibakeText } from "@/lib/i18n/fix-mojibake"
@@ -29,9 +29,19 @@ interface NotificationPreference {
 
 interface NotificationsClientProps {
     initialData: {
-        history: NotificationEvent[]
+        history: Array<{
+            event_id: string
+            event_type: string
+            channel: string
+            subject: string | null
+            message: string | null
+            created_at: string
+            read_at?: string | null
+            related_policy_id?: string | null
+            related_policy_name?: string | null
+        }>
         preferences: NotificationPreference[]
-        user: { id: string }
+        user: { id?: string; user_id?: string }
     }
     userLanguage?: string
 }
@@ -129,7 +139,48 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
         return Object.fromEntries(map)
     })
 
+    const [readIds, setReadIds] = useState<Set<string>>(() => {
+        const set = new Set<string>()
+        for (const item of initialData.history) {
+            if (item.read_at) set.add(item.event_id)
+        }
+        return set
+    })
+    const [markingRead, setMarkingRead] = useState(false)
+
     const historyItems = useMemo(() => initialData.history.slice(0, 24), [initialData.history])
+    const unreadCount = useMemo(() => historyItems.filter((e) => !readIds.has(e.event_id)).length, [historyItems, readIds])
+
+    const handleMarkRead = useCallback(async (eventId: string) => {
+        if (readIds.has(eventId)) return
+        setReadIds((prev) => new Set(prev).add(eventId))
+        try {
+            const { markNotificationRead } = await import("@/app/(protected)/notifications/actions")
+            await markNotificationRead(eventId)
+        } catch {
+            setReadIds((prev) => {
+                const next = new Set(prev)
+                next.delete(eventId)
+                return next
+            })
+        }
+    }, [readIds])
+
+    const handleMarkAllRead = useCallback(async () => {
+        setMarkingRead(true)
+        const allIds = new Set(historyItems.map((e) => e.event_id))
+        setReadIds(allIds)
+        try {
+            const { markAllNotificationsRead } = await import("@/app/(protected)/notifications/actions")
+            await markAllNotificationsRead()
+            toast.success(tr("Όλες σημάνθηκαν ως αναγνωσμένες.", "All marked as read."))
+        } catch {
+            setReadIds(new Set())
+            toast.error(tr("Αποτυχία σήμανσης.", "Could not mark as read."))
+        } finally {
+            setMarkingRead(false)
+        }
+    }, [historyItems, tr])
 
     const enabledEmailCount = useMemo(() => {
         return Object.values(preferences).filter((entry) => entry.email).length
@@ -230,9 +281,14 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                         onClick={() => setActiveTab("history")}
                         role="tab"
                         aria-selected={activeTab === "history"}
-                        className={`rounded-lg px-3 py-2 text-sm font-semibold transition ${activeTab === "history" ? "bg-white dark:bg-black text-black dark:text-white shadow-sm" : "text-black/60 dark:text-white/65"}`}
+                        className={`relative rounded-lg px-3 py-2 text-sm font-semibold transition ${activeTab === "history" ? "bg-white dark:bg-black text-black dark:text-white shadow-sm" : "text-black/60 dark:text-white/65"}`}
                     >
                         {tr("Ιστορικό", "History")}
+                        {unreadCount > 0 && (
+                            <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-[#1FDC86] px-1 text-[10px] font-bold text-white">
+                                {unreadCount}
+                            </span>
+                        )}
                     </button>
                 </div>
 
@@ -288,6 +344,19 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                         </motion.div>
                     ) : (
                         <motion.div key="history" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} className="space-y-3">
+                            {historyItems.length > 0 && unreadCount > 0 && (
+                                <div className="flex justify-end">
+                                    <button
+                                        type="button"
+                                        onClick={() => void handleMarkAllRead()}
+                                        disabled={markingRead}
+                                        className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-[#1FDC86] transition hover:bg-[#1FDC86]/10 disabled:opacity-60"
+                                    >
+                                        <CheckCheck className="h-3.5 w-3.5" />
+                                        {markingRead ? tr("Σήμανση...", "Marking...") : tr("Σήμανση όλων ως αναγνωσμένα", "Mark all as read")}
+                                    </button>
+                                </div>
+                            )}
                             {historyItems.length === 0 ? (
                                 <div className="rounded-2xl border border-black/10 dark:border-white/15 bg-white dark:bg-black p-6 text-center shadow-sm">
                                     <Settings2 className="mx-auto h-5 w-5 text-black/40 dark:text-white/50" />
@@ -295,25 +364,40 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                                 </div>
                             ) : (
                                 historyItems.map((event) => {
-                                    const channelInfo = channelMeta[event.channel]
-                                    const ChannelIcon = channelInfo.icon
+                                    const channelInfo = channelMeta[event.channel as NotificationEvent["channel"]]
+                                    const ChannelIcon = channelInfo?.icon || MessageCircle
+                                    const channelLabel = channelInfo ? (isGreek ? channelInfo.label.el : channelInfo.label.en) : event.channel
                                     const createdAtDate = new Date(event.created_at)
                                     const createdAtText = Number.isNaN(createdAtDate.getTime())
                                         ? event.created_at
                                         : createdAtDate.toLocaleString(isGreek ? "el-GR" : "en-US", { dateStyle: "short", timeStyle: "short" })
+                                    const isRead = readIds.has(event.event_id)
 
                                     return (
-                                        <div key={event.id} className="rounded-2xl border border-black/10 dark:border-white/15 bg-white dark:bg-black p-4 shadow-sm">
+                                        <div
+                                            key={event.event_id}
+                                            onClick={() => void handleMarkRead(event.event_id)}
+                                            role="button"
+                                            tabIndex={0}
+                                            onKeyDown={(e) => { if (e.key === "Enter") void handleMarkRead(event.event_id) }}
+                                            className={`cursor-pointer rounded-2xl border p-4 shadow-sm transition ${
+                                                isRead
+                                                    ? "border-black/10 dark:border-white/15 bg-white dark:bg-black"
+                                                    : "border-l-[3px] border-l-[#1FDC86] border-t-black/10 border-r-black/10 border-b-black/10 dark:border-t-white/15 dark:border-r-white/15 dark:border-b-white/15 bg-[#1FDC86]/5 dark:bg-[#1FDC86]/5"
+                                            }`}
+                                        >
                                             <div className="flex items-start justify-between gap-3">
                                                 <div>
-                                                    <p className="text-sm font-semibold text-black dark:text-white">{fixMojibakeText(event.title)}</p>
-                                                    <p className="mt-1 text-sm text-black/65 dark:text-white/70">{fixMojibakeText(event.message)}</p>
+                                                    <p className={`text-sm text-black dark:text-white ${isRead ? "font-medium" : "font-bold"}`}>
+                                                        {fixMojibakeText(event.subject || "")}
+                                                    </p>
+                                                    <p className="mt-1 text-sm text-black/65 dark:text-white/70">{fixMojibakeText(event.message || "")}</p>
                                                     <div className="mt-2 inline-flex items-center gap-1 rounded-full bg-black/5 dark:bg-white/10 px-2 py-0.5 text-xs font-medium text-black/70 dark:text-white/75">
                                                         <ChannelIcon className="h-3 w-3" />
-                                                        <span>{isGreek ? channelInfo.label.el : channelInfo.label.en}</span>
+                                                        <span>{channelLabel}</span>
                                                     </div>
                                                 </div>
-                                                <p className="text-xs font-medium text-black/50 dark:text-white/60">
+                                                <p className="text-xs font-medium text-black/50 dark:text-white/60 whitespace-nowrap">
                                                     {createdAtText}
                                                 </p>
                                             </div>

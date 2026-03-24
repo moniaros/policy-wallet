@@ -34,7 +34,7 @@
     "@prisma/client": "^5.22.0",
     "@radix-ui/react-slot": "^1.2.4",
     "@revenuecat/purchases-js": "^1.25.0",
-    "@sentry/nextjs": "^10.36.0",
+    "@sentry/nextjs": "^10.45.0",
     "@simplewebauthn/browser": "^13.2.2",
     "@simplewebauthn/server": "^13.2.3",
     "@supabase/ssr": "^0.8.0",

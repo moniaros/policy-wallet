@@ -6,10 +6,20 @@ import Link from "next/link"
 import { verifyEmailToken } from "./actions"
 import { Loader2 } from "lucide-react"
 import { trackLandingEvent } from "@/lib/landing/analytics"
+import { useLanguage } from "@/contexts/LanguageContext"
+import { PolicyWalletLogo } from "@/components/branding/Logo"
+import { IBM_Plex_Sans } from "next/font/google"
+
+const ibmPlexSans = IBM_Plex_Sans({
+    subsets: ["latin", "greek"],
+    weight: ["400", "500", "600", "700"],
+})
 
 function VerifyEmailContent() {
     const searchParams = useSearchParams()
     const router = useRouter()
+    const { language } = useLanguage()
+    const t = (el: string, en: string) => (language === "el" ? el : en)
     const token = searchParams.get("token")
     const email = searchParams.get("email")
     const [status, setStatus] = useState<"loading" | "success" | "error">("loading")
@@ -18,7 +28,7 @@ function VerifyEmailContent() {
     useEffect(() => {
         if (!token || !email) {
             setStatus("error")
-            setMessage("Invalid verification link")
+            setMessage(t("Μη έγκυρος σύνδεσμος επαλήθευσης", "Invalid verification link"))
             return
         }
 
@@ -37,68 +47,69 @@ function VerifyEmailContent() {
                     })
                 } else {
                     setStatus("error")
-                    setMessage(result.error || "Verification failed")
+                    setMessage(result.error || t("Η επαλήθευση απέτυχε", "Verification failed"))
                 }
             })
             .catch((err) => {
                 console.error("Verification error:", err)
                 setStatus("error")
-                setMessage("An unexpected error occurred")
+                setMessage(t("Παρουσιάστηκε σφάλμα", "An unexpected error occurred"))
             })
     }, [token, email, router])
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-slate-900 px-4 py-12 relative overflow-hidden">
-            {/* Emerald/Teal Liquid Blobs */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-                <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-slate-500/10 blur-[120px] animate-pulse-slow" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-teal-500/10 blur-[120px] animate-pulse-slow delay-700" />
-            </div>
-
-            <div className="w-full max-w-md bg-slate-900/50 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-700/50 p-8 sm:p-10 relative z-10 animate-in fade-in zoom-in duration-500 hover:shadow-slate-500/5 transition-all text-center">
-                <Link href="/" className="inline-block group mb-8">
-                    <h1 className="text-3xl font-black tracking-tighter text-white">
-                        Policy<span className="text-slate-500">Wallet</span>
-                    </h1>
+        <div className={`${ibmPlexSans.className} relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#F9FAFB] px-4 py-12 dark:bg-[#000000]`}>
+            <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-slate-800 dark:bg-[#111111] sm:p-10 text-center">
+                <Link href="/" className="inline-block mb-8">
+                    <PolicyWalletLogo size="md" language={language} />
                 </Link>
 
                 {status === "loading" && (
                     <div className="flex flex-col items-center py-8">
-                        <Loader2 className="h-12 w-12 animate-spin text-slate-500 mb-6" />
-                        <h2 className="text-xl font-bold text-white">Verifying your email...</h2>
+                        <Loader2 className="h-12 w-12 animate-spin text-[#1FDC86] mb-6" />
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                            {t("Επαλήθευση email...", "Verifying your email...")}
+                        </h2>
                     </div>
                 )}
 
                 {status === "success" && (
                     <div className="py-2">
-                        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-slate-500/10 mb-6 border border-slate-500/20 shadow-lg shadow-slate-500/10">
-                            <svg className="h-10 w-10 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#1FDC86]/10 mb-6 border border-[#1FDC86]/20">
+                            <svg className="h-10 w-10 text-[#1FDC86]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
-                        <h2 className="text-2xl font-bold text-white mb-3">Email Verified!</h2>
-                        <p className="text-slate-400 mb-8">
-                            Your email has been successfully verified. You can now access all features.
+                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+                            {t("Το email επαληθεύτηκε!", "Email Verified!")}
+                        </h2>
+                        <p className="text-slate-600 dark:text-slate-400 mb-8">
+                            {t(
+                                "Το email σας επαληθεύτηκε επιτυχώς. Μπορείτε πλέον να χρησιμοποιήσετε όλες τις λειτουργίες.",
+                                "Your email has been successfully verified. You can now access all features."
+                            )}
                         </p>
-                        <Link href="/auth/signin" className="block w-full rounded-xl bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600 px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-slate-500/20 transition-all hover:-translate-y-0.5">
-                            Continue to App
+                        <Link href="/auth/signin" className="block w-full rounded-full bg-[#1FDC86] px-4 py-3.5 text-sm font-bold text-slate-900 transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                            {t("Συνέχεια στην εφαρμογή", "Continue to App")}
                         </Link>
                     </div>
                 )}
 
                 {status === "error" && (
                     <div className="py-2">
-                        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-500/10 mb-6 border border-red-500/20 shadow-lg shadow-red-500/10">
+                        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-500/10 mb-6 border border-red-500/20">
                             <svg className="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </div>
-                        <h2 className="text-2xl font-bold text-white mb-3">Verification Failed</h2>
-                        <p className="text-slate-400 mb-8">
-                            {message}. The link may be invalid or expired.
+                        <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">
+                            {t("Η επαλήθευση απέτυχε", "Verification Failed")}
+                        </h2>
+                        <p className="text-slate-600 dark:text-slate-400 mb-8">
+                            {message}. {t("Ο σύνδεσμος μπορεί να μην είναι έγκυρος ή να έχει λήξει.", "The link may be invalid or expired.")}
                         </p>
-                        <Link href="/auth/signin" className="text-slate-500 hover:text-slate-400 font-bold hover:underline transition-colors">
-                            Back to Sign In
+                        <Link href="/auth/signin" className="font-bold text-[#1FDC86] hover:underline transition-colors">
+                            {t("Επιστροφή στη σύνδεση", "Back to Sign In")}
                         </Link>
                     </div>
                 )}
@@ -109,7 +120,7 @@ function VerifyEmailContent() {
 
 export default function VerifyEmailPage() {
     return (
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<div className={`${ibmPlexSans.className} flex min-h-screen items-center justify-center`}><Loader2 className="h-7 w-7 animate-spin text-[#1FDC86]" /></div>}>
             <VerifyEmailContent />
         </Suspense>
     )

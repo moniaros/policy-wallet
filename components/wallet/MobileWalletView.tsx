@@ -8,6 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { hapticFeedback } from "@/utils/haptic"
 import { PlusIcon, ChatIcon, TrendingUpIcon, DocumentIcon } from "@/components/icons/PolicyIcons"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
+import { Search, X } from "lucide-react"
 
 export function MobileWalletView({
     policies,
@@ -17,14 +18,28 @@ export function MobileWalletView({
     onViewDocuments,
 }: PolicyWalletProps) {
     const { language } = useLanguage()
+    const isGreek = language === "el"
     const roleCopy = getRoleCopy(language)
     const [currentPolicyIndex, setCurrentPolicyIndex] = useState(0)
     const [viewMode, setViewMode] = useState<"hero" | "list">("hero")
+    const [searchQuery, setSearchQuery] = useState("")
+
+    const filteredPolicies = useMemo(() => {
+        if (!searchQuery.trim()) return policies
+        const q = searchQuery.toLowerCase()
+        return policies.filter(
+            (p) =>
+                p.insurerName?.toLowerCase().includes(q) ||
+                p.policyNumber?.toLowerCase().includes(q) ||
+                p.lineOfBusiness?.toLowerCase().includes(q)
+        )
+    }, [policies, searchQuery])
 
     const primaryPolicy = useMemo(() => {
-        const activePolicies = policies.filter((p) => p.status === "active")
-        return activePolicies[currentPolicyIndex] || policies[currentPolicyIndex] || policies[0]
-    }, [policies, currentPolicyIndex])
+        const source = filteredPolicies.length > 0 ? filteredPolicies : policies
+        const activePolicies = source.filter((p) => p.status === "active")
+        return activePolicies[currentPolicyIndex] || source[currentPolicyIndex] || source[0]
+    }, [filteredPolicies, policies, currentPolicyIndex])
 
     const gapRecommendations = useMemo((): GapRecommendation[] => {
         const gaps: GapRecommendation[] = []
@@ -113,8 +128,31 @@ export function MobileWalletView({
             </div>
 
             <div className="max-w-md mx-auto px-4 py-6 space-y-6">
+                {policies.length > 2 && (
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black/40 dark:text-white/45" />
+                        <input
+                            type="search"
+                            placeholder={isGreek ? "Αναζήτηση συμβολαίου..." : "Search policies..."}
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full rounded-xl border border-black/10 bg-black/5 py-2.5 pl-9 pr-9 text-sm text-black placeholder-black/40 outline-none transition focus:border-[#1FDC86]/50 focus:ring-2 focus:ring-[#1FDC86]/20 dark:border-white/15 dark:bg-white/5 dark:text-white dark:placeholder-white/40"
+                        />
+                        {searchQuery && (
+                            <button
+                                type="button"
+                                onClick={() => setSearchQuery("")}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/45"
+                                aria-label={isGreek ? "Καθαρισμός αναζήτησης" : "Clear search"}
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                        )}
+                    </div>
+                )}
+
                 <div className="flex items-center justify-between mb-4">
-                    <p className="text-sm font-bold text-black/65 dark:text-white/70">{roleCopy.walletDashboard.policiesCount(policies.length)}</p>
+                    <p className="text-sm font-bold text-black/65 dark:text-white/70">{roleCopy.walletDashboard.policiesCount(filteredPolicies.length)}</p>
                     <button
                         onClick={() => setViewMode(viewMode === "hero" ? "list" : "hero")}
                         className="text-sm font-bold text-[#1FDC86] hover:underline"
@@ -132,9 +170,9 @@ export function MobileWalletView({
                             onShare={() => onShareWithAgent?.(primaryPolicy.id)}
                             onViewDocuments={() => onViewDocuments?.(primaryPolicy.id)}
                         />
-                        {policies.length > 1 && (
+                        {filteredPolicies.length > 1 && (
                             <div className="flex items-center justify-center gap-2 mt-4">
-                                {policies.map((_, index) => (
+                                {filteredPolicies.map((_, index) => (
                                     <button
                                         key={index}
                                         onClick={() => {
@@ -151,7 +189,7 @@ export function MobileWalletView({
 
                 {viewMode === "list" && (
                     <div className="space-y-3">
-                        {policies.map((policy) => (
+                        {filteredPolicies.map((policy) => (
                             <MobilePolicyCard
                                 key={policy.id}
                                 policy={policy}

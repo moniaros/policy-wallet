@@ -83,10 +83,10 @@ export default async function PolicyholderHomePage() {
 
     const now = new Date()
     const activePolicies = policies.filter((policy) => policy.status === "active")
+    const sixMonthsOut = new Date(now.getTime() + 180 * 24 * 60 * 60 * 1000)
     const upcomingRenewals = policies
-        .filter((policy) => policy.endDate > now)
+        .filter((policy) => policy.endDate > now && policy.endDate <= sixMonthsOut)
         .sort((a, b) => a.endDate.getTime() - b.endDate.getTime())
-        .slice(0, 3)
 
     const recentDocuments = policies
         .flatMap((policy) =>
@@ -108,7 +108,22 @@ export default async function PolicyholderHomePage() {
         if (sameLineCount > 1) duplicatePolicyLines.add(policy.lineOfBusiness)
     }
 
-    const savingsEstimate = duplicatePolicyLines.size * 35
+    const duplicateLobPremiumTotal = policies
+        .filter((p) => duplicatePolicyLines.has(p.lineOfBusiness) && p.premiumAmount != null)
+        .reduce((sum, p) => sum + Number(p.premiumAmount ?? 0), 0)
+    const savingsEstimate = Math.round(duplicateLobPremiumTotal * 0.12)
+
+    // Portfolio summary: total premium + LOB breakdown
+    const totalAnnualPremium = activePolicies
+        .filter(p => p.premiumAmount != null)
+        .reduce((sum, p) => sum + Number(p.premiumAmount ?? 0), 0)
+    const lobBreakdown = activePolicies.reduce((acc, p) => {
+        const lob = p.lineOfBusiness || 'other'
+        if (!acc[lob]) acc[lob] = 0
+        acc[lob] += Number(p.premiumAmount ?? 0)
+        return acc
+    }, {} as Record<string, number>)
+
     const openGapCount = await db.gapInstance.count({
         where: {
             policy: { ownerUserId: dbUser.id },
@@ -119,7 +134,7 @@ export default async function PolicyholderHomePage() {
 
     return (
         <div className="pw-page-shell">
-            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-7xl px-4 py-8 pb-32 sm:px-6 lg:px-8 lg:pb-8">
                 <div className="mb-8">
                     <p className="pw-kicker">
                         {t("Αρχική", "Home")}
@@ -128,7 +143,7 @@ export default async function PolicyholderHomePage() {
                         {t("Πίνακας προστασίας", "Protection dashboard")}
                     </h1>
                     <p className="mt-2 text-sm text-black/65 dark:text-white/70">
-                        {t("Η συνολική εικόνα των ασφαλίσεών σου σε ένα σημείο.", "Your complete insurance overview in one place.")}
+                        {t("Η συνολική εικόνα των ασφαλίσεών σας σε ένα σημείο.", "Your complete insurance overview in one place.")}
                     </p>
                 </div>
 
@@ -175,47 +190,92 @@ export default async function PolicyholderHomePage() {
                         </div>
                     </Link>
 
+                    {/* Portfolio Summary */}
+                    {totalAnnualPremium > 0 && (
+                        <div className="pw-card rounded-3xl p-6 lg:col-span-3">
+                            <p className="pw-kicker">
+                                {t("Χαρτοφυλάκιο ασφαλίσεων", "Insurance portfolio")}
+                            </p>
+                            <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                <div>
+                                    <p className="text-3xl font-semibold text-black dark:text-white">
+                                        {formatCurrencyValue(totalAnnualPremium) || '€0'}
+                                    </p>
+                                    <p className="mt-1 text-xs text-black/55 dark:text-white/60">
+                                        {t("Συνολικό ετήσιο ασφάλιστρο", "Total annual premium")}
+                                    </p>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    {Object.entries(lobBreakdown)
+                                        .filter(([, amount]) => amount > 0)
+                                        .sort(([, a], [, b]) => b - a)
+                                        .map(([lob, amount]) => {
+                                            const meta = getLineOfBusinessMeta(lob)
+                                            const LobIcon = meta.icon
+                                            return (
+                                                <div key={lob} className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 dark:border-white/15 dark:bg-white/5">
+                                                    <LobIcon className="h-3.5 w-3.5 text-[#1FDC86]" />
+                                                    <span className="text-xs font-bold text-black/70 dark:text-white/75">
+                                                        {formatCurrencyValue(amount)}
+                                                    </span>
+                                                </div>
+                                            )
+                                        })}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="pw-card rounded-3xl p-6">
-                        <p className="pw-kicker">
-                            {t("Ανανεώσεις σύντομα", "Upcoming renewals")}
-                        </p>
+                        <div className="flex items-center justify-between">
+                            <p className="pw-kicker">
+                                {t("Χρονοδιάγραμμα ανανεώσεων", "Renewal timeline")}
+                            </p>
+                            {upcomingRenewals.length > 0 && (
+                                <p className="text-[11px] font-semibold text-black/45 dark:text-white/55">
+                                    {upcomingRenewals.length} {t("συμβόλαια", "policies")}
+                                </p>
+                            )}
+                        </div>
                         <div className="mt-3">
                             {upcomingRenewals.length === 0 ? (
-                                <p className="text-sm text-black/55 dark:text-white/65">{t("Δεν υπάρχουν ανανεώσεις.", "No upcoming renewals.")}</p>
+                                <p className="text-sm text-black/55 dark:text-white/65">{t("Δεν υπάρχουν ανανεώσεις τους επόμενους 6 μήνες.", "No renewals in the next 6 months.")}</p>
                             ) : (
-                                <div className="-mx-2 flex snap-x gap-3 overflow-x-auto px-2 pb-1">
-                                    {upcomingRenewals.map((policy) => {
+                                <div className="space-y-2">
+                                    {upcomingRenewals.slice(0, 6).map((policy) => {
                                         const { icon: PolicyIcon, label } = getLineOfBusinessMeta(policy.lineOfBusiness)
                                         const premiumLabel = formatCurrencyValue(policy.premiumAmount, policy.premiumCurrency || "EUR")
+                                        const days = daysUntil(policy.endDate)
+                                        const urgencyColor = days <= 30 ? "bg-rose-500" : days <= 89 ? "bg-amber-500" : "bg-[#1FDC86]"
+                                        const urgencyText = days <= 30
+                                            ? "text-rose-700 dark:text-rose-300"
+                                            : days <= 89
+                                                ? "text-amber-700 dark:text-amber-300"
+                                                : "text-[#1FDC86] dark:text-[#1FDC86]"
 
                                         return (
-                                            <div
+                                            <Link
                                                 key={policy.id}
-                                                className="min-w-[220px] snap-start rounded-2xl border border-black/10 bg-black/5 p-3 dark:border-white/15 dark:bg-black/30"
+                                                href={`/wallet/${policy.id}`}
+                                                className="flex items-center gap-3 rounded-xl border border-black/8 bg-black/[0.03] p-2.5 transition hover:bg-black/[0.06] dark:border-white/10 dark:bg-white/[0.03] dark:hover:bg-white/[0.06]"
                                             >
-                                                <div className="flex items-start justify-between gap-2">
-                                                    <div className="inline-flex items-center gap-2">
-                                                        <span className="grid h-8 w-8 place-items-center rounded-lg bg-white text-[#1FDC86] dark:bg-black">
-                                                            <PolicyIcon className="h-4 w-4" />
-                                                        </span>
-                                                        <div>
-                                                            <p className="text-[11px] font-semibold uppercase tracking-wide text-black/45 dark:text-white/55">{label}</p>
-                                                            <p className="truncate text-xs font-semibold text-black dark:text-white">{policy.insurerName}</p>
-                                                        </div>
-                                                    </div>
-                                                    <p className="text-[11px] font-semibold text-amber-700 dark:text-amber-300">
-                                                        {daysUntil(policy.endDate)} {t("ημ.", "days")}
-                                                    </p>
+                                                <div className={`h-8 w-1 rounded-full ${urgencyColor}`} />
+                                                <span className="grid h-7 w-7 flex-shrink-0 place-items-center rounded-lg bg-white text-black/70 dark:bg-black dark:text-white/70">
+                                                    <PolicyIcon className="h-3.5 w-3.5" />
+                                                </span>
+                                                <div className="min-w-0 flex-1">
+                                                    <p className="truncate text-xs font-semibold text-black dark:text-white">{policy.insurerName}</p>
+                                                    <p className="text-[11px] text-black/50 dark:text-white/55">{label} · {policy.endDate.toLocaleDateString(isGreek ? "el-GR" : "en-GB")}</p>
                                                 </div>
-                                                <div className="mt-3 flex items-center justify-between text-xs">
-                                                    <p className="text-black/65 dark:text-white/70">
-                                                        {policy.endDate.toLocaleDateString(isGreek ? "el-GR" : "en-GB")}
+                                                <div className="flex-shrink-0 text-right">
+                                                    <p className={`text-xs font-bold ${urgencyText}`}>
+                                                        {days} {t("ημ.", "d")}
                                                     </p>
-                                                    <p className="font-semibold text-black dark:text-white">
-                                                        {premiumLabel || t("χωρίς premium", "premium n/a")}
-                                                    </p>
+                                                    {premiumLabel && (
+                                                        <p className="text-[11px] text-black/50 dark:text-white/55">{premiumLabel}</p>
+                                                    )}
                                                 </div>
-                                            </div>
+                                            </Link>
                                         )
                                     })}
                                 </div>
@@ -230,15 +290,22 @@ export default async function PolicyholderHomePage() {
                         className="pw-card rounded-3xl p-6"
                     >
                         <p className="pw-kicker">
-                            {t("AI Insight", "AI Insight")}
+                            {t("Ανάλυση AI", "AI Analysis")}
                         </p>
                         <div className="mt-3 flex items-start gap-3">
                             <Sparkles className="mt-0.5 h-5 w-5 text-[#1FDC86]" />
-                            <p className="text-sm text-black/80 dark:text-white/80">
-                                {openGapCount > 0
-                                    ? t(`Εντοπίστηκαν ${openGapCount} σημεία που αξίζουν έλεγχο.`, `${openGapCount} coverage points need review.`)
-                                    : t("Η κάλυψή σου φαίνεται σταθερή σήμερα.", "Your coverage looks stable today.")}
-                            </p>
+                            <div className="flex-1">
+                                <p className="text-sm text-black/80 dark:text-white/80">
+                                    {openGapCount > 0
+                                        ? t(`Εντοπίστηκαν ${openGapCount} σημεία που αξίζουν έλεγχο.`, `${openGapCount} coverage points need review.`)
+                                        : t("Η κάλυψή σας φαίνεται σταθερή σήμερα.", "Your coverage looks stable today.")}
+                                </p>
+                                {openGapCount > 0 && (
+                                    <p className="mt-1.5 text-xs font-semibold text-[#1FDC86]">
+                                        {t("Δείτε λεπτομέρειες →", "View details →")}
+                                    </p>
+                                )}
+                            </div>
                         </div>
                     </Link>
 
@@ -254,7 +321,7 @@ export default async function PolicyholderHomePage() {
                                 <Upload className="h-5 w-5" />
                             </div>
                             <p className="text-sm text-black/80 dark:text-white/80">
-                                {t("Πρόσθεσε νέο συμβόλαιο", "Add a new policy")}
+                                {t("Προσθέστε νέο συμβόλαιο", "Add a new policy")}
                             </p>
                         </div>
                     </Link>
@@ -319,8 +386,8 @@ export default async function PolicyholderHomePage() {
                             <HeartPulse className="mt-0.5 h-5 w-5 text-[#1FDC86]" />
                             <p className="text-sm text-black/80 dark:text-white/80">
                                 {hasHealthPolicy
-                                    ? t("Το ετήσιο check-up σου είναι διαθέσιμο.", "Your annual check-up benefit is available.")
-                                    : t("Πρόσθεσε health policy για προληπτικές υπενθυμίσεις.", "Add a health policy to unlock preventive reminders.")}
+                                    ? t("Το ετήσιο check-up σας είναι διαθέσιμο.", "Your annual check-up benefit is available.")
+                                    : t("Προσθέστε ασφάλεια υγείας για προληπτικές υπενθυμίσεις.", "Add a health policy to unlock preventive reminders.")}
                             </p>
                         </div>
                     </div>
@@ -329,16 +396,18 @@ export default async function PolicyholderHomePage() {
                         href="/coverage-insights"
                         className="pw-card rounded-3xl p-6"
                     >
-                        <p className="pw-kicker">{t("Savings opportunities", "Savings opportunities")}</p>
+                        <p className="pw-kicker">{t("Ευκαιρίες εξοικονόμησης", "Savings opportunities")}</p>
                         <div className="mt-3 flex items-center justify-between">
                             <p className="text-sm text-black/80 dark:text-white/80">
                                 {savingsEstimate > 0
-                                    ? t(`Potential savings EUR ${savingsEstimate}/year`, `Potential savings EUR ${savingsEstimate}/year`)
-                                    : t("No immediate savings opportunities today.", "No immediate savings opportunities today.")}
+                                    ? t(`Δυνατότητα εξοικονόμησης ${formatCurrencyValue(savingsEstimate)}/έτος`, `Potential savings ${formatCurrencyValue(savingsEstimate)}/year`)
+                                    : t("Δεν υπάρχουν ευκαιρίες εξοικονόμησης αυτή τη στιγμή.", "No immediate savings opportunities today.")}
                             </p>
-                            <span className="rounded-full bg-[#1FDC86]/20 px-2 py-1 text-xs font-semibold text-black dark:text-[#1FDC86]">
-                                EUR
-                            </span>
+                            {savingsEstimate > 0 && (
+                                <span className="rounded-full bg-[#1FDC86]/20 px-2 py-1 text-xs font-semibold text-black dark:text-[#1FDC86]">
+                                    {formatCurrencyValue(savingsEstimate)}
+                                </span>
+                            )}
                         </div>
                     </Link>
                 </div>
@@ -372,7 +441,7 @@ export default async function PolicyholderHomePage() {
             {!customerRelationship && (
                 <div className="fixed bottom-24 left-6 hidden items-center gap-2 rounded-xl bg-amber-100 px-3 py-2 text-xs font-bold text-amber-800 shadow-md lg:flex">
                     <AlertCircle className="h-4 w-4" />
-                    {t("Συνδέσου με σύμβουλο για ταχύτερη υποστήριξη.", "Connect with an agent for faster support.")}
+                    {t("Συνδεθείτε με σύμβουλο για ταχύτερη υποστήριξη.", "Connect with an agent for faster support.")}
                     <Link href="/agent" className="underline">
                         {t("Σύνδεση", "Connect")}
                     </Link>

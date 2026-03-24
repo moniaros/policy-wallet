@@ -87,21 +87,21 @@ function SignupConfirmationContent() {
     }, [email, isVerified, language, loadingState, needsEmailVerification, role])
 
     const copy = useMemo(() => ({
-        heading: t("Ο λογαριασμός σου είναι έτοιμος", "Your wallet account is ready"),
-        subtitle: t("Ένα γρήγορο βήμα και συνεχίζεις στο onboarding.", "One quick checkpoint, then continue to onboarding."),
+        heading: t("Ο λογαριασμός σας είναι έτοιμος", "Your wallet account is ready"),
+        subtitle: t("Ένα γρήγορο βήμα και συνεχίζετε στο onboarding.", "One quick checkpoint, then continue to onboarding."),
         shellTitle: t("Ρύθμιση πρώτης εμπειρίας", "First-login setup shell"),
         shellDesc: t("Θα χρειαστεί περίπου 2 λεπτά. Θα δεις AI ανάλυση και υπενθυμίσεις.", "This takes about 2 minutes. You will unlock AI insights and reminders."),
         verifyTitle: t("Επαλήθευση email", "Verify your email"),
-        verifyDesc: t("Χρησιμοποίησε τον σύνδεσμο που στείλαμε στο inbox σου.", "Use the link we sent to your inbox."),
+        verifyDesc: t("Χρησιμοποιήστε τον σύνδεσμο που στείλαμε στο inbox σας.", "Use the link we sent to your inbox."),
         checkVerified: t("Έκανα επαλήθευση, συνέχεια", "I verified, continue"),
         resend: t("Επαναποστολή email", "Resend verification email"),
-        startSetup: t("Start setup", "Start setup"),
-        skip: t("Skip for now", "Skip for now"),
-        verifyPending: t("Δεν έχει ολοκληρωθεί ακόμα η επαλήθευση. Έλεγξε ξανά το email σου.", "Verification is not complete yet. Please check your email again."),
+        startSetup: t("Έναρξη ρύθμισης", "Start setup"),
+        skip: t("Παράλειψη προς το παρόν", "Skip for now"),
+        verifyPending: t("Δεν έχει ολοκληρωθεί ακόμα η επαλήθευση. Ελέγξτε ξανά το email σας.", "Verification is not complete yet. Please check your email again."),
         verificationSuccess: t("Το email επαληθεύτηκε. Συνεχίζουμε.", "Email verified. Continuing."),
         resendSuccess: t("Στάλθηκε νέο email επαλήθευσης.", "Verification email sent again."),
         resendError: t("Αποτυχία αποστολής email επαλήθευσης.", "Failed to resend verification email."),
-        authMissing: t("Η συνεδρία έληξε. Κάνε ξανά σύνδεση για να συνεχίσεις.", "Your session expired. Sign in again to continue."),
+        authMissing: t("Η συνεδρία έληξε. Συνδεθείτε ξανά για να συνεχίσετε.", "Your session expired. Sign in again to continue."),
         signin: t("Μετάβαση σε σύνδεση", "Go to sign in"),
         stepLabel: t("Βήμα 2 από 6", "Step 2 of 6"),
         secureSetup: t("Ασφαλές setup", "Secure setup"),
@@ -188,7 +188,7 @@ function SignupConfirmationContent() {
         } catch {
             setNotice({
                 kind: "error",
-                message: t("Αποτυχία μετάβασης στο onboarding. Δοκίμασε ξανά.", "Could not continue to onboarding. Please try again."),
+                message: t("Αποτυχία μετάβασης στο onboarding. Δοκιμάστε ξανά.", "Could not continue to onboarding. Please try again."),
             })
         } finally {
             setIsContinuing(false)

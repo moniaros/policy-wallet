@@ -1,0 +1,109 @@
+import { withApiGuard } from "@/lib/api-guard"
+import { db as prisma } from "@/lib/db"
+import { NextResponse } from "next/server"
+
+// POST — Create a document request
+export const POST = withApiGuard(
+    {
+        auth: { mode: "user", roles: ["agent"] },
+    },
+    async ({ auth, body }) => {
+        const { relationshipId, documentType, instruction, urgency, dueDate } = body as {
+            relationshipId: string
+            documentType: string
+            instruction?: string
+            urgency?: string
+            dueDate?: string
+        }
+
+        if (!relationshipId || !documentType) {
+            return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
+        }
+
+        const agentUserId = auth!.dbUser.id
+
+        // Verify relationship
+        const relationship = await prisma.customerRelationship.findFirst({
+            where: { id: relationshipId, agentUserId },
+        })
+        if (!relationship) {
+            return NextResponse.json({ error: "Relationship not found" }, { status: 404 })
+        }
+
+        // Create thread + document request in transaction
+        const result = await prisma.$transaction(async (tx) => {
+            const thread = await tx.collaborationThread.create({
+                data: {
+                    relationshipId,
+                    subject: `Document Request: ${documentType}`,
+                    category: "document_request",
+                    threadType: "document_request",
+                    priority: urgency === "urgent" ? "high" : "medium",
+                    createdByUserId: agentUserId,
+                    assignedToUserId: relationship.policyholderUserId,
+                },
+            })
+
+            const documentRequest = await tx.documentRequest.create({
+                data: {
+                    threadId: thread.id,
+                    relationshipId,
+                    requestedByUserId: agentUserId,
+                    documentType,
+                    instruction: instruction || null,
+                    urgency: urgency || "normal",
+                    dueDate: dueDate ? new Date(dueDate) : null,
+                },
+            })
+
+            // Add system message to thread
+            await tx.collaborationMessage.create({
+                data: {
+                    threadId: thread.id,
+                    senderUserId: agentUserId,
+                    messageType: "system",
+                    body: `Document requested: ${documentType}`,
+                },
+            })
+
+            return { thread, documentRequest }
+        })
+
+        return NextResponse.json(result, { status: 201 })
+    }
+)
+
+// GET — List document requests
+export const GET = withApiGuard(
+    {
+        auth: { mode: "user" },
+    },
+    async ({ req, auth }) => {
+        const { searchParams } = new URL(req.url)
+        const relationshipId = searchParams.get("relationshipId")
+        const status = searchParams.get("status")
+
+        const where: Record<string, unknown> = {}
+        if (relationshipId) where.relationshipId = relationshipId
+        if (status) where.status = status
+
+        // Filter by user's relationships
+        where.relationship = {
+            OR: [
+                { agentUserId: auth!.dbUser.id },
+                { policyholderUserId: auth!.dbUser.id },
+            ],
+        }
+
+        const requests = await prisma.documentRequest.findMany({
+            where,
+            include: {
+                thread: { select: { id: true, subject: true, status: true } },
+                requestedBy: { select: { id: true, name: true } },
+            },
+            orderBy: { createdAt: "desc" },
+        })
+
+        return NextResponse.json({ requests })
+    }
+)
