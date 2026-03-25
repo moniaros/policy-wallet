@@ -1,4 +1,4 @@
-﻿export const runtime = 'nodejs'
+export const runtime = 'nodejs'
 
 import Link from "next/link"
 import { redirect } from "next/navigation"
@@ -23,6 +23,7 @@ import {
     Users,
     Wallet,
 } from "lucide-react"
+import { GettingStartedWrapper } from "@/components/dashboard/GettingStartedWrapper"
 
 function daysUntil(date: Date) {
     return Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
@@ -142,6 +143,17 @@ export default async function PolicyholderHomePage() {
         ? 0
         : Math.max(0, Math.min(100, 100 - (criticalGaps * 25 + highGaps * 15 + mediumGaps * 8 + lowGaps * 3)))
 
+    // Getting Started checklist data
+    const hasAnalysisRun = await db.policyAnalysisRun.findFirst({
+        where: { userId: dbUser.id, status: "completed" },
+        select: { id: true },
+    })
+    const hasNotificationPref = await db.notificationPreference.findFirst({
+        where: { userId: dbUser.id, enabled: true },
+        select: { id: true },
+    })
+    const isOnboardingComplete = Boolean(dbUser.updatedAt) && policies.length > 0
+
     return (
         <div className="pw-page-shell">
             <div className="mx-auto max-w-7xl px-4 py-8 pb-32 sm:px-6 lg:px-8 lg:pb-8">
@@ -155,6 +167,17 @@ export default async function PolicyholderHomePage() {
                     <p className="mt-2 text-sm text-black/65 dark:text-white/70">
                         {t("Η συνολική εικόνα των ασφαλίσεών σας σε ένα σημείο.", "Your complete insurance overview in one place.")}
                     </p>
+                </div>
+
+                {/* Getting Started Checklist */}
+                <div className="mb-4">
+                    <GettingStartedWrapper
+                        policyCount={activePolicies.length}
+                        hasAnalysis={Boolean(hasAnalysisRun)}
+                        gapCount={openGapCount}
+                        hasAgent={Boolean(customerRelationship)}
+                        notificationsEnabled={Boolean(hasNotificationPref)}
+                    />
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">

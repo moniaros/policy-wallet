@@ -26,6 +26,15 @@ export async function getAuthenticatedUser() {
         redirect("/auth/signin")
     }
 
+    // Update lastActiveAt — throttle to once per 5 minutes
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
+    if (!dbUser.lastActiveAt || dbUser.lastActiveAt < fiveMinutesAgo) {
+        db.user.update({
+            where: { id: dbUser.id },
+            data: { lastActiveAt: new Date() },
+        }).catch(() => { /* fire and forget */ })
+    }
+
     return { supabaseUser: user, dbUser }
 }
 

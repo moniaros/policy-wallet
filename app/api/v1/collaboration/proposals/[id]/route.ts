@@ -43,7 +43,7 @@ export const GET = withApiGuard(
     }
 )
 
-// PATCH — Accept, decline, or update a proposal
+// PATCH — Accept, decline, or counter-offer on a proposal
 export const PATCH = withApiGuard(
     {
         auth: { mode: "user" },
@@ -52,6 +52,9 @@ export const PATCH = withApiGuard(
         const id = (params as { id: string }).id
         const body = (await req.json()) as {
             status?: "accepted" | "declined"
+            declineReason?: "too_expensive" | "not_needed" | "prefer_different" | "other"
+            declineComment?: string
+            counterOfferNotes?: string
         }
 
         const proposal = await prisma.proposal.findUnique({
@@ -75,22 +78,46 @@ export const PATCH = withApiGuard(
         }
 
         const updated = await prisma.$transaction(async (tx) => {
+            // Build metadata for decline/counter
+            const metadata: Record<string, unknown> = {}
+            if (body.declineReason) metadata.declineReason = body.declineReason
+            if (body.declineComment) metadata.declineComment = body.declineComment
+            if (body.counterOfferNotes) metadata.counterOfferNotes = body.counterOfferNotes
+
             const result = await tx.proposal.update({
                 where: { id },
                 data: {
                     status: body.status,
                     clientResponseAt: new Date(),
+                    ...(Object.keys(metadata).length > 0 ? { metadata } : {}),
                 },
             })
 
-            // Add system message
-            const statusText = body.status === "accepted" ? "accepted" : "declined"
+            // Build system message
+            let systemMessage: string
+            if (body.status === "accepted") {
+                systemMessage = "Proposal accepted by client"
+            } else if (body.counterOfferNotes) {
+                systemMessage = `Proposal declined with counter-offer: "${body.counterOfferNotes}"`
+            } else if (body.declineReason) {
+                const reasonLabels: Record<string, string> = {
+                    too_expensive: "Too expensive",
+                    not_needed: "Not needed",
+                    prefer_different: "Prefer different coverage",
+                    other: "Other reason",
+                }
+                const reason = reasonLabels[body.declineReason] || body.declineReason
+                systemMessage = `Proposal declined — Reason: ${reason}${body.declineComment ? `. "${body.declineComment}"` : ""}`
+            } else {
+                systemMessage = "Proposal declined by client"
+            }
+
             await tx.collaborationMessage.create({
                 data: {
                     threadId: proposal.threadId,
                     senderUserId: userId,
                     messageType: "system",
-                    body: `Proposal ${statusText} by client`,
+                    body: systemMessage,
                 },
             })
 
@@ -98,9 +125,30 @@ export const PATCH = withApiGuard(
             await tx.collaborationThread.update({
                 where: { id: proposal.threadId },
                 data: {
-                    status: body.status === "accepted" ? "resolved" : "closed",
+                    status: body.status === "accepted" ? "resolved" : body.counterOfferNotes ? "open" : "closed",
                     lastActivityAt: new Date(),
                     resolvedAt: body.status === "accepted" ? new Date() : null,
+                },
+            })
+
+            // Notify the agent
+            await tx.notificationEvent.create({
+                data: {
+                    userId: proposal.relationship.agentUserId,
+                    eventType: body.status === "accepted"
+                        ? "proposal_accepted"
+                        : body.counterOfferNotes
+                            ? "proposal_counter_offer"
+                            : "proposal_declined",
+                    channel: "in_app",
+                    title: body.status === "accepted"
+                        ? "Proposal accepted"
+                        : body.counterOfferNotes
+                            ? "Counter-offer received"
+                            : "Proposal declined",
+                    message: systemMessage,
+                    relatedObjectType: "proposal",
+                    relatedObjectId: id,
                 },
             })
 
@@ -110,3 +158,4 @@ export const PATCH = withApiGuard(
         return NextResponse.json(updated)
     }
 )
+

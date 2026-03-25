@@ -5,7 +5,7 @@ import { Loader2, Sparkles, Upload, Wallet, Users, Check } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { fixMojibakeText } from "@/lib/i18n/fix-mojibake"
-import { completeOnboardingStep, uploadOnboardingPolicy, redeemInviteCode } from "./actions"
+import { completeOnboardingStep, uploadOnboardingPolicy, redeemInviteCode, triggerOnboardingAnalysis } from "./actions"
 
 type GoalType = "save_money" | "health_family" | "my_car"
 
@@ -50,12 +50,35 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
     const stepLabel = t(`Βήμα ${step} από ${TOTAL_STEPS}`, `Step ${step} of ${TOTAL_STEPS}`)
     const displayName = initialState.name || ""
 
+    const [analysisResult, setAnalysisResult] = useState<{
+        status: string
+        healthScore?: number
+        gapCount?: number
+    } | null>(null)
+
     useEffect(() => {
         if (step !== 3) return
         setSimulatingAi(true)
-        const timer = setTimeout(() => setSimulatingAi(false), 1800)
-        return () => clearTimeout(timer)
-    }, [step])
+        setAnalysisResult(null)
+
+        if (uploadedPolicyId) {
+            // Real AI analysis for uploaded policies
+            triggerOnboardingAnalysis(uploadedPolicyId)
+                .then((result) => {
+                    setAnalysisResult(result)
+                    setSimulatingAi(false)
+                })
+                .catch(() => {
+                    // Graceful fallback — don't block onboarding
+                    setAnalysisResult({ status: "queued" })
+                    setSimulatingAi(false)
+                })
+        } else {
+            // No upload — quick transition
+            const timer = setTimeout(() => setSimulatingAi(false), 1200)
+            return () => clearTimeout(timer)
+        }
+    }, [step, uploadedPolicyId])
 
     const canContinueStep1 = Boolean(goal)
 
@@ -311,18 +334,34 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 {simulatingAi ? (
                                     <div className="flex items-center gap-3 text-sm text-stone-700 dark:text-stone-200">
                                         <Loader2 className="h-4 w-4 animate-spin text-teal-600" />
-                                        {t("Το AI διαβάζει το συμβόλαιό σας...", "AI is reading your policy...")}
+                                        {uploadedPolicyId
+                                            ? t("Το AI αναλύει το συμβόλαιό σας...", "AI is analyzing your policy...")
+                                            : t("Προετοιμασία...", "Preparing...")}
                                     </div>
                                 ) : (
                                     <div className="space-y-3 text-sm text-stone-700 dark:text-stone-200">
                                         <div className="flex items-center gap-2">
                                             <Sparkles className="h-4 w-4 text-violet-600" />
                                             <span>
-                                                {uploadedPolicyId
-                                                    ? t("Το συμβόλαιο προστέθηκε και είναι έτοιμο για analysis.", "Your policy was added and is ready for analysis.")
-                                                    : t("Μπορείς να ξεκινήσεις χωρίς upload και να προσθέσεις συμβόλαια αργότερα.", "You can start now and upload policies later.")}
+                                                {uploadedPolicyId && analysisResult?.status === "completed"
+                                                    ? t("Η ανάλυση AI ολοκληρώθηκε!", "AI analysis completed!")
+                                                    : uploadedPolicyId && analysisResult?.status === "queued"
+                                                        ? t("Η ανάλυση θα ολοκληρωθεί σε λίγα λεπτά.", "Analysis will complete in a few minutes.")
+                                                        : uploadedPolicyId
+                                                            ? t("Το συμβόλαιο προστέθηκε και αναλύεται.", "Your policy was added and is being analyzed.")
+                                                            : t("Μπορείς να ξεκινήσεις χωρίς upload και να προσθέσεις συμβόλαια αργότερα.", "You can start now and upload policies later.")}
                                             </span>
                                         </div>
+                                        {analysisResult?.healthScore != null && (
+                                            <div className="flex items-center gap-2 rounded-xl bg-teal-50 px-3 py-2 dark:bg-teal-900/20">
+                                                <span className="text-xl font-black text-teal-700 dark:text-teal-300">
+                                                    {analysisResult.healthScore}%
+                                                </span>
+                                                <span className="text-xs text-teal-600 dark:text-teal-400">
+                                                    {t("Σκορ ανάλυσης", "Analysis score")}
+                                                </span>
+                                            </div>
+                                        )}
                                         {uploadedFileName && (
                                             <p className="font-semibold text-stone-900 dark:text-white">
                                                 {t("Αρχείο:", "File:")} {uploadedFileName}

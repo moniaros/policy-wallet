@@ -4,6 +4,7 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowRight, Play, Shield, X, Upload, Sparkles, BarChart3, Users, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
+import { TrustBadges } from "./TrustBadges"
 
 interface HeroSectionProps {
     t: {
@@ -105,18 +106,7 @@ export function HeroSection({ t }: HeroSectionProps) {
                         className="flex flex-col items-center gap-4"
                     >
                         <p className="text-sm text-slate-500">{t.trustedBy}</p>
-
-                        {/* Trust Badges — Greek Insurers */}
-                        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
-                            {["Ethniki", "Interamerican", "NN Hellas", "Generali", "Eurolife", "Allianz"].map((name) => (
-                                <div
-                                    key={name}
-                                    className="h-9 px-5 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-lg flex items-center justify-center grayscale hover:grayscale-0 transition-all duration-300"
-                                >
-                                    <span className="text-xs font-semibold tracking-wide text-slate-600">{name}</span>
-                                </div>
-                            ))}
-                        </div>
+                        <TrustBadges />
                     </motion.div>
 
                     {/* Hero Image/Mockup */}
