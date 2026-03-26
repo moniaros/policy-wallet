@@ -215,7 +215,7 @@ export async function registerUser(formData: FormData) {
 
     const authEmail = email || buildSyntheticEmailFromPhone(normalizedPhone)
     const isSyntheticEmail = !email
-    const displayName = name?.trim().length
+    const displayName = name?.trim()?.length
         ? name.trim()
         : role === "agent"
             ? "Agent User"
@@ -317,6 +317,7 @@ export async function registerUser(formData: FormData) {
         const redirectTarget = `/auth/signup/confirmation?role=${role}${email ? `&email=${encodeURIComponent(email)}` : ""}`
         return { success: true, redirect: redirectTarget }
     } catch (error) {
+        console.error("REGISTER_USER_FATAL:", error)
         if (error instanceof Error) {
             if (error.message.includes("Unique constraint")) {
                 return { success: false, error: "User already exists" }

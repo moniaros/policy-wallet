@@ -29,34 +29,39 @@ const localCache = new Map<string, { count: number; expires: number }>()
  */
 export async function rateLimit(ip: string, limit: number = 10, durationMs: number = 60000) {
     if (ratelimit) {
-        // Use Global Redis Ratelimiter
-        const { success, limit: totalLimit, remaining, reset } = await ratelimit.limit(ip)
+        try {
+            // Use Global Redis Ratelimiter
+            const { success, limit: totalLimit, remaining, reset } = await ratelimit.limit(ip)
 
-        if (!success) {
-            return {
-                success: false,
-                limit: totalLimit,
-                remaining,
-                error: NextResponse.json(
-                    {
-                        error: {
-                            code: "TOO_MANY_REQUESTS",
-                            message: "Rate limit exceeded. Please try again later.",
-                            status: 429
+            if (!success) {
+                return {
+                    success: false,
+                    limit: totalLimit,
+                    remaining,
+                    error: NextResponse.json(
+                        {
+                            error: {
+                                code: "TOO_MANY_REQUESTS",
+                                message: "Rate limit exceeded. Please try again later.",
+                                status: 429
+                            }
+                        },
+                        {
+                            status: 429,
+                            headers: {
+                                'X-RateLimit-Limit': totalLimit.toString(),
+                                'X-RateLimit-Remaining': remaining.toString(),
+                                'X-RateLimit-Reset': reset.toString(),
+                            }
                         }
-                    },
-                    {
-                        status: 429,
-                        headers: {
-                            'X-RateLimit-Limit': totalLimit.toString(),
-                            'X-RateLimit-Remaining': remaining.toString(),
-                            'X-RateLimit-Reset': reset.toString(),
-                        }
-                    }
-                )
+                    )
+                }
             }
+            return { success: true, count: totalLimit - remaining, limit: totalLimit }
+        } catch (error) {
+            console.warn("Upstash Redis ratelimit failed, falling back to local memory:", error)
+            // Fall through to local cache
         }
-        return { success: true, count: totalLimit - remaining, limit: totalLimit }
     }
 
     // Fallback Code (In-Memory for Dev)

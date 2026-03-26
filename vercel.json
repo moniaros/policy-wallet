@@ -3,6 +3,22 @@
     {
       "path": "/api/v1/jobs/collaboration-reminders",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/v1/jobs/engagement-drip",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/v1/jobs/weekly-digest",
+      "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/v1/jobs/churn-prevention",
+      "schedule": "0 11 * * *"
+    },
+    {
+      "path": "/api/v1/jobs/perk-reminders",
+      "schedule": "0 12 * * *"
     }
   ]
 }
