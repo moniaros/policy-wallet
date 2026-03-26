@@ -44,14 +44,14 @@ export async function runPerkReminderScan(): Promise<{
             where: {
                 status: { in: ["active", "pending_review"] },
                 endDate: { gt: new Date() },
-                acordData: { not: null },
+                acordData: { not: undefined },
             },
             select: {
                 id: true,
                 policyNumber: true,
                 insurerName: true,
                 acordData: true,
-                userId: true,
+                ownerUserId: true,
             },
         })
 
@@ -60,7 +60,7 @@ export async function runPerkReminderScan(): Promise<{
         const perksToRemind: PerkToRemind[] = []
 
         for (const policy of activePolicies) {
-            if (!policy.acordData || !policy.userId) continue
+            if (!policy.acordData || !policy.ownerUserId) continue
 
             const acordData = policy.acordData as unknown as AcordData
             const perks = acordData.perksAndBenefits
@@ -71,7 +71,7 @@ export async function runPerkReminderScan(): Promise<{
                 if (!perk.reminderRecommended) continue
 
                 perksToRemind.push({
-                    userId: policy.userId,
+                    userId: policy.ownerUserId,
                     policyId: policy.id,
                     policyNumber: policy.policyNumber || "N/A",
                     insurerName: policy.insurerName || "N/A",
@@ -84,49 +84,52 @@ export async function runPerkReminderScan(): Promise<{
         }
 
         // Filter out perks that were already reminded within the last 90 days
+        // Use the relatedObjectId + title pattern to deduplicate since NotificationEvent
+        // doesn't have a metadata column
         const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000)
 
         const recentReminders = await db.notificationEvent.findMany({
             where: {
                 eventType: "perk_reminder",
                 createdAt: { gt: ninetyDaysAgo },
-                userId: { in: perksToRemind.map((p) => p.userId) },
+                userId: { in: [...new Set(perksToRemind.map((p) => p.userId))] },
             },
             select: {
                 userId: true,
-                metadata: true,
+                relatedObjectId: true,
+                title: true,
             },
         })
 
-        // Build a set of "userId:policyId:perkType" that were already reminded
+        // Build a set of "userId:policyId:perkType" using relatedObjectId + title prefix matching
         const alreadyReminded = new Set<string>()
         for (const reminder of recentReminders) {
-            const meta = reminder.metadata as Record<string, string> | null
-            if (meta?.policyId && meta?.perkType) {
-                alreadyReminded.add(`${reminder.userId}:${meta.policyId}:${meta.perkType}`)
+            if (reminder.relatedObjectId) {
+                // Use policyId + first 30 chars of title as dedup key
+                const titleKey = (reminder.title || "").slice(0, 30)
+                alreadyReminded.add(`${reminder.userId}:${reminder.relatedObjectId}:${titleKey}`)
             }
         }
 
         // Send reminders for perks not yet reminded
         for (const perk of perksToRemind) {
-            const key = `${perk.userId}:${perk.policyId}:${perk.perkType}`
-            if (alreadyReminded.has(key)) continue
+            // Resolve user's preferred language
+            const user = await db.user.findUnique({
+                where: { id: perk.userId },
+                select: { preferredLanguage: true },
+            })
+            const lang = (user?.preferredLanguage === "en" ? "en" : "el") as "en" | "el"
+
+            const title = lang === "el"
+                ? `💡 Μην ξεχάσετε: ${perk.perkName.el}`
+                : `💡 Don't forget: ${perk.perkName.en}`
+
+            // Check if already reminded using title prefix + policyId
+            const dedupKey = `${perk.userId}:${perk.policyId}:${title.slice(0, 30)}`
+            if (alreadyReminded.has(dedupKey)) continue
 
             try {
-                // Resolve user's preferred language
-                const user = await db.user.findUnique({
-                    where: { id: perk.userId },
-                    select: { preferredLanguage: true },
-                })
-                const lang = (user?.preferredLanguage === "en" ? "en" : "el") as "en" | "el"
-
-                const phoneNote = perk.contactPhone
-                    ? ` ${perk.contactPhone}`
-                    : ""
-
-                const title = lang === "el"
-                    ? `💡 Μην ξεχάσετε: ${perk.perkName.el}`
-                    : `💡 Don't forget: ${perk.perkName.en}`
+                const phoneNote = perk.contactPhone ? ` ${perk.contactPhone}` : ""
 
                 const message = lang === "el"
                     ? `Το ασφαλιστήριο ${perk.insurerName} (${perk.policyNumber}) περιλαμβάνει: ${perk.perkDescription.el}${phoneNote}`
@@ -156,7 +159,6 @@ export async function runPerkReminderScan(): Promise<{
             scanned,
             perksFound: perksToRemind.length,
             remindersGenerated,
-            skippedAlreadyReminded: perksToRemind.length - remindersGenerated - errors,
             errors,
         })
     } catch (err) {
