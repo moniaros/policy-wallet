@@ -145,23 +145,44 @@ export class GeminiAIService implements IAIService {
 
       // Optimized prompt: field-level instructions moved to Zod .describe() annotations
       // Reduced from ~600 tokens to ~200 tokens (~65% prompt savings)
-      const prompt = `Extract ALL insurance policy data from this document into structured JSON.
-Rules: Extract exactly as shown. Dates: YYYY-MM-DD. Amounts: numeric only. Unknown fields: null.
-Handle both Greek (Ασφάλιστρο, Απαλλαγή, Εξαιρέσεις, Ισχύς, Γενικοί Όροι, Ειδικοί Όροι) and English documents.
-Only populate the type-specific ACORD section matching the detected lineOfBusiness.
-
-CRITICAL — also extract these sections by reading the FULL document including General Terms and Appendices:
-1. finePrintClauses: Any clause that limits, restricts, or conditions coverage in ways a typical consumer
-   would NOT expect. Look in General Terms (Γενικοί Όροι), Special Conditions (Ειδικοί Όροι), and Appendices.
-   Flag sub-limits, co-payments, notification deadlines, geographic restrictions, and cancellation penalties.
-   Rate each clause: info (informational), warning (could affect claim), critical (likely to cause claim denial).
-2. perksAndBenefits: Free services, prevention programs, assistance hotlines (οδική βοήθεια, τεχνική βοήθεια,
-   τηλεϊατρός), legal aid (νομική προστασία), loyalty bonuses (μπόνους-μάλους), no-claims discounts,
-   gifts, and any bundled digital tools. Always include phone numbers and usage limits.
-   Set reminderRecommended=true for perks users often forget (annual checkup, tele-doctor, legal aid).
-3. notableConditions: Waiting periods (αναμονή), auto-renewal terms (σιωπηρή ανανέωση), claim filing deadlines
-   (notice obligations), age limits, geographic restrictions, and no-claims bonus qualification rules.
-   Set userActionRequired=true when the user must do something to benefit (e.g., file notice within 72h).`
+      const prompt = `You are an insurance document parser.
+TASK:
+Extract ALL insurance data from this PDF into structured JSON using ACORD format.
+IMPORTANT:
+- Read ALL pages, including:
+  - General Terms
+  - Special Conditions
+  - Appendices
+- Do NOT summarize
+- Do NOT skip sections
+STRICT RULES:
+- Output JSON only
+- No text outside JSON
+- If value not found → null
+DATA NORMALIZATION:
+- Dates: DD-MM-YYYY
+- Amounts: numbers only
+- Keep original language (Greek or English)
+DETECT:
+lineOfBusiness = Motor | Property | Health | Life | Travel
+ONLY populate the matching ACORD section.
+EXTRACTION SECTIONS:
+finePrintClauses:
+Extract limiting clauses:
+[text, category, severity, reason]
+perksAndBenefits:
+[name, description, phone, usageLimit, reminderRecommended]
+notableConditions:
+[condition, type, userActionRequired, deadline]
+FINAL OUTPUT:
+{
+  "lineOfBusiness": "...",
+  "acord": {...},
+  "finePrintClauses": [...],
+  "perksAndBenefits": [...],
+  "notableConditions": [...]
+}
+Do not include Citations, text should be in Greek (Primary and language of source) and English in different tags. This includes all text such as names, descriptions, types, usage limits etc.`
 
       logger('info', 'Starting Gemini 2.0 Flash extraction with UI Zod Schema', {
         fileName: document.fileName,
@@ -636,8 +657,8 @@ Policy Information:
 
       // Build detailed context from structuredContext (ACORD data) when available
       const acordContext = options?.structuredContext?.acordData
-          ? `\n\nDetailed Policy Data (ACORD):\n${JSON.stringify(options.structuredContext.acordData, null, 2)}`
-          : ''
+        ? `\n\nDetailed Policy Data (ACORD):\n${JSON.stringify(options.structuredContext.acordData, null, 2)}`
+        : ''
 
       const parts: any[] = []
 

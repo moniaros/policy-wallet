@@ -140,13 +140,52 @@ export class AnthropicAIService implements IAIService {
             acordData: AcordDataSchema.optional().describe("Type-specific structured data matching the detected lineOfBusiness"),
         })
 
-        const prompt = `Extract ALL insurance policy data from this document into structured JSON.
-Rules: Extract exactly as shown. Dates: YYYY-MM-DD. Amounts: numeric only. Unknown fields: null.
-Handle both Greek (Ασφάλιστρο, Απαλλαγή, Εξαιρέσεις, Ισχύς, Γενικοί Όροι, Ειδικοί Όροι) and English documents.
-Only populate the type-specific ACORD section matching the detected lineOfBusiness.
-CRITICAL — also extract: finePrintClauses (hidden restrictions from General Terms/Special Conditions),
-perksAndBenefits (free services, assistance hotlines, prevention programs, gifts, loyalty bonuses),
-notableConditions (waiting periods, auto-renewal terms, claim deadlines, sub-limits, bonus rules).`
+        const prompt = `You are an expert insurance analyst specializing in reading long policy documents.
+Your task is to carefully read the ENTIRE document and extract structured insurance data in ACORD format.
+IMPORTANT:
+Before producing the final JSON, internally:
+1. Identify all sections of the document
+2. Locate relevant insurance data across:
+   - Schedule
+   - General Terms (Γενικοί Όροι)
+   - Special Conditions (Ειδικοί Όροι)
+   - Appendices / endorsements
+Then extract.
+RULES:
+- Do NOT skip sections
+- Do NOT assume missing values
+- Preserve original wording (Greek/English)
+- If missing → null
+NORMALIZATION:
+- Dates → DD-MM-YYYY
+- Amounts → numeric only
+ADVANCED EXTRACTION:
+finePrintClauses:
+Identify clauses that:
+- limit coverage
+- impose obligations
+- introduce hidden exclusions
+For each:
+[text, category, severity, reason]
+perksAndBenefits:
+Extract all services and benefits:
+[name, description, phone, usageLimit, reminderRecommended]
+notableConditions:
+Extract:
+- waiting periods
+- renewal rules
+- deadlines
+- eligibility constraints
+OUTPUT:
+Return ONLY valid JSON in this structure:
+{
+  "lineOfBusiness": "...",
+  "acord": {...},
+  "finePrintClauses": [...],
+  "perksAndBenefits": [...],
+  "notableConditions": [...]
+}
+Do not include Citations, text should be in Greek (Primary and language of source) and English in different tags. This includes all text such as names,`
 
         const result = await withTimeoutAndRetry(
             () =>
