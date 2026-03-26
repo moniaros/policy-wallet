@@ -147,8 +147,21 @@ export class GeminiAIService implements IAIService {
       // Reduced from ~600 tokens to ~200 tokens (~65% prompt savings)
       const prompt = `Extract ALL insurance policy data from this document into structured JSON.
 Rules: Extract exactly as shown. Dates: YYYY-MM-DD. Amounts: numeric only. Unknown fields: null.
-Handle both Greek (Ασφάλιστρο, Απαλλαγή, Εξαιρέσεις, Ισχύς) and English documents.
-Only populate the type-specific ACORD section matching the detected lineOfBusiness.`
+Handle both Greek (Ασφάλιστρο, Απαλλαγή, Εξαιρέσεις, Ισχύς, Γενικοί Όροι, Ειδικοί Όροι) and English documents.
+Only populate the type-specific ACORD section matching the detected lineOfBusiness.
+
+CRITICAL — also extract these sections by reading the FULL document including General Terms and Appendices:
+1. finePrintClauses: Any clause that limits, restricts, or conditions coverage in ways a typical consumer
+   would NOT expect. Look in General Terms (Γενικοί Όροι), Special Conditions (Ειδικοί Όροι), and Appendices.
+   Flag sub-limits, co-payments, notification deadlines, geographic restrictions, and cancellation penalties.
+   Rate each clause: info (informational), warning (could affect claim), critical (likely to cause claim denial).
+2. perksAndBenefits: Free services, prevention programs, assistance hotlines (οδική βοήθεια, τεχνική βοήθεια,
+   τηλεϊατρός), legal aid (νομική προστασία), loyalty bonuses (μπόνους-μάλους), no-claims discounts,
+   gifts, and any bundled digital tools. Always include phone numbers and usage limits.
+   Set reminderRecommended=true for perks users often forget (annual checkup, tele-doctor, legal aid).
+3. notableConditions: Waiting periods (αναμονή), auto-renewal terms (σιωπηρή ανανέωση), claim filing deadlines
+   (notice obligations), age limits, geographic restrictions, and no-claims bonus qualification rules.
+   Set userActionRequired=true when the user must do something to benefit (e.g., file notice within 72h).`
 
       logger('info', 'Starting Gemini 2.0 Flash extraction with UI Zod Schema', {
         fileName: document.fileName,
@@ -443,9 +456,16 @@ ${gapDefinitions.map(g => `- ${g.slug}: ${g.checkCriteria}`).join('\n')}`
     if (hasStructuredContext && !hasDocument) {
       const ctx = options!.structuredContext!
       prompt = `You are an insurance clarity analyst for policyholders.
-Goal: 1) Plain-language insights 2) Savings opportunities 3) Coverage gaps 4) Checklist scoring.
+Goal: 1) Plain-language insights 2) Savings opportunities 3) Coverage gaps 4) Checklist scoring
+5) Fine print warnings 6) Hidden perks and free services.
 Respond in Greek (Ελληνικά) only. All text fields must be in Greek.
 Use the extracted data below as source of truth. If details are missing, say so and lower confidence.
+
+SPECIAL FOCUS — Fine Print & Hidden Value:
+- Identify clauses, restrictions, and conditions that most consumers would be SURPRISED by.
+- Highlight ALL free prevention services, assistance phone numbers, and gifts.
+- Flag auto-renewal traps, claim filing deadlines, and notification obligations.
+- Populate finePrintClauses, perksAndBenefits, and notableConditions arrays in acordData.
 
 Extracted Policy Data:
 - Insurer: ${ctx.insurerName} | Policy: ${ctx.policyNumber} | Type: ${ctx.lineOfBusiness}
@@ -458,9 +478,15 @@ Checklist pillars:
 ${checklistPrompt}`
     } else {
       prompt = `You are an insurance clarity analyst for policyholders.
-Goal: 1) Plain-language insights 2) Savings opportunities 3) Coverage gaps 4) Checklist scoring.
+Goal: 1) Plain-language insights 2) Savings opportunities 3) Coverage gaps 4) Checklist scoring
+5) Fine print warnings 6) Hidden perks and free services.
 Respond in Greek (Ελληνικά) only. All text fields must be in Greek.
 Use the document as source of truth. If details are missing, say so and lower confidence.
+
+SPECIAL FOCUS — Fine Print & Hidden Value:
+- Identify clauses, restrictions, and conditions that most consumers would be SURPRISED by.
+- Highlight ALL free prevention services, assistance phone numbers, and gifts.
+- Flag auto-renewal traps, claim filing deadlines, and notification obligations.
 
 Current metadata:
 - Insurer: ${metadata.insurerName} | Policy: ${metadata.policyNumber} | Type: ${metadata.lineOfBusiness}
@@ -511,6 +537,17 @@ ${checklistPrompt}`
         action: z.string().describe("Action in Greek"),
         reason: z.string().describe("Reason in Greek"),
       })).default([]),
+      finePrintWarnings: z.array(z.object({
+        clause: z.string().describe("The restricting clause in Greek"),
+        riskLevel: z.enum(['info', 'warning', 'critical']),
+        impact: z.string().describe("Why this matters, in Greek"),
+      })).default([]).describe("Hidden restrictions a consumer would be surprised by"),
+      hiddenPerks: z.array(z.object({
+        name: z.string().describe("Perk name in Greek"),
+        description: z.string().describe("Description in Greek"),
+        phone: z.string().optional().describe("Phone number to use the service"),
+        usageFrequency: z.string().optional().describe("e.g. 1x per year"),
+      })).default([]).describe("Free services, gifts, and prevention perks"),
       acordData: AcordDataSchema.optional(),
     })
 
@@ -558,6 +595,8 @@ ${checklistPrompt}`
       coverageGaps: object.coverageGaps,
       checklistScores: object.checklistScores,
       priorityActions: object.priorityActions,
+      finePrintWarnings: object.finePrintWarnings,
+      hiddenPerks: object.hiddenPerks,
       acordData: object.acordData,
       usage: parsedUsage,
     })

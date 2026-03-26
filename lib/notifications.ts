@@ -1,6 +1,7 @@
 import { db } from "./db"
 import { sendEmail } from "./email/email-service"
 import { templates } from "./mail-templates"
+import { sendPushNotification } from "./services/push.service"
 
 export type NotificationChannel = 'email' | 'push' | 'whatsapp' | 'viber'
 export type NotificationStatus = 'queued' | 'sent' | 'failed'
@@ -80,7 +81,15 @@ export async function sendNotification({
                     throw new Error(result.error || "Email delivery failed")
                 }
             } else if (channel === 'push' && user.pushToken) {
-                console.log(`[Push] To: ${user.pushToken} Title: ${title}`)
+                const pushResult = await sendPushNotification({
+                    token: user.pushToken,
+                    title,
+                    body: message,
+                    url: relatedObjectId ? `/wallet/${relatedObjectId}` : '/home',
+                })
+                if (!pushResult.success) {
+                    throw new Error(pushResult.error || 'Push delivery failed')
+                }
             }
         } catch (error: any) {
             status = 'failed'

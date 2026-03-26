@@ -75,3 +75,9 @@ export function getHealthScoreDotColor(score: number): string {
     if (score >= 40) return "bg-amber-500"
     return "bg-red-500"
 }
+
+export function getHealthScoreLabel(score: number, locale: "en" | "el" = "el"): string {
+    if (score >= 70) return locale === "el" ? "Καλή" : "Good"
+    if (score >= 40) return locale === "el" ? "Μέτρια" : "Fair"
+    return locale === "el" ? "Χρειάζεται Προσοχή" : "Needs Attention"
+}

@@ -155,6 +155,19 @@ export interface ClarityPriorityAction {
     reason: LocalizedText
 }
 
+export interface ClarityFinePrintWarning {
+    clause: LocalizedText
+    riskLevel: "info" | "warning" | "critical"
+    impact: LocalizedText
+}
+
+export interface ClarityHiddenPerk {
+    name: LocalizedText
+    description: LocalizedText
+    phone?: string
+    usageFrequency?: string
+}
+
 export interface AIPolicyClarityResponse {
     plainLanguageSummary: LocalizedText
     coverageSnapshot: ClarityCoverageSnapshot
@@ -162,6 +175,8 @@ export interface AIPolicyClarityResponse {
     coverageGaps: ClarityCoverageGap[]
     checklistScores: ClarityChecklistScore[]
     priorityActions: ClarityPriorityAction[]
+    finePrintWarnings?: ClarityFinePrintWarning[]
+    hiddenPerks?: ClarityHiddenPerk[]
     acordData?: any
     usage?: AITokenUsage
 }

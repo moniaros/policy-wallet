@@ -97,6 +97,15 @@ export interface SharedPolicyRoomData {
     proposals: ProposalData[]
 }
 
+export interface ProposalComparison {
+    currentPremium: number
+    proposedPremium: number
+    currentCoverage: string
+    proposedCoverage: string
+    savingsOrAddedValue: number
+    savingsLabel: string // e.g. "Εξοικονόμηση €200/έτος"
+}
+
 // Document type taxonomy for Greek insurance
 export const DOCUMENT_TYPE_TAXONOMY = {
     id_card: { en: "Identity Card", el: "Ταυτότητα" },

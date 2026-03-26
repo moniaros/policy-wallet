@@ -137,6 +137,43 @@ export const AcordDataSchema = z.object({
 
     exclusions: z.array(z.string()).optional(),
 
+    finePrintClauses: z.array(z.object({
+        clause: z.string().describe("Actual clause text or summary from the General Terms / Special Conditions"),
+        section: z.string().describe("e.g. General Terms, Special Conditions, Appendix, Ειδικοί Όροι"),
+        riskLevel: z.enum(["info", "warning", "critical"]).describe("critical = likely to cause claim denial"),
+        impactSummary: z.object({
+            en: z.string(),
+            el: z.string(),
+        }).describe("Plain-language explanation of why this clause matters to the policyholder"),
+        relatedCoverage: z.string().optional().describe("Which coverage this clause restricts"),
+    })).optional().describe("Hidden restrictions, sub-limits, and gotchas that most consumers would NOT expect"),
+
+    perksAndBenefits: z.array(z.object({
+        perkType: z.enum([
+            "free_service", "assistance", "discount", "prevention",
+            "loyalty_bonus", "digital_tool", "gift", "legal_aid"
+        ]),
+        name: z.object({ en: z.string(), el: z.string() }),
+        description: z.object({ en: z.string(), el: z.string() }),
+        contactPhone: z.string().optional().describe("Direct phone number for the service"),
+        contactUrl: z.string().optional(),
+        usageLimit: z.string().optional().describe("e.g. '1x per year', 'unlimited', '3 incidents'"),
+        expiresWithPolicy: z.boolean().default(true),
+        reminderRecommended: z.boolean().default(false).describe("True for perks users often forget to use"),
+    })).optional().describe("Free services, prevention programs, assistance hotlines, gifts, loyalty bonuses"),
+
+    notableConditions: z.array(z.object({
+        conditionType: z.enum([
+            "waiting_period", "auto_renewal", "cancellation_penalty",
+            "sub_limit", "co_payment", "age_limit", "geographic_restriction",
+            "claim_deadline", "notification_obligation", "no_claims_bonus"
+        ]),
+        summary: z.object({ en: z.string(), el: z.string() }),
+        value: z.string().optional().describe("e.g. '90 days', '€200/day', '72 hours'"),
+        deadline: z.string().optional().describe("ISO date if applicable"),
+        userActionRequired: z.boolean().default(false),
+    })).optional().describe("Waiting periods, auto-renewal traps, claim deadlines, sub-limits, bonus rules"),
+
     // ─── Legacy aliases for backward compatibility with UI components ───
     // These map to the canonical section names above. AI extraction should
     // populate the canonical sections; these exist only so that stored data

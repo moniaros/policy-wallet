@@ -160,6 +160,38 @@ export const INSURANCE_CLARITY_CHECKLIST: InsuranceClarityChecklistPillar[] = [
             "green_card_validity",
         ],
     },
+    {
+        key: "fine_print_transparency",
+        title: {
+            en: "Fine print transparency",
+            el: "Διαφάνεια ψιλών γραμμάτων",
+        },
+        description: {
+            en: "Surfaces hidden restrictions, sub-limits, notification obligations, and surprising conditions that could affect claims.",
+            el: "Αποκαλύπτει κρυφούς περιορισμούς, υπο-όρια, υποχρεώσεις ειδοποίησης και απρόσμενες συνθήκες που μπορεί να επηρεάσουν αποζημιώσεις.",
+        },
+        checks: [
+            "sub_limits_identified",
+            "notification_obligations_flagged",
+            "auto_renewal_terms_exposed",
+        ],
+    },
+    {
+        key: "perks_and_prevention",
+        title: {
+            en: "Perks and prevention services",
+            el: "Παροχές και υπηρεσίες πρόληψης",
+        },
+        description: {
+            en: "Ensures all free services, prevention perks, assistance numbers, and gifts included in the policy are visible to the user.",
+            el: "Διασφαλίζει ότι όλες οι δωρεάν υπηρεσίες, οι παροχές πρόληψης, τα τηλέφωνα βοήθειας και τα δώρα που περιλαμβάνονται στο ασφαλιστήριο είναι ορατά στον χρήστη.",
+        },
+        checks: [
+            "free_services_listed",
+            "assistance_phones_captured",
+            "loyalty_bonuses_highlighted",
+        ],
+    },
 ]
 
 export const INSURANCE_CLARITY_CHECKLIST_TOTAL_CHECKS = INSURANCE_CLARITY_CHECKLIST.reduce(

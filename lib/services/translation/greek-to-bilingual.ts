@@ -18,6 +18,8 @@ import type {
     ClarityCoverageGap,
     ClarityChecklistScore,
     ClarityPriorityAction,
+    ClarityFinePrintWarning,
+    ClarityHiddenPerk,
 } from "../ai/ai-service.interface"
 
 function toLocalized(greekText: string): LocalizedText {
@@ -76,6 +78,17 @@ export function wrapClarityResultsBilingual(raw: {
         action: string
         reason: string
     }>
+    finePrintWarnings?: Array<{
+        clause: string
+        riskLevel: "info" | "warning" | "critical"
+        impact: string
+    }>
+    hiddenPerks?: Array<{
+        name: string
+        description: string
+        phone?: string
+        usageFrequency?: string
+    }>
     acordData?: any
     usage?: any
 }): AIPolicyClarityResponse {
@@ -106,6 +119,17 @@ export function wrapClarityResultsBilingual(raw: {
             priority: p.priority,
             action: toLocalized(p.action),
             reason: toLocalized(p.reason),
+        })),
+        finePrintWarnings: (raw.finePrintWarnings || []).map((f) => ({
+            clause: toLocalized(f.clause),
+            riskLevel: f.riskLevel,
+            impact: toLocalized(f.impact),
+        })),
+        hiddenPerks: (raw.hiddenPerks || []).map((h) => ({
+            name: toLocalized(h.name),
+            description: toLocalized(h.description),
+            phone: h.phone,
+            usageFrequency: h.usageFrequency,
         })),
         acordData: raw.acordData,
         usage: raw.usage,
@@ -149,6 +173,18 @@ export function collectClarityTextsForTranslation(
         texts.push(p.reason.el)
     }
 
+    // finePrintWarnings
+    for (const f of clarity.finePrintWarnings || []) {
+        texts.push(f.clause.el)
+        texts.push(f.impact.el)
+    }
+
+    // hiddenPerks
+    for (const h of clarity.hiddenPerks || []) {
+        texts.push(h.name.el)
+        texts.push(h.description.el)
+    }
+
     function rebuild(en: string[]): AIPolicyClarityResponse {
         let i = 0
         return {
@@ -173,6 +209,16 @@ export function collectClarityTextsForTranslation(
                 ...p,
                 action: { en: en[i++], el: p.action.el },
                 reason: { en: en[i++], el: p.reason.el },
+            })),
+            finePrintWarnings: (clarity.finePrintWarnings || []).map((f) => ({
+                ...f,
+                clause: { en: en[i++], el: f.clause.el },
+                impact: { en: en[i++], el: f.impact.el },
+            })),
+            hiddenPerks: (clarity.hiddenPerks || []).map((h) => ({
+                ...h,
+                name: { en: en[i++], el: h.name.el },
+                description: { en: en[i++], el: h.description.el },
             })),
         }
     }

@@ -142,8 +142,11 @@ export class AnthropicAIService implements IAIService {
 
         const prompt = `Extract ALL insurance policy data from this document into structured JSON.
 Rules: Extract exactly as shown. Dates: YYYY-MM-DD. Amounts: numeric only. Unknown fields: null.
-Handle both Greek (Ασφάλιστρο, Απαλλαγή, Εξαιρέσεις, Ισχύς) and English documents.
-Only populate the type-specific ACORD section matching the detected lineOfBusiness.`
+Handle both Greek (Ασφάλιστρο, Απαλλαγή, Εξαιρέσεις, Ισχύς, Γενικοί Όροι, Ειδικοί Όροι) and English documents.
+Only populate the type-specific ACORD section matching the detected lineOfBusiness.
+CRITICAL — also extract: finePrintClauses (hidden restrictions from General Terms/Special Conditions),
+perksAndBenefits (free services, assistance hotlines, prevention programs, gifts, loyalty bonuses),
+notableConditions (waiting periods, auto-renewal terms, claim deadlines, sub-limits, bonus rules).`
 
         const result = await withTimeoutAndRetry(
             () =>
@@ -361,6 +364,17 @@ ${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
                     reason: z.string().describe("Reason in Greek"),
                 })
             ).default([]),
+            finePrintWarnings: z.array(z.object({
+                clause: z.string().describe("Restricting clause in Greek"),
+                riskLevel: z.enum(["info", "warning", "critical"]),
+                impact: z.string().describe("Why this matters, in Greek"),
+            })).default([]),
+            hiddenPerks: z.array(z.object({
+                name: z.string().describe("Perk name in Greek"),
+                description: z.string().describe("Description in Greek"),
+                phone: z.string().optional(),
+                usageFrequency: z.string().optional(),
+            })).default([]),
             acordData: AcordDataSchema.optional(),
         })
 

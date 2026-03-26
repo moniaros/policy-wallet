@@ -142,7 +142,7 @@ export class OpenAIAIService implements IAIService {
                                 {
                                     type: "text",
                                     text:
-                                        "Extract policy metadata and coverage summary from the provided insurance document. Return only structured data.",
+                                        "Extract policy metadata and coverage summary from the provided insurance document. Return only structured data. CRITICAL: also extract finePrintClauses (hidden restrictions, sub-limits, gotchas from General Terms), perksAndBenefits (free services, assistance hotlines, prevention programs, loyalty bonuses), and notableConditions (waiting periods, auto-renewal, claim deadlines).",
                                 },
                                 {
                                     type: "file",
@@ -346,6 +346,17 @@ ${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
                     reason: z.string().describe("Reason in Greek"),
                 })
             ).default([]),
+            finePrintWarnings: z.array(z.object({
+                clause: z.string().describe("Restricting clause in Greek"),
+                riskLevel: z.enum(["info", "warning", "critical"]),
+                impact: z.string().describe("Why this matters, in Greek"),
+            })).default([]),
+            hiddenPerks: z.array(z.object({
+                name: z.string().describe("Perk name in Greek"),
+                description: z.string().describe("Description in Greek"),
+                phone: z.string().optional(),
+                usageFrequency: z.string().optional(),
+            })).default([]),
             acordData: AcordDataSchema.optional(),
         })
 
