@@ -56,7 +56,7 @@ export default function AgentOnboardingFlow() {
                     {step === 2 && <AgencyBrandingStep onNext={nextStep} onBack={prevStep} />}
                     {step === 3 && <LicenseVerificationStep onNext={nextStep} onBack={prevStep} />}
                     {step === 4 && <DemoAnalysisStep onNext={nextStep} onBack={prevStep} />}
-                    {step === 5 && <FirstClientInviteStep onNext={() => window.location.href = '/dashboard'} onBack={prevStep} />}
+                    {step === 5 && <FirstClientInviteStep onNext={() => window.location.href = '/dashboard/agent'} onBack={prevStep} />}
                 </motion.div>
             </AnimatePresence>
         </div>

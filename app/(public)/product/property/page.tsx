@@ -3,6 +3,7 @@
 import React from "react"
 import Link from "next/link"
 import { Shield, CheckCircle2 } from "lucide-react"
+import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 
@@ -91,6 +92,8 @@ export default function PropertyProductPage() {
                     </div>
                 </div>
             </section>
+
+            <ProductCategoryExplorer currentCategoryId="property" />
 
             {/* CTA */}
             <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">

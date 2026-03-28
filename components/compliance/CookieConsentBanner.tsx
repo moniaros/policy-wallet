@@ -29,6 +29,11 @@ function readCookieConsent(): ConsentCookiePayload | null {
     }
 }
 
+function writeCookieConsent(payload: ConsentCookiePayload) {
+    const secureFlag = typeof window !== "undefined" && window.location.protocol === "https:" ? "; Secure" : ""
+    document.cookie = `${CONSENT_COOKIE_NAME}=${encodeURIComponent(JSON.stringify(payload))}; path=/; max-age=31536000; SameSite=Lax${secureFlag}`
+}
+
 export function CookieConsentBanner() {
     const { language, t } = useLanguage()
     const copy = t.compliance.cookieBanner
@@ -52,8 +57,18 @@ export function CookieConsentBanner() {
 
     const persistConsent = async (nextCategories: ConsentCategories, source: "banner_accept_all" | "banner_necessary_only" | "banner_preferences") => {
         setSaving(true)
+        const payload: ConsentCookiePayload = {
+            consentType: "cookie",
+            locale: language,
+            policyVersion: LEGAL_POLICY_VERSIONS.cookie,
+            categories: nextCategories,
+            acceptedAt: new Date().toISOString(),
+        }
+
+        // Persist immediately so navigation/reload does not redisplay the banner.
+        writeCookieConsent(payload)
         try {
-            await fetch("/api/v1/consents", {
+            const response = await fetch("/api/v1/consents", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -64,15 +79,12 @@ export function CookieConsentBanner() {
                     categories: nextCategories,
                 }),
             })
-        } catch {
-            const fallback: ConsentCookiePayload = {
-                consentType: "cookie",
-                locale: language,
-                policyVersion: LEGAL_POLICY_VERSIONS.cookie,
-                categories: nextCategories,
-                acceptedAt: new Date().toISOString(),
+            if (!response.ok) {
+                throw new Error("Failed to persist consent")
             }
-            document.cookie = `${CONSENT_COOKIE_NAME}=${encodeURIComponent(JSON.stringify(fallback))}; path=/; max-age=31536000; SameSite=Lax`
+        } catch {
+            // Keep local cookie fallback; the API call is best-effort for audit logging.
+            writeCookieConsent(payload)
         } finally {
             setSaving(false)
             setVisible(false)

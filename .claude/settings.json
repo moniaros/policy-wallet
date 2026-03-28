@@ -11,7 +11,20 @@
       "Bash(grep -r \"TODO\\\\|FIXME\\\\|BUG\\\\|HACK\" '/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/lib' --include=*.ts)",
       "Bash(find '/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet' -name *.tsx -path *components/account* -type f)",
       "Bash(find \"/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/app/\\(protected\\)/agent\" -type f -name \"*.tsx\")",
-      "Bash(find \"/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/app/\\(public\\)\" -name \"*.tsx\" -o -name \"*.ts\")"
+      "Bash(find \"/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/app/\\(public\\)\" -name \"*.tsx\" -o -name \"*.ts\")",
+      "Bash(find /c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet -type f \\\\\\(-name *toggle* -o -name *dark* -o -name *mode* \\\\\\))",
+      "Bash(xargs grep:*)",
+      "Bash(find /c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet -path */node_modules -prune -o -path */.next -prune -o -type f -name layout.tsx -print)",
+      "Bash(grep -r \"ThemeProvider\\\\|next-themes\" /c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet --include=*.tsx --include=*.ts --exclude-dir=node_modules --exclude-dir=.next)",
+      "Skill(update-config)",
+      "Skill(update-config:*)",
+      "mcp__playwright__browser_resize",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_fill_form",
+      "mcp__playwright__browser_wait_for",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_take_screenshot"
     ]
   }
 }

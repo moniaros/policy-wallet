@@ -56,7 +56,7 @@ const getBottomNavItems = (role: UserRole['role'], t: any) => {
     if (role === 'policyholder') {
         const isGreek = (t.common?.locale || '').startsWith('el')
         return [
-            { href: '/home', icon: LayoutDashboard, label: isGreek ? 'Αρχική' : 'Home', id: 'home' },
+            { href: '/dashboard', icon: LayoutDashboard, label: isGreek ? 'Αρχική' : 'Home', id: 'home' },
             { href: '/wallet', icon: Wallet, label: t.nav.wallet, id: 'wallet' },
             { href: '/coverage-insights', icon: Shield, label: isGreek ? 'AI Insights' : 'AI Insights', id: 'analysis' },
             { href: '/agent', icon: Users, label: isGreek ? 'Σύμβουλος' : 'My Agent', id: 'agent' },
@@ -71,7 +71,7 @@ const getBottomNavItems = (role: UserRole['role'], t: any) => {
             more: t.common.actions
         }
         return [
-            { href: '/dashboard', icon: LayoutDashboard, label: translations.dashboard, id: 'dashboard' },
+            { href: '/dashboard/agent', icon: LayoutDashboard, label: translations.dashboard, id: 'dashboard' },
             { href: '/customers', icon: Users, label: translations.customers, id: 'customers' },
             { href: '/opportunities', icon: TrendingUp, label: translations.opportunities, id: 'opportunities' },
             { href: '/insights', icon: Lightbulb, label: translations.insights, id: 'insights' },
@@ -121,10 +121,10 @@ export function AppShell({
 
     const hasMultipleRoles = availableRoles.length > 1
     const roleHomeHref = currentRole.role === 'policyholder'
-        ? '/home'
+        ? '/dashboard'
         : currentRole.role === 'admin'
             ? '/admin/dashboard'
-            : '/dashboard'
+            : '/dashboard/agent'
 
     const handleRoleSwitch = (role: UserRole) => {
         onRoleSwitch?.(role)

@@ -19,6 +19,7 @@ import {
     isSyntheticPhoneEmail,
     normalizeGreekMobile,
 } from "@/lib/auth/phone-auth"
+import { VALID_PLAN_IDS } from "@/lib/pricing/public-pricing-content"
 
 const RegisterSchema = z.object({
     name: z.preprocess((v) => (typeof v === "string" && v.trim().length === 0 ? undefined : v), z.string().min(1).optional()),
@@ -40,6 +41,8 @@ const RegisterSchema = z.object({
         message: "You must accept the terms and conditions",
     }),
     marketingConsent: z.boolean().optional(),
+    selectedPlan: z.enum(VALID_PLAN_IDS).optional(),
+    selectedBilling: z.enum(["monthly", "annual"]).optional(),
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
@@ -207,7 +210,7 @@ export async function registerUser(formData: FormData) {
         return { success: false, error: validation.error.flatten().fieldErrors }
     }
 
-    const { name, email, mobileNumber, password, role, language, token } = validation.data
+    const { name, email, mobileNumber, password, role, language, token, selectedPlan, selectedBilling } = validation.data
     const normalizedPhone = normalizeGreekMobile(mobileNumber)
     if (!normalizedPhone) {
         return { success: false, error: "Invalid Greek mobile number" }
@@ -233,6 +236,8 @@ export async function registerUser(formData: FormData) {
                     role,
                     language,
                     phone_number: normalizedPhone,
+                    ...(selectedPlan ? { selected_plan: selectedPlan } : {}),
+                    ...(selectedBilling ? { selected_billing: selectedBilling } : {}),
                 },
             },
         })
@@ -314,7 +319,7 @@ export async function registerUser(formData: FormData) {
             return { success: true, warning: "Account created but auto-login failed. Please sign in manually." }
         }
 
-        const redirectTarget = `/auth/signup/confirmation?role=${role}${email ? `&email=${encodeURIComponent(email)}` : ""}`
+        const redirectTarget = `/auth/signup/confirmation?role=${role}${email ? `&email=${encodeURIComponent(email)}` : ""}${selectedPlan ? `&plan=${encodeURIComponent(selectedPlan)}` : ""}${selectedBilling ? `&billing=${selectedBilling}` : ""}`
         return { success: true, redirect: redirectTarget }
     } catch (error) {
         console.error("REGISTER_USER_FATAL:", error)

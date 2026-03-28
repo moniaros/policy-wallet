@@ -1,45 +1,74 @@
 "use client"
 
-import React, { useState } from 'react'
-import { ChevronDown } from 'lucide-react'
-import { subscriptionCopy } from '@/lib/subscription-copy'
+import React, { useState } from "react"
+import { ChevronDown } from "lucide-react"
+import type { PublicPricingFaqItem } from "@/lib/pricing/public-pricing-content"
 
 export interface PricingFAQProps {
-    language: 'el' | 'en'
+    language: "el" | "en"
+    items: PublicPricingFaqItem[]
     className?: string
 }
 
-export function PricingFAQ({ language, className = '' }: PricingFAQProps) {
+export function PricingFAQ({ language, items, className = "" }: PricingFAQProps) {
     const [openIndex, setOpenIndex] = useState<number | null>(0)
-    const faqItems = subscriptionCopy.faq
 
     return (
-        <div className={`max-w-3xl mx-auto ${className}`}>
+        <div className={`mx-auto max-w-3xl ${className}`}>
             <div className="space-y-4">
-                {faqItems.map((item, idx) => (
-                    <div
-                        key={idx}
-                        className="bg-white dark:bg-slate-900 rounded-xl border-2 border-slate-200 dark:border-slate-700 overflow-hidden transition-all duration-200 hover:border-blue-300 dark:hover:border-blue-700"
-                    >
-                        <button
-                            onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
-                            className="w-full px-6 py-4 flex items-center justify-between text-left transition-colors hover:bg-slate-50 dark:hover:bg-slate-800"
+                {items.map((item, idx) => {
+                    const isOpen = openIndex === idx
+                    const panelId = `pricing-faq-panel-${idx}`
+                    const buttonId = `pricing-faq-button-${idx}`
+                    return (
+                        <div
+                            key={`${item.question.en}-${idx}`}
+                            className={`overflow-hidden rounded-xl border-2 bg-white transition-all duration-200 dark:bg-slate-900 ${
+                                isOpen
+                                    ? "border-[#29685B] shadow-md shadow-[#29685B]/10 dark:border-[#89D9B2]/60"
+                                    : "border-slate-200 hover:border-[#29685B]/40 dark:border-slate-700 dark:hover:border-[#89D9B2]/30"
+                            }`}
                         >
-                            <span className="font-bold text-slate-900 dark:text-white pr-4">
-                                {item.question[language]}
-                            </span>
-                            <ChevronDown
-                                className={`w-5 h-5 text-slate-600 dark:text-slate-400 flex-shrink-0 transition-transform duration-200 ${openIndex === idx ? 'rotate-180' : ''
+                            <button
+                                id={buttonId}
+                                type="button"
+                                onClick={() => setOpenIndex(isOpen ? null : idx)}
+                                aria-expanded={isOpen ? "true" : "false"}
+                                aria-controls={panelId}
+                                className="flex w-full cursor-pointer items-center justify-between px-6 py-4 text-left transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29685B]/40 dark:hover:bg-slate-800"
+                            >
+                                <span className="pr-4 font-bold text-slate-900 dark:text-white">{item.question[language]}</span>
+                                <span
+                                    className={`inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full transition-all duration-200 ${
+                                        isOpen
+                                            ? "bg-[#29685B] text-white"
+                                            : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
                                     }`}
-                            />
-                        </button>
-                        {openIndex === idx && (
-                            <div className="px-6 pb-4 text-slate-600 dark:text-slate-300 leading-relaxed">
-                                {item.answer[language]}
+                                >
+                                    <ChevronDown
+                                        className={`h-4 w-4 transition-transform duration-200 ${
+                                            isOpen ? "rotate-180" : ""
+                                        }`}
+                                    />
+                                </span>
+                            </button>
+                            <div
+                                id={panelId}
+                                role="region"
+                                aria-labelledby={buttonId}
+                                className={`grid transition-[grid-template-rows] duration-200 ease-in-out ${
+                                    isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                                }`}
+                            >
+                                <div className="overflow-hidden">
+                                    <div className="px-6 pb-5 leading-relaxed text-slate-600 dark:text-slate-300">
+                                        {item.answer[language]}
+                                    </div>
+                                </div>
                             </div>
-                        )}
-                    </div>
-                ))}
+                        </div>
+                    )
+                })}
             </div>
         </div>
     )

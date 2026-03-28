@@ -3,13 +3,13 @@ import { createClient } from '@/lib/supabase/server'
 import { db } from "@/lib/db"
 import { cookies, headers } from "next/headers"
 import { createBrevoContact } from "@/lib/brevo"
-import { env } from "@/lib/env"
+import { getPostLoginRedirectByRole } from "@/lib/auth/role-routing"
 
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url)
     const code = searchParams.get('code')
-    // if "next" is in param, use it as the redirect URL
-    const next = searchParams.get('next') ?? '/'
+    // If "next" is provided and safe, preserve it; otherwise use role-based default.
+    const requestedNext = searchParams.get('next')
 
     if (code) {
         const supabase = await createClient()
@@ -130,7 +130,14 @@ export async function GET(request: Request) {
                 // Don't block login if logging fails
             }
 
-            return NextResponse.redirect(`${origin}${next}`)
+            const dbUser = await db.user.findUnique({
+                where: { id: user.id },
+                select: { roles: true },
+            })
+            const roleRoute = getPostLoginRedirectByRole(dbUser?.roles || String(user.user_metadata?.role || ""))
+            const safeNext = requestedNext && requestedNext.startsWith("/") ? requestedNext : null
+
+            return NextResponse.redirect(`${origin}${safeNext || roleRoute}`)
         }
     }
 

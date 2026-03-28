@@ -22,16 +22,34 @@ export function calculateVAT(netAmount: number, countryCode: string = 'GR'): VAT
 }
 
 /**
+ * Annual price lookup.
+ * These must match the prices shown on the public pricing page so that the
+ * amount charged equals what the visitor was offered.  If a plan has no
+ * explicit annual price, fall back to 12 × monthly (no discount).
+ */
+const ANNUAL_PRICE_BY_PLAN: Record<string, number> = {
+    "ph-plus": 29,        // UI: €29/yr  (monthly €2.99 × 12 = €35.88)
+    "ph-pro": 99,         // UI: €99/yr  (monthly €9.99 × 12 = €119.88)
+    "agent-starter": 199, // UI: €199/yr (monthly €19.99 × 12 = €239.88)
+    "agent-pro": 499,     // UI: €499/yr (monthly €49.99 × 12 = €599.88)
+    "agent-agency": 999,  // UI: €999/yr (monthly €99.99 × 12 = €1199.88)
+}
+
+/**
  * Create a real Stripe Checkout Session
  */
-export async function createCheckoutSession(userId: string, planId: string) {
+export async function createCheckoutSession(userId: string, planId: string, billingPeriod: "monthly" | "annual" = "monthly") {
     const user = await db.user.findUnique({ where: { id: userId }, select: { email: true } })
     const plan = await db.plan.findUnique({ where: { id: planId } })
 
     if (!plan || !user) throw new Error("Plan or User not found")
 
-    const price = Number(plan.price)
-    const vat = calculateVAT(price)
+    const monthlyPrice = Number(plan.price)
+    const isAnnual = billingPeriod === "annual"
+    const periodPrice = isAnnual
+        ? (ANNUAL_PRICE_BY_PLAN[planId] ?? monthlyPrice * 12)
+        : monthlyPrice
+    const vat = calculateVAT(periodPrice)
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
@@ -41,9 +59,12 @@ export async function createCheckoutSession(userId: string, planId: string) {
                     currency: "eur",
                     product_data: {
                         name: plan.name,
-                        description: `PolicyWallet ${plan.name} Subscription`,
+                        description: `PolicyWallet ${plan.name} Subscription (${isAnnual ? "Annual" : "Monthly"})`,
                     },
                     unit_amount: Math.round(vat.totalWithVat * 100), // Stripe expects cents
+                    recurring: {
+                        interval: isAnnual ? "year" : "month",
+                    },
                 },
                 quantity: 1,
             },
@@ -55,13 +76,14 @@ export async function createCheckoutSession(userId: string, planId: string) {
         metadata: {
             userId,
             planId,
+            billingPeriod,
         },
     })
 
     return {
         id: session.id,
         url: session.url!,
-        amount: price,
+        amount: periodPrice,
         vatAmount: vat.amount,
         total: vat.totalWithVat
     }

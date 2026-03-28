@@ -1,139 +1,83 @@
 "use client"
 
-import React from 'react'
-import { Check, X } from 'lucide-react'
-import { subscriptionCopy } from '@/lib/subscription-copy'
-import { ENTITLEMENT_LIMITS } from '@/lib/subscription-entitlements'
+import React from "react"
+import { Check, X } from "lucide-react"
+import type {
+    PublicPricingComparisonRow,
+    PublicPricingPlan,
+} from "@/lib/pricing/public-pricing-content"
 
 export interface FeatureComparisonProps {
-    language: 'el' | 'en'
+    language: "el" | "en"
+    plans: PublicPricingPlan[]
+    rows: PublicPricingComparisonRow[]
     className?: string
 }
 
-interface ComparisonFeature {
-    name: { el: string; en: string }
-    free: boolean | string
-    plus: boolean | string
-    pro: boolean | string
-    category?: { el: string; en: string }
-}
-
-export function FeatureComparison({ language, className = '' }: FeatureComparisonProps) {
-    const copy = subscriptionCopy
-
-    const features: ComparisonFeature[] = [
-        {
-            category: { el: 'Διαχείριση Συμβολαίων', en: 'Policy Management' },
-            name: { el: 'Αριθμός Συμβολαίων', en: 'Number of Policies' },
-            free: String(ENTITLEMENT_LIMITS.free.policies),
-            plus: String(ENTITLEMENT_LIMITS.plus.policies),
-            pro: copy.messages.unlimited[language],
-        },
-        {
-            category: { el: 'Ανάλυση με AI', en: 'AI Analysis' },
-            name: { el: 'AI Αναλύσεις ανά μήνα', en: 'AI analyses per month' },
-            free: String(ENTITLEMENT_LIMITS.free.aiAnalysisPerMonth),
-            plus: String(ENTITLEMENT_LIMITS.plus.aiAnalysisPerMonth),
-            pro: copy.messages.unlimited[language],
-        },
-        {
-            name: { el: 'AI ερωτήσεις ανά ημέρα', en: 'AI questions per day' },
-            free: String(ENTITLEMENT_LIMITS.free.questionsPerDay),
-            plus: String(ENTITLEMENT_LIMITS.plus.questionsPerDay),
-            pro: copy.messages.unlimited[language],
-        },
-        {
-            name: { el: 'Gap αναλύσεις ανά ημέρα', en: 'Gap analyses per day' },
-            free: String(ENTITLEMENT_LIMITS.free.gapAnalysisPerDay),
-            plus: String(ENTITLEMENT_LIMITS.plus.gapAnalysisPerDay),
-            pro: copy.messages.unlimited[language],
-        },
-        {
-            name: copy.features.interactiveQA,
-            free: ENTITLEMENT_LIMITS.free.interactiveQA,
-            plus: ENTITLEMENT_LIMITS.plus.interactiveQA,
-            pro: ENTITLEMENT_LIMITS.pro.interactiveQA,
-        },
-        {
-            category: { el: 'Ειδοποιήσεις & Analytics', en: 'Notifications & Analytics' },
-            name: copy.features.emailNotifications,
-            free: ENTITLEMENT_LIMITS.free.notifications,
-            plus: ENTITLEMENT_LIMITS.plus.notifications,
-            pro: ENTITLEMENT_LIMITS.pro.notifications,
-        },
-        {
-            name: copy.features.advancedAnalytics,
-            free: ENTITLEMENT_LIMITS.free.advancedAnalytics,
-            plus: ENTITLEMENT_LIMITS.plus.advancedAnalytics,
-            pro: ENTITLEMENT_LIMITS.pro.advancedAnalytics,
-        },
-        {
-            category: { el: 'Συνεργασία', en: 'Collaboration' },
-            name: copy.features.agentCollaboration,
-            free: ENTITLEMENT_LIMITS.free.agentCollaboration,
-            plus: ENTITLEMENT_LIMITS.plus.agentCollaboration,
-            pro: ENTITLEMENT_LIMITS.pro.agentCollaboration,
-        },
-    ]
-
-    let currentCategory: string | null = null
-
+export function FeatureComparison({ language, plans, rows, className = "" }: FeatureComparisonProps) {
     return (
         <div className={`overflow-x-auto ${className}`}>
             <table className="w-full border-collapse">
                 <thead>
                     <tr className="border-b-2 border-slate-200 dark:border-slate-700">
-                        <th className="text-left py-4 px-6 text-slate-900 dark:text-white font-bold">
-                            {language === 'el' ? 'Χαρακτηριστικό' : 'Feature'}
+                        <th className="px-6 py-4 text-left font-bold text-slate-900 dark:text-white">
+                            {language === "el" ? "Χαρακτηριστικό" : "Feature"}
                         </th>
-                        <th className="text-center py-4 px-6 text-slate-900 dark:text-white font-bold">
-                            {copy.tiers.free.name[language]}
-                        </th>
-                        <th className="text-center py-4 px-6 text-slate-900 dark:text-white font-bold">
-                            {copy.tiers.plus.name[language]}
-                        </th>
-                        <th className="text-center py-4 px-6 bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 rounded-t-xl">
-                            <div className="flex items-center justify-center gap-2">
-                                <span className="text-blue-600 dark:text-blue-400 font-black">
-                                    {copy.tiers.pro.name[language]}
-                                </span>
-                                <span className="px-2 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full text-center">
-                                    {copy.tiers.pro.badge?.[language] || 'PRO'}
-                                </span>
-                            </div>
-                        </th>
+                        {plans.map((plan) => (
+                            <th
+                                key={plan.key}
+                                className={`px-6 py-4 text-center font-bold ${
+                                    plan.isHighlighted
+                                        ? "rounded-t-xl bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30"
+                                        : ""
+                                }`}
+                            >
+                                <div className="flex items-center justify-center gap-2">
+                                    <span className={`${plan.isHighlighted ? "font-black text-blue-600 dark:text-blue-400" : "text-slate-900 dark:text-white"}`}>
+                                        {plan.name[language]}
+                                    </span>
+                                    {plan.badge && (
+                                        <span className="rounded-full bg-blue-600 px-2 py-0.5 text-center text-xs font-bold text-white">
+                                            {plan.badge[language]}
+                                        </span>
+                                    )}
+                                </div>
+                            </th>
+                        ))}
                     </tr>
                 </thead>
                 <tbody>
-                    {features.map((feature, idx) => {
-                        const showCategory = feature.category && feature.category[language] !== currentCategory
-                        if (showCategory && feature.category) currentCategory = feature.category[language]
+                    {rows.map((row, idx) => {
+                        const categoryLabel = row.category?.[language] ?? null
+                        const previousCategory = rows[idx - 1]?.category?.[language] ?? null
+                        const showCategory = Boolean(categoryLabel && categoryLabel !== previousCategory)
 
                         return (
-                            <React.Fragment key={idx}>
-                                {showCategory && feature.category && (
+                            <React.Fragment key={`${row.name.en}-${idx}`}>
+                                {showCategory && (
                                     <tr className="bg-slate-100 dark:bg-slate-800">
                                         <td
-                                            colSpan={4}
-                                            className="py-3 px-6 text-sm font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide"
+                                            colSpan={plans.length + 1}
+                                            className="px-6 py-3 text-sm font-bold uppercase tracking-wide text-slate-700 dark:text-slate-300"
                                         >
-                                            {feature.category[language]}
+                                            {categoryLabel}
                                         </td>
                                     </tr>
                                 )}
-                                <tr className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                    <td className="py-4 px-6 text-slate-700 dark:text-slate-300">
-                                        {feature.name[language]}
-                                    </td>
-                                    <td className="py-4 px-6 text-center">
-                                        {renderCell(feature.free)}
-                                    </td>
-                                    <td className="py-4 px-6 text-center">
-                                        {renderCell(feature.plus)}
-                                    </td>
-                                    <td className="py-4 px-6 text-center bg-gradient-to-br from-blue-50/50 to-cyan-50/50 dark:from-blue-950/10 dark:to-cyan-950/10">
-                                        {renderCell(feature.pro)}
-                                    </td>
+                                <tr className="border-b border-slate-100 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/50">
+                                    <td className="px-6 py-4 text-slate-700 dark:text-slate-300">{row.name[language]}</td>
+                                    {plans.map((plan) => (
+                                        <td
+                                            key={`${row.name.en}-${plan.key}`}
+                                            className={`px-6 py-4 text-center ${
+                                                plan.isHighlighted
+                                                    ? "bg-gradient-to-br from-blue-50/50 to-cyan-50/50 dark:from-blue-950/10 dark:to-cyan-950/10"
+                                                    : ""
+                                            }`}
+                                        >
+                                            {renderCell(row.values[plan.key])}
+                                        </td>
+                                    ))}
                                 </tr>
                             </React.Fragment>
                         )
@@ -144,13 +88,32 @@ export function FeatureComparison({ language, className = '' }: FeatureCompariso
     )
 }
 
-function renderCell(value: boolean | string) {
-    if (typeof value === 'boolean') {
+function renderCell(value: boolean | string | undefined) {
+    if (typeof value === "boolean") {
         return value ? (
-            <Check className="w-5 h-5 text-slate-800 dark:text-slate-200 mx-auto" />
+            <div className="flex items-center justify-center">
+                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/40">
+                    <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                </span>
+            </div>
         ) : (
-            <X className="w-5 h-5 text-slate-400 dark:text-slate-600 mx-auto" />
+            <div className="flex items-center justify-center">
+                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+                    <X className="h-4 w-4 text-red-500 dark:text-red-400" />
+                </span>
+            </div>
         )
     }
-    return <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{value}</span>
+
+    if (typeof value === "string" && value.trim().length > 0) {
+        return <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{value}</span>
+    }
+
+    return (
+        <div className="flex items-center justify-center">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
+                <span className="text-xs font-bold text-slate-400 dark:text-slate-500">—</span>
+            </span>
+        </div>
+    )
 }

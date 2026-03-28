@@ -1,119 +1,88 @@
 "use client"
 
-import React from 'react'
-import { Check, X, Sparkles } from 'lucide-react'
-import { subscriptionCopy } from '@/lib/subscription-copy'
-import { ENTITLEMENT_LIMITS } from '@/lib/subscription-entitlements'
+import React from "react"
+import { Check, Sparkles, X } from "lucide-react"
+import type {
+    BillingPeriod,
+    LocalizedText,
+    PublicPricingPlan,
+} from "@/lib/pricing/public-pricing-content"
 
 export interface PricingCardProps {
-    tier: 'free' | 'plus' | 'pro'
-    language: 'el' | 'en'
-    isHighlighted?: boolean
-    currentTier?: 'free' | 'plus' | 'pro' | null
-    onSelectPlan: (tier: 'free' | 'plus' | 'pro') => void
+    plan: PublicPricingPlan
+    language: "el" | "en"
+    billingPeriod: BillingPeriod
+    actionLabel: LocalizedText
+    isLoading?: boolean
+    onSelectPlan: (plan: PublicPricingPlan) => void
     className?: string
 }
 
-interface Feature {
-    label: { el: string; en: string }
-    included: boolean
-    highlight?: boolean
-}
-
 export function PricingCard({
-    tier,
+    plan,
     language,
-    isHighlighted = false,
-    currentTier = null,
+    billingPeriod,
+    actionLabel,
+    isLoading = false,
     onSelectPlan,
-    className = '',
+    className = "",
 }: PricingCardProps) {
-    const copy = subscriptionCopy
-    const tierData = copy.tiers[tier]
-    const isCurrentPlan = currentTier === tier
-    const limits = ENTITLEMENT_LIMITS[tier]
-
-    const features: Feature[] = [
-        limits.policies === null
-            ? { label: copy.features.unlimitedPolicies, included: true, highlight: true }
-            : {
-                label: {
-                    el: `Μέχρι ${limits.policies} συμβόλαια`,
-                    en: `Up to ${limits.policies} policies`,
-                },
-                included: true,
-                highlight: tier !== 'free',
-            },
-        { label: tier === 'free' ? copy.features.basicAI : copy.features.advancedAI, included: true, highlight: tier !== 'free' },
-        { label: tier === 'free' ? copy.features.manualGapDetection : copy.features.automaticGapDetection, included: true, highlight: tier !== 'free' },
-        { label: copy.features.documentStorage, included: true },
-        { label: copy.features.emailNotifications, included: limits.notifications },
-        { label: copy.features.interactiveQA, included: limits.interactiveQA },
-        { label: copy.features.advancedAnalytics, included: limits.advancedAnalytics },
-        { label: copy.features.agentCollaboration, included: limits.agentCollaboration },
-    ]
+    const annualAvailable = Boolean(plan.pricing.annual)
+    const displayAnnual = billingPeriod === "annual" && annualAvailable
+    const pricing = displayAnnual ? plan.pricing.annual! : plan.pricing.monthly
 
     return (
         <div
-            className={`
-        relative rounded-2xl p-8 transition-all duration-300
-        ${isHighlighted
-                    ? 'bg-[#EBE5D9] dark:bg-slate-900 border-2 border-[#D9D0C1] dark:border-slate-700 shadow-2xl shadow-[#D9D0C1]/50 scale-105'
-                    : 'bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 hover:border-[#29685B] dark:hover:border-[#29685B] hover:shadow-xl'
-                }
-        ${className}
-      `}
+            className={`relative rounded-2xl p-8 transition-all duration-300 ${
+                plan.isHighlighted
+                    ? "scale-105 border-2 border-[#D9D0C1] bg-[#EBE5D9] shadow-2xl shadow-[#D9D0C1]/50 dark:border-slate-700 dark:bg-slate-900"
+                    : "border-2 border-slate-200 bg-white hover:border-[#29685B] hover:shadow-xl dark:border-slate-700 dark:bg-slate-900 dark:hover:border-[#29685B]"
+            } ${className}`}
         >
-            {isHighlighted && !isCurrentPlan && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-[#29685B] text-white text-sm font-bold rounded-full shadow-lg flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4" />
-                    {'badge' in tierData && tierData.badge[language]}
+            {plan.badge && !isLoading && (
+                <div className="absolute -top-4 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-[#29685B] px-4 py-1.5 text-sm font-bold text-white shadow-lg">
+                    <Sparkles className="h-4 w-4" />
+                    {plan.badge[language]}
                 </div>
             )}
 
-            {isCurrentPlan && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-slate-800 text-white text-sm font-bold rounded-full shadow-lg">
-                    {copy.cta.currentPlan[language]}
-                </div>
-            )}
-
-            <div className="text-center mb-6">
-                <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-2">
-                    {tierData.name[language]}
-                </h3>
-                <p className="text-slate-600 dark:text-slate-400 text-sm">
-                    {tierData.description[language]}
-                </p>
+            <div className="mb-6 text-center">
+                <h3 className="mb-2 text-2xl font-black text-slate-900 dark:text-white">{plan.name[language]}</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-400">{plan.description[language]}</p>
             </div>
 
-            <div className="text-center mb-8">
+            <div className="mb-8 text-center">
                 <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-5xl font-black text-slate-900 dark:text-white">
-                        {tierData.price[language]}
-                    </span>
-                    <span className="text-slate-600 dark:text-slate-400 text-lg">
-                        {tierData.period[language]}
-                    </span>
+                    <span className="text-5xl font-black text-slate-900 dark:text-white">{pricing.amount}</span>
+                    <span className="text-lg text-slate-600 dark:text-slate-400">{pricing.period[language]}</span>
                 </div>
-                {tier !== 'free' && 'annual' in tierData && (
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
-                        {language === 'el' ? 'ή ' : 'or '}{tierData.annual.price[language]}{tierData.annual.period[language]}
+                {displayAnnual && plan.pricing.annual?.savings && (
+                    <p className="mt-2 text-xs font-semibold text-[#29685B] dark:text-[#89D9B2]">
+                        {plan.pricing.annual.savings[language]}
                     </p>
                 )}
             </div>
 
-            <ul className="space-y-3 mb-8">
-                {features.map((feature, idx) => (
+            <ul className="mb-8 space-y-3">
+                {plan.features.map((feature, idx) => (
                     <li
-                        key={idx}
-                        className={`flex items-start gap-3 ${feature.highlight ? 'text-blue-600 dark:text-blue-400 font-semibold' : 'text-slate-700 dark:text-slate-300'
-                            }`}
+                        key={`${plan.key}-${idx}`}
+                        className={`flex items-start gap-3 ${
+                            feature.highlight
+                                ? "font-semibold text-[#29685B] dark:text-[#89D9B2]"
+                                : "text-slate-700 dark:text-slate-300"
+                        }`}
                     >
                         {feature.included ? (
-                            <Check className={`w-5 h-5 flex-shrink-0 mt-0.5 ${feature.highlight ? 'text-[#29685B] dark:text-[#89D9B2]' : 'text-slate-800 dark:text-slate-200'
-                                }`} />
+                            <Check
+                                className={`mt-0.5 h-5 w-5 flex-shrink-0 ${
+                                    feature.highlight
+                                        ? "text-[#29685B] dark:text-[#89D9B2]"
+                                        : "text-slate-800 dark:text-slate-200"
+                                }`}
+                            />
                         ) : (
-                            <X className="w-5 h-5 flex-shrink-0 mt-0.5 text-slate-400 dark:text-slate-600" />
+                            <X className="mt-0.5 h-5 w-5 flex-shrink-0 text-slate-400 dark:text-slate-600" />
                         )}
                         <span className="text-sm leading-tight">{feature.label[language]}</span>
                     </li>
@@ -121,33 +90,17 @@ export function PricingCard({
             </ul>
 
             <button
-                onClick={() => onSelectPlan(tier)}
-                disabled={isCurrentPlan}
-                className={`
-          w-full py-3.5 px-6 rounded-xl font-bold text-base transition-all duration-200
-          ${isCurrentPlan
-                        ? 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400 cursor-not-allowed'
-                        : tier !== 'free'
-                            ? 'bg-[#29685B] hover:bg-[#1C4E44] text-white shadow-lg shadow-[#29685B]/30 hover:shadow-xl'
-                            : 'bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-white border-2 border-slate-300 dark:border-slate-600 hover:border-[#29685B] dark:hover:border-[#89D9B2]'
-                    }
-        `}
+                onClick={() => onSelectPlan(plan)}
+                disabled={isLoading}
+                className={`w-full rounded-xl px-6 py-3.5 text-base font-bold transition-all duration-200 ${
+                    plan.isHighlighted
+                        ? "bg-[#29685B] text-white shadow-lg shadow-[#29685B]/30 hover:bg-[#1C4E44]"
+                        : "border-2 border-slate-300 bg-white text-slate-900 hover:border-[#29685B] hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:hover:border-[#89D9B2] dark:hover:bg-slate-700"
+                } ${isLoading ? "cursor-not-allowed opacity-60" : ""}`}
             >
-                {isCurrentPlan
-                    ? copy.cta.currentPlan[language]
-                    : tier === 'plus'
-                        ? copy.cta.startPlus[language]
-                        : tier === 'pro'
-                            ? copy.cta.startPro[language]
-                            : copy.cta.getStarted[language]
-                }
+                {isLoading ? (language === "el" ? "Παρακαλώ περιμένετε..." : "Please wait...") : actionLabel[language]}
             </button>
-
-            {tier !== 'free' && !isCurrentPlan && (
-                <p className="text-center text-xs text-slate-500 dark:text-slate-400 mt-4">
-                    {copy.trust.cancelAnytime[language]}
-                </p>
-            )}
         </div>
     )
 }
+

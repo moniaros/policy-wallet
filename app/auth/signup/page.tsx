@@ -100,6 +100,8 @@ function SignUpForm() {
     const initialRole = searchParams.get("role") === "agent" ? "agent" : "policyholder"
     const source = searchParams.get("source") || "signup_direct"
     const token = searchParams.get("token") || ""
+    const selectedPlan = searchParams.get("plan") || ""
+    const selectedBilling = searchParams.get("billing") || ""
 
     const [role, setRole] = useState<"policyholder" | "agent">(initialRole)
     const [showPassword, setShowPassword] = useState(false)
@@ -164,6 +166,8 @@ function SignUpForm() {
         formData.append("termsAccepted", String(values.termsAccepted))
         formData.append("marketingConsent", "false")
         if (token) formData.append("token", token)
+        if (selectedPlan) formData.append("selectedPlan", selectedPlan)
+        if (selectedBilling) formData.append("selectedBilling", selectedBilling)
 
         if (role === "agent") {
             formData.append("licenseNumber", "pending")

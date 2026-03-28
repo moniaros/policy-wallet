@@ -3,6 +3,7 @@
 import React from "react"
 import Link from "next/link"
 import { CheckCircle2, TrendingUp, PieChart } from "lucide-react"
+import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 
@@ -87,6 +88,8 @@ export default function GroupPensionProductPage() {
                     </div>
                 </div>
             </section>
+
+            <ProductCategoryExplorer currentCategoryId="group-pension" />
 
             {/* CTA */}
             <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">

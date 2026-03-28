@@ -1,13 +1,14 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 import { rateLimit } from "@/lib/rate-limit"
+import { getPostLoginRedirectByRole, getPrimaryRole } from "@/lib/auth/role-routing"
 
 export async function proxy(request: NextRequest) {
     const { nextUrl } = request
 
     // Rate limit API routes (except stripe webhooks)
     if (nextUrl.pathname.startsWith("/api/") && !nextUrl.pathname.includes("/stripe/webhook")) {
-        // @ts-ignore
+        // @ts-expect-error request.ip can be undefined depending on runtime adapter.
         const ip = request.ip || request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "127.0.0.1"
         const limitCheck = await rateLimit(ip, 60, 60000)
         if (!limitCheck.success) {
@@ -79,6 +80,7 @@ export async function proxy(request: NextRequest) {
 
     const publicPrefixes = [
         "/product",
+        "/solutions",
         "/auth",
         "/api/auth",
     ]
@@ -89,6 +91,9 @@ export async function proxy(request: NextRequest) {
         "/privacy",
         "/pricing",
         "/company",
+        "/contact",
+        "/api/contact",
+        "/api/v1/contact",
     ]
     const isPublicRoute =
         publicExactRoutes.includes(nextUrl.pathname) ||
@@ -106,7 +111,8 @@ export async function proxy(request: NextRequest) {
         !nextUrl.pathname.startsWith("/auth/verify-email") &&
         !nextUrl.pathname.startsWith("/auth/signup/confirmation")
     ) {
-        return NextResponse.redirect(new URL("/wallet", nextUrl))
+        const roleRoute = getPostLoginRedirectByRole(String(user?.user_metadata?.role || ""))
+        return NextResponse.redirect(new URL(roleRoute, nextUrl))
     }
 
     if (nextUrl.pathname.startsWith("/admin") && !isLoggedIn) {
@@ -126,31 +132,37 @@ export async function proxy(request: NextRequest) {
 
     // Role-based route protection for authenticated users
     if (isLoggedIn && user) {
-        const userRole = (user.user_metadata?.role as string) || ""
+        const userRole = getPrimaryRole((user.user_metadata?.role as string) || "")
 
+        const agentRoutes = ["/dashboard/agent", "/customers", "/opportunities", "/renewals", "/commissions", "/questionnaires", "/tasks", "/insights", "/team"]
         const policyholderRoutes = ["/home", "/wallet", "/coverage-insights"]
-        const agentRoutes = ["/dashboard", "/customers", "/opportunities", "/renewals", "/commissions", "/questionnaires", "/tasks", "/insights", "/team"]
 
         // /agent path is shared: /agent is policyholder's "My Agent", /agent/settings is agent settings
         const isPolicyholderAgentPage = nextUrl.pathname === "/agent" || nextUrl.pathname === "/agent/"
 
+        const isAgentRoute = agentRoutes.some(r => nextUrl.pathname.startsWith(r))
+        // "/dashboard" without "/dashboard/agent" prefix = policyholder dashboard
+        const isPolicyholderRoute =
+            policyholderRoutes.some(r => nextUrl.pathname.startsWith(r)) ||
+            (nextUrl.pathname.startsWith("/dashboard") && !nextUrl.pathname.startsWith("/dashboard/agent"))
+
         // Agent trying to access policyholder-only routes
         if (userRole === "agent") {
-            if (policyholderRoutes.some(r => nextUrl.pathname.startsWith(r)) || isPolicyholderAgentPage) {
-                return NextResponse.redirect(new URL("/dashboard", nextUrl))
+            if (isPolicyholderRoute || isPolicyholderAgentPage) {
+                return NextResponse.redirect(new URL("/dashboard/agent", nextUrl))
             }
         }
 
         // Policyholder trying to access agent-only routes
         if (userRole === "policyholder") {
-            if (agentRoutes.some(r => nextUrl.pathname.startsWith(r))) {
-                return NextResponse.redirect(new URL("/home", nextUrl))
+            if (isAgentRoute) {
+                return NextResponse.redirect(new URL("/dashboard", nextUrl))
             }
         }
 
         // Non-admin trying to access admin routes (already handled above for unauthenticated)
         if (nextUrl.pathname.startsWith("/admin") && userRole !== "admin") {
-            const redirectTarget = userRole === "agent" ? "/dashboard" : "/home"
+            const redirectTarget = userRole === "agent" ? "/dashboard/agent" : "/dashboard"
             return NextResponse.redirect(new URL(redirectTarget, nextUrl))
         }
     }

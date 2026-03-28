@@ -268,6 +268,7 @@ export function classifyAnalysisFailure(error: unknown): ClassifiedFailure {
         ]) ||
         hasAny(msg, [
             "timeout",
+            "timed out",
             "deadline",
             "aborted",
             "503",

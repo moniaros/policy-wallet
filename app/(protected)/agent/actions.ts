@@ -322,7 +322,7 @@ export async function createAgentInvite(email: string, scope: AccessScope) {
         console.error("Failed to send agent invite email", error)
     }
 
-    revalidatePath("/dashboard")
+    revalidatePath("/dashboard/agent")
     revalidatePath("/customers")
     revalidatePath(`/customers/${customer.id}`)
     return { success: true, inviteId: invite.id, token: invite.token }

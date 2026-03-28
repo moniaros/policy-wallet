@@ -10,7 +10,7 @@ import { z } from "zod";
  * This is the single source of truth — the TypeScript type is derived via z.infer.
  */
 export const AcordDataSchema = z.object({
-    _version: z.literal(2).default(2),
+    _version: z.number().default(2),
 
     // ─── Motor & Liability ──────────────────────────────────────────────
     vehicle: z.object({

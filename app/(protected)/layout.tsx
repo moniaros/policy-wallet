@@ -35,7 +35,7 @@ export default async function ProtectedLayout({
         navigation.push({
             title: t.nav.navigation,
             items: [
-                { label: t.nav.home, href: "/home", icon: <LayoutDashboard className="w-5 h-5" /> },
+                { label: t.nav.home, href: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
                 { label: t.nav.wallet, href: "/wallet", icon: <Wallet className="w-5 h-5" /> },
                 {
                     label: t.nav.coverageInsights,
@@ -53,7 +53,7 @@ export default async function ProtectedLayout({
         navigation.push({
             title: roleCopy.shell.agentSection,
             items: [
-                { label: t.nav.dashboard, href: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
+                { label: t.nav.dashboard, href: "/dashboard/agent", icon: <LayoutDashboard className="w-5 h-5" /> },
                 { label: t.nav.customers, href: "/customers", icon: <Users className="w-5 h-5" /> },
                 { label: t.nav.opportunities, href: "/opportunities", icon: <Lightbulb className="w-5 h-5" /> },
                 { label: t.nav.renewals, href: "/renewals", icon: <RefreshCw className="w-5 h-5" /> },

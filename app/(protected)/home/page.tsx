@@ -61,7 +61,7 @@ export default async function PolicyholderHomePage() {
     const role = roles[0]
 
     if (role !== "policyholder") {
-        if (role === "agent") redirect("/dashboard")
+        if (role === "agent") redirect("/dashboard/agent")
         if (role === "admin") redirect("/admin/dashboard")
     }
 

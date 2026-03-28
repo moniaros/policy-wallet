@@ -7,7 +7,7 @@
 
 import { logger } from '@/lib/logger'
 
-export const AI_CALL_TIMEOUT_MS = 60_000
+export const AI_CALL_TIMEOUT_MS = 180_000
 export const MAX_RETRIES = 1
 export const INITIAL_BACKOFF_MS = 2_000
 
@@ -26,6 +26,7 @@ export function isTransientError(error: unknown): boolean {
     const msg = error.message.toLowerCase()
     return (
         msg.includes('timeout') ||
+        msg.includes('timed out') ||
         msg.includes('aborted') ||
         msg.includes('deadline') ||
         msg.includes('429') ||
@@ -40,25 +41,37 @@ export function isTransientError(error: unknown): boolean {
 
 /**
  * Wraps an async function with a timeout and retry logic for transient failures.
+ * Accepts an optional AbortSignal so callers can propagate cancellation from
+ * the orchestrator.  When a timeout fires, the returned AbortController is
+ * aborted so SDK calls that honour AbortSignal can clean up immediately.
  */
 export async function withTimeoutAndRetry<T>(
-    fn: () => Promise<T>,
+    fn: (signal?: AbortSignal) => Promise<T>,
     context: string
 ): Promise<T> {
     let lastError: unknown
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        const controller = new AbortController()
+        const timer = setTimeout(() => {
+            controller.abort()
+        }, AI_CALL_TIMEOUT_MS)
+
         try {
             const result = await Promise.race([
-                fn(),
-                new Promise<never>((_, reject) =>
-                    setTimeout(
-                        () => reject(new Error(`AI call timed out after ${AI_CALL_TIMEOUT_MS}ms`)),
-                        AI_CALL_TIMEOUT_MS
-                    )
-                ),
+                fn(controller.signal),
+                new Promise<never>((_, reject) => {
+                    controller.signal.addEventListener('abort', () => {
+                        reject(new Error(`AI call timed out after ${AI_CALL_TIMEOUT_MS}ms`))
+                    })
+                }),
             ])
+            clearTimeout(timer)
             return result
         } catch (error) {
+            clearTimeout(timer)
+            if (!controller.signal.aborted) {
+                controller.abort()
+            }
             lastError = error
             if (attempt < MAX_RETRIES && isTransientError(error)) {
                 const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt)

@@ -178,7 +178,7 @@ export default function AgentPricingPage() {
         <div className="min-h-screen bg-white dark:bg-stone-950 pb-20">
             <div className="max-w-7xl mx-auto px-4 py-12">
                 <button
-                    onClick={() => router.push("/dashboard")}
+                    onClick={() => router.push("/dashboard/agent")}
                     className="inline-flex items-center gap-1 text-sm text-stone-500 hover:text-stone-700 dark:text-stone-400 dark:hover:text-stone-200 mb-8 transition-colors"
                 >
                     <ChevronLeft className="w-4 h-4" />

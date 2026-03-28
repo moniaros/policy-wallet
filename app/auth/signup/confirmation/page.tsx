@@ -5,14 +5,26 @@ import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { IBM_Plex_Sans } from "next/font/google"
 import { AnimatePresence, motion } from "framer-motion"
-import { AlertCircle, ArrowRight, CheckCircle2, Loader2, Mail, RefreshCw, ShieldCheck, Sparkles } from "lucide-react"
+import { AlertCircle, ArrowRight, CheckCircle2, CreditCard, Loader2, Mail, RefreshCw, ShieldCheck, Sparkles } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { completeOnboardingStep } from "@/app/onboarding/actions"
 import { resendVerificationEmail } from "@/app/auth/actions"
 import { trackLandingEvent } from "@/lib/landing/analytics"
 import { isSyntheticPhoneEmail } from "@/lib/auth/phone-auth"
+import { BillingPeriod, VALID_PLAN_IDS, ValidPlanId, publicPricingContent } from "@/lib/pricing/public-pricing-content"
 import { getSignupCheckpointState } from "./actions"
+
+function resolvePlanDisplayName(planId: string, language: "el" | "en"): string | null {
+    for (const audience of Object.values(publicPricingContent)) {
+        for (const plan of audience.plans) {
+            if (plan.checkoutPlanId === planId || plan.key === planId) {
+                return plan.name[language]
+            }
+        }
+    }
+    return null
+}
 
 const ibmPlexSans = IBM_Plex_Sans({
     subsets: ["latin", "greek"],
@@ -27,6 +39,10 @@ function SignupConfirmationContent() {
 
     const role = searchParams.get("role") === "agent" ? "agent" : "policyholder"
     const queryEmail = searchParams.get("email")?.trim().toLowerCase() || ""
+    const rawPlan = searchParams.get("plan") || ""
+    const selectedPlan: ValidPlanId | "" = (VALID_PLAN_IDS as readonly string[]).includes(rawPlan) ? (rawPlan as ValidPlanId) : ""
+    const selectedBilling: BillingPeriod | "" = searchParams.get("billing") === "annual" ? "annual" : searchParams.get("billing") === "monthly" ? "monthly" : ""
+    const planDisplayName = selectedPlan ? resolvePlanDisplayName(selectedPlan, language) : null
 
     const [email, setEmail] = useState(queryEmail)
     const [isVerified, setIsVerified] = useState(false)
@@ -75,6 +91,8 @@ function SignupConfirmationContent() {
             has_email: Boolean(email),
             needs_email_verification: needsEmailVerification,
             verified: isVerified,
+            ...(selectedPlan ? { selected_plan: selectedPlan } : {}),
+            ...(selectedBilling ? { selected_billing: selectedBilling } : {}),
         })
 
         if (needsEmailVerification) {
@@ -111,6 +129,10 @@ function SignupConfirmationContent() {
             t("AI εξήγηση καλύψεων σε απλή γλώσσα", "AI explanation of coverage in plain language"),
             t("Έξυπνες υπενθυμίσεις ανανέωσης", "Smart renewal reminders"),
         ],
+        selectedPlanTitle: t("Το πλάνο σας", "Your selected plan"),
+        selectedPlanBillingMonthly: t("Μηνιαία χρέωση", "Monthly billing"),
+        selectedPlanBillingAnnual: t("Ετήσια χρέωση", "Annual billing"),
+        selectedPlanNote: t("Θα ενεργοποιηθεί μετά το onboarding.", "Will be activated after onboarding."),
     }), [language])
 
     const handleCheckVerification = async () => {
@@ -182,9 +204,15 @@ function SignupConfirmationContent() {
             await completeOnboardingStep(1, {
                 onboardingEntryCompletedAt: new Date().toISOString(),
                 onboardingEntrySource: "signup_checkpoint",
+                ...(selectedPlan ? { selectedPlan } : {}),
+                ...(selectedBilling ? { selectedBilling } : {}),
             })
 
-            router.push("/onboarding")
+            const onboardingParams = new URLSearchParams()
+            if (selectedPlan) onboardingParams.set("plan", selectedPlan)
+            if (selectedBilling) onboardingParams.set("billing", selectedBilling)
+            const qs = onboardingParams.toString()
+            router.push(`/onboarding${qs ? `?${qs}` : ""}`)
         } catch {
             setNotice({
                 kind: "error",
@@ -261,6 +289,17 @@ function SignupConfirmationContent() {
                                 ))}
                             </ul>
                         </div>
+
+                        {planDisplayName ? (
+                            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
+                                <div className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-900">
+                                    <CreditCard className="h-4 w-4" />
+                                    {copy.selectedPlanTitle}
+                                </div>
+                                <p className="mt-1 text-sm font-bold text-emerald-800">{planDisplayName}{selectedBilling ? ` — ${selectedBilling === "annual" ? copy.selectedPlanBillingAnnual : copy.selectedPlanBillingMonthly}` : ""}</p>
+                                <p className="mt-1 text-xs text-emerald-700">{copy.selectedPlanNote}</p>
+                            </div>
+                        ) : null}
 
                         {showVerificationCard ? (
                             <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4">
