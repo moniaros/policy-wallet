@@ -78,16 +78,77 @@ export class CollaborationService {
             ]
         }
 
-        return db.collaborationThread.findMany({
+        const threads = await db.collaborationThread.findMany({
             where,
             include: {
                 createdBy: { select: { id: true, name: true, email: true } },
                 assignedTo: { select: { id: true, name: true, email: true } },
-                relationship: { select: { id: true, agentUserId: true, policyholderUserId: true } },
+                relationship: {
+                    select: {
+                        id: true,
+                        agentUserId: true,
+                        policyholderUserId: true,
+                        agent: { select: { id: true, name: true, email: true } },
+                        customer: { select: { id: true, name: true, email: true } },
+                    },
+                },
+                messages: {
+                    select: {
+                        body: true,
+                        createdAt: true,
+                        senderUserId: true,
+                    },
+                    orderBy: { createdAt: "desc" },
+                    take: 1,
+                },
                 _count: { select: { messages: true, actions: true } },
             },
             orderBy: [{ lastActivityAt: "desc" }],
             take: Math.min(filters.limit ?? 30, 100),
+        })
+
+        return threads.map((thread) => {
+            const viewerRole: "agent" | "policyholder" | null =
+                thread.relationship.agentUserId === userId
+                    ? "agent"
+                    : thread.relationship.policyholderUserId === userId
+                        ? "policyholder"
+                        : roles.includes("agent")
+                            ? "agent"
+                            : roles.includes("policyholder")
+                                ? "policyholder"
+                                : null
+
+            const counterpart =
+                viewerRole === "agent"
+                    ? thread.relationship.customer
+                    : thread.relationship.agent
+
+            const clientName =
+                counterpart?.name ||
+                counterpart?.email ||
+                "Unknown"
+
+            const clientId =
+                counterpart?.id ||
+                (viewerRole === "agent"
+                    ? thread.relationship.policyholderUserId
+                    : thread.relationship.agentUserId)
+
+            const lastMessage = thread.messages[0]?.body || undefined
+            const isWaitingOnYou =
+                (thread.status === "waiting_agent" && viewerRole === "agent") ||
+                (thread.status === "waiting_policyholder" && viewerRole === "policyholder")
+
+            const { messages, ...base } = thread
+            return {
+                ...base,
+                clientName,
+                clientId,
+                unreadCount: 0,
+                lastMessage,
+                isWaitingOnYou,
+            }
         })
     }
 

@@ -455,6 +455,10 @@ export class GapAnalysisService extends BaseService {
             throw AppError.notFound('Gap', gapInstanceId)
         }
 
+        if (!gap.policy) {
+            throw AppError.notFound('Gap policy', gapInstanceId)
+        }
+
         // Check authorization
         const isOwner = gap.policy.ownerUserId === userId
         if (!isOwner) {
@@ -524,6 +528,10 @@ export class GapAnalysisService extends BaseService {
 
         if (!gap) {
             throw AppError.notFound('Gap', gapInstanceId)
+        }
+
+        if (!gap.policy) {
+            throw AppError.notFound('Gap policy', gapInstanceId)
         }
 
         // Check authorization

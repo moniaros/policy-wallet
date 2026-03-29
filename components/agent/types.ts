@@ -37,6 +37,10 @@ export interface Opportunity {
     nextActionDate: string
     notes: string
     createdAt: string
+    /** Conversion likelihood from opportunity scoring (null if not computed) */
+    conversionLikelihood?: "high" | "medium" | "low" | null
+    /** Opportunity score 0-100 (null if not computed) */
+    conversionScore?: number | null
 }
 
 export interface Interaction {
@@ -177,6 +181,18 @@ export interface ActionQueueItem {
     metadata?: Record<string, unknown>
 }
 
+export interface GapsSummary {
+    criticalClientsCount: number
+    highClientsCount: number
+    totalGapsCount: number
+    topClients: Array<{
+        clientId: string
+        clientName: string
+        criticalGaps: number
+        highGaps: number
+    }>
+}
+
 export interface RevenueMetrics {
     mrr: number
     renewalsDueThisMonth: number
@@ -205,6 +221,10 @@ export interface ClientCardData {
     nextActionDue?: string | null
     nextActionLabel?: string | null
     activationStatus: ActivationStatus
+    /** Unified protection score (0-100) from gap engine. Null if not computed yet. */
+    protectionScore?: number | null
+    /** Number of detected coverage gaps */
+    gapCount?: number
 }
 
 export interface AgentDashboardData {
@@ -217,4 +237,5 @@ export interface AgentDashboardData {
         inactive: ClientCardData[]
     }
     todaysFollowUps: ActionQueueItem[]
+    gapsSummary?: GapsSummary | null
 }

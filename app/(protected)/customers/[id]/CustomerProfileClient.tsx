@@ -371,7 +371,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                     <AgentInbox
                         relationshipId={initialCustomer.relationshipId}
                         onSelectThread={(threadId) => {
-                            router.push(`/notifications`)
+                            router.push(`/collaboration/threads/${threadId}`)
                         }}
                     />
                 </div>

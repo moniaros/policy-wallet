@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { ChevronRight, Shield, Clock, UserPlus } from "lucide-react"
+import { ChevronRight, Shield, Clock, UserPlus, AlertTriangle } from "lucide-react"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { BrandActionButton } from "@/components/ui/brand/BrandActionButton"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -67,6 +67,30 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                     )}
                 </div>
             </div>
+
+            {/* Protection score badge */}
+            {client.protectionScore != null && (
+                <div className="shrink-0 flex flex-col items-center gap-0.5 mr-1">
+                    <span
+                        className={`text-xs font-bold ${
+                            client.protectionScore >= 70
+                                ? "text-emerald-600 dark:text-emerald-400"
+                                : client.protectionScore >= 40
+                                    ? "text-amber-600 dark:text-amber-400"
+                                    : "text-red-600 dark:text-red-400"
+                        }`}
+                    >
+                        {client.protectionScore}
+                    </span>
+                    <span className="text-[9px] text-slate-400">/100</span>
+                    {(client.gapCount ?? 0) > 0 && (
+                        <span className="flex items-center gap-0.5 text-[9px] text-red-500">
+                            <AlertTriangle className="h-2.5 w-2.5" />
+                            {client.gapCount}
+                        </span>
+                    )}
+                </div>
+            )}
 
             {/* Arrow */}
             <ChevronRight className="h-4 w-4 shrink-0 text-slate-400" />

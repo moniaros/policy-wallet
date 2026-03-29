@@ -1,0 +1,389 @@
+/**
+ * Agent Playbook Generator
+ *
+ * Generates suggested action steps for agents per client opportunity,
+ * based on gap data, client profile, and engagement signals.
+ *
+ * Each playbook is a prioritized list of concrete steps the agent
+ * can take to convert an opportunity into a sale.
+ */
+
+import { db } from "@/lib/db"
+import type { ConversionLikelihood } from "./opportunity-scoring"
+
+// ── Types ────────────────────────────────────────────────────────────
+
+export interface PlaybookStep {
+    order: number
+    action: { en: string; el: string }
+    channel: "call" | "email" | "whatsapp" | "in_app" | "meeting"
+    timing: { en: string; el: string }
+    talkingPoints: Array<{ en: string; el: string }>
+}
+
+export interface AgentPlaybook {
+    clientId: string
+    clientName: string
+    opportunityId: string | null
+    gapSeverity: string
+    lineOfBusiness: string
+    conversionLikelihood: ConversionLikelihood
+    steps: PlaybookStep[]
+    estimatedPremium: number | null
+    keyInsight: { en: string; el: string }
+}
+
+// ── Step templates by gap type ───────────────────────────────────────
+
+interface StepTemplate {
+    channel: PlaybookStep["channel"]
+    action: { en: string; el: string }
+    timing: { en: string; el: string }
+    talkingPoints: Array<{ en: string; el: string }>
+}
+
+const STEP_TEMPLATES: Record<string, StepTemplate[]> = {
+    // Critical gaps (motor, life with dependents)
+    critical: [
+        {
+            channel: "call",
+            action: {
+                en: "Urgent call: discuss the unprotected risk",
+                el: "Επείγουσα κλήση: συζήτηση για τον απροστάτευτο κίνδυνο",
+            },
+            timing: { en: "Today", el: "Σήμερα" },
+            talkingPoints: [
+                {
+                    en: "Explain the specific financial exposure",
+                    el: "Εξηγήστε τη συγκεκριμένη οικονομική έκθεση",
+                },
+                {
+                    en: "Share a real-world scenario relevant to their situation",
+                    el: "Μοιραστείτε ένα πραγματικό σενάριο σχετικό με την κατάστασή τους",
+                },
+            ],
+        },
+        {
+            channel: "email",
+            action: {
+                en: "Follow up with a personalized quote comparison",
+                el: "Αποστολή εξατομικευμένης σύγκρισης προσφορών",
+            },
+            timing: { en: "Within 24 hours", el: "Εντός 24 ωρών" },
+            talkingPoints: [
+                {
+                    en: "Include 2-3 product options at different price points",
+                    el: "Συμπεριλάβετε 2-3 επιλογές σε διαφορετικά κόστη",
+                },
+            ],
+        },
+        {
+            channel: "call",
+            action: {
+                en: "Close: address any objections and finalize",
+                el: "Κλείσιμο: αντιμετώπιση αντιρρήσεων και οριστικοποίηση",
+            },
+            timing: { en: "Within 3 days", el: "Εντός 3 ημερών" },
+            talkingPoints: [
+                {
+                    en: "Ask about preferred payment method and start date",
+                    el: "Ρωτήστε για προτιμώμενο τρόπο πληρωμής και ημερομηνία έναρξης",
+                },
+            ],
+        },
+    ],
+    // High severity gaps
+    high: [
+        {
+            channel: "whatsapp",
+            action: {
+                en: "Send a friendly check-in message about the coverage gap",
+                el: "Στείλτε ένα φιλικό μήνυμα για το κενό κάλυψης",
+            },
+            timing: { en: "This week", el: "Αυτή την εβδομάδα" },
+            talkingPoints: [
+                {
+                    en: "Reference a specific life event or risk factor from their profile",
+                    el: "Αναφερθείτε σε συγκεκριμένο γεγονός ζωής ή παράγοντα κινδύνου",
+                },
+            ],
+        },
+        {
+            channel: "email",
+            action: {
+                en: "Send educational content about this insurance type",
+                el: "Αποστολή εκπαιδευτικού υλικού για αυτό τον τύπο ασφάλισης",
+            },
+            timing: { en: "Within 3 days", el: "Εντός 3 ημερών" },
+            talkingPoints: [
+                {
+                    en: "Include market statistics relevant to Greece",
+                    el: "Συμπεριλάβετε στατιστικά αγοράς σχετικά με την Ελλάδα",
+                },
+                {
+                    en: "Highlight what peers in similar situations typically choose",
+                    el: "Υπογραμμίστε τι επιλέγουν συνήθως άτομα σε παρόμοια κατάσταση",
+                },
+            ],
+        },
+        {
+            channel: "call",
+            action: {
+                en: "Schedule a brief consultation to present options",
+                el: "Προγραμματίστε σύντομη συνάντηση για παρουσίαση επιλογών",
+            },
+            timing: { en: "Within 1 week", el: "Εντός 1 εβδομάδας" },
+            talkingPoints: [
+                {
+                    en: "Prepare 2 options: essential and comprehensive",
+                    el: "Προετοιμάστε 2 επιλογές: βασική και ολοκληρωμένη",
+                },
+            ],
+        },
+    ],
+    // Medium severity gaps
+    medium: [
+        {
+            channel: "in_app",
+            action: {
+                en: "Send an in-app notification about the coverage opportunity",
+                el: "Αποστολή ειδοποίησης εντός εφαρμογής για την ευκαιρία κάλυψης",
+            },
+            timing: { en: "This week", el: "Αυτή την εβδομάδα" },
+            talkingPoints: [
+                {
+                    en: "Keep it brief and informational",
+                    el: "Κρατήστε το σύντομο και ενημερωτικό",
+                },
+            ],
+        },
+        {
+            channel: "email",
+            action: {
+                en: "Include in next monthly portfolio review email",
+                el: "Συμπεριλάβετε στο επόμενο μηνιαίο email ανασκόπησης",
+            },
+            timing: { en: "Next review cycle", el: "Επόμενος κύκλος ανασκόπησης" },
+            talkingPoints: [
+                {
+                    en: "Position as part of overall portfolio optimization",
+                    el: "Τοποθετήστε το ως μέρος συνολικής βελτιστοποίησης χαρτοφυλακίου",
+                },
+            ],
+        },
+    ],
+    // Low severity gaps
+    low: [
+        {
+            channel: "in_app",
+            action: {
+                en: "Add to future discussion topics",
+                el: "Προσθήκη σε μελλοντικά θέματα συζήτησης",
+            },
+            timing: { en: "Next meeting", el: "Επόμενη συνάντηση" },
+            talkingPoints: [
+                {
+                    en: "Mention briefly during next renewal discussion",
+                    el: "Αναφέρετε εν συντομία κατά την επόμενη ανανέωση",
+                },
+            ],
+        },
+    ],
+}
+
+// ── LOB-specific talking points ──────────────────────────────────────
+
+const LOB_TALKING_POINTS: Record<string, Array<{ en: string; el: string }>> = {
+    motor: [
+        {
+            en: "Motor insurance is mandatory in Greece — driving without it risks fines and license suspension",
+            el: "Η ασφάλεια αυτοκινήτου είναι υποχρεωτική στην Ελλάδα — η οδήγηση χωρίς αυτήν κινδυνεύει με πρόστιμα",
+        },
+    ],
+    home: [
+        {
+            en: "With earthquake risk in Greece, home insurance is essential — especially for ENFIA compliance",
+            el: "Με τον σεισμικό κίνδυνο στην Ελλάδα, η ασφάλεια κατοικίας είναι απαραίτητη — ειδικά για συμμόρφωση ΕΝΦΙΑ",
+        },
+    ],
+    health: [
+        {
+            en: "Private health supplements ESY with faster access to specialists and diagnostics",
+            el: "Η ιδιωτική υγεία συμπληρώνει το ΕΣΥ με ταχύτερη πρόσβαση σε ειδικούς και διαγνωστικά",
+        },
+    ],
+    life: [
+        {
+            en: "Life insurance protects dependents and can cover mortgage obligations",
+            el: "Η ασφάλεια ζωής προστατεύει τα εξαρτώμενα μέλη και μπορεί να καλύψει στεγαστικές υποχρεώσεις",
+        },
+    ],
+    travel: [
+        {
+            en: "Medical costs abroad can be devastating — a single hospital visit can exceed €10,000",
+            el: "Τα ιατρικά έξοδα στο εξωτερικό μπορεί να είναι καταστροφικά — μία νοσηλεία μπορεί να ξεπεράσει τα €10.000",
+        },
+    ],
+}
+
+// ── Key insight generator ────────────────────────────────────────────
+
+function generateKeyInsight(
+    lob: string,
+    severity: string,
+    clientProfile: { dependentsCount?: number; ownsHome?: boolean; hasLoans?: boolean }
+): { en: string; el: string } {
+    if (severity === "critical" && lob === "life" && (clientProfile.dependentsCount ?? 0) > 0) {
+        return {
+            en: `Client has ${clientProfile.dependentsCount} dependent(s) with no life cover — high emotional urgency.`,
+            el: `Ο πελάτης έχει ${clientProfile.dependentsCount} εξαρτώμενο(α) μέλος(η) χωρίς ασφάλεια ζωής — υψηλή συναισθηματική επείγουσα ανάγκη.`,
+        }
+    }
+    if (lob === "home" && clientProfile.ownsHome) {
+        return {
+            en: "Homeowner without property insurance — significant asset at risk.",
+            el: "Ιδιοκτήτης χωρίς ασφάλεια ακινήτου — σημαντικό περιουσιακό στοιχείο σε κίνδυνο.",
+        }
+    }
+    if (lob === "life" && clientProfile.hasLoans) {
+        return {
+            en: "Client has outstanding loans — life insurance would protect against debt transfer to family.",
+            el: "Ο πελάτης έχει ανεξόφλητα δάνεια — η ασφάλεια ζωής θα προστάτευε από μεταφορά χρέους στην οικογένεια.",
+        }
+    }
+
+    return {
+        en: `This ${severity}-priority ${lob} gap represents a conversion opportunity.`,
+        el: `Αυτό το κενό ${lob} ${severity === "critical" ? "κρίσιμης" : severity === "high" ? "υψηλής" : "μέσης"} προτεραιότητας αποτελεί ευκαιρία μετατροπής.`,
+    }
+}
+
+// ── Main generator ───────────────────────────────────────────────────
+
+/**
+ * Generate an action playbook for an agent's client opportunity.
+ */
+export async function generatePlaybook(
+    agentUserId: string,
+    clientUserId: string,
+    lineOfBusiness: string,
+    severity: string,
+    opportunityId: string | null = null,
+    conversionLikelihood: ConversionLikelihood = "medium"
+): Promise<AgentPlaybook> {
+    // Verify agent has a relationship with this client
+    const relationship = await db.customerRelationship.findFirst({
+        where: {
+            agentUserId,
+            policyholderUserId: clientUserId,
+        },
+        select: { id: true },
+    })
+    if (!relationship) {
+        throw new Error("Unauthorized: no agent-client relationship")
+    }
+
+    // Fetch client info
+    const [clientUser, clientProfile, matchedProduct] = await Promise.all([
+        db.user.findUnique({
+            where: { id: clientUserId },
+            select: { name: true },
+        }),
+        db.policyholderProfile.findUnique({
+            where: { userId: clientUserId },
+        }),
+        db.insuranceProduct.findFirst({
+            where: {
+                lineOfBusiness: lineOfBusiness.toLowerCase(),
+                isActive: true,
+            },
+            select: { estimatedAnnualPremium: true },
+            orderBy: { greekMarketPopularity: "desc" },
+        }),
+    ])
+
+    // Build steps from templates
+    const templateKey =
+        severity === "critical" ? "critical" : severity === "high" ? "high" : severity === "medium" ? "medium" : "low"
+
+    const baseSteps = STEP_TEMPLATES[templateKey] || STEP_TEMPLATES.low
+
+    const steps: PlaybookStep[] = baseSteps.map((tmpl, i) => {
+        const lobPoints = LOB_TALKING_POINTS[lineOfBusiness.toLowerCase()] || []
+        const allPoints = i === 0 ? [...tmpl.talkingPoints, ...lobPoints] : tmpl.talkingPoints
+
+        return {
+            order: i + 1,
+            action: tmpl.action,
+            channel: tmpl.channel,
+            timing: tmpl.timing,
+            talkingPoints: allPoints,
+        }
+    })
+
+    const profile = clientProfile as any
+    const keyInsight = generateKeyInsight(lineOfBusiness, severity, {
+        dependentsCount: profile?.dependentsCount ?? 0,
+        ownsHome: profile?.ownsHome ?? false,
+        hasLoans: profile?.hasLoans ?? false,
+    })
+
+    return {
+        clientId: clientUserId,
+        clientName: clientUser?.name || "Client",
+        opportunityId,
+        gapSeverity: severity,
+        lineOfBusiness,
+        conversionLikelihood,
+        steps,
+        estimatedPremium: matchedProduct
+            ? Number(matchedProduct.estimatedAnnualPremium)
+            : null,
+        keyInsight,
+    }
+}
+
+/**
+ * Generate playbooks for all open opportunities of an agent.
+ */
+export async function generateAgentPlaybooks(
+    agentUserId: string
+): Promise<AgentPlaybook[]> {
+    const opportunities = await db.opportunity.findMany({
+        where: {
+            ownerAgentUserId: agentUserId,
+            status: { in: ["open", "contacted"] },
+        },
+        include: {
+            gapInstance: {
+                select: {
+                    severity: true,
+                    policy: { select: { lineOfBusiness: true } },
+                },
+            },
+            relationship: {
+                select: { policyholderUserId: true },
+            },
+        },
+        take: 20,
+    })
+
+    const playbooks: AgentPlaybook[] = []
+
+    for (const opp of opportunities) {
+        const lob = opp.gapInstance?.policy?.lineOfBusiness || "other"
+        const severity = opp.gapInstance?.severity || "medium"
+        const clientId = opp.relationship.policyholderUserId
+
+        const playbook = await generatePlaybook(
+            agentUserId,
+            clientId,
+            lob,
+            severity,
+            opp.id
+        )
+        playbooks.push(playbook)
+    }
+
+    return playbooks
+}

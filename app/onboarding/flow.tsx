@@ -105,10 +105,10 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
         }
     }
 
-    const continueFromStep2 = async () => {
+    const continueFromStep2 = async (skipUpload: boolean = false) => {
         setBusy(true)
         try {
-            if (selectedFile) {
+            if (!skipUpload && selectedFile) {
                 const formData = new FormData()
                 formData.append("file", selectedFile)
                 const result = await uploadOnboardingPolicy(formData)
@@ -298,7 +298,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                             <div className="flex flex-col gap-2 sm:flex-row">
                                 <button
                                     type="button"
-                                    onClick={continueFromStep2}
+                                    onClick={() => continueFromStep2()}
                                     disabled={busy}
                                     className="flex-1 rounded-2xl bg-stone-900 px-4 py-3 text-sm font-black text-white transition hover:bg-stone-800 disabled:opacity-60 dark:bg-white dark:text-stone-900"
                                 >
@@ -308,7 +308,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                     type="button"
                                     onClick={() => {
                                         setSelectedFile(null)
-                                        continueFromStep2()
+                                        continueFromStep2(true)
                                     }}
                                     disabled={busy}
                                     className="rounded-2xl border border-stone-300 px-4 py-3 text-sm font-bold text-stone-700 transition hover:bg-stone-50 disabled:opacity-60 dark:border-stone-700 dark:text-stone-200 dark:hover:bg-stone-800"
@@ -465,4 +465,3 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
         </div>
     )
 }
-

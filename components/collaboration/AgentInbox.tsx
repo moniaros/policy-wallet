@@ -71,6 +71,25 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
     const [filterType, setFilterType] = useState<string | null>(null)
     const [filterStatus, setFilterStatus] = useState<string | null>(null)
 
+    function normalizeThread(thread: any): InboxThread {
+        const fallbackClientName = language === "el" ? "Πελάτης" : "Client"
+        return {
+            id: String(thread?.id || ""),
+            subject: String(thread?.subject || ""),
+            category: String(thread?.category || "general"),
+            threadType: String(thread?.threadType || "message"),
+            status: String(thread?.status || "open"),
+            priority: (thread?.priority === "low" || thread?.priority === "high" ? thread.priority : "medium"),
+            lastActivityAt: String(thread?.lastActivityAt || new Date().toISOString()),
+            createdAt: String(thread?.createdAt || new Date().toISOString()),
+            clientName: String(thread?.clientName || fallbackClientName),
+            clientId: String(thread?.clientId || ""),
+            unreadCount: Number.isFinite(Number(thread?.unreadCount)) ? Number(thread.unreadCount) : 0,
+            lastMessage: typeof thread?.lastMessage === "string" ? thread.lastMessage : undefined,
+            isWaitingOnYou: Boolean(thread?.isWaitingOnYou),
+        }
+    }
+
     useEffect(() => {
         fetchThreads()
     }, [relationshipId])
@@ -84,8 +103,13 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
 
             const res = await fetch(`/api/v1/collaboration/threads?${params}`)
             if (res.ok) {
-                const data = await res.json()
-                setThreads(data.threads || [])
+                const payload = await res.json()
+                const rawThreads = Array.isArray(payload?.data?.threads)
+                    ? payload.data.threads
+                    : Array.isArray(payload?.threads)
+                        ? payload.threads
+                        : []
+                setThreads(rawThreads.map(normalizeThread))
             }
         } catch {
             // handle silently

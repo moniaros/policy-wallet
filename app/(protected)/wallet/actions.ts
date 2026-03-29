@@ -942,7 +942,7 @@ export async function ignoreGap(gapId: string) {
         where: { id: gapId },
         include: { policy: true }
     })
-    if (!gap) return { error: "Gap not found" }
+    if (!gap || !gap.policy) return { error: "Gap not found" }
 
     const isOwner = gap.policy.ownerUserId === authResult.dbUser.id
     if (!isOwner) {

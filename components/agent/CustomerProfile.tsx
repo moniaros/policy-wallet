@@ -15,7 +15,7 @@ import {
     FileText, CheckCircle, XCircle, ArrowLeft, MoreHorizontal,
     TrendingUp, Activity, Download, ExternalLink, Sparkles,
     ChevronRight, Upload, UserPlus, Send, Briefcase,
-    ShieldCheck, ShieldAlert, Plus
+    ShieldCheck, ShieldAlert, Plus, ArrowUpRight
 } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 
@@ -133,6 +133,27 @@ export function CustomerProfile({
             case 'medium': return { badge: 'bg-amber-500/15 text-amber-600 dark:text-amber-400', dot: 'bg-amber-500', icon: 'text-amber-500' }
             case 'low': return { badge: 'bg-blue-500/15 text-blue-600 dark:text-blue-400', dot: 'bg-blue-500', icon: 'text-blue-500' }
             default: return { badge: 'bg-slate-500/15 text-slate-500', dot: 'bg-slate-400', icon: 'text-slate-400' }
+        }
+    }
+
+    const getConversionBadge = (likelihood: "high" | "medium" | "low" | null | undefined) => {
+        if (!likelihood) return null
+        switch (likelihood) {
+            case "high":
+                return {
+                    label: language === "el" ? "Υψηλή πιθανότητα" : "High likelihood",
+                    cls: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+                }
+            case "medium":
+                return {
+                    label: language === "el" ? "Μέση πιθανότητα" : "Medium likelihood",
+                    cls: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+                }
+            case "low":
+                return {
+                    label: language === "el" ? "Χαμηλή πιθανότητα" : "Low likelihood",
+                    cls: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+                }
         }
     }
 
@@ -351,10 +372,25 @@ export function CustomerProfile({
                                                             </div>
                                                             <div>
                                                                 <h4 className="font-bold text-slate-900 dark:text-white">{opp.gapTitle}</h4>
-                                                                <span className={`inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider ${severity.badge}`}>
-                                                                    <span className={`w-1.5 h-1.5 rounded-full ${severity.dot}`} />
-                                                                    {opp.severity} {t.priority}
-                                                                </span>
+                                                                <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                                                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider ${severity.badge}`}>
+                                                                        <span className={`w-1.5 h-1.5 rounded-full ${severity.dot}`} />
+                                                                        {opp.severity} {t.priority}
+                                                                    </span>
+                                                                    {(() => {
+                                                                        const badge = getConversionBadge(opp.conversionLikelihood)
+                                                                        if (!badge) return null
+                                                                        return (
+                                                                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-semibold ${badge.cls}`}>
+                                                                                <ArrowUpRight className="w-3 h-3" />
+                                                                                {badge.label}
+                                                                                {opp.conversionScore != null && (
+                                                                                    <span className="opacity-60 ml-0.5">{opp.conversionScore}%</span>
+                                                                                )}
+                                                                            </span>
+                                                                        )
+                                                                    })()}
+                                                                </div>
                                                             </div>
                                                         </div>
 

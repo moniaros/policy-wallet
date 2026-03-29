@@ -263,6 +263,11 @@ export const POST = withApiGuard(
                 }
             })
 
+            // Refresh protection score after new policy (fire-and-forget)
+            import("@/lib/services/gap-engine")
+                .then(({ refreshProtectionScore }) => refreshProtectionScore(authResult.dbUser.id))
+                .catch(() => {})
+
             return createApiResponse({
                 ...policy,
                 openGapsCount: 0

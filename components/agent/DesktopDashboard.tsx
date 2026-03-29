@@ -127,6 +127,8 @@ export function DesktopDashboard({
                             items={data.actionQueue}
                             onAction={onActionQueueItem}
                             isLoading={isLoading}
+                            gapsSummary={data.gapsSummary}
+                            onGapClientClick={onClientClick}
                         />
                     </div>
                     <div className="col-span-5">

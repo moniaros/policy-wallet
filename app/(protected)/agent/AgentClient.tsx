@@ -114,25 +114,37 @@ export function AgentClient({ policies, user, agent, relationshipId }: AgentClie
         if (activeTab === "proposals") fetchProposals()
     }, [activeTab, fetchDocumentRequests, fetchProposals])
 
-    const handleDocumentUpload = async (requestId: string, file: File) => {
+    const handleDocumentUpload = async (requestId: string, file: File): Promise<boolean> => {
         setUploadingRequestId(requestId)
         try {
-            // Upload file to get URL (using existing upload pattern)
             const formData = new FormData()
             formData.append("file", file)
             const uploadRes = await fetch("/api/v1/upload", { method: "POST", body: formData })
-            const uploadData = uploadRes.ok ? await uploadRes.json() : null
-            const fileUrl = uploadData?.url || uploadData?.fileUrl
+            if (!uploadRes.ok) return false
 
-            if (fileUrl) {
-                await fetch(`/api/v1/collaboration/document-requests/${requestId}`, {
-                    method: "PATCH",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ uploadedDocumentUrl: fileUrl }),
-                })
-                fetchDocumentRequests()
-            }
-        } catch { /* silent */ } finally { setUploadingRequestId(null) }
+            const uploadData = await uploadRes.json()
+            const fileUrl =
+                uploadData?.data?.url ||
+                uploadData?.data?.fileUrl ||
+                uploadData?.url ||
+                uploadData?.fileUrl
+
+            if (!fileUrl) return false
+
+            const patchRes = await fetch(`/api/v1/collaboration/document-requests/${requestId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ uploadedDocumentUrl: fileUrl }),
+            })
+            if (!patchRes.ok) return false
+
+            fetchDocumentRequests()
+            return true
+        } catch {
+            return false
+        } finally {
+            setUploadingRequestId(null)
+        }
     }
 
     const handleAcceptProposal = async (proposalId: string) => {
@@ -224,7 +236,7 @@ export function AgentClient({ policies, user, agent, relationshipId }: AgentClie
                         relationshipId={relationshipId}
                         onSelectThread={(threadId) => {
                             // For now, navigate could go to a thread detail — using alert as placeholder
-                            router.push(`/notifications`)
+                            router.push(`/collaboration/threads/${threadId}`)
                         }}
                     />
                 )}
@@ -337,7 +349,7 @@ function DocumentsTab({
     documentRequests: DocumentRequestData[]
     isLoading: boolean
     agentName: string
-    onUpload: (requestId: string, file: File) => void
+    onUpload: (requestId: string, file: File) => Promise<boolean>
     uploadingRequestId: string | null
     language: string
 }) {

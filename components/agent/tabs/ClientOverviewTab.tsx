@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { Shield, AlertTriangle, Users, Plus, Calendar } from "lucide-react"
+import { Shield, AlertTriangle, Users, Plus, Calendar, ArrowUpRight } from "lucide-react"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { BrandActionButton } from "@/components/ui/brand/BrandActionButton"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -149,9 +149,23 @@ export function ClientOverviewTab({
                                         key={opp.opportunityId}
                                         className={`border-l-4 rounded-xl p-4 ${severityColors[opp.severity] || severityColors.medium}`}
                                     >
-                                        <p className="text-sm font-medium text-slate-900 dark:text-white">
-                                            {opp.gapTitle}
-                                        </p>
+                                        <div className="flex items-center gap-2 flex-wrap">
+                                            <p className="text-sm font-medium text-slate-900 dark:text-white">
+                                                {opp.gapTitle}
+                                            </p>
+                                            {opp.conversionLikelihood && (
+                                                <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold ${
+                                                    opp.conversionLikelihood === "high"
+                                                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                                                        : opp.conversionLikelihood === "medium"
+                                                            ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                                                            : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                                                }`}>
+                                                    <ArrowUpRight className="w-2.5 h-2.5" />
+                                                    {opp.conversionScore != null ? `${opp.conversionScore}%` : opp.conversionLikelihood}
+                                                </span>
+                                            )}
+                                        </div>
                                         <p className="text-xs text-slate-500 mt-1 line-clamp-2">
                                             {opp.notes}
                                         </p>

@@ -17,7 +17,7 @@ import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { formatRelativeDate } from "@/lib/agent/format"
-import type { ActionQueueItem, OneTapAction } from "./types"
+import type { ActionQueueItem, GapsSummary, OneTapAction } from "./types"
 
 const ACTION_ICONS: Record<string, React.ElementType> = {
     expiring_policy: Calendar,
@@ -49,10 +49,12 @@ interface ActionQueueCardProps {
     items: ActionQueueItem[]
     onAction: (item: ActionQueueItem) => void
     onViewAll?: () => void
+    onGapClientClick?: (clientId: string) => void
     isLoading?: boolean
+    gapsSummary?: GapsSummary | null
 }
 
-export function ActionQueueCard({ items, onAction, onViewAll, isLoading }: ActionQueueCardProps) {
+export function ActionQueueCard({ items, onAction, onViewAll, onGapClientClick, isLoading, gapsSummary }: ActionQueueCardProps) {
     const { language } = useLanguage()
 
     if (isLoading) return <ActionQueueCardSkeleton />
@@ -81,6 +83,15 @@ export function ActionQueueCard({ items, onAction, onViewAll, isLoading }: Actio
                     </span>
                 )}
             </div>
+
+            {/* Critical gaps summary banner */}
+            {gapsSummary && gapsSummary.criticalClientsCount > 0 && (
+                <GapsSummaryBanner
+                    summary={gapsSummary}
+                    language={language}
+                    onClientClick={onGapClientClick}
+                />
+            )}
 
             {/* Items */}
             {totalCount === 0 ? (
@@ -134,6 +145,69 @@ export function ActionQueueCard({ items, onAction, onViewAll, isLoading }: Actio
                 </button>
             )}
         </BrandCard>
+    )
+}
+
+function GapsSummaryBanner({
+    summary,
+    language,
+    onClientClick,
+}: {
+    summary: GapsSummary
+    language: string
+    onClientClick?: (clientId: string) => void
+}) {
+    const { criticalClientsCount, highClientsCount, topClients } = summary
+
+    return (
+        <div className="mb-3 rounded-xl border border-red-200 bg-red-50 p-3 dark:border-red-900/40 dark:bg-red-950/20">
+            <div className="flex items-center gap-2 mb-2">
+                <Eye className="h-4 w-4 text-red-600 dark:text-red-400" />
+                <p className="text-sm font-semibold text-red-800 dark:text-red-300">
+                    {language === "el"
+                        ? `${criticalClientsCount} πελάτ${criticalClientsCount === 1 ? "ης" : "ες"} με κρίσιμα κενά`
+                        : `${criticalClientsCount} client${criticalClientsCount === 1 ? "" : "s"} with critical gaps`}
+                    {highClientsCount > 0 && (
+                        <span className="font-normal text-red-600/70 dark:text-red-400/70">
+                            {" "}
+                            {language === "el"
+                                ? `+ ${highClientsCount} υψηλής`
+                                : `+ ${highClientsCount} high`}
+                        </span>
+                    )}
+                </p>
+            </div>
+            {topClients.length > 0 && (
+                <div className="space-y-1">
+                    {topClients.slice(0, 3).map((client) => (
+                        <button
+                            key={client.clientId}
+                            type="button"
+                            onClick={() => onClientClick?.(client.clientId)}
+                            className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-xs transition hover:bg-red-100 dark:hover:bg-red-900/30"
+                        >
+                            <span className="font-medium text-red-900 dark:text-red-200 truncate">
+                                {client.clientName}
+                            </span>
+                            <span className="shrink-0 ml-2 text-red-600 dark:text-red-400">
+                                {client.criticalGaps > 0 && (
+                                    <span className="inline-flex items-center gap-0.5">
+                                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500" />
+                                        {client.criticalGaps}
+                                    </span>
+                                )}
+                                {client.highGaps > 0 && (
+                                    <span className="inline-flex items-center gap-0.5 ml-2">
+                                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-orange-500" />
+                                        {client.highGaps}
+                                    </span>
+                                )}
+                            </span>
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
     )
 }
 

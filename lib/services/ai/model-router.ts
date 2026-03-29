@@ -81,6 +81,18 @@ const ROUTING_TABLE: Record<
         },
         mock: { standard: "mock" },
     },
+    analyzeRiskProfile: {
+        gemini: {
+            standard: env.GEMINI_MODEL_QA,
+        },
+        openai: {
+            standard: env.OPENAI_MODEL_QA,
+        },
+        anthropic: {
+            standard: env.CLAUDE_MODEL_QA,
+        },
+        mock: { standard: "mock" },
+    },
 }
 
 /**

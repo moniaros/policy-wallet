@@ -510,7 +510,195 @@ async function main() {
         })
     }
 
-    // 7. Questionnaire Templates
+    // 7. Insurance Product Catalog (Greek Market)
+    console.log('Seeding Insurance Products...')
+    const products = [
+        {
+            lineOfBusiness: 'motor',
+            name: { en: 'Motor Insurance', el: 'Ασφάλεια Αυτοκινήτου' },
+            description: { en: 'Comprehensive or third-party motor coverage for cars, motorcycles, and commercial vehicles.', el: 'Ολική ή ασφάλεια αστικής ευθύνης για αυτοκίνητα, μοτοσικλέτες και επαγγελματικά οχήματα.' },
+            category: 'individual',
+            estimatedAnnualPremium: 400,
+            premiumRangeLow: 180,
+            premiumRangeHigh: 1200,
+            keyBenefits: [
+                { en: 'Third-party liability (mandatory)', el: 'Αστική ευθύνη (υποχρεωτική)' },
+                { en: 'Own damage / collision', el: 'Ίδιες ζημιές / σύγκρουση' },
+                { en: 'Roadside assistance', el: 'Οδική βοήθεια' },
+                { en: 'Legal protection', el: 'Νομική προστασία' },
+            ],
+            idealProfileTags: ['has_vehicles'],
+            urgencyForProfiles: 'critical',
+            greekMarketPopularity: 95,
+            sortOrder: 1,
+        },
+        {
+            lineOfBusiness: 'home',
+            name: { en: 'Home Insurance', el: 'Ασφάλεια Κατοικίας' },
+            description: { en: 'Coverage for fire, earthquake, flood, theft, and liability for homeowners and tenants.', el: 'Κάλυψη πυρκαγιάς, σεισμού, πλημμύρας, κλοπής και αστικής ευθύνης για ιδιοκτήτες και ενοικιαστές.' },
+            category: 'individual',
+            estimatedAnnualPremium: 250,
+            premiumRangeLow: 100,
+            premiumRangeHigh: 800,
+            keyBenefits: [
+                { en: 'Fire & natural disasters', el: 'Πυρκαγιά & φυσικές καταστροφές' },
+                { en: 'Earthquake (ENFIA compliance)', el: 'Σεισμός (συμβατό με ΕΝΦΙΑ)' },
+                { en: 'Theft & vandalism', el: 'Κλοπή & βανδαλισμοί' },
+                { en: 'Tenant liability', el: 'Ευθύνη ενοικιαστή' },
+            ],
+            idealProfileTags: ['homeowner'],
+            urgencyForProfiles: 'high',
+            greekMarketPopularity: 60,
+            sortOrder: 2,
+        },
+        {
+            lineOfBusiness: 'health',
+            name: { en: 'Private Health Insurance', el: 'Ιδιωτική Ασφάλεια Υγείας' },
+            description: { en: 'Hospitalization, outpatient, and preventive care coverage supplementing ESY (Greek NHS).', el: 'Κάλυψη νοσηλείας, εξωτερικών ιατρείων και προληπτικών εξετάσεων ως συμπλήρωμα του ΕΣΥ.' },
+            category: 'individual',
+            estimatedAnnualPremium: 800,
+            premiumRangeLow: 300,
+            premiumRangeHigh: 3000,
+            keyBenefits: [
+                { en: 'Hospitalization (private rooms)', el: 'Νοσηλεία (ιδιωτικά δωμάτια)' },
+                { en: 'Outpatient & diagnostics', el: 'Εξωτερικά ιατρεία & διαγνωστικά' },
+                { en: 'Direct billing network', el: 'Δίκτυο απευθείας πληρωμών' },
+                { en: 'Annual check-up', el: 'Ετήσιο check-up' },
+            ],
+            idealProfileTags: [],
+            urgencyForProfiles: 'high',
+            greekMarketPopularity: 75,
+            sortOrder: 3,
+        },
+        {
+            lineOfBusiness: 'life',
+            name: { en: 'Life Insurance', el: 'Ασφάλεια Ζωής' },
+            description: { en: 'Financial protection for dependents in case of death, disability, or critical illness.', el: 'Οικονομική προστασία εξαρτωμένων μελών σε περίπτωση θανάτου, αναπηρίας ή σοβαρής ασθένειας.' },
+            category: 'individual',
+            estimatedAnnualPremium: 600,
+            premiumRangeLow: 200,
+            premiumRangeHigh: 2500,
+            keyBenefits: [
+                { en: 'Death benefit', el: 'Παροχή θανάτου' },
+                { en: 'Permanent disability', el: 'Μόνιμη αναπηρία' },
+                { en: 'Critical illness cover', el: 'Κάλυψη σοβαρών ασθενειών' },
+                { en: 'Mortgage protection', el: 'Προστασία στεγαστικού δανείου' },
+            ],
+            idealProfileTags: ['has_dependents', 'has_mortgage', 'has_loans'],
+            urgencyForProfiles: 'critical',
+            greekMarketPopularity: 50,
+            sortOrder: 4,
+        },
+        {
+            lineOfBusiness: 'travel',
+            name: { en: 'Travel Insurance', el: 'Ταξιδιωτική Ασφάλεια' },
+            description: { en: 'Coverage for medical emergencies, trip cancellation, and luggage loss while traveling.', el: 'Κάλυψη ιατρικών εκτάκτων, ακύρωσης ταξιδιού και απώλειας αποσκευών κατά τη διάρκεια ταξιδιού.' },
+            category: 'individual',
+            estimatedAnnualPremium: 80,
+            premiumRangeLow: 30,
+            premiumRangeHigh: 300,
+            keyBenefits: [
+                { en: 'Emergency medical abroad', el: 'Ιατρικά έκτακτα στο εξωτερικό' },
+                { en: 'Trip cancellation', el: 'Ακύρωση ταξιδιού' },
+                { en: 'Luggage protection', el: 'Προστασία αποσκευών' },
+                { en: 'Repatriation', el: 'Επαναπατρισμός' },
+            ],
+            idealProfileTags: ['travels_frequently'],
+            urgencyForProfiles: 'medium',
+            greekMarketPopularity: 40,
+            sortOrder: 5,
+        },
+        {
+            lineOfBusiness: 'pet',
+            name: { en: 'Pet Insurance', el: 'Ασφάλεια Κατοικίδιου' },
+            description: { en: 'Veterinary costs, liability, and theft coverage for dogs and cats.', el: 'Κτηνιατρικά έξοδα, αστική ευθύνη και κάλυψη κλοπής για σκύλους και γάτες.' },
+            category: 'individual',
+            estimatedAnnualPremium: 150,
+            premiumRangeLow: 80,
+            premiumRangeHigh: 400,
+            keyBenefits: [
+                { en: 'Veterinary treatment', el: 'Κτηνιατρική περίθαλψη' },
+                { en: 'Leishmaniasis coverage', el: 'Κάλυψη λεϊσμανίασης' },
+                { en: 'Third-party liability', el: 'Αστική ευθύνη τρίτων' },
+                { en: 'Theft / loss', el: 'Κλοπή / απώλεια' },
+            ],
+            idealProfileTags: ['has_pets'],
+            urgencyForProfiles: 'low',
+            greekMarketPopularity: 25,
+            sortOrder: 6,
+        },
+        {
+            lineOfBusiness: 'liability',
+            name: { en: 'Professional Liability', el: 'Επαγγελματική Ευθύνη' },
+            description: { en: 'Errors & omissions coverage for professionals and self-employed individuals.', el: 'Κάλυψη σφαλμάτων και παραλείψεων για επαγγελματίες και ελεύθερους επαγγελματίες.' },
+            category: 'individual',
+            estimatedAnnualPremium: 200,
+            premiumRangeLow: 100,
+            premiumRangeHigh: 1000,
+            keyBenefits: [
+                { en: 'Professional negligence defense', el: 'Υπεράσπιση επαγγελματικής αμέλειας' },
+                { en: 'Client claims coverage', el: 'Κάλυψη αξιώσεων πελατών' },
+                { en: 'Legal costs', el: 'Νομικά έξοδα' },
+            ],
+            idealProfileTags: ['self_employed'],
+            urgencyForProfiles: 'medium',
+            greekMarketPopularity: 30,
+            sortOrder: 7,
+        },
+        {
+            lineOfBusiness: 'legal_expenses',
+            name: { en: 'Legal Expenses Insurance', el: 'Ασφάλεια Νομικής Προστασίας' },
+            description: { en: 'Coverage for legal fees, court costs, and dispute resolution.', el: 'Κάλυψη δικηγορικών αμοιβών, δικαστικών εξόδων και επίλυσης διαφορών.' },
+            category: 'individual',
+            estimatedAnnualPremium: 120,
+            premiumRangeLow: 60,
+            premiumRangeHigh: 350,
+            keyBenefits: [
+                { en: 'Legal consultation', el: 'Νομική συμβουλή' },
+                { en: 'Court representation', el: 'Δικαστική εκπροσώπηση' },
+                { en: 'Dispute mediation', el: 'Διαμεσολάβηση διαφορών' },
+            ],
+            idealProfileTags: [],
+            urgencyForProfiles: 'low',
+            greekMarketPopularity: 20,
+            sortOrder: 8,
+        },
+        {
+            lineOfBusiness: 'income_protection',
+            name: { en: 'Income Protection', el: 'Προστασία Εισοδήματος' },
+            description: { en: 'Replaces income if you are unable to work due to illness or injury.', el: 'Αντικατάσταση εισοδήματος σε περίπτωση αδυναμίας εργασίας λόγω ασθένειας ή τραυματισμού.' },
+            category: 'individual',
+            estimatedAnnualPremium: 500,
+            premiumRangeLow: 200,
+            premiumRangeHigh: 1500,
+            keyBenefits: [
+                { en: 'Monthly income replacement', el: 'Μηνιαία αντικατάσταση εισοδήματος' },
+                { en: 'Covers illness & accidents', el: 'Καλύπτει ασθένεια & ατυχήματα' },
+                { en: 'Return-to-work support', el: 'Υποστήριξη επιστροφής στην εργασία' },
+            ],
+            idealProfileTags: ['has_dependents', 'self_employed'],
+            urgencyForProfiles: 'high',
+            greekMarketPopularity: 20,
+            sortOrder: 9,
+        },
+    ]
+
+    for (const product of products) {
+        // Use upsert on lineOfBusiness + category combo
+        const existing = await prisma.insuranceProduct.findFirst({
+            where: { lineOfBusiness: product.lineOfBusiness, category: product.category },
+        })
+        if (existing) {
+            await prisma.insuranceProduct.update({
+                where: { id: existing.id },
+                data: product as any,
+            })
+        } else {
+            await prisma.insuranceProduct.create({ data: product as any })
+        }
+    }
+
+    // 8. Questionnaire Templates
     await prisma.questionnaireTemplate.upsert({
         where: { id: 'motor-risk-v1' },
         update: {},

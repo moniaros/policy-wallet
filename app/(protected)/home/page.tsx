@@ -5,6 +5,7 @@ import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { fixMojibakeText } from "@/lib/i18n/fix-mojibake"
+import { getProtectionScore } from "@/lib/services/gap-engine"
 import {
     AlertCircle,
     Car,
@@ -134,14 +135,20 @@ export default async function PolicyholderHomePage() {
     })
     const openGapCount = openGaps.length
 
-    // Gap-based health score: start at 100, penalize by severity
-    const criticalGaps = openGaps.filter(g => g.severity === "critical").length
-    const highGaps = openGaps.filter(g => g.severity === "high").length
-    const mediumGaps = openGaps.filter(g => g.severity === "medium").length
-    const lowGaps = openGaps.filter(g => g.severity === "low").length
-    const healthScore = policies.length === 0
-        ? 0
-        : Math.max(0, Math.min(100, 100 - (criticalGaps * 25 + highGaps * 15 + mediumGaps * 8 + lowGaps * 3)))
+    // Protection score: prefer cached gap engine score, fallback to legacy penalty-based calculation
+    const cachedScore = await getProtectionScore(dbUser.id, 24 * 60 * 60 * 1000).catch(() => null)
+    let healthScore: number
+    if (cachedScore) {
+        healthScore = cachedScore.overallScore
+    } else {
+        const criticalGaps = openGaps.filter(g => g.severity === "critical").length
+        const highGaps = openGaps.filter(g => g.severity === "high").length
+        const mediumGaps = openGaps.filter(g => g.severity === "medium").length
+        const lowGaps = openGaps.filter(g => g.severity === "low").length
+        healthScore = policies.length === 0
+            ? 0
+            : Math.max(0, Math.min(100, 100 - (criticalGaps * 25 + highGaps * 15 + mediumGaps * 8 + lowGaps * 3)))
+    }
 
     // Getting Started checklist data
     const hasAnalysisRun = await db.policyAnalysisRun.findFirst({
@@ -199,7 +206,7 @@ export default async function PolicyholderHomePage() {
                         className="pw-card rounded-3xl p-6"
                     >
                         <p className="pw-kicker">
-                            {t("Κύκλος κάλυψης", "Coverage progress")}
+                            {t("Βαθμολογία προστασίας", "Protection score")}
                         </p>
                         <div className="mt-3 flex items-center gap-4">
                             <div className="relative h-14 w-14">
@@ -208,18 +215,29 @@ export default async function PolicyholderHomePage() {
                                     <path
                                         d="M18 2 a 16 16 0 1 1 0 32 a 16 16 0 1 1 0 -32"
                                         fill="none"
-                                        className="stroke-[#1FDC86]"
+                                        className={healthScore >= 70 ? "stroke-[#1FDC86]" : healthScore >= 40 ? "stroke-amber-500" : "stroke-red-500"}
                                         strokeWidth="3"
                                         strokeDasharray={`${healthScore}, 100`}
                                     />
                                 </svg>
                                 <span className="absolute inset-0 grid place-items-center text-xs font-semibold text-black dark:text-white">
-                                    {healthScore}%
+                                    {healthScore}
                                 </span>
                             </div>
-                            <p className="text-sm text-black/65 dark:text-white/70">
-                                {t("Άνοιγμα AI Insights", "Open AI Insights")}
-                            </p>
+                            <div>
+                                <p className="text-sm text-black/80 dark:text-white/80 font-medium">
+                                    {healthScore >= 70
+                                        ? t("Καλή κάλυψη", "Good coverage")
+                                        : healthScore >= 40
+                                            ? t("Χρειάζεται βελτίωση", "Needs improvement")
+                                            : t("Χρειάζεται προσοχή", "Needs attention")}
+                                </p>
+                                {openGapCount > 0 && (
+                                    <p className="text-xs text-black/55 dark:text-white/60 mt-0.5">
+                                        {openGapCount} {t("κενά κάλυψης", "coverage gaps")}
+                                    </p>
+                                )}
+                            </div>
                         </div>
                     </Link>
 

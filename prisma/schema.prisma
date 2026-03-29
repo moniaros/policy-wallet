@@ -51,65 +51,65 @@ enum DeletionRequestStatus {
 }
 
 model User {
-  id                              String                   @id @default(cuid()) @map("user_id")
+  id                              String                     @id @default(cuid()) @map("user_id")
   name                            String?
-  email                           String                   @unique
+  email                           String                     @unique
   emailVerified                   DateTime?
   image                           String?
-  preferredLanguage               String                   @default("el") @map("preferred_language")
-  roles                           String                   @default("policyholder")
-  createdAt                       DateTime                 @default(now()) @map("created_at")
-  updatedAt                       DateTime                 @updatedAt @map("updated_at")
-  lastActiveAt                    DateTime?                @map("last_active_at")
+  preferredLanguage               String                     @default("el") @map("preferred_language")
+  roles                           String                     @default("policyholder")
+  createdAt                       DateTime                   @default(now()) @map("created_at")
+  updatedAt                       DateTime                   @updatedAt @map("updated_at")
+  lastActiveAt                    DateTime?                  @map("last_active_at")
   password                        String?
-  phoneNumber                     String?                  @map("phone_number")
-  pushToken                       String?                  @map("push_token")
-  stripeCustomerId                String?                  @unique @map("stripe_customer_id")
-  termsVersionAccepted            String?                  @map("terms_version_accepted")
-  privacyVersionAccepted          String?                  @map("privacy_version_accepted")
-  cookieConsentVersion            String?                  @map("cookie_consent_version")
-  consentUpdatedAt                DateTime?                @map("consent_updated_at")
-  consentLocale                   String?                  @map("consent_locale")
-  grantsReceived                  AccessGrant[]            @relation("Grantee")
-  grantsGiven                     AccessGrant[]            @relation("Granter")
+  phoneNumber                     String?                    @map("phone_number")
+  pushToken                       String?                    @map("push_token")
+  stripeCustomerId                String?                    @unique @map("stripe_customer_id")
+  termsVersionAccepted            String?                    @map("terms_version_accepted")
+  privacyVersionAccepted          String?                    @map("privacy_version_accepted")
+  cookieConsentVersion            String?                    @map("cookie_consent_version")
+  consentUpdatedAt                DateTime?                  @map("consent_updated_at")
+  consentLocale                   String?                    @map("consent_locale")
+  grantsReceived                  AccessGrant[]              @relation("Grantee")
+  grantsGiven                     AccessGrant[]              @relation("Granter")
   accounts                        Account[]
   activeSessions                  ActiveSession[]
   adminProfile                    AdminUser?
   agentProfile                    AgentProfile?
   creditTransactions              CreditTransaction[]
-  customerRelationshipsAsAgent    CustomerRelationship[]   @relation("Agent")
-  customerRelationshipsAsCustomer CustomerRelationship[]   @relation("Customer")
+  customerRelationshipsAsAgent    CustomerRelationship[]     @relation("Agent")
+  customerRelationshipsAsCustomer CustomerRelationship[]     @relation("Customer")
   entitlementUsages               EntitlementUsage[]
-  invitesReceived                 Invite[]                 @relation("Invitee")
-  invitesSent                     Invite[]                 @relation("Inviter")
+  invitesReceived                 Invite[]                   @relation("Invitee")
+  invitesSent                     Invite[]                   @relation("Inviter")
   invoices                        Invoice[]
   notifications                   NotificationEvent[]
   notificationPreferences         NotificationPreference[]
   opportunitiesOwned              Opportunity[]
   paymentMethods                  PaymentMethod[]
-  policiesCreated                 Policy[]                 @relation("Creator")
-  policiesOwned                   Policy[]                 @relation("Owner")
+  policiesCreated                 Policy[]                   @relation("Creator")
+  policiesOwned                   Policy[]                   @relation("Owner")
   documentsUploaded               PolicyDocument[]
   policyholderProfile             PolicyholderProfile?
-  questionnairesSent              QuestionnaireInstance[]  @relation("Sender")
-  questionnairesReceived          QuestionnaireInstance[]  @relation("Receiver")
+  questionnairesSent              QuestionnaireInstance[]    @relation("Sender")
+  questionnairesReceived          QuestionnaireInstance[]    @relation("Receiver")
   questionnaireResponses          QuestionnaireResponse[]
-  referralsReceived               Referral[]               @relation("Referred")
-  referralsMade                   Referral[]               @relation("Referrer")
+  referralsReceived               Referral[]                 @relation("Referred")
+  referralsMade                   Referral[]                 @relation("Referrer")
   securityEvents                  SecurityEvent[]
   sessions                        Session[]
   subscriptions                   Subscription[]
-  tasksReceived                   UserTask[]               @relation("TaskRecipient")
-  tasksCreated                    UserTask[]               @relation("TaskCreator")
-  tokenUsage                      TokenUsage[]             @relation("TokenUsage")
-  tokenBalance                    TokenBalance?            @relation("TokenBalance")
-  tokenPurchases                  TokenPurchase[]          @relation("TokenPurchases")
-  monthlyTokenUsage               MonthlyTokenUsage[]      @relation("MonthlyTokenUsage")
+  tasksReceived                   UserTask[]                 @relation("TaskRecipient")
+  tasksCreated                    UserTask[]                 @relation("TaskCreator")
+  tokenUsage                      TokenUsage[]               @relation("TokenUsage")
+  tokenBalance                    TokenBalance?              @relation("TokenBalance")
+  tokenPurchases                  TokenPurchase[]            @relation("TokenPurchases")
+  monthlyTokenUsage               MonthlyTokenUsage[]        @relation("MonthlyTokenUsage")
   policyAnalysisRuns              PolicyAnalysisRun[]
-  collaborationThreadsCreated     CollaborationThread[]    @relation("CollaborationThreadCreatedBy")
-  collaborationThreadsAssigned    CollaborationThread[]    @relation("CollaborationThreadAssignedTo")
+  collaborationThreadsCreated     CollaborationThread[]      @relation("CollaborationThreadCreatedBy")
+  collaborationThreadsAssigned    CollaborationThread[]      @relation("CollaborationThreadAssignedTo")
   collaborationMessages           CollaborationMessage[]
-  collaborationActionsAssigned    CollaborationAction[]    @relation("CollaborationActionAssignee")
+  collaborationActionsAssigned    CollaborationAction[]      @relation("CollaborationActionAssignee")
   collaborationParticipants       CollaborationParticipant[]
   policyRenewals                  PolicyRenewal[]
   tenantMemberships               TenantMembership[]
@@ -120,6 +120,9 @@ model User {
   deletionRequests                DeletionRequest[]
   documentRequestsCreated         DocumentRequest[]
   proposalsCreated                Proposal[]
+  GapInstance                     GapInstance[]
+  protectionScore                 ProtectionScore?
+  recommendations                 RecommendationInstance[]
 
   @@map("users")
 }
@@ -163,21 +166,21 @@ model VerificationToken {
 }
 
 model AgentProfile {
-  id                    String    @id @default(cuid()) @map("profile_id")
-  userId                String    @unique @map("user_id")
-  verificationStatus    String    @default("pending") @map("verification_status")
-  agencyName            String?   @map("agency_name")
-  licenseNumber         String?   @map("license_number")
-  
+  id                 String  @id @default(cuid()) @map("profile_id")
+  userId             String  @unique @map("user_id")
+  verificationStatus String  @default("pending") @map("verification_status")
+  agencyName         String? @map("agency_name")
+  licenseNumber      String? @map("license_number")
+
   // Branding & Profile
-  logoUrl            String?
-  brandColor         String?  @default("#10b981")
-  website            String?
-  phone              String?
-  documents          Json?    // [{ type: "license", url: "..." }]
+  logoUrl    String?
+  brandColor String? @default("#10b981")
+  website    String?
+  phone      String?
+  documents  Json? // [{ type: "license", url: "..." }]
 
   // Commission rates per LoB: { "motor": 15, "health": 20, ... } (percentage)
-  commissionRates    Json?    @map("commission_rates")
+  commissionRates Json? @map("commission_rates")
 
   onboardingCompletedAt DateTime? @map("onboarding_completed_at")
   submittedAt           DateTime  @default(now()) @map("submitted_at")
@@ -189,12 +192,33 @@ model AgentProfile {
 }
 
 model PolicyholderProfile {
-  id          String   @id @default(cuid()) @map("profile_id")
-  userId      String   @unique @map("user_id")
+  id          String @id @default(cuid()) @map("profile_id")
+  userId      String @unique @map("user_id")
   preferences Json?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Risk Profile Fields
+  maritalStatus    String?  @map("marital_status") // e.g. 'single', 'married'
+  dependentsCount  Int      @default(0) @map("dependents_count")
+  employmentStatus String?  @map("employment_status") // e.g. 'employed', 'self_employed', 'retired'
+  ownsHome         Boolean  @default(false) @map("owns_home")
+  mortgageAmount   Decimal? @map("mortgage_amount")
+  hasPets          Boolean  @default(false) @map("has_pets")
+  vehiclesCount    Int      @default(0) @map("vehicles_count")
+
+  // Enhanced Risk Fields (Gap Detection Engine)
+  dateOfBirth       DateTime? @map("date_of_birth")
+  annualIncome      Decimal?  @map("annual_income")
+  occupation        String?   // e.g. 'office_worker', 'manual_labor', 'freelancer'
+  riskTolerance     String?   @map("risk_tolerance") // 'conservative', 'moderate', 'aggressive'
+  hasLoans          Boolean   @default(false) @map("has_loans")
+  loanAmount        Decimal?  @map("loan_amount")
+  travelsFrequently Boolean   @default(false) @map("travels_frequently")
+  smokingStatus     String?   @map("smoking_status") // 'non_smoker', 'smoker', 'former_smoker'
+  lifeEvents        Json?     @map("life_events") // [{type: 'new_baby', date: '2026-03'}]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("policyholder_profiles")
 }
@@ -222,35 +246,35 @@ model InsuranceType {
 }
 
 model Tenant {
-  id        String             @id @default(cuid()) @map("tenant_id")
-  name      String
-  type      String             @default("agency") // agency | personal
-  logoUrl   String?            @map("logo_url")
-  brandColor String?           @map("brand_color") @default("#10b981")
-  website   String?
-  phone     String?
-  address   String?
-  taxId     String?            @map("tax_id") // ΑΦΜ for Greek agencies
-  createdAt DateTime           @default(now()) @map("created_at")
-  updatedAt DateTime           @updatedAt @map("updated_at")
-  members   TenantMembership[]
+  id         String             @id @default(cuid()) @map("tenant_id")
+  name       String
+  type       String             @default("agency") // agency | personal
+  logoUrl    String?            @map("logo_url")
+  brandColor String?            @default("#10b981") @map("brand_color")
+  website    String?
+  phone      String?
+  address    String?
+  taxId      String?            @map("tax_id") // ΑΦΜ for Greek agencies
+  createdAt  DateTime           @default(now()) @map("created_at")
+  updatedAt  DateTime           @updatedAt @map("updated_at")
+  members    TenantMembership[]
 
   @@map("tenants")
 }
 
 model TenantMembership {
-  id          String    @id @default(cuid()) @map("membership_id")
-  tenantId    String    @map("tenant_id")
-  userId      String    @map("user_id")
-  role        String    @default("member") // owner | manager | member
-  status      String    @default("active") // active | suspended | invited
-  invitedBy   String?   @map("invited_by")
-  invitedAt   DateTime? @map("invited_at")
-  joinedAt    DateTime? @map("joined_at")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String    @id @default(cuid()) @map("membership_id")
+  tenantId  String    @map("tenant_id")
+  userId    String    @map("user_id")
+  role      String    @default("member") // owner | manager | member
+  status    String    @default("active") // active | suspended | invited
+  invitedBy String?   @map("invited_by")
+  invitedAt DateTime? @map("invited_at")
+  joinedAt  DateTime? @map("joined_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([tenantId, userId])
   @@index([userId])
@@ -258,31 +282,31 @@ model TenantMembership {
 }
 
 model Policy {
-  id              String           @id @default(cuid()) @map("policy_id")
-  ownerUserId     String           @map("owner_user_id")
-  createdByUserId String           @map("created_by_user_id")
-  policyNumber    String           @map("policy_number")
-  insurerName     String           @map("insurer_name")
-  lineOfBusiness  String           @map("line_of_business")
-  startDate       DateTime         @map("start_date")
-  endDate         DateTime         @map("end_date")
-  status          String
-  premiumAmount   Decimal?         @map("premium_amount")
-  premiumCurrency String?          @default("EUR") @map("premium_currency")
-  coverageSummary String?          @map("coverage_summary")
-  createdAt       DateTime         @default(now()) @map("created_at")
-  updatedAt       DateTime         @updatedAt @map("updated_at")
-  acordData       Json?            @map("acord_data")
-  lastAnalyzedAt  DateTime?        @map("last_analyzed_at")
-  gapInstances    GapInstance[]
-  opportunities   Opportunity[]
-  creator         User             @relation("Creator", fields: [createdByUserId], references: [id])
-  owner           User             @relation("Owner", fields: [ownerUserId], references: [id])
-  documents       PolicyDocument[]
-  tokenUsages     TokenUsage[]     @relation("PolicyTokenUsage")
-  analysisRuns    PolicyAnalysisRun[]
+  id                   String                @id @default(cuid()) @map("policy_id")
+  ownerUserId          String                @map("owner_user_id")
+  createdByUserId      String                @map("created_by_user_id")
+  policyNumber         String                @map("policy_number")
+  insurerName          String                @map("insurer_name")
+  lineOfBusiness       String                @map("line_of_business")
+  startDate            DateTime              @map("start_date")
+  endDate              DateTime              @map("end_date")
+  status               String
+  premiumAmount        Decimal?              @map("premium_amount")
+  premiumCurrency      String?               @default("EUR") @map("premium_currency")
+  coverageSummary      String?               @map("coverage_summary")
+  createdAt            DateTime              @default(now()) @map("created_at")
+  updatedAt            DateTime              @updatedAt @map("updated_at")
+  acordData            Json?                 @map("acord_data")
+  lastAnalyzedAt       DateTime?             @map("last_analyzed_at")
+  gapInstances         GapInstance[]
+  opportunities        Opportunity[]
+  creator              User                  @relation("Creator", fields: [createdByUserId], references: [id])
+  owner                User                  @relation("Owner", fields: [ownerUserId], references: [id])
+  documents            PolicyDocument[]
+  tokenUsages          TokenUsage[]          @relation("PolicyTokenUsage")
+  analysisRuns         PolicyAnalysisRun[]
   collaborationThreads CollaborationThread[]
-  renewals        PolicyRenewal[]
+  renewals             PolicyRenewal[]
 
   @@index([ownerUserId])
   @@index([createdByUserId])
@@ -314,6 +338,7 @@ model PolicyDocument {
 
 model GapDefinition {
   id              String        @id @default(cuid()) @map("gap_definition_id")
+  scope           String        @default("document") // 'document' or 'portfolio'
   slug            String        @unique
   name            String
   title           String
@@ -332,21 +357,24 @@ model GapDefinition {
 }
 
 model GapInstance {
-  id              String        @id @default(cuid()) @map("gap_instance_id")
-  policyId        String        @map("policy_id")
-  gapDefinitionId String        @map("gap_definition_id")
-  severity        String
-  status          String        @default("open")
-  aiExplanation   String?       @map("ai_explanation")
-  aiSuggestion    String?       @map("ai_suggestion")
-  detectedAt      DateTime      @default(now()) @map("detected_at")
-  resolvedAt      DateTime?     @map("resolved_at")
-  aiExplanationEl String?       @map("ai_explanation_el")
-  aiSuggestionEl  String?       @map("ai_suggestion_el")
-  definition      GapDefinition @relation(fields: [gapDefinitionId], references: [id])
-  policy          Policy        @relation(fields: [policyId], references: [id], onDelete: Cascade)
-  opportunities   Opportunity[]
+  id                   String                @id @default(cuid()) @map("gap_instance_id")
+  policyId             String?               @map("policy_id")
+  userId               String?               @map("user_id")
+  gapDefinitionId      String                @map("gap_definition_id")
+  severity             String
+  status               String                @default("open")
+  aiExplanation        String?               @map("ai_explanation")
+  aiSuggestion         String?               @map("ai_suggestion")
+  detectedAt           DateTime              @default(now()) @map("detected_at")
+  resolvedAt           DateTime?             @map("resolved_at")
+  aiExplanationEl      String?               @map("ai_explanation_el")
+  aiSuggestionEl       String?               @map("ai_suggestion_el")
+  definition           GapDefinition         @relation(fields: [gapDefinitionId], references: [id])
+  policy               Policy?               @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  user                 User?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  opportunities        Opportunity[]
   collaborationThreads CollaborationThread[]
+  recommendations      RecommendationInstance[]
 
   @@index([policyId])
   @@index([status])
@@ -407,26 +435,26 @@ model Invite {
 }
 
 model Opportunity {
-  id                  String               @id @default(cuid()) @map("opportunity_id")
-  relationshipId      String               @map("relationship_id")
-  policyId            String?              @map("policy_id")
-  gapInstanceId       String?              @map("gap_instance_id")
-  status              String               @default("open")
-  nextActionAt        DateTime?            @map("next_action_at")
-  notes               String?
-  ownerAgentUserId    String               @map("owner_agent_user_id")
-  estimatedPremium    Decimal?             @map("estimated_premium")
-  estimatedCommission Decimal?             @map("estimated_commission")
-  quotedPremium       Decimal?             @map("quoted_premium")
-  wonPremium          Decimal?             @map("won_premium")
-  currency            String               @default("EUR")
-  lineOfBusiness      String?              @map("line_of_business")
-  createdAt           DateTime             @default(now()) @map("created_at")
-  updatedAt           DateTime             @updatedAt @map("updated_at")
-  gapInstance         GapInstance?         @relation(fields: [gapInstanceId], references: [id])
-  owner               User                 @relation(fields: [ownerAgentUserId], references: [id])
-  policy              Policy?              @relation(fields: [policyId], references: [id])
-  relationship        CustomerRelationship @relation(fields: [relationshipId], references: [id])
+  id                   String                @id @default(cuid()) @map("opportunity_id")
+  relationshipId       String                @map("relationship_id")
+  policyId             String?               @map("policy_id")
+  gapInstanceId        String?               @map("gap_instance_id")
+  status               String                @default("open")
+  nextActionAt         DateTime?             @map("next_action_at")
+  notes                String?
+  ownerAgentUserId     String                @map("owner_agent_user_id")
+  estimatedPremium     Decimal?              @map("estimated_premium")
+  estimatedCommission  Decimal?              @map("estimated_commission")
+  quotedPremium        Decimal?              @map("quoted_premium")
+  wonPremium           Decimal?              @map("won_premium")
+  currency             String                @default("EUR")
+  lineOfBusiness       String?               @map("line_of_business")
+  createdAt            DateTime              @default(now()) @map("created_at")
+  updatedAt            DateTime              @updatedAt @map("updated_at")
+  gapInstance          GapInstance?          @relation(fields: [gapInstanceId], references: [id])
+  owner                User                  @relation(fields: [ownerAgentUserId], references: [id])
+  policy               Policy?               @relation(fields: [policyId], references: [id])
+  relationship         CustomerRelationship  @relation(fields: [relationshipId], references: [id])
   collaborationThreads CollaborationThread[]
 
   @@index([relationshipId])
@@ -454,19 +482,19 @@ model QuestionnaireTemplate {
 }
 
 model QuestionnaireInstance {
-  id             String                  @id @default(cuid()) @map("instance_id")
-  templateId     String                  @map("template_id")
-  relationshipId String                  @map("relationship_id")
-  sentToUserId   String                  @map("sent_to_user_id")
-  sentByUserId   String                  @map("sent_by_user_id")
-  status         String                  @default("pending")
-  sentAt         DateTime                @default(now()) @map("sent_at")
-  completedAt    DateTime?               @map("completed_at")
-  relationship   CustomerRelationship    @relation(fields: [relationshipId], references: [id])
-  sender         User                    @relation("Sender", fields: [sentByUserId], references: [id])
-  receiver       User                    @relation("Receiver", fields: [sentToUserId], references: [id])
-  template       QuestionnaireTemplate   @relation(fields: [templateId], references: [id])
-  responses      QuestionnaireResponse[]
+  id                   String                  @id @default(cuid()) @map("instance_id")
+  templateId           String                  @map("template_id")
+  relationshipId       String                  @map("relationship_id")
+  sentToUserId         String                  @map("sent_to_user_id")
+  sentByUserId         String                  @map("sent_by_user_id")
+  status               String                  @default("pending")
+  sentAt               DateTime                @default(now()) @map("sent_at")
+  completedAt          DateTime?               @map("completed_at")
+  relationship         CustomerRelationship    @relation(fields: [relationshipId], references: [id])
+  sender               User                    @relation("Sender", fields: [sentByUserId], references: [id])
+  receiver             User                    @relation("Receiver", fields: [sentToUserId], references: [id])
+  template             QuestionnaireTemplate   @relation(fields: [templateId], references: [id])
+  responses            QuestionnaireResponse[]
   collaborationThreads CollaborationThread[]
 
   @@map("questionnaire_instances")
@@ -501,24 +529,24 @@ model Plan {
 }
 
 model Subscription {
-  id                 String             @id @default(cuid()) @map("subscription_id")
-  userId             String             @map("user_id")
-  planId             String             @map("plan_id")
-  status             String             @default("active")
-  currentPeriodStart DateTime           @map("current_period_start")
-  currentPeriodEnd   DateTime           @map("current_period_end")
-  autoRenew          Boolean            @default(true) @map("auto_renew")
-  provider           String             @default("stripe") // 'stripe', 'revenue_cat'
-  revenueCatIdentifier String?          @unique @map("revenue_cat_identifier")
-  stripeSubscriptionId String?          @unique @map("stripe_subscription_id")
-  stripePriceId      String?            @map("stripe_price_id")
-  stripeStatus       String?            @map("stripe_status")
-  createdAt          DateTime           @default(now()) @map("created_at")
-  updatedAt          DateTime           @updatedAt @map("updated_at")
-  entitlementUsages  EntitlementUsage[]
-  invoices           Invoice[]
-  plan               Plan               @relation(fields: [planId], references: [id])
-  user               User               @relation(fields: [userId], references: [id])
+  id                   String             @id @default(cuid()) @map("subscription_id")
+  userId               String             @map("user_id")
+  planId               String             @map("plan_id")
+  status               String             @default("active")
+  currentPeriodStart   DateTime           @map("current_period_start")
+  currentPeriodEnd     DateTime           @map("current_period_end")
+  autoRenew            Boolean            @default(true) @map("auto_renew")
+  provider             String             @default("stripe") // 'stripe', 'revenue_cat'
+  revenueCatIdentifier String?            @unique @map("revenue_cat_identifier")
+  stripeSubscriptionId String?            @unique @map("stripe_subscription_id")
+  stripePriceId        String?            @map("stripe_price_id")
+  stripeStatus         String?            @map("stripe_status")
+  createdAt            DateTime           @default(now()) @map("created_at")
+  updatedAt            DateTime           @updatedAt @map("updated_at")
+  entitlementUsages    EntitlementUsage[]
+  invoices             Invoice[]
+  plan                 Plan               @relation(fields: [planId], references: [id])
+  user                 User               @relation(fields: [userId], references: [id])
 
   @@map("subscriptions")
 }
@@ -721,7 +749,7 @@ model TokenUsage {
   outputTokens  Int      @map("output_tokens")
   totalTokens   Int      @map("total_tokens") // inputTokens + outputTokens
   costEur       Decimal  @map("cost_eur") @db.Decimal(10, 6)
-  model         String   // 'gemini-2.0-flash', etc.
+  model         String // 'gemini-2.0-flash', etc.
   createdAt     DateTime @default(now()) @map("created_at")
 
   user   User    @relation("TokenUsage", fields: [userId], references: [id], onDelete: Cascade)
@@ -747,16 +775,15 @@ model TokenBalance {
   @@map("token_balances")
 }
 
-
 model TokenPurchase {
-  id                     String   @id @default(cuid()) @map("purchase_id")
-  userId                 String   @map("user_id")
-  tokensPurchased        BigInt   @map("tokens_purchased")
-  amountEur              Decimal  @map("amount_eur") @db.Decimal(10, 2)
-  stripePaymentIntentId  String?  @map("stripe_payment_intent_id")
-  stripeSessionId        String?  @unique @map("stripe_session_id")
-  status                 String   @default("pending") // 'pending', 'completed', 'failed'
-  createdAt              DateTime @default(now()) @map("created_at")
+  id                    String   @id @default(cuid()) @map("purchase_id")
+  userId                String   @map("user_id")
+  tokensPurchased       BigInt   @map("tokens_purchased")
+  amountEur             Decimal  @map("amount_eur") @db.Decimal(10, 2)
+  stripePaymentIntentId String?  @map("stripe_payment_intent_id")
+  stripeSessionId       String?  @unique @map("stripe_session_id")
+  status                String   @default("pending") // 'pending', 'completed', 'failed'
+  createdAt             DateTime @default(now()) @map("created_at")
 
   user User @relation("TokenPurchases", fields: [userId], references: [id], onDelete: Cascade)
 
@@ -769,7 +796,7 @@ model MonthlyTokenUsage {
   id                  String   @id @default(cuid()) @map("summary_id")
   userId              String   @map("user_id")
   month               DateTime @map("month") @db.Date // First day of month
-  tier                String   // 'free', 'plus', 'pro'
+  tier                String // 'free', 'plus', 'pro'
   totalTokens         BigInt   @map("total_tokens")
   totalCostEur        Decimal  @map("total_cost_eur") @db.Decimal(10, 2)
   subscriptionTokens  BigInt   @map("subscription_tokens") // Tokens included in subscription
@@ -784,35 +811,35 @@ model MonthlyTokenUsage {
 }
 
 model PolicyAnalysisRun {
-  id               String            @id @default(cuid()) @map("analysis_run_id")
-  policyId         String            @map("policy_id")
-  userId           String            @map("user_id")
-  provider         String
-  model            String
-  status           AnalysisRunStatus @default(queued)
-  priority         Int               @default(0) @map("priority") // 0=standard, 1=plus, 2=pro (higher = sooner)
-  runAttempt       Int               @default(1) @map("run_attempt")
-  overallSuccessPct Int?             @map("overall_success_pct")
-  estimatedTokens  Int?              @map("estimated_tokens")
-  actualInputTokens Int?             @map("actual_input_tokens")
-  actualOutputTokens Int?            @map("actual_output_tokens")
-  actualTotalTokens Int?             @map("actual_total_tokens")
-  blockedReason    String?           @map("blocked_reason")
-  failureCode      String?           @map("failure_code")
-  failureMessage   String?           @map("failure_message")
-  remediationSummary Json?           @map("remediation_summary")
-  resultJson       Json?             @map("result_json")
-  executionLeaseId String?           @map("execution_lease_id")
-  executionLeaseExpiresAt DateTime?  @map("execution_lease_expires_at")
-  leaseHeartbeatAt DateTime?         @map("lease_heartbeat_at")
-  startedAt        DateTime?         @map("started_at")
-  finishedAt       DateTime?         @map("finished_at")
-  createdAt        DateTime          @default(now()) @map("created_at")
-  updatedAt        DateTime          @updatedAt @map("updated_at")
+  id                      String            @id @default(cuid()) @map("analysis_run_id")
+  policyId                String            @map("policy_id")
+  userId                  String            @map("user_id")
+  provider                String
+  model                   String
+  status                  AnalysisRunStatus @default(queued)
+  priority                Int               @default(0) @map("priority") // 0=standard, 1=plus, 2=pro (higher = sooner)
+  runAttempt              Int               @default(1) @map("run_attempt")
+  overallSuccessPct       Int?              @map("overall_success_pct")
+  estimatedTokens         Int?              @map("estimated_tokens")
+  actualInputTokens       Int?              @map("actual_input_tokens")
+  actualOutputTokens      Int?              @map("actual_output_tokens")
+  actualTotalTokens       Int?              @map("actual_total_tokens")
+  blockedReason           String?           @map("blocked_reason")
+  failureCode             String?           @map("failure_code")
+  failureMessage          String?           @map("failure_message")
+  remediationSummary      Json?             @map("remediation_summary")
+  resultJson              Json?             @map("result_json")
+  executionLeaseId        String?           @map("execution_lease_id")
+  executionLeaseExpiresAt DateTime?         @map("execution_lease_expires_at")
+  leaseHeartbeatAt        DateTime?         @map("lease_heartbeat_at")
+  startedAt               DateTime?         @map("started_at")
+  finishedAt              DateTime?         @map("finished_at")
+  createdAt               DateTime          @default(now()) @map("created_at")
+  updatedAt               DateTime          @updatedAt @map("updated_at")
 
-  policy           Policy            @relation(fields: [policyId], references: [id], onDelete: Cascade)
-  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  steps            PolicyAnalysisStep[]
+  policy Policy               @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  user   User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  steps  PolicyAnalysisStep[]
 
   @@index([policyId, createdAt])
   @@index([userId, createdAt])
@@ -822,62 +849,62 @@ model PolicyAnalysisRun {
 }
 
 model PolicyAnalysisStep {
-  id             String             @id @default(cuid()) @map("analysis_step_id")
-  runId          String             @map("analysis_run_id")
-  stepKey        String             @map("step_key")
-  stepOrder      Int                @map("step_order")
-  status         AnalysisStepStatus @default(pending)
-  attempt        Int                @default(1)
-  successPct     Int?               @map("success_pct")
-  inputTokens    Int?               @map("input_tokens")
-  outputTokens   Int?               @map("output_tokens")
-  totalTokens    Int?               @map("total_tokens")
-  provider       String?            @map("provider")
-  remediationType String?           @map("remediation_type")
-  logMessage     String?            @map("log_message")
-  logJson        Json?              @map("log_json")
-  errorCode      String?            @map("error_code")
-  errorMessage   String?            @map("error_message")
-  startedAt      DateTime?          @map("started_at")
-  finishedAt     DateTime?          @map("finished_at")
-  createdAt      DateTime           @default(now()) @map("created_at")
+  id              String             @id @default(cuid()) @map("analysis_step_id")
+  runId           String             @map("analysis_run_id")
+  stepKey         String             @map("step_key")
+  stepOrder       Int                @map("step_order")
+  status          AnalysisStepStatus @default(pending)
+  attempt         Int                @default(1)
+  successPct      Int?               @map("success_pct")
+  inputTokens     Int?               @map("input_tokens")
+  outputTokens    Int?               @map("output_tokens")
+  totalTokens     Int?               @map("total_tokens")
+  provider        String?            @map("provider")
+  remediationType String?            @map("remediation_type")
+  logMessage      String?            @map("log_message")
+  logJson         Json?              @map("log_json")
+  errorCode       String?            @map("error_code")
+  errorMessage    String?            @map("error_message")
+  startedAt       DateTime?          @map("started_at")
+  finishedAt      DateTime?          @map("finished_at")
+  createdAt       DateTime           @default(now()) @map("created_at")
 
-  run            PolicyAnalysisRun  @relation(fields: [runId], references: [id], onDelete: Cascade)
+  run PolicyAnalysisRun @relation(fields: [runId], references: [id], onDelete: Cascade)
 
   @@index([runId, stepOrder, attempt])
   @@map("policy_analysis_steps")
 }
 
 model CollaborationThread {
-  id                          String                    @id @default(cuid()) @map("thread_id")
-  relationshipId              String                    @map("relationship_id")
-  policyId                    String?                   @map("policy_id")
-  subject                     String
-  category                    String                    @default("general")
-  status                      String                    @default("open")
-  priority                    String                    @default("medium")
-  createdByUserId             String                    @map("created_by_user_id")
-  assignedToUserId            String?                   @map("assigned_to_user_id")
-  linkedOpportunityId         String?                   @map("linked_opportunity_id")
-  linkedQuestionnaireInstanceId String?                 @map("linked_questionnaire_instance_id")
-  linkedGapInstanceId         String?                   @map("linked_gap_instance_id")
-  lastActivityAt              DateTime                  @default(now()) @map("last_activity_at")
-  resolvedAt                  DateTime?                 @map("resolved_at")
-  createdAt                   DateTime                  @default(now()) @map("created_at")
-  updatedAt                   DateTime                  @updatedAt @map("updated_at")
-  relationship                CustomerRelationship      @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
-  policy                      Policy?                   @relation(fields: [policyId], references: [id], onDelete: SetNull)
-  createdBy                   User                      @relation("CollaborationThreadCreatedBy", fields: [createdByUserId], references: [id], onDelete: Cascade)
-  assignedTo                  User?                     @relation("CollaborationThreadAssignedTo", fields: [assignedToUserId], references: [id], onDelete: SetNull)
-  linkedOpportunity           Opportunity?              @relation(fields: [linkedOpportunityId], references: [id], onDelete: SetNull)
-  linkedQuestionnaireInstance QuestionnaireInstance?    @relation(fields: [linkedQuestionnaireInstanceId], references: [id], onDelete: SetNull)
-  linkedGapInstance           GapInstance?              @relation(fields: [linkedGapInstanceId], references: [id], onDelete: SetNull)
-  threadType                  String                    @default("message") @map("thread_type")
-  messages                    CollaborationMessage[]
-  actions                     CollaborationAction[]
-  participants                CollaborationParticipant[]
-  documentRequests            DocumentRequest[]
-  proposals                   Proposal[]
+  id                            String                     @id @default(cuid()) @map("thread_id")
+  relationshipId                String                     @map("relationship_id")
+  policyId                      String?                    @map("policy_id")
+  subject                       String
+  category                      String                     @default("general")
+  status                        String                     @default("open")
+  priority                      String                     @default("medium")
+  createdByUserId               String                     @map("created_by_user_id")
+  assignedToUserId              String?                    @map("assigned_to_user_id")
+  linkedOpportunityId           String?                    @map("linked_opportunity_id")
+  linkedQuestionnaireInstanceId String?                    @map("linked_questionnaire_instance_id")
+  linkedGapInstanceId           String?                    @map("linked_gap_instance_id")
+  lastActivityAt                DateTime                   @default(now()) @map("last_activity_at")
+  resolvedAt                    DateTime?                  @map("resolved_at")
+  createdAt                     DateTime                   @default(now()) @map("created_at")
+  updatedAt                     DateTime                   @updatedAt @map("updated_at")
+  relationship                  CustomerRelationship       @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
+  policy                        Policy?                    @relation(fields: [policyId], references: [id], onDelete: SetNull)
+  createdBy                     User                       @relation("CollaborationThreadCreatedBy", fields: [createdByUserId], references: [id], onDelete: Cascade)
+  assignedTo                    User?                      @relation("CollaborationThreadAssignedTo", fields: [assignedToUserId], references: [id], onDelete: SetNull)
+  linkedOpportunity             Opportunity?               @relation(fields: [linkedOpportunityId], references: [id], onDelete: SetNull)
+  linkedQuestionnaireInstance   QuestionnaireInstance?     @relation(fields: [linkedQuestionnaireInstanceId], references: [id], onDelete: SetNull)
+  linkedGapInstance             GapInstance?               @relation(fields: [linkedGapInstanceId], references: [id], onDelete: SetNull)
+  threadType                    String                     @default("message") @map("thread_type")
+  messages                      CollaborationMessage[]
+  actions                       CollaborationAction[]
+  participants                  CollaborationParticipant[]
+  documentRequests              DocumentRequest[]
+  proposals                     Proposal[]
 
   @@index([relationshipId])
   @@index([policyId])
@@ -887,47 +914,47 @@ model CollaborationThread {
 }
 
 model CollaborationMessage {
-  id          String               @id @default(cuid()) @map("message_id")
-  threadId    String               @map("thread_id")
+  id           String              @id @default(cuid()) @map("message_id")
+  threadId     String              @map("thread_id")
   senderUserId String              @map("sender_user_id")
-  messageType String               @default("comment") @map("message_type")
-  body        String
-  metadata    Json?
-  isPrivate   Boolean              @default(false) @map("is_private")
-  createdAt   DateTime             @default(now()) @map("created_at")
-  thread      CollaborationThread  @relation(fields: [threadId], references: [id], onDelete: Cascade)
-  sender      User                 @relation(fields: [senderUserId], references: [id], onDelete: Cascade)
+  messageType  String              @default("comment") @map("message_type")
+  body         String
+  metadata     Json?
+  isPrivate    Boolean             @default(false) @map("is_private")
+  createdAt    DateTime            @default(now()) @map("created_at")
+  thread       CollaborationThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  sender       User                @relation(fields: [senderUserId], references: [id], onDelete: Cascade)
 
   @@index([threadId, createdAt])
   @@map("collaboration_messages")
 }
 
 model CollaborationAction {
-  id             String               @id @default(cuid()) @map("action_id")
-  threadId       String               @map("thread_id")
+  id             String              @id @default(cuid()) @map("action_id")
+  threadId       String              @map("thread_id")
   title          String
   description    String?
-  assigneeUserId String               @map("assignee_user_id")
-  status         String               @default("pending")
-  dueDate        DateTime?            @map("due_date")
-  completedAt    DateTime?            @map("completed_at")
-  createdAt      DateTime             @default(now()) @map("created_at")
-  updatedAt      DateTime             @updatedAt @map("updated_at")
-  thread         CollaborationThread  @relation(fields: [threadId], references: [id], onDelete: Cascade)
-  assignee       User                 @relation("CollaborationActionAssignee", fields: [assigneeUserId], references: [id], onDelete: Cascade)
+  assigneeUserId String              @map("assignee_user_id")
+  status         String              @default("pending")
+  dueDate        DateTime?           @map("due_date")
+  completedAt    DateTime?           @map("completed_at")
+  createdAt      DateTime            @default(now()) @map("created_at")
+  updatedAt      DateTime            @updatedAt @map("updated_at")
+  thread         CollaborationThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  assignee       User                @relation("CollaborationActionAssignee", fields: [assigneeUserId], references: [id], onDelete: Cascade)
 
   @@index([assigneeUserId, status, dueDate])
   @@map("collaboration_actions")
 }
 
 model CollaborationParticipant {
-  id        String               @id @default(cuid()) @map("participant_id")
-  threadId  String               @map("thread_id")
-  userId    String               @map("user_id")
-  role      String               @default("participant")
-  createdAt DateTime             @default(now()) @map("created_at")
-  thread    CollaborationThread  @relation(fields: [threadId], references: [id], onDelete: Cascade)
-  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String              @id @default(cuid()) @map("participant_id")
+  threadId  String              @map("thread_id")
+  userId    String              @map("user_id")
+  role      String              @default("participant")
+  createdAt DateTime            @default(now()) @map("created_at")
+  thread    CollaborationThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([threadId, userId])
   @@index([userId])
@@ -1023,7 +1050,7 @@ model PasskeyCredential {
   credentialID        String   @unique @map("credential_identifier")
   credentialPublicKey Bytes    @map("credential_public_key")
   counter             BigInt   @default(0)
-  transports          String?  
+  transports          String?
   createdAt           DateTime @default(now()) @map("created_at")
   lastUsedAt          DateTime @default(now()) @map("last_used_at")
 
@@ -1062,34 +1089,34 @@ model TranslationCache {
 // ============================================================================
 
 model PolicyRenewal {
-  id                  String    @id @default(cuid()) @map("renewal_id")
-  policyId            String    @map("policy_id")
-  ownerUserId         String    @map("owner_user_id")
-  agentUserId         String?   @map("agent_user_id")
+  id          String  @id @default(cuid()) @map("renewal_id")
+  policyId    String  @map("policy_id")
+  ownerUserId String  @map("owner_user_id")
+  agentUserId String? @map("agent_user_id")
 
   // Renewal timeline
-  policyEndDate       DateTime  @map("policy_end_date")
-  daysBeforeExpiry    Int       @map("days_before_expiry")
+  policyEndDate    DateTime @map("policy_end_date")
+  daysBeforeExpiry Int      @map("days_before_expiry")
 
   // Status tracking: pending → contacted → renewed / lapsed / cancelled
-  status              String    @default("pending")
-  outcome             String?   // renewed_same_insurer | renewed_different_insurer | lapsed | cancelled
-  outcomeNotes        String?   @map("outcome_notes")
-  outcomeAt           DateTime? @map("outcome_at")
+  status       String    @default("pending")
+  outcome      String? // renewed_same_insurer | renewed_different_insurer | lapsed | cancelled
+  outcomeNotes String?   @map("outcome_notes")
+  outcomeAt    DateTime? @map("outcome_at")
 
   // Notification tracking
-  remindersSent       Json      @default("[]") @map("reminders_sent") // array of { milestone: number, sentAt: string }
-  lastReminderAt      DateTime? @map("last_reminder_at")
+  remindersSent  Json      @default("[]") @map("reminders_sent") // array of { milestone: number, sentAt: string }
+  lastReminderAt DateTime? @map("last_reminder_at")
 
   // Linked records
-  taskId              String?   @map("task_id")
-  opportunityId       String?   @map("opportunity_id")
+  taskId        String? @map("task_id")
+  opportunityId String? @map("opportunity_id")
 
-  createdAt           DateTime  @default(now()) @map("created_at")
-  updatedAt           DateTime  @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  policy              Policy    @relation(fields: [policyId], references: [id], onDelete: Cascade)
-  owner               User      @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  policy Policy @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  owner  User   @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
 
   @@unique([policyId, policyEndDate])
   @@index([ownerUserId])
@@ -1100,22 +1127,22 @@ model PolicyRenewal {
 }
 
 model DocumentRequest {
-  id                 String               @id @default(cuid()) @map("document_request_id")
-  threadId           String               @map("thread_id")
-  relationshipId     String               @map("relationship_id")
-  requestedByUserId  String               @map("requested_by_user_id")
-  documentType       String               @map("document_type")
-  instruction        String?
-  urgency            String               @default("normal")
-  status             String               @default("pending")
-  dueDate            DateTime?            @map("due_date")
-  completedAt        DateTime?            @map("completed_at")
-  uploadedDocumentUrl String?             @map("uploaded_document_url")
-  createdAt          DateTime             @default(now()) @map("created_at")
-  updatedAt          DateTime             @updatedAt @map("updated_at")
-  thread             CollaborationThread  @relation(fields: [threadId], references: [id], onDelete: Cascade)
-  relationship       CustomerRelationship @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
-  requestedBy        User                 @relation(fields: [requestedByUserId], references: [id], onDelete: Cascade)
+  id                  String               @id @default(cuid()) @map("document_request_id")
+  threadId            String               @map("thread_id")
+  relationshipId      String               @map("relationship_id")
+  requestedByUserId   String               @map("requested_by_user_id")
+  documentType        String               @map("document_type")
+  instruction         String?
+  urgency             String               @default("normal")
+  status              String               @default("pending")
+  dueDate             DateTime?            @map("due_date")
+  completedAt         DateTime?            @map("completed_at")
+  uploadedDocumentUrl String?              @map("uploaded_document_url")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+  thread              CollaborationThread  @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  relationship        CustomerRelationship @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
+  requestedBy         User                 @relation(fields: [requestedByUserId], references: [id], onDelete: Cascade)
 
   @@index([relationshipId])
   @@index([status])
@@ -1148,4 +1175,75 @@ model Proposal {
   @@index([relationshipId])
   @@index([status])
   @@map("proposals")
+}
+
+// ── Gap Detection & Recommendation Engine ────────────────────────────
+
+model ProtectionScore {
+  id             String   @id @default(cuid()) @map("protection_score_id")
+  userId         String   @unique @map("user_id")
+  overallScore   Int      @map("overall_score") // 0-100
+  categoryScores Json     @map("category_scores") // { life: 80, health: 100, property: 0, income: 40, liability: 60, other: 0 }
+  gapCount       Int      @map("gap_count")
+  expectedLines  Json     @map("expected_lines") // ["motor","health","home","life"]
+  actualLines    Json     @map("actual_lines") // ["motor","health"]
+  computedAt     DateTime @map("computed_at")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("protection_scores")
+}
+
+model RecommendationInstance {
+  id               String       @id @default(cuid()) @map("recommendation_id")
+  userId           String       @map("user_id")
+  gapInstanceId    String?      @map("gap_instance_id")
+  lineOfBusiness   String       @map("line_of_business")
+  ruleId           String?      @map("rule_id") // e.g. 'mortgage_no_life'
+  title            Json         // { en: "...", el: "..." }
+  description      Json         // { en: "...", el: "..." }
+  urgency          String       // 'critical', 'high', 'medium', 'low'
+  estimatedCostEur Decimal?     @map("estimated_cost_eur") @db.Decimal(10, 2)
+  personalReason   Json         @map("personal_reason") // { en: "You have a mortgage...", el: "..." }
+  status           String       @default("active") // 'active', 'dismissed', 'actioned'
+  dismissReason    String?      @map("dismiss_reason")
+  actionedAt       DateTime?    @map("actioned_at")
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gapInstance      GapInstance? @relation(fields: [gapInstanceId], references: [id], onDelete: SetNull)
+
+  productId        String?      @map("product_id")
+  product          InsuranceProduct? @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@index([userId, status])
+  @@index([urgency])
+  @@map("recommendation_instances")
+}
+
+// ── Insurance Product Catalog ────────────────────────────────────────────────
+// Greek market insurance products linked to specific lines of business.
+// Used for product matching in recommendations and cross-sell.
+
+model InsuranceProduct {
+  id                      String       @id @default(cuid()) @map("product_id")
+  lineOfBusiness          String       @map("line_of_business") // motor, home, health, life, travel, pet, liability, legal_expenses
+  name                    Json         // { en: "...", el: "..." }
+  description             Json         // { en: "...", el: "..." }
+  category                String       @default("individual") // individual, group, corporate
+  estimatedAnnualPremium  Decimal      @map("estimated_annual_premium") @db.Decimal(10, 2)
+  premiumRangeLow         Decimal?     @map("premium_range_low") @db.Decimal(10, 2)
+  premiumRangeHigh        Decimal?     @map("premium_range_high") @db.Decimal(10, 2)
+  keyBenefits             Json?        @map("key_benefits") // [{ en: "...", el: "..." }, ...]
+  idealProfileTags        String[]     @map("ideal_profile_tags") // e.g. ['homeowner', 'has_dependents', 'self_employed']
+  urgencyForProfiles      String       @default("medium") @map("urgency_for_profiles") // critical, high, medium, low
+  greekMarketPopularity   Int          @default(50) @map("greek_market_popularity") // 0-100
+  isActive                Boolean      @default(true) @map("is_active")
+  sortOrder               Int          @default(0) @map("sort_order")
+  createdAt               DateTime     @default(now()) @map("created_at")
+  updatedAt               DateTime     @updatedAt @map("updated_at")
+  recommendations         RecommendationInstance[]
+
+  @@index([lineOfBusiness, isActive])
+  @@index([isActive, sortOrder])
+  @@map("insurance_products")
 }

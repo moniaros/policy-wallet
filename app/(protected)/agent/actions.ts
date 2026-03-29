@@ -179,16 +179,29 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
                 endDate: new Date(p.expiresAt).toISOString(),
                 status: 'active'
             })),
-            opportunities: profile.opportunities.map(o => ({
-                opportunityId: o.id,
-                policyId: o.policyId || '',
-                gapId: o.gapInstanceId || '',
-                gapTitle: o.relatedGap || 'Coverage Gap',
-                severity: (o.severity || 'medium') as any,
-                status: o.status as OpportunityStatus,
-                nextActionDate: '',
-                notes: o.notes || '',
-                createdAt: new Date(o.createdAt).toISOString()
+            opportunities: await Promise.all(profile.opportunities.map(async (o) => {
+                // Compute a lightweight conversion score from available data
+                let conversionLikelihood: "high" | "medium" | "low" | null = null
+                let conversionScore: number | null = null
+                try {
+                    const { scoreOpportunity } = await import("@/lib/services/gap-engine/opportunity-scoring")
+                    const scored = await scoreOpportunity(o.id)
+                    conversionLikelihood = scored.likelihood
+                    conversionScore = scored.score
+                } catch {}
+                return {
+                    opportunityId: o.id,
+                    policyId: o.policyId || '',
+                    gapId: o.gapInstanceId || '',
+                    gapTitle: o.relatedGap || 'Coverage Gap',
+                    severity: (o.severity || 'medium') as any,
+                    status: o.status as OpportunityStatus,
+                    nextActionDate: '',
+                    notes: o.notes || '',
+                    createdAt: new Date(o.createdAt).toISOString(),
+                    conversionLikelihood,
+                    conversionScore,
+                }
             })),
             interactions
         }

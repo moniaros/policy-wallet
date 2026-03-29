@@ -51,6 +51,7 @@ export type OperationType =
     | 'opportunity_analysis'
     | 'client_report'
     | 'notification_generation'
+    | 'risk_profile_analysis'
     | 'other'
 
 /**

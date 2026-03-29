@@ -1439,6 +1439,19 @@ export class PolicyAnalysisOrchestratorService {
             durationMs: startedAtMs ? Math.max(0, Date.now() - startedAtMs) : undefined,
         })
 
+        // Refresh protection score after successful analysis (fire-and-forget)
+        if (finalStatus === "completed" || finalStatus === "completed_with_warnings") {
+            import("@/lib/services/gap-engine")
+                .then(({ refreshProtectionScore }) => refreshProtectionScore(run.userId))
+                .catch((err) =>
+                    logger("warn", "Post-analysis protection score refresh failed (non-blocking)", {
+                        userId: run.userId,
+                        runId,
+                        error: err instanceof Error ? err.message : String(err),
+                    })
+                )
+        }
+
         return updatedRun
     }
     private async executeStepWithRetry<T>(params: {

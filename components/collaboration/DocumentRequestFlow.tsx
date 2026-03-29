@@ -150,7 +150,7 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
 interface DocumentRequestRespondProps {
     request: DocumentRequestData
     agentName: string
-    onUpload: (requestId: string, file: File) => void
+    onUpload: (requestId: string, file: File) => Promise<boolean>
     isUploading?: boolean
 }
 
@@ -158,17 +158,30 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
     const { language } = useLanguage()
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [uploaded, setUploaded] = useState(request.status === "uploaded")
+    const [error, setError] = useState<string | null>(null)
 
     const docLabel = DOCUMENT_TYPE_TAXONOMY[request.documentType as DocumentTypeKey]
     const docName = docLabel
         ? (language === "el" ? docLabel.el : docLabel.en)
         : request.documentType
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (file) {
-            onUpload(request.id, file)
-            setUploaded(true)
+            setError(null)
+            const success = await onUpload(request.id, file).catch(() => false)
+            if (success) {
+                setUploaded(true)
+            } else {
+                setError(
+                    language === "el"
+                        ? "Η μεταφόρτωση απέτυχε. Παρακαλώ δοκιμάστε ξανά."
+                        : "Upload failed. Please try again."
+                )
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = ""
+                }
+            }
         }
     }
 
@@ -226,6 +239,21 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
                     <Clock className="h-3 w-3" />
                     {language === "el" ? "Προθεσμία" : "Due"}: {formatDateGreek(request.dueDate)}
                 </p>
+            )}
+
+            {/* Error feedback */}
+            {error && (
+                <div className="flex items-center gap-2 mt-3 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/50 px-3 py-2">
+                    <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400 shrink-0" />
+                    <p className="text-xs text-red-700 dark:text-red-400">{error}</p>
+                    <button
+                        type="button"
+                        onClick={() => setError(null)}
+                        className="ml-auto text-red-400 hover:text-red-600 dark:hover:text-red-300"
+                    >
+                        <X className="h-3 w-3" />
+                    </button>
+                </div>
             )}
 
             {/* Upload buttons */}

@@ -15,6 +15,8 @@ interface Opportunity {
     nextActionAt: Date | null
     notes: string | null
     policyId: string | null
+    conversionLikelihood: "high" | "medium" | "low" | null
+    conversionScore: number | null
 }
 
 interface OpportunitiesClientProps {
@@ -105,6 +107,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                     <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-8">Customer</th>
                                     <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Opportunity</th>
                                     <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Status</th>
+                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Likelihood</th>
                                     <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Next Action</th>
                                     <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest text-right pr-8">Actions</th>
                                 </tr>
@@ -112,7 +115,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
                                 {filteredOpportunities.length === 0 ? (
                                     <tr>
-                                        <td colSpan={5} className="px-6 py-20 text-center">
+                                        <td colSpan={6} className="px-6 py-20 text-center">
                                             <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-slate-100 dark:bg-slate-800 text-slate-400 mb-4">
                                                 <svg className="w-8 h-8 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -150,6 +153,26 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                     }`}>
                                                     {opp.status}
                                                 </span>
+                                            </td>
+                                            <td className="px-6 py-6">
+                                                {opp.conversionLikelihood ? (
+                                                    <div className="flex items-center gap-1.5">
+                                                        <span className={`inline-block h-2 w-2 rounded-full ${
+                                                            opp.conversionLikelihood === "high" ? "bg-emerald-500" :
+                                                            opp.conversionLikelihood === "medium" ? "bg-amber-500" : "bg-slate-400"
+                                                        }`} />
+                                                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400 capitalize">
+                                                            {opp.conversionLikelihood}
+                                                        </span>
+                                                        {opp.conversionScore != null && (
+                                                            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
+                                                                {opp.conversionScore}%
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-xs text-slate-400">—</span>
+                                                )}
                                             </td>
                                             <td className="px-6 py-6 text-sm font-bold text-slate-500 dark:text-slate-400">
                                                 {opp.nextActionAt ? new Date(opp.nextActionAt).toLocaleDateString() : '—'}

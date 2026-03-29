@@ -23,7 +23,7 @@ export async function updateGapStatus(gapId: string, status: 'acknowledged' | 'd
         }
     })
 
-    if (!gap || gap.policy.ownerUserId !== authResult.dbUser.id) {
+    if (!gap || !gap.policy || gap.policy.ownerUserId !== authResult.dbUser.id) {
         throw new Error("Gap not found or unauthorized")
     }
 

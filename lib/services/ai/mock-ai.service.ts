@@ -17,7 +17,9 @@ import type {
     AIPolicyExtractionResponse,
     AIGapAnalysisResponse,
     AIPolicyClarityResponse,
-    AITrackingOptions
+    AIRiskProfileAnalysisResponse,
+    AITrackingOptions,
+    RiskProfileInput,
 } from './ai-service.interface'
 import { enrichExtractionPayload } from './extraction-enrichment'
 import { daysFromNow, DEFAULT_POLICY_DURATION_DAYS } from '@/lib/constants/time'
@@ -338,6 +340,48 @@ export class MockAIService implements IAIService {
         }
 
         return `This is a mock answer to your question: "${question}". I've analyzed your ${metadata.insurerName} policy.`
+    }
+
+    async analyzeRiskProfile(
+        profile: RiskProfileInput,
+        existingPolicies: PolicyMetadata[],
+        options?: AITrackingOptions
+    ): Promise<AIRiskProfileAnalysisResponse> {
+        await this.simulateDelay()
+        if (this.shouldFail) throw new Error('Mock AI failure: analyzeRiskProfile')
+
+        return {
+            riskSummary: {
+                en: 'Mock risk analysis: your profile indicates moderate risk with some coverage gaps.',
+                el: 'Ανάλυση κινδύνου mock: το προφίλ σας δείχνει μέτριο κίνδυνο με κάποια κενά κάλυψης.',
+            },
+            riskLevel: 'moderate',
+            insights: [
+                {
+                    category: 'health',
+                    insight: {
+                        en: 'Consider private health insurance to complement ESY.',
+                        el: 'Εξετάστε ιδιωτική ασφάλεια υγείας για συμπλήρωση του ΕΣΥ.',
+                    },
+                    urgency: 'medium',
+                    actionable: true,
+                },
+            ],
+            prioritizedGaps: [
+                {
+                    lineOfBusiness: 'health',
+                    reason: {
+                        en: 'No private health coverage detected.',
+                        el: 'Δεν εντοπίστηκε ιδιωτική κάλυψη υγείας.',
+                    },
+                    urgency: 'high',
+                },
+            ],
+            profileStrengths: [
+                { en: 'Good policy diversity.', el: 'Καλή ποικιλία ασφαλιστηρίων.' },
+            ],
+            usage: { inputTokens: 0, outputTokens: 0, totalTokens: 0, model: 'mock' },
+        }
     }
 
     /**

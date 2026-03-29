@@ -59,6 +59,7 @@ interface CollaborationTimelineProps {
     relationshipId?: string | null
     viewerRole: ViewerRole
     compact?: boolean
+    initialThreadId?: string | null
 }
 
 function getSlaHours(priority: "low" | "medium" | "high") {
@@ -76,9 +77,10 @@ export function CollaborationTimeline({
     relationshipId,
     viewerRole,
     compact = false,
+    initialThreadId = null,
 }: CollaborationTimelineProps) {
     const [threads, setThreads] = useState<Thread[]>([])
-    const [selectedId, setSelectedId] = useState<string | null>(null)
+    const [selectedId, setSelectedId] = useState<string | null>(initialThreadId)
     const [selected, setSelected] = useState<ThreadDetail | null>(null)
     const [loading, setLoading] = useState(false)
     const [threadSubject, setThreadSubject] = useState("")
@@ -249,6 +251,12 @@ export function CollaborationTimeline({
     useEffect(() => {
         loadThreads()
     }, [query])
+
+    useEffect(() => {
+        if (initialThreadId) {
+            setSelectedId(initialThreadId)
+        }
+    }, [initialThreadId])
 
     useEffect(() => {
         if (selectedId) loadThreadDetail(selectedId)

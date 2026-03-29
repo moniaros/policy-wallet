@@ -248,8 +248,8 @@ export async function getInsightsData(): Promise<InsightsData | null> {
             id: g.id,
             title: g.definition?.title || 'Coverage Gap',
             severity: g.severity,
-            customerName: customerMap.get(g.policy.ownerUserId) || 'Unknown',
-            policyNumber: g.policy.policyNumber || 'N/A',
+            customerName: g.policy ? customerMap.get(g.policy.ownerUserId) || 'Unknown' : 'Unknown',
+            policyNumber: g.policy?.policyNumber || 'N/A',
             detectedAt: g.detectedAt.toISOString(),
         })),
         renewalMetrics: {

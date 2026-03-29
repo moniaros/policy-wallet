@@ -10,7 +10,7 @@ import { resolveAgentEntitlements } from "@/lib/subscription-entitlements"
 import { computeClientHealthScore } from "@/lib/agent/health-score"
 import { classifyUrgencyTier } from "@/lib/agent/format"
 import { db as prisma } from "@/lib/db"
-import type { AgentDashboardData, ActionQueueItem, ClientCardData } from "@/components/agent/types"
+import type { AgentDashboardData, ActionQueueItem, ClientCardData, GapsSummary } from "@/components/agent/types"
 
 export default async function DashboardPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -159,6 +159,18 @@ export default async function DashboardPage() {
         atRiskCount: actionQueue.filter((i) => i.urgency === "high").length,
     }
 
+    // ── Protection Scores (batch fetch from cache) ──────────────
+    const protectionScores = await prisma.protectionScore.findMany({
+        where: {
+            userId: { in: relationships.map((r) => r.policyholderUserId) },
+        },
+        select: { userId: true, overallScore: true, gapCount: true },
+    }).catch(() => [] as Array<{ userId: string; overallScore: number; gapCount: number }>)
+
+    const scoresByUserId = new Map(
+        protectionScores.map((s) => [s.userId, s])
+    )
+
     // ── Clients by Urgency ────────────────────────────────────────
     const clientsByUrgency: AgentDashboardData["clientsByUrgency"] = {
         needs_attention: [],
@@ -209,6 +221,8 @@ export default async function DashboardPage() {
             nextActionDue: nextAction?.dueDate || null,
             nextActionLabel: nextAction?.description || null,
             activationStatus: rel.status === "active" ? "activated" : rel.status === "pending_activation" ? "invited" : "inactive",
+            protectionScore: scoresByUserId.get(rel.policyholderUserId)?.overallScore ?? null,
+            gapCount: scoresByUserId.get(rel.policyholderUserId)?.gapCount ?? 0,
         }
 
         clientsByUrgency[urgencyTier].push(clientCard)
@@ -236,12 +250,59 @@ export default async function DashboardPage() {
         }
     })
 
+    // ── Gaps Summary (critical/high gaps across clients) ────────────
+    const clientUserIds = relationships.map((r) => r.policyholderUserId)
+    const criticalHighGaps = clientUserIds.length > 0
+        ? await prisma.gapInstance.findMany({
+            where: {
+                status: { in: ["open", "detected"] },
+                severity: { in: ["critical", "high"] },
+                policy: { ownerUserId: { in: clientUserIds } },
+            },
+            select: {
+                severity: true,
+                policy: { select: { ownerUserId: true } },
+            },
+        }).catch(() => [])
+        : []
+
+    const gapsByClient = new Map<string, { critical: number; high: number }>()
+    for (const gap of criticalHighGaps) {
+        const ownerId = gap.policy?.ownerUserId
+        if (!ownerId) continue
+        const entry = gapsByClient.get(ownerId) || { critical: 0, high: 0 }
+        if (gap.severity === "critical") entry.critical++
+        else entry.high++
+        gapsByClient.set(ownerId, entry)
+    }
+
+    const gapsSummary: GapsSummary | null = gapsByClient.size > 0
+        ? {
+            criticalClientsCount: [...gapsByClient.values()].filter((v) => v.critical > 0).length,
+            highClientsCount: [...gapsByClient.values()].filter((v) => v.high > 0 && v.critical === 0).length,
+            totalGapsCount: criticalHighGaps.length,
+            topClients: [...gapsByClient.entries()]
+                .sort((a, b) => (b[1].critical * 10 + b[1].high) - (a[1].critical * 10 + a[1].high))
+                .slice(0, 3)
+                .map(([userId, counts]) => {
+                    const rel = relationships.find((r) => r.policyholderUserId === userId)
+                    return {
+                        clientId: rel?.customer.id || userId,
+                        clientName: rel?.customer.name || "Client",
+                        criticalGaps: counts.critical,
+                        highGaps: counts.high,
+                    }
+                }),
+        }
+        : null
+
     const dashboardData: AgentDashboardData = {
         actionQueue,
         revenue,
         portfolioHealth,
         clientsByUrgency,
         todaysFollowUps,
+        gapsSummary,
     }
 
     return (

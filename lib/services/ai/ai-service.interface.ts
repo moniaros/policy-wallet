@@ -202,11 +202,52 @@ export interface AITrackingOptions {
     structuredContext?: AIPolicyExtractionResponse
 }
 
+// ── Risk Profile Analysis (Phase 2) ─────────────────────────────────
+
+export interface RiskProfileInput {
+    maritalStatus: string | null
+    dependentsCount: number
+    employmentStatus: string | null
+    ownsHome: boolean
+    mortgageAmount: number | null
+    hasPets: boolean
+    vehiclesCount: number
+    annualIncome: number | null
+    occupation: string | null
+    travelsFrequently: boolean
+    hasLoans: boolean
+    loanAmount: number | null
+    smokingStatus: string | null
+    dateOfBirth: string | null
+    lifeEvents: Array<{ type: string; date: string }> | null
+}
+
+export interface AIRiskInsight {
+    category: string
+    insight: LocalizedText
+    urgency: "critical" | "high" | "medium" | "low"
+    actionable: boolean
+}
+
+export interface AIRiskProfileAnalysisResponse {
+    riskSummary: LocalizedText
+    riskLevel: "low" | "moderate" | "high" | "very_high"
+    insights: AIRiskInsight[]
+    prioritizedGaps: Array<{
+        lineOfBusiness: string
+        reason: LocalizedText
+        urgency: "critical" | "high" | "medium" | "low"
+    }>
+    profileStrengths: LocalizedText[]
+    usage?: AITokenUsage
+}
+
 export type AICapabilityOperation =
     | "extractPolicyData"
     | "analyzeGaps"
     | "analyzePolicyClarity"
     | "askQuestion"
+    | "analyzeRiskProfile"
 
 export interface AICapabilityMetadata {
     provider: "gemini" | "openai" | "anthropic" | "mock"
@@ -312,8 +353,23 @@ export interface IAIService {
     ): Promise<string>
 
     /**
+     * Analyzes a user's risk profile against their existing policies
+     * to generate personalized insurance insights and prioritized gap recommendations.
+     *
+     * @param profile - User's risk profile fields
+     * @param existingPolicies - Current policy portfolio metadata
+     * @param options - Tracking options
+     * @returns Risk analysis with insights, gap priorities, and strengths
+     */
+    analyzeRiskProfile(
+        profile: RiskProfileInput,
+        existingPolicies: PolicyMetadata[],
+        options?: AITrackingOptions
+    ): Promise<AIRiskProfileAnalysisResponse>
+
+    /**
      * Checks if the AI service is available
-     * 
+     *
      * @returns True if service is available
      */
     isAvailable(): boolean

@@ -1,6 +1,7 @@
 import { db } from "../db"
 import { sendEmail } from "../email/email-service"
 import { getWeeklyDigestEmail } from "../email/templates/weekly-digest"
+import { getActiveRecommendations } from "./gap-engine/recommendation-generator"
 
 type WeeklyDigestSummary = {
     emailsSent: number
@@ -107,24 +108,66 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                 },
             })
 
-            // Health score
-            const openGaps = await db.gapInstance.findMany({
-                where: {
-                    policy: { ownerUserId: user.id },
-                    status: { in: ["open", "detected", "acknowledged"] },
-                },
-                select: { severity: true },
-            })
-            const policies = await db.policy.count({ where: { ownerUserId: user.id } })
-            const crit = openGaps.filter(g => g.severity === "critical").length
-            const high = openGaps.filter(g => g.severity === "high").length
-            const med = openGaps.filter(g => g.severity === "medium").length
-            const low = openGaps.filter(g => g.severity === "low").length
-            const healthScore = policies === 0
-                ? 0
-                : Math.max(0, Math.min(100, 100 - (crit * 25 + high * 15 + med * 8 + low * 3)))
+            // Health score — prefer cached protection score from gap engine
+            const cachedScore = await db.protectionScore.findUnique({
+                where: { userId: user.id },
+                select: { overallScore: true },
+            }).catch(() => null)
 
+            let healthScore: number
+            if (cachedScore) {
+                healthScore = cachedScore.overallScore
+            } else {
+                const openGaps = await db.gapInstance.findMany({
+                    where: {
+                        policy: { ownerUserId: user.id },
+                        status: { in: ["open", "detected", "acknowledged"] },
+                    },
+                    select: { severity: true },
+                })
+                const policyCount = await db.policy.count({ where: { ownerUserId: user.id } })
+                const crit = openGaps.filter(g => g.severity === "critical").length
+                const high = openGaps.filter(g => g.severity === "high").length
+                const med = openGaps.filter(g => g.severity === "medium").length
+                const low = openGaps.filter(g => g.severity === "low").length
+                healthScore = policyCount === 0
+                    ? 0
+                    : Math.max(0, Math.min(100, 100 - (crit * 25 + high * 15 + med * 8 + low * 3)))
+            }
+
+            // Top recommendations for behavioral nudge
             const lang = user.preferredLanguage === "el" ? "el" as const : "en" as const
+            const activeRecs = await getActiveRecommendations(user.id).catch(() => [])
+            const topRecommendations = activeRecs.slice(0, 3).map(r => ({
+                title: r.title[lang] || r.title.en,
+                urgency: r.urgency,
+                estimatedCostEur: r.estimatedCostEur,
+            }))
+
+            // Profile completeness
+            const profile = await db.policyholderProfile.findUnique({
+                where: { userId: user.id },
+                select: {
+                    maritalStatus: true,
+                    employmentStatus: true,
+                    annualIncome: true,
+                    occupation: true,
+                    smokingStatus: true,
+                    dateOfBirth: true,
+                },
+            }).catch(() => null)
+
+            const filledProfileFields = profile ? [
+                profile.maritalStatus != null,
+                profile.employmentStatus != null,
+                profile.dateOfBirth != null,
+                profile.annualIncome != null,
+                profile.occupation != null,
+                profile.smokingStatus != null,
+                true, true, true, true, true, // boolean fields always set
+            ].filter(Boolean).length : 0
+            const profileCompleteness = profile ? Math.round((filledProfileFields / 11) * 100) : 0
+
             const { subject, html } = getWeeklyDigestEmail(lang, user.name || undefined, {
                 renewingSoon: renewals.map(r => ({
                     insurerName: r.insurerName,
@@ -135,6 +178,8 @@ export async function runWeeklyDigestJob(): Promise<WeeklyDigestSummary> {
                 unreadMessages,
                 healthScoreChange: 0, // TODO: compare with last week's stored score
                 healthScore,
+                topRecommendations,
+                profileCompleteness,
             })
 
             await sendEmail({ to: user.email, subject, html })

@@ -20,10 +20,12 @@ import type {
     AIGapAnalysisResponse,
     AIPolicyClarityResponse,
     AIPolicyExtractionResponse,
+    AIRiskProfileAnalysisResponse,
     AITrackingOptions,
     GapDefinitionForAI,
     IAIService,
     PolicyMetadata,
+    RiskProfileInput,
 } from "./ai-service.interface"
 import { AcordDataSchema } from "@/lib/schemas/acord-data"
 import { enrichExtractionPayload } from "./extraction-enrichment"
@@ -544,5 +546,119 @@ Question: ${question}`,
         }
 
         return result.text
+    }
+
+    // ── Risk Profile Analysis ────────────────────────────────────────
+
+    async analyzeRiskProfile(
+        profile: RiskProfileInput,
+        existingPolicies: PolicyMetadata[],
+        options?: AITrackingOptions
+    ): Promise<AIRiskProfileAnalysisResponse> {
+        if (!this.aiProvider) throw new Error("Anthropic service not available")
+
+        const modelName = env.CLAUDE_MODEL_QA as string
+
+        const RiskProfileAnalysisSchema = z.object({
+            riskSummary: z.object({
+                en: z.string().describe("English risk summary (2-3 sentences)"),
+                el: z.string().describe("Greek risk summary (2-3 sentences)"),
+            }),
+            riskLevel: z.enum(["low", "moderate", "high", "very_high"]),
+            insights: z.array(z.object({
+                category: z.string(),
+                insight: z.object({ en: z.string(), el: z.string() }),
+                urgency: z.enum(["critical", "high", "medium", "low"]),
+                actionable: z.boolean(),
+            })).describe("Personalized risk insights (max 5)"),
+            prioritizedGaps: z.array(z.object({
+                lineOfBusiness: z.string(),
+                reason: z.object({ en: z.string(), el: z.string() }),
+                urgency: z.enum(["critical", "high", "medium", "low"]),
+            })).describe("Missing insurance lines ranked by urgency (max 5)"),
+            profileStrengths: z.array(z.object({
+                en: z.string(),
+                el: z.string(),
+            })).describe("Positive aspects of current coverage (max 3)"),
+        })
+
+        const policySummary = existingPolicies.length > 0
+            ? existingPolicies.map(p =>
+                `- ${p.lineOfBusiness} (${p.insurerName}): premium ${p.premiumAmount ?? "unknown"}€, expires ${p.endDate.toISOString().split("T")[0]}`
+            ).join("\n")
+            : "No policies currently held."
+
+        const age = profile.dateOfBirth
+            ? Math.floor((Date.now() - new Date(profile.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
+            : null
+
+        const prompt = `You are an expert Greek insurance advisor. Analyze this person's risk profile and current insurance portfolio.
+
+## Risk Profile
+- Age: ${age ?? "Unknown"}
+- Marital status: ${profile.maritalStatus || "Unknown"}
+- Dependents: ${profile.dependentsCount}
+- Employment: ${profile.employmentStatus || "Unknown"}
+- Occupation: ${profile.occupation || "Unknown"}
+- Annual income: ${profile.annualIncome ? `€${profile.annualIncome}` : "Unknown"}
+- Owns home: ${profile.ownsHome ? "Yes" : "No"}
+- Mortgage: ${profile.mortgageAmount ? `€${profile.mortgageAmount}` : "None"}
+- Vehicles: ${profile.vehiclesCount}
+- Has pets: ${profile.hasPets ? "Yes" : "No"}
+- Travels frequently: ${profile.travelsFrequently ? "Yes" : "No"}
+- Has loans: ${profile.hasLoans ? "Yes" : "No"}${profile.loanAmount ? ` (€${profile.loanAmount})` : ""}
+- Smoking status: ${profile.smokingStatus || "Unknown"}
+- Life events: ${profile.lifeEvents?.length ? profile.lifeEvents.map(e => `${e.type} (${e.date})`).join(", ") : "None reported"}
+
+## Current Insurance Portfolio
+${policySummary}
+
+## Instructions
+1. Consider the Greek insurance market context (mandatory motor, ENFIA property requirements, ESY public health)
+2. Identify the most critical coverage gaps given this person's specific situation
+3. Provide actionable, personalized insights (not generic advice)
+4. Be bilingual: provide both English and Greek for all text fields
+5. Consider life stage, income level, and family situation when assessing urgency
+6. Limit insights to max 5, prioritized gaps to max 5, strengths to max 3`
+
+        try {
+            const result = await withTimeoutAndRetry(
+                () => generateObject({
+                    model: this.aiProvider!(modelName),
+                    schema: RiskProfileAnalysisSchema,
+                    messages: [{ role: "user", content: prompt }],
+                    temperature: 0.3,
+                }),
+                "Anthropic risk profile analysis"
+            )
+
+            const analysis = result.object
+            const parsedUsage = parseUsage(result.usage, modelName)
+
+            if (options?.userId && result.usage) {
+                trackTokenUsage({
+                    userId: options.userId,
+                    operationType: "risk_profile_analysis",
+                    inputTokens: parsedUsage.inputTokens,
+                    outputTokens: parsedUsage.outputTokens,
+                    model: modelName as any,
+                }).catch(err => logger("error", "Failed to track Anthropic risk profile analysis token usage", { error: err }))
+            }
+
+            return {
+                riskSummary: analysis.riskSummary,
+                riskLevel: analysis.riskLevel,
+                insights: analysis.insights,
+                prioritizedGaps: analysis.prioritizedGaps,
+                profileStrengths: analysis.profileStrengths,
+                usage: parsedUsage,
+            }
+        } catch (error) {
+            logger("error", "Anthropic risk profile analysis failed", {
+                userId: options?.userId,
+                error: error instanceof Error ? error.message : String(error),
+            })
+            throw error
+        }
     }
 }
