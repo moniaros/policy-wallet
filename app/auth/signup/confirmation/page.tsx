@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { IBM_Plex_Sans } from "next/font/google"
+import { Inter } from "next/font/google"
 import { AnimatePresence, motion } from "framer-motion"
 import { AlertCircle, ArrowRight, CheckCircle2, CreditCard, Loader2, Mail, RefreshCw, ShieldCheck, Sparkles } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -14,6 +14,11 @@ import { trackLandingEvent } from "@/lib/landing/analytics"
 import { isSyntheticPhoneEmail } from "@/lib/auth/phone-auth"
 import { BillingPeriod, VALID_PLAN_IDS, ValidPlanId, publicPricingContent } from "@/lib/pricing/public-pricing-content"
 import { getSignupCheckpointState } from "./actions"
+
+const inter = Inter({
+    subsets: ["latin", "greek"],
+    weight: ["400", "500", "600", "700"],
+})
 
 function resolvePlanDisplayName(planId: string, language: "el" | "en"): string | null {
     for (const audience of Object.values(publicPricingContent)) {
@@ -26,15 +31,10 @@ function resolvePlanDisplayName(planId: string, language: "el" | "en"): string |
     return null
 }
 
-const ibmPlexSans = IBM_Plex_Sans({
-    subsets: ["latin", "greek"],
-    weight: ["400", "500", "600", "700"],
-})
-
 function SignupConfirmationContent() {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const { language } = useLanguage()
+    const { language, setLanguage } = useLanguage()
     const t = (el: string, en: string) => (language === "el" ? el : en)
 
     const role = searchParams.get("role") === "agent" ? "agent" : "policyholder"
@@ -133,6 +133,7 @@ function SignupConfirmationContent() {
         selectedPlanBillingMonthly: t("Μηνιαία χρέωση", "Monthly billing"),
         selectedPlanBillingAnnual: t("Ετήσια χρέωση", "Annual billing"),
         selectedPlanNote: t("Θα ενεργοποιηθεί μετά το onboarding.", "Will be activated after onboarding."),
+        backHome: t("← Αρχική", "← Home"),
     }), [language])
 
     const handleCheckVerification = async () => {
@@ -236,145 +237,200 @@ function SignupConfirmationContent() {
     const busy = isContinuing || isCheckingVerification || isResending
 
     return (
-        <div className={`${ibmPlexSans.className} relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-b from-[#1E3A8A] via-[#dbeafe] to-white px-4 py-10`}>
-            <motion.div className="absolute -top-20 right-[-10%] h-72 w-72 rounded-full bg-cyan-300/30 blur-3xl" animate={{ scale: [1, 1.06, 1] }} transition={{ duration: 6, repeat: Infinity }} />
-            <motion.div className="absolute -bottom-20 left-[-8%] h-64 w-64 rounded-full bg-blue-200/45 blur-3xl" animate={{ scale: [1.06, 1, 1.06] }} transition={{ duration: 6, repeat: Infinity }} />
+        <div className={`${inter.className} flex min-h-screen flex-col bg-[#F8FAFC]`}>
+            {/* Header bar */}
+            <header className="flex items-center justify-between px-6 py-4">
+                <Link
+                    href="/"
+                    className="text-[13px] font-medium text-[#475569] transition hover:text-[#29685B]"
+                >
+                    {copy.backHome}
+                </Link>
+                <button
+                    type="button"
+                    onClick={() => setLanguage(language === "el" ? "en" : "el")}
+                    className="rounded-full border border-[#E2E8F0] bg-white px-3 py-1 text-[12px] font-semibold text-[#475569] transition hover:bg-[#F8FAFC]"
+                >
+                    {language === "el" ? "EN" : "EL"}
+                </button>
+            </header>
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }} className="relative z-10 w-full max-w-md rounded-3xl border border-white/70 bg-white/95 p-6 shadow-2xl shadow-blue-900/10 sm:p-7">
-                <div className="mb-5 flex items-center justify-between text-xs font-semibold text-slate-500">
-                    <span className="rounded-full bg-slate-100 px-2.5 py-1">{copy.stepLabel}</span>
-                    <span className="inline-flex items-center gap-1 text-slate-700">
-                        <ShieldCheck className="h-3.5 w-3.5" />
-                        {copy.secureSetup}
-                    </span>
-                </div>
-
-                <div className="mb-6 text-center">
-                    <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 shadow-sm">
-                        <PolicyWalletLogo size="md" language={language} />
+            {/* Card */}
+            <div className="flex flex-1 items-center justify-center px-4 py-10">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-full max-w-md rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0_4px_24px_rgba(0,0,0,0.06)] sm:p-7"
+                >
+                    {/* Top meta row */}
+                    <div className="mb-5 flex items-center justify-between text-xs font-semibold text-[#64748B]">
+                        <span className="rounded-full bg-[#F1F5F9] px-2.5 py-1">{copy.stepLabel}</span>
+                        <span className="inline-flex items-center gap-1 text-[#475569]">
+                            <ShieldCheck className="h-3.5 w-3.5 text-[#29685B]" />
+                            {copy.secureSetup}
+                        </span>
                     </div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900">{copy.heading}</h1>
-                    <p className="mt-1.5 text-sm text-slate-600">{copy.subtitle}</p>
-                </div>
 
-                {loadingState ? (
-                    <div className="flex items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 p-6 text-slate-600">
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {copy.loading}
-                    </div>
-                ) : null}
-
-                {!loadingState && !isAuthenticated ? (
-                    <div className="space-y-4">
-                        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
-                            {copy.authMissing}
+                    {/* Logo + heading */}
+                    <div className="mb-6 text-center">
+                        <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-[#F8FAFC] px-3 py-2">
+                            <PolicyWalletLogo size="md" language={language} />
                         </div>
-                        <Link href="/auth/signin" className="inline-flex w-full items-center justify-center rounded-xl bg-[#1E3A8A] px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110">
-                            {copy.signin}
-                        </Link>
+                        <h1 className="text-2xl font-bold tracking-tight text-[#0F172A]">{copy.heading}</h1>
+                        <p className="mt-1.5 text-sm text-[#64748B]">{copy.subtitle}</p>
                     </div>
-                ) : null}
 
-                {!loadingState && isAuthenticated ? (
-                    <div className="space-y-4">
-                        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                            <p className="text-sm font-semibold text-slate-900">{copy.shellTitle}</p>
-                            <p className="mt-1 text-sm text-slate-600">{copy.shellDesc}</p>
-                            <ul className="mt-3 space-y-2 text-sm text-slate-700">
-                                {copy.trustedPoints.map((point) => (
-                                    <li key={point} className="flex items-center gap-2">
-                                        <CheckCircle2 className="h-4 w-4 text-slate-600" />
-                                        <span>{point}</span>
-                                    </li>
-                                ))}
-                            </ul>
+                    {loadingState ? (
+                        <div className="flex items-center justify-center rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-6 text-[#64748B]">
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin text-[#29685B]" />
+                            {copy.loading}
                         </div>
+                    ) : null}
 
-                        {planDisplayName ? (
-                            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-                                <div className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-900">
-                                    <CreditCard className="h-4 w-4" />
-                                    {copy.selectedPlanTitle}
-                                </div>
-                                <p className="mt-1 text-sm font-bold text-emerald-800">{planDisplayName}{selectedBilling ? ` — ${selectedBilling === "annual" ? copy.selectedPlanBillingAnnual : copy.selectedPlanBillingMonthly}` : ""}</p>
-                                <p className="mt-1 text-xs text-emerald-700">{copy.selectedPlanNote}</p>
+                    {!loadingState && !isAuthenticated ? (
+                        <div className="space-y-4">
+                            <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+                                {copy.authMissing}
                             </div>
-                        ) : null}
+                            <Link
+                                href="/auth/signin"
+                                className="inline-flex w-full items-center justify-center rounded-full bg-[#29685B] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1C4E44]"
+                            >
+                                {copy.signin}
+                            </Link>
+                        </div>
+                    ) : null}
 
-                        {showVerificationCard ? (
-                            <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4">
-                                <div className="inline-flex items-center gap-2 text-sm font-semibold text-blue-900">
-                                    <Mail className="h-4 w-4" />
-                                    {copy.verifyTitle}
-                                </div>
-                                <p className="mt-1 text-sm text-blue-800">{copy.verifyDesc}</p>
-                                <p className="mt-2 break-all rounded-lg bg-white/80 px-2.5 py-1.5 text-xs font-semibold text-blue-900">{email}</p>
+                    {!loadingState && isAuthenticated ? (
+                        <div className="space-y-4">
+                            {/* Onboarding shell card */}
+                            <div className="rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-4">
+                                <p className="text-sm font-semibold text-[#0F172A]">{copy.shellTitle}</p>
+                                <p className="mt-1 text-sm text-[#64748B]">{copy.shellDesc}</p>
+                                <ul className="mt-3 space-y-2 text-sm text-[#475569]">
+                                    {copy.trustedPoints.map((point) => (
+                                        <li key={point} className="flex items-center gap-2">
+                                            <CheckCircle2 className="h-4 w-4 text-[#29685B]" />
+                                            <span>{point}</span>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
-                        ) : null}
 
-                        <AnimatePresence>
-                            {notice ? (
-                                <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={`flex items-start gap-2 rounded-xl border p-3 text-sm ${notice.kind === "success" ? "border-slate-200 bg-slate-50 text-slate-700" : "border-rose-200 bg-rose-50 text-rose-700"}`} role="status">
-                                    {notice.kind === "success" ? <CheckCircle2 className="mt-0.5 h-4 w-4" /> : <AlertCircle className="mt-0.5 h-4 w-4" />}
-                                    <span>{notice.message}</span>
-                                </motion.div>
+                            {/* Selected plan */}
+                            {planDisplayName ? (
+                                <div className="rounded-xl border border-[#D1FAE5] bg-[#F0FDF4] p-4">
+                                    <div className="inline-flex items-center gap-2 text-sm font-semibold text-[#065F46]">
+                                        <CreditCard className="h-4 w-4" />
+                                        {copy.selectedPlanTitle}
+                                    </div>
+                                    <p className="mt-1 text-sm font-bold text-[#065F46]">
+                                        {planDisplayName}
+                                        {selectedBilling ? ` — ${selectedBilling === "annual" ? copy.selectedPlanBillingAnnual : copy.selectedPlanBillingMonthly}` : ""}
+                                    </p>
+                                    <p className="mt-1 text-xs text-[#047857]">{copy.selectedPlanNote}</p>
+                                </div>
                             ) : null}
-                        </AnimatePresence>
 
-                        <div className="space-y-2.5">
+                            {/* Email verification card */}
                             {showVerificationCard ? (
-                                <>
-                                    <button
-                                        type="button"
-                                        onClick={() => void handleCheckVerification()}
-                                        disabled={busy}
-                                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#1E3A8A] to-[#6D28D9] px-4 py-3.5 text-sm font-semibold text-white transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
-                                    >
-                                        {isCheckingVerification ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                                        {copy.checkVerified}
-                                    </button>
+                                <div className="rounded-xl border border-[#D1FAE5] bg-[#F0FDF4] p-4">
+                                    <div className="inline-flex items-center gap-2 text-sm font-semibold text-[#065F46]">
+                                        <Mail className="h-4 w-4" />
+                                        {copy.verifyTitle}
+                                    </div>
+                                    <p className="mt-1 text-sm text-[#047857]">{copy.verifyDesc}</p>
+                                    <p className="mt-2 break-all rounded-lg bg-white px-2.5 py-1.5 text-xs font-semibold text-[#065F46]">{email}</p>
+                                </div>
+                            ) : null}
 
+                            {/* Notice */}
+                            <AnimatePresence>
+                                {notice ? (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: -6 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0 }}
+                                        className={`flex items-start gap-2 rounded-xl border p-3 text-sm ${
+                                            notice.kind === "success"
+                                                ? "border-[#D1FAE5] bg-[#F0FDF4] text-[#065F46]"
+                                                : "border-rose-200 bg-rose-50 text-rose-700"
+                                        }`}
+                                        role="status"
+                                    >
+                                        {notice.kind === "success" ? (
+                                            <CheckCircle2 className="mt-0.5 h-4 w-4" />
+                                        ) : (
+                                            <AlertCircle className="mt-0.5 h-4 w-4" />
+                                        )}
+                                        <span>{notice.message}</span>
+                                    </motion.div>
+                                ) : null}
+                            </AnimatePresence>
+
+                            {/* Action buttons */}
+                            <div className="space-y-2.5">
+                                {showVerificationCard ? (
+                                    <>
+                                        <button
+                                            type="button"
+                                            onClick={() => void handleCheckVerification()}
+                                            disabled={busy}
+                                            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#29685B] px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-[#1C4E44] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29685B]/40 disabled:cursor-not-allowed disabled:opacity-70"
+                                        >
+                                            {isCheckingVerification ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                                            {copy.checkVerified}
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => void handleResend()}
+                                            disabled={busy}
+                                            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#E2E8F0] bg-white px-4 py-3 text-sm font-semibold text-[#475569] transition hover:bg-[#F8FAFC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29685B]/20 disabled:cursor-not-allowed disabled:opacity-70"
+                                        >
+                                            {isResending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                                            {copy.resend}
+                                        </button>
+                                    </>
+                                ) : (
                                     <button
                                         type="button"
-                                        onClick={() => void handleResend()}
+                                        onClick={() => void continueToOnboarding()}
                                         disabled={busy}
-                                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
+                                        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#29685B] px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-[#1C4E44] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29685B]/40 disabled:cursor-not-allowed disabled:opacity-70"
                                     >
-                                        {isResending ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-                                        {copy.resend}
+                                        {isContinuing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
+                                        {copy.startSetup}
                                     </button>
-                                </>
-                            ) : (
+                                )}
+
                                 <button
                                     type="button"
-                                    onClick={() => void continueToOnboarding()}
+                                    onClick={handleSkip}
                                     disabled={busy}
-                                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#1E3A8A] to-[#6D28D9] px-4 py-3.5 text-sm font-semibold text-white transition hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
+                                    className="inline-flex w-full items-center justify-center rounded-full border border-[#E2E8F0] bg-white px-4 py-3 text-sm font-semibold text-[#475569] transition hover:bg-[#F8FAFC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29685B]/20 disabled:cursor-not-allowed disabled:opacity-70"
                                 >
-                                    {isContinuing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
-                                    {copy.startSetup}
+                                    {copy.skip}
                                 </button>
-                            )}
-
-                            <button
-                                type="button"
-                                onClick={handleSkip}
-                                disabled={busy}
-                                className="inline-flex w-full items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-70"
-                            >
-                                {copy.skip}
-                            </button>
+                            </div>
                         </div>
-                    </div>
-                ) : null}
-            </motion.div>
+                    ) : null}
+                </motion.div>
+            </div>
         </div>
     )
 }
 
 export default function SignUpConfirmationPage() {
     return (
-        <Suspense fallback={<div className={`${ibmPlexSans.className} flex min-h-screen items-center justify-center`}><Loader2 className="h-7 w-7 animate-spin text-blue-700" /></div>}>
+        <Suspense
+            fallback={
+                <div className={`${inter.className} flex min-h-screen items-center justify-center bg-[#F8FAFC]`}>
+                    <Loader2 className="h-7 w-7 animate-spin text-[#29685B]" />
+                </div>
+            }
+        >
             <SignupConfirmationContent />
         </Suspense>
     )

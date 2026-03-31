@@ -220,6 +220,14 @@ export interface RiskProfileInput {
     smokingStatus: string | null
     dateOfBirth: string | null
     lifeEvents: Array<{ type: string; date: string }> | null
+    // Health & Lifestyle
+    gender: string | null
+    heightCm: number | null
+    weightKg: number | null
+    chronicConditions: string[] | null
+    familyMedicalHistory: string[] | null
+    drivingRecord: string | null
+    activityLevel: string | null
 }
 
 export interface AIRiskInsight {

@@ -34,6 +34,14 @@ interface RiskProfileWizardProps {
         loanAmount?: number | null
         smokingStatus?: string | null
         lifeEvents?: Array<{ type: string; date: string }>
+        // Health & Lifestyle
+        gender?: string | null
+        heightCm?: number | null
+        weightKg?: number | null
+        chronicConditions?: string[] | null
+        familyMedicalHistory?: string[] | null
+        drivingRecord?: string | null
+        activityLevel?: string | null
     }
     language?: "en" | "el"
 }
@@ -81,6 +89,19 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
     const [newEventType, setNewEventType] = useState("")
     const [newEventDate, setNewEventDate] = useState("")
 
+    // Health & Lifestyle state
+    const [gender, setGender] = useState(initialData?.gender || "")
+    const [heightCm, setHeightCm] = useState<number | "">(initialData?.heightCm ?? "")
+    const [weightKg, setWeightKg] = useState<number | "">(initialData?.weightKg ?? "")
+    const [chronicConditions, setChronicConditions] = useState<string[]>(
+        initialData?.chronicConditions ?? []
+    )
+    const [familyMedicalHistory, setFamilyMedicalHistory] = useState<string[]>(
+        initialData?.familyMedicalHistory ?? []
+    )
+    const [drivingRecord, setDrivingRecord] = useState(initialData?.drivingRecord || "")
+    const [activityLevel, setActivityLevel] = useState(initialData?.activityLevel || "")
+
     function addLifeEvent() {
         if (!newEventType || !newEventDate) return
         setLifeEvents((prev) => [...prev, { type: newEventType, date: newEventDate }])
@@ -116,6 +137,13 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                     loanAmount: loanAmount === "" ? undefined : Number(loanAmount),
                     smokingStatus: smokingStatus || undefined,
                     lifeEvents: lifeEvents.length > 0 ? lifeEvents : undefined,
+                    gender: gender || undefined,
+                    heightCm: heightCm === "" ? undefined : Number(heightCm),
+                    weightKg: weightKg === "" ? undefined : Number(weightKg),
+                    chronicConditions,
+                    familyMedicalHistory,
+                    drivingRecord: drivingRecord || undefined,
+                    activityLevel: activityLevel || undefined,
                 }),
             })
 
@@ -220,7 +248,161 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                     </div>
                 </div>
 
-                {/* Row 4: Property & Assets */}
+                {/* Row 4: Health & Lifestyle */}
+                <div className="pt-3 border-t border-black/8 dark:border-white/10">
+                    <p className="text-xs font-semibold text-black/50 dark:text-white/50 uppercase tracking-widest mb-3">
+                        {t("Υγεία & Τρόπος Ζωής", "Health & Lifestyle")}
+                    </p>
+
+                    {/* Gender + Activity level */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label htmlFor="gender" className={labelClass}>
+                                {t("Φύλο", "Gender")}
+                            </label>
+                            <select id="gender" value={gender} onChange={(e) => setGender(e.target.value)} className={inputClass}>
+                                <option value="">{t("Επιλέξτε...", "Select...")}</option>
+                                <option value="male">{t("Άνδρας", "Male")}</option>
+                                <option value="female">{t("Γυναίκα", "Female")}</option>
+                                <option value="prefer_not_to_say">{t("Προτιμώ να μην αναφέρω", "Prefer not to say")}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label htmlFor="activityLevel" className={labelClass}>
+                                {t("Επίπεδο δραστηριότητας", "Activity level")}
+                            </label>
+                            <select id="activityLevel" value={activityLevel} onChange={(e) => setActivityLevel(e.target.value)} className={inputClass}>
+                                <option value="">{t("Επιλέξτε...", "Select...")}</option>
+                                <option value="sedentary">{t("Καθιστικός", "Sedentary")}</option>
+                                <option value="moderate">{t("Μέτρια ενεργός", "Moderately active")}</option>
+                                <option value="active">{t("Ενεργός", "Active")}</option>
+                                <option value="very_active">{t("Πολύ ενεργός", "Very active")}</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Height + Weight */}
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label className={labelClass}>{t("Ύψος (cm)", "Height (cm)")}</label>
+                            <input
+                                type="number" min="50" max="250"
+                                value={heightCm}
+                                onChange={(e) => setHeightCm(e.target.value as any)}
+                                className={inputClass}
+                                placeholder="170"
+                            />
+                        </div>
+                        <div>
+                            <label className={labelClass}>{t("Βάρος (kg)", "Weight (kg)")}</label>
+                            <input
+                                type="number" min="20" max="500"
+                                value={weightKg}
+                                onChange={(e) => setWeightKg(e.target.value as any)}
+                                className={inputClass}
+                                placeholder="75"
+                            />
+                            {heightCm !== "" && weightKg !== "" && (
+                                <p className="text-xs text-black/45 dark:text-white/45 mt-1">
+                                    {t("ΔΜΣ", "BMI")}: {(Number(weightKg) / ((Number(heightCm) / 100) ** 2)).toFixed(1)}
+                                </p>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Chronic conditions */}
+                    <div className="mb-4">
+                        <label className={labelClass + " mb-1.5 block"}>
+                            {t("Χρόνιες παθήσεις", "Chronic conditions")}
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                            {[
+                                { value: "diabetes", en: "Diabetes", el: "Διαβήτης" },
+                                { value: "hypertension", en: "Hypertension", el: "Υπέρταση" },
+                                { value: "heart_disease", en: "Heart disease", el: "Καρδιοπάθεια" },
+                                { value: "asthma", en: "Asthma", el: "Άσθμα" },
+                                { value: "cancer", en: "Cancer", el: "Καρκίνος" },
+                                { value: "mental_health", en: "Mental health condition", el: "Ψυχική διαταραχή" },
+                                { value: "musculoskeletal", en: "Musculoskeletal", el: "Μυοσκελετικά" },
+                            ].map((c) => {
+                                const checked = chronicConditions.includes(c.value)
+                                return (
+                                    <label key={c.value} className={`flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${checked ? "border-[#1FDC86] bg-[#1FDC86]/10 text-[#1FDC86]" : "border-black/10 dark:border-white/15 text-black/60 dark:text-white/60"}`}>
+                                        <input
+                                            type="checkbox"
+                                            checked={checked}
+                                            onChange={(e) => setChronicConditions(
+                                                e.target.checked
+                                                    ? [...chronicConditions, c.value]
+                                                    : chronicConditions.filter((x) => x !== c.value)
+                                            )}
+                                            className="sr-only"
+                                        />
+                                        {lang === "el" ? c.el : c.en}
+                                    </label>
+                                )
+                            })}
+                        </div>
+                        <p className="text-xs text-black/40 dark:text-white/40 mt-1.5">
+                            {t("Επιλέξτε όλα όσα ισχύουν. Αφήστε κενό εάν δεν υπάρχουν.", "Select all that apply. Leave blank if none.")}
+                        </p>
+                    </div>
+
+                    {/* Family medical history */}
+                    <div className="mb-4">
+                        <label className={labelClass + " mb-1.5 block"}>
+                            {t("Οικογενειακό ιατρικό ιστορικό", "Family medical history")}
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                            {[
+                                { value: "heart_disease", en: "Heart disease", el: "Καρδιοπάθεια" },
+                                { value: "cancer", en: "Cancer", el: "Καρκίνος" },
+                                { value: "diabetes", en: "Diabetes", el: "Διαβήτης" },
+                                { value: "stroke", en: "Stroke", el: "Εγκεφαλικό" },
+                                { value: "hypertension", en: "Hypertension", el: "Υπέρταση" },
+                                { value: "mental_illness", en: "Mental illness", el: "Ψυχική ασθένεια" },
+                            ].map((c) => {
+                                const checked = familyMedicalHistory.includes(c.value)
+                                return (
+                                    <label key={c.value} className={`flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${checked ? "border-amber-400 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300" : "border-black/10 dark:border-white/15 text-black/60 dark:text-white/60"}`}>
+                                        <input
+                                            type="checkbox"
+                                            checked={checked}
+                                            onChange={(e) => setFamilyMedicalHistory(
+                                                e.target.checked
+                                                    ? [...familyMedicalHistory, c.value]
+                                                    : familyMedicalHistory.filter((x) => x !== c.value)
+                                            )}
+                                            className="sr-only"
+                                        />
+                                        {lang === "el" ? c.el : c.en}
+                                    </label>
+                                )
+                            })}
+                        </div>
+                        <p className="text-xs text-black/40 dark:text-white/40 mt-1.5">
+                            {t("Κληρονομικές παθήσεις σε γονείς ή αδέλφια.", "Hereditary conditions in parents or siblings.")}
+                        </p>
+                    </div>
+
+                    {/* Driving record — only show if they have vehicles */}
+                    {(vehiclesCount !== "" && Number(vehiclesCount) > 0) && (
+                        <div>
+                            <label htmlFor="drivingRecord" className={labelClass}>
+                                {t("Οδηγικό ιστορικό", "Driving record")}
+                            </label>
+                            <select id="drivingRecord" value={drivingRecord} onChange={(e) => setDrivingRecord(e.target.value)} className={inputClass}>
+                                <option value="">{t("Επιλέξτε...", "Select...")}</option>
+                                <option value="clean">{t("Καθαρό ιστορικό", "Clean record")}</option>
+                                <option value="minor_violations">{t("Μικρές παραβάσεις", "Minor violations")}</option>
+                                <option value="major_violations">{t("Σοβαρές παραβάσεις", "Major violations")}</option>
+                                <option value="accidents">{t("Ατυχήματα", "Accidents")}</option>
+                            </select>
+                        </div>
+                    )}
+                </div>
+
+                {/* Row 5: Property & Assets */}
                 <div className="space-y-3">
                     <div className="flex flex-wrap gap-4">
                         <label className="flex items-center gap-2 cursor-pointer">

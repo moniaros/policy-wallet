@@ -27,6 +27,15 @@ const RiskProfileSchema = z.object({
     type: z.string(),
     date: z.string(),
   })).optional(),
+
+  // Health & Lifestyle risk fields
+  gender: z.enum(['male', 'female', 'prefer_not_to_say']).optional(),
+  heightCm: z.number().int().min(50).max(250).optional(),
+  weightKg: z.number().int().min(20).max(500).optional(),
+  chronicConditions: z.array(z.string().max(50)).optional(),
+  familyMedicalHistory: z.array(z.string().max(50)).optional(),
+  drivingRecord: z.enum(['clean', 'minor_violations', 'major_violations', 'accidents']).optional(),
+  activityLevel: z.enum(['sedentary', 'moderate', 'active', 'very_active']).optional(),
 })
 
 export const PATCH = withApiGuard(
@@ -65,6 +74,13 @@ export const PATCH = withApiGuard(
       travelsFrequently,
       smokingStatus,
       lifeEvents,
+      gender,
+      heightCm,
+      weightKg,
+      chronicConditions,
+      familyMedicalHistory,
+      drivingRecord,
+      activityLevel,
     } = parsed.data
 
     const profileData = {
@@ -84,6 +100,13 @@ export const PATCH = withApiGuard(
       travelsFrequently,
       smokingStatus,
       lifeEvents: lifeEvents ?? undefined,
+      gender,
+      heightCm,
+      weightKg,
+      chronicConditions: chronicConditions ?? undefined,
+      familyMedicalHistory: familyMedicalHistory ?? undefined,
+      drivingRecord,
+      activityLevel,
     }
 
     // Remove undefined fields so we don't overwrite existing values

@@ -89,6 +89,10 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
                 status: true,
                 insurerName: true,
                 premiumAmount: true,
+                policyNumber: true,
+                startDate: true,
+                endDate: true,
+                coverageSummary: true,
             },
         }),
         db.gapInstance.findMany({
@@ -243,7 +247,11 @@ export async function refreshProtectionScore(
 
 async function runAiRiskAnalysis(
     profile: ProfileFields,
-    policies: Array<{ id: string; lineOfBusiness: string; status: string; insurerName: string; premiumAmount: any }>,
+    policies: Array<{
+        id: string; lineOfBusiness: string; status: string; insurerName: string;
+        premiumAmount: any; policyNumber: string; startDate: Date; endDate: Date;
+        coverageSummary: string | null;
+    }>,
     userId: string
 ): Promise<AIRiskProfileAnalysisResponse | null> {
     try {
@@ -253,12 +261,12 @@ async function runAiRiskAnalysis(
 
         const policyMetadata = policies.map((p) => ({
             insurerName: p.insurerName || "Unknown",
-            policyNumber: "",
+            policyNumber: p.policyNumber,
             lineOfBusiness: p.lineOfBusiness,
-            startDate: new Date(),
-            endDate: new Date(),
+            startDate: p.startDate,
+            endDate: p.endDate,
             premiumAmount: p.premiumAmount ? Number(p.premiumAmount) : null,
-            coverageSummary: null,
+            coverageSummary: p.coverageSummary,
         }))
 
         return await aiService.analyzeRiskProfile(
@@ -278,6 +286,13 @@ async function runAiRiskAnalysis(
                 smokingStatus: profile.smokingStatus,
                 dateOfBirth: profile.dateOfBirth?.toISOString().split("T")[0] ?? null,
                 lifeEvents: profile.lifeEvents as Array<{ type: string; date: string }> | null,
+                gender: profile.gender,
+                heightCm: profile.heightCm,
+                weightKg: profile.weightKg,
+                chronicConditions: profile.chronicConditions,
+                familyMedicalHistory: profile.familyMedicalHistory,
+                drivingRecord: profile.drivingRecord,
+                activityLevel: profile.activityLevel,
             },
             policyMetadata,
             { userId }
@@ -326,16 +341,25 @@ async function cacheProtectionScore(
 
 /**
  * Calculate how complete the user's risk profile is (0-100).
- * Used to nudge users to fill in more data for better gap detection.
  *
- * Boolean fields (ownsHome, hasPets, etc.) default to `false` in the DB,
- * so we can only count them as explicitly filled if the user has interacted
- * with the profile form — signalled by at least one nullable field being
- * non-null, or at least one boolean being `true` (toggled from default).
+ * Split into two weighted sections to avoid regressing existing users when
+ * new health fields are added:
+ *
+ *   Core (65%): original fields — identity, financial, lifestyle booleans.
+ *               A user who filled these before the health section shipped keeps
+ *               ~65, sees the wizard, and is nudged to fill the health section.
+ *
+ *   Health (35%): new health & lifestyle fields. drivingRecord is only included
+ *                 in the denominator when the user has vehicles — non-drivers
+ *                 aren't penalised for not answering it.
+ *
+ * Boolean fields (ownsHome, hasPets, etc.) default to `false` in the DB and are
+ * only counted as filled once the profile has been touched (any nullable set, or
+ * any boolean toggled to true).
  */
 function calculateProfileCompleteness(profile: ProfileFields): number {
-    // Nullable fields — non-null means the user explicitly provided a value
-    const nullableChecks = [
+    // ── Core section (weight: 65%) ────────────────────────────────────
+    const coreNullable = [
         profile.maritalStatus != null,
         profile.employmentStatus != null,
         profile.dateOfBirth != null,
@@ -344,9 +368,7 @@ function calculateProfileCompleteness(profile: ProfileFields): number {
         profile.smokingStatus != null,
     ]
 
-    // Boolean / numeric fields that default to false/0 in DB.
-    // Only count as filled if user has engaged with the form at all.
-    const hasAnyNullableFilled = nullableChecks.some(Boolean)
+    const hasAnyNullableFilled = coreNullable.some(Boolean)
     const hasAnyBooleanToggled =
         profile.ownsHome ||
         profile.hasPets ||
@@ -357,13 +379,30 @@ function calculateProfileCompleteness(profile: ProfileFields): number {
 
     const profileTouched = hasAnyNullableFilled || hasAnyBooleanToggled
 
-    const booleanChecks = profileTouched
+    const coreBooleans = profileTouched
         ? [true, true, true, true, true] // ownsHome, hasPets, vehiclesCount, travelsFrequently, hasLoans
         : [false, false, false, false, false]
 
-    const allChecks = [...nullableChecks, ...booleanChecks]
-    const filled = allChecks.filter(Boolean).length
-    return Math.round((filled / allChecks.length) * 100)
+    const coreChecks = [...coreNullable, ...coreBooleans]
+    const coreRatio = coreChecks.filter(Boolean).length / coreChecks.length
+
+    // ── Health section (weight: 35%) ──────────────────────────────────
+    // drivingRecord is only expected for users who own vehicles.
+    const healthChecks = [
+        profile.gender != null,
+        profile.heightCm != null,
+        profile.weightKg != null,
+        profile.chronicConditions != null,    // null = never answered; [] = "none"
+        profile.familyMedicalHistory != null, // same semantics
+        profile.activityLevel != null,
+        ...(profile.vehiclesCount > 0 ? [profile.drivingRecord != null] : []),
+    ]
+
+    const healthRatio = healthChecks.length > 0
+        ? healthChecks.filter(Boolean).length / healthChecks.length
+        : 1 // no health checks applicable → full credit
+
+    return Math.round((coreRatio * 0.65 + healthRatio * 0.35) * 100)
 }
 
 // ── Re-exports ───────────────────────────────────────────────────────

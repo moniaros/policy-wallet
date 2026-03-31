@@ -216,6 +216,15 @@ model PolicyholderProfile {
   smokingStatus     String?   @map("smoking_status") // 'non_smoker', 'smoker', 'former_smoker'
   lifeEvents        Json?     @map("life_events") // [{type: 'new_baby', date: '2026-03'}]
 
+  // Health & Lifestyle Risk Fields
+  gender               String? @map("gender")                // 'male', 'female', 'prefer_not_to_say'
+  heightCm             Int?    @map("height_cm")             // used for BMI
+  weightKg             Int?    @map("weight_kg")             // used for BMI
+  chronicConditions    Json?   @map("chronic_conditions")    // string[] e.g. ['diabetes', 'hypertension']
+  familyMedicalHistory Json?   @map("family_medical_history") // string[] e.g. ['heart_disease', 'cancer']
+  drivingRecord        String? @map("driving_record")        // 'clean', 'minor_violations', 'major_violations', 'accidents'
+  activityLevel        String? @map("activity_level")        // 'sedentary', 'moderate', 'active', 'very_active'
+
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

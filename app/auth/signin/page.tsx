@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { IBM_Plex_Sans } from "next/font/google"
+import { Inter } from "next/font/google"
 import { AlertCircle, ArrowRight, Fingerprint, KeyRound, Loader2, Lock, Mail, Phone, ShieldCheck } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
@@ -11,7 +11,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { resolveAuthEmailIdentifier } from "@/lib/auth/phone-auth"
 import { getPostLoginRedirectByRole } from "@/lib/auth/role-routing"
 
-const ibmPlexSans = IBM_Plex_Sans({ subsets: ["latin", "greek"], weight: ["400", "500", "600", "700"] })
+const inter = Inter({ subsets: ["latin", "greek"], weight: ["400", "500", "600", "700"] })
 type Tab = "email" | "phone"
 type ResetStep = "request" | "verify" | "success"
 
@@ -22,7 +22,6 @@ function isPhoneLike(value: string) {
 
 function sanitizeCallbackUrl(callbackUrl: string | null): string | null {
     if (!callbackUrl) return null
-
     const trimmed = callbackUrl.trim()
     if (!trimmed.startsWith("/")) return null
     if (trimmed.startsWith("//")) return null
@@ -191,84 +190,194 @@ export default function SignInPage() {
         } catch { setResetError(isGreek ? "Σφάλμα επαναφοράς." : "Reset failed.") } finally { setResetLoading(false) }
     }
 
+    const inputBase = "w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[14px] text-[#0F172A] outline-none transition placeholder:text-[#94A3B8] focus-visible:border-[#29685B] focus-visible:ring-2 focus-visible:ring-[#29685B]/20"
+
     return (
-        <div className={`${ibmPlexSans.className} flex min-h-screen items-center justify-center bg-[#F9FAFB] px-4 py-10 dark:bg-black`}>
-            <div className="w-full max-w-[460px] rounded-2xl border border-gray-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-[#111111]">
-                <div className="mb-6 text-center">
-                    <Link href="/" className="mb-4 inline-block"><PolicyWalletLogo size="md" language={language} /></Link>
-                    <h1 className="text-xl font-bold text-slate-900 dark:text-white">{t.auth.welcomeBack}</h1>
-                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{isGreek ? "Συνδεθείτε για να συνεχίσετε." : "Sign in to continue."}</p>
-                    <div className="mt-3 inline-flex rounded-lg border border-slate-200 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-800">
-                        <button type="button" onClick={() => setLanguage("el")} className={`rounded-md px-3 py-1 text-xs font-bold ${language === "el" ? "bg-white dark:bg-slate-700" : "text-slate-500"}`}>EL</button>
-                        <button type="button" onClick={() => setLanguage("en")} className={`rounded-md px-3 py-1 text-xs font-bold ${language === "en" ? "bg-white dark:bg-slate-700" : "text-slate-500"}`}>EN</button>
+        <div className={`${inter.className} flex min-h-screen items-center justify-center bg-[#F8FAFC] px-4 py-12`}>
+            <div className="w-full max-w-[420px]">
+
+                {/* Back to home */}
+                <div className="mb-6 flex items-center justify-between">
+                    <Link href="/" className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#64748B] transition-colors hover:text-[#0F172A]">
+                        ← {isGreek ? "Αρχική" : "Home"}
+                    </Link>
+                    <div className="flex items-center gap-2">
+                        <button type="button" onClick={() => setLanguage("el")} className={`text-[12px] font-semibold transition-colors ${language === "el" ? "text-[#0F172A]" : "text-[#94A3B8] hover:text-[#0F172A]"}`}>ΕΛ</button>
+                        <span className="text-[#E2E8F0]">|</span>
+                        <button type="button" onClick={() => setLanguage("en")} className={`text-[12px] font-semibold transition-colors ${language === "en" ? "text-[#0F172A]" : "text-[#94A3B8] hover:text-[#0F172A]"}`}>EN</button>
                     </div>
                 </div>
 
-                {error && <div className="mb-3 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"><AlertCircle className="mr-1 inline h-4 w-4" />{error}</div>}
-                {showResend && <button type="button" onClick={resendVerification} className="mb-3 w-full rounded-lg border border-slate-300 bg-slate-100 py-2 text-sm font-semibold">{resending ? (isGreek ? "Αποστολή..." : "Sending...") : (isGreek ? "Επαναποστολή επιβεβαίωσης" : "Resend verification")}</button>}
-                {resendMessage && <p className="mb-3 text-sm text-slate-700 dark:text-slate-300">{resendMessage}</p>}
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="inline-flex w-full rounded-lg border border-slate-200 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-800">
-                        <button type="button" onClick={() => setTab("email")} className={`flex-1 rounded-md px-3 py-2 text-sm font-semibold ${tab === "email" ? "bg-white dark:bg-slate-700" : "text-slate-500"}`}>{isGreek ? "Email" : "Email"}</button>
-                        <button type="button" onClick={() => setTab("phone")} className={`flex-1 rounded-md px-3 py-2 text-sm font-semibold ${tab === "phone" ? "bg-white dark:bg-slate-700" : "text-slate-500"}`}>{isGreek ? "Τηλέφωνο" : "Phone"}</button>
+                {/* Card */}
+                <div className="rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-[0_4px_24px_rgba(0,0,0,0.06)]">
+                    {/* Logo + heading */}
+                    <div className="mb-7 text-center">
+                        <Link href="/" className="mb-4 inline-block">
+                            <PolicyWalletLogo size="md" language={language} />
+                        </Link>
+                        <h1 className="text-[20px] font-semibold tracking-tight text-[#0F172A]">
+                            {t.auth.welcomeBack}
+                        </h1>
+                        <p className="mt-1 text-[14px] text-[#64748B]">
+                            {isGreek ? "Συνδεθείτε για να συνεχίσετε." : "Sign in to continue."}
+                        </p>
                     </div>
-                    {tab === "email" ? (
-                        <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">{isGreek ? "Email" : "Email"}
-                            <div className="relative mt-1"><Mail className="absolute left-3 top-3.5 h-4 w-4 text-slate-400" /><input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full rounded-xl border border-slate-300 py-3 pl-9 pr-3 text-sm" /></div>
-                        </label>
-                    ) : (
-                        <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">{isGreek ? "Κινητό" : "Phone"}
-                            <div className="relative mt-1"><Phone className="absolute left-3 top-3.5 h-4 w-4 text-slate-400" /><input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full rounded-xl border border-slate-300 py-3 pl-9 pr-3 text-sm" /></div>
-                        </label>
-                    )}
-                    <label className="block text-xs font-bold uppercase tracking-wide text-slate-500">{isGreek ? "Κωδικός" : "Password"}
-                        <div className="relative mt-1"><Lock className="absolute left-3 top-3.5 h-4 w-4 text-slate-400" /><input ref={pwdRef} type="password" required value={password} onChange={(e) => setPassword(e.target.value)} className="w-full rounded-xl border border-slate-300 py-3 pl-9 pr-3 text-sm" /></div>
-                    </label>
-                    <button type="button" onClick={() => { setShowReset(true); setResetStep("request"); setResetEmail(email) }} className="text-xs font-semibold text-[#1E3A8A] hover:underline">{isGreek ? "Ξέχασα τον κωδικό μου" : "Forgot password"}</button>
-                    <button type="submit" disabled={loading} className="flex w-full items-center justify-center gap-2 rounded-full bg-[#1FDC86] px-4 py-3.5 font-bold text-slate-900 disabled:opacity-70">
-                        {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
-                        {loading ? (isGreek ? "Σύνδεση..." : "Signing in...") : t.auth.signIn}
-                    </button>
-                </form>
 
-                {biometricRegistered && (
-                    <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs dark:border-slate-700 dark:bg-slate-800/40">
-                        <p className="mb-2 font-bold uppercase tracking-wide">{isGreek ? "Βιομετρικό / PIN (δευτερεύον)" : "Biometric / PIN (secondary)"}</p>
-                        <div className="grid grid-cols-2 gap-2">
-                            <button type="button" onClick={applyStoredIdentifier} className="rounded-lg border border-slate-300 bg-white px-3 py-2 font-semibold"><Fingerprint className="mr-1 inline h-3.5 w-3.5" />{isGreek ? "Βιομετρικό" : "Biometric"}</button>
-                            <button type="button" onClick={() => setShowPinPrompt((v) => !v)} className="rounded-lg border border-slate-300 bg-white px-3 py-2 font-semibold"><KeyRound className="mr-1 inline h-3.5 w-3.5" />PIN</button>
+                    {/* Error */}
+                    {error && (
+                        <div className="mb-4 flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2.5 text-[13px] text-rose-700">
+                            <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                            {error}
                         </div>
-                        {showPinPrompt && <div className="mt-2 flex gap-2"><input type="password" maxLength={4} value={pinPrompt} onChange={(e) => setPinPrompt(e.target.value.replace(/\D/g, ""))} className="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm" /><button type="button" onClick={handlePinUnlock} className="rounded-lg bg-slate-800 px-3 py-2 text-xs font-bold text-white">OK</button></div>}
-                        {quickError && <p className="mt-2 text-red-600">{quickError}</p>}
-                    </div>
-                )}
+                    )}
+                    {showResend && (
+                        <button type="button" onClick={resendVerification} className="mb-4 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] py-2.5 text-[13px] font-semibold text-[#0F172A] transition hover:bg-[#F1F5F9]">
+                            {resending ? (isGreek ? "Αποστολή..." : "Sending...") : (isGreek ? "Επαναποστολή επιβεβαίωσης" : "Resend verification")}
+                        </button>
+                    )}
+                    {resendMessage && <p className="mb-4 text-[13px] text-[#475569]">{resendMessage}</p>}
 
-                <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-900/50">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                        <Lock className="h-4 w-4 text-[#29685B]" />
-                        <span>{isGreek ? "256-bit AES κρυπτογράφηση" : "256-bit AES encryption"}</span>
-                        <span className="rounded-full border border-[#29685B]/30 bg-[#29685B]/10 px-2 py-0.5 text-xs font-bold text-[#29685B]">GDPR Compliant</span>
-                    </div>
-                    <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">{isGreek ? "PolicyWallet δεν αποθηκεύει κωδικούς σε plaintext." : "PolicyWallet does not store passwords in plaintext."}</p>
-                </div>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        {/* Email / Phone toggle */}
+                        <div className="flex rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-1">
+                            <button type="button" onClick={() => setTab("email")} className={`flex-1 rounded-lg py-2 text-[13px] font-semibold transition-all ${tab === "email" ? "bg-white text-[#0F172A] shadow-sm" : "text-[#64748B] hover:text-[#0F172A]"}`}>
+                                Email
+                            </button>
+                            <button type="button" onClick={() => setTab("phone")} className={`flex-1 rounded-lg py-2 text-[13px] font-semibold transition-all ${tab === "phone" ? "bg-white text-[#0F172A] shadow-sm" : "text-[#64748B] hover:text-[#0F172A]"}`}>
+                                {isGreek ? "Τηλέφωνο" : "Phone"}
+                            </button>
+                        </div>
 
-                <div className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
-                    {isGreek ? "Δεν έχετε λογαριασμό;" : "No account yet?"} <Link href="/auth/signup" className="font-bold text-slate-800 hover:text-slate-500 dark:text-slate-200">{isGreek ? "Εγγραφή" : "Create account"}</Link>
+                        {/* Identifier field */}
+                        {tab === "email" ? (
+                            <div>
+                                <label className="mb-1.5 block text-[12px] font-semibold uppercase tracking-wide text-[#64748B]">Email</label>
+                                <div className="relative">
+                                    <Mail className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#94A3B8]" />
+                                    <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className={`${inputBase} pl-9`} placeholder="name@example.com" />
+                                </div>
+                            </div>
+                        ) : (
+                            <div>
+                                <label className="mb-1.5 block text-[12px] font-semibold uppercase tracking-wide text-[#64748B]">{isGreek ? "Κινητό" : "Phone"}</label>
+                                <div className="relative">
+                                    <Phone className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#94A3B8]" />
+                                    <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} className={`${inputBase} pl-9`} placeholder="+30 69X XXX XXXX" />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Password */}
+                        <div>
+                            <label htmlFor="signin-password" className="mb-1.5 block text-[12px] font-semibold uppercase tracking-wide text-[#64748B]">{isGreek ? "Κωδικός" : "Password"}</label>
+                            <div className="relative">
+                                <Lock className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#94A3B8]" />
+                                <input id="signin-password" ref={pwdRef} type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className={`${inputBase} pl-9`} />
+                            </div>
+                        </div>
+
+                        {/* Forgot password */}
+                        <div className="flex justify-end">
+                            <button type="button" onClick={() => { setShowReset(true); setResetStep("request"); setResetEmail(email) }} className="text-[12px] font-semibold text-[#29685B] hover:underline">
+                                {isGreek ? "Ξέχασα τον κωδικό μου" : "Forgot password?"}
+                            </button>
+                        </div>
+
+                        {/* Submit */}
+                        <button type="submit" disabled={loading} className="flex w-full items-center justify-center gap-2 rounded-full bg-[#29685B] px-4 py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-[#1C4E44] disabled:opacity-70">
+                            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
+                            {loading ? (isGreek ? "Σύνδεση..." : "Signing in...") : t.auth.signIn}
+                        </button>
+                    </form>
+
+                    {/* Biometric / PIN */}
+                    {biometricRegistered && (
+                        <div className="mt-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3 text-[12px]">
+                            <p className="mb-2 font-semibold uppercase tracking-wide text-[#64748B]">{isGreek ? "Βιομετρικό / PIN" : "Biometric / PIN"}</p>
+                            <div className="grid grid-cols-2 gap-2">
+                                <button type="button" onClick={applyStoredIdentifier} className="flex items-center justify-center gap-1.5 rounded-xl border border-[#E2E8F0] bg-white py-2.5 font-semibold text-[#0F172A] transition hover:bg-[#F8FAFC]">
+                                    <Fingerprint className="h-3.5 w-3.5 text-[#29685B]" />{isGreek ? "Βιομετρικό" : "Biometric"}
+                                </button>
+                                <button type="button" onClick={() => setShowPinPrompt((v) => !v)} className="flex items-center justify-center gap-1.5 rounded-xl border border-[#E2E8F0] bg-white py-2.5 font-semibold text-[#0F172A] transition hover:bg-[#F8FAFC]">
+                                    <KeyRound className="h-3.5 w-3.5 text-[#29685B]" />PIN
+                                </button>
+                            </div>
+                            {showPinPrompt && (
+                                <div className="mt-2 flex gap-2">
+                                    <input type="password" maxLength={4} value={pinPrompt} onChange={(e) => setPinPrompt(e.target.value.replace(/\D/g, ""))} className="flex-1 rounded-xl border border-[#E2E8F0] px-3 py-2 text-[13px] outline-none focus-visible:ring-2 focus-visible:ring-[#29685B]/20" placeholder="••••" />
+                                    <button type="button" onClick={handlePinUnlock} className="rounded-xl bg-[#29685B] px-4 py-2 text-[12px] font-bold text-white">OK</button>
+                                </div>
+                            )}
+                            {quickError && <p className="mt-2 text-rose-600">{quickError}</p>}
+                        </div>
+                    )}
+
+                    {/* Trust badge */}
+                    <div className="mt-4 flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3">
+                        <Lock className="h-4 w-4 flex-shrink-0 text-[#29685B]" />
+                        <div className="min-w-0">
+                            <p className="text-[12px] font-semibold text-[#0F172A]">{isGreek ? "AES-256 κρυπτογράφηση" : "AES-256 encryption"}</p>
+                            <p className="text-[11px] text-[#64748B]">{isGreek ? "Δεν αποθηκεύουμε κωδικούς σε plaintext." : "Passwords are never stored in plaintext."}</p>
+                        </div>
+                        <span className="flex-shrink-0 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-2 py-0.5 text-[10px] font-bold text-[#29685B]">GDPR</span>
+                    </div>
+
+                    {/* Sign up link */}
+                    <p className="mt-5 text-center text-[13px] text-[#64748B]">
+                        {isGreek ? "Δεν έχετε λογαριασμό;" : "No account yet?"}{" "}
+                        <Link href="/auth/signup" className="font-semibold text-[#29685B] hover:underline">
+                            {isGreek ? "Εγγραφή" : "Create account"}
+                        </Link>
+                    </p>
                 </div>
             </div>
 
+            {/* Reset password modal */}
             {showReset && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-                    <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
-                        <h2 className="text-lg font-bold">{isGreek ? "Επαναφορά κωδικού" : "Reset password"}</h2>
-                        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{resetStep === "request" ? (isGreek ? "Εισάγετε email για OTP." : "Enter email for OTP.") : (isGreek ? "Εισάγετε OTP και νέο κωδικό." : "Enter OTP and new password.")}</p>
-                        {resetError && <p className="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{resetError}</p>}
-                        {resetNotice && <p className="mt-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">{resetNotice}</p>}
-                        {resetStep === "request" && <div className="mt-3 space-y-3"><input type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm" /><button type="button" onClick={requestOtp} disabled={resetLoading} className="w-full rounded-xl bg-[#29685B] px-4 py-2.5 text-sm font-bold text-white">{resetLoading ? (isGreek ? "Αποστολή..." : "Sending...") : (isGreek ? "Αποστολή OTP" : "Send OTP")}</button></div>}
-                        {resetStep !== "request" && resetStep !== "success" && <div className="mt-3 space-y-3"><input type="text" inputMode="numeric" maxLength={6} value={resetOtp} onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, ""))} placeholder="OTP" className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm" /><input type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder={isGreek ? "Νέος κωδικός" : "New password"} className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm" /><input type="password" value={resetConfirmPassword} onChange={(e) => setResetConfirmPassword(e.target.value)} placeholder={isGreek ? "Επιβεβαίωση κωδικού" : "Confirm password"} className="w-full rounded-xl border border-slate-300 px-3 py-2.5 text-sm" /><button type="button" onClick={submitReset} disabled={resetLoading} className="w-full rounded-xl bg-[#29685B] px-4 py-2.5 text-sm font-bold text-white">{resetLoading ? (isGreek ? "Επεξεργασία..." : "Processing...") : (isGreek ? "Επιβεβαίωση & Αλλαγή" : "Verify & reset")}</button></div>}
-                        {resetStep === "success" && <div className="mt-3 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700"><ShieldCheck className="mr-1 inline h-4 w-4" />{isGreek ? "Ο κωδικός ενημερώθηκε επιτυχώς." : "Password updated successfully."}</div>}
-                        <button type="button" onClick={() => setShowReset(false)} className="mt-4 w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700">{isGreek ? "Κλείσιμο" : "Close"}</button>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
+                    <div className="w-full max-w-[400px] rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0_24px_64px_rgba(0,0,0,0.12)]">
+                        <h2 className="mb-1 text-[17px] font-semibold text-[#0F172A]">
+                            {isGreek ? "Επαναφορά κωδικού" : "Reset password"}
+                        </h2>
+                        <p className="mb-4 text-[13px] text-[#64748B]">
+                            {resetStep === "request"
+                                ? (isGreek ? "Εισάγετε email για να σας στείλουμε OTP." : "Enter your email to receive an OTP.")
+                                : (isGreek ? "Εισάγετε τον OTP και τον νέο κωδικό." : "Enter the OTP and your new password.")}
+                        </p>
+
+                        {resetError && <p className="mb-3 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[13px] text-rose-700">{resetError}</p>}
+                        {resetNotice && <p className="mb-3 rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-2 text-[13px] text-[#065F46]">{resetNotice}</p>}
+
+                        {resetStep === "request" && (
+                            <div className="space-y-3">
+                                <input type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} placeholder="name@example.com" className={inputBase} />
+                                <button type="button" onClick={requestOtp} disabled={resetLoading} className="w-full rounded-full bg-[#29685B] px-4 py-3 text-[14px] font-bold text-white transition hover:bg-[#1C4E44] disabled:opacity-70">
+                                    {resetLoading ? (isGreek ? "Αποστολή..." : "Sending...") : (isGreek ? "Αποστολή OTP" : "Send OTP")}
+                                </button>
+                            </div>
+                        )}
+
+                        {resetStep === "verify" && (
+                            <div className="space-y-3">
+                                <input type="text" inputMode="numeric" maxLength={6} value={resetOtp} onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, ""))} placeholder="OTP" className={inputBase} />
+                                <input type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder={isGreek ? "Νέος κωδικός" : "New password"} className={inputBase} />
+                                <input type="password" value={resetConfirmPassword} onChange={(e) => setResetConfirmPassword(e.target.value)} placeholder={isGreek ? "Επιβεβαίωση" : "Confirm password"} className={inputBase} />
+                                <button type="button" onClick={submitReset} disabled={resetLoading} className="w-full rounded-full bg-[#29685B] px-4 py-3 text-[14px] font-bold text-white transition hover:bg-[#1C4E44] disabled:opacity-70">
+                                    {resetLoading ? (isGreek ? "Επεξεργασία..." : "Processing...") : (isGreek ? "Επιβεβαίωση & Αλλαγή" : "Verify & reset")}
+                                </button>
+                            </div>
+                        )}
+
+                        {resetStep === "success" && (
+                            <div className="mb-3 flex items-center gap-2 rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-2.5 text-[13px] text-[#065F46]">
+                                <ShieldCheck className="h-4 w-4 flex-shrink-0" />
+                                {isGreek ? "Ο κωδικός ενημερώθηκε επιτυχώς." : "Password updated successfully."}
+                            </div>
+                        )}
+
+                        <button type="button" onClick={() => setShowReset(false)} className="mt-3 w-full rounded-full border border-[#E2E8F0] bg-white px-4 py-2.5 text-[14px] font-semibold text-[#475569] transition hover:bg-[#F8FAFC]">
+                            {isGreek ? "Κλείσιμο" : "Close"}
+                        </button>
                     </div>
                 </div>
             )}

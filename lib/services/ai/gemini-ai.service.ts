@@ -795,6 +795,12 @@ Answer the user's question:
 - Has loans: ${profile.hasLoans ? 'Yes' : 'No'}${profile.loanAmount ? ` (€${profile.loanAmount})` : ''}
 - Smoking status: ${profile.smokingStatus || 'Unknown'}
 - Life events: ${profile.lifeEvents?.length ? profile.lifeEvents.map(e => `${e.type} (${e.date})`).join(', ') : 'None reported'}
+- Gender: ${profile.gender || 'Unknown'}
+- BMI: ${profile.heightCm && profile.weightKg ? (profile.weightKg / ((profile.heightCm / 100) ** 2)).toFixed(1) : 'Unknown'}
+- Activity level: ${profile.activityLevel || 'Unknown'}
+- Chronic conditions: ${profile.chronicConditions?.length ? profile.chronicConditions.join(', ') : 'None reported'}
+- Family medical history: ${profile.familyMedicalHistory?.length ? profile.familyMedicalHistory.join(', ') : 'None reported'}
+- Driving record: ${profile.drivingRecord || 'Unknown'}
 
 ## Current Insurance Portfolio
 ${policySummary}

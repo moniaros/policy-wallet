@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, Suspense } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { IBM_Plex_Sans } from "next/font/google"
+import { Inter } from "next/font/google"
 import { z } from "zod"
 import { useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -15,10 +15,7 @@ import { trackLandingEvent } from "@/lib/landing/analytics"
 import { buildSyntheticEmailFromPhone, normalizeGreekMobile } from "@/lib/auth/phone-auth"
 import { useLanguage } from "@/contexts/LanguageContext"
 
-const ibmPlexSans = IBM_Plex_Sans({
-    subsets: ["latin", "greek"],
-    weight: ["400", "500", "600", "700"],
-})
+const inter = Inter({ subsets: ["latin", "greek"], weight: ["400", "500", "600", "700"] })
 
 const signupSchema = z.object({
     mobileNumber: z.string().min(1, "mobile_required").refine((value) => Boolean(normalizeGreekMobile(value)), "mobile_invalid"),
@@ -46,15 +43,12 @@ function getZodError(message: string | undefined, language: "el" | "en"): string
 function formatPhoneInput(value: string): string {
     const digitsOnly = value.replace(/\D/g, "")
     let local = digitsOnly
-
     if (local.startsWith("30")) local = local.slice(2)
     if (local.startsWith("0")) local = local.slice(1)
-
     local = local.slice(0, 10)
     const p1 = local.slice(0, 3)
     const p2 = local.slice(3, 6)
     const p3 = local.slice(6, 10)
-
     let formatted = "+30"
     if (p1) formatted += ` ${p1}`
     if (p2) formatted += ` ${p2}`
@@ -80,7 +74,7 @@ function ConfettiBurst() {
                     style={{
                         left: `${15 + i * 6}%`,
                         top: "55%",
-                        backgroundColor: i % 3 === 0 ? "#1FDC86" : i % 3 === 1 ? "#29685B" : "#06B6D4",
+                        backgroundColor: i % 3 === 0 ? "#29685B" : i % 3 === 1 ? "#A7F3D0" : "#0F172A",
                     }}
                     initial={{ opacity: 0, y: 0, scale: 0.6 }}
                     animate={{ opacity: [0, 1, 0], y: -80 - (i % 4) * 12, x: (i % 2 === 0 ? 1 : -1) * (12 + i), scale: [0.6, 1, 0.6] }}
@@ -117,12 +111,7 @@ function SignUpForm() {
         formState: { errors },
     } = useForm<SignupFormValues>({
         resolver: zodResolver(signupSchema),
-        defaultValues: {
-            mobileNumber: "+30 ",
-            email: "",
-            password: "",
-            termsAccepted: false,
-        },
+        defaultValues: { mobileNumber: "+30 ", email: "", password: "", termsAccepted: false },
         mode: "onChange",
     })
 
@@ -143,11 +132,7 @@ function SignUpForm() {
     const isPasswordValid = !errors.password && passwordValue.length > 0
 
     useEffect(() => {
-        trackLandingEvent("page_view_signup", {
-            role,
-            source,
-            locale: language,
-        })
+        trackLandingEvent("page_view_signup", { role, source, locale: language })
     }, [language, role, source])
 
     const onSubmit = async (values: SignupFormValues) => {
@@ -168,7 +153,6 @@ function SignUpForm() {
         if (token) formData.append("token", token)
         if (selectedPlan) formData.append("selectedPlan", selectedPlan)
         if (selectedBilling) formData.append("selectedBilling", selectedBilling)
-
         if (role === "agent") {
             formData.append("licenseNumber", "pending")
             formData.append("agencyName", "pending")
@@ -188,214 +172,236 @@ function SignUpForm() {
                 return
             }
 
-            trackLandingEvent("signup_completed", {
-                role,
-                source,
-                locale: language,
-                identifier_type: sanitizedEmail ? "email" : "phone",
-                auth_identifier: emailOrSynthetic,
-            })
-            trackLandingEvent("signup_complete", {
-                role,
-                source,
-                locale: language,
-                identifier_type: sanitizedEmail ? "email" : "phone",
-                auth_identifier: emailOrSynthetic,
-            })
+            trackLandingEvent("signup_completed", { role, source, locale: language, identifier_type: sanitizedEmail ? "email" : "phone", auth_identifier: emailOrSynthetic })
+            trackLandingEvent("signup_complete", { role, source, locale: language, identifier_type: sanitizedEmail ? "email" : "phone", auth_identifier: emailOrSynthetic })
 
             setSignupSuccess(true)
-            setTimeout(() => {
-                router.push(result.redirect || "/onboarding")
-            }, 900)
+            setTimeout(() => { router.push(result.redirect || "/onboarding") }, 900)
         } catch {
             setServerError(t("Κάτι πήγε στραβά. Δοκιμάστε ξανά.", "Something went wrong. Please try again."))
             setIsSubmitting(false)
         }
     }
 
-    const inputBase = "w-full rounded-xl border bg-white px-4 py-3.5 text-sm text-slate-900 outline-none transition focus-visible:ring-2 focus-visible:ring-[#29685B]/40"
+    const inputBase = "w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[14px] text-[#0F172A] outline-none transition placeholder:text-[#94A3B8] focus-visible:border-[#29685B] focus-visible:ring-2 focus-visible:ring-[#29685B]/20"
+
+    const strengthColors = ["bg-rose-400", "bg-amber-400", "bg-[#29685B]"]
+    const strengthLabel = strength === 0 ? "" : strength === 1 ? t("Αδύναμος", "Weak") : strength === 2 ? t("Μέτριος", "Fair") : t("Ισχυρός", "Strong")
 
     return (
-        <div className={`${ibmPlexSans.className} relative flex min-h-screen items-center justify-center overflow-hidden bg-[#F9FAFB] px-4 py-10 dark:bg-[#000000]`}>
+        <div className={`${inter.className} flex min-h-screen items-center justify-center bg-[#F8FAFC] px-4 py-12`}>
+            <div className="w-full max-w-[420px]">
 
-            <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="relative z-10 w-full max-w-[440px] rounded-2xl border border-gray-200 bg-[#FFFFFF] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-slate-800 dark:bg-[#111111] sm:p-10">
-                {signupSuccess ? <ConfettiBurst /> : null}
-
-                <div className="mb-6 text-center">
-                    <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-white px-3 py-2 shadow-sm">
-                        <PolicyWalletLogo size="md" language={language} />
-                    </div>
-                    <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                        {t("Το Ασφαλιστικό σας Πορτοφόλι", "Your Insurance Wallet")}
-                    </h1>
-                    <p className="mt-1.5 text-sm text-slate-600 dark:text-slate-400">
-                        {t("Όλα τα συμβόλαιά σας. Σε ένα ασφαλές μέρος.", "All your policies. One secure place.")}
-                    </p>
-                    <div className="mt-4 inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-100 p-1 dark:border-slate-700 dark:bg-slate-800">
-                        <button
-                            type="button"
-                            onClick={() => setLanguage("el")}
-                            className={`rounded-md px-2.5 py-1 text-xs font-bold transition-colors ${language === "el" ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
-                        >
-                            EL
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setLanguage("en")}
-                            className={`rounded-md px-2.5 py-1 text-xs font-bold transition-colors ${language === "en" ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white" : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"}`}
-                        >
-                            EN
-                        </button>
+                {/* Back + language */}
+                <div className="mb-6 flex items-center justify-between">
+                    <Link href="/" className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#64748B] transition-colors hover:text-[#0F172A]">
+                        ← {t("Αρχική", "Home")}
+                    </Link>
+                    <div className="flex items-center gap-2">
+                        <button type="button" onClick={() => setLanguage("el")} className={`text-[12px] font-semibold transition-colors ${language === "el" ? "text-[#0F172A]" : "text-[#94A3B8] hover:text-[#0F172A]"}`}>ΕΛ</button>
+                        <span className="text-[#E2E8F0]">|</span>
+                        <button type="button" onClick={() => setLanguage("en")} className={`text-[12px] font-semibold transition-colors ${language === "en" ? "text-[#0F172A]" : "text-[#94A3B8] hover:text-[#0F172A]"}`}>EN</button>
                     </div>
                 </div>
 
-                {/* Role Selection */}
-                <div className="mb-5 grid grid-cols-2 gap-3">
-                    <button
-                        type="button"
-                        onClick={() => setRole("policyholder")}
-                        className={`flex items-center gap-2.5 rounded-xl border-2 px-4 py-3 text-left transition-all ${role === "policyholder"
-                            ? "border-[#1FDC86] bg-emerald-50/50 dark:bg-emerald-900/10"
-                            : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-slate-600"
-                            }`}
-                    >
-                        <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${role === "policyholder" ? "bg-emerald-100 dark:bg-emerald-900/30" : "bg-slate-100 dark:bg-slate-800"}`}>
-                            <Shield className={`h-4 w-4 ${role === "policyholder" ? "text-emerald-600" : "text-slate-400"}`} />
-                        </div>
-                        <div>
-                            <p className={`text-xs font-bold ${role === "policyholder" ? "text-slate-900 dark:text-white" : "text-slate-600 dark:text-slate-400"}`}>
-                                {t("Ασφαλισμένος", "Policyholder")}
-                            </p>
-                            <p className="text-[10px] text-slate-500">
-                                {t("Διαχείριση συμβολαίων", "Manage my policies")}
-                            </p>
-                        </div>
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => setRole("agent")}
-                        className={`flex items-center gap-2.5 rounded-xl border-2 px-4 py-3 text-left transition-all ${role === "agent"
-                            ? "border-indigo-500 bg-indigo-50/50 dark:bg-indigo-900/10"
-                            : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-slate-600"
-                            }`}
-                    >
-                        <div className={`flex h-9 w-9 items-center justify-center rounded-lg ${role === "agent" ? "bg-indigo-100 dark:bg-indigo-900/30" : "bg-slate-100 dark:bg-slate-800"}`}>
-                            <Briefcase className={`h-4 w-4 ${role === "agent" ? "text-indigo-600" : "text-slate-400"}`} />
-                        </div>
-                        <div>
-                            <p className={`text-xs font-bold ${role === "agent" ? "text-slate-900 dark:text-white" : "text-slate-600 dark:text-slate-400"}`}>
-                                {t("Ασφαλιστικός Σύμβουλος", "Insurance Agent")}
-                            </p>
-                            <p className="text-[10px] text-slate-500">
-                                {t("Διαχείριση πελατών", "Manage my clients")}
-                            </p>
-                        </div>
-                    </button>
-                </div>
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="relative overflow-hidden rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-[0_4px_24px_rgba(0,0,0,0.06)]"
+                >
+                    {signupSuccess && <ConfettiBurst />}
 
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    <AnimatePresence>
-                        {serverError ? (
-                            <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700" role="alert">
-                                <AlertCircle className="mt-0.5 h-4 w-4" />
-                                <span>{serverError}</span>
-                            </motion.div>
-                        ) : null}
-                    </AnimatePresence>
-
-                    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
-                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
-                            {t("Αριθμός κινητού", "Mobile number")}
-                        </label>
-                        <div className="relative">
-                            <input
-                                type="tel"
-                                inputMode="tel"
-                                placeholder="+30 69X XXX XXXX"
-                                {...register("mobileNumber")}
-                                onChange={(event) => setValue("mobileNumber", formatPhoneInput(event.target.value), { shouldValidate: true })}
-                                className={`${inputBase} ${errors.mobileNumber ? "border-rose-300" : "border-slate-300"}`}
-                            />
-                            {isMobileValid ? <CheckCircle2 className="absolute right-3 top-3.5 h-4 w-4 text-slate-500" /> : null}
-                        </div>
-                        {errors.mobileNumber ? <p className="mt-1 text-xs text-rose-600">{getZodError(errors.mobileNumber.message, language)}</p> : null}
-                    </motion.div>
-
-                    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.07 }}>
-                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
-                            {t("Email (προαιρετικό)", "Email (optional)")}
-                        </label>
-                        <div className="relative">
-                            <input type="email" placeholder="name@example.com" {...register("email")} className={`${inputBase} ${errors.email ? "border-rose-300" : "border-slate-300"}`} />
-                            {isEmailValid ? <CheckCircle2 className="absolute right-3 top-3.5 h-4 w-4 text-slate-500" /> : null}
-                        </div>
-                        <p className="mt-1 text-xs text-slate-500">
-                            {t("Προαιρετικό, χρησιμοποιείται για ανάκτηση λογαριασμού και ειδοποιήσεις.", "Optional, used for account recovery and alerts.")}
+                    {/* Logo + heading */}
+                    <div className="mb-6 text-center">
+                        <Link href="/" className="mb-4 inline-block">
+                            <PolicyWalletLogo size="md" language={language} />
+                        </Link>
+                        <h1 className="text-[20px] font-semibold tracking-tight text-[#0F172A]">
+                            {t("Δημιουργία λογαριασμού", "Create your account")}
+                        </h1>
+                        <p className="mt-1 text-[14px] text-[#64748B]">
+                            {t("Όλα τα συμβόλαιά σας σε ένα ασφαλές μέρος.", "All your policies in one secure place.")}
                         </p>
-                        {errors.email ? <p className="mt-1 text-xs text-rose-600">{getZodError(errors.email.message, language)}</p> : null}
-                    </motion.div>
+                    </div>
 
-                    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.11 }}>
-                        <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
-                            {t("Κωδικός πρόσβασης", "Password")}
-                        </label>
-                        <div className="relative">
-                            <input type={showPassword ? "text" : "password"} placeholder={t("Δημιουργία κωδικού", "Create password")} {...register("password")} className={`${inputBase} pr-11 ${errors.password ? "border-rose-300" : "border-slate-300"}`} />
-                            <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-2 top-2.5 rounded-md p-1.5 text-slate-500 transition hover:bg-slate-100" aria-label={showPassword ? t("Απόκρυψη κωδικού", "Hide password") : t("Εμφάνιση κωδικού", "Show password")}>
-                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </button>
-                        </div>
-                        <div className="mt-2 grid grid-cols-3 gap-1.5" aria-hidden>
-                            {[0, 1, 2].map((index) => (
-                                <span
-                                    key={index}
-                                    className={`h-1.5 rounded-full ${strength > index ? (strength === 1 ? "bg-rose-500" : strength === 2 ? "bg-amber-500" : "bg-slate-500") : "bg-slate-200"}`}
+                    {/* Role selector */}
+                    <div className="mb-5 grid grid-cols-2 gap-2.5">
+                        <button
+                            type="button"
+                            onClick={() => setRole("policyholder")}
+                            className={`flex items-center gap-2.5 rounded-xl border-2 px-4 py-3 text-left transition-all ${
+                                role === "policyholder"
+                                    ? "border-[#29685B] bg-[#ECFDF5]"
+                                    : "border-[#E2E8F0] bg-white hover:border-[#A7F3D0]"
+                            }`}
+                        >
+                            <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${role === "policyholder" ? "bg-[#D1FAE5]" : "bg-[#F1F5F9]"}`}>
+                                <Shield className={`h-4 w-4 ${role === "policyholder" ? "text-[#29685B]" : "text-[#94A3B8]"}`} />
+                            </div>
+                            <div>
+                                <p className={`text-[12px] font-bold ${role === "policyholder" ? "text-[#0F172A]" : "text-[#64748B]"}`}>
+                                    {t("Ασφαλισμένος", "Policyholder")}
+                                </p>
+                                <p className="text-[10px] text-[#94A3B8]">{t("Τα συμβόλαιά μου", "My policies")}</p>
+                            </div>
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setRole("agent")}
+                            className={`flex items-center gap-2.5 rounded-xl border-2 px-4 py-3 text-left transition-all ${
+                                role === "agent"
+                                    ? "border-[#29685B] bg-[#ECFDF5]"
+                                    : "border-[#E2E8F0] bg-white hover:border-[#A7F3D0]"
+                            }`}
+                        >
+                            <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${role === "agent" ? "bg-[#D1FAE5]" : "bg-[#F1F5F9]"}`}>
+                                <Briefcase className={`h-4 w-4 ${role === "agent" ? "text-[#29685B]" : "text-[#94A3B8]"}`} />
+                            </div>
+                            <div>
+                                <p className={`text-[12px] font-bold ${role === "agent" ? "text-[#0F172A]" : "text-[#64748B]"}`}>
+                                    {t("Ασφαλιστής", "Agent")}
+                                </p>
+                                <p className="text-[10px] text-[#94A3B8]">{t("Οι πελάτες μου", "My clients")}</p>
+                            </div>
+                        </button>
+                    </div>
+
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                        <AnimatePresence>
+                            {serverError && (
+                                <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-[13px] text-rose-700" role="alert">
+                                    <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                                    <span>{serverError}</span>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
+                        {/* Mobile */}
+                        <div>
+                            <label htmlFor="signup-mobile" className="mb-1.5 block text-[12px] font-semibold uppercase tracking-wide text-[#64748B]">
+                                {t("Αριθμός κινητού", "Mobile number")}
+                            </label>
+                            <div className="relative">
+                                <input
+                                    id="signup-mobile"
+                                    type="tel"
+                                    inputMode="tel"
+                                    placeholder="+30 69X XXX XXXX"
+                                    {...register("mobileNumber")}
+                                    onChange={(e) => setValue("mobileNumber", formatPhoneInput(e.target.value), { shouldValidate: true })}
+                                    className={`${inputBase} ${errors.mobileNumber ? "border-rose-300" : ""}`}
                                 />
-                            ))}
+                                {isMobileValid && <CheckCircle2 className="absolute right-3 top-3.5 h-4 w-4 text-[#29685B]" />}
+                            </div>
+                            {errors.mobileNumber && <p className="mt-1 text-[12px] text-rose-600">{getZodError(errors.mobileNumber.message, language)}</p>}
                         </div>
-                        {isPasswordValid ? <p className="mt-1 text-xs text-slate-600">{t("Αρκετά ισχυρός", "Strong enough")}</p> : null}
-                        {errors.password ? <p className="mt-1 text-xs text-rose-600">{getZodError(errors.password.message, language)}</p> : null}
-                    </motion.div>
 
-                    <motion.label initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700">
-                        <input type="checkbox" {...register("termsAccepted")} className="mt-0.5 h-4 w-4 rounded border-slate-300 text-[#29685B] focus:ring-[#29685B]" />
-                        <span>
-                            {t("Αποδέχομαι τους ", "I agree to ")}<Link href="/terms" className="font-semibold text-[#29685B] hover:underline">{t("Όρους", "Terms")}</Link>{t(" και το ", " and ")}<Link href="/privacy" className="font-semibold text-[#29685B] hover:underline">{t("Απόρρητο", "Privacy")}</Link>
-                        </span>
-                    </motion.label>
-                    {errors.termsAccepted ? <p className="-mt-2 text-xs text-rose-600">{getZodError(errors.termsAccepted.message, language)}</p> : null}
+                        {/* Email */}
+                        <div>
+                            <label htmlFor="signup-email" className="mb-1.5 block text-[12px] font-semibold uppercase tracking-wide text-[#64748B]">
+                                {t("Email (προαιρετικό)", "Email (optional)")}
+                            </label>
+                            <div className="relative">
+                                <input id="signup-email" type="email" placeholder="name@example.com" {...register("email")} className={`${inputBase} ${errors.email ? "border-rose-300" : ""}`} />
+                                {isEmailValid && <CheckCircle2 className="absolute right-3 top-3.5 h-4 w-4 text-[#29685B]" />}
+                            </div>
+                            <p className="mt-1 text-[11px] text-[#94A3B8]">
+                                {t("Για ανάκτηση λογαριασμού και ειδοποιήσεις.", "For account recovery and alerts.")}
+                            </p>
+                            {errors.email && <p className="mt-1 text-[12px] text-rose-600">{getZodError(errors.email.message, language)}</p>}
+                        </div>
 
-                    <AnimatePresence>
-                        {isMobileValid && strength >= 2 ? (
-                            <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="inline-flex items-center gap-1.5 rounded-full border border-[#89D9B2] bg-[#89D9B2]/10 px-3 py-1 text-xs font-medium text-[#1C4E44]">
-                                <ShieldCheck className="h-3.5 w-3.5" />
-                                {t("Χρήση FaceID μετά την πρώτη εγγραφή", "Use FaceID after first signup")}
-                            </motion.div>
-                        ) : null}
-                    </AnimatePresence>
+                        {/* Password */}
+                        <div>
+                            <label htmlFor="signup-password" className="mb-1.5 block text-[12px] font-semibold uppercase tracking-wide text-[#64748B]">
+                                {t("Κωδικός πρόσβασης", "Password")}
+                            </label>
+                            <div className="relative">
+                                <input
+                                    id="signup-password"
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder={t("Δημιουργία κωδικού", "Create password")}
+                                    {...register("password")}
+                                    className={`${inputBase} pr-11 ${errors.password ? "border-rose-300" : ""}`}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword((v) => !v)}
+                                    className="absolute right-2 top-2.5 rounded-md p-1.5 text-[#94A3B8] transition hover:bg-[#F1F5F9]"
+                                    aria-label={showPassword ? t("Απόκρυψη κωδικού", "Hide password") : t("Εμφάνιση κωδικού", "Show password")}
+                                >
+                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </button>
+                            </div>
+                            {/* Strength bar */}
+                            <div className="mt-2 flex items-center gap-2" aria-hidden>
+                                <div className="flex flex-1 gap-1">
+                                    {[0, 1, 2].map((i) => (
+                                        <span key={i} className={`h-1.5 flex-1 rounded-full transition-colors ${strength > i ? strengthColors[strength - 1] : "bg-[#E2E8F0]"}`} />
+                                    ))}
+                                </div>
+                                {strengthLabel && <span className={`text-[11px] font-semibold ${strength === 1 ? "text-rose-500" : strength === 2 ? "text-amber-500" : "text-[#29685B]"}`}>{strengthLabel}</span>}
+                            </div>
+                            {errors.password && <p className="mt-1 text-[12px] text-rose-600">{getZodError(errors.password.message, language)}</p>}
+                        </div>
 
-                    <motion.button initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} type="submit" disabled={isSubmitting || signupSuccess} className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-transparent bg-[#1FDC86] px-4 py-4 text-[16px] font-bold text-slate-900 transition-all hover:-translate-y-[2px] hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86] flex-shrink-0 disabled:cursor-not-allowed disabled:opacity-70 dark:bg-[#1FDC86] dark:text-slate-900">
-                        {isSubmitting || signupSuccess ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                        {signupSuccess ? t("Πορτοφόλι δημιουργήθηκε", "Wallet Created") : t("Δημιουργία Πορτοφολιού", "Create My Wallet")}
-                    </motion.button>
+                        {/* Terms */}
+                        <label htmlFor="signup-terms" className="flex cursor-pointer items-start gap-2.5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-3 py-2.5 text-[13px] text-[#475569]">
+                            <input id="signup-terms" type="checkbox" {...register("termsAccepted")} className="mt-0.5 h-4 w-4 rounded border-[#CBD5E1] accent-[#29685B]" />
+                            <span>
+                                {t("Αποδέχομαι τους ", "I agree to ")}<Link href="/terms" className="font-semibold text-[#29685B] hover:underline">{t("Όρους", "Terms")}</Link>{t(" και το ", " and ")}<Link href="/privacy" className="font-semibold text-[#29685B] hover:underline">{t("Απόρρητο", "Privacy")}</Link>
+                            </span>
+                        </label>
+                        {errors.termsAccepted && <p className="-mt-2 text-[12px] text-rose-600">{getZodError(errors.termsAccepted.message, language)}</p>}
 
-                    <p className="text-center text-xs text-slate-500">
-                        {t("Χρειάζονται 90 δευτερόλεπτα. Ακυρώστε οποτεδήποτε.", "Takes 90 seconds. Cancel anytime.")}
+                        {/* FaceID hint */}
+                        <AnimatePresence>
+                            {isMobileValid && strength >= 2 && (
+                                <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="inline-flex items-center gap-1.5 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-1 text-[11px] font-medium text-[#065F46]">
+                                    <ShieldCheck className="h-3.5 w-3.5" />
+                                    {t("Χρήση FaceID μετά την πρώτη εγγραφή", "Use FaceID after first signup")}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
+                        {/* Submit */}
+                        <motion.button
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
+                            type="submit"
+                            disabled={isSubmitting || signupSuccess}
+                            className="flex w-full items-center justify-center gap-2 rounded-full bg-[#29685B] px-4 py-4 text-[15px] font-bold text-white transition-all hover:bg-[#1C4E44] hover:-translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29685B] disabled:cursor-not-allowed disabled:opacity-70"
+                        >
+                            {isSubmitting || signupSuccess ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+                            {signupSuccess ? t("Πορτοφόλι δημιουργήθηκε", "Wallet Created") : t("Δημιουργία Πορτοφολιού", "Create My Wallet")}
+                        </motion.button>
+
+                        <p className="text-center text-[12px] text-[#94A3B8]">
+                            {t("Χρειάζονται 90 δευτερόλεπτα. Ακυρώστε οποτεδήποτε.", "Takes 90 seconds. Cancel anytime.")}
+                        </p>
+                    </form>
+
+                    <p className="mt-5 border-t border-[#E2E8F0] pt-4 text-center text-[13px] text-[#64748B]">
+                        {t("Έχετε ήδη λογαριασμό;", "Already have an account?")}{" "}
+                        <Link href="/auth/signin" className="font-semibold text-[#29685B] hover:underline">
+                            {t("Σύνδεση", "Log in")}
+                        </Link>
                     </p>
-                </form>
-
-                <div className="mt-5 border-t border-slate-200 pt-4 text-center text-sm text-slate-600">
-                    {t("Έχετε ήδη λογαριασμό;", "Already have account?")} <Link href="/auth/signin" className="font-semibold text-[#1FDC86] hover:underline">{t("Σύνδεση", "Login")}</Link>
-                </div>
-
-            </motion.div>
+                </motion.div>
+            </div>
         </div>
     )
 }
 
 export default function SignUpPage() {
     return (
-        <Suspense fallback={<div className={`${ibmPlexSans.className} flex min-h-screen items-center justify-center`}><Loader2 className="h-7 w-7 animate-spin text-[#1FDC86]" /></div>}>
+        <Suspense fallback={
+            <div className={`${inter.className} flex min-h-screen items-center justify-center bg-[#F8FAFC]`}>
+                <Loader2 className="h-7 w-7 animate-spin text-[#29685B]" />
+            </div>
+        }>
             <SignUpForm />
         </Suspense>
     )

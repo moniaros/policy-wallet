@@ -47,6 +47,14 @@ export interface ProfileFields {
     travelsFrequently: boolean
     smokingStatus: string | null
     lifeEvents: any[] | null
+    // Health & Lifestyle
+    gender: string | null
+    heightCm: number | null
+    weightKg: number | null
+    chronicConditions: string[] | null
+    familyMedicalHistory: string[] | null
+    drivingRecord: string | null
+    activityLevel: string | null
 }
 
 /** Subset of Policy fields used in rules */
@@ -264,6 +272,68 @@ export const PROFILE_GAP_RULES: ProfileGapRule[] = [
             el: `Ως ${p.ownsHome ? "ιδιοκτήτης ακινήτου" : "ελεύθερος επαγγελματίας"}, η νομική προστασία καλύπτει δικαστικά έξοδα για διαφορές ακινήτων και συμβάσεων.`,
         }),
     },
+
+    // ── Health & Lifestyle Rules ──────────────────────────────────────
+
+    {
+        id: "chronic_condition_no_health",
+        lineOfBusiness: "health",
+        severity: "critical",
+        name: {
+            en: "Health insurance for chronic condition",
+            el: "Ασφάλιση υγείας για χρόνια νόσο",
+        },
+        condition: (p, policies) =>
+            Array.isArray(p.chronicConditions) &&
+            p.chronicConditions.length > 0 &&
+            !hasActiveLine(policies, "health"),
+        reason: (p) => ({
+            en: `You have reported chronic health conditions (${(p.chronicConditions ?? []).join(", ")}). Private health insurance ensures you have timely access to specialists and ongoing treatment.`,
+            el: `Έχετε δηλώσει χρόνιες παθήσεις (${(p.chronicConditions ?? []).join(", ")}). Η ιδιωτική ασφάλιση υγείας εξασφαλίζει άμεση πρόσβαση σε ειδικούς και συνεχή θεραπεία.`,
+        }),
+    },
+    {
+        id: "family_history_no_life",
+        lineOfBusiness: "life",
+        severity: "high",
+        name: {
+            en: "Life insurance with family medical history",
+            el: "Ασφάλιση ζωής λόγω οικογενειακού ιστορικού",
+        },
+        condition: (p, policies) => {
+            const seriousConditions = ["heart_disease", "cancer", "stroke", "diabetes"]
+            const hasSeriousHistory =
+                Array.isArray(p.familyMedicalHistory) &&
+                p.familyMedicalHistory.some((c) => seriousConditions.includes(c))
+            return hasSeriousHistory && !hasActiveLine(policies, "life")
+        },
+        reason: (p) => ({
+            en: `Your family medical history includes hereditary conditions (${(p.familyMedicalHistory ?? []).join(", ")}), which increases your personal risk profile. Life insurance provides protection for your dependents.`,
+            el: `Το οικογενειακό ιατρικό ιστορικό σας περιλαμβάνει κληρονομικές παθήσεις (${(p.familyMedicalHistory ?? []).join(", ")}), αυξάνοντας το προσωπικό σας προφίλ κινδύνου. Η ασφάλιση ζωής προστατεύει τα εξαρτώμενα μέλη σας.`,
+        }),
+    },
+    {
+        // Fires when driver HAS motor insurance but their record shows elevated
+        // litigation risk — they need legal expenses cover on top of motor.
+        // Deliberately targets legal_expenses (not motor) so it never conflicts
+        // with vehicles_no_motor (critical), which also requires !hasActiveLine(motor).
+        id: "poor_driving_record_needs_legal",
+        lineOfBusiness: "legal_expenses",
+        severity: "medium",
+        name: {
+            en: "Legal expenses insurance (driving record)",
+            el: "Νομική προστασία (οδηγικό ιστορικό)",
+        },
+        condition: (p, policies) =>
+            p.vehiclesCount > 0 &&
+            (p.drivingRecord === "major_violations" || p.drivingRecord === "accidents") &&
+            hasActiveLine(policies, "motor") &&
+            !hasActiveLine(policies, "legal_expenses"),
+        reason: () => ({
+            en: "Your driving record indicates a higher likelihood of traffic-related disputes. Legal expenses insurance covers legal fees and representation costs if you face a claim arising from an accident.",
+            el: "Το οδηγικό σας ιστορικό υποδεικνύει αυξημένο κίνδυνο διαφορών από τροχαία. Η νομική προστασία καλύπτει δικαστικά έξοδα και νομική εκπροσώπηση σε ατυχήματα.",
+        }),
+    },
 ]
 
 // ── Execution ────────────────────────────────────────────────────────
@@ -368,31 +438,40 @@ export function toProfileFields(
             travelsFrequently: false,
             smokingStatus: null,
             lifeEvents: null,
+            gender: null,
+            heightCm: null,
+            weightKg: null,
+            chronicConditions: null,
+            familyMedicalHistory: null,
+            drivingRecord: null,
+            activityLevel: null,
         }
     }
 
+    const p = profile as any
     return {
         maritalStatus: profile.maritalStatus,
         dependentsCount: profile.dependentsCount,
         employmentStatus: profile.employmentStatus,
         ownsHome: profile.ownsHome,
-        mortgageAmount: profile.mortgageAmount
-            ? Number(profile.mortgageAmount)
-            : null,
+        mortgageAmount: profile.mortgageAmount ? Number(profile.mortgageAmount) : null,
         hasPets: profile.hasPets,
         vehiclesCount: profile.vehiclesCount,
-        dateOfBirth: (profile as any).dateOfBirth ?? null,
-        annualIncome: (profile as any).annualIncome
-            ? Number((profile as any).annualIncome)
-            : null,
-        occupation: (profile as any).occupation ?? null,
-        riskTolerance: (profile as any).riskTolerance ?? null,
-        hasLoans: (profile as any).hasLoans ?? false,
-        loanAmount: (profile as any).loanAmount
-            ? Number((profile as any).loanAmount)
-            : null,
-        travelsFrequently: (profile as any).travelsFrequently ?? false,
-        smokingStatus: (profile as any).smokingStatus ?? null,
-        lifeEvents: (profile as any).lifeEvents ?? null,
+        dateOfBirth: p.dateOfBirth ?? null,
+        annualIncome: p.annualIncome ? Number(p.annualIncome) : null,
+        occupation: p.occupation ?? null,
+        riskTolerance: p.riskTolerance ?? null,
+        hasLoans: p.hasLoans ?? false,
+        loanAmount: p.loanAmount ? Number(p.loanAmount) : null,
+        travelsFrequently: p.travelsFrequently ?? false,
+        smokingStatus: p.smokingStatus ?? null,
+        lifeEvents: p.lifeEvents ?? null,
+        gender: p.gender ?? null,
+        heightCm: p.heightCm ?? null,
+        weightKg: p.weightKg ?? null,
+        chronicConditions: Array.isArray(p.chronicConditions) ? p.chronicConditions : null,
+        familyMedicalHistory: Array.isArray(p.familyMedicalHistory) ? p.familyMedicalHistory : null,
+        drivingRecord: p.drivingRecord ?? null,
+        activityLevel: p.activityLevel ?? null,
     }
 }
