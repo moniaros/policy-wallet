@@ -1,45 +1,15 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight, CheckCircle2, Sparkles } from "lucide-react"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { useLanguage } from "@/contexts/LanguageContext"
-
-const valuePropCards = [
-    {
-        key: "portfolio",
-        titleEl: "Client Portfolio Dashboard",
-        titleEn: "Client Portfolio Dashboard",
-        bodyEl: "Δείτε όλες τις ανανεώσεις, εκκρεμότητες και ευκαιρίες cross-sell σε ένα πίνακα.",
-        bodyEn: "View renewals, pending tasks, and cross-sell opportunities in one dashboard.",
-        image: "/screenshots/desktop-dashboard.png",
-    },
-    {
-        key: "gap",
-        titleEl: "Automated Gap Analysis ανά πελάτη",
-        titleEn: "Automated Gap Analysis per client",
-        bodyEl: "Η AI εντοπίζει κενά κάλυψης ανά συμβόλαιο και προτείνει άμεσα βήματα.",
-        bodyEn: "AI detects coverage gaps per policy and recommends immediate next actions.",
-        image: "/images/hero_dashboard_mockup_1771963947200.png",
-    },
-    {
-        key: "renewal",
-        titleEl: "One-click renewal reminders",
-        titleEn: "One-click renewal reminders",
-        bodyEl: "Στείλτε προσωποποιημένες υπενθυμίσεις στους πελάτες πριν τη λήξη του συμβολαίου.",
-        bodyEn: "Send personalized renewal reminders to clients before policy expiration.",
-        image: "/screenshots/mobile-dashboard.png",
-    },
-    {
-        key: "reports",
-        titleEl: "Shareable branded policy reports",
-        titleEn: "Shareable branded policy reports",
-        bodyEl: "Παραδώστε αναφορές με το brand σας, έτοιμες για αποστολή και αρχειοθέτηση.",
-        bodyEn: "Deliver branded reports ready to send and archive with your own identity.",
-        image: "/screenshots/desktop-dashboard.png",
-    },
-] as const
+import {
+    ClientPortfolioDashboardWidget,
+    GapAnalysisWidget,
+    RenewalReminderWidget,
+    BrandedReportWidget,
+} from "@/components/landing/AgentWidgets"
 
 export default function AgentSolutionsPage() {
     const { language } = useLanguage()
@@ -82,21 +52,73 @@ export default function AgentSolutionsPage() {
                     </div>
 
                     <div className="grid gap-6 md:grid-cols-2">
-                        {valuePropCards.map((card) => (
-                            <article key={card.key} className="overflow-hidden rounded-[14px] border border-[#E2E8F0] bg-white shadow-sm">
-                                <div className="relative aspect-[16/10] border-b border-[#EDF2F7] bg-[#F8FAFC]">
-                                    <Image src={card.image} alt={isGreek ? card.titleEl : card.titleEn} fill className="object-contain p-2" />
-                                </div>
-                                <div className="p-6">
-                                    <h3 className="mb-2 text-[24px] font-medium leading-tight text-[#0F172A]">
-                                        {isGreek ? card.titleEl : card.titleEn}
-                                    </h3>
-                                    <p className="text-[16px] leading-relaxed text-[#475569]">
-                                        {isGreek ? card.bodyEl : card.bodyEn}
-                                    </p>
-                                </div>
-                            </article>
-                        ))}
+                        <article className="overflow-hidden rounded-[14px] border border-[#E2E8F0] bg-white shadow-sm">
+                            <div className="border-b border-[#EDF2F7] bg-[#F8FAFC] p-4">
+                                <ClientPortfolioDashboardWidget isGreek={isGreek} />
+                            </div>
+                            <div className="p-6">
+                                <h3 className="mb-2 text-[24px] font-medium leading-tight text-[#0F172A]">
+                                    {t("Client Portfolio Dashboard", "Client Portfolio Dashboard")}
+                                </h3>
+                                <p className="text-[16px] leading-relaxed text-[#475569]">
+                                    {t(
+                                        "Δείτε όλες τις ανανεώσεις, εκκρεμότητες και ευκαιρίες cross-sell σε ένα πίνακα.",
+                                        "View renewals, pending tasks, and cross-sell opportunities in one dashboard."
+                                    )}
+                                </p>
+                            </div>
+                        </article>
+
+                        <article className="overflow-hidden rounded-[14px] border border-[#E2E8F0] bg-white shadow-sm">
+                            <div className="border-b border-[#EDF2F7] bg-[#F8FAFC] p-4">
+                                <GapAnalysisWidget isGreek={isGreek} />
+                            </div>
+                            <div className="p-6">
+                                <h3 className="mb-2 text-[24px] font-medium leading-tight text-[#0F172A]">
+                                    {t("Automated Gap Analysis ανά πελάτη", "Automated Gap Analysis per client")}
+                                </h3>
+                                <p className="text-[16px] leading-relaxed text-[#475569]">
+                                    {t(
+                                        "Η AI εντοπίζει κενά κάλυψης ανά συμβόλαιο και προτείνει άμεσα βήματα.",
+                                        "AI detects coverage gaps per policy and recommends immediate next actions."
+                                    )}
+                                </p>
+                            </div>
+                        </article>
+
+                        <article className="overflow-hidden rounded-[14px] border border-[#E2E8F0] bg-white shadow-sm">
+                            <div className="border-b border-[#EDF2F7] bg-[#F8FAFC] p-4">
+                                <RenewalReminderWidget isGreek={isGreek} />
+                            </div>
+                            <div className="p-6">
+                                <h3 className="mb-2 text-[24px] font-medium leading-tight text-[#0F172A]">
+                                    {t("One-click renewal reminders", "One-click renewal reminders")}
+                                </h3>
+                                <p className="text-[16px] leading-relaxed text-[#475569]">
+                                    {t(
+                                        "Στείλτε προσωποποιημένες υπενθυμίσεις στους πελάτες πριν τη λήξη του συμβολαίου.",
+                                        "Send personalized renewal reminders to clients before policy expiration."
+                                    )}
+                                </p>
+                            </div>
+                        </article>
+
+                        <article className="overflow-hidden rounded-[14px] border border-[#E2E8F0] bg-white shadow-sm">
+                            <div className="border-b border-[#EDF2F7] bg-[#F8FAFC] p-4">
+                                <BrandedReportWidget isGreek={isGreek} />
+                            </div>
+                            <div className="p-6">
+                                <h3 className="mb-2 text-[24px] font-medium leading-tight text-[#0F172A]">
+                                    {t("Shareable branded policy reports", "Shareable branded policy reports")}
+                                </h3>
+                                <p className="text-[16px] leading-relaxed text-[#475569]">
+                                    {t(
+                                        "Παραδώστε αναφορές με το brand σας, έτοιμες για αποστολή και αρχειοθέτηση.",
+                                        "Deliver branded reports ready to send and archive with your own identity."
+                                    )}
+                                </p>
+                            </div>
+                        </article>
                     </div>
                 </div>
             </section>
