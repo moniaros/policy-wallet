@@ -104,7 +104,8 @@ export default async function WalletPage() {
         })()
 
         const extraction = (p.acordData as any)?.extraction
-        const requiresReview = Boolean(
+        const hasExtraction = Boolean(extraction)
+        const requiresReview = hasExtraction && Boolean(
             extraction?.requiresReview ||
             (typeof extraction?.confidence?.overall === 'number' && extraction.confidence.overall < 80) ||
             (Array.isArray(extraction?.missingCriticalFields) && extraction.missingCriticalFields.length > 0)
@@ -128,7 +129,7 @@ export default async function WalletPage() {
                 permissions: g.permissions
             })),
             coverageHighlights: [], // Mock or parse from summary
-            verified: !requiresReview,
+            verified: hasExtraction && !requiresReview,
             documents: p.documents.map((d: any) => ({
                 id: d.id,
                 fileName: d.fileName,
@@ -153,6 +154,9 @@ function mapStatus(dbStatus: string, endDate: Date): 'active' | 'expiring_soon' 
 
     if (dbStatus === 'analyzing') return 'analyzing'
     if (dbStatus === 'cancelled') return 'cancelled'
+    // Preserve DB-level terminal states so failed/blocked runs are never shown as active
+    if (dbStatus === 'action_needed') return 'action_needed'
+    if (dbStatus === 'incomplete') return 'incomplete'
     if (daysUntilExpiry < 0) return 'action_needed' // Expired
     if (daysUntilExpiry < 30) return 'expiring_soon'
 

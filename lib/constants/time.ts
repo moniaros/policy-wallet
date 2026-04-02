@@ -1,6 +1,17 @@
 // ─── Centralized time constants ───
 // All durations in one place. Never inline magic numbers.
 
+// ─── File upload limits ───
+// Used by all upload paths (single, onboarding, batch) to enforce consistent rules.
+export const MAX_UPLOAD_SIZE_BYTES = 15 * 1024 * 1024 // 15 MB
+export const ALLOWED_UPLOAD_MIME_TYPES = [
+    'application/pdf',
+    'image/jpeg',
+    'image/png',
+    'image/webp',
+    'image/heic',
+] as const
+
 export const INVITE_EXPIRY_DAYS = 7
 export const TRIAL_PERIOD_DAYS = 30
 export const SUBSCRIPTION_PERIOD_DAYS = 30

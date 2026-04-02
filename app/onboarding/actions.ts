@@ -270,6 +270,7 @@ export async function triggerOnboardingAnalysis(policyId: string): Promise<{
     status: "completed" | "running" | "queued" | "failed"
     healthScore?: number
     gapCount?: number
+    runId?: string
     error?: string
 }> {
     const { dbUser } = await getAuthenticatedUser()
@@ -315,8 +316,8 @@ export async function triggerOnboardingAnalysis(policyId: string): Promise<{
         select: { id: true, status: true },
     })
 
-    if (existingRun && (existingRun.status === "running" || existingRun.status === "queued")) {
-        return { success: true, status: existingRun.status as "running" | "queued" }
+    if (existingRun && existingRun.status === "running") {
+        return { success: true, status: "running" as const }
     }
 
     // Trigger new analysis
@@ -330,9 +331,11 @@ export async function triggerOnboardingAnalysis(policyId: string): Promise<{
         )
 
         if (result) {
+            const isComplete = result.status === "completed" || result.status === "completed_with_warnings"
+            const isFailed = result.status === "failed" || result.status === "blocked" || result.status === "cancelled"
             return {
-                success: true,
-                status: (result.status === "completed" || result.status === "completed_with_warnings") ? "completed" : "running",
+                success: !isFailed,
+                status: isComplete ? "completed" : isFailed ? "failed" : "running",
                 healthScore: result.overallSuccessPct ?? undefined,
             }
         }
@@ -340,8 +343,18 @@ export async function triggerOnboardingAnalysis(policyId: string): Promise<{
         return { success: true, status: "completed" }
     } catch (error) {
         console.error("Onboarding analysis error:", error)
-        // Don't block onboarding — still succeed but mark as queued
-        return { success: true, status: "queued", error: "Analysis queued for background processing" }
+        // No background worker drains queued runs, so creating one would leave the
+        // policy permanently stuck in 'analyzing'. Revert to 'incomplete' instead so
+        // the user sees a clear failure and can retry manually.
+        try {
+            await db.policy.update({
+                where: { id: policyId },
+                data: { status: "incomplete" },
+            })
+        } catch {
+            // best-effort
+        }
+        return { success: false, status: "failed" as const, error: "Analysis failed. Please try again." }
     }
 }
 

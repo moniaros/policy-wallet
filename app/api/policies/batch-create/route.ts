@@ -12,6 +12,12 @@ const policySchema = z.object({
     endDate: z.string().min(1),
     premiumAmount: z.number().nullable().optional(),
     coverageSummary: z.string().nullable().optional(),
+    acordData: z.any().optional(),
+    extractionMeta: z.object({
+        overallConfidence: z.number().optional(),
+        requiresReview: z.boolean().optional(),
+        missingCriticalFields: z.array(z.string()).optional(),
+    }).optional(),
 })
 
 const batchCreateSchema = z.object({
@@ -58,6 +64,17 @@ export const POST = withApiGuard(
                 }
 
                 try {
+                    // Only mark 'analyzing' when extraction passed minimum quality checks.
+                    // Otherwise use 'incomplete' so the user knows manual review is needed.
+                    const meta = policyData.extractionMeta
+                    const passesQA = Boolean(
+                        meta &&
+                        !meta.requiresReview &&
+                        (meta.overallConfidence ?? 0) >= 80 &&
+                        (meta.missingCriticalFields?.length ?? 0) === 0
+                    )
+                    const initialStatus = passesQA ? 'active' : 'incomplete'
+
                     const policy = await db.policy.create({
                         data: {
                             ownerUserId: userId,
@@ -69,7 +86,8 @@ export const POST = withApiGuard(
                             endDate,
                             premiumAmount: policyData.premiumAmount || null,
                             coverageSummary: policyData.coverageSummary || null,
-                            status: 'active'
+                            acordData: policyData.acordData || undefined,
+                            status: initialStatus,
                         }
                     })
                     createdPolicies.push(policy)

@@ -9,13 +9,9 @@ export default async function DashboardPage() {
     const { dbUser } = await getAuthenticatedUser()
     const role = getPrimaryRole(dbUser.roles)
 
-    if (role === "agent") {
-        redirect("/dashboard/agent")
-    }
+    if (role === "agent") redirect("/dashboard/agent")
+    if (role === "admin") redirect("/admin/dashboard")
 
-    if (role === "admin") {
-        redirect("/admin/dashboard")
-    }
-
-    return <PolicyholderHomePage />
+    // Pass the already-fetched user so PolicyholderHomePage skips a second auth round-trip
+    return <PolicyholderHomePage preloadedDbUser={dbUser} />
 }

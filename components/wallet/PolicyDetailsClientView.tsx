@@ -297,7 +297,7 @@ export function PolicyDetailsClient({
                     <span className="font-semibold text-black dark:text-white">{displayPolicyNumber || localizedType}</span>
                 </nav>
 
-                <section className="relative overflow-hidden rounded-[28px] border border-white/10 bg-black p-6 text-white shadow-2xl sm:p-8 lg:p-10">
+                <section className="relative overflow-hidden rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0d1f1c] via-[#0f2420] to-[#111111] p-6 text-white shadow-2xl sm:p-8 lg:p-10">
                     <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(31,220,134,0.28),_transparent_45%)]" />
                     <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.06),transparent_40%)]" />
 
@@ -465,7 +465,7 @@ export function PolicyDetailsClient({
                                     onClick={() => setActiveTab("analysis")}
                                     className={`rounded-xl px-3 py-2.5 text-sm font-bold transition-colors cursor-pointer ${
                                         activeTab === "analysis"
-                                            ? "bg-black text-white"
+                                            ? "bg-[#1FDC86] text-white"
                                             : "bg-black/5 text-black/70 hover:bg-black/10 dark:bg-white/10 dark:text-white/75 dark:hover:bg-white/15"
                                     }`}
                                 >
@@ -476,7 +476,7 @@ export function PolicyDetailsClient({
                                     onClick={() => setActiveTab("qa")}
                                     className={`rounded-xl px-3 py-2.5 text-sm font-bold transition-colors cursor-pointer ${
                                         activeTab === "qa"
-                                            ? "bg-black text-white"
+                                            ? "bg-[#1FDC86] text-white"
                                             : "bg-black/5 text-black/70 hover:bg-black/10 dark:bg-white/10 dark:text-white/75 dark:hover:bg-white/15"
                                     }`}
                                 >
@@ -488,7 +488,7 @@ export function PolicyDetailsClient({
                                     disabled={!canShowCollaborationTimeline && !isFreeTier}
                                     className={`rounded-xl px-3 py-2.5 text-sm font-bold transition-colors ${
                                         activeTab === "collaboration"
-                                            ? "bg-black text-white"
+                                            ? "bg-[#1FDC86] text-white"
                                             : "bg-black/5 text-black/70 hover:bg-black/10 dark:bg-white/10 dark:text-white/75 dark:hover:bg-white/15"
                                     } ${(!canShowCollaborationTimeline || isFreeTier) ? "cursor-not-allowed opacity-45" : "cursor-pointer"}`}
                                 >

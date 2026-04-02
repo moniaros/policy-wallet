@@ -19,7 +19,7 @@ import type {
     PolicyDetailView,
     UserSummary
 } from '@/types'
-import { daysFromNow, POLICY_SHARE_EXPIRY_DAYS, DEFAULT_POLICY_DURATION_DAYS } from '@/lib/constants/time'
+import { ALLOWED_UPLOAD_MIME_TYPES, MAX_UPLOAD_SIZE_BYTES, daysFromNow, POLICY_SHARE_EXPIRY_DAYS, DEFAULT_POLICY_DURATION_DAYS } from '@/lib/constants/time'
 
 export interface UploadAndParseResult {
     policy: Policy
@@ -107,7 +107,7 @@ export class PolicyService extends BaseService {
 
                     // Validate file extension
                     const lowerName = fileName.toLowerCase()
-                    const validExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.webp']
+                    const validExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.webp', '.heic']
                     const hasValidExt = validExtensions.some(ext => lowerName.endsWith(ext))
 
                     if (!hasValidExt) {
@@ -270,21 +270,19 @@ export class PolicyService extends BaseService {
         language: 'en' | 'el' = 'en'
     ): Promise<UploadAndParseResult> {
         // 1. Initial Validation
-        const MAX_FILE_SIZE = 15 * 1024 * 1024 // Increased to 15MB for better document support
-        if (file.size > MAX_FILE_SIZE) {
+        if (file.size > MAX_UPLOAD_SIZE_BYTES) {
             throw AppError.validation({
                 file: [language === 'el'
-                    ? 'Το αρχείο είναι πολύ μεγάλο. Μέγιστο μέγεθος: 15MB'
-                    : 'File too large. Maximum size is 15MB']
+                    ? `Το αρχείο είναι πολύ μεγάλο. Μέγιστο μέγεθος: ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`
+                    : `File too large. Maximum size is ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`]
             })
         }
 
-        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp']
-        if (!allowedTypes.includes(file.type)) {
+        if (!(ALLOWED_UPLOAD_MIME_TYPES as readonly string[]).includes(file.type)) {
             throw AppError.validation({
                 file: [language === 'el'
-                    ? 'Μη έγκυρος τύπος αρχείου. Επιτρέπονται μόνο PDF, JPG, PNG και WEBP'
-                    : 'Invalid file type. Only PDF, JPG, PNG, and WEBP are allowed']
+                    ? 'Μη έγκυρος τύπος αρχείου. Επιτρέπονται PDF, JPG, PNG, WEBP και HEIC'
+                    : 'Invalid file type. Allowed: PDF, JPG, PNG, WEBP, and HEIC']
             })
         }
 

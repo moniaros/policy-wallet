@@ -238,7 +238,7 @@ Do not include Citations, text should be in Greek (Primary and language of sourc
       )
 
       const extracted = result.object
-      const enriched = enrichExtractionPayload(extracted)
+      const enriched = enrichExtractionPayload(extracted, undefined, 'gemini')
       const parsedUsage = parseUsage(result.usage, modelName)
 
       if (options?.userId) {
@@ -425,7 +425,7 @@ ${gapDefinitions.map(g => `- ${g.slug}: ${g.checkCriteria}`).join('\n')}`
         exclusions: analysisRaw.exclusions,
         extractionConfidence: analysisRaw.extractionConfidence,
         acordData: analysisRaw.acordData,
-      })
+      }, undefined, 'gemini')
 
       const response: AIGapAnalysisResponse = {
         verifiedMetadata: analysisRaw.verifiedMetadata as any,

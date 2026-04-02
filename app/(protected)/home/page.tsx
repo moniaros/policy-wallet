@@ -5,6 +5,7 @@ import { redirect } from "next/navigation"
 import { db } from "@/lib/db"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { fixMojibakeText } from "@/lib/i18n/fix-mojibake"
+import type { User } from "@prisma/client"
 import { getProtectionScore } from "@/lib/services/gap-engine"
 import {
     AlertCircle,
@@ -56,14 +57,16 @@ function getLineOfBusinessMeta(lineOfBusiness: string) {
     return { icon: Shield, label: "Other" }
 }
 
-export default async function PolicyholderHomePage() {
-    const { dbUser } = await getAuthenticatedUser()
-    const roles = (dbUser.roles || "policyholder").split(",")
-    const role = roles[0]
+export default async function PolicyholderHomePage({ preloadedDbUser }: { preloadedDbUser?: User } = {}) {
+    const dbUser = preloadedDbUser ?? (await getAuthenticatedUser()).dbUser
 
-    if (role !== "policyholder") {
-        if (role === "agent") redirect("/dashboard/agent")
-        if (role === "admin") redirect("/admin/dashboard")
+    if (!preloadedDbUser) {
+        // Role-guard only when accessed directly — dashboard/page.tsx already redirects
+        const role = (dbUser.roles || "policyholder").split(",")[0]
+        if (role !== "policyholder") {
+            if (role === "agent") redirect("/dashboard/agent")
+            if (role === "admin") redirect("/admin/dashboard")
+        }
     }
 
     const isGreek = (dbUser.preferredLanguage || "en") === "el"
@@ -152,7 +155,7 @@ export default async function PolicyholderHomePage() {
 
     // Getting Started checklist data
     const hasAnalysisRun = await db.policyAnalysisRun.findFirst({
-        where: { userId: dbUser.id, status: "completed" },
+        where: { userId: dbUser.id, status: { in: ["completed", "completed_with_warnings"] } },
         select: { id: true },
     })
     const hasNotificationPref = await db.notificationPreference.findFirst({

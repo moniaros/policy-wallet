@@ -117,7 +117,7 @@ export class MockAIService implements IAIService {
                 }
             }
         }
-        const enriched = enrichExtractionPayload(base)
+        const enriched = enrichExtractionPayload(base, undefined, 'mock')
 
         // Return mock data
         return {
@@ -211,7 +211,7 @@ export class MockAIService implements IAIService {
                 }
             },
             acordData: response.acordData
-        })
+        }, undefined, 'mock')
         response.acordData = enriched.acordData
         ;(response as any).usage = {
             inputTokens: 3200,

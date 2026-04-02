@@ -44,7 +44,7 @@ function formatRelativeExpiry(endDate: string | null, locale: 'el' | 'en'): stri
 function getStatusBadge(status: string, t: any) {
     const label = t.policyStatus?.[status as keyof typeof t.policyStatus] || status
     const styles: Record<string, string> = {
-        active: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
+        active: 'bg-[#1FDC86]/15 text-[#19b870] dark:bg-[#1FDC86]/15 dark:text-[#7de8ba]',
         expiring_soon: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
         action_needed: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
         analyzing: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 animate-pulse',
@@ -77,7 +77,7 @@ export function PolicyCard({ policy, onView, id }: PolicyCardProps) {
         >
             <div className="flex items-start gap-4">
                 {/* LOB Icon */}
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-emerald-100/80 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#1FDC86]/15 text-[#19b870] dark:bg-[#1FDC86]/12 dark:text-[#7de8ba]">
                     {isAnalyzing ? (
                         <Sparkles className="h-5 w-5 animate-pulse" />
                     ) : (

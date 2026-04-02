@@ -351,6 +351,13 @@ export class PolicyAnalysisOrchestratorService {
                 },
             })
 
+            // Documents were set to "processing" before the token gate — reset them
+            // so the wallet UI doesn't show a perpetual spinner for a blocked run.
+            await db.policyDocument.updateMany({
+                where: { policyId, processingStatus: "processing" },
+                data: { processingStatus: "failed" },
+            })
+
             return blockedRun
         }
 
@@ -2086,7 +2093,8 @@ export class PolicyAnalysisOrchestratorService {
                     ...(clarity.acordData || {}),
                 },
             },
-            existingAcord
+            existingAcord,
+            pipeline.provider
         )
 
         const compactClarity = {

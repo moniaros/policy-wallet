@@ -347,9 +347,11 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                                     ? t("Η ανάλυση AI ολοκληρώθηκε!", "AI analysis completed!")
                                                     : uploadedPolicyId && analysisResult?.status === "queued"
                                                         ? t("Η ανάλυση θα ολοκληρωθεί σε λίγα λεπτά.", "Analysis will complete in a few minutes.")
-                                                        : uploadedPolicyId
-                                                            ? t("Το συμβόλαιο προστέθηκε και αναλύεται.", "Your policy was added and is being analyzed.")
-                                                            : t("Μπορείς να ξεκινήσεις χωρίς upload και να προσθέσεις συμβόλαια αργότερα.", "You can start now and upload policies later.")}
+                                                        : uploadedPolicyId && analysisResult?.status === "failed"
+                                                            ? t("Η ανάλυση απέτυχε. Μπορείτε να τη ξεκινήσετε ξανά από το Wallet.", "Analysis failed. You can retry from your Wallet.")
+                                                            : uploadedPolicyId
+                                                                ? t("Το συμβόλαιο προστέθηκε και αναλύεται.", "Your policy was added and is being analyzed.")
+                                                                : t("Μπορείς να ξεκινήσεις χωρίς upload και να προσθέσεις συμβόλαια αργότερα.", "You can start now and upload policies later.")}
                                             </span>
                                         </div>
                                         {analysisResult?.healthScore != null && (

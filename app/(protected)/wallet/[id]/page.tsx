@@ -126,13 +126,15 @@ export default async function PolicyDetailPage({
         updatedAt: policy.updatedAt.toISOString(),
         lastAnalyzedAt: policy.lastAnalyzedAt?.toISOString() || null,
         premiumAmount: policy.premiumAmount ? Number(policy.premiumAmount) : null,
-        verified: !(
-            (policy.acordData as any)?.extraction?.requiresReview ||
-            (typeof (policy.acordData as any)?.extraction?.confidence?.overall === 'number' &&
-                (policy.acordData as any).extraction.confidence.overall < 80) ||
-            (Array.isArray((policy.acordData as any)?.extraction?.missingCriticalFields) &&
-                (policy.acordData as any).extraction.missingCriticalFields.length > 0)
-        ),
+        verified: (() => {
+            const ext = (policy.acordData as any)?.extraction
+            if (!ext) return false
+            return !(
+                ext.requiresReview ||
+                (typeof ext.confidence?.overall === 'number' && ext.confidence.overall < 80) ||
+                (Array.isArray(ext.missingCriticalFields) && ext.missingCriticalFields.length > 0)
+            )
+        })(),
         premiumCurrency: policy.premiumCurrency,
         documents: policy.documents.map(d => ({
             ...d,

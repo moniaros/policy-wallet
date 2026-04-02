@@ -85,7 +85,8 @@ function getMissingCriticalFields(payload: RawExtractionPayload): string[] {
 
 export function enrichExtractionPayload(
     payload: RawExtractionPayload,
-    existingAcordData?: any
+    existingAcordData?: any,
+    provider: string = 'gemini'
 ): EnrichedExtraction {
     const fieldConfidence = extractConfidenceMap(payload)
     const missingCriticalFields = getMissingCriticalFields(payload)
@@ -120,7 +121,7 @@ export function enrichExtractionPayload(
         exclusions,
         extraction: {
             ...(baseAcord?.extraction || {}),
-            source: 'gemini',
+            source: provider,
             extractedAt: new Date().toISOString(),
             confidence: {
                 overall: Math.round(overallConfidence),

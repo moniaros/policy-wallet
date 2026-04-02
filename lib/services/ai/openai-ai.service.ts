@@ -161,7 +161,7 @@ export class OpenAIAIService implements IAIService {
         )
 
         const extracted = result.object
-        const enriched = enrichExtractionPayload(extracted)
+        const enriched = enrichExtractionPayload(extracted, undefined, 'openai')
         const parsedUsage = parseUsage(result.usage, modelName)
 
         if (options?.userId && result.usage) {

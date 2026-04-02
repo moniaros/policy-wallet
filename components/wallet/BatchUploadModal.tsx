@@ -19,6 +19,12 @@ interface ExtractedPolicy {
         endDate: string
         premiumAmount?: number
         coverageSummary?: string
+        acordData?: unknown
+        extractionMeta?: {
+            overallConfidence?: number
+            requiresReview?: boolean
+            missingCriticalFields?: string[]
+        }
     }
 }
 
@@ -166,7 +172,17 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    policies: successPolicies.map((p) => p.data),
+                    policies: successPolicies.map((p) => ({
+                        insurerName: p.data!.insurerName,
+                        policyNumber: p.data!.policyNumber,
+                        lineOfBusiness: p.data!.lineOfBusiness,
+                        startDate: p.data!.startDate,
+                        endDate: p.data!.endDate,
+                        premiumAmount: p.data!.premiumAmount,
+                        coverageSummary: p.data!.coverageSummary,
+                        acordData: p.data!.acordData,
+                        extractionMeta: p.data!.extractionMeta,
+                    })),
                 }),
             })
 

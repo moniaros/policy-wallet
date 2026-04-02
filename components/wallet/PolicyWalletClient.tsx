@@ -139,6 +139,15 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
                         },
                     })
                     fireBrowserNotification(copy.failed, copy.failedDesc, policy.id)
+                } else if (policy.status === 'incomplete') {
+                    toast.warning(copy.incomplete, {
+                        description: copy.incompleteDesc,
+                        action: {
+                            label: copy.view,
+                            onClick: () => router.push(`/wallet/${policy.id}`),
+                        },
+                    })
+                    fireBrowserNotification(copy.incomplete, copy.incompleteDesc, policy.id)
                 } else {
                     toast.success(copy.completed, {
                         description: summary,

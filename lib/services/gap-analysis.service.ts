@@ -268,7 +268,7 @@ export class GapAnalysisService extends BaseService {
                 exclusions: (analysis as any).exclusions,
                 extractionConfidence: (analysis as any).extractionConfidence,
                 acordData
-            }, (policy as any).acordData || {})
+            }, (policy as any).acordData || {}, aiService.getServiceName())
 
             // 7. Update Policy with Verified Data
             await this.db.policy.update({

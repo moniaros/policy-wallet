@@ -84,7 +84,8 @@ export function GettingStartedChecklist({
             descEn: "Check if there are gaps in your insurance coverage.",
             href: "/coverage-insights",
             icon: ShieldAlert,
-            completed: policyCount > 0 && gapCount === 0,
+            // Requires analysis to have actually run — zero gaps when no analysis ran is not "complete"
+            completed: hasAnalysis && gapCount === 0,
         },
         {
             id: "agent",
@@ -102,7 +103,7 @@ export function GettingStartedChecklist({
             titleEn: "Enable notifications",
             descEl: "Ενεργοποιήστε ειδοποιήσεις για ανανεώσεις και ενημερώσεις.",
             descEn: "Turn on alerts for renewals and updates.",
-            href: "/settings",
+            href: "/notifications",
             icon: Bell,
             completed: notificationsEnabled,
         },

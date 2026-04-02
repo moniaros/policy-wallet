@@ -3,7 +3,7 @@ import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { env } from "@/lib/env"
 import { enrichExtractionPayload } from "@/lib/services/ai/extraction-enrichment"
-import { daysFromNow, DEFAULT_POLICY_DURATION_DAYS } from "@/lib/constants/time"
+import { ALLOWED_UPLOAD_MIME_TYPES, MAX_UPLOAD_SIZE_BYTES, daysFromNow, DEFAULT_POLICY_DURATION_DAYS } from "@/lib/constants/time"
 
 export async function POST(request: NextRequest) {
     const authResult = await getAuthenticatedUserOrNull()
@@ -19,16 +19,13 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: "No file provided" }, { status: 400 })
         }
 
-        // Size limit (10MB)
-        if (file.size > 10 * 1024 * 1024) {
-            return NextResponse.json({ error: "File too large. Maximum 10MB." }, { status: 400 })
+        if (file.size > MAX_UPLOAD_SIZE_BYTES) {
+            return NextResponse.json({ error: `File too large. Maximum ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB.` }, { status: 400 })
         }
 
-        // Validate MIME type
-        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/heic']
-        if (!allowedTypes.includes(file.type)) {
+        if (!(ALLOWED_UPLOAD_MIME_TYPES as readonly string[]).includes(file.type)) {
             return NextResponse.json({
-                error: `Invalid file type. Allowed: ${allowedTypes.join(', ')}`
+                error: `Invalid file type. Allowed: ${ALLOWED_UPLOAD_MIME_TYPES.join(', ')}`
             }, { status: 400 })
         }
 
@@ -101,7 +98,7 @@ export async function POST(request: NextRequest) {
             }
             extracted = JSON.parse(jsonMatch[0])
         }
-        const enriched = enrichExtractionPayload(extracted)
+        const enriched = enrichExtractionPayload(extracted, undefined, 'gemini')
 
         return NextResponse.json({
             success: true,

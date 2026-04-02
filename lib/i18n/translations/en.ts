@@ -328,6 +328,8 @@ export const en: TranslationKeys = {
             completed: 'Policy analysis completed',
             failed: 'Analysis failed',
             failedDesc: 'You can retry the analysis.',
+            incomplete: 'Analysis needs review',
+            incompleteDesc: 'Some policy data could not be fully extracted.',
             view: 'View',
         },
         mobileShell: {

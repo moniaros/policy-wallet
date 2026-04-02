@@ -214,7 +214,7 @@ Do not include Citations, text should be in Greek (Primary and language of sourc
         )
 
         const extracted = result.object
-        const enriched = enrichExtractionPayload(extracted)
+        const enriched = enrichExtractionPayload(extracted, undefined, 'anthropic')
         const parsedUsage = parseUsage(result.usage, modelName)
 
         if (options?.userId && result.usage) {
