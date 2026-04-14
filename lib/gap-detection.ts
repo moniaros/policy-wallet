@@ -181,7 +181,7 @@ export async function createGapInstances(detectedGaps: DetectedGap[]): Promise<v
                 policyId: gap.policyId,
                 gapDefinitionId: gap.gapDefinitionId,
                 status: {
-                    in: ['detected', 'acknowledged'],
+                    in: ['detected', 'acknowledged', 'open'],
                 },
             },
         })

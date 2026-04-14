@@ -100,67 +100,80 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                     </div>
                 </div>
 
-                <div className="space-y-4">
-                    <div className="bg-black/5 dark:bg-white/5 rounded-xl p-3 border border-black/10 dark:border-white/15">
-                        <div className="flex gap-2.5">
-                            <Info className="w-4 h-4 text-black/45 dark:text-white/55 mt-0.5 flex-shrink-0" />
-                            <div>
-                                <span className="text-[10px] font-semibold text-black/45 dark:text-white/55 uppercase tracking-widest block mb-1">
-                                    {language === 'el' ? 'Γιατί έχει σημασία' : 'Why this matters'}
-                                </span>
-                                <p className="text-black/80 dark:text-white/80 text-sm leading-relaxed">{insight.whyItMatters}</p>
+                {insight.isPlusFeature ? (
+                    <div className="rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/15 px-4 py-5 text-center space-y-3">
+                        <Lock className="w-6 h-6 mx-auto text-black/35 dark:text-white/40" />
+                        <p className="text-sm text-black/55 dark:text-white/60">
+                            {language === 'el'
+                                ? 'Αναβάθμισε για να δεις ανάλυση και προτεινόμενες ενέργειες.'
+                                : 'Upgrade to see the full analysis and recommended actions.'}
+                        </p>
+                    </div>
+                ) : (
+                    <div className="space-y-4">
+                        <div className="bg-black/5 dark:bg-white/5 rounded-xl p-3 border border-black/10 dark:border-white/15">
+                            <div className="flex gap-2.5">
+                                <Info className="w-4 h-4 text-black/45 dark:text-white/55 mt-0.5 flex-shrink-0" />
+                                <div>
+                                    <span className="text-[10px] font-semibold text-black/45 dark:text-white/55 uppercase tracking-widest block mb-1">
+                                        {language === 'el' ? 'Γιατί έχει σημασία' : 'Why this matters'}
+                                    </span>
+                                    <p className="text-black/80 dark:text-white/80 text-sm leading-relaxed">{insight.whyItMatters}</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div>
-                        <span className="text-[10px] font-semibold text-black/45 dark:text-white/55 uppercase tracking-widest block mb-2">
-                            {language === 'el' ? 'Τι ελέγξαμε' : 'What we checked'}
-                        </span>
-                        <div className="space-y-2">
-                            {insight.checkedItems.slice(0, 3).map((item, idx) => (
-                                <div key={idx} className="flex items-center gap-2.5 text-sm text-black/70 dark:text-white/70">
-                                    <div className="w-5 h-5 rounded-full bg-[#1FDC86]/15 flex items-center justify-center flex-shrink-0">
-                                        <CheckCircle2 className="w-3.5 h-3.5 text-[#1FDC86]" />
+                        <div>
+                            <span className="text-[10px] font-semibold text-black/45 dark:text-white/55 uppercase tracking-widest block mb-2">
+                                {language === 'el' ? 'Τι ελέγξαμε' : 'What we checked'}
+                            </span>
+                            <div className="space-y-2">
+                                {insight.checkedItems.slice(0, 3).map((item, idx) => (
+                                    <div key={idx} className="flex items-center gap-2.5 text-sm text-black/70 dark:text-white/70">
+                                        <div className="w-5 h-5 rounded-full bg-[#1FDC86]/15 flex items-center justify-center flex-shrink-0">
+                                            <CheckCircle2 className="w-3.5 h-3.5 text-[#1FDC86]" />
+                                        </div>
+                                        <span>{item}</span>
                                     </div>
-                                    <span>{item}</span>
-                                </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={() => onAction('primary', insight.id, insight.primaryAction.label)}
+                            className="w-full flex items-center justify-between px-4 py-3 bg-[#1FDC86] text-white rounded-xl text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity cursor-pointer"
+                        >
+                            <span>{insight.primaryAction.label}</span>
+                            <ChevronRight className="w-4 h-4" />
+                        </button>
+
+                        <div className="grid grid-cols-2 gap-2">
+                            {insight.secondaryActions.map((action, idx) => (
+                                <button
+                                    key={idx}
+                                    type="button"
+                                    onClick={() => onAction('secondary', insight.id, action.label)}
+                                    className={`px-3 py-2.5 rounded-xl text-xs font-semibold border transition-colors cursor-pointer ${idx === 0
+                                        ? 'bg-white dark:bg-black border-black/15 dark:border-white/20 text-black dark:text-white'
+                                        : 'bg-black/5 dark:bg-white/10 border-black/10 dark:border-white/15 text-black/60 dark:text-white/60'
+                                        }`}
+                                >
+                                    {action.label}
+                                </button>
                             ))}
                         </div>
+
+                        {insight.microcopy && (
+                            <div className="flex justify-center">
+                                <span className="text-[10px] font-medium text-black/45 dark:text-white/55 bg-black/5 dark:bg-white/10 px-3 py-1 rounded-full flex items-center gap-1.5">
+                                    <Shield className="w-3 h-3" />
+                                    {insight.microcopy}
+                                </span>
+                            </div>
+                        )}
                     </div>
-
-                    <button
-                        onClick={() => onAction('primary', insight.id, insight.primaryAction.label)}
-                        className="w-full flex items-center justify-between px-4 py-3 bg-[#1FDC86] text-white rounded-xl text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity cursor-pointer"
-                    >
-                        <span>{insight.primaryAction.label}</span>
-                        <ChevronRight className="w-4 h-4" />
-                    </button>
-
-                    <div className="grid grid-cols-2 gap-2">
-                        {insight.secondaryActions.map((action, idx) => (
-                            <button
-                                key={idx}
-                                onClick={() => onAction('secondary', insight.id, action.label)}
-                                className={`px-3 py-2.5 rounded-xl text-xs font-semibold border transition-colors cursor-pointer ${idx === 0
-                                    ? 'bg-white dark:bg-black border-black/15 dark:border-white/20 text-black dark:text-white'
-                                    : 'bg-black/5 dark:bg-white/10 border-black/10 dark:border-white/15 text-black/60 dark:text-white/60'
-                                    }`}
-                            >
-                                {action.label}
-                            </button>
-                        ))}
-                    </div>
-
-                    {insight.microcopy && (
-                        <div className="flex justify-center">
-                            <span className="text-[10px] font-medium text-black/45 dark:text-white/55 bg-black/5 dark:bg-white/10 px-3 py-1 rounded-full flex items-center gap-1.5">
-                                <Shield className="w-3 h-3" />
-                                {insight.microcopy}
-                            </span>
-                        </div>
-                    )}
-                </div>
+                )}
             </div>
 
             {insight.isPlusFeature && (

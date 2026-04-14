@@ -332,7 +332,7 @@ export async function triggerOnboardingAnalysis(policyId: string): Promise<{
 
         if (result) {
             const isComplete = result.status === "completed" || result.status === "completed_with_warnings"
-            const isFailed = result.status === "failed" || result.status === "blocked" || result.status === "cancelled"
+            const isFailed = result.status === "failed" || result.status === "blocked"
             return {
                 success: !isFailed,
                 status: isComplete ? "completed" : isFailed ? "failed" : "running",

@@ -33,7 +33,6 @@ interface CoverageInsightsClientProps {
     userLanguage: string
     tier: PlanTier
     isPaid: boolean
-    canUseAdvancedAnalytics: boolean
     canUseAgentCollaboration: boolean
     policies?: Array<{
         id: string
@@ -47,7 +46,7 @@ export function CoverageInsightsClient({
     stats,
     userLanguage,
     tier,
-    canUseAdvancedAnalytics,
+    isPaid,
     canUseAgentCollaboration,
     policies = []
 }: CoverageInsightsClientProps) {
@@ -129,7 +128,7 @@ export function CoverageInsightsClient({
     const confidence = getConfidenceLevel(stats.healthScore)
     const visibleGaps = gaps.filter((g) => !hiddenInsights.has(g.id))
     const freeUnlockedLimit = 2
-    const maxVisibleInsights = isFreeTier ? 6 : 6
+    const maxVisibleInsights = isFreeTier ? freeUnlockedLimit : 6
 
     const summaryText = visibleGaps.length > 0
         ? (lang === 'el'
@@ -167,6 +166,11 @@ export function CoverageInsightsClient({
                 await updateGapStatus(id, 'dismissed')
                 toast.success(copy.dismissSuccess)
             } catch {
+                setHiddenInsights((prev) => {
+                    const next = new Set(prev)
+                    next.delete(id)
+                    return next
+                })
                 toast.error(copy.dismissFail)
             }
             return
@@ -204,7 +208,7 @@ export function CoverageInsightsClient({
                     </div>
                     <div className="pw-card rounded-2xl p-4">
                         <p className="pw-kicker mb-1">{copy.policiesWithPoints}</p>
-                        <p className="text-2xl font-semibold text-black dark:text-white">{stats.totalGaps}</p>
+                        <p className="text-2xl font-semibold text-black dark:text-white">{policiesWithIssues.size}</p>
                     </div>
                     <div className="pw-card rounded-2xl p-4">
                         <p className="pw-kicker mb-1">{copy.totalPolicies}</p>

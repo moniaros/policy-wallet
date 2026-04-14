@@ -14,10 +14,20 @@ export default async function CoverageInsightsPage() {
     const { dbUser } = await getAuthenticatedUser()
     const entitlements = await resolveUserEntitlements(dbUser.id)
 
-    // 1. Legacy gap detection first (creates policy-level gap instances in DB)
-    const detectedGaps = await detectGapsForUser(dbUser.id)
-    if (detectedGaps.length > 0) {
-        await createGapInstances(detectedGaps)
+    // 1. Legacy gap detection — only run if no policy was analyzed in the last hour
+    // to avoid write-heavy N+1 detection on every page render.
+    const recentlyAnalyzed = await db.policy.findFirst({
+        where: {
+            ownerUserId: dbUser.id,
+            lastAnalyzedAt: { gte: new Date(Date.now() - 60 * 60 * 1000) },
+        },
+        select: { id: true },
+    })
+    if (!recentlyAnalyzed) {
+        const detectedGaps = await detectGapsForUser(dbUser.id)
+        if (detectedGaps.length > 0) {
+            await createGapInstances(detectedGaps)
+        }
     }
 
     // 2. Run gap engine (reads fresh gap instances, computes protection score + recommendations)
@@ -160,7 +170,6 @@ export default async function CoverageInsightsPage() {
                     userLanguage={userLanguage}
                     tier={entitlements.tier}
                     isPaid={entitlements.isPaid}
-                    canUseAdvancedAnalytics={entitlements.limits.advancedAnalytics}
                     canUseAgentCollaboration={entitlements.limits.agentCollaboration}
                     policies={policies.map(p => ({
                         id: p.id,

@@ -35,7 +35,8 @@
       "Bash(cat \"/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/app/\\(protected\\)/home/page.tsx\")",
       "Bash(cat \"/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/app/\\(protected\\)/dashboard/agent/page.tsx\")",
       "Bash(find '/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/app' -type f \\\\\\(-name *.ts -o -name *.tsx \\\\\\))",
-      "Bash(node -e \"const p = require\\(''./package.json''\\); console.log\\(JSON.stringify\\(p.devDependencies, null, 2\\)\\)\")"
+      "Bash(node -e \"const p = require\\(''./package.json''\\); console.log\\(JSON.stringify\\(p.devDependencies, null, 2\\)\\)\")",
+      "Bash(npx vitest:*)"
     ],
     "additionalDirectories": [
       "c:\\Users\\admin\\Documents\\GitHub\\PolicyWalletPlatform\\New folder\\product-plan\\policy-wallet\\app\\api\\v1\\recommendations"
