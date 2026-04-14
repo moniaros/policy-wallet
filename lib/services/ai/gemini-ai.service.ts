@@ -251,8 +251,6 @@ Do not include Citations, text should be in Greek (Primary and language of sourc
             inputTokens: usage.inputTokens,
             outputTokens: usage.outputTokens,
             model: modelName as any
-          }).catch(err => {
-            logger('error', 'Failed to track token usage', { error: err })
           })
         }
       }
@@ -409,8 +407,6 @@ ${gapDefinitions.map(g => `- ${g.slug}: ${g.checkCriteria}`).join('\n')}`
             inputTokens: usage.inputTokens,
             outputTokens: usage.outputTokens,
             model: modelName as any
-          }).catch(err => {
-            logger('error', 'Failed to track token usage', { error: err })
           })
         }
       }
@@ -606,8 +602,6 @@ ${checklistPrompt}`
         inputTokens: usage.inputTokens,
         outputTokens: usage.outputTokens,
         model: modelName as any,
-      }).catch((err) => {
-        logger('error', 'Failed to track clarity token usage', { error: err })
       })
     }
 

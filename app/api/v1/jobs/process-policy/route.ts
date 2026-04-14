@@ -22,6 +22,26 @@ export async function POST(req: Request) {
     if (!limitCheck.success) return limitCheck.error!
 
     try {
+        // Pre-flight: expire stale analysis runs whose serverless lease timed out
+        // Runs stuck in "running" with an expired lease would block future attempts
+        const expiredLeaseCount = await db.policyAnalysisRun.updateMany({
+            where: {
+                status: "running",
+                executionLeaseExpiresAt: { lt: new Date() },
+            },
+            data: {
+                status: "failed",
+                failureCode: "LEASE_EXPIRED",
+                failureMessage: "Execution lease expired — serverless timeout likely",
+                completedAt: new Date(),
+            },
+        })
+        if (expiredLeaseCount.count > 0) {
+            logger("warn", "Expired stale analysis leases in pre-flight", {
+                count: expiredLeaseCount.count,
+            })
+        }
+
         const { policyId } = processPolicySchema.parse(await req.json())
 
         // Ensure user owns the policy
@@ -31,6 +51,19 @@ export async function POST(req: Request) {
 
         if (!policy || policy.ownerUserId !== authResult.dbUser.id) {
             return createApiError("FORBIDDEN", "Access denied", 403)
+        }
+
+        // M3: Idempotency guard — skip if an analysis is already in-flight for this policy
+        const inFlight = await db.policyAnalysisRun.findFirst({
+            where: { policyId, status: "running" },
+            select: { id: true },
+        })
+        if (inFlight) {
+            logger("info", "process-policy skipped — analysis already running", {
+                policyId,
+                runId: inFlight.id,
+            })
+            return createApiResponse({ processed: false, reason: "analysis_already_running" })
         }
 
         // 1. Process Gaps

@@ -181,7 +181,8 @@ export async function getTokenBalance(userId: string) {
 }
 
 /**
- * Check if user can use tokens for an operation
+ * Check if user can use tokens for an operation.
+ * Accounts for both recorded usage and in-flight reservations.
  */
 export async function canUserUseTokens(
     userId: string,
@@ -194,11 +195,16 @@ export async function canUserUseTokens(
 }> {
     const { tier: rawTier } = await getUserSubscription(userId)
     const tier = normalizeTokenTier(rawTier)
-    const monthlyUsage = await getMonthlyUsage(userId)
+    const now = new Date()
+    const month = new Date(now.getFullYear(), now.getMonth(), 1)
     const limit = TOKEN_LIMITS[tier]
-    const used = monthlyUsage.total_tokens
 
-    // Check subscription allowance
+    const usage = await prisma.monthlyTokenUsage.findUnique({
+        where: { userId_month: { userId, month } },
+    })
+
+    const used = usage ? Number(usage.totalTokens) + Number((usage as any).reservedTokens ?? 0) : 0
+
     if (limit === null || used + estimatedTokens <= limit) {
         return {
             allowed: true,
@@ -207,7 +213,6 @@ export async function canUserUseTokens(
         }
     }
 
-    // For paid users, check purchased token balance
     if (tier !== 'free') {
         const balance = await getTokenBalance(userId)
         if (balance.remaining_tokens >= estimatedTokens) {
@@ -230,6 +235,104 @@ export async function canUserUseTokens(
         reason: 'monthly_limit_reached',
         remainingTokens: 0,
     }
+}
+
+/**
+ * Atomically reserve tokens before an AI step begins.
+ * Uses a single UPDATE with a budget check in the WHERE clause — no read-then-write race.
+ * Returns true if the reservation was granted, false if budget is exhausted.
+ */
+export async function reserveTokens(
+    userId: string,
+    estimatedTokens: number
+): Promise<{ allowed: boolean; reason?: string }> {
+    const { tier: rawTier } = await getUserSubscription(userId)
+    const tier = normalizeTokenTier(rawTier)
+    const limit = TOKEN_LIMITS[tier]
+    const now = new Date()
+    const month = new Date(now.getFullYear(), now.getMonth(), 1)
+
+    if (limit === null) {
+        // Unlimited tier — ensure row exists, no check needed
+        await prisma.monthlyTokenUsage.upsert({
+            where: { userId_month: { userId, month } },
+            create: {
+                userId, month, tier,
+                totalTokens: BigInt(0),
+                totalCostEur: 0,
+                subscriptionTokens: BigInt(0),
+                purchasedTokensUsed: BigInt(0),
+            },
+            update: {},
+        })
+        return { allowed: true }
+    }
+
+    // Atomic check-and-reserve: increment reservedTokens only if budget allows.
+    // updateMany returns count=1 on success, count=0 if WHERE condition failed.
+    const result = await prisma.$executeRaw`
+        UPDATE monthly_token_usage
+        SET reserved_tokens = reserved_tokens + ${BigInt(estimatedTokens)}
+        WHERE user_id = ${userId}
+          AND month = ${month}
+          AND (total_tokens + reserved_tokens + ${BigInt(estimatedTokens)}) <= ${BigInt(limit)}`
+
+    if (result === 1) {
+        return { allowed: true }
+    }
+
+    // Row may not exist yet (first use this month) — try to create it with reservation
+    try {
+        await prisma.$executeRaw`
+            INSERT INTO monthly_token_usage
+              (summary_id, user_id, month, tier, total_tokens, reserved_tokens,
+               total_cost_eur, subscription_tokens, purchased_tokens_used)
+            VALUES
+              (gen_random_uuid()::text, ${userId}, ${month}, ${tier},
+               0, ${BigInt(estimatedTokens)}, 0, 0, 0)
+            ON CONFLICT (user_id, month) DO NOTHING`
+
+        // Check if we were the ones to create the row (conflict → budget was full)
+        const row = await prisma.monthlyTokenUsage.findUnique({
+            where: { userId_month: { userId, month } },
+        })
+        if (!row) {
+            // Concurrent insert race — fall through to purchased check
+        } else if (
+            Number(row.totalTokens) + Number((row as any).reservedTokens ?? 0) <= limit
+        ) {
+            return { allowed: true }
+        }
+    } catch {
+        // Ignore insert errors — fall through to purchased balance check
+    }
+
+    // Subscription exhausted — check purchased tokens for non-free tiers
+    if (tier !== 'free') {
+        const balance = await getTokenBalance(userId)
+        if (balance.remaining_tokens >= estimatedTokens) {
+            return { allowed: true }
+        }
+        return { allowed: false, reason: 'insufficient_tokens' }
+    }
+
+    return { allowed: false, reason: 'monthly_limit_reached' }
+}
+
+/**
+ * Release a token reservation after a step completes or fails.
+ * Decrements reservedTokens by the originally estimated amount.
+ */
+export async function releaseTokenReservation(
+    userId: string,
+    estimatedTokens: number
+): Promise<void> {
+    const now = new Date()
+    const month = new Date(now.getFullYear(), now.getMonth(), 1)
+    await prisma.$executeRaw`
+        UPDATE monthly_token_usage
+        SET reserved_tokens = GREATEST(0, reserved_tokens - ${BigInt(estimatedTokens)})
+        WHERE user_id = ${userId} AND month = ${month}`
 }
 
 /**

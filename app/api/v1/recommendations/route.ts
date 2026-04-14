@@ -1,9 +1,10 @@
-import { createApiResponse } from "@/lib/api-utils"
+import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { withApiGuard } from "@/lib/api-guard"
 import {
     getActiveRecommendations,
     runGapEngine,
 } from "@/lib/services/gap-engine"
+import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 
 /**
  * GET /api/v1/recommendations
@@ -34,6 +35,24 @@ export const GET = withApiGuard(
         const includeAi = url.searchParams.get("ai_insights") === "true"
 
         if (refresh) {
+            // H6: Gate refresh behind subscription check — gap engine bypasses the orchestrator token gate
+            const entitlements = await resolveUserEntitlements(userId)
+            if (entitlements.status !== "active") {
+                return createApiError(
+                    "SUBSCRIPTION_REQUIRED",
+                    "An active subscription is required to refresh gap analysis",
+                    402
+                )
+            }
+            const dailyLimit = entitlements.limits.gapAnalysisPerDay
+            if (dailyLimit !== null && dailyLimit <= 0) {
+                return createApiError(
+                    "LIMIT_REACHED",
+                    "Daily gap analysis limit reached — upgrade your plan or try again tomorrow",
+                    402
+                )
+            }
+
             const result = await runGapEngine(userId, {
                 includeAiInsights: includeAi,
             })

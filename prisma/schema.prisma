@@ -807,6 +807,7 @@ model MonthlyTokenUsage {
   month               DateTime @map("month") @db.Date // First day of month
   tier                String // 'free', 'plus', 'pro'
   totalTokens         BigInt   @map("total_tokens")
+  reservedTokens      BigInt   @default(0) @map("reserved_tokens") // In-flight reservations
   totalCostEur        Decimal  @map("total_cost_eur") @db.Decimal(10, 2)
   subscriptionTokens  BigInt   @map("subscription_tokens") // Tokens included in subscription
   purchasedTokensUsed BigInt   @map("purchased_tokens_used") // On-demand tokens used

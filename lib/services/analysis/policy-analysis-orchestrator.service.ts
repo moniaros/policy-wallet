@@ -1,10 +1,11 @@
 import fs from "fs/promises"
 import path from "path"
 import { randomUUID } from "crypto"
+import { z } from "zod"
 import { db } from "@/lib/db"
 import { env } from "@/lib/env"
 import { logger } from "@/lib/logger"
-import { canUserUseTokens } from "@/lib/token-tracking"
+import { canUserUseTokens, reserveTokens, releaseTokenReservation } from "@/lib/token-tracking"
 import { getAIService, type AIServiceType } from "@/lib/services/ai"
 import { enrichExtractionPayload } from "@/lib/services/ai/extraction-enrichment"
 import type {
@@ -68,7 +69,14 @@ const STEP_ORDER: Record<PolicyAnalysisStepKey, number> = {
 const MAX_STEP_ATTEMPTS = 3
 const MAX_RUN_ATTEMPTS = 5
 const STEP_BACKOFF_MS = [2000, 5000, 10000]
-const RUN_EXECUTION_LEASE_TTL_MS = 15 * 60 * 1000
+const RUN_EXECUTION_LEASE_TTL_MS = 8 * 60 * 1000 // 8 min — matches real serverless timeout ceiling
+
+// H4: Minimal schema for sourceRun.resultJson — guards retryMissing against propagating corrupt JSON
+const sourceRunResultSchema = z.object({
+    gapResults: z.array(z.record(z.unknown())),
+    metadata: z.record(z.unknown()).optional(),
+    acordData: z.unknown().optional(),
+}).passthrough()
 
 type RemediationType = "initial" | "retry" | "model_fallback" | "provider_failover"
 type ProviderAttemptOutcome = "success" | "failed"
@@ -92,6 +100,7 @@ type PipelineRemediationSummary = {
     failoverUsed: boolean
     retryScope?: "full" | "missing_only"
     retrySourceRunId?: string
+    translationFailed?: boolean
 }
 
 type StepExecutionPayload<T> = {
@@ -729,6 +738,7 @@ export class PolicyAnalysisOrchestratorService {
         let finalUserMessageKey = "analysis.status.completed"
         let lastFailureCode: string | null = null
         let lastFailureAt: string | null = null
+        let translationFailed = false
 
         const retryOnlySteps = options?.retryOnlySteps
         const shouldRun = (stepKey: PolicyAnalysisStepKey) =>
@@ -753,7 +763,20 @@ export class PolicyAnalysisOrchestratorService {
                 },
                 select: { resultJson: true },
             })
-            sourceRunResult = (sourceRun?.resultJson as Record<string, any>) || null
+            const rawResult = (sourceRun?.resultJson as Record<string, any>) || null
+            // H4: Validate before trusting — partially written JSON propagates corruption
+            if (rawResult !== null) {
+                const parsed = sourceRunResultSchema.safeParse(rawResult)
+                if (parsed.success) {
+                    sourceRunResult = parsed.data as Record<string, any>
+                } else {
+                    logger("warn", "retryMissing: sourceRun.resultJson schema validation failed — falling back to fresh analysis", {
+                        runId: options.retrySourceRunId,
+                        issues: parsed.error.issues.map((i) => i.message),
+                    })
+                    sourceRunResult = null
+                }
+            }
         }
 
         const storedClarity =
@@ -845,9 +868,11 @@ export class PolicyAnalysisOrchestratorService {
         absorbPayload(docStep)
 
         // Check extraction cache before running AI extraction
+        // Pass documentId so a re-upload with the same hash doesn't return a stale cache
         const cachedExtraction = await getCachedExtraction(
             policy.id,
-            docStep.result.documentHash
+            docStep.result.documentHash,
+            docStep.result.documentId
         )
 
         let extractionStep: StepExecutionPayload<AIPolicyExtractionResponse>
@@ -1289,7 +1314,9 @@ export class PolicyAnalysisOrchestratorService {
                 runId,
                 error: translationError instanceof Error ? translationError.message : String(translationError),
             })
-            // Graceful degradation: English fields remain as Greek text
+            // M9: Track failure so the UI can show a soft warning
+            translationFailed = true
+            missingArtifacts.add("translation")
         }
 
         const persistenceStep = await this.executeStepWithRetry({
@@ -1354,6 +1381,7 @@ export class PolicyAnalysisOrchestratorService {
             ),
             retryScope: options?.retrySourceRunId ? "missing_only" : "full",
             retrySourceRunId: options?.retrySourceRunId,
+            translationFailed: translationFailed || undefined,
         }
 
         const resultJson = {
@@ -1501,7 +1529,8 @@ export class PolicyAnalysisOrchestratorService {
 
             await this.heartbeatRunLease(params.runId, params.leaseId)
 
-            const preflight = await canUserUseTokens(params.userId, params.estimatedTokens)
+            // Atomically reserve tokens — collapses the TOCTOU window between check and usage recording.
+            const preflight = await reserveTokens(params.userId, params.estimatedTokens)
             if (!preflight.allowed) {
                 const classified = classifyAnalysisFailure(
                     new Error(`Token budget check failed: ${preflight.reason || "insufficient_tokens"}`)
@@ -1581,6 +1610,7 @@ export class PolicyAnalysisOrchestratorService {
                     willRetry: false,
                 })
                 await this.heartbeatRunLease(params.runId, params.leaseId)
+                await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
                 return null
             }
 
@@ -1648,6 +1678,7 @@ export class PolicyAnalysisOrchestratorService {
                     })
 
                     await this.heartbeatRunLease(params.runId, params.leaseId)
+                    await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
                     return null
                 }
             }
@@ -1706,6 +1737,8 @@ export class PolicyAnalysisOrchestratorService {
                     tokens: payload.usage,
                 })
                 await this.heartbeatRunLease(params.runId, params.leaseId)
+                // Release the reservation — actual usage is recorded by trackTokenUsage in the AI service layer
+                await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
 
                 return {
                     ...payload,
@@ -1790,6 +1823,7 @@ export class PolicyAnalysisOrchestratorService {
                     await sleep(STEP_BACKOFF_MS[Math.min(stepAttemptCounter - 1, STEP_BACKOFF_MS.length - 1)] || 10000)
                 }
 
+                await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
                 return null
             }
         }
@@ -2128,34 +2162,7 @@ export class PolicyAnalysisOrchestratorService {
                 ? clarity.plainLanguageSummary.el
                 : clarity.plainLanguageSummary.en
 
-        await db.policy.update({
-            where: { id: policy.id },
-            data: {
-                insurerName: extraction.insurerName || metadata.insurerName,
-                policyNumber: extraction.policyNumber || metadata.policyNumber,
-                lineOfBusiness: normalizeLineOfBusiness(extraction.lineOfBusiness || metadata.lineOfBusiness),
-                startDate: parseDateMaybe(extraction.startDate, policy.startDate),
-                endDate: parseDateMaybe(extraction.endDate, policy.endDate),
-                premiumAmount:
-                    typeof extraction.premiumAmount === "number"
-                        ? extraction.premiumAmount
-                        : policy.premiumAmount,
-                coverageSummary,
-                acordData: mergedAcord,
-                lastAnalyzedAt: new Date(),
-                status: "active",
-            },
-        })
-
-        await db.policyDocument.updateMany({
-            where: { policyId: policy.id },
-            data: { processingStatus: "completed" },
-        })
-
-        await db.gapInstance.deleteMany({
-            where: { policyId: policy.id },
-        })
-
+        // Collect detected gaps from both AI sources before entering the transaction.
         const detectedGaps = new Map<
             string,
             {
@@ -2193,28 +2200,78 @@ export class PolicyAnalysisOrchestratorService {
             })
         }
 
-        for (const [slug, details] of detectedGaps.entries()) {
-            const definition = await this.ensureGapDefinition({
-                slug,
-                lineOfBusiness: normalizeLineOfBusiness(extraction.lineOfBusiness || metadata.lineOfBusiness),
-                severity: details.severity,
-                sourceDefinitions: gapDefinitions,
-            })
+        const normalizedLob = normalizeLineOfBusiness(extraction.lineOfBusiness || metadata.lineOfBusiness)
+        const now = new Date()
 
-            await db.gapInstance.create({
+        // All writes are atomic: if any step fails, no partial state is persisted.
+        await db.$transaction(async (tx) => {
+            await tx.policy.update({
+                where: { id: policy.id },
                 data: {
-                    policyId: policy.id,
-                    gapDefinitionId: definition.id,
-                    severity: details.severity,
-                    status: "open",
-                    aiExplanation: details.explanationEn,
-                    aiExplanationEl: details.explanationEl,
-                    aiSuggestion: details.suggestionEn,
-                    aiSuggestionEl: details.suggestionEl,
-                    detectedAt: new Date(),
+                    insurerName: extraction.insurerName || metadata.insurerName,
+                    policyNumber: extraction.policyNumber || metadata.policyNumber,
+                    lineOfBusiness: normalizedLob,
+                    startDate: parseDateMaybe(extraction.startDate, policy.startDate),
+                    endDate: parseDateMaybe(extraction.endDate, policy.endDate),
+                    premiumAmount:
+                        typeof extraction.premiumAmount === "number"
+                            ? extraction.premiumAmount
+                            : policy.premiumAmount,
+                    coverageSummary,
+                    acordData: mergedAcord,
+                    lastAnalyzedAt: now,
+                    status: "active",
                 },
             })
-        }
+
+            await tx.policyDocument.updateMany({
+                where: { policyId: policy.id },
+                data: { processingStatus: "completed" },
+            })
+
+            await tx.gapInstance.deleteMany({
+                where: { policyId: policy.id },
+            })
+
+            for (const [slug, details] of detectedGaps.entries()) {
+                // Resolve or create the gap definition inside the transaction
+                let definition = await tx.gapDefinition.findUnique({ where: { slug } })
+                if (!definition) {
+                    const source = gapDefinitions.find((item) => item.slug === slug)
+                    const fallbackTitle = slug
+                        .replace(/_/g, " ")
+                        .replace(/\b\w/g, (char) => char.toUpperCase())
+                    definition = await tx.gapDefinition.create({
+                        data: {
+                            slug,
+                            name: source?.name || fallbackTitle,
+                            title: source?.name || fallbackTitle,
+                            description: source?.description || "Auto-created from AI clarity analysis",
+                            lineOfBusiness: normalizedLob,
+                            severity: details.severity,
+                            defaultSeverity: details.severity,
+                            ruleId: `ai_${slug}`,
+                            detectionLogic: { source: "ai_clarity_pipeline" },
+                            isActive: true,
+                        },
+                    })
+                }
+
+                await tx.gapInstance.create({
+                    data: {
+                        policyId: policy.id,
+                        gapDefinitionId: definition.id,
+                        severity: details.severity,
+                        status: "open",
+                        aiExplanation: details.explanationEn,
+                        aiExplanationEl: details.explanationEl,
+                        aiSuggestion: details.suggestionEn,
+                        aiSuggestionEl: details.suggestionEl,
+                        detectedAt: now,
+                    },
+                })
+            }
+        })
     }
 
     private async ensureGapDefinition(params: {
@@ -2386,7 +2443,14 @@ export class PolicyAnalysisOrchestratorService {
                 status: "active",
             },
         })
-        if (hasAccess) return policy
+        // M4: AccessGrant recipients are read-only viewers — they cannot trigger analysis runs
+        if (hasAccess) {
+            throw new OrchestrationError("Shared viewers cannot trigger policy analysis", {
+                code: "SHARED_VIEWER_NOT_ALLOWED",
+                hardFailure: true,
+                blockedReason: "forbidden",
+            })
+        }
 
         const hasRelationship = await db.customerRelationship.findFirst({
             where: {

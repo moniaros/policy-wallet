@@ -13,6 +13,7 @@ import fs from "fs/promises"
 import path from "path"
 import { getAIService } from "@/lib/services/ai"
 import { GapAnalysisService } from "@/lib/services/gap-analysis.service"
+import { refreshProtectionScore } from "@/lib/services/gap-engine"
 import { PolicyService } from "@/lib/services/policy.service"
 import { canUserUseTokens } from "@/lib/token-tracking"
 import { canUserAddPolicy, canUserUseFeature, getUpgradeMessage, getUserSubscription, SUBSCRIPTION_LIMITS } from "@/lib/subscription-limits"
@@ -36,7 +37,10 @@ const PolicySchema = z.object({
     startDate: z.string(),
     endDate: z.string(),
     premiumAmount: z.coerce.number().optional(),
-})
+}).refine(
+    (data) => new Date(data.endDate) > new Date(data.startDate),
+    { message: "End date must be after start date", path: ["endDate"] }
+)
 
 export async function createPolicy(formData: FormData) {
     const supabase = await createClient()
@@ -960,6 +964,14 @@ export async function ignoreGap(gapId: string) {
     await db.gapInstance.update({
         where: { id: gapId },
         data: { status: 'ignored' }
+    })
+
+    // M7: Bust protection score cache so the dashboard reflects the dismissal immediately
+    refreshProtectionScore(gap.policy.ownerUserId).catch((err) => {
+        logger('warn', 'Failed to refresh protection score after gap dismissal', {
+            gapId,
+            error: err instanceof Error ? err.message : String(err),
+        })
     })
 
     revalidatePath("/wallet")

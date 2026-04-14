@@ -36,7 +36,15 @@
       "Bash(cat \"/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/app/\\(protected\\)/dashboard/agent/page.tsx\")",
       "Bash(find '/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/app' -type f \\\\\\(-name *.ts -o -name *.tsx \\\\\\))",
       "Bash(node -e \"const p = require\\(''./package.json''\\); console.log\\(JSON.stringify\\(p.devDependencies, null, 2\\)\\)\")",
-      "Bash(npx vitest:*)"
+      "Bash(npx vitest:*)",
+      "Bash(python -c \"import graphify\")",
+      "Bash(pip install:*)",
+      "Bash(python -c ':*)",
+      "Bash(New-Item -ItemType Directory -Force -Path graphify-out)",
+      "Bash(Out-Null)",
+      "Bash(rm -f .graphify_detect.json .graphify_extract.json .graphify_ast.json .graphify_semantic.json .graphify_analysis.json .graphify_labels.json .graphify_cached.json .graphify_uncached.txt .graphify_semantic_new.json .graphify_python)",
+      "Bash(rm -f graphify-out/.graphify_chunk_01.json)",
+      "Bash(grep -n \"trackTokenUsage\\\\|after.*trackToken\\\\|import.*trackToken\" /c/Users/admin/Documents/GitHub/PolicyWalletPlatform/\"New folder\"/product-plan/policy-wallet/lib/services/ai/*.ts)"
     ],
     "additionalDirectories": [
       "c:\\Users\\admin\\Documents\\GitHub\\PolicyWalletPlatform\\New folder\\product-plan\\policy-wallet\\app\\api\\v1\\recommendations"

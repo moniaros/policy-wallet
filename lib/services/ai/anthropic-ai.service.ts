@@ -225,7 +225,7 @@ Do not include Citations, text should be in Greek (Primary and language of sourc
                 inputTokens: parsedUsage.inputTokens,
                 outputTokens: parsedUsage.outputTokens,
                 model: modelName as any,
-            }).catch((err) => logger("error", "Failed to track Anthropic extraction token usage", { error: err }))
+            })
         }
 
         logger("info", "Anthropic extraction successful", {
@@ -337,7 +337,7 @@ ${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
                 inputTokens: parsedUsage.inputTokens,
                 outputTokens: parsedUsage.outputTokens,
                 model: modelName as any,
-            }).catch((err) => logger("error", "Failed to track Anthropic gap token usage", { error: err }))
+            })
         }
 
         return {
@@ -479,7 +479,7 @@ Metadata:
                 inputTokens: parsedUsage.inputTokens,
                 outputTokens: parsedUsage.outputTokens,
                 model: modelName as any,
-            }).catch((err) => logger("error", "Failed to track Anthropic clarity token usage", { error: err }))
+            })
         }
 
         return wrapClarityResultsBilingual({

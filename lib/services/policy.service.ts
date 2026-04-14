@@ -11,6 +11,7 @@ import { AppError } from '@/lib/errors'
 import { uploadFile, deleteFile } from '@/lib/storage'
 import { logger } from '@/lib/logger'
 import { sendPolicyInviteEmail, sendPolicySharedAccessEmail } from '@/lib/email/invite-emails'
+import { refreshProtectionScore } from '@/lib/services/gap-engine'
 import type { Policy, PolicyDocument } from '@prisma/client'
 import type {
     CreatePolicyInput,
@@ -175,7 +176,7 @@ export class PolicyService extends BaseService {
         data: Partial<CreatePolicyInput> & { status?: string },
         language: 'en' | 'el' = 'en'
     ): Promise<Policy> {
-        return this.withTransaction(async (tx) => {
+        const result = await this.withTransaction(async (tx) => {
             // 1. Verify policy exists
             const policy = await tx.policy.findUnique({
                 where: { id: policyId },
@@ -243,6 +244,17 @@ export class PolicyService extends BaseService {
 
             return updatedPolicy
         })
+
+        // M6: Re-sync gap recommendations after policy data changes.
+        // Fire-and-forget so the update response isn't held waiting for gap engine.
+        refreshProtectionScore(userId).catch((err) => {
+            logger('warn', 'Failed to refresh protection score after policy update', {
+                policyId,
+                error: err instanceof Error ? err.message : String(err),
+            })
+        })
+
+        return result
     }
 
     /**

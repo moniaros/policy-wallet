@@ -172,7 +172,7 @@ export class OpenAIAIService implements IAIService {
                 inputTokens: parsedUsage.inputTokens,
                 outputTokens: parsedUsage.outputTokens,
                 model: modelName as any,
-            }).catch((err) => logger("error", "Failed to track OpenAI extraction token usage", { error: err }))
+            })
         }
 
         return {
@@ -280,7 +280,7 @@ ${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
                 inputTokens: parsedUsage.inputTokens,
                 outputTokens: parsedUsage.outputTokens,
                 model: modelName as any,
-            }).catch((err) => logger("error", "Failed to track OpenAI gap token usage", { error: err }))
+            })
         }
 
         return {
@@ -423,7 +423,7 @@ Metadata:
                 inputTokens: parsedUsage.inputTokens,
                 outputTokens: parsedUsage.outputTokens,
                 model: modelName as any,
-            }).catch((err) => logger("error", "Failed to track OpenAI clarity token usage", { error: err }))
+            })
         }
 
         return wrapClarityResultsBilingual({

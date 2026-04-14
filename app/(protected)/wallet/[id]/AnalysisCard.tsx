@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react"
 import { runPolicyAnalysis, ignoreGap, notifyAgentAboutGap } from "../actions"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { Sparkles, AlertTriangle, Lightbulb, EyeOff, MessageSquare, Loader2, RefreshCw } from "lucide-react"
+import { Sparkles, AlertTriangle, Lightbulb, EyeOff, MessageSquare, Loader2, RefreshCw, HelpCircle } from "lucide-react"
 import { LimitReachedModal } from "@/components/account/LimitReachedModal"
 
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -127,7 +127,10 @@ export function AnalysisCard({
         savings_opportunities: stepLabels.savings_detection,
         checklist_scores: stepLabels.checklist_scoring_and_actions,
         priority_actions: stepLabels.checklist_scoring_and_actions,
+        translation: t.analysis.translationIncomplete,
     }
+
+    const translationWarning = missingArtifacts.includes("translation")
 
     const backgroundInProgress = policyStatus === "analyzing" && !runId && !analyzing
     const analysisInProgress = analyzing || runStatus === "queued" || runStatus === "running" || backgroundInProgress
@@ -523,6 +526,16 @@ export function AnalysisCard({
                     </div>
                 </div>
             )}
+            {translationWarning && !analysisInProgress && (
+                <div className="px-6 pt-3">
+                    <div className="rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 dark:border-slate-700/60 dark:bg-slate-800/40">
+                        <p className="text-xs text-slate-600 dark:text-slate-400">
+                            <span className="font-semibold">{t.analysis.translationIncomplete}:</span>{" "}
+                            {t.analysis.translationIncompleteHint}
+                        </p>
+                    </div>
+                </div>
+            )}
             {analysisError && !analysisInProgress && (
                 <div className="px-6 pt-5">
                     <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 dark:border-amber-700/60 dark:bg-amber-950/20">
@@ -549,6 +562,19 @@ export function AnalysisCard({
             )}
             <div className="p-6">
                 {uniqueGaps.length === 0 ? (
+                    missingArtifacts.includes("gap_results") ? (
+                        <div className="text-center py-8">
+                            <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
+                                <HelpCircle className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+                            </div>
+                            <p className="text-sm text-slate-700 dark:text-slate-300 font-semibold mb-2">
+                                {t.analysis.gapCheckIncomplete}
+                            </p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                                {t.analysis.gapCheckIncompleteHint}
+                            </p>
+                        </div>
+                    ) : (
                     <div className="text-center py-8">
                         <div className="w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mx-auto mb-4">
                             <Sparkles className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
@@ -560,6 +586,7 @@ export function AnalysisCard({
                             {t.wallet.runAnalysisDesc}
                         </p>
                     </div>
+                    )
                 ) : (
                     <div className="space-y-4">
                         {uniqueGaps.map((gap) => {

@@ -27,10 +27,15 @@ export async function hashDocumentBuffer(buffer: Buffer): Promise<string> {
 /**
  * Check if a cached extraction exists for the given document.
  * Returns the cached result if valid, or null if expired/missing.
+ *
+ * `documentId` scopes the lookup to the current document version.
+ * Without it, a re-upload with the same hash would return a stale
+ * cache from an older document record.
  */
 export async function getCachedExtraction(
     policyId: string,
-    documentHash: string
+    documentHash: string,
+    documentId?: string
 ): Promise<AIPolicyExtractionResponse | null> {
     try {
         const doc = await db.policyDocument.findFirst({
@@ -38,6 +43,8 @@ export async function getCachedExtraction(
                 policyId,
                 documentHash,
                 extractedAt: { not: null },
+                // M2: Scope to current document version when documentId is provided
+                ...(documentId ? { id: documentId } : {}),
             },
             orderBy: { uploadedAt: "desc" },
             select: {
