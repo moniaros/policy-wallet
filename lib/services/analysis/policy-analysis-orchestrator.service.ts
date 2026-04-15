@@ -73,8 +73,8 @@ const RUN_EXECUTION_LEASE_TTL_MS = 8 * 60 * 1000 // 8 min — matches real serve
 
 // H4: Minimal schema for sourceRun.resultJson — guards retryMissing against propagating corrupt JSON
 const sourceRunResultSchema = z.object({
-    gapResults: z.array(z.record(z.unknown())),
-    metadata: z.record(z.unknown()).optional(),
+    gapResults: z.array(z.record(z.string(), z.unknown())),
+    metadata: z.record(z.string(), z.unknown()).optional(),
     acordData: z.unknown().optional(),
 }).passthrough()
 
@@ -1545,6 +1545,11 @@ export class PolicyAnalysisOrchestratorService {
                 })
             }
 
+            // Track whether the reservation was against subscription pool or purchased tokens.
+            // releaseTokenReservation must ONLY be called for subscription reservations — purchased
+            // tokens are not tracked via reserved_tokens so releasing would corrupt the pool.
+            const reservationSource = preflight.source
+
             const step = await db.policyAnalysisStep.create({
                 data: {
                     runId: params.runId,
@@ -1610,7 +1615,9 @@ export class PolicyAnalysisOrchestratorService {
                     willRetry: false,
                 })
                 await this.heartbeatRunLease(params.runId, params.leaseId)
-                await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
+                if (reservationSource === 'subscription') {
+                    await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
+                }
                 return null
             }
 
@@ -1678,7 +1685,9 @@ export class PolicyAnalysisOrchestratorService {
                     })
 
                     await this.heartbeatRunLease(params.runId, params.leaseId)
-                    await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
+                    if (reservationSource === 'subscription') {
+                        await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
+                    }
                     return null
                 }
             }
@@ -1737,8 +1746,11 @@ export class PolicyAnalysisOrchestratorService {
                     tokens: payload.usage,
                 })
                 await this.heartbeatRunLease(params.runId, params.leaseId)
-                // Release the reservation — actual usage is recorded by trackTokenUsage in the AI service layer
-                await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
+                // Release the subscription reservation — actual usage is recorded by trackTokenUsage in the AI service layer.
+                // Purchased-token path does not use reserved_tokens so must not release.
+                if (reservationSource === 'subscription') {
+                    await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
+                }
 
                 return {
                     ...payload,
@@ -1823,7 +1835,9 @@ export class PolicyAnalysisOrchestratorService {
                     await sleep(STEP_BACKOFF_MS[Math.min(stepAttemptCounter - 1, STEP_BACKOFF_MS.length - 1)] || 10000)
                 }
 
-                await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
+                if (reservationSource === 'subscription') {
+                    await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
+                }
                 return null
             }
         }

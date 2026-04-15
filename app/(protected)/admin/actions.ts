@@ -3,6 +3,7 @@
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
+import { headers } from "next/headers"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { buildUserDataExportPayload } from "@/lib/services/compliance.service"
 import { getBillingReconciliationSnapshot } from "@/lib/services/billing/reconciliation.service"
@@ -36,6 +37,7 @@ async function verifyAdminRole() {
 
 /**
  * LOG ADMIN ACTION
+ * L2: always captures requestorId (adminUserId), timestamp, and client IP for auditability.
  */
 async function logAdminAction(
     adminUserId: string,
@@ -45,13 +47,26 @@ async function logAdminAction(
     metadata?: any
 ) {
     try {
+        const reqHeaders = await headers()
+        const ip =
+            reqHeaders.get("x-forwarded-for")?.split(",")[0].trim() ||
+            reqHeaders.get("x-real-ip") ||
+            "unknown"
+
         await db.activityLog.create({
             data: {
                 adminUserId,
                 adminEmail,
                 actionType,
                 description,
-                metadata: metadata || {},
+                metadata: {
+                    ...(metadata || {}),
+                    _audit: {
+                        requestorId: adminUserId,
+                        ip,
+                        at: new Date().toISOString(),
+                    },
+                },
                 timestamp: new Date()
             }
         })
@@ -1230,4 +1245,50 @@ export async function createInsuranceType(formData: FormData) {
     )
 
     revalidatePath("/admin/types")
+}
+
+/**
+ * L4: Update a gap definition with automatic version increment.
+ * Records changedAt and changedBy (admin user id) on every write.
+ */
+export async function updateGapDefinition(
+    gapDefinitionId: string,
+    data: {
+        name?: string
+        title?: string
+        description?: string
+        severity?: string
+        isActive?: boolean
+        detectionLogic?: Record<string, unknown>
+    }
+) {
+    const admin = await verifyAdminRole()
+
+    const existing = await db.gapDefinition.findUnique({
+        where: { id: gapDefinitionId },
+        select: { slug: true, version: true },
+    })
+    if (!existing) throw new Error("Gap definition not found")
+
+    const updated = await (db.gapDefinition.update as any)({
+        where: { id: gapDefinitionId },
+        data: {
+            ...data,
+            version: { increment: 1 },
+            changedAt: new Date(),
+            changedBy: admin.id,
+            updatedAt: new Date(),
+        },
+    })
+
+    await logAdminAction(
+        admin.id,
+        admin.email,
+        "UPDATE_GAP_DEFINITION",
+        `Updated gap definition ${existing.slug} (v${existing.version} → v${(existing.version ?? 0) + 1})`,
+        { gapDefinitionId, slug: existing.slug, changes: Object.keys(data) }
+    )
+
+    revalidatePath("/admin/gaps")
+    return updated
 }

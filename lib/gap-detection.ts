@@ -174,48 +174,60 @@ function evaluateAcordFieldCheck(acordData: any, rule: any): boolean {
 /**
  * Create gap instances for detected gaps.
  * Idempotent: re-activates dismissed/resolved gaps instead of creating duplicates.
+ * Handles gaps across multiple policies (e.g. from detectGapsForUser).
  * The DB partial unique index on (policy_id, gap_definition_id) is the final guard
  * against concurrent-insert races; P2002 errors are caught and ignored.
  */
 export async function createGapInstances(detectedGaps: DetectedGap[]): Promise<void> {
     if (detectedGaps.length === 0) return
 
-    const policyId = detectedGaps[0].policyId
-    const definitionIds = detectedGaps.map((g) => g.gapDefinitionId)
-
-    // Single bulk query instead of N+1 findFirst calls
-    const existingInstances = await db.gapInstance.findMany({
-        where: { policyId, gapDefinitionId: { in: definitionIds } },
-        select: { id: true, gapDefinitionId: true, status: true },
-    })
-    const existingByDef = new Map(existingInstances.map((e) => [e.gapDefinitionId, e]))
-
+    // Group by policyId — gaps from different policies must be queried separately
+    // because the unique constraint is (policyId, gapDefinitionId), not gapDefinitionId alone.
+    const byPolicy = new Map<string, DetectedGap[]>()
     for (const gap of detectedGaps) {
-        const existing = existingByDef.get(gap.gapDefinitionId)
+        const list = byPolicy.get(gap.policyId) ?? []
+        list.push(gap)
+        byPolicy.set(gap.policyId, list)
+    }
 
-        if (!existing) {
-            try {
-                await db.gapInstance.create({
-                    data: {
-                        policyId: gap.policyId,
-                        gapDefinitionId: gap.gapDefinitionId,
-                        detectedAt: gap.detectedAt,
-                        status: 'detected',
-                        severity: gap.severity,
-                    },
+    for (const [policyId, policyGaps] of byPolicy) {
+        const definitionIds = policyGaps.map((g) => g.gapDefinitionId)
+
+        // Bulk query for this policy — key by (policyId, gapDefinitionId) composite
+        const existingInstances = await db.gapInstance.findMany({
+            where: { policyId, gapDefinitionId: { in: definitionIds } },
+            select: { id: true, gapDefinitionId: true, status: true },
+        })
+        // Map keyed by gapDefinitionId — safe because policyId is fixed in this iteration
+        const existingByDef = new Map(existingInstances.map((e) => [e.gapDefinitionId, e]))
+
+        for (const gap of policyGaps) {
+            const existing = existingByDef.get(gap.gapDefinitionId)
+
+            if (!existing) {
+                try {
+                    await db.gapInstance.create({
+                        data: {
+                            policyId: gap.policyId,
+                            gapDefinitionId: gap.gapDefinitionId,
+                            detectedAt: gap.detectedAt,
+                            status: 'detected',
+                            severity: gap.severity,
+                        },
+                    })
+                } catch (e: any) {
+                    // P2002 = unique constraint violation from a concurrent insert — harmless
+                    if (e.code !== 'P2002') throw e
+                }
+            } else if (existing.status === 'dismissed' || existing.status === 'resolved') {
+                // Gap was previously closed but has been re-detected — reactivate it
+                await db.gapInstance.update({
+                    where: { id: existing.id },
+                    data: { status: 'detected', detectedAt: gap.detectedAt, severity: gap.severity },
                 })
-            } catch (e: any) {
-                // P2002 = unique constraint violation from a concurrent insert — harmless
-                if (e.code !== 'P2002') throw e
             }
-        } else if (existing.status === 'dismissed' || existing.status === 'resolved') {
-            // Gap was previously closed but has been re-detected — reactivate it
-            await db.gapInstance.update({
-                where: { id: existing.id },
-                data: { status: 'detected', detectedAt: gap.detectedAt, severity: gap.severity },
-            })
+            // else: gap is already active (detected/acknowledged) — skip (idempotent)
         }
-        // else: gap is already active (detected/acknowledged) — skip (idempotent)
     }
 }
 

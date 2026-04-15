@@ -239,13 +239,16 @@ export async function canUserUseTokens(
 
 /**
  * Atomically reserve tokens before an AI step begins.
- * Uses a single UPDATE with a budget check in the WHERE clause — no read-then-write race.
- * Returns true if the reservation was granted, false if budget is exhausted.
+ *
+ * Returns `{ allowed, source }` where `source` indicates whether the reservation
+ * was made against the subscription pool ('subscription') or purchased tokens ('purchased').
+ * The caller MUST only call `releaseTokenReservation` when `source === 'subscription'`.
+ * Purchased-token paths do not increment `reserved_tokens` and must not release.
  */
 export async function reserveTokens(
     userId: string,
     estimatedTokens: number
-): Promise<{ allowed: boolean; reason?: string }> {
+): Promise<{ allowed: boolean; reason?: string; source?: 'subscription' | 'purchased' }> {
     const { tier: rawTier } = await getUserSubscription(userId)
     const tier = normalizeTokenTier(rawTier)
     const limit = TOKEN_LIMITS[tier]
@@ -265,11 +268,11 @@ export async function reserveTokens(
             },
             update: {},
         })
-        return { allowed: true }
+        return { allowed: true, source: 'subscription' }
     }
 
     // Atomic check-and-reserve: increment reservedTokens only if budget allows.
-    // updateMany returns count=1 on success, count=0 if WHERE condition failed.
+    // $executeRaw returns affected row count: 1 = success, 0 = WHERE failed (budget full or no row).
     const result = await prisma.$executeRaw`
         UPDATE monthly_token_usage
         SET reserved_tokens = reserved_tokens + ${BigInt(estimatedTokens)}
@@ -278,40 +281,44 @@ export async function reserveTokens(
           AND (total_tokens + reserved_tokens + ${BigInt(estimatedTokens)}) <= ${BigInt(limit)}`
 
     if (result === 1) {
-        return { allowed: true }
+        return { allowed: true, source: 'subscription' }
     }
 
-    // Row may not exist yet (first use this month) — try to create it with reservation
+    // Row may not exist yet (first use this month) — INSERT a blank row, then retry the atomic UPDATE.
+    // We insert with reserved_tokens=0 so the retry UPDATE applies the same budget check cleanly.
     try {
         await prisma.$executeRaw`
             INSERT INTO monthly_token_usage
               (summary_id, user_id, month, tier, total_tokens, reserved_tokens,
                total_cost_eur, subscription_tokens, purchased_tokens_used)
             VALUES
-              (gen_random_uuid()::text, ${userId}, ${month}, ${tier},
-               0, ${BigInt(estimatedTokens)}, 0, 0, 0)
+              (gen_random_uuid()::text, ${userId}, ${month}, ${tier}, 0, 0, 0, 0, 0)
             ON CONFLICT (user_id, month) DO NOTHING`
-
-        // Check if we were the ones to create the row (conflict → budget was full)
-        const row = await prisma.monthlyTokenUsage.findUnique({
-            where: { userId_month: { userId, month } },
-        })
-        if (!row) {
-            // Concurrent insert race — fall through to purchased check
-        } else if (
-            Number(row.totalTokens) + Number((row as any).reservedTokens ?? 0) <= limit
-        ) {
-            return { allowed: true }
-        }
     } catch {
-        // Ignore insert errors — fall through to purchased balance check
+        // Ignore — the row may have been created concurrently; proceed to retry UPDATE
     }
 
-    // Subscription exhausted — check purchased tokens for non-free tiers
+    // Retry the same atomic reserve now that the row is guaranteed to exist.
+    // Bug fix: do NOT check the row after INSERT — the INSERT result is unreliable
+    // (ON CONFLICT DO NOTHING hides whether we actually created it). Always re-run
+    // the budget-guarded UPDATE so the check is consistent with the first attempt.
+    const retryResult = await prisma.$executeRaw`
+        UPDATE monthly_token_usage
+        SET reserved_tokens = reserved_tokens + ${BigInt(estimatedTokens)}
+        WHERE user_id = ${userId}
+          AND month = ${month}
+          AND (total_tokens + reserved_tokens + ${BigInt(estimatedTokens)}) <= ${BigInt(limit)}`
+
+    if (retryResult === 1) {
+        return { allowed: true, source: 'subscription' }
+    }
+
+    // Subscription exhausted — check purchased tokens for non-free tiers.
+    // IMPORTANT: do NOT increment reserved_tokens here; purchased usage is tracked separately.
     if (tier !== 'free') {
         const balance = await getTokenBalance(userId)
         if (balance.remaining_tokens >= estimatedTokens) {
-            return { allowed: true }
+            return { allowed: true, source: 'purchased' }
         }
         return { allowed: false, reason: 'insufficient_tokens' }
     }

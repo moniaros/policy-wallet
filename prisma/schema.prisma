@@ -358,6 +358,10 @@ model GapDefinition {
   ruleId          String        @map("rule_id")
   detectionLogic  Json          @map("detection_logic")
   isActive        Boolean       @default(true) @map("is_active")
+  // L4: Versioning — increment on every admin update for audit / rollback
+  version         Int           @default(1)
+  changedAt       DateTime?     @map("changed_at")
+  changedBy       String?       @map("changed_by")
   createdAt       DateTime      @default(now()) @map("created_at")
   updatedAt       DateTime      @updatedAt @map("updated_at")
   instances       GapInstance[]

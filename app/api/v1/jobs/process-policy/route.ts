@@ -33,7 +33,7 @@ export async function POST(req: Request) {
                 status: "failed",
                 failureCode: "LEASE_EXPIRED",
                 failureMessage: "Execution lease expired — serverless timeout likely",
-                completedAt: new Date(),
+                finishedAt: new Date(),
             },
         })
         if (expiredLeaseCount.count > 0) {

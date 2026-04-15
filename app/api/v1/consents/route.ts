@@ -26,6 +26,27 @@ const consentBodySchema = z.object({
         .optional(),
 })
 
+// L5 audit: anonymous POST is intentional — cookie consent must work before login.
+// Unauthenticated callers can only write to consentAudit (by design, rate-limited).
+// db.user.update is safely gated behind `if (userId)` — no auth bypass possible.
+// GET is auth-required; anonymous callers have nothing to read (no userId to scope by).
+export const GET = withApiGuard(
+    {
+        auth: { mode: "user" },
+        rateLimit: { limit: 60, windowMs: 60 * 1000, key: ({ auth }) => `consents:get:${auth?.dbUser.id}` },
+    },
+    async ({ auth }) => {
+        const userId = auth!.dbUser.id
+        const latest = await db.consentAudit.findMany({
+            where: { userId },
+            orderBy: { acceptedAt: "desc" },
+            take: 10,
+            select: { consentType: true, policyVersion: true, acceptedAt: true, locale: true },
+        })
+        return createApiResponse({ consents: latest })
+    }
+)
+
 export const POST = withApiGuard(
     {
         auth: { mode: "public" },
