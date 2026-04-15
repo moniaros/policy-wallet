@@ -8,9 +8,7 @@ import { fixMojibakeText } from "@/lib/i18n/fix-mojibake"
 import type { User } from "@prisma/client"
 import { getProtectionScore } from "@/lib/services/gap-engine"
 import {
-    AlertCircle,
     Car,
-    CalendarClock,
     CircleHelp,
     FileText,
     HeartPulse,
@@ -22,7 +20,6 @@ import {
     Sparkles,
     Stethoscope,
     Upload,
-    Users,
     Wallet,
 } from "lucide-react"
 import { GettingStartedWrapper } from "@/components/dashboard/GettingStartedWrapper"
@@ -166,17 +163,14 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
 
     return (
         <div className="pw-page-shell">
-            <div className="mx-auto max-w-7xl px-4 py-8 pb-32 sm:px-6 lg:px-8 lg:pb-8">
-                <div className="mb-8">
+            <div className="mx-auto max-w-4xl px-4 py-6 pb-28 sm:px-6 lg:pb-6">
+                <div className="mb-5">
                     <p className="pw-kicker">
                         {t("Αρχική", "Home")}
                     </p>
-                    <h1 className="mt-2 text-3xl font-semibold tracking-tight text-black dark:text-white">
-                        {t("Πίνακας προστασίας", "Protection dashboard")}
+                    <h1 className="mt-1.5 text-xl font-semibold tracking-tight text-[#0F172A] dark:text-white">
+                        {t("Χαρτοφυλάκιο προστασίας", "Protection portfolio")}
                     </h1>
-                    <p className="mt-2 text-sm text-black/65 dark:text-white/70">
-                        {t("Η συνολική εικόνα των ασφαλίσεών σας σε ένα σημείο.", "Your complete insurance overview in one place.")}
-                    </p>
                 </div>
 
                 {/* Getting Started Checklist */}
@@ -193,7 +187,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                     <Link
                         href="/wallet"
-                        className="pw-card rounded-3xl p-6"
+                        className="pw-card p-5"
                     >
                         <p className="pw-kicker">
                             {t("Ενεργά συμβόλαια", "Active policies")}
@@ -206,7 +200,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
 
                     <Link
                         href="/coverage-insights"
-                        className="pw-card rounded-3xl p-6"
+                        className="pw-card p-5"
                     >
                         <p className="pw-kicker">
                             {t("Βαθμολογία προστασίας", "Protection score")}
@@ -246,7 +240,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
 
                     {/* Portfolio Summary */}
                     {totalAnnualPremium > 0 && (
-                        <div className="pw-card rounded-3xl p-6 lg:col-span-3">
+                        <div className="pw-card p-5 lg:col-span-3">
                             <p className="pw-kicker">
                                 {t("Χαρτοφυλάκιο ασφαλίσεων", "Insurance portfolio")}
                             </p>
@@ -280,7 +274,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         </div>
                     )}
 
-                    <div className="pw-card rounded-3xl p-6">
+                    <div className="pw-card p-5">
                         <div className="flex items-center justify-between">
                             <p className="pw-kicker">
                                 {t("Χρονοδιάγραμμα ανανεώσεων", "Renewal timeline")}
@@ -341,7 +335,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
                     <Link
                         href="/coverage-insights"
-                        className="pw-card rounded-3xl p-6"
+                        className="pw-card p-5"
                     >
                         <p className="pw-kicker">
                             {t("Ανάλυση AI", "AI Analysis")}
@@ -365,7 +359,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
 
                     <Link
                         href="/wallet/add"
-                        className="pw-card rounded-3xl p-6"
+                        className="pw-card p-5"
                     >
                         <p className="pw-kicker">
                             {t("Γρήγορο Upload", "Quick upload")}
@@ -380,7 +374,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         </div>
                     </Link>
 
-                    <div className="pw-card rounded-3xl p-6">
+                    <div className="pw-card p-5">
                         <p className="pw-kicker">
                             {t("Πρόσφατα έγγραφα", "Recent documents")}
                         </p>
@@ -413,7 +407,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
                     <Link
                         href="/agent"
-                        className="pw-card rounded-3xl p-6"
+                        className="pw-card p-5"
                     >
                         <p className="pw-kicker">
                             {t("Κατάσταση συμβούλου", "Agent link status")}
@@ -432,7 +426,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         </div>
                     </Link>
 
-                    <div className="pw-card rounded-3xl p-6">
+                    <div className="pw-card p-5">
                         <p className="pw-kicker">
                             {t("Υπενθύμιση check-up", "Health check-up reminder")}
                         </p>
@@ -448,7 +442,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
 
                     <Link
                         href="/coverage-insights"
-                        className="pw-card rounded-3xl p-6"
+                        className="pw-card p-5"
                     >
                         <p className="pw-kicker">{t("Ευκαιρίες εξοικονόμησης", "Savings opportunities")}</p>
                         <div className="mt-3 flex items-center justify-between">
@@ -469,7 +463,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 <div className="mt-4">
                     <Link
                         href="/help"
-                        className="pw-card flex items-center justify-between rounded-3xl px-6 py-4"
+                        className="pw-card flex items-center justify-between px-5 py-3.5"
                     >
                         <div className="flex items-center gap-3">
                             <CircleHelp className="h-5 w-5 text-black/60 dark:text-white/65" />
@@ -492,25 +486,6 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 <Upload className="h-6 w-6" />
             </Link>
 
-            {!customerRelationship && (
-                <div className="fixed bottom-24 left-6 hidden items-center gap-2 rounded-xl bg-amber-100 px-3 py-2 text-xs font-bold text-amber-800 shadow-md lg:flex">
-                    <AlertCircle className="h-4 w-4" />
-                    {t("Συνδεθείτε με σύμβουλο για ταχύτερη υποστήριξη.", "Connect with an agent for faster support.")}
-                    <Link href="/agent" className="underline">
-                        {t("Σύνδεση", "Connect")}
-                    </Link>
-                </div>
-            )}
-
-            <div className="fixed bottom-6 left-6 hidden items-center gap-2 rounded-xl bg-white px-3 py-2 text-xs font-bold text-black/80 shadow-md lg:flex dark:bg-black dark:text-white/85">
-                <CalendarClock className="h-4 w-4 text-[#1FDC86]" />
-                {t("Προτεραιότητα: επόμενη ανανέωση", "Priority: next renewal")}
-            </div>
-
-            <div className="fixed bottom-6 right-24 hidden items-center gap-2 rounded-xl bg-white px-3 py-2 text-xs font-bold text-black/80 shadow-md lg:flex dark:bg-black dark:text-white/85">
-                <Users className="h-4 w-4 text-[#1FDC86]" />
-                {t("My Agent και οικογένεια από Settings", "My Agent and family controls in Settings")}
-            </div>
         </div>
     )
 }

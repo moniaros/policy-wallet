@@ -44,7 +44,15 @@
       "Bash(Out-Null)",
       "Bash(rm -f .graphify_detect.json .graphify_extract.json .graphify_ast.json .graphify_semantic.json .graphify_analysis.json .graphify_labels.json .graphify_cached.json .graphify_uncached.txt .graphify_semantic_new.json .graphify_python)",
       "Bash(rm -f graphify-out/.graphify_chunk_01.json)",
-      "Bash(grep -n \"trackTokenUsage\\\\|after.*trackToken\\\\|import.*trackToken\" /c/Users/admin/Documents/GitHub/PolicyWalletPlatform/\"New folder\"/product-plan/policy-wallet/lib/services/ai/*.ts)"
+      "Bash(grep -n \"trackTokenUsage\\\\|after.*trackToken\\\\|import.*trackToken\" /c/Users/admin/Documents/GitHub/PolicyWalletPlatform/\"New folder\"/product-plan/policy-wallet/lib/services/ai/*.ts)",
+      "Bash(grep -E \"\\(page|Client\\)\\\\.tsx$\")",
+      "Bash(echo \"exit:$?\")",
+      "Read(//c/Users/admin/AppData/Local/Temp/claude/c--Users-admin-Documents-GitHub-PolicyWalletPlatform-New-folder-product-plan-policy-wallet/35420922-211e-427c-a1cd-f5ab3f59de43/tasks/**)",
+      "Bash(node -e ' *)",
+      "Bash(grep -n \"getProtectionScore\" lib/services/gap-engine/index.ts lib/services/gap-engine/*.ts)",
+      "Bash(curl -s http://localhost:3001/dashboard)",
+      "Bash(curl -s http://localhost:3000/dashboard)",
+      "Bash(curl -s -L http://localhost:3000/dashboard)"
     ],
     "additionalDirectories": [
       "c:\\Users\\admin\\Documents\\GitHub\\PolicyWalletPlatform\\New folder\\product-plan\\policy-wallet\\app\\api\\v1\\recommendations"

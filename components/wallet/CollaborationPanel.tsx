@@ -25,9 +25,45 @@ interface CollaborationPanelProps {
     isOwner: boolean
 }
 
+const DEFAULT_WALLET_COPY = {
+    invitationCreated: "Invitation created. Send the link to your collaborator.",
+    policyShared: "Policy shared successfully.",
+    linkCopied: "Link copied.",
+    revokeAccess: "Revoke access?",
+    accessRevoked: "Access revoked.",
+    invitationLinkCreated: "Invitation Link Created",
+    accessGrantedTo: "Access Granted To",
+    revoke: "Revoke",
+    collaboration: {
+        title: "Collaboration",
+        notSharedYet: "Not shared yet",
+        emptyDescription: "Invite collaborators to manage this policy together.",
+        collaboratorSingular: "collaborator",
+        collaboratorPlural: "collaborators",
+        invite: "Invite",
+        inviteCollaborator: "Invite Collaborator",
+        collaboratorEmail: "Collaborator Email",
+        collaboratorEmailPlaceholder: "agent@example.com",
+        permissions: "Permissions",
+        viewOnly: "View Only",
+        readOnlyAccess: "Read-only access",
+        canEdit: "Can Edit",
+        fullManagement: "Full management",
+        cancel: "Cancel",
+        sending: "Sending...",
+        sendInvite: "Send Invite",
+        minutesAgo: "{count}m ago",
+        hoursAgo: "{count}h ago",
+        daysAgo: "{count}d ago",
+        agent: "Agent",
+        footerInfo: "Collaborators can access this policy based on granted permissions.",
+    },
+} as const
+
 export function CollaborationPanel({ policyId, policyNumber: _policyNumber, initialShares, isOwner }: CollaborationPanelProps) {
     const { t } = useLanguage()
-    const copy = t.wallet.collaboration
+    const walletCopy = t.wallet ?? DEFAULT_WALLET_COPY
+    const copy = walletCopy.collaboration ?? DEFAULT_WALLET_COPY.collaboration
     const locale = t.common.locale || "en-US"
     const [shares, setShares] = useState<Share[]>(initialShares)
     const [email, setEmail] = useState("")
@@ -56,13 +92,13 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
 
         if (res.link) {
             setInviteLink(res.link)
-            toast.success(t.wallet.invitationCreated)
+            toast.success(walletCopy.invitationCreated)
             trackJourneyEvent("first_policy_shared", {
                 policy_id: policyId,
                 share_type: "agent_invite",
             })
         } else {
-            toast.success(t.wallet.policyShared)
+            toast.success(walletCopy.policyShared)
             trackJourneyEvent("first_policy_shared", {
                 policy_id: policyId,
                 share_type: "agent_existing",
@@ -79,16 +115,16 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
 
         navigator.clipboard
             .writeText(inviteLink)
-            .then(() => toast.success(t.wallet.linkCopied))
+            .then(() => toast.success(walletCopy.linkCopied))
             .catch(() => toast.error(mapWalletErrorToMessage("COPY_FAILED", t, "copy")))
     }
 
     const handleRevoke = async (grantId: string) => {
-        if (!confirm(t.wallet.revokeAccess)) return
+        if (!confirm(walletCopy.revokeAccess)) return
 
         const res = await revokeShare(grantId)
         if (res.success) {
-            toast.success(t.wallet.accessRevoked)
+            toast.success(walletCopy.accessRevoked)
             router.refresh()
         } else if (res.error) {
             toast.error(mapWalletErrorToMessage(res.error, t, "revokeShare"))
@@ -164,7 +200,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                             <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold text-emerald-900 dark:text-emerald-100 mb-2">{t.wallet.invitationLinkCreated}</p>
+                            <p className="text-sm font-bold text-emerald-900 dark:text-emerald-100 mb-2">{walletCopy.invitationLinkCreated}</p>
                             <div className="flex gap-2">
                                 <input
                                     readOnly
@@ -293,7 +329,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                     <div className="space-y-3">
                         <div className="flex items-center gap-2 mb-4">
                             <Clock className="w-4 h-4 text-slate-400" />
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.wallet.accessGrantedTo}</p>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{walletCopy.accessGrantedTo}</p>
                         </div>
                         {shares.map((share, index) => (
                             <div
@@ -337,7 +373,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                                         <button
                                             onClick={() => handleRevoke(share.id)}
                                             className="flex-shrink-0 p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors group/btn"
-                                            title={t.wallet.revoke}
+                                            title={walletCopy.revoke}
                                         >
                                             <Trash2 className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
                                         </button>

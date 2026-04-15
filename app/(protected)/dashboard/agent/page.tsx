@@ -241,12 +241,19 @@ export default async function DashboardPage() {
         if (f.type.includes("join") || f.type.includes("invite") || f.type.includes("questionnaire")) type = "customer_invited"
         if (f.type.includes("renewal") || f.type.includes("updated")) type = "renewal_completed"
         if (f.type.includes("claim") || f.type.includes("won") || f.type.includes("lost")) type = "claim_filed"
+        const details =
+            typeof f.title === "string"
+                ? f.title
+                : typeof f.title === "object" && f.title
+                    ? (f.title as { en?: string; el?: string }).en || (f.title as { en?: string; el?: string }).el || "Action recorded"
+                    : "Action recorded"
+
         return {
             id: f.id,
             type,
             customerName: f.customerName || "System",
             timestamp: f.timestamp.toISOString(),
-            details: (f.title as any).en || (typeof f.title === "string" ? f.title : "Action recorded"),
+            details,
         }
     })
 
