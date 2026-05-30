@@ -567,6 +567,7 @@
     {
       "route": "v1/consents/route.ts",
       "methods": [
+        "GET",
         "POST"
       ],
       "policy": {
@@ -1042,6 +1043,25 @@
       }
     },
     {
+      "route": "v1/policies/[id]/analysis-runs/compare/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "policy-read"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
       "route": "v1/policies/[id]/documents/[docId]/route.ts",
       "methods": [
         "DELETE"
@@ -1139,7 +1159,7 @@
       }
     },
     {
-      "route": "v1/policies/[id]/wallet-pass/route.ts",
+      "route": "v1/policies/[id]/savings-report/route.ts",
       "methods": [
         "GET"
       ],
@@ -1148,12 +1168,12 @@
           "mode": "user"
         },
         "rateLimit": {
-          "required": false,
-          "profile": "none"
+          "required": true,
+          "profile": "policy-read"
         },
         "validation": {
-          "required": false,
-          "profile": "optional"
+          "required": true,
+          "profile": "zod-or-guard"
         }
       }
     },
@@ -1277,7 +1297,480 @@
       }
     },
     {
-      "route": "v1/wallet/[id]/pass/route.ts",
+      "route": "v1/portfolio/gaps/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "portfolio-read"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/protection-score/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "portfolio-read"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/recommendations/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "portfolio-read"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/recommendations/[id]/route.ts",
+      "methods": [
+        "PATCH"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "recommendation-mutation"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "v1/risk-profile/route.ts",
+      "methods": [
+        "PATCH"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "profile-write"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "v1/upload/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "upload"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "auth/reset-password/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "public"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "auth-public"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "contact/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "public"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "public-contact"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "sentry-example-api/route.ts",
+      "methods": [],
+      "policy": {
+        "auth": {
+          "mode": "public"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/agent/playbooks/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "agent-read"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/collaboration/document-requests/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/collaboration/document-requests/[id]/route.ts",
+      "methods": [
+        "PATCH"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/collaboration/events/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/collaboration/proposals/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/collaboration/proposals/[id]/route.ts",
+      "methods": [
+        "GET",
+        "PATCH"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/contact/route.ts",
+      "methods": [],
+      "policy": {
+        "auth": {
+          "mode": "public"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/customers/protection-scores/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "agent-read"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/feedback/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
+      "route": "v1/jobs/churn-prevention/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/jobs/engagement-drip/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/jobs/perk-reminders/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/jobs/protection-score-refresh/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/jobs/renewal-check/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/jobs/weekly-digest/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/me/achievements/route.ts",
       "methods": [
         "GET"
       ],

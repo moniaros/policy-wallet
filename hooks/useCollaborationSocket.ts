@@ -23,6 +23,7 @@ export function useCollaborationSocket({
     const eventSourceRef = useRef<EventSource | null>(null)
     const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
     const reconnectAttemptsRef = useRef(0)
+    const connectRef = useRef<() => void>(() => {})
     const maxReconnectAttempts = 10
 
     const connect = useCallback(() => {
@@ -58,12 +59,13 @@ export function useCollaborationSocket({
             if (reconnectAttemptsRef.current < maxReconnectAttempts) {
                 const delay = Math.min(1000 * Math.pow(2, reconnectAttemptsRef.current), 30000)
                 reconnectAttemptsRef.current++
-                reconnectTimeoutRef.current = setTimeout(connect, delay)
+                reconnectTimeoutRef.current = setTimeout(() => connectRef.current(), delay)
             }
         }
     }, [enabled, relationshipId, onEvent])
 
     useEffect(() => {
+        connectRef.current = connect
         connect()
         return () => {
             eventSourceRef.current?.close()

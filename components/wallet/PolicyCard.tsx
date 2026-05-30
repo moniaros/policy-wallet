@@ -29,8 +29,9 @@ const LOB_ICONS: Record<string, React.ElementType> = {
     travel: PlaneIcon,
 }
 
-function getLobIcon(lob: string) {
-    return LOB_ICONS[lob] || DocumentIcon
+function LobIcon({ lob, className }: { lob: string; className?: string }) {
+    const Icon = LOB_ICONS[lob] ?? DocumentIcon
+    return <Icon className={className} />
 }
 
 function formatRelativeExpiry(endDate: string | null, locale: 'el' | 'en'): string {
@@ -89,7 +90,6 @@ export function PolicyCard({ policy, onView, id }: PolicyCardProps) {
     const status = getStatusBadge(policy.status, t)
     const iconCfg = getStatusIconConfig(isAnalyzing ? 'active' : policy.status)
     const { cls: coverageCls, pct: coveragePct } = statusCoverage(policy.status)
-    const LobIcon = getLobIcon(policy.lineOfBusiness)
 
     return (
         <button
@@ -105,7 +105,7 @@ export function PolicyCard({ policy, onView, id }: PolicyCardProps) {
                     {isAnalyzing ? (
                         <Sparkles className={`h-5 w-5 animate-pulse ${iconCfg.icon}`} />
                     ) : (
-                        <LobIcon className={`h-5 w-5 ${iconCfg.icon}`} />
+                        <LobIcon lob={policy.lineOfBusiness} className={`h-5 w-5 ${iconCfg.icon}`} />
                     )}
                 </div>
 

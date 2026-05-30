@@ -112,7 +112,6 @@ function DonutChart({
     const radius = (size - strokeWidth) / 2
     const circumference = 2 * Math.PI * radius
     const total = segments.reduce((s, seg) => s + seg.value, 0)
-    let cumulativeOffset = 0
 
     if (total === 0) {
         return (
@@ -124,6 +123,11 @@ function DonutChart({
         )
     }
 
+    // cumulative ratio preceding each segment (no mutation during render)
+    const offsets = segments.map((_, i) =>
+        segments.slice(0, i).reduce((s, seg) => s + seg.value / total, 0)
+    )
+
     return (
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block">
             <circle cx={size / 2} cy={size / 2} r={radius} fill="none"
@@ -133,8 +137,7 @@ function DonutChart({
                 const ratio = seg.value / total
                 const dashLength = circumference * ratio
                 const dashGap = circumference - dashLength
-                const offset = circumference * cumulativeOffset - circumference * 0.25
-                cumulativeOffset += ratio
+                const offset = circumference * offsets[i] - circumference * 0.25
                 return (
                     <circle key={i} cx={size / 2} cy={size / 2} r={radius}
                         fill="none" stroke={seg.color} strokeWidth={strokeWidth}
