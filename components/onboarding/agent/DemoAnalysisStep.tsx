@@ -4,6 +4,7 @@ import { useState } from "react"
 import { ArrowRight, BarChart3, AlertTriangle, FileUp, Wand2, Check } from "lucide-react"
 import { motion } from "framer-motion"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 
 import { generateDemoProposal } from "@/app/onboarding/agent/actions"
 
@@ -139,6 +140,8 @@ export function DemoAnalysisStep({ onNext, onBack }: StepProps) {
                                 </div>
                             ))}
                         </div>
+
+                        <AiDisclaimer />
                     </div>
 
                     <div className="flex gap-3">

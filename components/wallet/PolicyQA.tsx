@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { MessageCircle, Send, Sparkles, Loader2, Minus, Plus } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { LimitReachedModal } from '@/components/account/LimitReachedModal'
+import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 
@@ -149,6 +150,7 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                     </form>
 
                     <p className="text-xs text-black/50 dark:text-white/60 mt-3 text-center">{t.wallet.aiFootnote}</p>
+                    <AiDisclaimer variant="inline" className="mt-2 justify-center text-center" />
                 </div>
             )}
 

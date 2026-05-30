@@ -5,6 +5,7 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { Sparkles, AlertTriangle, Lightbulb, EyeOff, MessageSquare, Loader2, RefreshCw, HelpCircle } from "lucide-react"
 import { LimitReachedModal } from "@/components/account/LimitReachedModal"
+import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 
 import { useLanguage } from "@/contexts/LanguageContext"
 import { toGreekUppercaseNoAccents } from "@/lib/i18n/text-format"
@@ -658,6 +659,7 @@ export function AnalysisCard({
                         })}
                     </div>
                 )}
+                {uniqueGaps.length > 0 && <AiDisclaimer />}
             </div>
             <LimitReachedModal
                 isOpen={gapLimitReached}

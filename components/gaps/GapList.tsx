@@ -1,6 +1,7 @@
 "use client"
 
 import { GapCard } from "./GapCard"
+import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 
 interface GapListProps {
     gaps: any[] // We'll use the type from the query
@@ -22,10 +23,13 @@ export function GapList({ gaps }: GapListProps) {
     }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {gaps.map((gap) => (
-                <GapCard key={gap.id} gap={gap} />
-            ))}
+        <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {gaps.map((gap) => (
+                    <GapCard key={gap.id} gap={gap} />
+                ))}
+            </div>
+            <AiDisclaimer />
         </div>
     )
 }

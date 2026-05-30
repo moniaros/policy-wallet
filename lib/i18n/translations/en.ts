@@ -27,6 +27,7 @@ export const en: TranslationKeys = {
         locale: 'en-GB',
         copy: 'Copy',
         needHelp: 'Need help?',
+        aiAdviceDisclaimer: 'AI outputs are informational support and are not legal or insurance advice. You should verify critical decisions with a licensed professional.',
     },
 
     // Navigation

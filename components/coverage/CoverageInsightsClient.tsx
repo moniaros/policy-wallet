@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation'
 import { InsightCard, InsightData } from './InsightCard'
 import { updateGapStatus } from '@/app/(protected)/coverage-insights/actions'
 import { toast } from 'sonner'
+import { AiDisclaimer } from '@/components/ui/AiDisclaimer'
 
 type PlanTier = 'free' | 'plus' | 'pro'
 
@@ -282,6 +283,8 @@ export function CoverageInsightsClient({
                         </div>
                     </div>
                 )}
+
+                <AiDisclaimer language={lang} className="mb-6 justify-center" />
 
                 <div className="pt-6 border-t border-black/10 dark:border-white/10 text-center">
                     <h3 className="text-lg font-semibold text-black dark:text-white mb-4">{copy.nextSteps}</h3>

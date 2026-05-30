@@ -69,7 +69,8 @@ export const GET = withApiGuard(
 
         const html = generateSavingsReportHtml(
             run.resultJson as Record<string, any>,
-            run.finishedAt?.toISOString() ?? new Date().toISOString()
+            run.finishedAt?.toISOString() ?? new Date().toISOString(),
+            (authResult.dbUser.preferredLanguage as "en" | "el") || "en"
         )
 
         return new Response(html, {

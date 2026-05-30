@@ -362,7 +362,7 @@ export interface IAIService {
 
     /**
      * Analyzes a user's risk profile against their existing policies
-     * to generate personalized insurance insights and prioritized gap recommendations.
+     * to surface informational observations about coverage gaps and overlaps.
      *
      * @param profile - User's risk profile fields
      * @param existingPolicies - Current policy portfolio metadata

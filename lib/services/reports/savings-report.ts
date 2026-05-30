@@ -6,6 +6,8 @@
  * Users can print to PDF via browser (Ctrl+P / Cmd+P).
  */
 
+import { getTranslations } from "@/lib/i18n"
+
 interface SavingsOpportunity {
     action: { en: string; el: string } | string
     rationale: { en: string; el: string } | string
@@ -29,8 +31,10 @@ function localized(val: any, lang: "en" | "el" = "en"): string {
 
 export function generateSavingsReportHtml(
     resultJson: Record<string, any>,
-    generatedAt: string
+    generatedAt: string,
+    language: "en" | "el" = "en"
 ): string {
+    const loc = (val: any) => localized(val, language)
     const metadata = resultJson.metadata ?? {}
     const savings: SavingsOpportunity[] = resultJson.savingsOpportunities ?? []
     const gaps: GapResult[] = (resultJson.gapResults ?? []).filter((g: any) => g.isDetected)
@@ -108,7 +112,7 @@ export function generateSavingsReportHtml(
   <span class="meta-label">Premium</span><span class="meta-value">${metadata.premiumAmount != null ? `€${Number(metadata.premiumAmount).toFixed(2)}` : "—"}</span>
 </div>
 
-${summary ? `<h2>Summary</h2><p style="font-size:14px">${escapeHtml(localized(summary))}</p>` : ""}
+${summary ? `<h2>Summary</h2><p style="font-size:14px">${escapeHtml(loc(summary))}</p>` : ""}
 
 <h2>Savings Opportunities</h2>
 ${savings.length === 0 ? "<p style='font-size:14px;color:#888'>No savings opportunities identified.</p>" : ""}
@@ -122,8 +126,8 @@ ${totalSavings > 0 ? `
 
 ${savings.map((s) => `
 <div class="savings-card">
-  <div class="action">${escapeHtml(localized(s.action))}</div>
-  <div class="rationale">${escapeHtml(localized(s.rationale))}</div>
+  <div class="action">${escapeHtml(loc(s.action))}</div>
+  <div class="rationale">${escapeHtml(loc(s.rationale))}</div>
   ${s.estimatedAnnualSavingsEur ? `<div class="estimate">Estimated saving: €${s.estimatedAnnualSavingsEur}/year (${Math.round(s.confidence * 100)}% confidence)</div>` : ""}
 </div>
 `).join("")}
@@ -133,8 +137,8 @@ ${gaps.length > 0 ? `
 ${gaps.map((g) => `
 <div class="gap-card ${g.severity || "medium"}">
   <div class="slug">${escapeHtml(g.slug.replace(/_/g, " "))} <span class="badge badge-${g.severity || "medium"}">${escapeHtml(g.severity || "medium")}</span></div>
-  ${g.explanation ? `<div class="detail">${escapeHtml(localized(g.explanation))}</div>` : ""}
-  ${g.suggestion ? `<div class="detail"><strong>Recommendation:</strong> ${escapeHtml(localized(g.suggestion))}</div>` : ""}
+  ${g.explanation ? `<div class="detail">${escapeHtml(loc(g.explanation))}</div>` : ""}
+  ${g.suggestion ? `<div class="detail"><strong>Recommendation:</strong> ${escapeHtml(loc(g.suggestion))}</div>` : ""}
 </div>
 `).join("")}
 ` : ""}
@@ -156,9 +160,7 @@ ${snapshot.exclusions?.length ? `
 ` : ""}
 
 <div class="footer">
-  This report was generated automatically by PolicyWallet based on AI analysis of your insurance policy document.
-  It is provided for informational purposes only and does not constitute insurance advice.
-  Always consult a licensed insurance professional before making coverage decisions.
+  ${escapeHtml(getTranslations(language).common.aiAdviceDisclaimer)}
 </div>
 
 </body>

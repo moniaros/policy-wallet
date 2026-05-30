@@ -18,6 +18,7 @@ import {
     Umbrella,
     X,
 } from "lucide-react"
+import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -299,6 +300,8 @@ export function RecommendationCards({
                     )}
                 </button>
             )}
+
+            <AiDisclaimer language={language} />
         </div>
     )
 }

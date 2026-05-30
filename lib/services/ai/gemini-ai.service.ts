@@ -747,7 +747,7 @@ Answer the user's question:
         }),
         urgency: z.enum(['critical', 'high', 'medium', 'low']),
         actionable: z.boolean().describe('Whether the user can take immediate action'),
-      })).describe('Personalized risk insights (max 5)'),
+      })).describe('Informational coverage observations (max 5)'),
       prioritizedGaps: z.array(z.object({
         lineOfBusiness: z.string().describe('Insurance line: motor, home, health, life, travel, pet, liability, legal_expenses, income_protection'),
         reason: z.object({
@@ -755,7 +755,7 @@ Answer the user's question:
           el: z.string().describe('Greek reason this coverage is needed'),
         }),
         urgency: z.enum(['critical', 'high', 'medium', 'low']),
-      })).describe('Missing insurance lines ranked by urgency (max 5)'),
+      })).describe('Insurance lines not currently detected in the portfolio (max 5)'),
       profileStrengths: z.array(z.object({
         en: z.string(),
         el: z.string(),
@@ -772,7 +772,7 @@ Answer the user's question:
       ? Math.floor((Date.now() - new Date(profile.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
       : null
 
-    const prompt = `You are an expert Greek insurance advisor. Analyze this person's risk profile and current insurance portfolio.
+    const prompt = `You are an informational insurance-analysis assistant for the Greek market. Analyze this person's risk profile and current insurance portfolio for educational purposes.
 
 ## Risk Profile
 - Age: ${age ?? 'Unknown'}
@@ -802,7 +802,7 @@ ${policySummary}
 ## Instructions
 1. Consider the Greek insurance market context (mandatory motor, ENFIA property requirements, ESY public health)
 2. Identify the most critical coverage gaps given this person's specific situation
-3. Provide actionable, personalized insights (not generic advice)
+3. Provide factual, informational observations about coverage gaps and overlaps; do not give personalized financial or insurance advice or tell the user what they "should" buy. Phrase findings as observations (e.g. "this profile appears to lack ...", "this policy may not cover ...").
 4. Be bilingual: provide both English and Greek for all text fields
 5. Consider life stage, income level, and family situation when assessing urgency
 6. Limit insights to max 5, prioritized gaps to max 5, strengths to max 3`

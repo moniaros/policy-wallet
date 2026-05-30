@@ -3,6 +3,7 @@
 import React from "react"
 import { Shield, ChevronRight, AlertTriangle, CheckCircle2, Info } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 
 interface CategoryScoreData {
     key: string
@@ -236,6 +237,8 @@ export function ProtectionScoreCard({
                     </div>
                 </div>
             )}
+
+            <AiDisclaimer language={language} />
         </div>
     )
 }
