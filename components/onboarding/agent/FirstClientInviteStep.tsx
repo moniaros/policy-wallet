@@ -29,7 +29,7 @@ export function FirstClientInviteStep({ onNext, onBack }: StepProps) {
         if (!user?.id) return
 
         setIsLoading(true)
-        await sendClientInvite(user.id, email)
+        await sendClientInvite(email)
         setIsLoading(false)
         setInviteSent(true)
     }
@@ -38,7 +38,7 @@ export function FirstClientInviteStep({ onNext, onBack }: StepProps) {
         if (!user?.id) return
 
         setIsLoading(true)
-        await completeOnboarding(user.id)
+        await completeOnboarding()
         setIsLoading(false)
         onNext()
     }

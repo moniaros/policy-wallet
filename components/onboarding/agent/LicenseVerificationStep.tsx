@@ -33,7 +33,7 @@ export function LicenseVerificationStep({ onNext, onBack }: StepProps) {
                 const formData = new FormData()
                 formData.append("file", file)
                 formData.append("type", "license")
-                await uploadAgentAsset(user.id, formData)
+                await uploadAgentAsset(formData)
             } catch {
                 // Still proceed — license upload is optional during onboarding
             } finally {

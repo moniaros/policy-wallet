@@ -11,7 +11,10 @@
       "Bash(npx next:*)",
       "Bash(npx prisma:*)",
       "Bash(grep -r \"Send Message\\\\|Request Callback\" '/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/app/\\(protected\\)/agent/' --include=*.tsx --include=*.ts)",
-      "Bash(grep -r \"PolicyComparison\\\\|import.*Comparison\" '/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/components/wallet' --include=*.tsx)"
+      "Bash(grep -r \"PolicyComparison\\\\|import.*Comparison\" '/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/components/wallet' --include=*.tsx)",
+      "Bash(node scripts/check-utf8.js)",
+      "Bash(npx eslint *)",
+      "PowerShell(Select-String -Path \"$env:TEMP/tc.txt\" -Pattern \"error TS\" | Select-Object -ExpandProperty Line)"
     ]
   }
 }

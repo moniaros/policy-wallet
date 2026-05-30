@@ -52,7 +52,10 @@
       "Bash(grep -n \"getProtectionScore\" lib/services/gap-engine/index.ts lib/services/gap-engine/*.ts)",
       "Bash(curl -s http://localhost:3001/dashboard)",
       "Bash(curl -s http://localhost:3000/dashboard)",
-      "Bash(curl -s -L http://localhost:3000/dashboard)"
+      "Bash(curl -s -L http://localhost:3000/dashboard)",
+      "Bash(npm test *)",
+      "Bash(grep -E \"^\\(C:|/|[A-Za-z].*\\\\\\\\.\\(ts|tsx\\)\\)|error|warning\")",
+      "Bash(grep -iE \"error|warning|\\\\.tsx?$\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\admin\\Documents\\GitHub\\PolicyWalletPlatform\\New folder\\product-plan\\policy-wallet\\app\\api\\v1\\recommendations"

@@ -377,6 +377,17 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
+    // Ownership gate: only the policy owner may share it. Runs before the agent
+    // lookup so a non-owner cannot trigger invite creation, access grants or emails.
+    const ownedPolicy = await db.policy.findUnique({
+        where: { id: policyId },
+        select: { ownerUserId: true },
+    })
+    if (!ownedPolicy) return { error: "Policy not found" }
+    if (ownedPolicy.ownerUserId !== authResult.dbUser.id) {
+        return { error: "You do not have permission to share this policy" }
+    }
+
     // 1. Find the agent
     const agent = await db.user.findUnique({
         where: { email: agentEmail }
@@ -388,7 +399,7 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
             data: {
                 inviterUserId: authResult.dbUser.id,
                 inviteeEmail: agentEmail,
-                token: Math.random().toString(36).substring(7),
+                token: crypto.randomUUID(),
                 inviteType: 'share',
                 scope: `policy:${policyId}`,
                 requestedPermissions: permissions,

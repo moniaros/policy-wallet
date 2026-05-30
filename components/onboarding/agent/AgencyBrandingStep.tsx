@@ -43,12 +43,12 @@ export function AgencyBrandingStep({ onNext, onBack }: StepProps) {
                 const formData = new FormData()
                 formData.append("file", logoFile)
                 formData.append("type", "logo")
-                await uploadAgentAsset(user.id, formData)
+                await uploadAgentAsset(formData)
             }
 
             // Save phone and website
             if (phone || website) {
-                await updateAgentProfile(user.id, {
+                await updateAgentProfile({
                     phone: phone || undefined,
                     website: website || undefined,
                 })

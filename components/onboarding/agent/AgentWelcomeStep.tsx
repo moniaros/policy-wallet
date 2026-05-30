@@ -23,7 +23,7 @@ export function AgentWelcomeStep({ onNext }: StepProps) {
         if (!user?.id) return
 
         setIsLoading(true)
-        const result = await updateAgentProfile(user.id, {
+        const result = await updateAgentProfile({
             agencyName,
             // title is not in schema yet, adding just agencyName
         })

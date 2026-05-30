@@ -1,10 +1,12 @@
 "use server"
 
 import { db } from "@/lib/db"
-import { createClient } from "@/lib/supabase/server"
+import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 import { daysFromNow, INVITE_EXPIRY_DAYS } from "@/lib/constants/time"
+import { uploadFile } from "@/lib/storage"
+import { sendPolicyInviteEmail } from "@/lib/email/invite-emails"
 
 const AgentProfileSchema = z.object({
     agencyName: z.string().optional(),
@@ -14,12 +16,23 @@ const AgentProfileSchema = z.object({
     // logoUrl would be handled separately after upload
 })
 
-export async function updateAgentProfile(userId: string, data: z.infer<typeof AgentProfileSchema>) {
-    const supabase = await createClient();
-    void supabase;
+/**
+ * Resolve the caller from the session and require the `agent` role.
+ * Throws (caught by each action and returned as { success: false, error })
+ * so identity is NEVER taken from a caller-supplied argument.
+ */
+async function requireAgent() {
+    const auth = await getAuthenticatedUserOrNull()
+    if (!auth) throw new Error("Unauthorized")
+    if (!auth.dbUser.roles.includes("agent")) throw new Error("Forbidden: agent role required")
+    return auth.dbUser
+}
+
+export async function updateAgentProfile(data: z.infer<typeof AgentProfileSchema>) {
     try {
+        const dbUser = await requireAgent()
         await db.agentProfile.update({
-            where: { userId },
+            where: { userId: dbUser.id },
             data: {
                 ...data,
                 // If agencyName is updated, we might want to sync it to other places if needed
@@ -28,60 +41,56 @@ export async function updateAgentProfile(userId: string, data: z.infer<typeof Ag
         return { success: true }
     } catch (error) {
         console.error("Failed to update agent profile:", error)
-        return { success: false, error: "Failed to update profile" }
+        return { success: false, error: error instanceof Error ? error.message : "Failed to update profile" }
     }
 }
 
-export async function completeOnboarding(userId: string) {
+export async function completeOnboarding() {
     try {
+        const dbUser = await requireAgent()
         await db.agentProfile.update({
-            where: { userId },
+            where: { userId: dbUser.id },
             data: {
                 onboardingCompletedAt: new Date(),
                 verificationStatus: "pending" // Or 'verified' if auto-verified
             }
         })
 
-        // Also update User role/status if needed? 
+        // Also update User role/status if needed?
         // Logic depends on requirements. For now, just marking profile as complete.
 
         revalidatePath('/agent')
         return { success: true }
     } catch (error) {
         console.error("Failed to complete onboarding:", error)
-        return { success: false, error: "Failed to complete onboarding" }
+        return { success: false, error: error instanceof Error ? error.message : "Failed to complete onboarding" }
     }
 }
 
-
-import { uploadFile } from "@/lib/storage"
-import { sendPolicyInviteEmail } from "@/lib/email/invite-emails"
-
-// ...
-
-export async function uploadAgentAsset(userId: string, formData: FormData) {
+export async function uploadAgentAsset(formData: FormData) {
     const file = formData.get('file') as File
     const type = formData.get('type') as string // 'logo' or 'license'
 
     if (!file) return { success: false, error: "No file provided" }
 
     try {
-        const publicUrl = await uploadFile(file, `agent/${userId}/${type}`)
+        const dbUser = await requireAgent()
+        const publicUrl = await uploadFile(file, `agent/${dbUser.id}/${type}`)
 
         if (type === 'logo') {
             await db.agentProfile.update({
-                where: { userId },
+                where: { userId: dbUser.id },
                 data: { logoUrl: publicUrl }
             })
         } else if (type === 'license') {
             // Append to documents JSON
             // This is a simplified update, concurrent updates might overwrite
-            const profile = await db.agentProfile.findUnique({ where: { userId }, select: { documents: true } })
+            const profile = await db.agentProfile.findUnique({ where: { userId: dbUser.id }, select: { documents: true } })
             const docs = (profile?.documents as any[]) || []
             docs.push({ type: 'license', url: publicUrl, name: file.name, uploadedAt: new Date() })
 
             await db.agentProfile.update({
-                where: { userId },
+                where: { userId: dbUser.id },
                 data: { documents: docs }
             })
         }
@@ -89,24 +98,22 @@ export async function uploadAgentAsset(userId: string, formData: FormData) {
         return { success: true, url: publicUrl }
     } catch (error) {
         console.error("Failed to save asset:", error)
-        return { success: false, error: "Upload failed" }
+        return { success: false, error: error instanceof Error ? error.message : "Upload failed" }
     }
 }
 
-export async function sendClientInvite(agentUserId: string, clientEmail: string) {
-    if (!agentUserId || !clientEmail) {
-        return { success: false, error: "Missing agent or client email" }
-    }
-
-    const normalizedEmail = clientEmail.trim().toLowerCase()
+export async function sendClientInvite(clientEmail: string) {
+    const normalizedEmail = clientEmail?.trim().toLowerCase()
     if (!normalizedEmail) {
         return { success: false, error: "Invalid email" }
     }
 
     try {
+        const dbUser = await requireAgent()
+
         const invite = await db.invite.create({
             data: {
-                inviterUserId: agentUserId,
+                inviterUserId: dbUser.id,
                 inviteeEmail: normalizedEmail,
                 token: crypto.randomUUID().replace(/-/g, ""),
                 inviteType: "signup",
@@ -114,26 +121,28 @@ export async function sendClientInvite(agentUserId: string, clientEmail: string)
             },
         })
 
-        const inviter = await db.user.findUnique({
-            where: { id: agentUserId },
-            select: { name: true, email: true, preferredLanguage: true },
-        })
-
         const emailResult = await sendPolicyInviteEmail({
             to: normalizedEmail,
             token: invite.token,
-            inviterName: inviter?.name || inviter?.email || "PolicyWallet advisor",
-            language: (inviter?.preferredLanguage as "el" | "en") || "en",
+            inviterName: dbUser.name || dbUser.email || "PolicyWallet advisor",
+            language: (dbUser.preferredLanguage as "el" | "en") || "en",
         })
 
         return { success: true, inviteId: invite.id, token: invite.token, emailQueued: emailResult.success }
     } catch (error) {
         console.error("Failed to create client invite:", error)
-        return { success: false, error: "Failed to send invite" }
+        return { success: false, error: error instanceof Error ? error.message : "Failed to send invite" }
     }
 }
 
 export async function generateDemoProposal(file: File) {
+    try {
+        await requireAgent()
+    } catch (error) {
+        return { success: false, error: error instanceof Error ? error.message : "Unauthorized" }
+    }
+
+    void file
     // 1. Simulate file processing
     await new Promise(resolve => setTimeout(resolve, 1500))
 
