@@ -24,7 +24,7 @@ Phase 1 — Core Journey Compliance (~68% per `docs/planning/V2_SPEC_ROADMAP_STA
 2. **Critical — AI advice unlabeled (regulatory)**: gap/recommendation output renders with no "informational / not insurance advice" disclaimer (the correct text exists only on the Terms page); prompts frame output as personalized advice; health data sent to LLMs without explicit consent. Launch-blocking for the Greek market.
 3. **High — auth gaps (Phase 1):** no production passkey/biometric verification; 30-day session persistence not enforced/tested.
 4. **Medium — assorted scope gaps:** `process-policy` global cross-tenant write (`jobs/process-policy/route.ts:27`); `analysis-runs/[runId]` grant check missing `scope` filter; `share` GET AccessGrant trust chain; `createUserTask`/`submitQuestionnaireResponse` recipient/instance not ownership-checked.
-5. **Low — pre-existing red CI** (not from current work): `audit:api-auth` has inventory drift on several `app/api/v1/**` routes; `type-check` has 1 error in `tests/unit/audience-tabs.test.tsx` (missing `@testing-library/user-event` dep). Clean these before relying on green CI.
+5. ~~Low — pre-existing red CI~~ **RESOLVED**: `audit:api-auth` inventory reconciled (91/91); `@testing-library/user-event` installed (type-check + unit tests green); 4 react-hooks errors fixed; lint `no-empty`/`@ts-nocheck` cleaned. All guardrails now pass (one cosmetic lint warning remains in `DocumentPreview.tsx`).
 
 ## Next 3 actions
 1. Fix `sharePolicy` (`ownerUserId` gate + `crypto.randomUUID()` token) — last of the auth/IDOR Criticals.

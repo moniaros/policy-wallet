@@ -1,5 +1,4 @@
-// @ts-nocheck
-import fs from "fs/promises"
+﻿import fs from "fs/promises"
 import path from "path"
 import { randomUUID } from "crypto"
 import { db } from "@/lib/db"
@@ -487,8 +486,9 @@ async function main() {
                     provider: step.provider,
                     remediationType: step.remediationType,
                     logMessage: step.logMessage,
-                    errorCode: step.errorCode ?? null,
-                    errorMessage: step.errorMessage ?? null,
+                    // Only the failed step in stepRows carries error fields; narrow with `in`.
+                    errorCode: "errorCode" in step ? step.errorCode : null,
+                    errorMessage: "errorMessage" in step ? step.errorMessage : null,
                     startedAt: new Date(now.getTime() - (90_000 - step.stepOrder * 2_000)),
                     finishedAt: new Date(now.getTime() - (88_000 - step.stepOrder * 2_000)),
                     logJson: {

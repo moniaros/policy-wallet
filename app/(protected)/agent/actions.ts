@@ -188,7 +188,10 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
                     const scored = await scoreOpportunity(o.id)
                     conversionLikelihood = scored.likelihood
                     conversionScore = scored.score
-                } catch {}
+                } catch {
+                    // Best-effort enrichment: opportunity scoring is non-critical.
+                    // On failure, leave conversionLikelihood/conversionScore as null.
+                }
                 return {
                     opportunityId: o.id,
                     policyId: o.policyId || '',

@@ -35,7 +35,10 @@ export default async function OpportunitiesPage() {
             try {
                 const result = await scoreOpportunity(opp.id)
                 scores.set(opp.id, { likelihood: result.likelihood, score: result.score })
-            } catch {}
+            } catch {
+                // Best-effort enrichment: scoring is non-critical. On failure the
+                // opportunity is simply omitted from the scores map (renders unscored).
+            }
         })
     )
 
