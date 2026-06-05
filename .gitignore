@@ -60,3 +60,6 @@ docs/policies/motor_ethniki_2_terms.pdf
 docs/policies/motor_ethniki_2.pdf
 docs/policies/motor_ethniki_3_terms.pdf
 docs/policies/motor_ethniki_3.pdf
+
+# Tesseract OCR language data (downloaded at runtime to os.tmpdir; never commit)
+*.traineddata
