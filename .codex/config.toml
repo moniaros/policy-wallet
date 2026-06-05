@@ -1,0 +1,18 @@
+[mcp_servers.perplexity-docs]
+url = "https://docs.perplexity.ai/mcp"
+
+[mcp_servers.playwright]
+command = "npx"
+args = ["@playwright/mcp@latest"]
+
+[mcp_servers.sentry]
+url = "https://mcp.sentry.dev/mcp"
+
+[mcp_servers.stripe]
+url = "https://mcp.stripe.com"
+
+[mcp_servers.supabase]
+url = "https://mcp.supabase.com/mcp"
+
+[mcp_servers.vercel]
+url = "https://mcp.vercel.com"

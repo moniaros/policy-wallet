@@ -58,7 +58,12 @@
       "Bash(grep -iE \"error|warning|\\\\.tsx?$\")",
       "PowerShell(npm run lint 2>&1)",
       "PowerShell(npm run type-check 2>&1)",
-      "PowerShell(\"----- TYPECHECK -----\")"
+      "PowerShell(\"----- TYPECHECK -----\")",
+      "Bash(xargs head -100)",
+      "PowerShell(head -20)",
+      "Bash(node scripts/_tmp_check_auth.mjs)",
+      "Bash(node scripts/seed-agent-demo.mjs agent1@example.com ph1@example.com)",
+      "Bash(echo \"exit=$?\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\admin\\Documents\\GitHub\\PolicyWalletPlatform\\New folder\\product-plan\\policy-wallet\\app\\api\\v1\\recommendations"
