@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
+import { seedCoverageTaxonomy, seedCoverageEnvelopes } from './seeds/coverage'
 const prisma = new PrismaClient()
 
 async function main() {
@@ -763,6 +764,11 @@ async function main() {
             isActive: true
         }
     })
+
+    // ── Ingestion pipeline reference data (Phase 0) ──────────────────
+    console.log('Seeding coverage taxonomy + envelopes...')
+    await seedCoverageTaxonomy(prisma)
+    await seedCoverageEnvelopes(prisma)
 
     console.log('Seeding finished.')
 }

@@ -239,6 +239,7 @@ model Insurer {
   isActive  Boolean  @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  templates InsurerTemplate[]
 
   @@map("insurers")
 }
@@ -334,8 +335,15 @@ model PolicyDocument {
   uploadedByUserId String    @map("uploaded_by_user_id")
   uploadedAt       DateTime  @default(now()) @map("uploaded_at")
   documentHash     String?   @map("document_hash")
+  // DEPRECATED (retired in Phase 5): per-document JSON cache with a 24h TTL.
+  // Superseded by the permanent, content-hash-keyed `DocumentExtraction` table.
+  // Linked by value: DocumentExtraction.contentHash == PolicyDocument.documentHash.
   extractionCache  Json?     @map("extraction_cache")
   extractedAt      DateTime? @map("extracted_at")
+  // ── Ingestion pipeline (Phase 0): triage + coverage-table location ──
+  documentSource     String?   @map("document_source")             // 'text-layer' | 'scanned' (set by triage, Phase 1)
+  pageCount          Int?      @map("page_count")
+  coverageTablePages Int[]     @default([]) @map("coverage_table_pages") // 1-based pages of Πίνακας Καλύψεων (Phase 3)
   policy           Policy    @relation(fields: [policyId], references: [id], onDelete: Cascade)
   uploader         User      @relation(fields: [uploadedByUserId], references: [id])
 
@@ -1260,4 +1268,124 @@ model InsuranceProduct {
   @@index([lineOfBusiness, isActive])
   @@index([isActive, sortOrder])
   @@map("insurance_products")
+}
+
+// ── Document Ingestion → Extraction Pipeline (Phase 0) ───────────────────────
+// Cost-optimized pipeline schema. Status/path values are stored as String to
+// match the codebase's prevailing convention (Policy.status, processingStatus)
+// and because the path set is a growing telemetry dimension; the canonical
+// unions + runtime validation live in lib/services/ingestion/contracts.ts (Zod).
+
+/// Permanent, content-hash-keyed extraction cache (promoted from the deprecated
+/// PolicyDocument.extractionCache JSON + its 24h TTL). One row per unique file
+/// content; many identical uploads across users reuse it — a $0 cache hit.
+/// Holds the STRUCTURED ExtractionResult only, never raw document text, so no
+/// downstream step ever re-OCRs. Feeds the margin dashboard via the cost columns.
+model DocumentExtraction {
+  id              String  @id @default(cuid()) @map("extraction_id")
+  contentHash     String  @unique @map("content_hash") // sha256 of file bytes — global cache key
+  source          String // 'text-layer' | 'scanned'
+  pathTaken       String  @map("path_taken") // cache-hit|text-layer|template|ocr|model-fallback|frontier-fallback
+
+  // Denormalized headline fields (for querying/joins); authoritative typed copy lives in `structured`.
+  insurerName     String   @map("insurer_name") // normalized via InsurerTemplate; safe placeholder, never null/"Unknown"
+  policyNumber    String?  @map("policy_number")
+  premiumAmount   Decimal? @map("premium_amount") @db.Decimal(12, 2)
+  premiumCurrency String   @default("EUR") @map("premium_currency")
+  startDate       DateTime? @map("start_date")
+  endDate         DateTime? @map("end_date")
+
+  /// Full ExtractionResult: FieldValue<T> provenance/confidence + NormalizedCoverage[].
+  /// Typed by lib/services/ingestion/contracts.ts. Structured object, never raw text.
+  structured        Json
+  overallConfidence Float   @default(0) @map("overall_confidence") // 0..1
+  requiresReview    Boolean @default(false) @map("requires_review") // → Sentry low-confidence signal
+
+  // Cost-per-document (tokens + path) — margin dashboard feed. $0 paths log zeros + null model.
+  inputTokens  Int     @default(0) @map("input_tokens")
+  outputTokens Int     @default(0) @map("output_tokens")
+  totalTokens  Int     @default(0) @map("total_tokens")
+  costEur      Decimal @default(0) @map("cost_eur") @db.Decimal(10, 6)
+  model        String? // null on a $0 path (cache/text-layer/template)
+
+  insurerTemplateId String?          @map("insurer_template_id")
+  insurerTemplate   InsurerTemplate? @relation(fields: [insurerTemplateId], references: [id], onDelete: SetNull)
+
+  extractedAt DateTime @default(now()) @map("extracted_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([pathTaken])
+  @@index([insurerName])
+  @@index([extractedAt])
+  @@map("document_extractions")
+}
+
+/// Canonical coverage vocabulary. `key` (e.g. 'motor.own_damage',
+/// 'health.hospitalization') is the join target for NormalizedCoverage.taxonomyKey,
+/// CoverageEnvelope expectations, and Gap.taxonomyKey. `aliases` carry the raw
+/// Greek Πίνακας Καλύψεων labels that normalize to this key.
+model CoverageTaxonomy {
+  id             String   @id @default(cuid()) @map("taxonomy_id")
+  key            String   @unique // canonical machine key, e.g. 'motor.own_damage'
+  lineOfBusiness String   @map("line_of_business")
+  nameEl         String   @map("name_el")
+  nameEn         String   @map("name_en")
+  descriptionEl  String?  @map("description_el")
+  descriptionEn  String?  @map("description_en")
+  unit           String   @default("amount") // 'amount' | 'percent' | 'boolean' | 'days'
+  aliases        String[] @default([]) // raw Greek coverage-row labels mapping to this key
+  sortOrder      Int      @default(0) @map("sort_order")
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@index([lineOfBusiness, isActive])
+  @@map("coverage_taxonomy")
+}
+
+/// Per-insurer extraction layouts + name normalization. `nameAliases` ensure we
+/// never surface "Unknown Insurer": raw PDF strings resolve to `canonicalName`.
+/// `fieldPatterns` / `coverageTableHints` drive the $0 template path (Phase 4).
+model InsurerTemplate {
+  id                 String  @id @default(cuid()) @map("insurer_template_id")
+  insurerId          String? @map("insurer_id") // null = alias-only entry (canonical Insurer not yet created)
+  canonicalName      String  @map("canonical_name") // safe display name; never "Unknown Insurer"
+  lineOfBusiness     String? @map("line_of_business") // null = applies to all LoBs for this insurer
+  nameAliases        String[] @default([]) @map("name_aliases") // raw strings seen in PDFs → canonicalName
+  fieldPatterns      Json?    @map("field_patterns") // { policyNumber: "<regex>", premium: "<regex>", ... }
+  coverageTableHints Json?    @map("coverage_table_hints") // anchors to locate Πίνακας Καλύψεων
+  version            Int      @default(1)
+  isActive           Boolean  @default(true) @map("is_active")
+  createdAt          DateTime @default(now()) @map("created_at")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+
+  insurer     Insurer?             @relation(fields: [insurerId], references: [id], onDelete: SetNull)
+  extractions DocumentExtraction[]
+
+  @@index([insurerId, isActive])
+  @@index([canonicalName])
+  @@map("insurer_templates")
+}
+
+/// Expected-coverage benchmark a policy is diffed against. The deterministic
+/// Gap Engine (Phase 6) runs detectGaps(actual, envelope) with NO model/I-O.
+/// `expectations` is EnvelopeExpectation[] (see contracts.ts). Versioned so a
+/// benchmark change is auditable and never silently re-scores history.
+model CoverageEnvelope {
+  id             String  @id @default(cuid()) @map("envelope_id")
+  lineOfBusiness String  @map("line_of_business")
+  // '' = baseline; else a segment such as 'homeowner'. Non-null sentinel (not NULL) so the
+  // @@unique below actually constrains baselines — Postgres treats NULLs as distinct.
+  profileSegment String  @default("") @map("profile_segment")
+  version        Int     @default(1)
+  /// EnvelopeExpectation[]: { taxonomyKey, minLimit?, maxDeductible?, requiredSubLimits?, forbiddenExclusions?, severityIfMissing }
+  expectations   Json
+  isActive       Boolean @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@unique([lineOfBusiness, profileSegment, version])
+  @@index([lineOfBusiness, isActive])
+  @@map("coverage_envelopes")
 }
