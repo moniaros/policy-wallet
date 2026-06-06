@@ -105,3 +105,30 @@ describe("extractScannedText — guards", () => {
     await expect(extractScannedText(textLayer, deps)).rejects.toThrow(/scanned/)
   })
 })
+
+describe("extractScannedText — cost guardrail: downscale BEFORE OCR", () => {
+  it("preprocesses (downscales) each page immediately before OCRing it", async () => {
+    const order: string[] = []
+    const deps = {
+      renderer: { render: async (n: number) => Buffer.from(`P${n}`), destroy: async () => {} },
+      preprocess: async (img: Buffer, edge: number) => {
+        order.push(`preprocess:${edge}`)
+        return img
+      },
+      ocr: async () => {
+        order.push("ocr")
+        return "γενικοι οροι"
+      },
+    }
+
+    await extractScannedText(scannedTriage(2), deps)
+
+    // Two pages OCR'd, and every OCR is immediately preceded by a downscale step.
+    expect(order.filter((o) => o === "ocr")).toHaveLength(2)
+    order.forEach((entry, i) => {
+      if (entry === "ocr") expect(order[i - 1]).toMatch(/^preprocess:\d+$/)
+    })
+    // ...never OCR on a non-downscaled (raw) image.
+    expect(order.every((o) => o === "ocr" || /^preprocess:\d+$/.test(o))).toBe(true)
+  })
+})
