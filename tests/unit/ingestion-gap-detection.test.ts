@@ -24,6 +24,24 @@ describe("detectGaps", () => {
     ])
   })
 
+  it("flags the canonical missing-flood gap (home policy with fire but no flood cover)", () => {
+    const gaps = detectGaps(
+      [cov("home.fire", { limit: 200_000 })], // fire present, flood absent
+      envelope([
+        { taxonomyKey: "home.fire", severityIfMissing: "critical" },
+        { taxonomyKey: "home.flood", severityIfMissing: "recommended" },
+      ]),
+    )
+    expect(gaps).toContainEqual({
+      taxonomyKey: "home.flood",
+      severity: "recommended",
+      kind: "missing",
+      reason: "missing:home.flood",
+    })
+    // fire is present and meets no minLimit constraint → no fire gap.
+    expect(gaps.some((g) => g.taxonomyKey === "home.fire")).toBe(false)
+  })
+
   it("emits no gap when the coverage meets the benchmark", () => {
     const gaps = detectGaps(
       [cov("motor.fire", { limit: 100_000 })],
