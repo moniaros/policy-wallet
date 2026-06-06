@@ -1,0 +1,87 @@
+{
+  "info": {
+    "name": "PolicyWallet — Ingestion Upload (HTTP boundary)",
+    "description": "Posts both committed Greek fixtures to the real upload endpoint (/api/v1/upload). Run headless with Newman: `npm run test:newman`. Requires a running server ({{baseUrl}}) and a valid user token ({{authToken}}); file paths resolve via `--working-dir tests/fixtures`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Upload text-layer policy (PDF)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/api/v1/upload", "host": ["{{baseUrl}}"], "path": ["api", "v1", "upload"] },
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "file", "type": "file", "src": "policy-text-layer-el.pdf" },
+            { "key": "folder", "value": "policies", "type": "text" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('200 OK', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('returns a stored file url', () => pm.expect(body.data && body.data.url, 'data.url').to.be.a('string'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Upload scanned policy (image-only PDF)",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/api/v1/upload", "host": ["{{baseUrl}}"], "path": ["api", "v1", "upload"] },
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "file", "type": "file", "src": "policy-scanned-el.pdf" },
+            { "key": "folder", "value": "policies", "type": "text" }
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('200 OK', () => pm.response.to.have.status(200));",
+              "const body = pm.response.json();",
+              "pm.test('returns a stored file url', () => pm.expect(body.data && body.data.url, 'data.url').to.be.a('string'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rejects an unauthenticated upload",
+      "request": {
+        "method": "POST",
+        "url": { "raw": "{{baseUrl}}/api/v1/upload", "host": ["{{baseUrl}}"], "path": ["api", "v1", "upload"] },
+        "body": {
+          "mode": "formdata",
+          "formdata": [{ "key": "file", "type": "file", "src": "policy-text-layer-el.pdf" }]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('401/403 without a token', () => pm.expect([401, 403]).to.include(pm.response.code));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

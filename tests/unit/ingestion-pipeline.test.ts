@@ -126,6 +126,46 @@ describe("runIngestionPipeline", () => {
     )
   })
 
+  it("compose-flow: produces explained gaps with the model NEVER used for detection or explanations", async () => {
+    const { createModelFieldResolver } = await import("@/lib/services/ingestion/extraction")
+    m.getOrExtract.mockImplementation(async () =>
+      extraction({
+        coverages: [
+          { taxonomyKey: "motor.fire", limit: 50000, exclusions: [], confidence: 0.8, source: "regex" },
+        ],
+      }),
+    )
+    m.envelopeFindMany.mockResolvedValue([
+      {
+        id: "env1",
+        lineOfBusiness: "motor",
+        version: 1,
+        profileSegment: "",
+        expectations: [
+          { taxonomyKey: "motor.theft", severityIfMissing: "critical" },
+          { taxonomyKey: "motor.fire", severityIfMissing: "recommended" },
+        ],
+      },
+    ])
+    m.taxonomyFindMany.mockResolvedValue([
+      { key: "motor.theft", nameEl: "Κλοπή", nameEn: "Theft" },
+      { key: "motor.fire", nameEl: "Πυρκαγιά", nameEn: "Fire" },
+    ])
+
+    const out = await runIngestionPipeline(Buffer.from("x"), { lineOfBusiness: "motor" })
+
+    // Deterministic gaps, each carrying a bilingual explanation.
+    expect(out.gaps.length).toBeGreaterThan(0)
+    expect(
+      out.gaps.every((g) => g.explanation.title.el.length > 0 && g.explanation.title.en.length > 0),
+    ).toBe(true)
+    expect(out.gaps.map((g) => g.gap.taxonomyKey)).toContain("motor.theft") // missing → flagged
+    // THE critical negative assertion: the gap detection + explanation flow never
+    // constructs or calls the model client. (Explanations are deterministic templates;
+    // the model is reserved for extraction fallback only — exercised on a cache miss.)
+    expect(createModelFieldResolver).not.toHaveBeenCalled()
+  })
+
   it("routes a text-layer PDF through the local path (no OCR)", async () => {
     m.getOrExtract.mockImplementation(async (_h: string, factory: () => Promise<ExtractionResult>) => factory())
     m.triagePdf.mockResolvedValue(triage("text-layer"))

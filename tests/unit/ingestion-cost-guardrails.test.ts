@@ -43,3 +43,26 @@ describe("cost guardrail: the cheap paths import no expensive client", () => {
     expect(await read("lib/services/ingestion/gap-explanations.ts")).not.toMatch(EXPENSIVE_CLIENT)
   })
 })
+
+/**
+ * FINDING — the deterministic Gap Engine (detectGaps) is NOT yet wired into the active
+ * upload→analysis paths, which still call the LLM for gap DETECTION. These are marked
+ * `it.fails`: they pass today because the residual LLM call is present, and will flip
+ * RED the moment the cutover lands — forcing them to become plain `it()`.
+ *
+ *   - lib/services/gap-analysis.service.ts:257  (aiService.analyzeGaps) via the
+ *     `analyzeGaps` server action (app/(protected)/wallet/actions.ts:629)
+ *   - lib/services/analysis/policy-analysis-orchestrator.service.ts:~1124
+ *     (service.analyzeGaps) — the orchestrator's gap_detection step (jobs/process-policy)
+ */
+describe("FINDING: residual LLM in gap detection (detectGaps cutover pending)", () => {
+  it.fails("GapAnalysisService should NOT call aiService.analyzeGaps for gap detection", async () => {
+    expect(await read("lib/services/gap-analysis.service.ts")).not.toMatch(/aiService\.analyzeGaps\(/)
+  })
+
+  it.fails("the orchestrator gap_detection step should NOT call the LLM analyzeGaps", async () => {
+    expect(await read("lib/services/analysis/policy-analysis-orchestrator.service.ts")).not.toMatch(
+      /\.analyzeGaps\(/,
+    )
+  })
+})
