@@ -81,6 +81,16 @@ describe("explainGap", () => {
     // ...but each instance still renders its own amount.
     expect(e2.body.el).toContain("€20.000")
   })
+
+  it("generates the template ONCE per gap-type across N repeated requests (cost guardrail)", () => {
+    // The lookup is consulted only on a cache miss — i.e. once per gap-type generation.
+    const generator = vi.fn(FIRE)
+    const g = gap({ taxonomyKey: "motor.fire", kind: "missing", severity: "critical" })
+    explainGap(g, generator)
+    explainGap(g, generator)
+    explainGap(g, generator)
+    expect(generator).toHaveBeenCalledTimes(1)
+  })
 })
 
 describe("makeTaxonomyNameLookup", () => {
