@@ -2,7 +2,6 @@ import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { detectGapsForPolicy, createGapInstances } from "@/lib/gap-detection"
 import { sendNotification } from "@/lib/notifications"
-import { rateLimit } from "@/lib/rate-limit"
 import { logger } from "@/lib/logger"
 import { requireApiUser } from "@/lib/api-auth"
 import { z } from "zod"
@@ -11,19 +10,34 @@ const processPolicySchema = z.object({
     policyId: z.string().min(1, "Policy ID is required"),
 })
 
+// Cron/admin-only: this is a system job (rule-based gap detection + owner
+// notification), not an end-user action. Authorize via CRON_SECRET or an admin
+// Bearer token, matching every other app/api/v1/jobs/* route. (Previously this
+// was the only jobs route callable by any authenticated user.)
 export async function POST(req: Request) {
-    const authCheck = await requireApiUser()
-    if ("error" in authCheck) return authCheck.error
-    const authResult = authCheck.auth
+    const cronSecret = process.env.CRON_SECRET
+    const headerSecret = req.headers.get("x-cron-secret")
+    const authHeader = req.headers.get("authorization")
+    const bearerSecret = authHeader?.startsWith("Bearer ")
+        ? authHeader.slice("Bearer ".length)
+        : null
 
-    // Rate limiting: max 5 policy analysis requests per minute per IP
-    const ip = req.headers.get("x-forwarded-for") || "127.0.0.1"
-    const limitCheck = await rateLimit(ip as string, 5, 60000)
-    if (!limitCheck.success) return limitCheck.error!
+    const isCronAuthorized = Boolean(
+        cronSecret &&
+        (
+            (headerSecret && headerSecret === cronSecret) ||
+            (bearerSecret && bearerSecret === cronSecret)
+        )
+    )
+
+    if (!isCronAuthorized) {
+        const authCheck = await requireApiUser({ roles: ["admin"] })
+        if ("error" in authCheck) return authCheck.error
+    }
 
     try {
-        // Pre-flight: expire stale analysis runs whose serverless lease timed out
-        // Runs stuck in "running" with an expired lease would block future attempts
+        // Pre-flight: expire stale analysis runs whose serverless lease timed out.
+        // Runs stuck in "running" with an expired lease would block future attempts.
         const expiredLeaseCount = await db.policyAnalysisRun.updateMany({
             where: {
                 status: "running",
@@ -44,13 +58,12 @@ export async function POST(req: Request) {
 
         const { policyId } = processPolicySchema.parse(await req.json())
 
-        // Ensure user owns the policy
         const policy = await db.policy.findUnique({
             where: { id: policyId }
         })
 
-        if (!policy || policy.ownerUserId !== authResult.dbUser.id) {
-            return createApiError("FORBIDDEN", "Access denied", 403)
+        if (!policy) {
+            return createApiError("NOT_FOUND", "Policy not found", 404)
         }
 
         // M3: Idempotency guard — skip if an analysis is already in-flight for this policy
@@ -70,11 +83,11 @@ export async function POST(req: Request) {
         const newGaps = await detectGapsForPolicy(policy)
         await createGapInstances(newGaps)
 
-        // 2. Notify User if critical gaps found
+        // 2. Notify the policy OWNER (not the caller) if critical gaps found
         const criticalGaps = newGaps.filter(g => g.severity === 'critical' || g.severity === 'high')
         if (criticalGaps.length > 0) {
             await sendNotification({
-                userId: authResult.dbUser.id,
+                userId: policy.ownerUserId,
                 eventType: 'GAP_DETECTED',
                 title: 'Security Alert: Coverage Gap Detected',
                 message: `We found ${criticalGaps.length} critical gaps in your ${policy.insurerName} policy.`,

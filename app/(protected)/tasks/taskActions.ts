@@ -19,6 +19,24 @@ export async function createUserTask(data: CreateTaskData) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { success: false, error: "Unauthorized" }
 
+    // Ownership check: a caller may only create a task for themselves or for a user
+    // they have a customer relationship with (agent↔policyholder, either direction).
+    // Without this any authenticated user could create tasks for arbitrary users.
+    if (data.userId !== authResult.dbUser.id) {
+        const relationship = await db.customerRelationship.findFirst({
+            where: {
+                OR: [
+                    { agentUserId: authResult.dbUser.id, policyholderUserId: data.userId },
+                    { agentUserId: data.userId, policyholderUserId: authResult.dbUser.id },
+                ],
+            },
+            select: { id: true },
+        })
+        if (!relationship) {
+            return { success: false, error: "Unauthorized" }
+        }
+    }
+
     try {
         const task = await db.userTask.create({
             data: {

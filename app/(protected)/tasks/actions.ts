@@ -126,6 +126,20 @@ export async function submitQuestionnaireResponse(instanceId: string, answers: Q
 
     // Start a transaction to ensure atomic update and response creation
     return await db.$transaction(async (tx) => {
+        // Ownership check: only the user the questionnaire was sent to may submit a
+        // response. Without this, any authenticated user could answer (and mark
+        // completed) an arbitrary questionnaire instance by id.
+        const instance = await tx.questionnaireInstance.findUnique({
+            where: { id: instanceId },
+            select: { sentToUserId: true },
+        })
+        if (!instance) {
+            throw new Error("Questionnaire not found")
+        }
+        if (instance.sentToUserId !== authResult.dbUser.id) {
+            throw new Error("Unauthorized")
+        }
+
         // Create the response
         const response = await tx.questionnaireResponse.create({
             data: {

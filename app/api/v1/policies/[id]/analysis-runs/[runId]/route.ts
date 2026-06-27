@@ -37,6 +37,7 @@ export const GET = withApiGuard(
                 where: {
                     granterUserId: policy.ownerUserId,
                     granteeUserId: authResult.dbUser.id,
+                    scope: `policy:${policyId}`,
                     status: "active",
                 },
             })

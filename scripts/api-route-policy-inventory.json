@@ -740,7 +740,10 @@
       ],
       "policy": {
         "auth": {
-          "mode": "user"
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
         },
         "rateLimit": {
           "required": false,

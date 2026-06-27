@@ -139,8 +139,12 @@ export async function GET(req: Request) {
             }
         })
 
-        // Extract policy IDs from scope
-        const policyIds = grants.map(g => g.scope.replace('policy:', ''))
+        // Map each policy id to the grant that references it.
+        const grantByPolicyId = new Map<string, (typeof grants)[number]>()
+        for (const g of grants) {
+            grantByPolicyId.set(g.scope.replace('policy:', ''), g)
+        }
+        const policyIds = [...grantByPolicyId.keys()]
 
         // Fetch the actual policies
         const policies = await db.policy.findMany({
@@ -157,13 +161,22 @@ export async function GET(req: Request) {
             }
         })
 
-        return createApiResponse({
-            sharedPolicies: policies.map(p => ({
-                ...p,
-                sharedBy: grants.find(g => g.scope === `policy:${p.id}`)?.granter,
-                permissions: grants.find(g => g.scope === `policy:${p.id}`)?.permissions
-            }))
-        })
+        // Trust-chain check: only surface a policy if its CURRENT owner is the same
+        // user who granted access. Prevents a stale grant (e.g. after an ownership
+        // change, or a grant not created by the present owner) from exposing a
+        // policy the current owner never shared.
+        const sharedPolicies = policies
+            .filter((p) => grantByPolicyId.get(p.id)?.granterUserId === p.ownerUserId)
+            .map((p) => {
+                const grant = grantByPolicyId.get(p.id)
+                return {
+                    ...p,
+                    sharedBy: grant?.granter,
+                    permissions: grant?.permissions,
+                }
+            })
+
+        return createApiResponse({ sharedPolicies })
     } catch (error) {
         Sentry.captureException(error, {
             tags: {
