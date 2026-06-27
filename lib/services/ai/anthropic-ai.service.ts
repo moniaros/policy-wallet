@@ -29,7 +29,7 @@ import type {
 } from "./ai-service.interface"
 import { AcordDataSchema } from "@/lib/schemas/acord-data"
 import { enrichExtractionPayload } from "./extraction-enrichment"
-import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from "./shared-utils"
+import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared, buildMessageParts } from "./shared-utils"
 import { wrapGapResultsBilingual, wrapClarityResultsBilingual } from "../translation/greek-to-bilingual"
 import { daysFromNow, DEFAULT_POLICY_DURATION_DAYS } from "@/lib/constants/time"
 
@@ -307,15 +307,7 @@ Gap definitions:
 ${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
         }
 
-        const parts: any[] = [{ type: "text", text: prompt }]
-        if (document) {
-            parts.push({
-                type: "file",
-                data: document.data,
-                mediaType: document.mimeType,
-                filename: document.fileName,
-            })
-        }
+        const parts = buildMessageParts(prompt, document)
 
         const result = await withTimeoutAndRetry(
             () =>
@@ -449,15 +441,7 @@ Metadata:
 - Premium: ${metadata.premiumAmount ?? "N/A"}`
         }
 
-        const parts: any[] = [{ type: "text", text: prompt }]
-        if (document) {
-            parts.push({
-                type: "file",
-                data: document.data,
-                mediaType: document.mimeType,
-                filename: document.fileName,
-            })
-        }
+        const parts = buildMessageParts(prompt, document)
 
         const result = await withTimeoutAndRetry(
             () =>

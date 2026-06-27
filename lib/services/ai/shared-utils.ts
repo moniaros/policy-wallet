@@ -6,10 +6,30 @@
  */
 
 import { logger } from '@/lib/logger'
+import type { AIDocument } from './ai-service.interface'
 
 export const AI_CALL_TIMEOUT_MS = 180_000
 export const MAX_RETRIES = 1
 export const INITIAL_BACKOFF_MS = 2_000
+
+/**
+ * Build the multimodal message `parts` array used by every provider: a text
+ * prompt, plus a single file attachment when a document is present. All three
+ * providers constructed this identically; centralizing it keeps the exact
+ * payload shape (asserted by the *-message-payload tests) in one place.
+ */
+export function buildMessageParts(prompt: string, document?: AIDocument | null): any[] {
+    const parts: any[] = [{ type: 'text', text: prompt }]
+    if (document) {
+        parts.push({
+            type: 'file',
+            data: document.data,
+            mediaType: document.mimeType,
+            filename: document.fileName,
+        })
+    }
+    return parts
+}
 
 /**
  * Checks if a regex pattern matches a value (case-insensitive)

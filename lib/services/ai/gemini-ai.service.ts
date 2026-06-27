@@ -29,7 +29,7 @@ import type {
 import { trackTokenUsage } from '@/lib/token-tracking'
 import { enrichExtractionPayload } from './extraction-enrichment'
 import { AcordDataSchema } from '../../schemas/acord-data'
-import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from './shared-utils'
+import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared, buildMessageParts } from './shared-utils'
 import { wrapGapResultsBilingual, wrapClarityResultsBilingual } from '../translation/greek-to-bilingual'
 import { daysFromNow, DEFAULT_POLICY_DURATION_DAYS, toISODate } from '@/lib/constants/time'
 
@@ -341,15 +341,7 @@ Potential Gaps to Check:
 ${gapDefinitions.map(g => `- ${g.slug}: ${g.checkCriteria}`).join('\n')}`
       }
 
-      const parts: any[] = [{ type: 'text', text: prompt }]
-      if (document) {
-        parts.push({
-          type: 'file',
-          data: document.data,
-          mediaType: document.mimeType,
-          filename: document.fileName
-        })
-      }
+      const parts = buildMessageParts(prompt, document)
 
       logger('info', 'Starting Gemini Zod Flash gap analysis', {
         policyNumber: metadata.policyNumber,
@@ -570,15 +562,7 @@ ${checklistPrompt}`
       acordData: AcordDataSchema.optional(),
     })
 
-    const parts: any[] = [{ type: 'text', text: prompt }]
-    if (document) {
-      parts.push({
-        type: 'file',
-        data: document.data,
-        mediaType: document.mimeType,
-        filename: document.fileName,
-      })
-    }
+    const parts = buildMessageParts(prompt, document)
 
     const result = await withTimeoutAndRetry(
       () => generateObject({

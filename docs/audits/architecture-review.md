@@ -161,11 +161,25 @@ distributed leasing, token budgeting, step retry/remediation, document prep, ext
 caching, batch translation, persistence, failure classification, and telemetry. It is the
 single biggest comprehension and test-surface risk in the repo. **Strategy in §5.4.**
 
-### 4.2 Three near-duplicate AI provider services (~55% shared logic)
+### 4.2 Three parallel AI provider services — _looks_ like ~55% duplication, mostly isn't
 `gemini-ai.service.ts` (852), `anthropic-ai.service.ts` (670), `openai-ai.service.ts` (619)
-repeat the same Zod schemas, prompt-assembly branching, capability checks, usage parsing,
-and timeout wrapping. Only model selection, the SDK handle, and prompt wording genuinely
-differ. **Strategy in §5.3.**
+share the same *shape* — four methods, each defining a Zod schema, assembling a prompt, and
+calling `generateObject`/`generateText`. An automated pass flagged this as ~55% mergeable
+duplication. **Direct inspection says otherwise, and this is the important correction:**
+
+- The per-provider **Zod schemas differ on purpose** — Gemini's `ExtractionSchema` carries a
+  `premiumCurrency` field and richer `.describe()` text than Anthropic's leaner version. Those
+  descriptions are serialized into the model's tool definition, so merging the schemas would
+  **change what each model is asked to return** — a behaviour change, not a cleanup.
+- The **prompts are tuned per provider** (wording, ordering, emphasis). Same risk.
+- The genuinely-shared, behaviour-neutral pieces were **already extracted**:
+  `withTimeoutAndRetry`, `parseUsage`, `matchesAnyPattern` (in `shared-utils.ts`) and the
+  `AcordDataSchema` (in `lib/schemas/acord-data`).
+
+So a "collapse everything into a `BaseAIService`" refactor would trade real, intentional
+per-provider tuning for a smaller line count — exactly the kind of change this review must
+*not* make. The only safe extraction left was the document-attachment payload block, which
+was byte-identical across all three. **Resolution in §5.3.**
 
 ### 4.3 `policy.service.ts` is a God object (1,012 lines)
 CRUD + upload + background-analysis orchestration + dedup/merge + sharing + invites +
@@ -217,7 +231,7 @@ tests + build). Nothing here changes runtime behaviour.
 |---|----------|-------|------|--------|
 | 5.1 | Extract `toISODate()` date helper (17 sites) | Med | **Very low** | ✅ done this pass |
 | 5.2 | Extract `resolvePolicyAccess()` owner-or-grant helper | High | Low–med | ◑ in progress (9 sites done) |
-| 5.3 | `BaseAIService` template; providers → ~150 LOC each | High | Med | planned |
+| 5.3 | AI providers: extract identical payload builder only (no base class) | Med | Low | ✅ done this pass |
 | 5.4 | Decompose orchestrator into collaborators | High | Med–high | planned |
 | 5.5 | Split `policy.service.ts` (extract sharing + analysis) | Med | Med | planned |
 | 5.6 | i18n key-parity CI check; split client components | Med | Low | planned |
@@ -266,12 +280,19 @@ through the helper; full suite 118 pass.**
 in the helper's callers — pass `policyScopeId` there too — but that *tightens* access, so it's
 a deliberate security fix tracked separately, not part of this behaviour-preserving pass.
 
-### 5.3 `BaseAIService` template method
-Lift the shared Zod schemas, prompt-assembly branching, capability map, and usage parsing
-into an abstract base; leave only `buildModel()` / provider-specific prompt wording in each
-subclass. Target ~150 LOC per provider. Keep the `IAIService` contract and `mock` provider
-byte-for-byte compatible; the factory is the seam, so callers don't change. Snapshot a few
-real prompts before/after to prove wording is preserved.
+### 5.3 AI providers — extract the identical payload builder; do NOT build a base class — DONE
+After the §4.2 investigation, the broad `BaseAIService` idea is **rejected**: it would
+homogenize intentionally-tuned schemas/prompts and change model output. What shipped instead
+is the one provably-safe extraction — `buildMessageParts(prompt, document)` in
+`shared-utils.ts`, replacing the 6 byte-identical `parts`-array blocks across the three
+providers. The QA-method variants that build the array differently are left alone. The
+existing `*-message-payload` tests (which assert the exact payload) are the safety net and
+stay green; full suite 118 pass.
+
+This is the deliberate senior-engineer call: recognizing that a tempting "−1,200 LOC"
+refactor is actually a behaviour change in disguise is itself the valuable output. Future
+de-duplication here should target only mechanically-identical fragments (a shared
+capability-table builder is the next safe candidate), never the schemas or prompts.
 
 ### 5.4 Decompose the orchestrator
 Extract collaborators behind the existing public methods (`createRun`, `getRunStatus`,
