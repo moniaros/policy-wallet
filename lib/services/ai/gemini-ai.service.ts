@@ -31,7 +31,7 @@ import { enrichExtractionPayload } from './extraction-enrichment'
 import { AcordDataSchema } from '../../schemas/acord-data'
 import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from './shared-utils'
 import { wrapGapResultsBilingual, wrapClarityResultsBilingual } from '../translation/greek-to-bilingual'
-import { daysFromNow, DEFAULT_POLICY_DURATION_DAYS } from '@/lib/constants/time'
+import { daysFromNow, DEFAULT_POLICY_DURATION_DAYS, toISODate } from '@/lib/constants/time'
 
 const GEMINI_SUPPORTED_MIME_TYPES = [
   'application/pdf',
@@ -266,8 +266,8 @@ Do not include Citations, text should be in Greek (Primary and language of sourc
         insurerName: extracted.insurerName || 'Unknown Insurer',
         policyNumber: extracted.policyNumber || `PENDING-${Date.now()}`,
         lineOfBusiness: extracted.lineOfBusiness || 'other',
-        startDate: extracted.startDate || new Date().toISOString().split('T')[0],
-        endDate: extracted.endDate || daysFromNow(DEFAULT_POLICY_DURATION_DAYS).toISOString().split('T')[0],
+        startDate: extracted.startDate || toISODate(new Date()),
+        endDate: extracted.endDate || toISODate(daysFromNow(DEFAULT_POLICY_DURATION_DAYS)),
         premiumAmount: extracted.premiumAmount || 0,
         coverageSummary: extracted.coverageSummary || 'Extracted from document',
         customerName: extracted.customerName,
@@ -334,7 +334,7 @@ Step 2: Check for gaps. Respond in Greek (Ελληνικά) only. All explanatio
 
 Current Metadata (Reference Only):
 Insurer: ${metadata.insurerName} | Policy: ${metadata.policyNumber} | Type: ${metadata.lineOfBusiness}
-Dates: ${metadata.startDate.toISOString().split('T')[0]} to ${metadata.endDate.toISOString().split('T')[0]}
+Dates: ${toISODate(metadata.startDate)} to ${toISODate(metadata.endDate)}
 Premium: ${metadata.premiumAmount} | Summary: ${metadata.coverageSummary || 'N/A'}
 
 Potential Gaps to Check:
@@ -509,7 +509,7 @@ SPECIAL FOCUS — Fine Print & Hidden Value:
 
 Current metadata:
 - Insurer: ${metadata.insurerName} | Policy: ${metadata.policyNumber} | Type: ${metadata.lineOfBusiness}
-- Period: ${metadata.startDate.toISOString().split('T')[0]} to ${metadata.endDate.toISOString().split('T')[0]}
+- Period: ${toISODate(metadata.startDate)} to ${toISODate(metadata.endDate)}
 - Premium: ${metadata.premiumAmount ?? 'N/A'} | Summary: ${metadata.coverageSummary || 'N/A'}
 
 Checklist pillars:
@@ -645,8 +645,8 @@ Policy Information:
       - Insurer: ${metadata.insurerName}
       - Policy Number: ${metadata.policyNumber}
       - Type: ${metadata.lineOfBusiness}
-      - Start Date: ${metadata.startDate.toISOString().split('T')[0]}
-      - End Date: ${metadata.endDate.toISOString().split('T')[0]}
+      - Start Date: ${toISODate(metadata.startDate)}
+      - End Date: ${toISODate(metadata.endDate)}
       - Premium: ${metadata.premiumAmount || 'N/A'}
       - Coverage Summary: ${metadata.coverageSummary || 'N/A'}
       `
@@ -764,7 +764,7 @@ Answer the user's question:
 
     const policySummary = existingPolicies.length > 0
       ? existingPolicies.map(p =>
-          `- ${p.lineOfBusiness} (${p.insurerName}): premium ${p.premiumAmount ?? 'unknown'}€, expires ${p.endDate.toISOString().split('T')[0]}`
+          `- ${p.lineOfBusiness} (${p.insurerName}): premium ${p.premiumAmount ?? 'unknown'}€, expires ${toISODate(p.endDate)}`
         ).join('\n')
       : 'No policies currently held.'
 

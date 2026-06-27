@@ -3,7 +3,7 @@ import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { env } from "@/lib/env"
 import { enrichExtractionPayload } from "@/lib/services/ai/extraction-enrichment"
-import { ALLOWED_UPLOAD_MIME_TYPES, MAX_UPLOAD_SIZE_BYTES, daysFromNow, DEFAULT_POLICY_DURATION_DAYS } from "@/lib/constants/time"
+import { ALLOWED_UPLOAD_MIME_TYPES, MAX_UPLOAD_SIZE_BYTES, daysFromNow, DEFAULT_POLICY_DURATION_DAYS, toISODate } from "@/lib/constants/time"
 
 export async function POST(request: NextRequest) {
     const authResult = await getAuthenticatedUserOrNull()
@@ -106,8 +106,8 @@ export async function POST(request: NextRequest) {
                 insurerName: extracted.insurerName || "Unknown Insurer",
                 policyNumber: extracted.policyNumber || `TEMP-${Date.now()}`,
                 lineOfBusiness: extracted.lineOfBusiness || "motor",
-                startDate: extracted.startDate || new Date().toISOString().split('T')[0],
-                endDate: extracted.endDate || daysFromNow(DEFAULT_POLICY_DURATION_DAYS).toISOString().split('T')[0],
+                startDate: extracted.startDate || toISODate(new Date()),
+                endDate: extracted.endDate || toISODate(daysFromNow(DEFAULT_POLICY_DURATION_DAYS)),
                 premiumAmount: extracted.premiumAmount || null,
                 coverageSummary: extracted.coverageSummary || null,
                 exclusions: enriched.exclusions,

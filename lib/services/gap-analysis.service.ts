@@ -14,6 +14,7 @@ import fs from 'fs/promises'
 import type { Policy, GapInstance } from '@prisma/client'
 import type { GapSeverity, GapStatus } from '@/types'
 import { enrichExtractionPayload } from '@/lib/services/ai/extraction-enrichment'
+import { toISODate } from '@/lib/constants/time'
 
 // Type Definitions
 export interface GapAnalysisResult {
@@ -260,8 +261,8 @@ export class GapAnalysisService extends BaseService {
                 insurerName: verifiedMetadata.insurerName || policy.insurerName,
                 policyNumber: verifiedMetadata.policyNumber || policy.policyNumber,
                 lineOfBusiness: verifiedMetadata.lineOfBusiness || policy.lineOfBusiness,
-                startDate: verifiedMetadata.startDate || policy.startDate.toISOString().split('T')[0],
-                endDate: verifiedMetadata.endDate || policy.endDate.toISOString().split('T')[0],
+                startDate: verifiedMetadata.startDate || toISODate(policy.startDate),
+                endDate: verifiedMetadata.endDate || toISODate(policy.endDate),
                 premiumAmount: typeof verifiedMetadata.premiumAmount === 'number'
                     ? verifiedMetadata.premiumAmount
                     : (policy.premiumAmount ? Number(policy.premiumAmount) : null),

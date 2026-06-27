@@ -22,7 +22,7 @@ import type {
     RiskProfileInput,
 } from './ai-service.interface'
 import { enrichExtractionPayload } from './extraction-enrichment'
-import { daysFromNow, DEFAULT_POLICY_DURATION_DAYS } from '@/lib/constants/time'
+import { daysFromNow, DEFAULT_POLICY_DURATION_DAYS, toISODate } from '@/lib/constants/time'
 
 export class MockAIService implements IAIService {
     private shouldFail: boolean = false
@@ -91,8 +91,8 @@ export class MockAIService implements IAIService {
             insurerName: 'Mock Insurance Co.',
             policyNumber: `MOCK-${Date.now()}`,
             lineOfBusiness: 'motor',
-            startDate: new Date().toISOString().split('T')[0],
-            endDate: daysFromNow(DEFAULT_POLICY_DURATION_DAYS).toISOString().split('T')[0],
+            startDate: toISODate(new Date()),
+            endDate: toISODate(daysFromNow(DEFAULT_POLICY_DURATION_DAYS)),
             premiumAmount: 500,
             coverageSummary: 'Mock policy with standard coverage',
             customerName: 'John',
@@ -174,8 +174,8 @@ export class MockAIService implements IAIService {
                 insurerName: metadata.insurerName,
                 policyNumber: metadata.policyNumber,
                 lineOfBusiness: metadata.lineOfBusiness,
-                startDate: metadata.startDate.toISOString().split('T')[0],
-                endDate: metadata.endDate.toISOString().split('T')[0],
+                startDate: toISODate(metadata.startDate),
+                endDate: toISODate(metadata.endDate),
                 premiumAmount: metadata.premiumAmount || 0,
                 coverageSummary: metadata.coverageSummary || 'Mock coverage summary'
             },

@@ -31,3 +31,11 @@ export function daysFromNow(days: number): Date {
 export function msFromNow(ms: number): Date {
     return new Date(Date.now() + ms)
 }
+
+/**
+ * Format a Date as an ISO calendar date (`YYYY-MM-DD`), dropping the time
+ * component. Centralizes the repeated `.toISOString().split('T')[0]` pattern.
+ */
+export function toISODate(date: Date): string {
+    return date.toISOString().split('T')[0]
+}
