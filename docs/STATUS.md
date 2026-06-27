@@ -21,21 +21,25 @@ _Living dashboard — not a log. Updated at the end of each session with meaning
 - Phase 0 stabilization complete; agent experience (insights / activity / dashboard) complete (`docs/planning/pending.md`).
 
 ## In progress
-- AI-processing **consent capture UI** — backbone enforced; the user-facing consent prompt/checkbox is the remaining piece (see Blocked).
+- Nothing actively in code — remaining GA work is the migration deploy + human sign-offs (see Blocked). Hard feature freeze holds.
+
+## Decisions settled (this session)
+- **Release base = current branch (NEW-UI), NOT the RC baseline.** Re-basing on `14f75fd` was investigated and rejected: that commit (Feb 27) predates — and lacks — the DSR workflow, billing reconciliation, AI lease migration, and the compliance/billing-hardening migration (ConsentType enum), all of which the go/no-go packet marks Completed/APPLIED. Those landed interleaved with the redesign across 29 commits + 23 migrations and can't be cleanly peeled apart. ⚠️ **The NEW-UI redesign therefore ships in GA — it cannot be parked to v1.1.** Confirm with strategy owner.
+- **Consent-capture UX = inline at Analyze** (built, see Done).
+- **`process-policy` = cron/admin** (done, 6aec2de). **Passkey/biometric = deferred to v1.1** (Magic Link/Google login is functional; documented limitation).
 
 ## Blocked
-- **Consent-capture UX decision (needs product input).** The gate now blocks all analysis until consent is recorded, so a capture surface must ship. Candidates: inline-at-Analyze (reuses the AI disclaimer; touches the redesigned `AnalysisCard`/`PolicyWalletClient`), a checkbox at upload, or a dedicated onboarding/settings step. Decision pending → blocks closing Top-risk #1.
-- **Migration not yet applied.** `20260627120000_ai_processing_consent` is hand-authored (no DB in the work env). Run `prisma migrate deploy` + `npm run verify:migrations` against staging/prod before release.
+- **Consent migration must deploy via Prisma, not the Supabase MCP.** DB state verified: `ConsentType` enum exists (`cookie,terms,privacy`); the new column does not — so `20260627120000` applies cleanly. There is **no staging project** (single prod DB `lzqvtvjggylcujenlelh`). Applying via `apply_migration` would desync Prisma's `_prisma_migrations` and break the next `prisma migrate deploy` (duplicate-column). → Apply via `prisma migrate deploy` + `verify:migrations` in the release pipeline.
 - **Launch sign-offs** (legal/DPO, SRE restore-drill decision, UAT matrix, governance) still `Pending`/`Hold` per the go/no-go packet; incident adapter prod secrets (`AI_INCIDENT_*`) still `MISSING`.
 
 ## Top risks (ranked)
-1. **High — AI-processing consent capture UI not shipped.** Enforcement gate + consents API + migration are done; users have no way to *grant* consent yet, so analysis is blocked end-to-end until the capture surface lands. Awaiting UX decision.
-2. **High — auth gaps (Phase 1):** no production passkey/biometric verification; 30-day session persistence not enforced/tested.
-3. **Medium — launch evidence/sign-offs open:** legal/DPO signatures, SRE full-restore decision, UAT sign-off matrix, governance evidence, and `AI_INCIDENT_*` prod secrets all still pending in the go/no-go packet.
-4. ~~Medium — security scope gaps (analysis-runs grant scope, process-policy, share GET, createUserTask/questionnaire)~~ **RESOLVED** (6aec2de).
-5. ~~Critical — IDOR in `sharePolicy`~~ **RESOLVED** (df12c77).
+1. **High — launch evidence/sign-offs open:** legal/DPO signatures, SRE full-restore decision, UAT sign-off matrix, governance evidence, and `AI_INCIDENT_*` prod secrets all still pending in the go/no-go packet. This is now the critical path to GA.
+2. **High — GA ships the unfinished NEW-UI redesign** (can't be parked, see Decisions). Needs UAT against the *actual* shipping UI, and a strategy-owner ack.
+3. **Medium — auth gaps:** no production passkey/biometric verification; 30-day session persistence not enforced/tested. Deferred to v1.1.
+4. ~~AI-processing consent (gate + capture)~~ **RESOLVED** (097db27 gate, ee7d041 capture UI).
+5. ~~Security scope gaps~~ **RESOLVED** (6aec2de); ~~IDOR in `sharePolicy`~~ **RESOLVED** (df12c77).
 
 ## Next 3 actions
-1. Decide the consent-capture UX, then build it (record via `recordAiProcessingConsent` / the consents API) and add a UI test — closes Top-risk #1.
-2. Apply `20260627120000_ai_processing_consent` to staging + run `verify:migrations`; wire `AI_INCIDENT_*` secrets.
+1. Apply `20260627120000_ai_processing_consent` via `prisma migrate deploy` + `verify:migrations` in the release pipeline; wire `AI_INCIDENT_*` secrets.
+2. Get strategy-owner ack that GA ships with the NEW-UI redesign; run UAT (`el`/`en`) against the shipping UI.
 3. Drive the go/no-go packet sign-offs (legal/DPO, SRE, UAT, governance) toward `Go`.
