@@ -33,6 +33,18 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
+# build / test output captured during local runs (keep these out of the repo)
+build_output*.log
+build_error*.log
+test_output*.log
+test_results*.txt
+tsc-output.txt
+tsc-errors.txt
+tsc_output.txt
+.smoke-dev.log
+.sre-drill-*.log
+.playwright-mcp/
+
 # env files (can opt-in for committing if needed)
 .env*
 !.env.example

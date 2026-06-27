@@ -234,8 +234,8 @@ tests + build). Nothing here changes runtime behaviour.
 | 5.3 | AI providers: extract identical payload builder only (no base class) | Med | Low | ✅ done this pass |
 | 5.4 | Decompose orchestrator into collaborators | High | Med–high | planned |
 | 5.5 | Split `policy.service.ts` (extract sharing + analysis) | Med | Med | planned |
-| 5.6 | i18n key-parity CI check; split client components | Med | Low | planned |
-| 5.7 | Repo hygiene: remove root cruft, widen `.gitignore` | Low | Very low | planned |
+| 5.6 | i18n full key-parity guard; split client components | Med | Low | ◑ parity guard done |
+| 5.7 | Repo hygiene: widen `.gitignore`; flag dead root scripts | Low | Very low | ◑ gitignore done |
 
 ### 5.1 Shared date formatter — DONE this pass
 Added `toISODate(date: Date): string` to `lib/constants/time.ts` (co-located with
@@ -306,14 +306,27 @@ Carve out `PolicyAccessService` (share/invite/notify/email) and route background
 through the orchestrator directly, leaving `PolicyService` as CRUD. Mechanical moves, no
 logic change.
 
-### 5.6 i18n + client-component hygiene
-Add a `lint:i18n-parity` script that asserts `el.ts` and `en.ts` have identical key sets
-(fail CI on drift). Independently, split the 700+ LOC client components per tab with
-`dynamic()` and memoize large lists. Both are isolated and low-risk.
+### 5.6 i18n + client-component hygiene (parity guard done)
+**Done:** `tests/unit/i18n-key-parity.test.ts` now asserts the *entire* `el`/`en` keysets match
+in both directions. The pre-existing `wallet-translation-parity.test.ts` only checked 6
+hand-picked namespaces, so a key added to e.g. `agent`/`admin`/`account` in one language but
+not the other shipped silently as a raw key string. The full keysets are currently in parity,
+so this just locks in the good state and fails CI on any future drift — zero runtime risk
+(test-only). **Still planned:** split the 700+ LOC client components per tab with `dynamic()`
+and memoize large lists (a UI-perf task, run E2E locally for it).
 
-### 5.7 Repo hygiene
-Delete root dev scripts and stray logs; widen `.gitignore` to cover `build_output*.log`,
-`tsc-*.txt`, `*.log`, `.playwright-mcp/`. Confirm nothing imports the deleted scripts first.
+### 5.7 Repo hygiene (gitignore done; deletions flagged, not performed)
+**Done:** widened `.gitignore` to keep locally-generated build/test logs out of the repo
+(`build_output*.log`, `tsc-*.txt`, `.smoke-dev.log`, `.playwright-mcp/`, …).
+
+**Flagged for the maintainer (intentionally NOT deleted here):** several throwaway dev scripts
+sit at the repo root and are imported by nothing — `test-gemini.ts`, `testApi.ts`,
+`listUsers.ts` (which itself violates the "no `new PrismaClient()`" rule), plus `script.py`
+and `fix_policy_card.py`. They look safe to `git rm`, but since they predate this work and
+aren't mine to delete, they're surfaced for a quick human confirm rather than removed
+unilaterally. Same for the already-tracked `build_output*.log` / `tsc-*.txt` files — the
+`.gitignore` entry stops *new* ones, but untracking the existing ones (`git rm --cached`) is
+left as a deliberate maintainer step.
 
 ---
 
