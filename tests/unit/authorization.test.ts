@@ -62,6 +62,23 @@ describe("resolvePolicyAccess", () => {
         expect(customerRelationshipFindFirst).not.toHaveBeenCalled()
     })
 
+    it("narrows the grant query to the policy scope when policyScopeId is given", async () => {
+        const { client, accessGrantFindFirst } = makeClient({ grant: { id: "g1" } })
+        const res = await resolvePolicyAccess("owner", "agent", { policyScopeId: "pol-1" }, client)
+        expect(res.allowed).toBe(true)
+        expect(accessGrantFindFirst).toHaveBeenCalledWith({
+            where: { granterUserId: "owner", granteeUserId: "agent", status: "active", scope: "policy:pol-1" },
+        })
+    })
+
+    it("omits the scope filter entirely when policyScopeId is not given", async () => {
+        const { client, accessGrantFindFirst } = makeClient({ grant: { id: "g1" } })
+        await resolvePolicyAccess("owner", "agent", {}, client)
+        expect(accessGrantFindFirst).toHaveBeenCalledWith({
+            where: { granterUserId: "owner", granteeUserId: "agent", status: "active" },
+        })
+    })
+
     it("denies a non-owner with neither grant nor relationship", async () => {
         const { client } = makeClient()
         const res = await resolvePolicyAccess("owner", "agent", { includeAgentRelationship: true }, client)

@@ -27,11 +27,16 @@ type AccessClient = Pick<PrismaClient, "accessGrant" | "customerRelationship">
  *   - an owner short-circuits with no DB query;
  *   - the agent-relationship lookup runs only when `includeAgentRelationship`
  *     is set AND no active grant was found.
+ *
+ * `policyScopeId` mirrors the two grant-query shapes that exist in the codebase:
+ * when set, the grant lookup is narrowed to a `policy:<id>`-scoped grant (as the
+ * wallet actions do); when omitted, any active owner→grantee grant matches (as
+ * the gap service and analysis-run routes do). Passing it never broadens access.
  */
 export async function resolvePolicyAccess(
     ownerUserId: string,
     userId: string,
-    options: { includeAgentRelationship?: boolean } = {},
+    options: { includeAgentRelationship?: boolean; policyScopeId?: string } = {},
     client: AccessClient = db,
 ): Promise<PolicyAccessResult> {
     if (ownerUserId === userId) {
@@ -39,7 +44,12 @@ export async function resolvePolicyAccess(
     }
 
     const grant = await client.accessGrant.findFirst({
-        where: { granterUserId: ownerUserId, granteeUserId: userId, status: "active" },
+        where: {
+            granterUserId: ownerUserId,
+            granteeUserId: userId,
+            status: "active",
+            ...(options.policyScopeId ? { scope: `policy:${options.policyScopeId}` } : {}),
+        },
     })
     const hasGrant = !!grant
 

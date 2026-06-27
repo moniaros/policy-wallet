@@ -216,7 +216,7 @@ tests + build). Nothing here changes runtime behaviour.
 | # | Refactor | Value | Risk | Status |
 |---|----------|-------|------|--------|
 | 5.1 | Extract `toISODate()` date helper (17 sites) | Med | **Very low** | ✅ done this pass |
-| 5.2 | Extract `resolvePolicyAccess()` owner-or-grant helper | High | Low–med | ◑ in progress (gap svc done) |
+| 5.2 | Extract `resolvePolicyAccess()` owner-or-grant helper | High | Low–med | ◑ in progress (9 sites done) |
 | 5.3 | `BaseAIService` template; providers → ~150 LOC each | High | Med | planned |
 | 5.4 | Decompose orchestrator into collaborators | High | Med–high | planned |
 | 5.5 | Split `policy.service.ts` (extract sharing + analysis) | Med | Med | planned |
@@ -250,10 +250,21 @@ so each call passes the matching flag; a naive merge would have broadened gap-mu
 (a security regression). Locked in with `tests/unit/authorization.test.ts` (6 tests covering
 decision + query ordering). Full suite: 116 pass.
 
-**Follow-ups (next iterations):** the same pattern in `policy.service.ts`, several
-`wallet/actions.ts` functions, and the `analysis-runs/[runId]` routes — converted one at a
-time, each with its exact semantics preserved (and §3.5's policy-scoped grant check folded in
-where appropriate, since the helper is the single place to add it).
+**Also converted (this pass):** both `analysis-runs/[runId]` routes (`route.ts` +
+`retry-missing/route.ts`) and 4 `wallet/actions.ts` checks. The wallet sites revealed a second
+grant-query shape — a `scope: policy:<id>`-narrowed lookup — so the helper grew an optional
+`policyScopeId` rather than flattening both shapes into one (which would have changed query
+breadth). Each site keeps its exact query and its own `{ error: "Unauthorized" }` / `403`
+response. 2 new tests assert the scoped vs unscoped `where` clauses. **9 sites total now route
+through the helper; full suite 118 pass.**
+
+> Note: the helper is deliberately a *boolean decision*, so two sites that need the grant
+> **record** itself (the share-revoke flows in `policy.service.ts` and `wallet/actions.ts`)
+> are intentionally left as-is — forcing them through this helper would be a worse fit.
+
+**Follow-up:** §3.5 (scope-blind grant on the analysis-run routes) is now a one-line change
+in the helper's callers — pass `policyScopeId` there too — but that *tightens* access, so it's
+a deliberate security fix tracked separately, not part of this behaviour-preserving pass.
 
 ### 5.3 `BaseAIService` template method
 Lift the shared Zod schemas, prompt-assembly branching, capability map, and usage parsing

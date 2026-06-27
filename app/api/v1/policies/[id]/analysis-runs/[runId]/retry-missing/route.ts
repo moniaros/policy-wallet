@@ -1,5 +1,6 @@
 import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { db } from "@/lib/db"
+import { resolvePolicyAccess } from "@/lib/services/authorization"
 import { PolicyAnalysisOrchestratorService } from "@/lib/services/analysis/policy-analysis-orchestrator.service"
 import { withApiGuard } from "@/lib/api-guard"
 import { z } from "zod"
@@ -32,18 +33,9 @@ export const POST = withApiGuard(
             return createApiError("NOT_FOUND", "Policy not found", 404)
         }
 
-        const isOwner = policy.ownerUserId === authResult.dbUser.id
-        if (!isOwner) {
-            const grant = await db.accessGrant.findFirst({
-                where: {
-                    granterUserId: policy.ownerUserId,
-                    granteeUserId: authResult.dbUser.id,
-                    status: "active",
-                },
-            })
-            if (!grant) {
-                return createApiError("FORBIDDEN", "Access denied", 403)
-            }
+        const access = await resolvePolicyAccess(policy.ownerUserId, authResult.dbUser.id)
+        if (!access.allowed) {
+            return createApiError("FORBIDDEN", "Access denied", 403)
         }
 
         const sourceRun = await db.policyAnalysisRun.findFirst({

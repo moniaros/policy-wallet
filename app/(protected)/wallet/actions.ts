@@ -15,6 +15,7 @@ import { getAIService } from "@/lib/services/ai"
 import { GapAnalysisService } from "@/lib/services/gap-analysis.service"
 import { refreshProtectionScore } from "@/lib/services/gap-engine"
 import { PolicyService } from "@/lib/services/policy.service"
+import { resolvePolicyAccess } from "@/lib/services/authorization"
 import { canUserUseTokens } from "@/lib/token-tracking"
 import { canUserAddPolicy, canUserUseFeature, getUpgradeMessage, getUserSubscription, SUBSCRIPTION_LIMITS } from "@/lib/subscription-limits"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
@@ -760,16 +761,8 @@ export async function askPolicyQuestion(policyId: string, question: string) {
     if (!policy) return { error: "Policy not found" }
 
     // Check authorization
-    const isOwner = policy.ownerUserId === authResult.dbUser.id
-    const hasAccess = isOwner || await db.accessGrant.findFirst({
-        where: {
-            granterUserId: policy.ownerUserId,
-            granteeUserId: authResult.dbUser.id,
-            status: 'active'
-        }
-    })
-
-    if (!hasAccess) return { error: "Unauthorized" }
+    const access = await resolvePolicyAccess(policy.ownerUserId, authResult.dbUser.id)
+    if (!access.allowed) return { error: "Unauthorized" }
 
     // Check feature access
     const isAllowed = await canUserUseFeature(authResult.dbUser.id, 'interactiveQA')
@@ -896,18 +889,8 @@ export async function runPolicyAnalysis(policyId: string) {
     if (!policy) return { error: "Policy not found" }
 
     // Check ownership or access grant
-    const isOwner = policy.ownerUserId === authResult.dbUser.id
-    if (!isOwner) {
-        const grant = await db.accessGrant.findFirst({
-            where: {
-                granterUserId: policy.ownerUserId,
-                granteeUserId: authResult.dbUser.id,
-                scope: `policy:${policyId}`,
-                status: 'active'
-            }
-        })
-        if (!grant) return { error: "Unauthorized" }
-    }
+    const access = await resolvePolicyAccess(policy.ownerUserId, authResult.dbUser.id, { policyScopeId: policyId })
+    if (!access.allowed) return { error: "Unauthorized" }
 
     const language = (authResult.dbUser.preferredLanguage as 'en' | 'el') || 'en'
 
@@ -959,18 +942,8 @@ export async function ignoreGap(gapId: string) {
     })
     if (!gap || !gap.policy) return { error: "Gap not found" }
 
-    const isOwner = gap.policy.ownerUserId === authResult.dbUser.id
-    if (!isOwner) {
-        const hasAccess = await db.accessGrant.findFirst({
-            where: {
-                granterUserId: gap.policy.ownerUserId,
-                granteeUserId: authResult.dbUser.id,
-                scope: `policy:${gap.policyId}`,
-                status: 'active'
-            }
-        })
-        if (!hasAccess) return { error: "Unauthorized" }
-    }
+    const access = await resolvePolicyAccess(gap.policy.ownerUserId, authResult.dbUser.id, { policyScopeId: gap.policy.id })
+    if (!access.allowed) return { error: "Unauthorized" }
 
     await db.gapInstance.update({
         where: { id: gapId },
@@ -996,17 +969,8 @@ export async function notifyAgentAboutGap(gapId: string, policyId: string) {
     // Verify ownership or access
     const policy = await db.policy.findUnique({ where: { id: policyId } })
     if (!policy) return { error: "Policy not found" }
-    if (policy.ownerUserId !== authResult.dbUser.id) {
-        const hasAccess = await db.accessGrant.findFirst({
-            where: {
-                granterUserId: policy.ownerUserId,
-                granteeUserId: authResult.dbUser.id,
-                scope: `policy:${policy.id}`,
-                status: 'active'
-            }
-        })
-        if (!hasAccess) return { error: "Unauthorized" }
-    }
+    const access = await resolvePolicyAccess(policy.ownerUserId, authResult.dbUser.id, { policyScopeId: policy.id })
+    if (!access.allowed) return { error: "Unauthorized" }
 
     // Find active relationship
     const relationship = await db.customerRelationship.findFirst({
