@@ -50,6 +50,7 @@ import {
 import { getModelForStep } from "@/lib/services/ai/model-router"
 import { detectDeterministicSavings } from "./deterministic-savings"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
+import { userHasAiProcessingConsent, AI_PROCESSING_CONSENT_REQUIRED } from "@/lib/compliance/ai-processing-consent"
 import {
     emitAnalysisRunTelemetry,
     emitAnalysisStepTelemetry,
@@ -276,6 +277,17 @@ function createFallbackGapAnalysis(metadata: PolicyMetadata): AIGapAnalysisRespo
 
 export class PolicyAnalysisOrchestratorService {
     async createRun(policyId: string, userId: string) {
+        // GDPR Art. 9 gate: policy documents (which may carry special-category
+        // health data) must not reach an AI provider without explicit consent.
+        // This runs before any policy load, run record, or document read.
+        if (!(await userHasAiProcessingConsent(userId))) {
+            throw new OrchestrationError("AI processing consent required", {
+                code: AI_PROCESSING_CONSENT_REQUIRED,
+                hardFailure: true,
+                userMessageKey: "errors.aiProcessingConsentRequired",
+            })
+        }
+
         const policy = await this.loadAuthorizedPolicy(policyId, userId)
         const gapDefinitionsCount = await db.gapDefinition.count({
             where: {

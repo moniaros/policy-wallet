@@ -13,7 +13,7 @@ import {
 } from "@/lib/compliance/consent"
 
 const consentBodySchema = z.object({
-    consentType: z.enum(["cookie", "terms", "privacy"]),
+    consentType: z.enum(["cookie", "terms", "privacy", "ai_processing"]),
     policyVersion: z.string().min(1).max(64).optional(),
     locale: z.enum(["el", "en"]).default("el"),
     source: z.string().min(1).max(64).default("web"),
@@ -96,6 +96,8 @@ export const POST = withApiGuard(
                 baseUpdate.termsVersionAccepted = policyVersion
             } else if (consentType === "privacy") {
                 baseUpdate.privacyVersionAccepted = policyVersion
+            } else if (consentType === "ai_processing") {
+                baseUpdate.aiProcessingConsentVersion = policyVersion
             }
 
             await db.user.update({

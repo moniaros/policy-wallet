@@ -74,6 +74,13 @@ export const POST = withApiGuard(
                 estimated_tokens: run.estimatedTokens
             })
         } catch (error) {
+            if ((error as { code?: string })?.code === "AI_PROCESSING_CONSENT_REQUIRED") {
+                return createApiError(
+                    "AI_PROCESSING_CONSENT_REQUIRED",
+                    "AI-processing consent is required before this policy can be analysed.",
+                    403
+                )
+            }
             console.error(error)
             return createApiError("INTERNAL_ERROR", "Failed to trigger review", 500)
         }

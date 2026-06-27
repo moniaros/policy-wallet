@@ -944,6 +944,9 @@ export async function runPolicyAnalysis(policyId: string) {
         revalidatePath(`/wallet/${policyId}`)
         return { success: true, message: "Analysis started", runId: run.id }
     } catch (e: any) {
+        if (e?.code === "AI_PROCESSING_CONSENT_REQUIRED") {
+            return { error: "AI_PROCESSING_CONSENT_REQUIRED" }
+        }
         logger('error', 'Manual policy analysis failed', { policyId, error: e.message })
         return { error: e.message || "Analysis failed" }
     }

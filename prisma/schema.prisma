@@ -30,6 +30,7 @@ enum ConsentType {
   cookie
   terms
   privacy
+  ai_processing
 }
 
 enum DataExportStatus {
@@ -68,6 +69,7 @@ model User {
   termsVersionAccepted            String?                    @map("terms_version_accepted")
   privacyVersionAccepted          String?                    @map("privacy_version_accepted")
   cookieConsentVersion            String?                    @map("cookie_consent_version")
+  aiProcessingConsentVersion      String?                    @map("ai_processing_consent_version")
   consentUpdatedAt                DateTime?                  @map("consent_updated_at")
   consentLocale                   String?                    @map("consent_locale")
   grantsReceived                  AccessGrant[]              @relation("Grantee")
