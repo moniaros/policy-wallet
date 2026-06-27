@@ -7,7 +7,8 @@ import { useRouter } from "next/navigation"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { toast } from "sonner"
-import { deletePolicy, runPolicyAnalysis } from "@/app/(protected)/wallet/actions"
+import { deletePolicy, runPolicyAnalysis, grantAiProcessingConsent } from "@/app/(protected)/wallet/actions"
+import { AiConsentModal } from "@/components/wallet/AiConsentModal"
 import DashboardTour from '@/components/onboarding/DashboardTour'
 import { dismissTour } from '@/app/onboarding/actions'
 import { useIsMobile } from "@/hooks/useResponsive"
@@ -46,6 +47,39 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
     const announcedRef = useRef<Set<string>>(new Set())
     const [isBatchUploadOpen, setIsBatchUploadOpen] = React.useState(false)
     const [isCompareOpen, setIsCompareOpen] = React.useState(false)
+    const [consentPolicyId, setConsentPolicyId] = React.useState<string | null>(null)
+    const [consentSubmitting, setConsentSubmitting] = React.useState(false)
+
+    // Run analysis for a policy, surfacing the AI-processing consent prompt when
+    // the gate blocks it. Returns nothing — toasts/modal handle user feedback.
+    const runAnalysis = async (policyId: string) => {
+        const toastId = toast.loading(t.toast.analysisStarting)
+        const result = await runPolicyAnalysis(policyId)
+        if (result.error === "AI_PROCESSING_CONSENT_REQUIRED") {
+            toast.dismiss(toastId)
+            setConsentPolicyId(policyId)
+            return
+        }
+        if (result.error) {
+            toast.error(mapWalletErrorToMessage(result.error, t, "analysis"), { id: toastId })
+        } else {
+            toast.success(t.toast.analysisStarted, { id: toastId })
+        }
+    }
+
+    const handleConsentAgree = async () => {
+        const policyId = consentPolicyId
+        if (!policyId) return
+        setConsentSubmitting(true)
+        const result = await grantAiProcessingConsent()
+        setConsentSubmitting(false)
+        if ("error" in result && result.error) {
+            toast.error(t.common.aiProcessingConsent.error)
+            return
+        }
+        setConsentPolicyId(null)
+        await runAnalysis(policyId)
+    }
 
     // Check if any LOB has 2+ active policies (comparison eligible)
     const hasComparablePolicies = React.useMemo(() => {
@@ -239,16 +273,7 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
                 onUploadDocument={() => router.push('/wallet/add?method=upload')}
                 onBatchUpload={() => setIsBatchUploadOpen(true)}
                 onShareWithAgent={(policyId) => router.push(`/wallet/${policyId}/share`)}
-                onRunAnalysis={async (policyId) => {
-                    const toastId = toast.loading(t.toast.analysisStarting)
-                    const result = await runPolicyAnalysis(policyId)
-                    if (result.error) {
-                        const friendlyError = mapWalletErrorToMessage(result.error, t, "analysis")
-                        toast.error(friendlyError, { id: toastId })
-                    } else {
-                        toast.success(t.toast.analysisStarted, { id: toastId })
-                    }
-                }}
+                onRunAnalysis={(policyId) => runAnalysis(policyId)}
                 onDeletePolicy={async (policyId) => {
                     if (confirm(t.toast.confirmDelete)) {
                         const toastId = toast.loading(t.toast.policyDeleting)
@@ -270,6 +295,13 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
                     setIsBatchUploadOpen(false)
                     router.refresh()
                 }}
+            />
+
+            <AiConsentModal
+                isOpen={consentPolicyId !== null}
+                isSubmitting={consentSubmitting}
+                onAgree={handleConsentAgree}
+                onCancel={() => setConsentPolicyId(null)}
             />
 
             {hasComparablePolicies && (

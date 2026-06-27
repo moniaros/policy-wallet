@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/server"
 import { logger } from "@/lib/logger"
 import { uploadFile, deleteFile } from "@/lib/storage"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
+import { recordAiProcessingConsent } from "@/lib/compliance/ai-processing-consent"
 import fs from "fs/promises"
 import path from "path"
 import { getAIService } from "@/lib/services/ai"
@@ -949,6 +950,31 @@ export async function runPolicyAnalysis(policyId: string) {
         }
         logger('error', 'Manual policy analysis failed', { policyId, error: e.message })
         return { error: e.message || "Analysis failed" }
+    }
+}
+
+/**
+ * Record the current user's explicit consent to AI processing of their policy
+ * documents (GDPR Art. 9). Called from the inline consent prompt shown when
+ * analysis is blocked by AI_PROCESSING_CONSENT_REQUIRED.
+ */
+export async function grantAiProcessingConsent() {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    try {
+        await recordAiProcessingConsent({
+            userId: authResult.dbUser.id,
+            locale: (authResult.dbUser.preferredLanguage as "el" | "en") || "el",
+            source: "wallet-analysis",
+        })
+        return { success: true }
+    } catch (e: any) {
+        logger('error', 'Failed to record AI-processing consent', {
+            userId: authResult.dbUser.id,
+            error: e?.message,
+        })
+        return { error: "Failed to record consent" }
     }
 }
 

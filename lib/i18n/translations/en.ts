@@ -28,6 +28,15 @@ export const en: TranslationKeys = {
         copy: 'Copy',
         needHelp: 'Need help?',
         aiAdviceDisclaimer: 'AI outputs are informational support and are not legal or insurance advice. You should verify critical decisions with a licensed professional.',
+        aiProcessingConsent: {
+            title: 'Consent to AI analysis',
+            body: 'To analyse this policy we send your policy document — which may include special-category data such as health information — to a third-party AI provider. We process it only to extract coverage, detect gaps and produce your analysis. You can withdraw consent at any time from your account settings.',
+            agree: 'I agree — analyse my policy',
+            cancel: 'Not now',
+            recording: 'Saving your consent…',
+            error: 'We could not save your consent. Please try again.',
+            required: 'AI-processing consent is required before this policy can be analysed.',
+        },
     },
 
     // Navigation

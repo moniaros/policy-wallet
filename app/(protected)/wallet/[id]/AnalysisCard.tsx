@@ -1,6 +1,7 @@
 "use client"
 import { useEffect, useMemo, useState } from "react"
-import { runPolicyAnalysis, ignoreGap, notifyAgentAboutGap } from "../actions"
+import { runPolicyAnalysis, ignoreGap, notifyAgentAboutGap, grantAiProcessingConsent } from "../actions"
+import { AiConsentModal } from "@/components/wallet/AiConsentModal"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { Sparkles, AlertTriangle, Lightbulb, EyeOff, MessageSquare, Loader2, RefreshCw, HelpCircle } from "lucide-react"
@@ -58,6 +59,8 @@ export function AnalysisCard({
     const [ignoring, setIgnoring] = useState<string | null>(null)
     const [notifying, setNotifying] = useState<string | null>(null)
     const [gapLimitReached, setGapLimitReached] = useState(false)
+    const [consentPromptOpen, setConsentPromptOpen] = useState(false)
+    const [consentSubmitting, setConsentSubmitting] = useState(false)
     const router = useRouter()
     const { t, language } = useLanguage()
     const analysisTitle = toGreekUppercaseNoAccents(t.analysis.title, t.common?.locale || 'el-GR')
@@ -202,6 +205,15 @@ export function AnalysisCard({
         const res = await runPolicyAnalysis(policyId)
 
         if ("error" in res && res.error) {
+            // Consent required: not a failure — prompt for consent, then retry.
+            if (res.error === "AI_PROCESSING_CONSENT_REQUIRED") {
+                setAnalyzing(false)
+                setRunStatus("idle")
+                toast.dismiss(toastId)
+                setConsentPromptOpen(true)
+                return
+            }
+
             setAnalyzing(false)
             setRunStatus("failed")
 
@@ -227,6 +239,19 @@ export function AnalysisCard({
             setAnalysisError(errorCopy.generic)
             toast.error(errorCopy.generic, { id: toastId })
         }
+    }
+
+    const handleConsentAgree = async () => {
+        setConsentSubmitting(true)
+        const result = await grantAiProcessingConsent()
+        setConsentSubmitting(false)
+        if ("error" in result && result.error) {
+            toast.error(t.common.aiProcessingConsent.error)
+            return
+        }
+        setConsentPromptOpen(false)
+        // Consent recorded — retry the analysis that was blocked.
+        await handleAnalyze()
     }
 
     const handleRetryMissing = async () => {
@@ -666,6 +691,13 @@ export function AnalysisCard({
                 reason="gap_limit"
                 language={language as 'el' | 'en'}
                 onDismiss={() => setGapLimitReached(false)}
+            />
+
+            <AiConsentModal
+                isOpen={consentPromptOpen}
+                isSubmitting={consentSubmitting}
+                onAgree={handleConsentAgree}
+                onCancel={() => setConsentPromptOpen(false)}
             />
         </div>
     )
