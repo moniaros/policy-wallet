@@ -88,6 +88,7 @@ jobs:
         run: npm run build
         env:
           # Provide dummy values for build-time env vars
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET || 'placeholder-build-secret' }}
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key' }}
           DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://placeholder' }}

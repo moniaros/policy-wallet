@@ -27,7 +27,7 @@ function loadEnv(p) {
       const v = m[2].replace(/^["']|["']$/g, "").trim();
       if (!(m[1] in process.env)) process.env[m[1]] = v;
     }
-  } catch {}
+  } catch { /* ignore a missing or unreadable env file */ }
 }
 loadEnv(".env.local");
 loadEnv(".env");
