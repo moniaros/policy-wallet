@@ -181,10 +181,15 @@ per-provider tuning for a smaller line count — exactly the kind of change this
 *not* make. The only safe extraction left was the document-attachment payload block, which
 was byte-identical across all three. **Resolution in §5.3.**
 
-### 4.3 `policy.service.ts` is a God object (1,012 lines)
+### 4.3 `policy.service.ts` was a God object (1,012 → 685 lines)
 CRUD + upload + background-analysis orchestration + dedup/merge + sharing + invites +
-email + notifications. Sharing/notification and analysis-orchestration are separable
-responsibilities. **Strategy in §5.5.**
+email + notifications. **Investigation finding:** the entire sharing surface in this class
+(`share`/`getShares`/`revokeShare`, ~290 lines) was **dead code** — a parallel, unused
+implementation. The live sharing path lives inline in the `sharePolicy`/`revokeShare` server
+actions and the share API route, and none of them call the service methods. Removed (see
+§5.5). What remains (CRUD + upload + the 259-line `runBackgroundAnalysis` dedup/merge) is the
+genuine surface; the analysis-orchestration concern is still separable but is lower-priority
+now that the dead weight is gone.
 
 ### 4.4 Duplicated cross-cutting logic
 - **Date → `YYYY-MM-DD`**: the `.toISOString().split('T')[0]` idiom repeated **17×**
@@ -233,7 +238,7 @@ tests + build). Nothing here changes runtime behaviour.
 | 5.2 | Extract `resolvePolicyAccess()` owner-or-grant helper | High | Low–med | ◑ in progress (9 sites done) |
 | 5.3 | AI providers: extract identical payload builder only (no base class) | Med | Low | ✅ done this pass |
 | 5.4 | Decompose orchestrator into collaborators | High | Med–high | planned |
-| 5.5 | Split `policy.service.ts` (extract sharing + analysis) | Med | Med | planned |
+| 5.5 | `policy.service.ts`: remove dead sharing code (was: split it) | Med | Low | ✅ done this pass |
 | 5.6 | i18n full key-parity guard; split client components | Med | Low | ◑ parity guard done |
 | 5.7 | Repo hygiene: widen `.gitignore`; flag dead root scripts | Low | Very low | ◑ gitignore done |
 
@@ -301,10 +306,19 @@ Extract collaborators behind the existing public methods (`createRun`, `getRunSt
 sequencer. Do this *after* §5.3 so the AI seam is already clean. High value for testability;
 move method-by-method with the existing tests green at each step.
 
-### 5.5 Split `policy.service.ts`
-Carve out `PolicyAccessService` (share/invite/notify/email) and route background analysis
-through the orchestrator directly, leaving `PolicyService` as CRUD. Mechanical moves, no
-logic change.
+### 5.5 `policy.service.ts` — removed dead sharing code — DONE
+Set out to carve sharing into a `PolicyAccessService`. Investigation showed there was nothing
+live to carve: `share`/`getShares`/`revokeShare` (and their `ShareResult` type +
+invite/shared-access email imports + `SharePolicyInput`/`POLICY_SHARE_EXPIRY_DAYS`) were
+**unreferenced anywhere** — the real sharing logic is inline in the server actions/route.
+Deleting them is behaviour-preserving by definition (dead code), drops the file 1,012 → 685
+lines, and removes a *dangerous* duplicate: wiring the actions to this older copy would have
+risked reintroducing the `sharePolicy` IDOR that was fixed inline (STATUS Done #1). Verified
+the deletion compiles (type-check 0 errors — a live reference would have failed) with all 120
+tests still green.
+
+> Deliberately did **not** attempt to "DRY up" sharing by pointing the actions at this code —
+> that would be a behaviour change with a security regression risk, not a cleanup.
 
 ### 5.6 i18n + client-component hygiene (parity guard done)
 **Done:** `tests/unit/i18n-key-parity.test.ts` now asserts the *entire* `el`/`en` keysets match
