@@ -15,6 +15,7 @@ import type { Policy, GapInstance } from '@prisma/client'
 import type { GapSeverity, GapStatus } from '@/types'
 import { enrichExtractionPayload } from '@/lib/services/ai/extraction-enrichment'
 import { toISODate } from '@/lib/constants/time'
+import { resolvePolicyAccess } from '@/lib/services/authorization'
 
 // Type Definitions
 export interface GapAnalysisResult {
@@ -119,31 +120,19 @@ export class GapAnalysisService extends BaseService {
             throw AppError.notFound('Policy', policyId)
         }
 
-        // Check authorization: Owner OR Authorized Agent
-        const isOwner = policy.ownerUserId === userId
-        if (!isOwner) {
-            const hasAccess = await this.db.accessGrant.findFirst({
-                where: {
-                    granterUserId: policy.ownerUserId,
-                    granteeUserId: userId,
-                    status: 'active'
-                }
-            })
-
-            const hasRelationship = !hasAccess ? await this.db.customerRelationship.findFirst({
-                where: {
-                    agentUserId: userId,
-                    policyholderUserId: policy.ownerUserId
-                }
-            }) : null
-
-            if (!hasAccess && !hasRelationship) {
-                throw AppError.forbidden(
-                    language === 'el'
-                        ? 'Δεν έχετε πρόσβαση σε αυτήν την πολιτική'
-                        : 'You do not have access to this policy'
-                )
-            }
+        // Check authorization: Owner OR Authorized Agent (active grant or relationship)
+        const access = await resolvePolicyAccess(
+            policy.ownerUserId,
+            userId,
+            { includeAgentRelationship: true },
+            this.db
+        )
+        if (!access.allowed) {
+            throw AppError.forbidden(
+                language === 'el'
+                    ? 'Δεν έχετε πρόσβαση σε αυτήν την πολιτική'
+                    : 'You do not have access to this policy'
+            )
         }
 
         // 2. Fetch Gap Definitions
@@ -461,24 +450,13 @@ export class GapAnalysisService extends BaseService {
         }
 
         // Check authorization
-        const isOwner = gap.policy.ownerUserId === userId
-        if (!isOwner) {
-            // Check for agent access
-            const hasAccess = await this.db.accessGrant.findFirst({
-                where: {
-                    granterUserId: gap.policy.ownerUserId,
-                    granteeUserId: userId,
-                    status: 'active'
-                }
-            })
-
-            if (!hasAccess) {
-                throw AppError.forbidden(
-                    language === 'el'
-                        ? 'Δεν έχετε δικαίωμα να επιλύσετε αυτό το κενό'
-                        : 'You do not have permission to resolve this gap'
-                )
-            }
+        const access = await resolvePolicyAccess(gap.policy.ownerUserId, userId, {}, this.db)
+        if (!access.allowed) {
+            throw AppError.forbidden(
+                language === 'el'
+                    ? 'Δεν έχετε δικαίωμα να επιλύσετε αυτό το κενό'
+                    : 'You do not have permission to resolve this gap'
+            )
         }
 
         await this.db.gapInstance.update({
@@ -536,24 +514,13 @@ export class GapAnalysisService extends BaseService {
         }
 
         // Check authorization
-        const isOwner = gap.policy.ownerUserId === userId
-        if (!isOwner) {
-            // Check for agent access
-            const hasAccess = await this.db.accessGrant.findFirst({
-                where: {
-                    granterUserId: gap.policy.ownerUserId,
-                    granteeUserId: userId,
-                    status: 'active'
-                }
-            })
-
-            if (!hasAccess) {
-                throw AppError.forbidden(
-                    language === 'el'
-                        ? 'Δεν έχετε δικαίωμα να απορρίψετε αυτό το κενό'
-                        : 'You do not have permission to dismiss this gap'
-                )
-            }
+        const access = await resolvePolicyAccess(gap.policy.ownerUserId, userId, {}, this.db)
+        if (!access.allowed) {
+            throw AppError.forbidden(
+                language === 'el'
+                    ? 'Δεν έχετε δικαίωμα να απορρίψετε αυτό το κενό'
+                    : 'You do not have permission to dismiss this gap'
+            )
         }
 
         await this.db.gapInstance.update({

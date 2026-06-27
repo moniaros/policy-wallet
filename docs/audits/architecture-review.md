@@ -216,7 +216,7 @@ tests + build). Nothing here changes runtime behaviour.
 | # | Refactor | Value | Risk | Status |
 |---|----------|-------|------|--------|
 | 5.1 | Extract `toISODate()` date helper (17 sites) | Med | **Very low** | ✅ done this pass |
-| 5.2 | Extract `checkPolicyAccess()` / `checkGapAccess()` | High | Low–med | planned |
+| 5.2 | Extract `resolvePolicyAccess()` owner-or-grant helper | High | Low–med | ◑ in progress (gap svc done) |
 | 5.3 | `BaseAIService` template; providers → ~150 LOC each | High | Med | planned |
 | 5.4 | Decompose orchestrator into collaborators | High | Med–high | planned |
 | 5.5 | Split `policy.service.ts` (extract sharing + analysis) | Med | Med | planned |
@@ -235,16 +235,25 @@ i18n violations, and `lint:i18n-changed` scans whole changed files (`git diff --
 so editing it would drag unrelated i18n debt into this refactor's commit and fail CI. They get
 swapped as part of §5.6 (the i18n pass), where fixing those 4 strings is in scope.
 
-### 5.2 Authorization helper (next)
-Introduce `lib/services/authorization.ts`:
-```ts
-export async function checkPolicyAccess(
-  userId: string, policyId: string, opts?: { requireOwner?: boolean }
-): Promise<{ allowed: boolean; isOwner: boolean; reason?: string }>
-```
-Replace the hand-rolled `isOwner || activeGrant` blocks one call-site at a time, asserting
-identical allow/deny outcomes with unit tests before swapping each. This also gives §3.5 a
-single place to add policy-scoped grant checks later.
+### 5.2 Authorization helper (in progress)
+`lib/services/authorization.ts` now exports `resolvePolicyAccess(ownerUserId, userId,
+{ includeAgentRelationship? }, client?)`, which returns a **decision** (`{ isOwner, hasGrant,
+hasAgentRelationship, allowed }`) rather than throwing — so each call site keeps its own
+error message and control flow, making the lift behaviour-preserving. The helper preserves
+the original query ordering exactly (owner short-circuits with no query; the agent-relationship
+lookup runs only when requested AND no active grant exists).
+
+**Done this pass:** the 3 hand-rolled checks in `gap-analysis.service.ts` (`analyzePolicy`,
+`resolveGap`, `dismissGap`) now call the helper. Critically, the original sites were *not*
+identical — `analyzePolicy` allows an agent **relationship**, the gap mutations do **not** —
+so each call passes the matching flag; a naive merge would have broadened gap-mutation access
+(a security regression). Locked in with `tests/unit/authorization.test.ts` (6 tests covering
+decision + query ordering). Full suite: 116 pass.
+
+**Follow-ups (next iterations):** the same pattern in `policy.service.ts`, several
+`wallet/actions.ts` functions, and the `analysis-runs/[runId]` routes — converted one at a
+time, each with its exact semantics preserved (and §3.5's policy-scoped grant check folded in
+where appropriate, since the helper is the single place to add it).
 
 ### 5.3 `BaseAIService` template method
 Lift the shared Zod schemas, prompt-assembly branching, capability map, and usage parsing
