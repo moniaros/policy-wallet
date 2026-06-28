@@ -333,14 +333,15 @@ and memoize large lists (a UI-perf task, run E2E locally for it).
 **Done:** widened `.gitignore` to keep locally-generated build/test logs out of the repo
 (`build_output*.log`, `tsc-*.txt`, `.smoke-dev.log`, `.playwright-mcp/`, …).
 
-**Flagged for the maintainer (intentionally NOT deleted here):** several throwaway dev scripts
-sit at the repo root and are imported by nothing — `test-gemini.ts`, `testApi.ts`,
-`listUsers.ts` (which itself violates the "no `new PrismaClient()`" rule), plus `script.py`
-and `fix_policy_card.py`. They look safe to `git rm`, but since they predate this work and
-aren't mine to delete, they're surfaced for a quick human confirm rather than removed
-unilaterally. Same for the already-tracked `build_output*.log` / `tsc-*.txt` files — the
-`.gitignore` entry stops *new* ones, but untracking the existing ones (`git rm --cached`) is
-left as a deliberate maintainer step.
+**Removed (maintainer-confirmed):** five throwaway dev scripts that sat at the repo root and
+were imported by nothing — `test-gemini.ts`, `testApi.ts`, `listUsers.ts` (which itself
+violated the "no `new PrismaClient()`" rule), `script.py`, and `fix_policy_card.py` — were
+`git rm`'d after the owner confirmed. Build/type-check/tests are unaffected (they were never
+part of the app graph).
+
+**Still left to the maintainer:** the already-tracked `build_output*.log` / `tsc-*.txt` files
+— the `.gitignore` entry stops *new* ones, but untracking the existing ones (`git rm --cached`)
+is a deliberate step left out of this branch.
 
 ---
 
