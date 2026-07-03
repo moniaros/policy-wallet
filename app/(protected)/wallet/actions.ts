@@ -13,6 +13,7 @@ import fs from "fs/promises"
 import path from "path"
 import { getAIService } from "@/lib/services/ai"
 import { GapAnalysisService } from "@/lib/services/gap-analysis.service"
+import { AppError } from "@/lib/errors/app-error"
 import { refreshProtectionScore } from "@/lib/services/gap-engine"
 import { PolicyService } from "@/lib/services/policy.service"
 import { canUserUseTokens } from "@/lib/token-tracking"
@@ -630,6 +631,9 @@ export async function analyzeGaps(policyId: string) {
         revalidatePath(`/wallet/${policyId}`)
         return result
     } catch (e) {
+        if (e instanceof AppError && e.metadata?.reason === "AI_CONSENT_REQUIRED") {
+            return { error: "AI_CONSENT_REQUIRED" }
+        }
         console.error("AI Gap Analysis failed", e)
         return { error: `Analysis failed: ${e instanceof Error ? e.message : String(e)}` }
     }
@@ -770,6 +774,16 @@ export async function askPolicyQuestion(policyId: string, question: string) {
     })
 
     if (!hasAccess) return { error: "Unauthorized" }
+
+    // GDPR Art. 9 gate: Q&A sends extracted policy content to an LLM — the policy
+    // OWNER (the data subject) must have granted AI-processing consent.
+    const policyOwner = await db.user.findUnique({
+        where: { id: policy.ownerUserId },
+        select: { aiProcessingConsentVersion: true },
+    })
+    if (!policyOwner?.aiProcessingConsentVersion) {
+        return { error: "AI_CONSENT_REQUIRED" }
+    }
 
     // Check feature access
     const isAllowed = await canUserUseFeature(authResult.dbUser.id, 'interactiveQA')
@@ -929,7 +943,7 @@ export async function runPolicyAnalysis(policyId: string) {
         const run = await orchestrator.createRun(policyId, authResult.dbUser.id)
 
         if (run.status === "blocked") {
-            return { error: "TOKEN_LIMIT_BLOCKED", runId: run.id }
+            return { error: run.failureCode || "TOKEN_LIMIT_BLOCKED", runId: run.id }
         }
 
         after(async () => {

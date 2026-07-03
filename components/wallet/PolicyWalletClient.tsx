@@ -15,6 +15,7 @@ import { MobileAppShell } from "@/components/layout/MobileAppShell"
 import { BatchUploadModal } from "@/components/wallet/BatchUploadModal"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { PolicyComparison } from "@/components/wallet/PolicyComparison"
+import { AiConsentModal } from "@/components/ui/AiConsentModal"
 
 interface PolicyWalletClientProps {
     policies: Policy[]
@@ -46,6 +47,24 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
     const announcedRef = useRef<Set<string>>(new Set())
     const [isBatchUploadOpen, setIsBatchUploadOpen] = React.useState(false)
     const [isCompareOpen, setIsCompareOpen] = React.useState(false)
+    // AI-processing consent: policy awaiting analysis while the consent modal is open
+    const [consentPendingPolicyId, setConsentPendingPolicyId] = React.useState<string | null>(null)
+
+    const runAnalysis = async (policyId: string) => {
+        const toastId = toast.loading(t.toast.analysisStarting)
+        const result = await runPolicyAnalysis(policyId)
+        if (result.error) {
+            if (result.error === "AI_CONSENT_REQUIRED") {
+                toast.dismiss(toastId)
+                setConsentPendingPolicyId(policyId)
+                return
+            }
+            const friendlyError = mapWalletErrorToMessage(result.error, t, "analysis")
+            toast.error(friendlyError, { id: toastId })
+        } else {
+            toast.success(t.toast.analysisStarted, { id: toastId })
+        }
+    }
 
     // Check if any LOB has 2+ active policies (comparison eligible)
     const hasComparablePolicies = React.useMemo(() => {
@@ -239,16 +258,7 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
                 onUploadDocument={() => router.push('/wallet/add?method=upload')}
                 onBatchUpload={() => setIsBatchUploadOpen(true)}
                 onShareWithAgent={(policyId) => router.push(`/wallet/${policyId}/share`)}
-                onRunAnalysis={async (policyId) => {
-                    const toastId = toast.loading(t.toast.analysisStarting)
-                    const result = await runPolicyAnalysis(policyId)
-                    if (result.error) {
-                        const friendlyError = mapWalletErrorToMessage(result.error, t, "analysis")
-                        toast.error(friendlyError, { id: toastId })
-                    } else {
-                        toast.success(t.toast.analysisStarted, { id: toastId })
-                    }
-                }}
+                onRunAnalysis={runAnalysis}
                 onDeletePolicy={async (policyId) => {
                     if (confirm(t.toast.confirmDelete)) {
                         const toastId = toast.loading(t.toast.policyDeleting)
@@ -270,6 +280,17 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
                     setIsBatchUploadOpen(false)
                     router.refresh()
                 }}
+            />
+
+            <AiConsentModal
+                isOpen={consentPendingPolicyId !== null}
+                onClose={() => setConsentPendingPolicyId(null)}
+                onConsented={() => {
+                    const policyId = consentPendingPolicyId
+                    setConsentPendingPolicyId(null)
+                    if (policyId) runAnalysis(policyId)
+                }}
+                source="wallet_policy_list"
             />
 
             {hasComparablePolicies && (

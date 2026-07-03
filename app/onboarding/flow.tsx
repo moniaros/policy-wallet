@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { fixMojibakeText } from "@/lib/i18n/fix-mojibake"
 import { completeOnboardingStep, uploadOnboardingPolicy, redeemInviteCode, triggerOnboardingAnalysis } from "./actions"
+import { AiConsentModal } from "@/components/ui/AiConsentModal"
 
 type GoalType = "save_money" | "health_family" | "my_car"
 
@@ -19,6 +20,7 @@ interface OnboardingFlowProps {
         onboardingFamiliarity: "beginner" | "intermediate" | "experienced" | null
         onboardingFileReady: boolean | null
         onboardingEntryCompleted: boolean
+        hasAiConsent: boolean
     }
 }
 
@@ -46,6 +48,10 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
     const [inviteCode, setInviteCode] = useState("")
     const [connectedAgentName, setConnectedAgentName] = useState<string | null>(null)
     const [inviteError, setInviteError] = useState<string | null>(null)
+    // AI-processing consent: uploading a policy leads straight into AI analysis,
+    // so consent is captured before the step-2 upload proceeds.
+    const [aiConsent, setAiConsent] = useState(initialState.hasAiConsent)
+    const [consentModalOpen, setConsentModalOpen] = useState(false)
 
     const stepLabel = t(`Βήμα ${step} από ${TOTAL_STEPS}`, `Step ${step} of ${TOTAL_STEPS}`)
     const displayName = initialState.name || ""
@@ -105,7 +111,11 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
         }
     }
 
-    const continueFromStep2 = async (skipUpload: boolean = false) => {
+    const continueFromStep2 = async (skipUpload: boolean = false, consentJustGranted: boolean = false) => {
+        if (!skipUpload && selectedFile && !aiConsent && !consentJustGranted) {
+            setConsentModalOpen(true)
+            return
+        }
         setBusy(true)
         try {
             if (!skipUpload && selectedFile) {
@@ -194,6 +204,16 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-teal-50 px-4 py-10 dark:from-stone-950 dark:via-stone-900 dark:to-teal-950/30">
+            <AiConsentModal
+                isOpen={consentModalOpen}
+                onClose={() => setConsentModalOpen(false)}
+                onConsented={() => {
+                    setAiConsent(true)
+                    setConsentModalOpen(false)
+                    continueFromStep2(false, true)
+                }}
+                source="onboarding_upload"
+            />
             <div className="mx-auto max-w-3xl">
                 <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-xl dark:border-stone-800 dark:bg-stone-900 sm:p-8">
                     <div className="mb-6">

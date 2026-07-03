@@ -193,6 +193,7 @@ export async function getOnboardingState() {
         onboardingFamiliarity: null as "beginner" | "intermediate" | "experienced" | null,
         onboardingFileReady: null as boolean | null,
         onboardingEntryCompleted: false,
+        hasAiConsent: Boolean(dbUser.aiProcessingConsentVersion),
     }
 
     const prefs = profile.preferences as any
@@ -205,6 +206,7 @@ export async function getOnboardingState() {
         onboardingFamiliarity: prefs.onboardingFamiliarity ?? null,
         onboardingFileReady: typeof prefs.onboardingFileReady === "boolean" ? prefs.onboardingFileReady : null,
         onboardingEntryCompleted: Boolean(prefs.onboardingEntryCompletedAt),
+        hasAiConsent: Boolean(dbUser.aiProcessingConsentVersion),
     }
 }
 

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { Sparkles, AlertTriangle, Lightbulb, EyeOff, MessageSquare, Loader2, RefreshCw, HelpCircle } from "lucide-react"
 import { LimitReachedModal } from "@/components/account/LimitReachedModal"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
+import { AiConsentModal } from "@/components/ui/AiConsentModal"
 
 import { useLanguage } from "@/contexts/LanguageContext"
 import { toGreekUppercaseNoAccents } from "@/lib/i18n/text-format"
@@ -58,6 +59,11 @@ export function AnalysisCard({
     const [ignoring, setIgnoring] = useState<string | null>(null)
     const [notifying, setNotifying] = useState<string | null>(null)
     const [gapLimitReached, setGapLimitReached] = useState(false)
+    const [consentModalOpen, setConsentModalOpen] = useState(false)
+    // True once the viewer has granted consent this session; a second
+    // AI_CONSENT_REQUIRED after that means the policy OWNER's consent is missing
+    // (agent-view case) and re-prompting the viewer cannot resolve it.
+    const [consentGranted, setConsentGranted] = useState(false)
     const router = useRouter()
     const { t, language } = useLanguage()
     const analysisTitle = toGreekUppercaseNoAccents(t.analysis.title, t.common?.locale || 'el-GR')
@@ -204,6 +210,17 @@ export function AnalysisCard({
         if ("error" in res && res.error) {
             setAnalyzing(false)
             setRunStatus("failed")
+
+            if (res.error === "AI_CONSENT_REQUIRED") {
+                toast.dismiss(toastId)
+                if (consentGranted) {
+                    setAnalysisError(t.common.aiConsentOwnerRequired)
+                } else {
+                    setRunStatus("idle")
+                    setConsentModalOpen(true)
+                }
+                return
+            }
 
             if (res.error === "TOKEN_LIMIT_BLOCKED" || res.error === "LIMIT_REACHED") {
                 setGapLimitReached(true)
@@ -666,6 +683,16 @@ export function AnalysisCard({
                 reason="gap_limit"
                 language={language as 'el' | 'en'}
                 onDismiss={() => setGapLimitReached(false)}
+            />
+            <AiConsentModal
+                isOpen={consentModalOpen}
+                onClose={() => setConsentModalOpen(false)}
+                onConsented={() => {
+                    setConsentGranted(true)
+                    setConsentModalOpen(false)
+                    handleAnalyze()
+                }}
+                source="wallet_analysis_card"
             />
         </div>
     )

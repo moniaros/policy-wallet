@@ -7,6 +7,7 @@ export const LEGAL_POLICY_VERSIONS = {
     cookie: "2026-03",
     terms: LEGAL_CONTENT_VERSION,
     privacy: LEGAL_CONTENT_VERSION,
+    ai_processing: "2026-07",
 } as const
 
 export type ConsentType = keyof typeof LEGAL_POLICY_VERSIONS

@@ -40,6 +40,14 @@ export const POST = withApiGuard(
             const run = await orchestrator.createRun(policy.id, authResult.dbUser.id)
 
             if (run.status === "blocked") {
+                if (run.failureCode === "AI_CONSENT_REQUIRED") {
+                    return createApiError(
+                        "AI_CONSENT_REQUIRED",
+                        "Policy owner has not granted AI-processing consent",
+                        403,
+                        { run_id: run.id }
+                    )
+                }
                 return createApiError(
                     "TOKEN_LIMIT_BLOCKED",
                     "Policy review blocked due to token usage limits",

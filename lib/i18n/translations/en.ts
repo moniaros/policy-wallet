@@ -28,6 +28,13 @@ export const en: TranslationKeys = {
         copy: 'Copy',
         needHelp: 'Need help?',
         aiAdviceDisclaimer: 'AI outputs are informational support and are not legal or insurance advice. You should verify critical decisions with a licensed professional.',
+        aiConsentTitle: 'Consent to AI analysis',
+        aiConsentBody: 'To analyze your policies, the content of your documents — which may include health data — is sent to an AI provider for processing. Your consent is recorded and you can withdraw it at any time from your privacy settings.',
+        aiConsentAccept: 'I consent to AI processing',
+        aiConsentCancel: 'Not now',
+        aiConsentRequired: 'AI-processing consent is required before analysis.',
+        aiConsentOwnerRequired: 'The policy owner has not granted consent for AI analysis.',
+        aiConsentSaveFailed: 'Saving your consent failed. Please try again.',
     },
 
     // Navigation
@@ -453,6 +460,7 @@ export const en: TranslationKeys = {
             skipForNow: 'Skip and review later',
             confirm: 'Confirm & Save',
             edit: 'Edit details',
+            tryAgain: 'Try again',
             insurer: 'Insurer',
             coverageType: 'Coverage Type',
             period: 'Period',

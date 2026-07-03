@@ -277,6 +277,31 @@ function createFallbackGapAnalysis(metadata: PolicyMetadata): AIGapAnalysisRespo
 export class PolicyAnalysisOrchestratorService {
     async createRun(policyId: string, userId: string) {
         const policy = await this.loadAuthorizedPolicy(policyId, userId)
+
+        // GDPR Art. 9 gate: the policy OWNER (the data subject — documents can
+        // carry special-category health data) must have granted explicit AI-processing
+        // consent before any document bytes reach an LLM provider. Checked before any
+        // policy/document status mutation so a blocked attempt leaves no churn.
+        const owner = await db.user.findUnique({
+            where: { id: policy.ownerUserId },
+            select: { aiProcessingConsentVersion: true },
+        })
+        if (!owner?.aiProcessingConsentVersion) {
+            return db.policyAnalysisRun.create({
+                data: {
+                    policyId,
+                    userId,
+                    provider: "gemini",
+                    model: env.GEMINI_MODEL_CLARITY_ANALYSIS,
+                    status: "blocked",
+                    blockedReason: "ai_consent_missing",
+                    failureCode: "AI_CONSENT_REQUIRED",
+                    failureMessage: "Policy owner has not granted AI-processing consent",
+                    finishedAt: new Date(),
+                },
+            })
+        }
+
         const gapDefinitionsCount = await db.gapDefinition.count({
             where: {
                 lineOfBusiness: {
