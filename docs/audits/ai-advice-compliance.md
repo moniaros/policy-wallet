@@ -50,7 +50,16 @@ Applied identically across all three providers — [gemini-ai.service.ts](../../
 
 ---
 
-## Part 3 — Consent gate (PROPOSAL — not implemented this pass)
+## Part 3 — Consent gate (IMPLEMENTED 2026-07-03)
+
+> **Status update (2026-07-03):** implemented as designed below, with three corrections discovered during implementation:
+> 1. `/api/v1/jobs/process-policy` needs **no** gate — it runs deterministic gap detection only and never reaches an LLM.
+> 2. The policy **Q&A path** (`askPolicyQuestion` → `aiService.askQuestion`) *does* send extracted policy content (acordData) to an LLM and is now gated too.
+> 3. Consent is checked against the policy **owner** (the data subject), not the run initiator — an agent with a grant/relationship cannot analyze a customer's documents until the customer has consented.
+>
+> **What shipped:** `ai_processing` in `ConsentType` + `User.aiProcessingConsentVersion` (migration `20260703000000_ai_processing_consent`, authored offline — apply with `prisma migrate deploy`/`dev` on the next DB-connected run); `POST /api/v1/consents` accepts `ai_processing` (authenticated only — anonymous is 401); gate in `PolicyAnalysisOrchestratorService.createRun()` returns a `blocked` run with `failureCode: "AI_CONSENT_REQUIRED"` *before* any policy/document status mutation; same check in `GapAnalysisService.analyzePolicy()` and `askPolicyQuestion`; capture UI via `components/ui/AiConsentModal.tsx` at the wallet upload form, onboarding step-2 upload, and both re-run buttons; `AI_CONSENT_REQUIRED` mapped in `lib/i18n/wallet-error.ts`. Tests: `tests/unit/ai-processing-consent-gate.test.ts`, `tests/unit/ai-processing-consent-capture.test.ts`.
+
+### Original proposal (for reference)
 
 **Verdict: no AI-processing consent exists today.** `ConsentType` = `cookie | terms | privacy` only ([lib/compliance/consent.ts](../../lib/compliance/consent.ts), `prisma/schema.prisma`); `User` has `termsVersionAccepted` / `privacyVersionAccepted` / `cookieConsentVersion` / `consentUpdatedAt`; `ConsentAudit` records events. Policy documents (and `PolicyholderProfile.chronicConditions` / `familyMedicalHistory` — GDPR Art. 9 special-category data) are sent to third-party LLMs with no explicit AI-processing consent.
 
