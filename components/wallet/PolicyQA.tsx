@@ -23,6 +23,7 @@ export function PolicyQA({ policyId }: { policyId: string }) {
     const [isAsking, setIsAsking] = useState(false)
     const [showChat, setShowChat] = useState(false)
     const [limitReached, setLimitReached] = useState(false)
+    const [limitReason, setLimitReason] = useState<"daily_limit" | "feature_locked">("daily_limit")
 
     const handleAsk = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -36,7 +37,8 @@ export function PolicyQA({ policyId }: { policyId: string }) {
         try {
             const result = await askPolicyQuestion(policyId, question)
             if (result.error) {
-                if (result.error === "LIMIT_REACHED") {
+                if (result.error === "LIMIT_REACHED" || result.error === "UPGRADE_REQUIRED") {
+                    setLimitReason(result.error === "UPGRADE_REQUIRED" ? "feature_locked" : "daily_limit")
                     setLimitReached(true)
                 } else {
                     toast.error(mapWalletErrorToMessage(result.error, t, "question"))
@@ -154,7 +156,7 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                 </div>
             )}
 
-            <LimitReachedModal isOpen={limitReached} reason="daily_limit" language={language as 'el' | 'en'} onDismiss={() => setLimitReached(false)} />
+            <LimitReachedModal isOpen={limitReached} reason={limitReason} language={language as 'el' | 'en'} onDismiss={() => setLimitReached(false)} />
         </div>
     )
 }

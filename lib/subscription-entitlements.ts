@@ -11,15 +11,18 @@ import type {
 // ── B2C Policyholder Limits ──────────────────────────────────────────
 
 export const ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> = {
+    // Free tier is organizer-only: every AI-cost feature requires a paid plan.
+    // The single exception is one complimentary trial analysis, granted at the
+    // orchestrator level via User.trialAnalysisUsedAt (see createRun).
     free: {
         policies: 3,
-        aiAnalysisPerMonth: 10,
-        questionsPerDay: 10,
-        gapAnalysisPerDay: 2,
+        aiAnalysisPerMonth: 0,
+        questionsPerDay: 0,
+        gapAnalysisPerDay: 0,
         notifications: false,
         advancedAnalytics: false,
         agentCollaboration: false,
-        interactiveQA: true,
+        interactiveQA: false,
         analysisComparison: false,
         portfolioGapView: false,
         priorityQueue: false,

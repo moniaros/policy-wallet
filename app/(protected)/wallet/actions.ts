@@ -402,6 +402,7 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
                 inviteeEmail: agentEmail,
                 token: crypto.randomUUID(),
                 inviteType: 'share',
+                relationshipType: 'client_agent',
                 scope: `policy:${policyId}`,
                 requestedPermissions: permissions,
                 expiresAt: daysFromNow(POLICY_SHARE_EXPIRY_DAYS)
@@ -598,8 +599,15 @@ export async function analyzeGaps(policyId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
-    // Check Daily Limit for Gap Analysis
+    // AI gap analysis is paid-only for policyholders (agents are metered by
+    // their agent-plan budgets, admins bypass).
     const { tier } = await getUserSubscription(authResult.dbUser.id)
+    const callerRoles = authResult.dbUser.roles || ""
+    if (tier === "free" && !callerRoles.includes("agent") && !callerRoles.includes("admin")) {
+        return { error: "UPGRADE_REQUIRED" }
+    }
+
+    // Check Daily Limit for Gap Analysis
     const dailyLimit = SUBSCRIPTION_LIMITS[tier].gapAnalysisPerDay
 
     if (dailyLimit !== null && !authResult.dbUser.roles.includes('admin')) {
@@ -785,12 +793,11 @@ export async function askPolicyQuestion(policyId: string, question: string) {
         return { error: "AI_CONSENT_REQUIRED" }
     }
 
-    // Check feature access
+    // Check feature access — interactiveQA is paid-only for policyholders;
+    // agents on granted policies are metered by their agent-plan budgets.
     const isAllowed = await canUserUseFeature(authResult.dbUser.id, 'interactiveQA')
-    if (!isAllowed && !authResult.dbUser.roles.includes('admin')) {
-        return {
-            error: getUpgradeMessage('feature_locked', authResult.dbUser.preferredLanguage as any || 'en')
-        }
+    if (!isAllowed && !authResult.dbUser.roles.includes('admin') && !authResult.dbUser.roles.includes('agent')) {
+        return { error: "UPGRADE_REQUIRED" }
     }
 
     // Check Daily Limit
@@ -1020,6 +1027,12 @@ export async function notifyAgentAboutGap(gapId: string, policyId: string) {
             }
         })
         if (!hasAccess) return { error: "Unauthorized" }
+    }
+
+    // Agent collaboration (incl. gap escalation) is a paid-plan feature.
+    const notifierEntitlements = await resolveUserEntitlements(authResult.dbUser.id)
+    if (!notifierEntitlements.limits.agentCollaboration && !authResult.dbUser.roles.includes('admin')) {
+        return { error: "UPGRADE_REQUIRED" }
     }
 
     // Find active relationship

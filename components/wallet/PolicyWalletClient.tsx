@@ -59,6 +59,11 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
                 setConsentPendingPolicyId(policyId)
                 return
             }
+            if (result.error === "UPGRADE_REQUIRED") {
+                toast.dismiss(toastId)
+                router.push("/upgrade?reason=ai_analysis")
+                return
+            }
             const friendlyError = mapWalletErrorToMessage(result.error, t, "analysis")
             toast.error(friendlyError, { id: toastId })
         } else {

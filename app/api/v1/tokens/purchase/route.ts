@@ -5,16 +5,7 @@ import { stripe } from "@/lib/stripe"
 import { getUserSubscription } from "@/lib/subscription-limits"
 import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
-
-export const TOKEN_PACKAGES = {
-    topup: { tokens: 100_000, priceEur: 1.99, label: "100K tokens" },
-    small: { tokens: 500_000, priceEur: 0.49, label: "500K tokens" },
-    medium: { tokens: 1_000_000, priceEur: 0.99, label: "1M tokens" },
-    large: { tokens: 5_000_000, priceEur: 4.99, label: "5M tokens" },
-    xl: { tokens: 10_000_000, priceEur: 9.99, label: "10M tokens" },
-} as const
-
-export type TokenPackageKey = keyof typeof TOKEN_PACKAGES
+import { TOKEN_PACKAGES, type TokenPackageKey } from "@/lib/billing/token-packages"
 
 export async function GET() {
     const authCheck = await requireApiUser()

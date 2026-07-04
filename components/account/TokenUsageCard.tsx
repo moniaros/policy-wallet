@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import type { PlanTier } from "@/types/subscription-entitlements"
+import { TOKEN_PACKAGES as SHARED_TOKEN_PACKAGES } from "@/lib/billing/token-packages"
 
 interface TokenUsageData {
     tier: PlanTier
@@ -19,12 +20,13 @@ interface TokenUsageData {
     }
 }
 
-const TOKEN_PACKAGES = [
-    { key: "small", tokens: 500_000, price: "€0.49", label: "500K", popular: false },
-    { key: "medium", tokens: 1_000_000, price: "€0.99", label: "1M", popular: true },
-    { key: "large", tokens: 5_000_000, price: "€4.99", label: "5M", popular: false },
-    { key: "xl", tokens: 10_000_000, price: "€9.99", label: "10M", popular: false },
-]
+const TOKEN_PACKAGE_LIST = Object.entries(SHARED_TOKEN_PACKAGES).map(([key, pkg]) => ({
+    key,
+    tokens: pkg.tokens,
+    price: `€${pkg.priceEur.toFixed(2)}`,
+    label: pkg.tokens >= 1_000_000 ? `${pkg.tokens / 1_000_000}M` : `${pkg.tokens / 1_000}K`,
+    popular: "popular" in pkg && Boolean((pkg as { popular?: boolean }).popular),
+}))
 
 function formatTokens(n: number): string {
     if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`
@@ -45,20 +47,31 @@ export function TokenUsageCard({ language = "en", className = "" }: Props) {
     const [purchaseError, setPurchaseError] = useState<string | null>(null)
     const [showPackages, setShowPackages] = useState(false)
 
-    const i18n = {
-        title: language === "el" ? "Χρήση AI Tokens" : "AI Token Usage",
-        monthlyUsage: language === "el" ? "Μηνιαία Χρήση" : "Monthly Usage",
-        extraTokens: language === "el" ? "Επιπλέον Tokens" : "Extra Tokens",
-        buyExtra: language === "el" ? "Αγορά Επιπλέον Tokens" : "Buy Extra Tokens",
-        freeTierNote:
-            language === "el"
-                ? "Αναβαθμίστε για αγορά επιπλέον tokens"
-                : "Upgrade to purchase extra tokens",
-        mostPopular: language === "el" ? "Πιο Δημοφιλές" : "Most Popular",
-        cancel: language === "el" ? "Ακύρωση" : "Cancel",
-        remaining: language === "el" ? "διαθέσιμα" : "remaining",
-        used: language === "el" ? "χρησιμοποιήθηκαν" : "used",
-    }
+    const I18N = {
+        el: {
+            title: "Χρήση AI Tokens",
+            monthlyUsage: "Μηνιαία Χρήση",
+            extraTokens: "Επιπλέον Tokens",
+            buyExtra: "Αγορά Επιπλέον Tokens",
+            freeTierNote: "Αναβαθμίστε για αγορά επιπλέον tokens",
+            mostPopular: "Πιο Δημοφιλές",
+            cancel: "Ακύρωση",
+            remaining: "διαθέσιμα",
+            used: "χρησιμοποιήθηκαν",
+        },
+        en: {
+            title: "AI Token Usage",
+            monthlyUsage: "Monthly Usage",
+            extraTokens: "Extra Tokens",
+            buyExtra: "Buy Extra Tokens",
+            freeTierNote: "Upgrade to purchase extra tokens",
+            mostPopular: "Most Popular",
+            cancel: "Cancel",
+            remaining: "remaining",
+            used: "used",
+        },
+    } as const
+    const i18n = I18N[language === "el" ? "el" : "en"]
 
     useEffect(() => {
         fetch("/api/v1/tokens/usage")
@@ -193,7 +206,7 @@ export function TokenUsageCard({ language = "en", className = "" }: Props) {
             {/* Token package selector */}
             {showPackages && isPaid && (
                 <div className="space-y-2">
-                    {TOKEN_PACKAGES.map((pkg) => (
+                    {TOKEN_PACKAGE_LIST.map((pkg) => (
                         <button
                             key={pkg.key}
                             onClick={() => handlePurchase(pkg.key)}

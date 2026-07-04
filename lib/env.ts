@@ -12,7 +12,10 @@ const envSchema = z.object({
     GEMINI_API_KEY: z.string().optional(),
     GEMINI_MODEL_EXTRACTION: z.string().default("gemini-2.5-pro"),
     GEMINI_MODEL_GAP_ANALYSIS: z.string().default("gemini-2.5-pro"),
-    GEMINI_MODEL_CLARITY_ANALYSIS: z.string().default("gemini-2.5-pro"),
+    // Clarity/translation/savings/checklist steps are language work — Flash is
+    // sufficient and ~4x cheaper blended than 2.5 Pro. Extraction and gap
+    // detection stay on Pro for accuracy (see docs/planning/TOKEN_ECONOMICS_2026-07.md).
+    GEMINI_MODEL_CLARITY_ANALYSIS: z.string().default("gemini-2.5-flash"),
     GEMINI_MODEL_QA: z.string().default("gemini-2.5-flash"),
     GEMINI_MODEL_FALLBACK: z.string().default("gemini-2.5-flash"),
     OPENAI_API_KEY: z.string().optional(),

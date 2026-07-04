@@ -48,6 +48,14 @@ export const POST = withApiGuard(
                         { run_id: run.id }
                     )
                 }
+                if (run.failureCode === "UPGRADE_REQUIRED") {
+                    return createApiError(
+                        "UPGRADE_REQUIRED",
+                        "AI analysis requires a paid plan; the free trial analysis has been used",
+                        402,
+                        { run_id: run.id }
+                    )
+                }
                 return createApiError(
                     "TOKEN_LIMIT_BLOCKED",
                     "Policy review blocked due to token usage limits",

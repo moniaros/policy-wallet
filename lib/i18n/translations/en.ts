@@ -35,6 +35,10 @@ export const en: TranslationKeys = {
         aiConsentRequired: 'AI-processing consent is required before analysis.',
         aiConsentOwnerRequired: 'The policy owner has not granted consent for AI analysis.',
         aiConsentSaveFailed: 'Saving your consent failed. Please try again.',
+        aiConsentRequestTitle: 'AI analysis consent request',
+        aiConsentRequestMessage: 'Your insurance advisor requests your consent to analyze your policies with AI.',
+        aiConsentRequestSent: 'Consent request sent to the client.',
+        aiConsentRequestAction: 'Request client consent',
     },
 
     // Navigation
@@ -438,6 +442,7 @@ export const en: TranslationKeys = {
             policyNotFound: 'Policy not found.',
             noActiveAgent: 'No active agent found.',
             limitReached: 'You have reached your usage limit for this action.',
+            upgradeRequired: 'AI features are available on paid plans. Upgrade to continue.',
             tokenLimit: 'Your AI token limit has been reached. Upgrade or buy credits to continue.',
             aiUnavailable: 'AI service is currently unavailable. Please try again later.',
             analysisFailed: 'Analysis failed. Please retry.',

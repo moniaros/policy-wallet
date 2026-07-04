@@ -7,7 +7,7 @@ vi.mock('@/lib/db', () => ({
         policyDocument: { updateMany: vi.fn() },
         policyAnalysisRun: { create: vi.fn(), update: vi.fn() },
         gapDefinition: { count: vi.fn() },
-        user: { findUnique: vi.fn() },
+        user: { findUnique: vi.fn(), updateMany: vi.fn() },
         accessGrant: { findFirst: vi.fn() },
         customerRelationship: { findFirst: vi.fn() },
     },
@@ -38,11 +38,12 @@ vi.mock('@/lib/services/ai', () => ({
     getAIService: vi.fn(() => ({ isAvailable: () => false, getServiceName: () => 'mock' })),
 }))
 vi.mock('@/lib/subscription-entitlements', () => ({
-    resolveUserEntitlements: vi.fn(async () => ({ tier: 'free', limits: {} })),
+    resolveUserEntitlements: vi.fn(async () => ({ tier: 'plus', limits: {} })),
 }))
 
 import { db } from '@/lib/db'
 import { canUserUseTokens } from '@/lib/token-tracking'
+import { resolveUserEntitlements } from '@/lib/subscription-entitlements'
 import { getAIService } from '@/lib/services/ai'
 import { PolicyAnalysisOrchestratorService } from '@/lib/services/analysis/policy-analysis-orchestrator.service'
 import { GapAnalysisService } from '@/lib/services/gap-analysis.service'
@@ -55,6 +56,8 @@ const mockRunCreate = vi.mocked(db.policyAnalysisRun.create)
 const mockGapCount = vi.mocked(db.gapDefinition.count)
 const mockUserFind = vi.mocked(db.user.findUnique)
 const mockTokenGate = vi.mocked(canUserUseTokens)
+const mockEntitlements = vi.mocked(resolveUserEntitlements)
+const mockUserUpdateMany = vi.mocked(db.user.updateMany)
 const mockGetAIService = vi.mocked(getAIService)
 
 const OWNER_ID = 'owner-1'
@@ -72,6 +75,7 @@ beforeEach(() => {
     mockGapCount.mockResolvedValue(3)
     mockTokenGate.mockResolvedValue({ allowed: true } as any)
     mockRunCreate.mockImplementation((async ({ data }: any) => ({ id: 'run-1', ...data })) as any)
+    mockUserUpdateMany.mockResolvedValue({ count: 1 } as any)
 })
 
 describe('AI-processing consent gate — orchestrator createRun (GDPR Art. 9)', () => {
@@ -161,5 +165,71 @@ describe('AI-processing consent gate — legacy GapAnalysisService.analyzePolicy
         const result = await service.analyzePolicy('pol-1', OWNER_ID, 'en')
         expect(result.success).toBe(true)
         expect(result.count).toBe(0)
+    })
+})
+
+describe('AI paywall — free tier gets exactly one trial analysis (orchestrator createRun)', () => {
+    const CONSENTED_OWNER = { aiProcessingConsentVersion: '2026-07' }
+
+    it('runs the one-time trial for a free policyholder and skips the token gate', async () => {
+        mockEntitlements.mockResolvedValue({ tier: 'free', limits: {} } as any)
+        // 1st user lookup: owner consent; 2nd: initiator roles/trial state
+        mockUserFind
+            .mockResolvedValueOnce(CONSENTED_OWNER as any)
+            .mockResolvedValueOnce({ roles: 'policyholder', trialAnalysisUsedAt: null } as any)
+
+        const orchestrator = new PolicyAnalysisOrchestratorService()
+        const run = await orchestrator.createRun('pol-1', OWNER_ID)
+
+        expect(run.status).toBe('queued')
+        expect(mockUserUpdateMany).toHaveBeenCalledWith(
+            expect.objectContaining({ where: { id: OWNER_ID, trialAnalysisUsedAt: null } })
+        )
+        expect(mockTokenGate).not.toHaveBeenCalled()
+    })
+
+    it('blocks with UPGRADE_REQUIRED once the trial is used', async () => {
+        mockEntitlements.mockResolvedValue({ tier: 'free', limits: {} } as any)
+        mockUserFind
+            .mockResolvedValueOnce(CONSENTED_OWNER as any)
+            .mockResolvedValueOnce({ roles: 'policyholder', trialAnalysisUsedAt: new Date() } as any)
+
+        const orchestrator = new PolicyAnalysisOrchestratorService()
+        const run = await orchestrator.createRun('pol-1', OWNER_ID)
+
+        expect(run.status).toBe('blocked')
+        expect(run.failureCode).toBe('UPGRADE_REQUIRED')
+        expect(mockPolicyUpdate).not.toHaveBeenCalled()
+        expect(mockUserUpdateMany).not.toHaveBeenCalled()
+    })
+
+    it('blocks when a concurrent request loses the atomic trial claim', async () => {
+        mockEntitlements.mockResolvedValue({ tier: 'free', limits: {} } as any)
+        mockUserFind
+            .mockResolvedValueOnce(CONSENTED_OWNER as any)
+            .mockResolvedValueOnce({ roles: 'policyholder', trialAnalysisUsedAt: null } as any)
+        mockUserUpdateMany.mockResolvedValue({ count: 0 } as any)
+
+        const orchestrator = new PolicyAnalysisOrchestratorService()
+        const run = await orchestrator.createRun('pol-1', OWNER_ID)
+
+        expect(run.status).toBe('blocked')
+        expect(run.failureCode).toBe('UPGRADE_REQUIRED')
+    })
+
+    it('never applies the policyholder paywall to agent initiators (agent budgets meter them)', async () => {
+        mockEntitlements.mockResolvedValue({ tier: 'free', limits: {} } as any)
+        vi.mocked(db.accessGrant.findFirst).mockResolvedValue(null)
+        vi.mocked(db.customerRelationship.findFirst).mockResolvedValue({ id: 'rel-1' } as any)
+        mockUserFind
+            .mockResolvedValueOnce(CONSENTED_OWNER as any)
+            .mockResolvedValueOnce({ roles: 'agent', trialAnalysisUsedAt: null } as any)
+
+        const orchestrator = new PolicyAnalysisOrchestratorService()
+        const run = await orchestrator.createRun('pol-1', 'agent-77')
+
+        expect(run.status).toBe('queued')
+        expect(mockUserUpdateMany).not.toHaveBeenCalled()
+        expect(mockTokenGate).toHaveBeenCalledTimes(1)
     })
 })

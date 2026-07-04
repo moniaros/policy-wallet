@@ -541,10 +541,10 @@ export function PolicyDetailsClient({
                                         </h3>
                                     </div>
                                     <p className="mb-4 text-xs leading-relaxed text-black/60 dark:text-white/65">
-                                        {detailsCopy.upgradeHint || 'Unlock agent collaboration, advanced analytics, and unlimited AI questions.'}
+                                        {detailsCopy.upgradeHint}
                                     </p>
                                     <a
-                                        href="/account"
+                                        href="/upgrade"
                                         className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full bg-[#1FDC86] px-4 text-sm font-bold text-white transition-colors hover:bg-[#19b870]"
                                     >
                                         <Crown className="h-4 w-4" />
@@ -714,8 +714,8 @@ export function PolicyDetailsClient({
                                                             <DocumentPreviewButton
                                                                 onClick={() => setPreviewDoc({ fileName: doc.fileName, fileUrl: doc.fileUrl })}
                                                                 isLocked={isPreviewLocked}
-                                                                label={t.wallet.preview || 'Preview'}
-                                                                lockedLabel={t.wallet.upgradeToPlusPreview || 'Upgrade to Plus to preview PDFs'}
+                                                                label={t.wallet.preview}
+                                                                lockedLabel={t.wallet.upgradeToPlusPreview}
                                                             />
                                                         )}
                                                         <Download className="h-4 w-4 shrink-0 text-black/45 dark:text-white/55" />

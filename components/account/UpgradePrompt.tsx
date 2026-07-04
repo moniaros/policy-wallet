@@ -7,7 +7,7 @@ import { subscriptionCopy } from '@/lib/subscription-copy'
 import { trackJourneyEvent } from '@/lib/journey/funnel'
 
 export interface UpgradePromptProps {
-    reason: 'policy_limit' | 'feature_locked' | 'notifications_disabled' | 'daily_limit' | 'gap_limit'
+    reason: 'policy_limit' | 'feature_locked' | 'notifications_disabled' | 'daily_limit' | 'gap_limit' | 'token_limit'
     language: 'el' | 'en'
     onDismiss?: () => void
     className?: string
@@ -80,6 +80,16 @@ export function UpgradePrompt({
                 en: 'Upgrade for more gap analyses and fuller risk visibility.',
             },
         },
+        token_limit: {
+            title: {
+                el: 'Εξαντλήθηκαν τα AI tokens του μήνα',
+                en: 'Monthly AI Tokens Exhausted',
+            },
+            description: {
+                el: 'Αναβαθμίστε το πλάνο σας ή αγοράστε επιπλέον tokens για να συνεχίσετε τις αναλύσεις AI.',
+                en: 'Upgrade your plan or buy extra tokens to continue AI analyses.',
+            },
+        },
     }
 
     const message = messages[reason]
@@ -144,7 +154,7 @@ export function UpgradePrompt({
                         onClick={onDismiss}
                         className="px-6 py-3 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white font-semibold transition-colors"
                     >
-                        {language === 'el' ? 'Αργότερα' : 'Maybe Later'}
+                        {({ el: 'Αργότερα', en: 'Maybe Later' } as const)[language]}
                     </button>
                 )}
             </div>

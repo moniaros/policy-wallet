@@ -17,10 +17,15 @@ import {
 // Re-export for backward compatibility if needed, but preferably use token-utils directly
 export { formatTokens, formatCost, TOKEN_COSTS, type AIModel, type OperationType }
 
+// Token budgets are the single AI meter (per-day feature counters are abuse
+// guards only). Free is 0 — AI is paid-only apart from the one-time trial
+// analysis, which bypasses this gate at the orchestrator. Pro is capped at 3M
+// so worst-case provider cost stays under the plan price (see
+// docs/planning/TOKEN_ECONOMICS_2026-07.md).
 const TOKEN_LIMITS: Record<'free' | 'plus' | 'pro', number | null> = {
-    free: 250_000,
+    free: 0,
     plus: 1_000_000,
-    pro: 5_000_000,
+    pro: 3_000_000,
 }
 
 function normalizeTokenTier(rawTier: string): 'free' | 'plus' | 'pro' {
