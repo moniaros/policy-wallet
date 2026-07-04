@@ -213,7 +213,10 @@ function SignupConfirmationContent() {
             if (selectedPlan) onboardingParams.set("plan", selectedPlan)
             if (selectedBilling) onboardingParams.set("billing", selectedBilling)
             const qs = onboardingParams.toString()
-            router.push(`/onboarding${qs ? `?${qs}` : ""}`)
+            // Each audience has its own onboarding flow — agents must not land
+            // in the policyholder flow (it would create a PolicyholderProfile).
+            const onboardingPath = role === "agent" ? "/onboarding/agent" : "/onboarding"
+            router.push(`${onboardingPath}${qs ? `?${qs}` : ""}`)
         } catch {
             setNotice({
                 kind: "error",
@@ -251,7 +254,7 @@ function SignupConfirmationContent() {
                     onClick={() => setLanguage(language === "el" ? "en" : "el")}
                     className="rounded-full border border-[#E2E8F0] bg-white px-3 py-1 text-[12px] font-semibold text-[#475569] transition hover:bg-[#F8FAFC]"
                 >
-                    {language === "el" ? "EN" : "EL"}
+                    {language === "el" ? "EN" : "EL"} {/* i18n-hardcoded-ignore — language switcher shows target code */}
                 </button>
             </header>
 

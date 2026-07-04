@@ -85,19 +85,19 @@ function ConfettiBurst() {
     )
 }
 
-function SignUpForm() {
+function SignUpForm({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
     const router = useRouter()
     const searchParams = useSearchParams()
     const { language, setLanguage } = useLanguage()
     const t = (el: string, en: string) => (language === "el" ? el : en)
 
-    const initialRole = searchParams.get("role") === "agent" ? "agent" : "policyholder"
     const source = searchParams.get("source") || "signup_direct"
     const token = searchParams.get("token") || ""
     const selectedPlan = searchParams.get("plan") || ""
     const selectedBilling = searchParams.get("billing") || ""
 
-    const [role, setRole] = useState<"policyholder" | "agent">(initialRole)
+    const role = fixedRole
+    const [agentName, setAgentName] = useState("")
     const [showPassword, setShowPassword] = useState(false)
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [serverError, setServerError] = useState<string | null>(null)
@@ -137,15 +137,24 @@ function SignUpForm() {
 
     const onSubmit = async (values: SignupFormValues) => {
         setServerError(null)
-        setIsSubmitting(true)
         const sanitizedEmail = values.email.trim().toLowerCase()
+
+        // Agents must provide name + valid email (mobile is required for everyone).
+        if (role === "agent" && (!agentName.trim() || !sanitizedEmail)) {
+            setServerError(t(
+                "Για λογαριασμό ασφαλιστή απαιτούνται όνομα και έγκυρο email.",
+                "An agent account requires your name and a valid email."
+            ))
+            return
+        }
+        setIsSubmitting(true)
 
         const formData = new FormData()
         formData.append("mobileNumber", values.mobileNumber)
         formData.append("email", sanitizedEmail)
         formData.append("password", values.password)
         formData.append("confirmPassword", values.password)
-        formData.append("name", role === "agent" ? "Agent User" : "")
+        formData.append("name", role === "agent" ? agentName.trim() : "")
         formData.append("role", role)
         formData.append("language", language)
         formData.append("termsAccepted", String(values.termsAccepted))
@@ -153,10 +162,6 @@ function SignUpForm() {
         if (token) formData.append("token", token)
         if (selectedPlan) formData.append("selectedPlan", selectedPlan)
         if (selectedBilling) formData.append("selectedBilling", selectedBilling)
-        if (role === "agent") {
-            formData.append("licenseNumber", "pending")
-            formData.append("agencyName", "pending")
-        }
 
         try {
             trackLandingEvent("signup_started", { role, source, locale: language, identifier_type: sanitizedEmail ? "email" : "phone" })
@@ -198,7 +203,7 @@ function SignUpForm() {
                         ← {t("Αρχική", "Home")}
                     </Link>
                     <div className="flex items-center gap-2">
-                        <button type="button" onClick={() => setLanguage("el")} className={`text-[12px] font-semibold transition-colors ${language === "el" ? "text-[#0F172A]" : "text-[#94A3B8] hover:text-[#0F172A]"}`}>ΕΛ</button>
+                        <button type="button" onClick={() => setLanguage("el")} className={`text-[12px] font-semibold transition-colors ${language === "el" ? "text-[#0F172A]" : "text-[#94A3B8] hover:text-[#0F172A]"}`}>ΕΛ</button>{/* i18n-hardcoded-ignore — language switcher */}
                         <span className="text-[#E2E8F0]">|</span>
                         <button type="button" onClick={() => setLanguage("en")} className={`text-[12px] font-semibold transition-colors ${language === "en" ? "text-[#0F172A]" : "text-[#94A3B8] hover:text-[#0F172A]"}`}>EN</button>
                     </div>
@@ -225,47 +230,24 @@ function SignUpForm() {
                         </p>
                     </div>
 
-                    {/* Role selector */}
-                    <div className="mb-5 grid grid-cols-2 gap-2.5">
-                        <button
-                            type="button"
-                            onClick={() => setRole("policyholder")}
-                            className={`flex items-center gap-2.5 rounded-xl border-2 px-4 py-3 text-left transition-all ${
-                                role === "policyholder"
-                                    ? "border-[#29685B] bg-[#ECFDF5]"
-                                    : "border-[#E2E8F0] bg-white hover:border-[#A7F3D0]"
-                            }`}
-                        >
-                            <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${role === "policyholder" ? "bg-[#D1FAE5]" : "bg-[#F1F5F9]"}`}>
-                                <Shield className={`h-4 w-4 ${role === "policyholder" ? "text-[#29685B]" : "text-[#94A3B8]"}`} />
-                            </div>
-                            <div>
-                                <p className={`text-[12px] font-bold ${role === "policyholder" ? "text-[#0F172A]" : "text-[#64748B]"}`}>
-                                    {t("Ασφαλισμένος", "Policyholder")}
-                                </p>
-                                <p className="text-[10px] text-[#94A3B8]">{t("Τα συμβόλαιά μου", "My policies")}</p>
-                            </div>
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setRole("agent")}
-                            className={`flex items-center gap-2.5 rounded-xl border-2 px-4 py-3 text-left transition-all ${
-                                role === "agent"
-                                    ? "border-[#29685B] bg-[#ECFDF5]"
-                                    : "border-[#E2E8F0] bg-white hover:border-[#A7F3D0]"
-                            }`}
-                        >
-                            <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${role === "agent" ? "bg-[#D1FAE5]" : "bg-[#F1F5F9]"}`}>
-                                <Briefcase className={`h-4 w-4 ${role === "agent" ? "text-[#29685B]" : "text-[#94A3B8]"}`} />
-                            </div>
-                            <div>
-                                <p className={`text-[12px] font-bold ${role === "agent" ? "text-[#0F172A]" : "text-[#64748B]"}`}>
-                                    {t("Ασφαλιστής", "Agent")}
-                                </p>
-                                <p className="text-[10px] text-[#94A3B8]">{t("Οι πελάτες μου", "My clients")}</p>
-                            </div>
-                        </button>
-                    </div>
+                    {/* Role cross-link: two dedicated forms, one per audience */}
+                    <p className="mb-5 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 text-center text-[12px] text-[#64748B]">
+                        {role === "policyholder" ? (
+                            <>
+                                {t("Είστε ασφαλιστικός σύμβουλος;", "Are you an insurance agent?")}{" "}
+                                <Link href={`/auth/signup/agent?${searchParams.toString()}`} className="font-semibold text-[#29685B] hover:underline">
+                                    {t("Εγγραφή ως ασφαλιστής", "Sign up as an agent")}
+                                </Link>
+                            </>
+                        ) : (
+                            <>
+                                {t("Είστε ασφαλισμένος;", "Are you a policyholder?")}{" "}
+                                <Link href={`/auth/signup/policyholder?${searchParams.toString()}`} className="font-semibold text-[#29685B] hover:underline">
+                                    {t("Εγγραφή ως ασφαλισμένος", "Sign up as a policyholder")}
+                                </Link>
+                            </>
+                        )}
+                    </p>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         <AnimatePresence>
@@ -276,6 +258,22 @@ function SignUpForm() {
                                 </motion.div>
                             )}
                         </AnimatePresence>
+
+                        {role === "agent" && (
+                            <div>
+                                <label htmlFor="signup-name" className="mb-1.5 block text-[12px] font-semibold uppercase tracking-wide text-[#64748B]">
+                                    {t("Ονοματεπώνυμο", "Full name")}
+                                </label>
+                                <input
+                                    id="signup-name"
+                                    type="text"
+                                    value={agentName}
+                                    onChange={(e) => setAgentName(e.target.value)}
+                                    placeholder={t("π.χ. Μαρία Παπαδοπούλου", "e.g. Maria Papadopoulou")}
+                                    className={inputBase}
+                                />
+                            </div>
+                        )}
 
                         {/* Mobile */}
                         <div>
@@ -300,7 +298,7 @@ function SignUpForm() {
                         {/* Email */}
                         <div>
                             <label htmlFor="signup-email" className="mb-1.5 block text-[12px] font-semibold uppercase tracking-wide text-[#64748B]">
-                                {t("Email (προαιρετικό)", "Email (optional)")}
+                                {role === "agent" ? t("Email", "Email") : t("Email (προαιρετικό)", "Email (optional)")}
                             </label>
                             <div className="relative">
                                 <input id="signup-email" type="email" placeholder="name@example.com" {...register("email")} className={`${inputBase} ${errors.email ? "border-rose-300" : ""}`} />
@@ -395,14 +393,14 @@ function SignUpForm() {
     )
 }
 
-export default function SignUpPage() {
+export function SignUpFormPage({ fixedRole }: { fixedRole: "policyholder" | "agent" }) {
     return (
         <Suspense fallback={
             <div className={`${inter.className} flex min-h-screen items-center justify-center bg-[#F8FAFC]`}>
                 <Loader2 className="h-7 w-7 animate-spin text-[#29685B]" />
             </div>
         }>
-            <SignUpForm />
+            <SignUpForm fixedRole={fixedRole} />
         </Suspense>
     )
 }
