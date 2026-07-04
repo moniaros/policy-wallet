@@ -170,7 +170,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                     </div>
 
                     {/* Gap Analysis */}
-                    <AnalysisCard policyId={policyId} gaps={policy.gapInstances as any} />
+                    <AnalysisCard policyId={policyId} gaps={policy.gapInstances as any} canRequestOwnerConsent />
 
                     <CollaborationTimeline
                         policyId={policyId}

@@ -20,7 +20,8 @@ import {
 import { AIServiceFactory, getAIService } from "@/lib/services/ai/ai-service.factory";
 import { CustomerService } from "@/lib/services/customer.service";
 import { collaborationService } from "@/lib/services/collaboration.service";
-import { sendPolicyInviteEmail } from "@/lib/email/invite-emails";
+import { sendPolicyInviteEmail, sendAiConsentRequestEmail } from "@/lib/email/invite-emails";
+import { getTranslations } from "@/lib/i18n";
 import { daysFromNow, INVITE_EXPIRY_DAYS } from "@/lib/constants/time";
 
 const customerService = new CustomerService(db);
@@ -320,8 +321,9 @@ export async function createAgentInvite(email: string, scope: AccessScope) {
         data: {
             inviterUserId: authResult.dbUser.id,
             inviteeEmail: email,
-            token: Math.random().toString(36).substring(7),
+            token: crypto.randomUUID().replace(/-/g, ''),
             inviteType: 'signup',
+            relationshipType: 'agent_client',
             scope,
             expiresAt: daysFromNow(INVITE_EXPIRY_DAYS)
         }
@@ -672,4 +674,92 @@ export async function createCrossSellOpportunities(customerId: string) {
 
     revalidatePath(`/customers/${customerId}`)
     return { success: true, opportunitiesCreated: result.opportunitiesCreated }
+}
+
+
+/**
+ * GDPR consent request: an agent cannot consent on the data subject's behalf,
+ * but is never dead-ended — this asks the policy OWNER for AI-processing
+ * consent. Account holders get an in-app notification + approval email;
+ * customers without a usable account get a signup invite whose onboarding
+ * captures consent at first upload.
+ */
+export async function requestAiConsent(policyId: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+    if (!authResult.dbUser.roles?.includes("agent")) return { error: "Unauthorized" }
+
+    const policy = await db.policy.findUnique({ where: { id: policyId } })
+    if (!policy) return { error: "Policy not found" }
+
+    const hasGrant = await db.accessGrant.findFirst({
+        where: {
+            granterUserId: policy.ownerUserId,
+            granteeUserId: authResult.dbUser.id,
+            status: "active",
+        },
+    })
+    const hasRelationship = hasGrant
+        ? null
+        : await db.customerRelationship.findFirst({
+            where: {
+                agentUserId: authResult.dbUser.id,
+                policyholderUserId: policy.ownerUserId,
+            },
+        })
+    if (!hasGrant && !hasRelationship) return { error: "Unauthorized" }
+
+    const owner = await db.user.findUnique({
+        where: { id: policy.ownerUserId },
+        select: {
+            id: true, email: true, preferredLanguage: true,
+            emailVerified: true, lastActiveAt: true, aiProcessingConsentVersion: true,
+        },
+    })
+    if (!owner) return { error: "Policy owner not found" }
+    if (owner.aiProcessingConsentVersion) return { success: true, mode: "already_consented" as const }
+
+    const language = (owner.preferredLanguage as "en" | "el") || "el"
+    const t = getTranslations(language)
+    const agentName = authResult.dbUser.name || authResult.dbUser.email || "PolicyWallet agent"
+
+    const hasAccount = Boolean(owner.emailVerified || owner.lastActiveAt)
+    if (hasAccount) {
+        await db.notificationEvent.create({
+            data: {
+                userId: owner.id,
+                eventType: "ai_consent_request",
+                channel: "in_app",
+                title: t.common.aiConsentRequestTitle,
+                message: `${agentName}: ${t.common.aiConsentRequestMessage}`,
+                relatedObjectType: "policy",
+                relatedObjectId: policy.id,
+            },
+        })
+        if (owner.email) {
+            // Best-effort — the in-app notification is the durable request.
+            await sendAiConsentRequestEmail({ to: owner.email, agentName, language }).catch(() => null)
+        }
+        return { success: true, mode: "notification" as const }
+    }
+
+    const invite = await db.invite.create({
+        data: {
+            inviterUserId: authResult.dbUser.id,
+            inviteeEmail: owner.email,
+            token: crypto.randomUUID().replace(/-/g, ""),
+            inviteType: "signup",
+            relationshipType: "agent_client",
+            scope: `policy:${policy.id}`,
+            expiresAt: daysFromNow(INVITE_EXPIRY_DAYS),
+        },
+    })
+    await sendPolicyInviteEmail({
+        to: owner.email,
+        token: invite.token,
+        inviterName: agentName,
+        policyNumber: policy.policyNumber,
+        language,
+    })
+    return { success: true, mode: "invite" as const }
 }

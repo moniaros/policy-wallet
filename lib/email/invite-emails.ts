@@ -118,3 +118,40 @@ export async function sendPolicySharedAccessEmail(params: {
     })
 }
 
+export async function sendAiConsentRequestEmail(params: {
+    to: string
+    agentName?: string | null
+    language?: Language
+}) {
+    const language = params.language || "el"
+    const copy = buildInviteCopy(language)
+    const agentName = sanitizeName(params.agentName)
+    const approvalUrl = `${getBaseUrl()}/consent/ai`
+
+    const text = language === "el"
+        ? {
+            subject: "Αίτημα συγκατάθεσης για ανάλυση AI",
+            title: "Ο σύμβουλός σας ζητά τη συγκατάθεσή σας",
+            body: `${agentName} ζητά τη συγκατάθεσή σας για να αναλύσει τα ασφαλιστήριά σας με AI στο PolicyWallet. Η συγκατάθεση καταγράφεται και μπορείτε να την ανακαλέσετε ανά πάσα στιγμή.`,
+            action: "Έλεγχος & έγκριση",
+        }
+        : {
+            subject: "AI analysis consent request",
+            title: "Your advisor requests your consent",
+            body: `${agentName} requests your consent to analyze your insurance policies with AI in PolicyWallet. Your consent is recorded and can be withdrawn at any time.`,
+            action: "Review & approve",
+        }
+
+    return sendEmail({
+        to: params.to,
+        subject: text.subject,
+        html: cardTemplate({
+            title: text.title,
+            body: text.body,
+            actionLabel: text.action,
+            actionUrl: approvalUrl,
+            footer: copy.footer,
+        }),
+    })
+}
+

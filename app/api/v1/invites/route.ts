@@ -47,6 +47,7 @@ export async function POST(req: Request) {
                 inviterUserId: authResult.dbUser.id,
                 inviteeEmail: invitee_email,
                 inviteType: "access_grant",
+                relationshipType: "policy_share",
                 scope: scope,
                 token: token,
                 expiresAt: daysFromNow(INVITE_EXPIRY_DAYS), // 7 days
