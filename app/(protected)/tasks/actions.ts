@@ -124,6 +124,16 @@ export async function submitQuestionnaireResponse(instanceId: string, answers: Q
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) throw new Error("Unauthorized")
 
+    // Only the instance's intended recipient may answer it — an instance id
+    // alone must not let any authenticated user submit/complete someone else's
+    // questionnaire.
+    const instance = await db.questionnaireInstance.findUnique({
+        where: { id: instanceId },
+        select: { sentToUserId: true },
+    })
+    if (!instance) throw new Error("Questionnaire not found")
+    if (instance.sentToUserId !== authResult.dbUser.id) throw new Error("Unauthorized")
+
     // Start a transaction to ensure atomic update and response creation
     return await db.$transaction(async (tx) => {
         // Create the response

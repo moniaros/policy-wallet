@@ -33,10 +33,13 @@ export const GET = withApiGuard(
 
         const isOwner = policy.ownerUserId === authResult.dbUser.id
         if (!isOwner) {
+            // The grant must be scoped to THIS policy — an active grant to any
+            // other policy of the same owner must not expose this run's data.
             const grant = await db.accessGrant.findFirst({
                 where: {
                     granterUserId: policy.ownerUserId,
                     granteeUserId: authResult.dbUser.id,
+                    scope: `policy:${policyId}`,
                     status: "active",
                 },
             })
