@@ -61,6 +61,8 @@ const envSchema = z.object({
     // Redis / Upstash
     UPSTASH_REDIS_REST_URL: z.string().optional(),
     UPSTASH_REDIS_REST_TOKEN: z.string().min(1).optional(),
+    // Escape hatch: allow a single-instance production deploy without Upstash.
+    RATELIMIT_ALLOW_LOCAL: z.string().optional(),
 
     // RevenueCat (webhooks)
     REVENUECAT_WEBHOOK_AUTH_VALUE: z.string().min(1).optional(),
@@ -80,6 +82,16 @@ if (parsedEnv.NODE_ENV === "production") {
 
     if (parsedEnv.FF_AI_FAILOVER_OPENAI === "true" && !parsedEnv.OPENAI_API_KEY) {
         missing.push("OPENAI_API_KEY")
+    }
+
+    // Distributed rate limiting is a security control, not an optimization: without
+    // Upstash, each serverless instance keeps its own in-memory counter, so the
+    // effective limit multiplies by the instance count (near fail-open at scale).
+    // Refuse to boot production without it. Set RATELIMIT_ALLOW_LOCAL=1 to override
+    // for a deliberately single-instance deploy.
+    if (parsedEnv.RATELIMIT_ALLOW_LOCAL !== "1") {
+        if (!parsedEnv.UPSTASH_REDIS_REST_URL) missing.push("UPSTASH_REDIS_REST_URL")
+        if (!parsedEnv.UPSTASH_REDIS_REST_TOKEN) missing.push("UPSTASH_REDIS_REST_TOKEN")
     }
 
     if (missing.length > 0) {

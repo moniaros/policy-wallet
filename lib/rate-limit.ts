@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
+import * as Sentry from "@sentry/nextjs"
 import { env } from "./env"
 
 // 1. Initialize Redis (Distributed Cache)
@@ -59,7 +60,14 @@ export async function rateLimit(ip: string, limit: number = 10, durationMs: numb
             }
             return { success: true, count: totalLimit - remaining, limit: totalLimit }
         } catch (error) {
+            // Redis unreachable → per-instance in-memory limiting only. This is a
+            // security degradation (the distributed limit no longer holds across
+            // instances), so surface it loudly rather than failing open silently.
             console.warn("Upstash Redis ratelimit failed, falling back to local memory:", error)
+            Sentry.captureMessage("rate-limit: Upstash unreachable, degraded to in-memory", {
+                level: "warning",
+                extra: { error: error instanceof Error ? error.message : String(error) },
+            })
             // Fall through to local cache
         }
     }
