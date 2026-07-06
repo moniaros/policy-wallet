@@ -95,9 +95,9 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 },
                 features: [
                     { label: { el: "Έως 3 συμβόλαια", en: "Up to 3 policies" }, included: true },
-                    { label: { el: "Βασική AI ανάλυση", en: "Basic AI analysis" }, included: true },
-                    { label: { el: "Ασφαλής αποθήκευση εγγράφων", en: "Secure document storage" }, included: true },
-                    { label: { el: "Ειδοποιήσεις email", en: "Email notifications" }, included: false },
+                    { label: { el: "1 δωρεάν δοκιμαστική ανάλυση AI", en: "1 free trial AI analysis" }, included: true },
+                    { label: { el: "Ασφαλής αποθήκευση & υπενθυμίσεις ανανέωσης", en: "Secure storage & renewal reminders" }, included: true },
+                    { label: { el: "Συνεχής ανάλυση AI & ερωτήσεις", en: "Ongoing AI analysis & Q&A" }, included: false },
                     { label: { el: "Συνεργασία με σύμβουλο", en: "Advisor collaboration" }, included: false },
                 ],
             },
@@ -121,7 +121,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 },
                 features: [
                     { label: { el: "Έως 10 συμβόλαια", en: "Up to 10 policies" }, included: true, highlight: true },
-                    { label: { el: "Προηγμένη AI ανάλυση", en: "Advanced AI analysis" }, included: true, highlight: true },
+                    { label: { el: "1M AI tokens/μήνα (~5 αναλύσεις)", en: "1M AI tokens/mo (~5 analyses)" }, included: true, highlight: true },
                     { label: { el: "Διαδραστικές ερωτήσεις AI", en: "Interactive AI Q&A" }, included: true },
                     { label: { el: "Ειδοποιήσεις email", en: "Email notifications" }, included: true },
                     { label: { el: "Συνεργασία με σύμβουλο", en: "Advisor collaboration" }, included: true },
@@ -146,8 +146,8 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 },
                 features: [
                     { label: { el: "Απεριόριστα συμβόλαια", en: "Unlimited policies" }, included: true, highlight: true },
-                    { label: { el: "Απεριόριστη χρήση AI", en: "Unlimited AI usage" }, included: true, highlight: true },
-                    { label: { el: "Προηγμένα analytics", en: "Advanced analytics" }, included: true },
+                    { label: { el: "3M AI tokens/μήνα (~15 αναλύσεις) + top-ups", en: "3M AI tokens/mo (~15 analyses) + top-ups" }, included: true, highlight: true },
+                    { label: { el: "Προηγμένα analytics & αναφορά εξοικονόμησης", en: "Advanced analytics & savings report" }, included: true },
                     { label: { el: "Συνεργασία με σύμβουλο", en: "Advisor collaboration" }, included: true },
                     { label: { el: "Προτεραιότητα υποστήριξης", en: "Priority support" }, included: true },
                 ],
@@ -164,12 +164,8 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 values: { free: "3", plus: "10", pro: "Unlimited" },
             },
             {
-                name: { el: "AI αναλύσεις / μήνα", en: "AI analyses / month" },
-                values: { free: "10", plus: "25", pro: "Unlimited" },
-            },
-            {
-                name: { el: "AI ερωτήσεις / ημέρα", en: "AI questions / day" },
-                values: { free: "10", plus: "25", pro: "Unlimited" },
+                name: { el: "Μηνιαία AI tokens", en: "Monthly AI tokens" },
+                values: { free: "1 δοκιμή / trial", plus: "1M", pro: "3M + top-ups" },
             },
             {
                 category: { el: "AI & ειδοποιήσεις", en: "AI & notifications" },
