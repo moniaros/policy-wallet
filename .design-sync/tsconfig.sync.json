@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "baseUrl": "..",
+    "jsx": "preserve",
+    "paths": {
+      "@/lib/i18n": [
+        "./lib/i18n/index.ts"
+      ],
+      "@/*": [
+        "./*"
+      ],
+      "next/link": [
+        "./.design-sync/shims/next-link.tsx"
+      ],
+      "next/navigation": [
+        "./.design-sync/shims/next-navigation.ts"
+      ]
+    }
+  }
+}

@@ -70,3 +70,10 @@ docs/policies/motor_ethniki_2_terms.pdf
 docs/policies/motor_ethniki_2.pdf
 docs/policies/motor_ethniki_3_terms.pdf
 docs/policies/motor_ethniki_3.pdf
+
+# design-sync machine state
+.ds-sync/
+ds-bundle/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules

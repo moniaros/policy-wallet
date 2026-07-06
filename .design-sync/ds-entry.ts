@@ -1,0 +1,20 @@
+// Design-sync entry barrel: the PolicyWallet design-system surface synced to
+// claude.ai/design. Named re-exports (not `export *`) — LoadingSkeleton.tsx
+// also exports a `Skeleton`, and the shadcn primitive in skeleton.tsx wins.
+export { Button, buttonVariants } from "../components/ui/button"
+export type { ButtonProps } from "../components/ui/button"
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from "../components/ui/card"
+export { Skeleton } from "../components/ui/skeleton"
+export { Modal } from "../components/ui/Modal"
+export { PageHeader } from "../components/ui/PageHeader"
+export { FloatingActionButton } from "../components/ui/FloatingActionButton"
+export { ProcessingHUD } from "../components/ui/ProcessingHUD"
+export { PullToRefresh } from "../components/ui/PullToRefresh"
+export { SwipeableCard } from "../components/ui/SwipeableCard"
+export { PlanGate } from "../components/ui/PlanGate"
+export { AiDisclaimer } from "../components/ui/AiDisclaimer"
+export { AiConsentModal } from "../components/ui/AiConsentModal"
+export { DashboardSkeleton } from "../components/ui/LoadingSkeleton"
+export { BrandCard, BrandStat, BrandSectionHeader, BrandActionButton } from "../components/ui/brand"
+export type { BrandCardProps, BrandStatProps, BrandSectionHeaderProps, BrandActionButtonProps } from "../components/ui/brand"
+export { LanguageProvider } from "../contexts/LanguageContext"
