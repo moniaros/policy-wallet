@@ -8,7 +8,9 @@
 
 **Vercel is the platform.** The repo is already connected via the native Vercel GitHub App (it auto-deploys a preview per PR and posts the deployment status). The custom `.github/workflows/preview.yml` + `deploy.yml` are a *second*, redundant Vercel path branch-gated to `main`/`develop` — leave them for now; the GitHub App is what deploys PRs into `NEW-UI`.
 
-**Known failing deploy → env var fix (do this first).** As of PR #43 the Vercel deploy fails. The most likely cause is a self-inflicted, intended change: production boot now **requires Upstash** (`lib/env.ts`), and Vercel builds run with `NODE_ENV=production`. Vercel builds **do not read GitHub workflow env** — env must be set in the **Vercel dashboard**. In *Project → Settings → Environment Variables*, for **both Preview and Production**, set at minimum:
+**Vercel is skipping this branch (do this first).** The project is `agentrises-projects/policy-wallet`. As of PR #43 Vercel reports the deployment as **Ignored** (`nextCommitStatus: IGNORED`) — it is **not building this branch at all**, so there's no preview yet (an earlier commit briefly showed a `failure` status; the current state is skipped, not failed). To get a demo preview: in *Vercel → Project → Settings → Git*, enable deployments for the demo branch (or set the demo branch as the project's production/preview branch), or deploy it manually with `vercel deploy`.
+
+**Then: build env vars (Vercel builds don't read GitHub workflow env).** Once the branch is un-ignored, the build runs with `NODE_ENV=production`, and production boot now **requires Upstash** (`lib/env.ts`). In *Project → Settings → Environment Variables*, for **both Preview and Production**, set at minimum:
 
 | Var | Why |
 |---|---|
