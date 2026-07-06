@@ -4,6 +4,25 @@
 
 > This is a demo/staging cutover. Do **not** point it at production data. Use a fresh Supabase project and Stripe **test mode**.
 
+## 0. Vercel platform notes (read first)
+
+**Vercel is the platform.** The repo is already connected via the native Vercel GitHub App (it auto-deploys a preview per PR and posts the deployment status). The custom `.github/workflows/preview.yml` + `deploy.yml` are a *second*, redundant Vercel path branch-gated to `main`/`develop` — leave them for now; the GitHub App is what deploys PRs into `NEW-UI`.
+
+**Known failing deploy → env var fix (do this first).** As of PR #43 the Vercel deploy fails. The most likely cause is a self-inflicted, intended change: production boot now **requires Upstash** (`lib/env.ts`), and Vercel builds run with `NODE_ENV=production`. Vercel builds **do not read GitHub workflow env** — env must be set in the **Vercel dashboard**. In *Project → Settings → Environment Variables*, for **both Preview and Production**, set at minimum:
+
+| Var | Why |
+|---|---|
+| `RATELIMIT_ALLOW_LOCAL=1` **or** `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` | else the build throws "Missing required production environment variables: UPSTASH_*" |
+| `AUTH_SECRET` | required at module eval (`lib/env.ts`) — build fails without it |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | build-time |
+| `DIRECT_URL` / `DATABASE_URL` (+ `POOLED_DATABASE_URL` for runtime) | build + runtime |
+
+Then re-deploy (push a commit, or *Redeploy* in the dashboard). If it still fails, read the Vercel **build log** for the first error — that's the ground truth I can't see from the repo. The full env table for a working data plane is in step 2 below.
+
+**Disconnect Cloudflare Workers.** The "Workers Builds: policy-wallet" check is a stray Cloudflare dashboard git-integration — there is **no `wrangler` config or `@opennextjs/cloudflare` adapter** in the repo, so a Next.js App Router app with Prisma/server actions won't run on Workers. It produces nothing usable. Disconnect it (*Cloudflare dashboard → Workers → policy-wallet → Settings → git integration*) so there's one clean deploy story.
+
+**Heads-up for later (not the demo):** `deploy.yml` runs `prisma migrate deploy` against `secrets.DATABASE_URL` on merge to `main` — production migrations auto-apply on release. Be deliberate about that when the time comes.
+
 ## 1. Provision infrastructure
 
 - **Supabase (staging):** new project. Grab the pooled and direct connection strings and the anon key.
