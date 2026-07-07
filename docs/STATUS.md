@@ -21,12 +21,12 @@ _Living dashboard — not a log. Updated at the end of each session with meaning
 
 ## Top risks (ranked)
 1. **High — nothing deployed yet**: the demo is the first real end-to-end exercise of signup→trial→paywall→checkout. Untested against a real Supabase/Stripe until the runbook runs.
-2. **High — scale gaps are fast-follow, not done** (gate before real traffic, not the demo): pooled DB unverified under load; AI pipeline still inline via `after()` (QStash installed, unused); no load run yet.
+2. **Medium — scale partially hardened** (branch `scale-hardening`, PR pending): AI pipeline now queued on QStash for manual-trigger paths (concurrency-capped, signed consumer) — **upload path still inline** (post-analysis dedup coupling; documented follow-up); pooled DB still unverified under load; no k6 run yet.
 3. **High — auth gaps**: email-verification still soft (issue #39), passkey/biometric not production-wired, 30-day session untested.
 4. **Medium — governance HOLD**: legal/DPO/product + UAT + SRE-restore sign-offs pending; `AI_INCIDENT_*` secrets missing.
 5. **Medium — CI blind spot**: CI only triggers on `main`/`develop`, so `NEW-UI`/`product-revision` have never been CI-validated remotely.
 
 ## Next 3 actions
-1. Open the consolidated PR (`product-revision` → `NEW-UI`), review the diff, merge; add `NEW-UI` to CI triggers so it validates remotely.
-2. Run `DEMO_DEPLOY_RUNBOOK.md` end-to-end on staging; complete the money-path acceptance walk; file defects.
-3. Kick off the fast-follow scale + auth-hardening work (Phase 3) in parallel with demo feedback: queue the AI pipeline on QStash, verify pooled DB under a k6 run, land issue #39 (email-verify hard gate).
+1. Merge PR #43 (`product-revision` → `NEW-UI`, CI green); then PR + merge `scale-hardening`. Enable the demo branch in Vercel + set build env; run `DEMO_DEPLOY_RUNBOOK.md` on staging.
+2. Finish the queue migration: move the **upload path** (`policy.service.runBackgroundAnalysis`) onto QStash by relocating post-analysis dedup into a completion hook; set QStash env in staging and verify a real enqueue→consume round-trip; run the k6 load scenario against staging to verify the pooled DB holds.
+3. Land issue #39 (email-verify hard gate) + start closing the go/no-go human sign-offs.
