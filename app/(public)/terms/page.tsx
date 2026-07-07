@@ -1,6 +1,10 @@
+import type { Metadata } from "next"
 import { headers } from "next/headers"
 import { LegalDocumentPage } from "@/components/legal/LegalDocumentPage"
 import { resolveLegalLanguage } from "@/lib/legal/legal-content"
+import { buildMarketingMetadata } from "@/lib/seo/marketing-pages"
+
+export const metadata: Metadata = buildMarketingMetadata("terms")
 
 type TermsPageProps = {
     searchParams?: Promise<{ lang?: string }> | { lang?: string }

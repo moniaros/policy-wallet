@@ -1,0 +1,148 @@
+"use client"
+
+import Link from "next/link"
+import { ArrowLeft, ArrowRight, CalendarDays, Clock3, ExternalLink } from "lucide-react"
+import { LoBPageShell } from "@/components/landing/LoBPageShell"
+import { useLanguage } from "@/contexts/LanguageContext"
+import type { Guide } from "@/lib/guides/content"
+
+function formatDate(iso: string, language: string): string {
+    return new Date(`${iso}T00:00:00Z`).toLocaleDateString(
+        language === "el" ? "el-GR" : "en-US",
+        { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }
+    )
+}
+
+export default function GuideArticleClient({ guide }: { guide: Guide }) {
+    const { language } = useLanguage()
+    const isGreek = language === "el"
+    const t = (el: string, en: string) => (isGreek ? el : en)
+    const lang = isGreek ? "el" : "en"
+
+    return (
+        <LoBPageShell activeNav="none">
+            <article className="mx-auto max-w-[760px] px-6 pb-24 md:px-0">
+                <nav className="mb-8">
+                    <Link
+                        href="/guides"
+                        className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#29685B] transition-colors duration-150 hover:text-[#1C4E44]"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        {t("Όλοι οι οδηγοί", "All guides")}
+                    </Link>
+                </nav>
+
+                <header className="mb-10">
+                    <h1 className="mb-6 text-[34px] font-medium leading-[1.1] tracking-[-0.03em] text-[#0F172A] md:text-[44px]">
+                        {guide.title[lang]}
+                    </h1>
+                    <div className="flex flex-wrap items-center gap-4 border-b border-[#E5E7EB] pb-6 text-[14px] text-[#64748B]">
+                        <span className="inline-flex items-center gap-1.5">
+                            <CalendarDays className="h-4 w-4 text-[#29685B]" />
+                            {t("Ενημερώθηκε", "Updated")}: {formatDate(guide.dateModified, language)}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5">
+                            <Clock3 className="h-4 w-4 text-[#29685B]" />
+                            {guide.readingMinutes} {t("λεπτά ανάγνωσης", "min read")}
+                        </span>
+                    </div>
+                </header>
+
+                {/* Direct-answer opening paragraph (featured-snippet shape). */}
+                <p className="mb-12 rounded-[14px] border border-[#DCEBDA] bg-[#F4F9F3] p-6 text-[17px] font-medium leading-relaxed text-[#0F172A]">
+                    {guide.summary[lang]}
+                </p>
+
+                {guide.sections.map((section) => (
+                    <section key={section.heading.en} className="mb-12">
+                        <h2 className="mb-5 text-[24px] font-medium leading-snug tracking-tight text-[#0F172A] md:text-[28px]">
+                            {section.heading[lang]}
+                        </h2>
+                        {section.paragraphs.map((paragraph) => (
+                            <p
+                                key={paragraph.en.slice(0, 40)}
+                                className="mb-4 text-[16px] leading-[1.75] text-[#334155]"
+                            >
+                                {paragraph[lang]}
+                            </p>
+                        ))}
+                        {section.bullets ? (
+                            <ul className="mt-4 space-y-3">
+                                {section.bullets.map((bullet) => (
+                                    <li
+                                        key={bullet.en.slice(0, 40)}
+                                        className="flex items-start gap-3 text-[16px] leading-relaxed text-[#334155]"
+                                    >
+                                        <span className="mt-[9px] h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#29685B]" />
+                                        {bullet[lang]}
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : null}
+                    </section>
+                ))}
+
+                <section className="mb-12">
+                    <h2 className="mb-6 text-[24px] font-medium leading-snug tracking-tight text-[#0F172A] md:text-[28px]">
+                        {t("Συχνές ερωτήσεις", "Frequently asked questions")}
+                    </h2>
+                    <div className="space-y-6">
+                        {guide.faq.map((item) => (
+                            <div key={item.question.en} className="rounded-[14px] border border-[#E5E7EB] bg-white p-6">
+                                <h3 className="mb-2 text-[17px] font-semibold text-[#0F172A]">
+                                    {item.question[lang]}
+                                </h3>
+                                <p className="text-[15px] leading-relaxed text-[#475569]">
+                                    {item.answer[lang]}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
+                <section className="mb-14">
+                    <h2 className="mb-4 text-[18px] font-semibold text-[#0F172A]">
+                        {t("Πηγές", "Sources")}
+                    </h2>
+                    <ul className="space-y-2">
+                        {guide.sources.map((source) => (
+                            <li key={source.url}>
+                                <a
+                                    href={source.url}
+                                    target="_blank"
+                                    rel="noreferrer noopener"
+                                    className="inline-flex items-center gap-1.5 text-[15px] text-[#29685B] underline-offset-4 transition-colors duration-150 hover:text-[#1C4E44] hover:underline"
+                                >
+                                    {source.label[lang]}
+                                    <ExternalLink className="h-3.5 w-3.5" />
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+                </section>
+
+                <aside className="rounded-[20px] bg-[#1A2420] p-8 text-white md:p-10">
+                    <h2 className="mb-3 text-[24px] font-medium tracking-tight">
+                        {t(
+                            "Ελέγξτε τα δικά σας συμβόλαια σε 2 λεπτά",
+                            "Check your own policies in 2 minutes"
+                        )}
+                    </h2>
+                    <p className="mb-6 text-[15px] leading-relaxed text-white/70">
+                        {t(
+                            "Ανεβάστε τα ασφαλιστήριά σας και η AI του PolicyWallet εντοπίζει κενά, επικαλύψεις και ευκαιρίες — δωρεάν, χωρίς πιστωτική κάρτα.",
+                            "Upload your policies and PolicyWallet's AI detects gaps, overlaps, and opportunities — free, no credit card required."
+                        )}
+                    </p>
+                    <Link
+                        href="/auth/signup"
+                        className="inline-flex items-center gap-2 rounded-[4px] bg-[#89D9B2] px-6 py-3 text-[15px] font-bold text-[#0F172A] transition-opacity duration-150 hover:opacity-90"
+                    >
+                        {t("Ξεκινήστε δωρεάν", "Get started free")}
+                        <ArrowRight className="h-4 w-4" />
+                    </Link>
+                </aside>
+            </article>
+        </LoBPageShell>
+    )
+}

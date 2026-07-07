@@ -1,12 +1,13 @@
 # PolicyWallet — Project Status
 
 _Living dashboard — not a log. Updated at the end of each session with meaningful work. Keep it under one screen._
-**Last updated:** 2026-07-06
+**Last updated:** 2026-07-07
 
 ## Current phase
 **Pre-demo hardening → internal/stakeholder staging demo.** Product is feature-complete; remaining work is integration + deployment + sign-off. All engineering on branch `product-revision` (the whole body of work — `production-prep` + monetization + design-sync + this hardening pass — is stacked here; opening one PR → `NEW-UI`). Greece GA go/no-go packet still `HOLD` on human sign-offs.
 
 ## Done (recent)
+- **SEO/GEO/AEO overhaul (branch `seo-geo-aeo`, responds to the 7 Jul external audit 4/4/5):** robots.ts + sitemap.ts; unique Greek titles/descriptions + canonicals on all marketing pages (client pages wrapped with server `page.tsx`); server-rendered JSON-LD (Organization, WebSite, FAQPage, HowTo, BreadcrumbList, SoftwareApplication+Offers, Article — was injected post-hydration, invisible to crawlers); 1200×630 OG images (was 1024×1024); `/guides` with 3 bilingual long-tail articles; free-tier copy contradiction fixed (3 policies); stat counters server-render real values; placeholder phone removed (env-driven NAP + socials, see `docs/operations/SEO_STRATEGY.md`). Root cause of the audit's critical finding was `proxy.ts` (Next 16 middleware) auth-gating robots.txt/sitemap/for-agents — allowlist fixed; takes effect on next deploy. Verified locally on a prod build (robots/sitemap 200, unique titles+canonicals, JSON-LD parses, og:image 1200×630, /wallet still auth-gated).
 - **Production hardening (this pass):** re-enabled server/edge Sentry (was commented out — server errors were invisible), sampling 1.0→0.1, `sendDefaultPii` off (GDPR); rate-limiter now alerts on in-memory fallback + prod requires Upstash; `db.ts` pooled-connection-ready (`POOLED_DATABASE_URL`, opt-in) + Prisma client cached on global in all envs.
 - **Security:** closed 3 endpoint scope-gaps (analysis-runs grant now policy-scoped; questionnaire-response recipient check; task-recipient relationship check) + 6 tests. Share trust chain audited sound.
 - **Pricing-cutover copy** fixed (risk #1): `/pricing` + `/upgrade` now match the shipped paywall (Free organizer + 1 trial, Plus 1M, Pro 3M) — no more "Unlimited AI"/"10 analyses/month" contradictions.
@@ -28,6 +29,6 @@ _Living dashboard — not a log. Updated at the end of each session with meaning
 5. **Medium — CI blind spot**: CI only triggers on `main`/`develop`, so `NEW-UI`/`product-revision` have never been CI-validated remotely.
 
 ## Next 3 actions
-1. Merge PR #43 (`product-revision` → `NEW-UI`, CI green); then PR + merge `scale-hardening`. Enable the demo branch in Vercel + set build env; run `DEMO_DEPLOY_RUNBOOK.md` on staging.
-2. Finish the queue migration: move the **upload path** (`policy.service.runBackgroundAnalysis`) onto QStash by relocating post-analysis dedup into a completion hook; set QStash env in staging and verify a real enqueue→consume round-trip; run the k6 load scenario against staging to verify the pooled DB holds.
-3. Land issue #39 (email-verify hard gate) + start closing the go/no-go human sign-offs.
+1. Merge PR #43 (`product-revision` → `NEW-UI`, CI green); then PR + merge `scale-hardening` and `seo-geo-aeo` (stacked on it). Deploy → verify `curl -I /robots.txt` = 200 on the live host; submit sitemap in Search Console (post-deploy checklist in `docs/operations/SEO_STRATEGY.md`).
+2. SEO data you must provide (env, no code): `NEXT_PUBLIC_SITE_URL`, real phone/address (`NEXT_PUBLIC_CONTACT_*`), LinkedIn company page (`NEXT_PUBLIC_SOCIAL_LINKEDIN`). Decide apex-domain move (policywallet.gr) per SEO_STRATEGY.md.
+3. Finish the queue migration (upload path onto QStash + k6 against staging) and start closing the go/no-go human sign-offs (issue #39 gate is built, opt-in).

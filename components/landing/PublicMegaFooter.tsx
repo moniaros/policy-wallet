@@ -4,6 +4,7 @@ import Link from "next/link"
 import { FormEvent, useMemo, useState } from "react"
 import { ArrowRight, Mail, ShieldCheck } from "lucide-react"
 import { productCategories } from "@/lib/product/catalog"
+import { getSocialProfiles } from "@/lib/seo/site"
 
 interface PublicMegaFooterProps {
     locale: "el" | "en"
@@ -45,10 +46,14 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
 
     const companyLinks = [
         { href: "/company", label: t("Εταιρεία", "Company") },
+        { href: "/guides", label: t("Οδηγοί Ασφάλισης", "Insurance Guides") },
         { href: "/contact", label: t("Επικοινωνία", "Contact") },
         { href: "/privacy", label: t("Πολιτική Απορρήτου", "Privacy Policy") },
         { href: "/terms", label: t("Όροι Χρήσης", "Terms of Service") },
     ]
+
+    // Real profiles only (from NEXT_PUBLIC_SOCIAL_*) — no placeholder links.
+    const socialProfiles = getSocialProfiles()
 
     const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 
@@ -272,6 +277,17 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                         {t("Με επιφύλαξη παντός δικαιώματος.", "All rights reserved.")}
                     </p>
                     <div className="flex flex-wrap items-center gap-4">
+                        {socialProfiles.map((profile) => (
+                            <a
+                                key={profile.url}
+                                href={profile.url}
+                                target="_blank"
+                                rel="noreferrer noopener"
+                                className="transition-colors hover:text-[#0F172A]"
+                            >
+                                {profile.label}
+                            </a>
+                        ))}
                         <Link href="/privacy" className="transition-colors hover:text-[#0F172A]">
                             {t("Privacy", "Privacy")}
                         </Link>

@@ -1,0 +1,198 @@
+import React from "react"
+import {
+    getSiteOrigin,
+    getSocialProfiles,
+    hasCompleteAddress,
+    siteConfig,
+} from "@/lib/seo/site"
+import { marketingPages, type MarketingPageKey } from "@/lib/seo/marketing-pages"
+
+/**
+ * Server-rendered JSON-LD.
+ *
+ * IMPORTANT: this must stay a plain inline <script> rendered by a server
+ * component. next/script with strategy="afterInteractive" injects the tag
+ * after hydration, so crawlers that do not execute JavaScript never see the
+ * structured data (this was the root cause of "no JSON-LD detected" in the
+ * SEO audit despite builders existing in the codebase).
+ */
+export function JsonLd({ data }: { data: object | object[] }) {
+    const items = Array.isArray(data) ? data : [data]
+    return (
+        <>
+            {items.map((item, index) => (
+                <script
+                    key={index}
+                    type="application/ld+json"
+                    // Escape "<" so user copy can never break out of the script tag.
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify(item).replace(/</g, "\\u003c"),
+                    }}
+                />
+            ))}
+        </>
+    )
+}
+
+export function organizationJsonLd() {
+    const origin = getSiteOrigin()
+    const sameAs = getSocialProfiles().map((profile) => profile.url)
+
+    const contactPoint: Record<string, unknown> = {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        email: siteConfig.contactEmail,
+        availableLanguage: ["el", "en"],
+    }
+    if (siteConfig.contactPhone) {
+        contactPoint.telephone = siteConfig.contactPhone
+    }
+
+    const organization: Record<string, unknown> = {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "@id": `${origin}/#organization`,
+        name: siteConfig.name,
+        url: origin,
+        logo: `${origin}/icons/icon-512x512.png`,
+        description: siteConfig.definition.el,
+        email: siteConfig.contactEmail,
+        contactPoint,
+        areaServed: "GR",
+    }
+    if (sameAs.length > 0) {
+        organization.sameAs = sameAs
+    }
+    if (hasCompleteAddress()) {
+        organization.address = {
+            "@type": "PostalAddress",
+            ...siteConfig.address,
+        }
+    }
+    return organization
+}
+
+export function webSiteJsonLd() {
+    const origin = getSiteOrigin()
+    return {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "@id": `${origin}/#website`,
+        name: siteConfig.name,
+        url: origin,
+        inLanguage: ["el", "en"],
+        publisher: { "@id": `${origin}/#organization` },
+    }
+}
+
+export function faqPageJsonLd(items: { question: string; answer: string }[]) {
+    return {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: items.map((item) => ({
+            "@type": "Question",
+            name: item.question,
+            acceptedAnswer: {
+                "@type": "Answer",
+                text: item.answer,
+            },
+        })),
+    }
+}
+
+/** Breadcrumb trail from arbitrary name/path pairs (home is prepended). */
+export function breadcrumbTrailJsonLd(trail: { name: string; path: string }[]) {
+    const origin = getSiteOrigin()
+    const items = [{ name: "Αρχική", path: "/" }, ...trail]
+    return {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: items.map((item, index) => ({
+            "@type": "ListItem",
+            position: index + 1,
+            name: item.name,
+            item: item.path === "/" ? origin : `${origin}${item.path}`,
+        })),
+    }
+}
+
+/** Breadcrumb trail ending at the given marketing page. */
+export function breadcrumbJsonLd(keys: MarketingPageKey[]) {
+    return breadcrumbTrailJsonLd(
+        keys.map((key) => ({
+            name: marketingPages[key].breadcrumb,
+            path: marketingPages[key].path,
+        }))
+    )
+}
+
+export type PricingOfferInput = {
+    name: string
+    price: string
+    priceCurrency?: string
+    description?: string
+}
+
+export function softwareApplicationJsonLd(offers: PricingOfferInput[]) {
+    const origin = getSiteOrigin()
+    return {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: siteConfig.name,
+        applicationCategory: "FinanceApplication",
+        operatingSystem: "Web",
+        url: origin,
+        description: siteConfig.definition.el,
+        publisher: { "@id": `${origin}/#organization` },
+        offers: offers.map((offer) => ({
+            "@type": "Offer",
+            name: offer.name,
+            price: offer.price,
+            priceCurrency: offer.priceCurrency ?? "EUR",
+            ...(offer.description ? { description: offer.description } : {}),
+        })),
+    }
+}
+
+export function howToJsonLd(input: {
+    name: string
+    description?: string
+    steps: { name: string; text: string }[]
+}) {
+    return {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        name: input.name,
+        ...(input.description ? { description: input.description } : {}),
+        step: input.steps.map((step, index) => ({
+            "@type": "HowToStep",
+            position: index + 1,
+            name: step.name,
+            text: step.text,
+        })),
+    }
+}
+
+export function articleJsonLd(input: {
+    path: string
+    headline: string
+    description: string
+    datePublished: string
+    dateModified?: string
+    inLanguage?: string
+}) {
+    const origin = getSiteOrigin()
+    return {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: input.headline,
+        description: input.description,
+        url: `${origin}${input.path}`,
+        datePublished: input.datePublished,
+        dateModified: input.dateModified ?? input.datePublished,
+        inLanguage: input.inLanguage ?? "el",
+        author: { "@id": `${origin}/#organization` },
+        publisher: { "@id": `${origin}/#organization` },
+        mainEntityOfPage: `${origin}${input.path}`,
+    }
+}

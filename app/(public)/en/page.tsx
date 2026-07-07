@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
-import Script from "next/script"
 import { WorldClassLanding } from "@/components/landing/WorldClassLanding"
 import { buildLandingJsonLd, buildLandingMetadata } from "@/lib/landing/seo"
+import { JsonLd } from "@/lib/seo/jsonld"
 
 export const metadata: Metadata = buildLandingMetadata("en")
 
@@ -14,15 +14,8 @@ export default function LandingPageEnglish() {
             <Suspense fallback={null}>
                 <WorldClassLanding locale="en" />
             </Suspense>
-            {jsonLd.map((payload, idx) => (
-                <Script
-                    id={`landing-jsonld-en-${idx}`}
-                    key={`landing-jsonld-en-${idx}`}
-                    type="application/ld+json"
-                    strategy="afterInteractive"
-                    dangerouslySetInnerHTML={{ __html: JSON.stringify(payload) }}
-                />
-            ))}
+            {/* Server-rendered so crawlers without JS see the structured data. */}
+            <JsonLd data={jsonLd} />
         </>
     )
 }

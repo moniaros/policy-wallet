@@ -1,14 +1,8 @@
 import type { Metadata } from "next"
 import { landingContent } from "@/lib/landing/content"
 import type { LandingLocale } from "@/types/landing-content"
-
-function getMetadataBase(): URL {
-    const raw =
-        process.env.NEXTAUTH_URL ||
-        process.env.NEXT_PUBLIC_SITE_URL ||
-        "http://localhost:3000"
-    return new URL(raw)
-}
+import { getSiteOrigin, getSiteUrl, OG_IMAGES, TWITTER_IMAGES } from "@/lib/seo/site"
+import { organizationJsonLd, webSiteJsonLd } from "@/lib/seo/jsonld"
 
 export function buildLandingMetadata(locale: LandingLocale): Metadata {
     const meta = landingContent.seo[locale]
@@ -19,8 +13,10 @@ export function buildLandingMetadata(locale: LandingLocale): Metadata {
             : { en: "/en", el: "/" }
 
     return {
-        metadataBase: getMetadataBase(),
-        title: meta.title,
+        metadataBase: getSiteUrl(),
+        // Absolute: the homepage title already contains the brand, so the
+        // root "%s | PolicyWallet" template must not apply here.
+        title: { absolute: meta.title },
         description: meta.description,
         keywords: meta.keywords,
         alternates: {
@@ -34,26 +30,19 @@ export function buildLandingMetadata(locale: LandingLocale): Metadata {
             description: meta.ogDescription,
             url: canonical,
             siteName: landingContent.productName,
-            images: [
-                {
-                    url: "/opengraph-image.png",
-                    width: 1200,
-                    height: 630,
-                    alt: landingContent.productName,
-                },
-            ],
+            images: OG_IMAGES,
         },
         twitter: {
             card: "summary_large_image",
             title: meta.twitterTitle,
             description: meta.twitterDescription,
-            images: ["/twitter-image.png"],
+            images: TWITTER_IMAGES,
         },
     }
 }
 
 export function buildLandingJsonLd(locale: LandingLocale) {
-    const baseUrl = getMetadataBase().toString().replace(/\/$/, "")
+    const baseUrl = getSiteOrigin()
     const meta = landingContent.seo[locale]
     const pageUrl = `${baseUrl}${meta.path}`
 
@@ -61,7 +50,7 @@ export function buildLandingJsonLd(locale: LandingLocale) {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         name: "PolicyWallet",
-        applicationCategory: "BusinessApplication",
+        applicationCategory: "FinanceApplication",
         operatingSystem: "Web",
         inLanguage: locale === "el" ? "el" : "en",
         offers: {
@@ -71,22 +60,7 @@ export function buildLandingJsonLd(locale: LandingLocale) {
         },
         url: pageUrl,
         description: meta.description,
-    }
-
-    const organization = {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        name: "PolicyWallet",
-        url: baseUrl,
-        sameAs: [],
-    }
-
-    const website = {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        name: "PolicyWallet",
-        url: baseUrl,
-        inLanguage: locale === "el" ? "el" : "en",
+        publisher: { "@id": `${baseUrl}/#organization` },
     }
 
     const faqPage = {
@@ -102,5 +76,5 @@ export function buildLandingJsonLd(locale: LandingLocale) {
         })),
     }
 
-    return [softwareApplication, organization, website, faqPage]
+    return [softwareApplication, organizationJsonLd(), webSiteJsonLd(), faqPage]
 }

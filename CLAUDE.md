@@ -99,7 +99,7 @@ contexts/        LanguageContext, ThemeContext
 hooks/           useSupabaseUser, useResponsive, …
 ```
 
-There is **no `middleware.ts`** — auth is enforced in layouts and in API routes, not middleware.
+Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middleware.ts`): it redirects any path not on its public allowlist to `/auth/signin`. **When adding a public page or public route handler, add its path to the allowlist in `proxy.ts`** or crawlers and anonymous users get a login redirect. Layouts and API guards enforce auth again underneath (defense in depth).
 
 ## Key conventions
 
