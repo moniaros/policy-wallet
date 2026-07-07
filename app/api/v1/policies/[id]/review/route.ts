@@ -1,6 +1,7 @@
 import { db } from "@/lib/db"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { PolicyAnalysisOrchestratorService } from "@/lib/services/analysis/policy-analysis-orchestrator.service"
+import { enqueueAnalysisRun } from "@/lib/services/analysis/analysis-queue"
 import { after } from "next/server"
 import { withApiGuard } from "@/lib/api-guard"
 import { z } from "zod"
@@ -64,13 +65,17 @@ export const POST = withApiGuard(
                 )
             }
 
-            after(async () => {
-                try {
-                    await orchestrator.executeRun(run.id, (authResult.dbUser.preferredLanguage as "en" | "el") || "en")
-                } catch (error) {
-                    console.error("Deferred policy review execution failed:", error)
-                }
-            })
+            const reviewLanguage = (authResult.dbUser.preferredLanguage as "en" | "el") || "en"
+            const queued = await enqueueAnalysisRun(run.id, reviewLanguage)
+            if (!queued) {
+                after(async () => {
+                    try {
+                        await orchestrator.executeRun(run.id, reviewLanguage)
+                    } catch (error) {
+                        console.error("Deferred policy review execution failed:", error)
+                    }
+                })
+            }
 
             await (db.activityLog as any).create({
                 data: {

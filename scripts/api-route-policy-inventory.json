@@ -1787,6 +1787,25 @@
           "profile": "optional"
         }
       }
+    },
+    {
+      "route": "v1/jobs/execute-analysis/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "webhook"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "optional"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
     }
   ]
 }

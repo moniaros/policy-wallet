@@ -14,6 +14,7 @@ import path from "path"
 import { getAIService } from "@/lib/services/ai"
 import { GapAnalysisService } from "@/lib/services/gap-analysis.service"
 import { AppError } from "@/lib/errors/app-error"
+import { enqueueAnalysisRun } from "@/lib/services/analysis/analysis-queue"
 import { refreshProtectionScore } from "@/lib/services/gap-engine"
 import { PolicyService } from "@/lib/services/policy.service"
 import { canUserUseTokens } from "@/lib/token-tracking"
@@ -953,13 +954,18 @@ export async function runPolicyAnalysis(policyId: string) {
             return { error: run.failureCode || "TOKEN_LIMIT_BLOCKED", runId: run.id }
         }
 
-        after(async () => {
-            try {
-                await orchestrator.executeRun(run.id, language)
-            } catch (e) {
-                logger('error', 'Deferred manual policy analysis failed', { policyId, runId: run.id, error: e })
-            }
-        })
+        // Hand execution to the durable queue when configured; otherwise run
+        // inline via after() (dev / no-QStash) — identical behavior.
+        const queued = await enqueueAnalysisRun(run.id, language)
+        if (!queued) {
+            after(async () => {
+                try {
+                    await orchestrator.executeRun(run.id, language)
+                } catch (e) {
+                    logger('error', 'Deferred manual policy analysis failed', { policyId, runId: run.id, error: e })
+                }
+            })
+        }
 
         revalidatePath(`/wallet`)
         revalidatePath(`/wallet/${policyId}`)
