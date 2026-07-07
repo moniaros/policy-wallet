@@ -16,13 +16,14 @@ _Living dashboard — not a log. Updated at the end of each session with meaning
 - All guardrails + **136/136 unit tests** + build green; full migration chain replayed clean on ephemeral Postgres.
 
 ## Blocked (credential-gated — you execute, runbook ready)
-- **Staging deploy**: provision staging Supabase + Upstash + Vercel; set env; `prisma migrate deploy`; `setup-billing-catalog.ts --apply` (Stripe test) + RevenueCat; deploy; walk the money path. Full steps in `DEMO_DEPLOY_RUNBOOK.md`.
+- **Vercel env — partially set.** On project `policy-wallet` (`prj_J0Yk…`, team moniaros-projects) I set `AUTH_SECRET`, `CRON_SECRET`, `RATELIMIT_ALLOW_LOCAL=1`, `AI_ANALYSIS_PARALLELISM=5`, `SENTRY_TRACES_SAMPLE_RATE=0.1` (production + preview). **You must add the data-plane secrets** (I can't fabricate them): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `POOLED_DATABASE_URL`, `DIRECT_URL`, `DATABASE_URL`, Stripe test keys, `GEMINI_API_KEY` (or leave unset for mock), and QStash keys to activate the queue. Build fails until the Supabase pair is set.
+- **Staging deploy**: enable the demo branch in Vercel Git settings; `prisma migrate deploy`; `setup-billing-catalog.ts --apply` (Stripe test) + RevenueCat; walk the money path. Full steps in `DEMO_DEPLOY_RUNBOOK.md`.
 - **Real-DB migrations** (consent gate, trial/invite columns) still unapplied to any real DB.
 
 ## Top risks (ranked)
 1. **High — nothing deployed yet**: the demo is the first real end-to-end exercise of signup→trial→paywall→checkout. Untested against a real Supabase/Stripe until the runbook runs.
 2. **Medium — scale partially hardened** (branch `scale-hardening`, PR pending): AI pipeline now queued on QStash for manual-trigger paths (concurrency-capped, signed consumer) — **upload path still inline** (post-analysis dedup coupling; documented follow-up); pooled DB still unverified under load; no k6 run yet.
-3. **High — auth gaps**: email-verification still soft (issue #39), passkey/biometric not production-wired, 30-day session untested.
+3. **Medium — auth gaps**: email-verification hard gate now **built, opt-in** (`ENFORCE_EMAIL_VERIFICATION=1`, off for the demo — flip on before real traffic); passkey/biometric still not production-wired, 30-day session untested.
 4. **Medium — governance HOLD**: legal/DPO/product + UAT + SRE-restore sign-offs pending; `AI_INCIDENT_*` secrets missing.
 5. **Medium — CI blind spot**: CI only triggers on `main`/`develop`, so `NEW-UI`/`product-revision` have never been CI-validated remotely.
 
