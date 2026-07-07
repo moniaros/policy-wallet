@@ -114,3 +114,19 @@ export async function getIsPayingUser(dbUser: any) {
 
     return subscription ? Number(subscription.plan.price) > 0 : false
 }
+
+/**
+ * Whether this user must verify their email before accessing the app.
+ *
+ * Gate is OFF by default and enabled with ENFORCE_EMAIL_VERIFICATION=1 (kept
+ * off for the internal demo so testers aren't blocked; flip on before real
+ * traffic — see docs/STATUS.md / issue #39). Phone-only signups get a synthetic
+ * email that is auto-verified at registration, so they always pass.
+ */
+export function emailVerificationRequired(
+    user: { emailVerified: Date | null } | null | undefined
+): boolean {
+    if (process.env.ENFORCE_EMAIL_VERIFICATION !== "1") return false
+    if (!user) return false
+    return !user.emailVerified
+}

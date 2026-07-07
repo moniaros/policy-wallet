@@ -1,6 +1,7 @@
 export const runtime = 'nodejs'
 
-import { getAuthenticatedUser, getIsPayingUser } from "@/lib/auth-helpers"
+import { getAuthenticatedUser, getIsPayingUser, emailVerificationRequired } from "@/lib/auth-helpers"
+import { redirect } from "next/navigation"
 import { AppShell } from "@/components/shell"
 import { getTranslations } from "@/lib/i18n"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
@@ -16,6 +17,12 @@ export default async function ProtectedLayout({
     children: React.ReactNode
 }) {
     const { dbUser } = await getAuthenticatedUser()
+
+    // Email-verification hard gate (opt-in via ENFORCE_EMAIL_VERIFICATION).
+    if (emailVerificationRequired(dbUser)) {
+        redirect("/auth/signup/confirmation")
+    }
+
     const isPayingUser = await getIsPayingUser(dbUser)
 
     // Query unread notification count
