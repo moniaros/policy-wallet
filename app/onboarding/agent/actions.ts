@@ -117,6 +117,7 @@ export async function sendClientInvite(clientEmail: string) {
                 inviteeEmail: normalizedEmail,
                 token: crypto.randomUUID().replace(/-/g, ""),
                 inviteType: "signup",
+                relationshipType: "agent_client",
                 expiresAt: daysFromNow(INVITE_EXPIRY_DAYS),
             },
         })

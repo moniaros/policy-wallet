@@ -1,11 +1,13 @@
 "use client"
 import { useEffect, useMemo, useState } from "react"
 import { runPolicyAnalysis, ignoreGap, notifyAgentAboutGap } from "../actions"
+import { requestAiConsent } from "@/app/(protected)/agent/actions"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { Sparkles, AlertTriangle, Lightbulb, EyeOff, MessageSquare, Loader2, RefreshCw, HelpCircle } from "lucide-react"
 import { LimitReachedModal } from "@/components/account/LimitReachedModal"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
+import { AiConsentModal } from "@/components/ui/AiConsentModal"
 
 import { useLanguage } from "@/contexts/LanguageContext"
 import { toGreekUppercaseNoAccents } from "@/lib/i18n/text-format"
@@ -26,6 +28,8 @@ interface Gap {
 interface AnalysisCardProps {
     policyId: string
     gaps: Gap[]
+    /** Agent viewing a customer's policy: offer "request consent" instead of the self-consent modal. */
+    canRequestOwnerConsent?: boolean
     policyStatus?: string
     processingError?: { code?: string; message?: string } | null
     analysisPipeline?: {
@@ -40,6 +44,7 @@ interface AnalysisCardProps {
 export function AnalysisCard({
     policyId,
     gaps,
+    canRequestOwnerConsent = false,
     policyStatus,
     processingError,
     analysisPipeline,
@@ -58,6 +63,14 @@ export function AnalysisCard({
     const [ignoring, setIgnoring] = useState<string | null>(null)
     const [notifying, setNotifying] = useState<string | null>(null)
     const [gapLimitReached, setGapLimitReached] = useState(false)
+    const [limitReason, setLimitReason] = useState<"gap_limit" | "token_limit" | "feature_locked">("gap_limit")
+    const [consentModalOpen, setConsentModalOpen] = useState(false)
+    const [showConsentRequest, setShowConsentRequest] = useState(false)
+    const [requestingConsent, setRequestingConsent] = useState(false)
+    // True once the viewer has granted consent this session; a second
+    // AI_CONSENT_REQUIRED after that means the policy OWNER's consent is missing
+    // (agent-view case) and re-prompting the viewer cannot resolve it.
+    const [consentGranted, setConsentGranted] = useState(false)
     const router = useRouter()
     const { t, language } = useLanguage()
     const analysisTitle = toGreekUppercaseNoAccents(t.analysis.title, t.common?.locale || 'el-GR')
@@ -205,7 +218,28 @@ export function AnalysisCard({
             setAnalyzing(false)
             setRunStatus("failed")
 
-            if (res.error === "TOKEN_LIMIT_BLOCKED" || res.error === "LIMIT_REACHED") {
+            if (res.error === "AI_CONSENT_REQUIRED") {
+                toast.dismiss(toastId)
+                if (canRequestOwnerConsent) {
+                    // The viewer is an agent — they cannot consent for the data
+                    // subject; offer to request the owner's consent instead.
+                    setAnalysisError(t.common.aiConsentOwnerRequired)
+                    setShowConsentRequest(true)
+                } else if (consentGranted) {
+                    setAnalysisError(t.common.aiConsentOwnerRequired)
+                } else {
+                    setRunStatus("idle")
+                    setConsentModalOpen(true)
+                }
+                return
+            }
+
+            if (res.error === "TOKEN_LIMIT_BLOCKED" || res.error === "LIMIT_REACHED" || res.error === "UPGRADE_REQUIRED") {
+                setLimitReason(
+                    res.error === "TOKEN_LIMIT_BLOCKED" ? "token_limit"
+                        : res.error === "UPGRADE_REQUIRED" ? "feature_locked"
+                            : "gap_limit"
+                )
                 setGapLimitReached(true)
                 setAnalysisError(resolveErrorMessage(res.error, res.error))
                 toast.dismiss(toastId)
@@ -550,13 +584,34 @@ export function AnalysisCard({
                                     {analysisError}
                                 </p>
                             </div>
-                            <button
-                                onClick={handleAnalyze}
-                                className="inline-flex items-center gap-1 rounded-lg border border-amber-400/60 bg-white px-2.5 py-1 text-xs font-bold text-amber-900 transition-colors hover:bg-amber-100 dark:border-amber-600/60 dark:bg-amber-900/50 dark:text-amber-100 dark:hover:bg-amber-900/80"
-                            >
-                                <RefreshCw className="h-3 w-3" />
-                                {statusCopy.retry}
-                            </button>
+                            {showConsentRequest ? (
+                                <button
+                                    onClick={async () => {
+                                        setRequestingConsent(true)
+                                        const res = await requestAiConsent(policyId)
+                                        if ("error" in res && res.error) {
+                                            toast.error(mapWalletErrorToMessage(res.error, t, "generic"))
+                                        } else {
+                                            toast.success(t.common.aiConsentRequestSent)
+                                            setShowConsentRequest(false)
+                                            setAnalysisError(null)
+                                        }
+                                        setRequestingConsent(false)
+                                    }}
+                                    disabled={requestingConsent}
+                                    className="inline-flex items-center gap-1 rounded-lg border border-amber-400/60 bg-white px-2.5 py-1 text-xs font-bold text-amber-900 transition-colors hover:bg-amber-100 disabled:opacity-50 dark:border-amber-600/60 dark:bg-amber-900/50 dark:text-amber-100 dark:hover:bg-amber-900/80"
+                                >
+                                    {t.common.aiConsentRequestAction}
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={handleAnalyze}
+                                    className="inline-flex items-center gap-1 rounded-lg border border-amber-400/60 bg-white px-2.5 py-1 text-xs font-bold text-amber-900 transition-colors hover:bg-amber-100 dark:border-amber-600/60 dark:bg-amber-900/50 dark:text-amber-100 dark:hover:bg-amber-900/80"
+                                >
+                                    <RefreshCw className="h-3 w-3" />
+                                    {statusCopy.retry}
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -663,9 +718,19 @@ export function AnalysisCard({
             </div>
             <LimitReachedModal
                 isOpen={gapLimitReached}
-                reason="gap_limit"
+                reason={limitReason}
                 language={language as 'el' | 'en'}
                 onDismiss={() => setGapLimitReached(false)}
+            />
+            <AiConsentModal
+                isOpen={consentModalOpen}
+                onClose={() => setConsentModalOpen(false)}
+                onConsented={() => {
+                    setConsentGranted(true)
+                    setConsentModalOpen(false)
+                    handleAnalyze()
+                }}
+                source="wallet_analysis_card"
             />
         </div>
     )

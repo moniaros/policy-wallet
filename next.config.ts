@@ -1,6 +1,18 @@
 import { withSentryConfig } from "@sentry/nextjs";
 import type { NextConfig } from "next";
 
+// Derive the Supabase origin from env so the CSP always matches the project
+// the deployment actually talks to (hardcoding a project ref breaks sign-in
+// the moment the Supabase project changes).
+const supabaseOrigin = (() => {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || "").origin;
+  } catch {
+    return "";
+  }
+})();
+const supabaseCspSource = supabaseOrigin ? ` ${supabaseOrigin}` : "";
+
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["*.picard.replit.dev", "*.replit.dev"],
   turbopack: {
@@ -14,7 +26,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.stripe.com https://static.cloudflareinsights.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' blob: data: https://storage.googleapis.com https://lzqvtvjggylcujenlelh.supabase.co; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://checkout.stripe.com; connect-src 'self' https://api.stripe.com https://api.brevo.com https://static.cloudflareinsights.com https://*.policywallet.gr https://lzqvtvjggylcujenlelh.supabase.co https://*.sentry.io;",
+            value: `default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.stripe.com https://static.cloudflareinsights.com https://browser.sentry-cdn.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' blob: data: https://storage.googleapis.com${supabaseCspSource}; font-src 'self' data: https://fonts.gstatic.com; frame-src 'self' https://checkout.stripe.com; connect-src 'self' https://api.stripe.com https://api.brevo.com https://static.cloudflareinsights.com https://*.policywallet.gr${supabaseCspSource} https://*.sentry.io;`,
           },
           {
             key: "X-Frame-Options",

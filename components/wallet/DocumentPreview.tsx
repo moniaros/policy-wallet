@@ -51,7 +51,6 @@ export function DocumentPreview({ isOpen, onClose, document }: DocumentPreviewPr
                         />
                     ) : fileType === "image" ? (
                         <div className="flex h-full items-center justify-center p-4">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 src={document.fileUrl}
                                 alt={document.fileName}

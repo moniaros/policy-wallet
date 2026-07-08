@@ -2,6 +2,8 @@
 
 Guidance for Claude Code when working in this repository. For setup, environment variables, and the full documentation index, see [README.md](README.md) and [docs/](docs/).
 
+> [AGENTS.md](AGENTS.md) is a mirror of this file for other coding agents — apply any edits to both.
+
 ## Session workflow
 
 - At the START of a session: read docs/STATUS.md and any relevant docs/audits/*.md, then briefly tell me where we are before doing new work.
@@ -28,8 +30,11 @@ npm start              # Production server (port 3000)
 npm run type-check     # tsc --noEmit
 
 # Tests
-npm test               # Vitest (unit)
+npm test               # Vitest (unit) — WATCH mode; use npx vitest --run for one-shot
+npx vitest --run tests/unit                          # what CI runs
+npx vitest --run tests/unit/gap-detection.test.ts    # single file; add -t "name" for one case
 npm run test:e2e       # Playwright (E2E); :ui and :headed variants exist
+npx playwright test tests/agent-journey.spec.ts --project=chromium   # single E2E spec
 
 # Repo guardrail scripts (see below)
 npm run lint               # ESLint
@@ -43,6 +48,9 @@ npm run verify:migrations  # Prisma schema + migration sync check
 npx prisma migrate dev   # Create & apply a migration
 npx prisma db seed       # Seed insurers / types / sample data (prisma/seed.ts)
 npx prisma studio        # DB GUI
+node scripts/seed-agent-demo.mjs <agentEmail> <customerEmail>
+                         # Idempotent agent-demo wiring (relationship + analyzed motor
+                         # policy + gaps); both accounts must already exist in Supabase auth
 ```
 
 ## CI-enforced guardrails — read before committing
@@ -56,7 +64,13 @@ CI ([.github/workflows/ci.yml](.github/workflows/ci.yml)) runs these as **blocki
 5. **`type-check`** — `tsc --noEmit` under `strict`.
 6. **Unit tests** — `vitest --run tests/unit`, then a production **build**.
 
-E2E (Playwright) is **not** in CI — run it locally before merging UI changes.
+E2E (Playwright) is **not** in CI — run it locally before merging UI changes. (`verify:migrations` is also local-only.)
+
+### Test layout & Playwright quirks
+
+- Unit tests live in `tests/unit/**` (jsdom, `globals: true`, shared setup in `tests/setup.ts`). Playwright specs are `tests/*.spec.ts` + `tests/e2e/` — Vitest excludes them and Playwright ignores `tests/unit`.
+- Playwright's `baseURL` defaults to `http://localhost:5000`, but `npm run dev` serves on **3000** — run E2E against a local dev server with `BASE_URL=http://localhost:3000 npx playwright test …`.
+- Auth is handled by setup projects that store state in `playwright/.auth/`: the `chromium`/`firefox`/mobile projects run signed in as a **policyholder** (`auth.setup.ts`), `agent-chromium` as an **agent** (`agent-auth.setup.ts`).
 
 ## Architecture
 
@@ -85,7 +99,7 @@ contexts/        LanguageContext, ThemeContext
 hooks/           useSupabaseUser, useResponsive, …
 ```
 
-There is **no `middleware.ts`** — auth is enforced in layouts and in API routes, not middleware.
+Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middleware.ts`): it redirects any path not on its public allowlist to `/auth/signin`. **When adding a public page or public route handler, add its path to the allowlist in `proxy.ts`** or crawlers and anonymous users get a login redirect. Layouts and API guards enforce auth again underneath (defense in depth).
 
 ## Key conventions
 

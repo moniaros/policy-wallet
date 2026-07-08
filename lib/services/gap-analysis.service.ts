@@ -145,6 +145,21 @@ export class GapAnalysisService extends BaseService {
             }
         }
 
+        // GDPR Art. 9 gate: the policy OWNER (the data subject) must have granted
+        // explicit AI-processing consent before document content reaches an LLM.
+        const owner = await this.db.user.findUnique({
+            where: { id: policy.ownerUserId },
+            select: { aiProcessingConsentVersion: true },
+        })
+        if (!owner?.aiProcessingConsentVersion) {
+            throw AppError.forbidden(
+                language === 'el'
+                    ? 'Απαιτείται συγκατάθεση για επεξεργασία με AI πριν από την ανάλυση'
+                    : 'AI-processing consent is required before analysis',
+                language
+            ).with({ reason: 'AI_CONSENT_REQUIRED' })
+        }
+
         // 2. Fetch Gap Definitions
         const gaps = await this.getGapDefinitions(policy.lineOfBusiness)
 

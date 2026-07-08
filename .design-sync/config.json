@@ -1,0 +1,81 @@
+{
+  "projectId": "01bf68cc-f070-4e55-b87d-57c8d7a54a4b",
+  "shape": "package",
+  "pkg": "policy-wallet",
+  "globalName": "PolicyWalletDS",
+  "srcDir": "components/ui",
+  "tsconfig": ".design-sync/tsconfig.sync.json",
+  "buildCmd": "npm run build && mkdir -p .design-sync/.cache && cp \"$(ls -S .next/static/chunks/*.css | head -1)\" .design-sync/.cache/compiled-tailwind.css",
+  "cssEntry": ".design-sync/.cache/compiled-tailwind.css",
+  "provider": {
+    "component": "LanguageProvider"
+  },
+  "componentSrcMap": {
+    "Button": "components/ui/button.tsx",
+    "Card": "components/ui/card.tsx",
+    "Skeleton": "components/ui/skeleton.tsx",
+    "Modal": "components/ui/Modal.tsx",
+    "PageHeader": "components/ui/PageHeader.tsx",
+    "FloatingActionButton": "components/ui/FloatingActionButton.tsx",
+    "ProcessingHUD": "components/ui/ProcessingHUD.tsx",
+    "PullToRefresh": "components/ui/PullToRefresh.tsx",
+    "SwipeableCard": "components/ui/SwipeableCard.tsx",
+    "PlanGate": "components/ui/PlanGate.tsx",
+    "AiDisclaimer": "components/ui/AiDisclaimer.tsx",
+    "AiConsentModal": "components/ui/AiConsentModal.tsx",
+    "DashboardSkeleton": "components/ui/LoadingSkeleton.tsx",
+    "BrandCard": "components/ui/brand/BrandCard.tsx",
+    "BrandStat": "components/ui/brand/BrandStat.tsx",
+    "BrandSectionHeader": "components/ui/brand/BrandSectionHeader.tsx",
+    "BrandActionButton": "components/ui/brand/BrandActionButton.tsx",
+    "CardHeader": null,
+    "CardFooter": null,
+    "CardTitle": null,
+    "CardDescription": null,
+    "CardContent": null,
+    "WalletSkeleton": null,
+    "TasksSkeleton": null,
+    "QuestionnaireSkeleton": null,
+    "LanguageProvider": null
+  },
+  "overrides": {
+    "Modal": {
+      "cardMode": "single",
+      "viewport": "600x560"
+    },
+    "DashboardSkeleton": {
+      "cardMode": "column",
+      "viewport": "1000x1000"
+    },
+    "AiConsentModal": {
+      "cardMode": "single",
+      "viewport": "600x560"
+    },
+    "ProcessingHUD": {
+      "cardMode": "single",
+      "viewport": "600x560"
+    },
+    "FloatingActionButton": {
+      "cardMode": "single",
+      "viewport": "480x520"
+    },
+    "PullToRefresh": {
+      "cardMode": "single",
+      "viewport": "440x600"
+    },
+    "SwipeableCard": {
+      "cardMode": "single",
+      "viewport": "680x420"
+    },
+    "PageHeader": {
+      "cardMode": "column"
+    },
+    "PlanGate": {
+      "cardMode": "column"
+    }
+  },
+  "guidelinesGlob": [
+    "design-system/policywallet/**/*.md"
+  ],
+  "readmeHeader": ".design-sync/conventions.md"
+}

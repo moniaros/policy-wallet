@@ -1,34 +1,34 @@
 # PolicyWallet — Project Status
 
 _Living dashboard — not a log. Updated at the end of each session with meaningful work. Keep it under one screen._
-**Last updated:** 2026-06-01
+**Last updated:** 2026-07-07
 
 ## Current phase
-Phase 1 — Core Journey Compliance (~68% per `docs/planning/V2_SPEC_ROADMAP_STATUS.md`, source-of-truth doc last refreshed 2026-02-23), tracking toward **Greece GA** (`docs/launch/GO_NO_GO_SIGNOFF_PACKET_GR-GA-2026.03.md`). Active branch: `NEW-UI` (UI redesign in flight).
+**Pre-demo hardening → internal/stakeholder staging demo.** Product is feature-complete; remaining work is integration + deployment + sign-off. All engineering on branch `product-revision` (the whole body of work — `production-prep` + monetization + design-sync + this hardening pass — is stacked here; opening one PR → `NEW-UI`). Greece GA go/no-go packet still `HOLD` on human sign-offs.
 
 ## Done (recent)
-- **Fixed Critical IDOR — `sharePolicy`** (`app/(protected)/wallet/actions.ts:376`): an owner gate now runs *before* any agent lookup / invite / AccessGrant / email — a non-owner gets `"You do not have permission to share this policy"`; share-invite tokens use `crypto.randomUUID()`. Tests in `tests/unit/share-policy.test.ts`. **Closes former Top-risk #1 (Critical IDOR).** _Committed (df12c77)._
-- **Closed Critical #3 (parts 1+2)** — AI-advice disclaimer now renders on every gap/recommendation/protection-score surface + the savings-report export, via a new canonical `common.aiAdviceDisclaimer` i18n key (EL+EN) and shared `components/ui/AiDisclaimer.tsx`; AI prompts reframed from "personalized advice" to informational framing across all 3 providers + interface. Consent gate **designed, not built** → `docs/audits/ai-advice-compliance.md`. _Committed (1cc5576)._
-- **Fixed Critical #1** — `app/onboarding/agent/actions.ts`: all 5 actions now derive identity from the session via a `requireAgent()` guard (agent role required), `userId` param removed, 8 call sites updated; new `tests/unit/onboarding-agent-actions.test.ts` (8 tests) proves unauthenticated/wrong-role callers are rejected with no DB write. _Committed (df12c77)._
-- `CLAUDE.md` authored — repo guide + CI guardrail rules.
-- Security/compliance audits → `docs/audits/idor-policyholder-data.md`: policyholder-data IDOR, server-action auth-guard, agent↔policyholder connection-join, and AI advice-labeling/compliance review.
-- Phase 0 stabilization complete; agent experience (insights / activity / dashboard) complete (`docs/planning/pending.md`).
+- **SEO/GEO/AEO overhaul (branch `seo-geo-aeo`, responds to the 7 Jul external audit 4/4/5):** robots.ts + sitemap.ts; unique Greek titles/descriptions + canonicals on all marketing pages (client pages wrapped with server `page.tsx`); server-rendered JSON-LD (Organization, WebSite, FAQPage, HowTo, BreadcrumbList, SoftwareApplication+Offers, Article — was injected post-hydration, invisible to crawlers); 1200×630 OG images (was 1024×1024); `/guides` with 3 bilingual long-tail articles; free-tier copy contradiction fixed (3 policies); stat counters server-render real values; placeholder phone removed (env-driven NAP + socials, see `docs/operations/SEO_STRATEGY.md`). Root cause of the audit's critical finding was `proxy.ts` (Next 16 middleware) auth-gating robots.txt/sitemap/for-agents — allowlist fixed; takes effect on next deploy. Verified locally on a prod build (robots/sitemap 200, unique titles+canonicals, JSON-LD parses, og:image 1200×630, /wallet still auth-gated).
+- **Production hardening (this pass):** re-enabled server/edge Sentry (was commented out — server errors were invisible), sampling 1.0→0.1, `sendDefaultPii` off (GDPR); rate-limiter now alerts on in-memory fallback + prod requires Upstash; `db.ts` pooled-connection-ready (`POOLED_DATABASE_URL`, opt-in) + Prisma client cached on global in all envs.
+- **Security:** closed 3 endpoint scope-gaps (analysis-runs grant now policy-scoped; questionnaire-response recipient check; task-recipient relationship check) + 6 tests. Share trust chain audited sound.
+- **Pricing-cutover copy** fixed (risk #1): `/pricing` + `/upgrade` now match the shipped paywall (Free organizer + 1 trial, Plus 1M, Pro 3M) — no more "Unlimited AI"/"10 analyses/month" contradictions.
+- **nodemailer 7→9** (worst production vuln class gone; 10→9 vulns). k6 load scripts authored (`scripts/load/`). Demo deploy runbook: `docs/operations/DEMO_DEPLOY_RUNBOOK.md`.
+- **Design system synced** to claude.ai/design (17 components, all previews graded good); inputs committed under `.design-sync/`.
+- Prior: AI paywall + trial, token economics, agent consent-request flow, onboarding v2 + signup split, agency-tier gating, GDPR consent gate, billing catalog script.
+- All guardrails + **136/136 unit tests** + build green; full migration chain replayed clean on ephemeral Postgres.
 
-## In progress
-- `NEW-UI` redesign branch (active, uncommitted UI work).
-- Phase 1 login hardening — production passkey/biometric handshake (currently UI-first prefill only).
-
-## Blocked
-- ~~Greece GA sign-off gated by the Critical `sharePolicy` IDOR~~ **RESOLVED** — IDOR fixed (df12c77). Remaining pre-GA launch-risk to close: the **AI-processing consent gate** (GDPR Art. 9, Top risks #1).
+## Blocked (credential-gated — you execute, runbook ready)
+- **Vercel env — partially set.** On project `policy-wallet` (`prj_J0Yk…`, team moniaros-projects) I set `AUTH_SECRET`, `CRON_SECRET`, `RATELIMIT_ALLOW_LOCAL=1`, `AI_ANALYSIS_PARALLELISM=5`, `SENTRY_TRACES_SAMPLE_RATE=0.1` (production + preview). **You must add the data-plane secrets** (I can't fabricate them): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `POOLED_DATABASE_URL`, `DIRECT_URL`, `DATABASE_URL`, Stripe test keys, `GEMINI_API_KEY` (or leave unset for mock), and QStash keys to activate the queue. Build fails until the Supabase pair is set.
+- **Staging deploy**: enable the demo branch in Vercel Git settings; `prisma migrate deploy`; `setup-billing-catalog.ts --apply` (Stripe test) + RevenueCat; walk the money path. Full steps in `DEMO_DEPLOY_RUNBOOK.md`.
+- **Real-DB migrations** (consent gate, trial/invite columns) still unapplied to any real DB.
 
 ## Top risks (ranked)
-1. **High — AI-processing consent missing (GDPR Art. 9)**: disclaimer + prompt-framing resolved (Critical #3 parts 1+2, see Done). **Remaining:** policy documents — incl. special-category health data — are sent to LLMs with no explicit consent. Design ready in `docs/audits/ai-advice-compliance.md` (needs Prisma migration + gate at `orchestrator.createRun()`).
-2. **High — auth gaps (Phase 1):** no production passkey/biometric verification; 30-day session persistence not enforced/tested.
-3. **Medium — assorted scope gaps:** `analysis-runs/[runId]` grant check accepts *any* active owner→grantee grant, not one scoped to `policy:<id>` (`app/api/v1/policies/[id]/analysis-runs/[runId]/route.ts:36`); `share` GET AccessGrant trust chain; `createUserTask`/`submitQuestionnaireResponse` recipient/instance not ownership-checked. _(`process-policy` is **not** a cross-tenant hole — it has an owner gate at `app/api/v1/jobs/process-policy/route.ts:52` plus rate-limit + idempotency; residual concern is only that a `jobs/` route is user-callable at all.)_
-4. ~~Critical — IDOR in `sharePolicy`~~ **RESOLVED** (df12c77) — owner gate + `crypto.randomUUID()` tokens; see Done.
-5. ~~Low — pre-existing red CI~~ **RESOLVED**: `audit:api-auth` inventory reconciled (91/91); `@testing-library/user-event` installed (type-check + unit tests green); 4 react-hooks errors fixed; lint `no-empty`/`@ts-nocheck` cleaned. All guardrails now pass (one cosmetic lint warning remains in `DocumentPreview.tsx`).
+1. **High — nothing deployed yet**: the demo is the first real end-to-end exercise of signup→trial→paywall→checkout. Untested against a real Supabase/Stripe until the runbook runs.
+2. **Medium — scale partially hardened** (branch `scale-hardening`, PR pending): AI pipeline now queued on QStash for manual-trigger paths (concurrency-capped, signed consumer) — **upload path still inline** (post-analysis dedup coupling; documented follow-up); pooled DB still unverified under load; no k6 run yet.
+3. **Medium — auth gaps**: email-verification hard gate now **built, opt-in** (`ENFORCE_EMAIL_VERIFICATION=1`, off for the demo — flip on before real traffic); passkey/biometric still not production-wired, 30-day session untested.
+4. **Medium — governance HOLD**: legal/DPO/product + UAT + SRE-restore sign-offs pending; `AI_INCIDENT_*` secrets missing.
+5. **Medium — CI blind spot**: CI only triggers on `main`/`develop`, so `NEW-UI`/`product-revision` have never been CI-validated remotely.
 
 ## Next 3 actions
-1. Implement the AI-processing consent gate (Prisma migration: `ai_processing` ConsentType + `User.aiProcessingConsentVersion`; capture UI; gate in `orchestrator.createRun()`) per `docs/audits/ai-advice-compliance.md`.
-2. Add `scope: policy:<id>` to the `analysis-runs/[runId]` grant check; decide whether the user-callable `process-policy` `jobs/` route should be cron/admin-only.
-3. Triage the motor broker-demo gaps before the demo — silent mock-mode fallback, no gap→Opportunity automation, and the agent-dashboard `createdByUserId` blind spot (`docs/demo/motor-demo-path.md`).
+1. Merge PR #43 (`product-revision` → `NEW-UI`, CI green); then PR + merge `scale-hardening` and `seo-geo-aeo` (stacked on it). Deploy → verify `curl -I /robots.txt` = 200 on the live host; submit sitemap in Search Console (post-deploy checklist in `docs/operations/SEO_STRATEGY.md`).
+2. SEO data you must provide (env, no code): `NEXT_PUBLIC_SITE_URL`, real phone/address (`NEXT_PUBLIC_CONTACT_*`), LinkedIn company page (`NEXT_PUBLIC_SOCIAL_LINKEDIN`). Domain split DECIDED: marketing → `policywallet.gr` apex, B2C app + B2B agency on separate subdomains — execute cutover steps in SEO_STRATEGY.md (DNS/Vercel + env flip, then 301s + Search Console).
+3. Finish the queue migration (upload path onto QStash + k6 against staging) and start closing the go/no-go human sign-offs (issue #39 gate is built, opt-in).

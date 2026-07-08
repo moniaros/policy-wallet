@@ -6,8 +6,9 @@ import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { fixMojibakeText } from "@/lib/i18n/fix-mojibake"
 import { completeOnboardingStep, uploadOnboardingPolicy, redeemInviteCode, triggerOnboardingAnalysis } from "./actions"
+import { AiConsentModal } from "@/components/ui/AiConsentModal"
 
-type GoalType = "save_money" | "health_family" | "my_car"
+type GoalType = "save_money" | "health_family" | "my_car" | "organize_policies" | "review_policy" | "investments_reminders"
 
 interface OnboardingFlowProps {
     initialState: {
@@ -19,16 +20,28 @@ interface OnboardingFlowProps {
         onboardingFamiliarity: "beginner" | "intermediate" | "experienced" | null
         onboardingFileReady: boolean | null
         onboardingEntryCompleted: boolean
+        hasAiConsent: boolean
     }
 }
 
-const TOTAL_STEPS = 4
+const TOTAL_STEPS = 5
 
 function mapGoalToLegacy(goal: GoalType): string {
     if (goal === "health_family") return "understand_coverage"
     if (goal === "my_car") return "avoid_missed_renewals"
-    return "save_money"
+    if (goal === "save_money") return "save_money"
+    // Newer goals are stored under their own keys.
+    return goal
 }
+
+const GOALS: { key: GoalType; el: string; en: string }[] = [
+    { key: "organize_policies", el: "Έλεγχος των συμβολαίων μου", en: "Control My Policies" },
+    { key: "review_policy", el: "Έλεγχος υπάρχοντος συμβολαίου", en: "Review an Existing Policy" },
+    { key: "save_money", el: "Εξοικονόμηση", en: "Save Money" },
+    { key: "health_family", el: "Υγεία & Οικογένεια", en: "Health & Family" },
+    { key: "my_car", el: "Το Αυτοκίνητό μου", en: "My Car" },
+    { key: "investments_reminders", el: "Επενδύσεις & Υπενθυμίσεις", en: "Investments & Reminders" },
+]
 
 export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
     const { language } = useLanguage()
@@ -46,6 +59,10 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
     const [inviteCode, setInviteCode] = useState("")
     const [connectedAgentName, setConnectedAgentName] = useState<string | null>(null)
     const [inviteError, setInviteError] = useState<string | null>(null)
+    // AI-processing consent: uploading a policy leads straight into AI analysis,
+    // so consent is captured before the step-2 upload proceeds.
+    const [aiConsent, setAiConsent] = useState(initialState.hasAiConsent)
+    const [consentModalOpen, setConsentModalOpen] = useState(false)
 
     const stepLabel = t(`Βήμα ${step} από ${TOTAL_STEPS}`, `Step ${step} of ${TOTAL_STEPS}`)
     const displayName = initialState.name || ""
@@ -86,7 +103,10 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
         if (!goal) return null
         if (goal === "save_money") return t("Θα ξεκινήσουμε με ευκαιρίες εξοικονόμησης.", "We will prioritize savings opportunities first.")
         if (goal === "health_family") return t("Θα δώσουμε έμφαση σε υγεία και οικογενειακή κάλυψη.", "We will prioritize health and family coverage first.")
-        return t("Θα ξεκινήσουμε από την ασφάλιση αυτοκινήτου σας.", "We will start from your motor coverage first.")
+        if (goal === "my_car") return t("Θα ξεκινήσουμε από την ασφάλιση αυτοκινήτου σας.", "We will start from your motor coverage first.")
+        if (goal === "organize_policies") return t("Θα οργανώσουμε όλα τα συμβόλαιά σας σε ένα ασφαλές πορτοφόλι με υπενθυμίσεις ανανέωσης.", "We will organize all your policies in one secure wallet with renewal reminders.")
+        if (goal === "review_policy") return t("Θα ξεκινήσουμε με έλεγχο του υπάρχοντος συμβολαίου σας για κενά και ασάφειες.", "We will start by reviewing your existing policy for gaps and unclear terms.")
+        return t("Θα παρακολουθούμε επενδυτικά προϊόντα ασφάλισης και θα ρυθμίσουμε έξυπνες υπενθυμίσεις.", "We will track investment-linked policies and set up smart reminders.")
     }, [goal, isGreek])
 
     const continueFromStep1 = async () => {
@@ -105,7 +125,11 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
         }
     }
 
-    const continueFromStep2 = async (skipUpload: boolean = false) => {
+    const continueFromStep2 = async (skipUpload: boolean = false, consentJustGranted: boolean = false) => {
+        if (!skipUpload && selectedFile && !aiConsent && !consentJustGranted) {
+            setConsentModalOpen(true)
+            return
+        }
         setBusy(true)
         try {
             if (!skipUpload && selectedFile) {
@@ -175,10 +199,22 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
         }
     }
 
+    const continueFromReminders = async () => {
+        setBusy(true)
+        try {
+            await completeOnboardingStep(4, { onboardingRemindersEnabled: true })
+            setStep(5)
+        } catch {
+            toast.error(t("Σφάλμα.", "Error."))
+        } finally {
+            setBusy(false)
+        }
+    }
+
     const finishOnboarding = async () => {
         setBusy(true)
         try {
-            await completeOnboardingStep(4, {
+            await completeOnboardingStep(5, {
                 markCompleted: true,
                 redirectTo: "/home",
                 onboardingCompletionLocation: "home_dashboard",
@@ -194,6 +230,16 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-teal-50 px-4 py-10 dark:from-stone-950 dark:via-stone-900 dark:to-teal-950/30">
+            <AiConsentModal
+                isOpen={consentModalOpen}
+                onClose={() => setConsentModalOpen(false)}
+                onConsented={() => {
+                    setAiConsent(true)
+                    setConsentModalOpen(false)
+                    continueFromStep2(false, true)
+                }}
+                source="onboarding_upload"
+            />
             <div className="mx-auto max-w-3xl">
                 <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-xl dark:border-stone-800 dark:bg-stone-900 sm:p-8">
                     <div className="mb-6">
@@ -221,39 +267,20 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                             </div>
 
                             <div className="grid gap-3 sm:grid-cols-3">
-                                <button
-                                    type="button"
-                                    onClick={() => setGoal("save_money")}
-                                    className={`rounded-2xl border px-4 py-5 text-left transition ${
-                                        goal === "save_money"
-                                            ? "border-teal-500 bg-teal-50 dark:bg-teal-900/20"
-                                            : "border-stone-200 bg-white hover:border-teal-400 dark:border-stone-700 dark:bg-stone-900"
-                                    }`}
-                                >
-                                    <p className="text-sm font-black text-stone-900 dark:text-white">{t("Εξοικονόμηση", "Save Money")}</p>
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setGoal("health_family")}
-                                    className={`rounded-2xl border px-4 py-5 text-left transition ${
-                                        goal === "health_family"
-                                            ? "border-teal-500 bg-teal-50 dark:bg-teal-900/20"
-                                            : "border-stone-200 bg-white hover:border-teal-400 dark:border-stone-700 dark:bg-stone-900"
-                                    }`}
-                                >
-                                    <p className="text-sm font-black text-stone-900 dark:text-white">{t("Υγεία & Οικογένεια", "Health & Family")}</p>
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setGoal("my_car")}
-                                    className={`rounded-2xl border px-4 py-5 text-left transition ${
-                                        goal === "my_car"
-                                            ? "border-teal-500 bg-teal-50 dark:bg-teal-900/20"
-                                            : "border-stone-200 bg-white hover:border-teal-400 dark:border-stone-700 dark:bg-stone-900"
-                                    }`}
-                                >
-                                    <p className="text-sm font-black text-stone-900 dark:text-white">{t("Το Αυτοκίνητό μου", "My Car")}</p>
-                                </button>
+                                {GOALS.map((g) => (
+                                    <button
+                                        key={g.key}
+                                        type="button"
+                                        onClick={() => setGoal(g.key)}
+                                        className={`rounded-2xl border px-4 py-5 text-left transition ${
+                                            goal === g.key
+                                                ? "border-teal-500 bg-teal-50 dark:bg-teal-900/20"
+                                                : "border-stone-200 bg-white hover:border-teal-400 dark:border-stone-700 dark:bg-stone-900"
+                                        }`}
+                                    >
+                                        <p className="text-sm font-black text-stone-900 dark:text-white">{t(g.el, g.en)}</p>
+                                    </button>
+                                ))}
                             </div>
 
                             {currentGoalDescription && (
@@ -373,6 +400,15 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 )}
                             </div>
 
+                            {uploadedPolicyId && !simulatingAi && (
+                                <p className="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-200">
+                                    {t(
+                                        "Αυτή ήταν η δωρεάν δοκιμαστική σας ανάλυση. Οι αναλύσεις AI είναι διαθέσιμες στα πλάνα Plus και Pro.",
+                                        "This was your complimentary trial analysis. AI analyses are available on the Plus and Pro plans."
+                                    )}
+                                </p>
+                            )}
+
                             <button
                                 type="button"
                                 onClick={continueFromStep3}
@@ -385,6 +421,38 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                     )}
 
                     {step === 4 && (
+                        <div className="space-y-6">
+                            <div>
+                                <h2 className="text-xl font-black text-stone-900 dark:text-white">
+                                    {t("Έξυπνες Υπενθυμίσεις", "Smart Reminders")}
+                                </h2>
+                                <p className="mt-2 text-sm text-stone-600 dark:text-stone-300">
+                                    {t(
+                                        "Θα σας ειδοποιούμε πριν από κάθε λήξη ή ανανέωση συμβολαίου — με βάση τις ημερομηνίες των συμβολαίων σας. Δωρεάν, πάντα.",
+                                        "We will remind you before every policy expiry or renewal — based on your policies' dates. Free, always."
+                                    )}
+                                </p>
+                            </div>
+
+                            <div className="rounded-2xl border border-teal-100 bg-teal-50 p-4 text-sm text-teal-800 dark:border-teal-900/40 dark:bg-teal-900/20 dark:text-teal-200">
+                                {t(
+                                    "Οι υπενθυμίσεις ανανέωσης ενεργοποιούνται αυτόματα για κάθε συμβόλαιο που προσθέτετε.",
+                                    "Renewal reminders are enabled automatically for every policy you add."
+                                )}
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={continueFromReminders}
+                                disabled={busy}
+                                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-stone-900 px-4 py-3 text-sm font-black text-white transition hover:bg-stone-800 disabled:opacity-60 dark:bg-white dark:text-stone-900"
+                            >
+                                {busy ? t("Αποθήκευση...", "Saving...") : t("Συνέχεια", "Continue")}
+                            </button>
+                        </div>
+                    )}
+
+                    {step === 5 && (
                         <div className="space-y-6">
                             <div>
                                 <h2 className="text-xl font-black text-stone-900 dark:text-white">

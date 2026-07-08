@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client"
 import { createPolicy, getPolicyReviewData, retryPolicyAnalysis } from "@/app/(protected)/wallet/actions"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { Skeleton } from "@/components/ui/skeleton"
+import { AiConsentModal } from "@/components/ui/AiConsentModal"
 import {
     UploadCloud,
     FileText,
@@ -29,6 +30,7 @@ import {
 interface AddPolicyClientProps {
     insurers: { id: string, name: string }[]
     types: { id: string, name: string, slug: string }[]
+    hasAiConsent: boolean
 }
 
 type Phase = 'form' | 'reviewing'
@@ -55,13 +57,19 @@ function getAnalyzingStep(elapsed: number, t: any): string {
     return steps?.stepGenerating || 'Generating insights...'
 }
 
-export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
+export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClientProps) {
     const { t, language } = useLanguage()
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
     const [selectedFiles, setSelectedFiles] = useState<File[]>([])
     const [dragActive, setDragActive] = useState(false)
     const formCopy = t.wallet.addPolicyForm
+
+    // AI-processing consent (GDPR): analysis starts in the background right after
+    // createPolicy, so consent must be captured before the form is submitted.
+    const [aiConsent, setAiConsent] = useState(hasAiConsent)
+    const [consentModalOpen, setConsentModalOpen] = useState(false)
+    const pendingFormDataRef = useRef<FormData | null>(null)
 
     // Review phase state
     const [phase, setPhase] = useState<Phase>('form')
@@ -100,7 +108,6 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         const formData = new FormData(e.currentTarget)
-        const supabase = createClient()
 
         if (selectedFiles.length === 0) {
             toast.error(formCopy.uploadDocumentRequired)
@@ -127,6 +134,17 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
             formData.set("endDate", nextYear.toISOString().split('T')[0])
         }
 
+        if (!aiConsent) {
+            pendingFormDataRef.current = formData
+            setConsentModalOpen(true)
+            return
+        }
+
+        submitPolicy(formData)
+    }
+
+    const submitPolicy = (formData: FormData) => {
+        const supabase = createClient()
         startTransition(async () => {
             try {
                 const uploadPromises = selectedFiles.map(async (file) => {
@@ -273,7 +291,7 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                                     >
                                         <span className="flex items-center justify-center gap-2">
                                             <RefreshCw className="w-5 h-5" />
-                                            {language === 'el' ? 'Δοκιμάστε ξανά' : 'Try again'}
+                                            {reviewCopy.tryAgain}
                                         </span>
                                     </button>
 
@@ -284,7 +302,7 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                                     >
                                         <span className="flex items-center justify-center gap-2">
                                             <Pencil className="w-4 h-4" />
-                                            {reviewCopy.edit || (language === 'el' ? 'Επεξεργασία στοιχείων' : 'Edit details manually')}
+                                            {reviewCopy.edit}
                                         </span>
                                     </button>
 
@@ -293,7 +311,7 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                                         onClick={() => router.push('/wallet')}
                                         className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 underline transition-colors mt-2"
                                     >
-                                        {reviewCopy.skipForNow || (language === 'el' ? 'Παράλειψη' : 'Skip for now')}
+                                        {reviewCopy.skipForNow}
                                     </button>
                                 </div>
                             </div>
@@ -442,7 +460,7 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
                                     <button
                                         type="button"
                                         onClick={() => {
-                                            toast.success(reviewCopy.success || 'Policy saved!')
+                                            toast.success(reviewCopy.success)
                                             router.push('/wallet')
                                         }}
                                         className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white rounded-2xl py-4 font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/20"
@@ -491,6 +509,22 @@ export function AddPolicyClient({ insurers, types }: AddPolicyClientProps) {
             </div>
 
             <div className="max-w-3xl mx-auto px-4 py-8">
+                <AiConsentModal
+                    isOpen={consentModalOpen}
+                    onClose={() => {
+                        setConsentModalOpen(false)
+                        pendingFormDataRef.current = null
+                    }}
+                    onConsented={() => {
+                        setAiConsent(true)
+                        setConsentModalOpen(false)
+                        const pending = pendingFormDataRef.current
+                        pendingFormDataRef.current = null
+                        if (pending) submitPolicy(pending)
+                    }}
+                    source="wallet_add_policy"
+                />
+
                 <form onSubmit={handleSubmit} className="space-y-8">
 
                     {/* File Upload Section */}

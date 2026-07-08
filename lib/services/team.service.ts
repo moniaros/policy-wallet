@@ -1,5 +1,6 @@
 import { db } from "@/lib/db"
 import { sendNotification } from "@/lib/notifications"
+import { resolveAgentEntitlements } from "@/lib/subscription-entitlements"
 
 // ────────────────────────────────────────────────
 // Types
@@ -86,6 +87,15 @@ export async function createAgency(ownerUserId: string, data: {
         throw new Error("User already belongs to a team")
     }
 
+    // Agency/team creation (group-admin capability) is a plan upgrade: only
+    // tiers whose teamMembers entitlement exceeds 1 (agent_pro: 3, agency:
+    // unlimited) can create a tenant.
+    const entitlements = await resolveAgentEntitlements(ownerUserId)
+    const teamLimit = entitlements.limits.teamMembers
+    if (teamLimit !== null && teamLimit <= 1) {
+        throw new Error("UPGRADE_REQUIRED")
+    }
+
     const tenant = await db.tenant.create({
         data: {
             name: data.name,
@@ -152,6 +162,25 @@ export async function inviteTeamMember(
     })
     if (existingMembership) {
         throw new Error("User already belongs to a team")
+    }
+
+    // Enforce the plan's team-size entitlement. The seat count is checked
+    // against the tenant OWNER's plan — the tenant's capacity is theirs.
+    const owner = await db.tenantMembership.findFirst({
+        where: { tenantId: membership.tenantId, role: "owner" },
+        select: { userId: true },
+    })
+    if (owner) {
+        const ownerEntitlements = await resolveAgentEntitlements(owner.userId)
+        const seatLimit = ownerEntitlements.limits.teamMembers
+        if (seatLimit !== null) {
+            const seatCount = await db.tenantMembership.count({
+                where: { tenantId: membership.tenantId, status: { in: ["active", "invited"] } },
+            })
+            if (seatCount >= seatLimit) {
+                throw new Error("UPGRADE_REQUIRED")
+            }
+        }
     }
 
     const newMembership = await db.tenantMembership.create({

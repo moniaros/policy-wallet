@@ -1,110 +1,15 @@
-"use client"
+import type { Metadata } from "next"
+import PageClient from "./PageClient"
+import { buildMarketingMetadata } from "@/lib/seo/marketing-pages"
+import { JsonLd, breadcrumbJsonLd } from "@/lib/seo/jsonld"
 
-import React from "react"
-import Link from "next/link"
-import { Shield, CheckCircle2 } from "lucide-react"
-import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
-import { useLanguage } from "@/contexts/LanguageContext"
-import { LoBPageShell } from "@/components/landing/LoBPageShell"
+export const metadata: Metadata = buildMarketingMetadata("product-property")
 
-export default function PropertyProductPage() {
-    const { language } = useLanguage()
-    const isGreek = language === "el"
-    const t = (el: string, en: string) => (isGreek ? el : en)
-
+export default function Page() {
     return (
-        <LoBPageShell activeNav="product">
-
-            {/* HERO */}
-            <section className="px-6 lg:px-12">
-                <div className="mx-auto max-w-[900px] text-center">
-                    <span className="inline-flex bg-[#DCEBDA] text-[#1A1A1A] px-3 py-1 rounded-[4px] text-[11px] font-semibold tracking-wider uppercase mb-6">
-                        {t("Λύσεις Ακινήτων", "Property Solutions")}
-                    </span>
-                    <h1 className="text-[46px] lg:text-[68px] leading-[1.05] tracking-[-0.04em] font-medium text-[#0F172A] mb-8">
-                        {t("Έξυπνη διαχείριση περιουσίας.", "Intelligent home & property management.")}
-                    </h1>
-                    <p className="mx-auto max-w-[680px] text-[20px] lg:text-[22px] leading-[1.5] text-[#475569] mb-10">
-                        {t("Διασφαλίστε το Rebuild Cost, αναλύστε καλύψεις φυσικών καταστροφών και ελέγξτε τη συμμόρφωση σας για μείωση ΕΝΦΙΑ σε μία πλατφόρμα.", "Ensure adequate Rebuild Costs, analyze strictly natural disaster coverages, and automate ENFIA tax deduction compliance checks.")}
-                    </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="w-full sm:w-auto rounded-[4px] bg-[#29685B] px-8 py-3.5 text-[16px] font-bold text-white transition-colors duration-150 hover:bg-[#1C4E44]">
-                            {t("Ξεκινήστε δωρεάν", "Get Started Free")}
-                        </Link>
-                    </div>
-                </div>
-            </section>
-
-            {/* FEATURE DEEP DIVE */}
-            <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
-                <div className="mx-auto max-w-[1240px] grid md:grid-cols-2 gap-16 items-center">
-                    {/* Mock UI — left on desktop */}
-                    <div className="order-last md:order-first bg-white p-8 rounded-[12px] border border-[#E5E5E5] shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
-                        <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
-                            <div>
-                                <h3 className="text-[14px] font-bold text-[#1A1A1A] uppercase tracking-wider">Primary Residence</h3>
-                                <p className="text-[13px] text-gray-500">120 sq.m — Athens</p>
-                            </div>
-                        </div>
-                        <div className="space-y-6">
-                            <div>
-                                <div className="flex justify-between text-sm mb-2">
-                                    <span className="text-[#475569]">Rebuild Cost Threshold</span>
-                                    <span className="font-medium text-amber-600">Underinsured by 15%</span>
-                                </div>
-                                <div className="w-full bg-gray-100 h-2 rounded-full">
-                                    <div className="bg-amber-500 w-[85%] h-2 rounded-full" />
-                                </div>
-                            </div>
-                            <div className="p-4 bg-purple-50 rounded-lg border border-purple-100 flex justify-between items-center">
-                                <div>
-                                    <p className="font-bold text-purple-900 text-sm">ENFIA Compliance</p>
-                                    <p className="text-xs text-purple-700 mt-1">Missing Flood Coverage</p>
-                                </div>
-                                <Shield className="w-6 h-6 text-purple-500" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h2 className="text-[36px] font-medium tracking-[-0.03em] mb-6 leading-[1.1] text-[#1A1A1A]">
-                            {t("Μην αφήνετε την περιουσία σας στην τύχη", "Don't leave equity to chance")}
-                        </h2>
-                        <p className="text-[#475569] text-[18px] leading-relaxed mb-8">
-                            {t("Η έξυπνη ανάλυση μας εξάγει κάθε κρίσιμο όρο ασφάλισης σπιτιού και κατασκευής, διασφαλίζοντας ότι το σπίτι σας (και η τσέπη σας) είναι ασφαλή.", "Our intelligent parsing extracts every critical home and structure condition, ensuring your property (and your wallet) are actually protected.")}
-                        </p>
-                        <ul className="space-y-6">
-                            <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
-                                <div>
-                                    <h4 className="text-[18px] font-medium text-[#1A1A1A]">{t("Κλείδωμα Κόστους Ανακατασκευής", "Rebuild Cost Guard")}</h4>
-                                    <p className="text-[#475569]">{t("Σύγκριση της αξίας σας απέναντι στον πραγματικό πληθωρισμό υλικών πριν η ασφαλιστική πληρώσει λιγότερα.", "Pinpoint gaps where inflation outpaced your total rebuild coverage before catastrophe strikes.")}</p>
-                                </div>
-                            </li>
-                            <li className="flex gap-4">
-                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
-                                <div>
-                                    <h4 className="text-[18px] font-medium text-[#1A1A1A]">{t("Συμμόρφωση ΕΝΦΙΑ (Ελλάδα)", "ENFIA Tax Deduction (GR)")}</h4>
-                                    <p className="text-[#475569]">{t("Οπτικός έλεγχος αν έχετε την απαραίτητη τριάδα Σεισμού-Πυρκαγιάς-Πλημμύρας για το 10% έκπτωσης.", "Visual checks parsing for the holy trio of Earthquake, Fire, and Flood to guarantee tax discounts.")}</p>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-            <ProductCategoryExplorer currentCategoryId="property" />
-
-            {/* CTA */}
-            <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">
-                <h2 className="text-[36px] lg:text-[48px] font-medium tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
-                    {t("Ασφαλίστε την περιουσία σας σωστά.", "Protect your equity correctly.")}
-                </h2>
-                <Link href="/auth/signup" className="inline-flex rounded-[4px] bg-[#89D9B2] px-8 py-4 text-[16px] font-bold text-[#1A1A1A] transition-opacity duration-150 hover:opacity-90">
-                    {t("Ξεκινήστε τώρα", "Start organizing today")}
-                </Link>
-            </section>
-
-        </LoBPageShell>
+        <>
+            <PageClient />
+            <JsonLd data={breadcrumbJsonLd(["product", "product-property"])} />
+        </>
     )
 }

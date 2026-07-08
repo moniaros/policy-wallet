@@ -54,15 +54,10 @@ const RegisterSchema = z.object({
 }, {
     message: "Email and name are required for agents",
     path: ["email"],
-}).refine((data) => {
-    if (data.role === "agent") {
-        return Boolean(data.licenseNumber && data.agencyName)
-    }
-    return true
-}, {
-    message: "License Number and Agency Name are required for agents",
-    path: ["licenseNumber"],
 })
+// Agent signup minimum is name + valid mobile + email; license and agency
+// details are collected later during agent onboarding (verification stays a
+// non-blocking badge — no admin approval is required to start working).
 
 async function getRequestIp() {
     const headerStore = await headers()

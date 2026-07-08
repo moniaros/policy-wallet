@@ -13,6 +13,8 @@ import fs from "fs/promises"
 import path from "path"
 import { getAIService } from "@/lib/services/ai"
 import { GapAnalysisService } from "@/lib/services/gap-analysis.service"
+import { AppError } from "@/lib/errors/app-error"
+import { enqueueAnalysisRun } from "@/lib/services/analysis/analysis-queue"
 import { refreshProtectionScore } from "@/lib/services/gap-engine"
 import { PolicyService } from "@/lib/services/policy.service"
 import { canUserUseTokens } from "@/lib/token-tracking"
@@ -401,6 +403,7 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
                 inviteeEmail: agentEmail,
                 token: crypto.randomUUID(),
                 inviteType: 'share',
+                relationshipType: 'client_agent',
                 scope: `policy:${policyId}`,
                 requestedPermissions: permissions,
                 expiresAt: daysFromNow(POLICY_SHARE_EXPIRY_DAYS)
@@ -597,8 +600,15 @@ export async function analyzeGaps(policyId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
-    // Check Daily Limit for Gap Analysis
+    // AI gap analysis is paid-only for policyholders (agents are metered by
+    // their agent-plan budgets, admins bypass).
     const { tier } = await getUserSubscription(authResult.dbUser.id)
+    const callerRoles = authResult.dbUser.roles || ""
+    if (tier === "free" && !callerRoles.includes("agent") && !callerRoles.includes("admin")) {
+        return { error: "UPGRADE_REQUIRED" }
+    }
+
+    // Check Daily Limit for Gap Analysis
     const dailyLimit = SUBSCRIPTION_LIMITS[tier].gapAnalysisPerDay
 
     if (dailyLimit !== null && !authResult.dbUser.roles.includes('admin')) {
@@ -630,6 +640,9 @@ export async function analyzeGaps(policyId: string) {
         revalidatePath(`/wallet/${policyId}`)
         return result
     } catch (e) {
+        if (e instanceof AppError && e.metadata?.reason === "AI_CONSENT_REQUIRED") {
+            return { error: "AI_CONSENT_REQUIRED" }
+        }
         console.error("AI Gap Analysis failed", e)
         return { error: `Analysis failed: ${e instanceof Error ? e.message : String(e)}` }
     }
@@ -771,12 +784,21 @@ export async function askPolicyQuestion(policyId: string, question: string) {
 
     if (!hasAccess) return { error: "Unauthorized" }
 
-    // Check feature access
+    // GDPR Art. 9 gate: Q&A sends extracted policy content to an LLM — the policy
+    // OWNER (the data subject) must have granted AI-processing consent.
+    const policyOwner = await db.user.findUnique({
+        where: { id: policy.ownerUserId },
+        select: { aiProcessingConsentVersion: true },
+    })
+    if (!policyOwner?.aiProcessingConsentVersion) {
+        return { error: "AI_CONSENT_REQUIRED" }
+    }
+
+    // Check feature access — interactiveQA is paid-only for policyholders;
+    // agents on granted policies are metered by their agent-plan budgets.
     const isAllowed = await canUserUseFeature(authResult.dbUser.id, 'interactiveQA')
-    if (!isAllowed && !authResult.dbUser.roles.includes('admin')) {
-        return {
-            error: getUpgradeMessage('feature_locked', authResult.dbUser.preferredLanguage as any || 'en')
-        }
+    if (!isAllowed && !authResult.dbUser.roles.includes('admin') && !authResult.dbUser.roles.includes('agent')) {
+        return { error: "UPGRADE_REQUIRED" }
     }
 
     // Check Daily Limit
@@ -929,16 +951,21 @@ export async function runPolicyAnalysis(policyId: string) {
         const run = await orchestrator.createRun(policyId, authResult.dbUser.id)
 
         if (run.status === "blocked") {
-            return { error: "TOKEN_LIMIT_BLOCKED", runId: run.id }
+            return { error: run.failureCode || "TOKEN_LIMIT_BLOCKED", runId: run.id }
         }
 
-        after(async () => {
-            try {
-                await orchestrator.executeRun(run.id, language)
-            } catch (e) {
-                logger('error', 'Deferred manual policy analysis failed', { policyId, runId: run.id, error: e })
-            }
-        })
+        // Hand execution to the durable queue when configured; otherwise run
+        // inline via after() (dev / no-QStash) — identical behavior.
+        const queued = await enqueueAnalysisRun(run.id, language)
+        if (!queued) {
+            after(async () => {
+                try {
+                    await orchestrator.executeRun(run.id, language)
+                } catch (e) {
+                    logger('error', 'Deferred manual policy analysis failed', { policyId, runId: run.id, error: e })
+                }
+            })
+        }
 
         revalidatePath(`/wallet`)
         revalidatePath(`/wallet/${policyId}`)
@@ -1006,6 +1033,12 @@ export async function notifyAgentAboutGap(gapId: string, policyId: string) {
             }
         })
         if (!hasAccess) return { error: "Unauthorized" }
+    }
+
+    // Agent collaboration (incl. gap escalation) is a paid-plan feature.
+    const notifierEntitlements = await resolveUserEntitlements(authResult.dbUser.id)
+    if (!notifierEntitlements.limits.agentCollaboration && !authResult.dbUser.roles.includes('admin')) {
+        return { error: "UPGRADE_REQUIRED" }
     }
 
     // Find active relationship

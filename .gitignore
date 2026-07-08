@@ -53,6 +53,16 @@ sentry.properties
 # Sentry Config File
 .env.sentry-build-plugin
 .env*.local
+
+# local artifacts — build/debug output that must not be committed
+/screenshots/
+/graphify-out/
+/*.log
+/build_output*.txt
+/tsc*.txt
+playwright/*.png
+playwright/*.txt
+
 docs/policies/health_ethniki_1.pdf
 docs/policies/health_ethniki_2.pdf
 docs/policies/motor_ethniki_1.pdf
@@ -60,3 +70,10 @@ docs/policies/motor_ethniki_2_terms.pdf
 docs/policies/motor_ethniki_2.pdf
 docs/policies/motor_ethniki_3_terms.pdf
 docs/policies/motor_ethniki_3.pdf
+
+# design-sync machine state
+.ds-sync/
+ds-bundle/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules

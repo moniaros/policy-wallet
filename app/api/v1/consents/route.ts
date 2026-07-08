@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { createApiResponse } from "@/lib/api-utils"
+import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { withApiGuard } from "@/lib/api-guard"
 import { db } from "@/lib/db"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
@@ -13,7 +13,7 @@ import {
 } from "@/lib/compliance/consent"
 
 const consentBodySchema = z.object({
-    consentType: z.enum(["cookie", "terms", "privacy"]),
+    consentType: z.enum(["cookie", "terms", "privacy", "ai_processing"]),
     policyVersion: z.string().min(1).max(64).optional(),
     locale: z.enum(["el", "en"]).default("el"),
     source: z.string().min(1).max(64).default("web"),
@@ -27,7 +27,8 @@ const consentBodySchema = z.object({
 })
 
 // L5 audit: anonymous POST is intentional — cookie consent must work before login.
-// Unauthenticated callers can only write to consentAudit (by design, rate-limited).
+// Unauthenticated callers can only write to consentAudit (by design, rate-limited),
+// and ai_processing consent is additionally rejected for anonymous callers below.
 // db.user.update is safely gated behind `if (userId)` — no auth bypass possible.
 // GET is auth-required; anonymous callers have nothing to read (no userId to scope by).
 export const GET = withApiGuard(
@@ -69,6 +70,12 @@ export const POST = withApiGuard(
         const authUser = await getAuthenticatedUserOrNull()
         const userId = authUser?.dbUser.id || null
 
+        // ai_processing consent gates LLM access to the user's documents — it must
+        // be attributable to an account, unlike the anonymous cookie banner path.
+        if (consentType === "ai_processing" && !userId) {
+            return createApiError("UNAUTHORIZED", "AI processing consent requires an authenticated user", 401, undefined, locale)
+        }
+
         await db.consentAudit.create({
             data: {
                 userId,
@@ -96,6 +103,8 @@ export const POST = withApiGuard(
                 baseUpdate.termsVersionAccepted = policyVersion
             } else if (consentType === "privacy") {
                 baseUpdate.privacyVersionAccepted = policyVersion
+            } else if (consentType === "ai_processing") {
+                baseUpdate.aiProcessingConsentVersion = policyVersion
             }
 
             await db.user.update({

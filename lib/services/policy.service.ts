@@ -829,12 +829,13 @@ export class PolicyService extends BaseService {
             }
         } else {
             // Create invite
-            const token = `inv_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`
+            const token = `inv_${crypto.randomUUID().replace(/-/g, '')}`
             const invite = await this.db.invite.create({
                 data: {
                     inviterUserId: ownerUserId,
                     inviteeEmail: recipientEmail,
                     inviteType: 'share',
+                    relationshipType: 'policy_share',
                     scope: `policy:${policyId}`,
                     requestedPermissions: 'view',
                     token,

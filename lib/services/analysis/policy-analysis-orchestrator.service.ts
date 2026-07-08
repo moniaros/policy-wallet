@@ -277,6 +277,85 @@ function createFallbackGapAnalysis(metadata: PolicyMetadata): AIGapAnalysisRespo
 export class PolicyAnalysisOrchestratorService {
     async createRun(policyId: string, userId: string) {
         const policy = await this.loadAuthorizedPolicy(policyId, userId)
+
+        // GDPR Art. 9 gate: the policy OWNER (the data subject — documents can
+        // carry special-category health data) must have granted explicit AI-processing
+        // consent before any document bytes reach an LLM provider. Checked before any
+        // policy/document status mutation so a blocked attempt leaves no churn.
+        const owner = await db.user.findUnique({
+            where: { id: policy.ownerUserId },
+            select: { aiProcessingConsentVersion: true },
+        })
+        if (!owner?.aiProcessingConsentVersion) {
+            return db.policyAnalysisRun.create({
+                data: {
+                    policyId,
+                    userId,
+                    provider: "gemini",
+                    model: env.GEMINI_MODEL_CLARITY_ANALYSIS,
+                    status: "blocked",
+                    blockedReason: "ai_consent_missing",
+                    failureCode: "AI_CONSENT_REQUIRED",
+                    failureMessage: "Policy owner has not granted AI-processing consent",
+                    finishedAt: new Date(),
+                },
+            })
+        }
+
+        // Paywall: AI analysis is paid-only for policyholders, except for one
+        // complimentary trial run (User.trialAnalysisUsedAt). Agents are metered
+        // by their own agent-plan budgets (canAgentRunAnalysis at the action
+        // layer + token gate below), so the trial branch never applies to them.
+        const initiator = await db.user.findUnique({
+            where: { id: userId },
+            select: { roles: true, trialAnalysisUsedAt: true },
+        })
+        const isAgentInitiator = Boolean(initiator?.roles?.includes("agent"))
+
+        // Resolve tier for priority queue: pro=2, plus=1, free=0
+        const userEntitlements = await resolveUserEntitlements(userId)
+
+        let isTrialRun = false
+        if (!isAgentInitiator && userEntitlements.tier === "free") {
+            if (initiator?.trialAnalysisUsedAt) {
+                return db.policyAnalysisRun.create({
+                    data: {
+                        policyId,
+                        userId,
+                        provider: "gemini",
+                        model: env.GEMINI_MODEL_CLARITY_ANALYSIS,
+                        status: "blocked",
+                        blockedReason: "free_tier_ai_locked",
+                        failureCode: "UPGRADE_REQUIRED",
+                        failureMessage: "AI analysis requires a paid plan; the free trial analysis has been used",
+                        finishedAt: new Date(),
+                    },
+                })
+            }
+            // Consume the one-time trial atomically; a concurrent second run
+            // loses the updateMany race and falls through to blocked next time.
+            const claimed = await db.user.updateMany({
+                where: { id: userId, trialAnalysisUsedAt: null },
+                data: { trialAnalysisUsedAt: new Date() },
+            })
+            if (claimed.count === 0) {
+                return db.policyAnalysisRun.create({
+                    data: {
+                        policyId,
+                        userId,
+                        provider: "gemini",
+                        model: env.GEMINI_MODEL_CLARITY_ANALYSIS,
+                        status: "blocked",
+                        blockedReason: "free_tier_ai_locked",
+                        failureCode: "UPGRADE_REQUIRED",
+                        failureMessage: "AI analysis requires a paid plan; the free trial analysis has been used",
+                        finishedAt: new Date(),
+                    },
+                })
+            }
+            isTrialRun = true
+        }
+
         const gapDefinitionsCount = await db.gapDefinition.count({
             where: {
                 lineOfBusiness: {
@@ -293,8 +372,6 @@ export class PolicyAnalysisOrchestratorService {
             checklistPillarsCount: INSURANCE_CLARITY_CHECKLIST.length,
         })
 
-        // Resolve tier for priority queue: pro=2, plus=1, free=0
-        const userEntitlements = await resolveUserEntitlements(userId)
         const queuePriority = userEntitlements.tier === "pro" ? 2 : userEntitlements.tier === "plus" ? 1 : 0
 
         const run = await db.policyAnalysisRun.create({
@@ -319,7 +396,11 @@ export class PolicyAnalysisOrchestratorService {
             data: { processingStatus: "processing" },
         })
 
-        const gate = await canUserUseTokens(userId, estimation.totalEstimatedTokens)
+        // Trial runs bypass the token budget: free tier has a 0 budget by design
+        // and the trial's cost envelope is bounded by the single-run claim above.
+        const gate = isTrialRun
+            ? { allowed: true as const }
+            : await canUserUseTokens(userId, estimation.totalEstimatedTokens)
         if (!gate.allowed) {
             const blockedRun = await db.policyAnalysisRun.update({
                 where: { id: run.id },

@@ -1,5 +1,16 @@
 {
+  "functions": {
+    "app/api/v1/jobs/execute-analysis/route.ts": { "maxDuration": 300 },
+    "app/api/v1/policies/[id]/review/route.ts": { "maxDuration": 300 },
+    "app/api/v1/jobs/process-policy/route.ts": { "maxDuration": 300 },
+    "app/api/policies/extract/route.ts": { "maxDuration": 120 },
+    "app/api/v1/upload/route.ts": { "maxDuration": 60, "memory": 1024 }
+  },
   "crons": [
+    {
+      "path": "/api/v1/jobs/synthetic-launch-check",
+      "schedule": "0 */3 * * *"
+    },
     {
       "path": "/api/v1/jobs/collaboration-reminders",
       "schedule": "0 8 * * *"

@@ -81,8 +81,11 @@ export async function proxy(request: NextRequest) {
     const publicPrefixes = [
         "/product",
         "/solutions",
+        "/guides",
         "/auth",
         "/api/auth",
+        // PWA service-worker chunks (workbox-<hash>.js at the root)
+        "/workbox-",
     ]
     const publicExactRoutes = [
         "/",
@@ -92,8 +95,20 @@ export async function proxy(request: NextRequest) {
         "/pricing",
         "/company",
         "/contact",
+        "/for-agents",
+        "/landing",
         "/api/contact",
         "/api/v1/contact",
+        // Crawl infrastructure + link previews: redirecting these to the
+        // sign-in page hides the whole site from search and AI crawlers
+        // (SEO audit, critical finding #1).
+        "/robots.txt",
+        "/sitemap.xml",
+        "/opengraph-image",
+        "/twitter-image",
+        // PWA service worker + Sentry browser tunnel for anonymous visitors
+        "/sw.js",
+        "/monitoring",
     ]
     const isPublicRoute =
         publicExactRoutes.includes(nextUrl.pathname) ||

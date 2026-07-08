@@ -19,6 +19,18 @@ export async function createUserTask(data: CreateTaskData) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { success: false, error: "Unauthorized" }
 
+    // A task may only be assigned to yourself or to a customer you have an active
+    // relationship with — not to an arbitrary user id. Admins are exempt.
+    const isSelf = data.userId === authResult.dbUser.id
+    const isAdmin = authResult.dbUser.roles?.includes("admin")
+    if (!isSelf && !isAdmin) {
+        const relationship = await db.customerRelationship.findFirst({
+            where: { agentUserId: authResult.dbUser.id, policyholderUserId: data.userId },
+            select: { id: true },
+        })
+        if (!relationship) return { success: false, error: "Unauthorized" }
+    }
+
     try {
         const task = await db.userTask.create({
             data: {

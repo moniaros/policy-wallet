@@ -1,4 +1,5 @@
 ﻿import type { LandingContentModel } from "@/types/landing-content"
+import { siteConfig } from "@/lib/seo/site"
 
 export const landingContent: LandingContentModel = {
     productName: "PolicyWallet",
@@ -412,6 +413,16 @@ export const landingContent: LandingContentModel = {
     faq: {
         title: { el: "Συχνές Ερωτήσεις", en: "Frequently asked questions" },
         items: [
+            {
+                // One-line definition, first in the list: answer engines and
+                // featured snippets extract "X is a..." sentences from here.
+                id: "faq-what-is-policywallet",
+                question: { el: "Τι είναι το PolicyWallet;", en: "What is PolicyWallet?" },
+                answer: {
+                    el: siteConfig.definition.el,
+                    en: siteConfig.definition.en,
+                },
+            },
             {
                 id: "faq-data-security",
                 question: { el: "Είναι ασφαλή τα δεδομένα μου;", en: "Is my data secure?" },

@@ -61,8 +61,8 @@ export const subscriptionCopy = {
             en: 'Unlimited policies'
         },
         basicAI: {
-            el: 'Βασική ανάλυση AI',
-            en: 'Basic AI analysis'
+            el: '1 δωρεάν δοκιμαστική ανάλυση AI',
+            en: '1 free trial AI analysis'
         },
         advancedAI: {
             el: 'Προηγμένη ανάλυση AI',

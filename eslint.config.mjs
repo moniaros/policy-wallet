@@ -7,11 +7,11 @@ import typescriptPlugin from "@typescript-eslint/eslint-plugin";
 
 export default [
     {
-        ignores: [".next/**/*", "node_modules/**/*", "public/**/*"],
+        ignores: [".next/**/*", "node_modules/**/*", "public/**/*", ".ds-sync/**/*", "ds-bundle/**/*", ".design-sync/.cache/**/*"],
     },
     js.configs.recommended,
     {
-        files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
+        files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.mjs"],
         languageOptions: {
             parser: typescriptParser,
             parserOptions: {

@@ -12,11 +12,9 @@ import {
     Clock,
     MessageSquare,
 } from "lucide-react"
+import { buildMarketingMetadata } from "@/lib/seo/marketing-pages"
 
-export const metadata: Metadata = {
-    title: "For Agents — PolicyWallet",
-    description: "Manage your client portfolio with AI-powered insurance tools. PolicyWallet helps agents streamline renewals, cross-sell, and client engagement.",
-}
+export const metadata: Metadata = buildMarketingMetadata("for-agents")
 
 const FEATURES = [
     {

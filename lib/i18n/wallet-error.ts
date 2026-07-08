@@ -38,6 +38,14 @@ export function mapWalletErrorToMessage(
     const lower = message.toLowerCase()
     const upper = message.toUpperCase()
 
+    if (upper.includes("AI_CONSENT_REQUIRED")) {
+        return t?.common?.aiConsentRequired || byContext(context, t)
+    }
+
+    if (upper.includes("UPGRADE_REQUIRED")) {
+        return t?.wallet?.errors?.upgradeRequired || byContext(context, t)
+    }
+
     if (
         upper.includes("TOKEN_LIMIT_BLOCKED") ||
         lower.includes("monthly_limit_reached") ||
