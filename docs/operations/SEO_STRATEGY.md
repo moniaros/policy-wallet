@@ -23,21 +23,36 @@ the one decision that needs infrastructure work: the domain strategy._
 - `NEXT_PUBLIC_CONTACT_PHONE`, `NEXT_PUBLIC_CONTACT_STREET/_CITY/_POSTAL_CODE` — /contact + Organization/PostalAddress. The audit flagged the placeholder "+30 XXX XXX XXXX"; until a real phone exists, nothing renders (absence beats placeholder).
 - `NEXT_PUBLIC_SOCIAL_LINKEDIN` (and `_FACEBOOK`, `_INSTAGRAM`, `_X`) — footer links + `sameAs`. Create at least a LinkedIn company page; AI engines use it to corroborate the entity.
 
-## Domain strategy (audit: "subdomain strategy — needs attention")
+## Domain strategy — DECIDED (2026-07-08)
 
-The marketing site currently lives on `app.policywallet.gr`, so ranking signals
-accrue to an app subdomain. Recommendation, in order:
+Three-origin split:
 
-1. **Target state:** serve marketing pages from `https://policywallet.gr` (apex)
-   and keep `app.` for the logged-in product. In Vercel: add `policywallet.gr` to
-   the project, make it the production domain, 308-redirect `www.` → apex. Keep
-   `app.policywallet.gr` for `/wallet`, `/auth`, etc. (or a separate project).
-2. **Until then:** set `NEXT_PUBLIC_SITE_URL="https://app.policywallet.gr"` so
-   canonicals, sitemap, and JSON-LD are at least consistent on one origin
-   (implemented — this is the current state).
-3. **When cutting over:** change `NEXT_PUBLIC_SITE_URL` to the apex, 301 the
-   marketing paths from `app.` to apex, resubmit the sitemap in Google Search
-   Console, and keep the old URLs redirecting for ≥6 months.
+| Origin | Serves | Audience |
+| --- | --- | --- |
+| `policywallet.gr` (apex) | Marketing site: landing, product, pricing, company, contact, guides, legal | Public / crawlers |
+| B2C app subdomain (working name `app.policywallet.gr`) | Logged-in policyholder product: `/wallet`, `/home`, onboarding, account | Policyholders |
+| B2B subdomain (working name `agency.policywallet.gr` — confirm final name before DNS) | Agent & agency product: `/dashboard/agent`, customers, renewals, team | Agents / agencies |
+
+All ranking signals accrue to the apex; the app subdomains stay behind auth and
+are disallowed for crawlers. The canonical infrastructure already supports this —
+every canonical, sitemap URL, and JSON-LD `url` derives from `NEXT_PUBLIC_SITE_URL`.
+
+Cutover steps:
+
+1. In Vercel, add `policywallet.gr` as the production domain for the marketing
+   deployment; 308-redirect `www.` → apex. Point the B2C/B2B subdomains at the
+   app deployment(s).
+2. Set `NEXT_PUBLIC_SITE_URL="https://policywallet.gr"` (production env).
+3. 301 the marketing paths (`/`, `/product*`, `/pricing`, `/company`, `/contact`,
+   `/guides*`, `/solutions*`, `/for-agents`, `/privacy`, `/terms`) from the old
+   `app.` host to the apex; keep redirects for ≥6 months.
+4. Auth entry points: marketing CTAs (`/auth/signup`, `/auth/signin`) should land
+   on the appropriate app subdomain by role (B2C default; agent signup → B2B).
+5. Resubmit the sitemap in Google Search Console under the apex property and
+   re-run the post-deploy checklist below.
+
+Until cutover, `NEXT_PUBLIC_SITE_URL="https://app.policywallet.gr"` keeps
+canonicals/sitemap/JSON-LD consistent on one origin (current state).
 
 Note: the 307 redirect of `/robots.txt` and `/sitemap.xml` to `/auth/signin` came
 from `proxy.ts` (Next 16's middleware), which auth-gates every path not on its

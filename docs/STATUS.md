@@ -30,5 +30,5 @@ _Living dashboard — not a log. Updated at the end of each session with meaning
 
 ## Next 3 actions
 1. Merge PR #43 (`product-revision` → `NEW-UI`, CI green); then PR + merge `scale-hardening` and `seo-geo-aeo` (stacked on it). Deploy → verify `curl -I /robots.txt` = 200 on the live host; submit sitemap in Search Console (post-deploy checklist in `docs/operations/SEO_STRATEGY.md`).
-2. SEO data you must provide (env, no code): `NEXT_PUBLIC_SITE_URL`, real phone/address (`NEXT_PUBLIC_CONTACT_*`), LinkedIn company page (`NEXT_PUBLIC_SOCIAL_LINKEDIN`). Decide apex-domain move (policywallet.gr) per SEO_STRATEGY.md.
+2. SEO data you must provide (env, no code): `NEXT_PUBLIC_SITE_URL`, real phone/address (`NEXT_PUBLIC_CONTACT_*`), LinkedIn company page (`NEXT_PUBLIC_SOCIAL_LINKEDIN`). Domain split DECIDED: marketing → `policywallet.gr` apex, B2C app + B2B agency on separate subdomains — execute cutover steps in SEO_STRATEGY.md (DNS/Vercel + env flip, then 301s + Search Console).
 3. Finish the queue migration (upload path onto QStash + k6 against staging) and start closing the go/no-go human sign-offs (issue #39 gate is built, opt-in).
