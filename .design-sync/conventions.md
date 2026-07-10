@@ -23,10 +23,10 @@ Style with Tailwind utility classes. Colors resolve to CSS variables, so **prefe
 
 | Utility family | Semantic names |
 |---|---|
-| `bg-*` / `text-*` / `border-*` | `primary` (brand green `#1FDC86`), `primary-foreground`, `secondary` (deep teal `#173330`), `secondary-foreground`, `muted`, `muted-foreground`, `card`, `card-foreground`, `background`, `foreground`, `border`, `border-input`, `destructive`, `destructive-foreground` |
-| Full palette also available | `teal-*`, `emerald-*`, `amber-*`, `stone-*`, `slate-*` (e.g. `bg-teal-600`, `text-stone-500`, `bg-amber-100`) |
-| Radius | `rounded-sm` / `rounded-md` / `rounded-lg` (token-driven) |
-| Fonts | body/heading = GT America → IBM Plex Sans → Inter (via `--font-sans`); mono = `font-mono` (JetBrains Mono) |
+| `bg-*` / `text-*` / `border-*` | `primary` (brand deep green `#29685B`; flips to mint `#89D9B2` with `#1A2420` foreground in dark mode), `primary-foreground`, `primary-hover`, `primary-soft` (`#DCEBDA`), `primary-tint` (`#F0FDF4`), `mint`, `secondary` (deep green-black `#143B33`), `secondary-foreground`, `muted`, `muted-foreground`, `card`, `card-foreground`, `background`, `foreground`, `border`, `border-input`, `destructive`, `destructive-foreground`; plus `ring-primary` for focus rings and the `.pw-card` / `.pw-pill` / `.pw-primary-button` / `.arc-*` utilities |
+| Raw palette classes | **Forbidden in app code.** Do not use `teal-*`, `emerald-*`, or hardcoded brand hexes (`#1FDC86` is retired) — always go through the semantic tokens above. Status colors (amber/red/blue) are used only via the semantic status pairs in `components/ui/design-tokens.ts` |
+| Radius | `rounded-sm` / `rounded-md` / `rounded-lg` (token-driven, `--radius: 0.75rem`); cards `rounded-2xl`, badges/pills `rounded-full` |
+| Fonts | body/heading = Inter 400–700, latin+greek, via `next/font` (`--font-inter`; GT America and IBM Plex Sans were removed); mono = `font-mono` (JetBrains Mono) |
 
 Example brand usage: a primary action is `bg-primary text-primary-foreground`, a muted caption is `text-muted-foreground`, a surface is `bg-card border rounded-lg`. Greek text is first-class — write real Greek copy, not placeholders.
 

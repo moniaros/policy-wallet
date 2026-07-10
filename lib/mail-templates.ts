@@ -20,11 +20,11 @@ export function getBaseTemplate({ title, description, actionUrl, actionLabel, fo
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
         .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; }
         .header { margin-bottom: 30px; text-align: center; }
-        .logo { font-size: 24px; font-weight: bold; color: #0d9488; text-decoration: none; }
+        .logo { font-size: 24px; font-weight: bold; color: #29685B; text-decoration: none; }
         .content { background: #ffffff; padding: 30px; border-radius: 12px; border: 1px solid #e5e7eb; }
         h1 { font-size: 22px; font-weight: 700; color: #111; margin-top: 0; }
         p { margin-bottom: 24px; color: #4b5563; }
-        .button { display: inline-block; background-color: #0d9488; color: #ffffff !important; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; text-align: center; }
+        .button { display: inline-block; background-color: #29685B; color: #ffffff !important; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: 600; text-align: center; }
         .footer { margin-top: 30px; text-align: center; font-size: 14px; color: #9ca3af; }
     </style>
 </head>
