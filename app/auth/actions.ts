@@ -248,6 +248,10 @@ export async function registerUser(formData: FormData) {
         let userId = ""
 
         if (existingUser) {
+            // Phantom rows created by an agent may carry agent-attested AI
+            // consent; clear it on activation so the customer decides
+            // first-hand in the consent gate.
+            const { isAgentAttestedConsent } = await import("@/lib/ai-consent")
             const updated = await db.user.update({
                 where: { email: authEmail },
                 data: {
@@ -256,6 +260,9 @@ export async function registerUser(formData: FormData) {
                     preferredLanguage: language,
                     phoneNumber: normalizedPhone,
                     emailVerified: isSyntheticEmail ? new Date() : existingUser.emailVerified,
+                    ...(isAgentAttestedConsent(existingUser.aiProcessingConsentVersion)
+                        ? { aiProcessingConsentVersion: null }
+                        : {}),
                 },
             })
             userId = updated.id

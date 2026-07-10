@@ -366,6 +366,18 @@ export async function addCustomerManually(data: {
     const agentId = authResult.dbUser.id
 
     try {
+        // 0. Subscription gate — same cap the invite/bulk paths enforce
+        const { canAgentAddCustomer } = await import("@/lib/subscription-entitlements")
+        const customerGate = await canAgentAddCustomer(agentId)
+        if (!customerGate.allowed) {
+            return {
+                error: `Customer limit reached (${customerGate.current}/${customerGate.limit}). Upgrade your plan.`,
+                reason: customerGate.reason,
+                current: customerGate.current,
+                limit: customerGate.limit,
+            }
+        }
+
         // 1. Create Customer Relationship via Service
         const relationship = await customerService.createCustomer(agentId, {
             email: data.email,
@@ -373,20 +385,31 @@ export async function addCustomerManually(data: {
             phoneNumber: data.phone
         });
 
-        // 2. Create policy if provided
+        // 2. Create policy if provided, minting the management grant with it
         if (data.policy) {
-            await db.policy.create({
-                data: {
-                    ownerUserId: relationship.policyholderUserId,
-                    createdByUserId: agentId,
-                    insurerName: data.policy.insurerName,
-                    policyNumber: data.policy.policyNumber,
-                    lineOfBusiness: data.policy.lineOfBusiness,
-                    startDate: new Date(data.policy.startDate),
-                    endDate: new Date(data.policy.endDate),
-                    premiumAmount: data.policy.premiumAmount,
-                    status: 'active'
-                }
+            await db.$transaction(async (tx) => {
+                const created = await tx.policy.create({
+                    data: {
+                        ownerUserId: relationship.policyholderUserId,
+                        createdByUserId: agentId,
+                        insurerName: data.policy!.insurerName,
+                        policyNumber: data.policy!.policyNumber,
+                        lineOfBusiness: data.policy!.lineOfBusiness,
+                        startDate: new Date(data.policy!.startDate),
+                        endDate: new Date(data.policy!.endDate),
+                        premiumAmount: data.policy!.premiumAmount,
+                        status: 'active'
+                    }
+                })
+                await tx.accessGrant.create({
+                    data: {
+                        granterUserId: relationship.policyholderUserId,
+                        granteeUserId: agentId,
+                        scope: `policy:${created.id}`,
+                        permissions: 'manage',
+                        status: 'active',
+                    }
+                })
             })
         }
 
@@ -413,15 +436,18 @@ export async function addPolicyForCustomer(data: {
         premiumAmount?: number;
         premiumCurrency?: string;
         carPlate?: string;
-    }
-}) {
+    };
+    /** Agent affirms the customer consented to AI processing (phantom owners). */
+    attestedAiConsent?: boolean;
+}, documentFormData?: FormData) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { success: false, error: "Unauthorized" }
 
     const agentId = authResult.dbUser.id
+    const language = ((authResult.dbUser as any).preferredLanguage as 'en' | 'el') || 'en'
 
     try {
-        // 1. Verify the agent has a relationship with this customer
+        // 1. Verify the agent has a usable relationship with this customer
         const relationship = await db.customerRelationship.findFirst({
             where: {
                 agentUserId: agentId,
@@ -429,35 +455,119 @@ export async function addPolicyForCustomer(data: {
             }
         })
 
-        if (!relationship) {
+        if (!relationship || relationship.status === 'inactive') {
             return { success: false, error: "You don't have access to this customer" }
         }
 
-        // 2. Create the policy
-        const policy = await db.policy.create({
-            data: {
-                ownerUserId: data.customerId,
-                createdByUserId: agentId,
-                insurerName: data.policy.insurerName,
-                policyNumber: data.policy.policyNumber,
-                lineOfBusiness: data.policy.lineOfBusiness,
-                startDate: new Date(data.policy.startDate),
-                endDate: new Date(data.policy.endDate),
-                premiumAmount: data.policy.premiumAmount,
-                premiumCurrency: data.policy.premiumCurrency || 'EUR',
-                status: 'active',
-                // Store car plate in acordData JSON field
-                acordData: data.policy.carPlate ? { vehicle: { plateNumber: data.policy.carPlate } } : undefined
+        // 2. Subscription gate: maxPoliciesPerCustomer for this tier
+        const { canAgentAddPolicyForCustomer } = await import("@/lib/subscription-entitlements")
+        const policyGate = await canAgentAddPolicyForCustomer(agentId, data.customerId)
+        if (!policyGate.allowed) {
+            return {
+                success: false,
+                error: language === 'el'
+                    ? `Φτάσατε το όριο συμβολαίων ανά πελάτη του πλάνου σας (${policyGate.current}/${policyGate.limit}).`
+                    : `You reached your plan's per-customer policy limit (${policyGate.current}/${policyGate.limit}).`,
+                reason: policyGate.reason,
+                current: policyGate.current,
+                limit: policyGate.limit,
             }
+        }
+
+        // 3. Optional document from the AI scanner step — validate before any writes
+        let file: File | null = null
+        if (documentFormData) {
+            const candidate = documentFormData.get("file")
+            if (candidate instanceof File && candidate.size > 0) {
+                if (candidate.size > 10 * 1024 * 1024) {
+                    return { success: false, error: "File too large. Maximum size is 10MB." }
+                }
+                const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp"]
+                if (!allowedTypes.includes(candidate.type)) {
+                    return { success: false, error: "Invalid file type. Only PDF and images are allowed." }
+                }
+                file = candidate
+            }
+        }
+
+        // 4. Create the policy + mint the management grant atomically. The
+        // owner stays the customer; the agent's capabilities flow from the
+        // grant, which the customer can revoke at any time.
+        const policy = await db.$transaction(async (tx) => {
+            const created = await tx.policy.create({
+                data: {
+                    ownerUserId: data.customerId,
+                    createdByUserId: agentId,
+                    insurerName: data.policy.insurerName,
+                    policyNumber: data.policy.policyNumber,
+                    lineOfBusiness: data.policy.lineOfBusiness,
+                    startDate: new Date(data.policy.startDate),
+                    endDate: new Date(data.policy.endDate),
+                    premiumAmount: data.policy.premiumAmount,
+                    premiumCurrency: data.policy.premiumCurrency || 'EUR',
+                    status: 'active',
+                    // Store car plate in acordData JSON field
+                    acordData: data.policy.carPlate ? { vehicle: { plateNumber: data.policy.carPlate } } : undefined
+                }
+            })
+
+            // No unique constraint exists on (granter, grantee, scope) —
+            // idempotency is enforced here.
+            const existingGrant = await tx.accessGrant.findFirst({
+                where: {
+                    granterUserId: data.customerId,
+                    granteeUserId: agentId,
+                    scope: `policy:${created.id}`,
+                    status: 'active',
+                }
+            })
+            if (!existingGrant) {
+                await tx.accessGrant.create({
+                    data: {
+                        granterUserId: data.customerId,
+                        granteeUserId: agentId,
+                        scope: `policy:${created.id}`,
+                        permissions: 'manage',
+                        status: 'active',
+                    }
+                })
+            }
+
+            return created
         })
 
-        // 3. Update relationship last interaction
+        // 5. Agent-attested AI consent for unactivated owners (D1 decision).
+        if (data.attestedAiConsent) {
+            const owner = await db.user.findUnique({
+                where: { id: data.customerId },
+                select: { aiProcessingConsentVersion: true, password: true, emailVerified: true },
+            })
+            const isUnactivated = owner && !owner.password && !owner.emailVerified
+            if (owner && !owner.aiProcessingConsentVersion && isUnactivated) {
+                const { AGENT_ATTESTED_CONSENT_PREFIX } = await import("@/lib/ai-consent")
+                await db.user.update({
+                    where: { id: data.customerId },
+                    data: { aiProcessingConsentVersion: `${AGENT_ATTESTED_CONSENT_PREFIX}${agentId}` },
+                })
+                await (db.activityLog as any).create({
+                    data: {
+                        adminUserId: agentId,
+                        adminEmail: authResult.dbUser.email || "unknown",
+                        actionType: "AI_CONSENT_AGENT_ATTESTED",
+                        description: `Agent attested customer AI-processing consent for policy ${policy.policyNumber}`,
+                        metadata: { policyId: policy.id, customerId: data.customerId },
+                    }
+                })
+            }
+        }
+
+        // 6. Update relationship last interaction
         await db.customerRelationship.update({
             where: { id: relationship.id },
             data: { lastInteractionAt: new Date() }
         })
 
-        // 4. Create a notification for the customer using NotificationEvent
+        // 7. Notify the customer
         await db.notificationEvent.create({
             data: {
                 userId: data.customerId,
@@ -470,29 +580,56 @@ export async function addPolicyForCustomer(data: {
             }
         })
 
-        // 5. Trigger background analysis only if documents exist
-        const docCount = await db.policyDocument.count({ where: { policyId: policy.id } })
-        if (docCount > 0) {
-            const { PolicyService } = await import("@/lib/services/policy.service")
-            const policyService = new PolicyService()
-            const language = (authResult.dbUser as any).preferredLanguage || 'en'
-
-            await db.policy.update({
-                where: { id: policy.id },
-                data: { status: 'analyzing' }
+        // 8. Persist the scanned document (if provided), then run analysis
+        // attributed to the AGENT (agent-plan run count + token budget).
+        let analysisState: 'started' | 'consent_required' | 'limit_reached' | 'none' = 'none'
+        if (file) {
+            const { uploadFile } = await import("@/lib/storage")
+            const fileUrl = await uploadFile(file, "policies")
+            await db.policyDocument.create({
+                data: {
+                    policyId: policy.id,
+                    fileUrl,
+                    fileName: file.name,
+                    fileSize: file.size,
+                    source: 'agent',
+                    uploadedByUserId: agentId,
+                    processingStatus: 'pending',
+                }
             })
 
-            try {
-                await policyService.runBackgroundAnalysis(policy.id, data.customerId, language)
-            } catch (e) {
-                console.error("Failed to trigger background analysis", e)
+            const owner = await db.user.findUnique({
+                where: { id: data.customerId },
+                select: { aiProcessingConsentVersion: true },
+            })
+            if (!owner?.aiProcessingConsentVersion) {
+                analysisState = 'consent_required'
+            } else {
+                const { canAgentRunAnalysis } = await import("@/lib/subscription-entitlements")
+                const analysisGate = await canAgentRunAnalysis(agentId)
+                if (!analysisGate.allowed) {
+                    analysisState = 'limit_reached'
+                } else {
+                    await db.policy.update({
+                        where: { id: policy.id },
+                        data: { status: 'analyzing' }
+                    })
+                    const { PolicyService } = await import("@/lib/services/policy.service")
+                    const policyService = new PolicyService()
+                    try {
+                        await policyService.runBackgroundAnalysis(policy.id, agentId, language)
+                        analysisState = 'started'
+                    } catch (e) {
+                        console.error("Failed to trigger background analysis", e)
+                    }
+                }
             }
         }
 
         revalidatePath(`/customers/${data.customerId}`)
         revalidatePath("/customers")
         revalidatePath("/wallet")
-        return { success: true, policyId: policy.id }
+        return { success: true, policyId: policy.id, analysisState }
     } catch (e) {
         console.error(e)
         return { success: false, error: "Failed to add policy" }

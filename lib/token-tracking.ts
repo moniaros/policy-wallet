@@ -37,6 +37,41 @@ function normalizeTokenTier(rawTier: string): 'free' | 'plus' | 'pro' {
 }
 
 /**
+ * Resolve the token budget for a user: agents draw on their AGENT-plan
+ * monthlyTokenBudget (agent_free..agency); everyone else on the B2C tiers.
+ * Agent-initiated analyses on customer policies are therefore metered against
+ * the agent's own subscription, never the customer's.
+ */
+async function resolveTokenBudget(
+    userId: string
+): Promise<{ tier: string; limit: number | null }> {
+    const [user, subscription] = await Promise.all([
+        prisma.user.findUnique({ where: { id: userId }, select: { roles: true } }),
+        prisma.subscription.findFirst({
+            where: { userId },
+            include: { plan: true },
+            orderBy: { createdAt: 'desc' },
+        }),
+    ])
+
+    const isAgentPlan = subscription?.plan?.planType === 'agent'
+    const isAgentRole = (user?.roles || '')
+        .split(',')
+        .map((r) => r.trim())
+        .includes('agent')
+
+    if (isAgentPlan || isAgentRole) {
+        const { resolveAgentEntitlements } = await import('@/lib/subscription-entitlements')
+        const agent = await resolveAgentEntitlements(userId)
+        return { tier: agent.tier, limit: agent.limits.monthlyTokenBudget ?? null }
+    }
+
+    const { tier: rawTier } = await getUserSubscription(userId)
+    const tier = normalizeTokenTier(rawTier)
+    return { tier, limit: TOKEN_LIMITS[tier] }
+}
+
+/**
  * Track token usage for an AI operation
  */
 export async function trackTokenUsage(params: {
@@ -55,8 +90,7 @@ export async function trackTokenUsage(params: {
     const outputCost = (params.outputTokens / 1_000_000) * costs.output
     const totalCost = inputCost + outputCost
 
-    const { tier: rawTier } = await getUserSubscription(params.userId)
-    const tier = normalizeTokenTier(rawTier)
+    const { tier, limit: budgetLimit } = await resolveTokenBudget(params.userId)
     const now = new Date()
     const month = new Date(now.getFullYear(), now.getMonth(), 1)
 
@@ -71,7 +105,7 @@ export async function trackTokenUsage(params: {
         })
 
         const monthlyUsedBefore = existingMonthly ? Number(existingMonthly.totalTokens) : 0
-        const subscriptionLimit = TOKEN_LIMITS[tier]
+        const subscriptionLimit = budgetLimit
         const subscriptionRemaining = subscriptionLimit === null
             ? totalTokens
             : Math.max(subscriptionLimit - monthlyUsedBefore, 0)
@@ -198,11 +232,9 @@ export async function canUserUseTokens(
     remainingTokens?: number
     source?: 'subscription' | 'purchased'
 }> {
-    const { tier: rawTier } = await getUserSubscription(userId)
-    const tier = normalizeTokenTier(rawTier)
+    const { tier, limit } = await resolveTokenBudget(userId)
     const now = new Date()
     const month = new Date(now.getFullYear(), now.getMonth(), 1)
-    const limit = TOKEN_LIMITS[tier]
 
     const usage = await prisma.monthlyTokenUsage.findUnique({
         where: { userId_month: { userId, month } },
@@ -254,9 +286,7 @@ export async function reserveTokens(
     userId: string,
     estimatedTokens: number
 ): Promise<{ allowed: boolean; reason?: string; source?: 'subscription' | 'purchased' }> {
-    const { tier: rawTier } = await getUserSubscription(userId)
-    const tier = normalizeTokenTier(rawTier)
-    const limit = TOKEN_LIMITS[tier]
+    const { tier, limit } = await resolveTokenBudget(userId)
     const now = new Date()
     const month = new Date(now.getFullYear(), now.getMonth(), 1)
 
