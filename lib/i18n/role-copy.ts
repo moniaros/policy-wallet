@@ -117,6 +117,32 @@ type RoleCopy = {
         invitedEmptyTitle: string
         invitedEmptySubtitle: string
         invitedEmptyCta: string
+        tableHealth: string
+        tableNextRenewal: string
+        tableGaps: string
+        tableConsent: string
+        tableAction: string
+        consentGranted: string
+        consentAttested: string
+        consentNone: string
+        actionResendInvite: string
+        actionAddFirstPolicy: string
+        actionRequestConsent: string
+        actionReviewRenewal: string
+        actionDiscussGaps: string
+        actionCheckIn: string
+        actionAllGood: string
+    }
+    agentKpis: {
+        totalClients: string
+        expiringClients: string
+        gapClients: string
+        pendingInvites: string
+        policiesThisMonth: string
+        followUps: string
+        pipeline: string
+        completeness: string
+        noScores: string
     }
     walletDashboard: {
         checkExpirations: string
@@ -297,6 +323,32 @@ const roleCopy: Record<Language, RoleCopy> = {
             invitedEmptyTitle: "Καμία εκκρεμής πρόσκληση",
             invitedEmptySubtitle: "Οι προσκλήσεις ενεργοποιούν τους πελάτες σας — και το προφίλ σας γίνεται ο σύμβουλός τους στο app.",
             invitedEmptyCta: "Αποστολή πρόσκλησης",
+            tableHealth: "Υγεία",
+            tableNextRenewal: "Επόμενη Ανανέωση",
+            tableGaps: "Κενά",
+            tableConsent: "Συναίνεση AI",
+            tableAction: "Προτεινόμενη Ενέργεια",
+            consentGranted: "Ενεργή",
+            consentAttested: "Βεβαίωση agent",
+            consentNone: "Εκκρεμεί",
+            actionResendInvite: "Επαναποστολή πρόσκλησης",
+            actionAddFirstPolicy: "Προσθήκη πρώτου συμβολαίου",
+            actionRequestConsent: "Αίτημα συναίνεσης AI",
+            actionReviewRenewal: "Έλεγχος ανανέωσης",
+            actionDiscussGaps: "Συζήτηση κενών κάλυψης",
+            actionCheckIn: "Επικοινωνία επανασύνδεσης",
+            actionAllGood: "Όλα καλά",
+        },
+        agentKpis: {
+            totalClients: "Σύνολο πελατών",
+            expiringClients: "Συμβόλαια που λήγουν",
+            gapClients: "Με κενά κάλυψης",
+            pendingInvites: "Εκκρεμείς προσκλήσεις",
+            policiesThisMonth: "Συμβόλαια αυτόν τον μήνα",
+            followUps: "Προτεινόμενα follow-ups",
+            pipeline: "Εκτίμηση ευκαιριών",
+            completeness: "Πληρότητα χαρτοφυλακίου",
+            noScores: "Χωρίς βαθμολόγηση ακόμα",
         },
         walletDashboard: {
             checkExpirations: "Ελέγξτε λήξεις και πιθανά κενά κάλυψης.",
@@ -475,6 +527,32 @@ const roleCopy: Record<Language, RoleCopy> = {
             invitedEmptyTitle: "No pending invitations",
             invitedEmptySubtitle: "Invitations activate your clients — and you become their in-app advisor.",
             invitedEmptyCta: "Send an invitation",
+            tableHealth: "Health",
+            tableNextRenewal: "Next Renewal",
+            tableGaps: "Gaps",
+            tableConsent: "AI Consent",
+            tableAction: "Recommended Action",
+            consentGranted: "Granted",
+            consentAttested: "Agent-attested",
+            consentNone: "Not granted",
+            actionResendInvite: "Resend invite",
+            actionAddFirstPolicy: "Add first policy",
+            actionRequestConsent: "Request AI consent",
+            actionReviewRenewal: "Review renewal",
+            actionDiscussGaps: "Discuss coverage gaps",
+            actionCheckIn: "Check in",
+            actionAllGood: "All good",
+        },
+        agentKpis: {
+            totalClients: "Total clients",
+            expiringClients: "Expiring policies",
+            gapClients: "With coverage gaps",
+            pendingInvites: "Pending invitations",
+            policiesThisMonth: "Policies this month",
+            followUps: "Recommended follow-ups",
+            pipeline: "Revenue opportunity",
+            completeness: "Portfolio completeness",
+            noScores: "No scores yet",
         },
         walletDashboard: {
             checkExpirations: "Check expirations and potential coverage gaps.",

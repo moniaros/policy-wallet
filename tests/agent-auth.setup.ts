@@ -15,6 +15,17 @@ const TEST_AGENT = {
     password: 'password123'
 };
 
+async function dismissCookieBanner(page: import('@playwright/test').Page) {
+    const necessaryOnly = page.locator(
+        'button:has-text("Μόνο Απαραίτητα"), button:has-text("Necessary Only")'
+    );
+    const visible = await necessaryOnly.first().isVisible({ timeout: 3000 }).catch(() => false);
+    if (visible) {
+        await necessaryOnly.first().click();
+        console.log('🍪 Cookie banner dismissed (necessary only)');
+    }
+}
+
 setup('authenticate as agent', async ({ page }) => {
     // Increase timeout to 2 minutes
     setup.setTimeout(120000);
@@ -25,9 +36,12 @@ setup('authenticate as agent', async ({ page }) => {
         await page.goto('/auth/signin');
         await page.waitForLoadState('networkidle');
 
-        // Fill in credentials - using IDs as seen in source
-        await page.fill('#email', TEST_AGENT.email);
-        await page.fill('#password', TEST_AGENT.password);
+        // The consent banner overlays the submit button — clear it first
+        await dismissCookieBanner(page);
+
+        // Fill in credentials (signin form has no #email id — target by type)
+        await page.fill('input[type="email"]', TEST_AGENT.email);
+        await page.fill('#signin-password', TEST_AGENT.password);
 
         // Click sign in button
         // Looking for submit button
@@ -42,16 +56,10 @@ setup('authenticate as agent', async ({ page }) => {
         console.log('⚠️ Login failed or timed out. Attempting registration with new agent...');
         console.log('Error during login:', e);
 
-        // Navigate to signup
-        await page.goto('/auth/signup');
+        // Navigate to the agent signup form directly (role comes from the route)
+        await page.goto('/auth/signup/agent');
         await page.waitForLoadState('networkidle');
-
-        // Select Agent Role - robust selector
-        // It's a button with text "Agent"
-        await page.getByRole('button', { name: 'Agent' }).click();
-
-        // Short wait for state update
-        await page.waitForTimeout(500);
+        await dismissCookieBanner(page);
 
         // Generate dynamic user
         const timestamp = Date.now();
@@ -59,30 +67,23 @@ setup('authenticate as agent', async ({ page }) => {
             ...TEST_AGENT,
             email: `agent_${timestamp}@example.com`,
             name: 'Test Agent',
-            licenseNumber: `LIC-${timestamp}`,
-            agencyName: `Agency ${timestamp}`
         };
 
         console.log(`📝 Registering as Agent: ${dynamicAgent.email}...`);
 
-        // Fill registration form using name attributes
-        await page.fill('input[name="name"]', dynamicAgent.name);
-        await page.fill('input[name="email"]', dynamicAgent.email);
-        await page.fill('input[name="password"]', dynamicAgent.password);
-        await page.fill('input[name="confirmPassword"]', dynamicAgent.password);
-
-        // Agent specific fields
-        console.log('Filling agent specific fields...');
-        await page.waitForSelector('input[name="licenseNumber"]');
-        await page.fill('input[name="licenseNumber"]', dynamicAgent.licenseNumber);
-        await page.fill('input[name="agencyName"]', dynamicAgent.agencyName);
+        // Fill registration form (current SignupForm ids; license/agency fields
+        // no longer exist at signup — they live in agent settings)
+        await page.fill('#signup-name', dynamicAgent.name);
+        await page.fill('#signup-mobile', `+30 69${timestamp % 100000000}`);
+        await page.fill('#signup-email', dynamicAgent.email);
+        await page.fill('#signup-password', dynamicAgent.password);
 
         // Accept terms (click checkbox)
         console.log('Accepting terms...');
-        await page.check('#termsAccepted', { force: true });
+        await page.check('#signup-terms', { force: true });
 
         // Check if actually checked
-        const isChecked = await page.isChecked('#termsAccepted');
+        const isChecked = await page.isChecked('#signup-terms');
         console.log(`Terms checked: ${isChecked}`);
 
         // Submit

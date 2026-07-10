@@ -83,6 +83,52 @@ export function CustomerList({
         return date.toLocaleDateString(language === "el" ? "el-GR" : "en-US")
     }
 
+    const ACTION_LABELS: Record<string, string> = {
+        resend_invite: roleCopy.customerList.actionResendInvite,
+        add_first_policy: roleCopy.customerList.actionAddFirstPolicy,
+        request_consent: roleCopy.customerList.actionRequestConsent,
+        review_renewal: roleCopy.customerList.actionReviewRenewal,
+        discuss_gaps: roleCopy.customerList.actionDiscussGaps,
+        check_in: roleCopy.customerList.actionCheckIn,
+        all_good: roleCopy.customerList.actionAllGood,
+    }
+    const ACTION_TONES: Record<string, string> = {
+        resend_invite: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+        add_first_policy: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+        request_consent: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+        review_renewal: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+        discuss_gaps: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+        check_in: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300",
+        all_good: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
+    }
+    const CONSENT_LABELS: Record<string, string> = {
+        granted: roleCopy.customerList.consentGranted,
+        attested: roleCopy.customerList.consentAttested,
+        none: roleCopy.customerList.consentNone,
+    }
+    const CONSENT_TONES: Record<string, string> = {
+        granted: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
+        attested: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
+        none: "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400",
+    }
+
+    const healthTone = (score: number | null | undefined) => {
+        if (score === null || score === undefined) return "bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500"
+        if (score >= 70) return "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint"
+        if (score >= 40) return "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+        return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+    }
+
+    const formatRenewal = (iso: string | null | undefined) => {
+        if (!iso) return "—"
+        return new Date(iso).toLocaleDateString(language === "el" ? "el-GR" : "en-US")
+    }
+
+    const renewalSoon = (iso: string | null | undefined) => {
+        if (!iso) return false
+        return new Date(iso).getTime() - Date.now() <= 30 * 24 * 60 * 60 * 1000
+    }
+
     return (
         <div className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm p-4 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 shadow-sm">
@@ -199,43 +245,69 @@ export function CustomerList({
                                         <input type="checkbox" checked={selectedIds.size === filteredCustomers.length && filteredCustomers.length > 0} onChange={toggleAll} className="rounded border-slate-300 text-primary focus:ring-primary" />
                                     </th>
                                     <th className="px-4 py-3.5 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors" onClick={() => setSortBy("name")}>{roleCopy.customerList.tableClient}</th>
-                                    <th className="px-4 py-3.5">{roleCopy.customerList.tableContact}</th>
-                                    <th className="px-4 py-3.5">{roleCopy.customerList.tableStatus}</th>
                                     <th className="px-4 py-3.5 text-center cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors" onClick={() => setSortBy("policyCount")}>{roleCopy.customerList.tablePolicies}</th>
+                                    <th className="px-4 py-3.5 text-center">{roleCopy.customerList.tableHealth}</th>
+                                    <th className="px-4 py-3.5">{roleCopy.customerList.tableNextRenewal}</th>
+                                    <th className="px-4 py-3.5 text-center">{roleCopy.customerList.tableGaps}</th>
+                                    <th className="px-4 py-3.5">{roleCopy.customerList.tableConsent}</th>
                                     <th className="px-4 py-3.5 text-right cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors" onClick={() => setSortBy("lastInteractionDate")}>{roleCopy.customerList.tableLastActivity}</th>
+                                    <th className="px-4 py-3.5">{roleCopy.customerList.tableAction}</th>
                                     <th className="px-4 py-3.5 w-10"></th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100/80 dark:divide-slate-800/60">
-                                {filteredCustomers.map((customer) => (
+                                {filteredCustomers.map((customer) => {
+                                    const intel = customer.intelligence
+                                    return (
                                     <tr key={customer.id} onClick={() => onCustomerClick(customer.id)} className="group hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-all cursor-pointer">
                                         <td className="px-4 py-3.5" onClick={(e) => e.stopPropagation()}>
                                             <input type="checkbox" checked={selectedIds.has(customer.id)} onChange={() => toggleSelection(customer.id)} className="rounded border-slate-300 text-primary focus:ring-primary" />
                                         </td>
                                         <td className="px-4 py-3.5">
-                                            <div className="font-semibold text-slate-900 dark:text-white text-[13px]">{customer.name} {customer.surname}</div>
-                                            {customer.openGapsCount > 0 && (
-                                                <div className="flex items-center gap-1 text-[10px] text-amber-600 dark:text-amber-400 font-semibold mt-0.5">
-                                                    <Sparkles className="w-3 h-3" />
-                                                    <span>{customer.openGapsCount} {customer.openGapsCount === 1 ? roleCopy.customerList.opportunitiesOne : roleCopy.customerList.opportunitiesMany}</span>
-                                                </div>
-                                            )}
-                                        </td>
-                                        <td className="px-4 py-3.5">
-                                            <div className="flex flex-col text-[12px] text-slate-500 dark:text-slate-400 gap-0.5">
-                                                <span className="truncate max-w-[180px]">{customer.email}</span>
-                                                <span className="text-slate-400">{customer.phone || "—"}</span>
+                                            <div className="flex items-center gap-1.5">
+                                                <span className="font-semibold text-slate-900 dark:text-white text-[13px]">{customer.name} {customer.surname}</span>
+                                                <span className="inline-flex items-center rounded-md bg-slate-100 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                                                    {roleCopy.customerList[customer.activationStatus]}
+                                                </span>
                                             </div>
-                                        </td>
-                                        <td className="px-4 py-3.5">
-                                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                                                {roleCopy.customerList[customer.activationStatus]}
-                                            </span>
+                                            <div className="mt-0.5 truncate max-w-[200px] text-[11px] text-slate-400 dark:text-slate-500">{customer.email}</div>
                                         </td>
                                         <td className="px-4 py-3.5 text-center">
                                             <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-slate-50 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300">{customer.policyCount}</span>
                                         </td>
-                                        <td className="px-4 py-3.5 text-right text-[12px] text-slate-400">{formatLastContact(customer.lastInteractionDate)}</td>
+                                        <td className="px-4 py-3.5 text-center">
+                                            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-bold ${healthTone(intel?.healthScore)}`}>
+                                                {intel?.healthScore !== null && intel?.healthScore !== undefined ? intel.healthScore : "—"}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3.5 whitespace-nowrap text-[12px]">
+                                            <span className={renewalSoon(intel?.nextRenewalDate) ? "font-semibold text-amber-600 dark:text-amber-400" : "text-slate-500 dark:text-slate-400"}>
+                                                {formatRenewal(intel?.nextRenewalDate)}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3.5 text-center">
+                                            {intel && intel.gapCount > 0 ? (
+                                                <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold ${intel.criticalGapCount > 0 ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"}`}>
+                                                    <Sparkles className="w-3 h-3" />
+                                                    {intel.gapCount}
+                                                </span>
+                                            ) : (
+                                                <span className="text-[12px] text-slate-300 dark:text-slate-600">0</span>
+                                            )}
+                                        </td>
+                                        <td className="px-4 py-3.5">
+                                            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${CONSENT_TONES[intel?.consentStatus || "none"]}`}>
+                                                {CONSENT_LABELS[intel?.consentStatus || "none"]}
+                                            </span>
+                                        </td>
+                                        <td className="px-4 py-3.5 text-right text-[12px] text-slate-400 whitespace-nowrap">{formatLastContact(customer.lastInteractionDate)}</td>
+                                        <td className="px-4 py-3.5">
+                                            {intel && (
+                                                <span className={`inline-flex items-center whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-semibold ${ACTION_TONES[intel.recommendedAction]}`}>
+                                                    {ACTION_LABELS[intel.recommendedAction]}
+                                                </span>
+                                            )}
+                                        </td>
                                         <td className="px-4 py-3.5 text-right">
                                             <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 {customer.phone && <button onClick={(e) => { e.stopPropagation(); onCall?.(customer.id) }} className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-primary dark:hover:text-mint transition-colors cursor-pointer"><Phone className="w-3.5 h-3.5" /></button>}
@@ -244,7 +316,8 @@ export function CustomerList({
                                             </div>
                                         </td>
                                     </tr>
-                                ))}
+                                    )
+                                })}
                             </tbody>
                         </table>
                     </div>
@@ -266,6 +339,16 @@ export function CustomerList({
                                 <span className="flex items-center gap-1"><FileText className="w-3 h-3" />{customer.policyCount} {roleCopy.customerList.policies}</span>
                                 <span>{formatLastContact(customer.lastInteractionDate)}</span>
                             </div>
+                            {customer.intelligence && (
+                                <div className="mb-3 flex flex-wrap items-center gap-1.5">
+                                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ${healthTone(customer.intelligence.healthScore)}`}>
+                                        {roleCopy.customerList.tableHealth}: {customer.intelligence.healthScore ?? "—"}
+                                    </span>
+                                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${ACTION_TONES[customer.intelligence.recommendedAction]}`}>
+                                        {ACTION_LABELS[customer.intelligence.recommendedAction]}
+                                    </span>
+                                </div>
+                            )}
                             {customer.openGapsCount > 0 && (
                                 <div className="flex items-center gap-1.5 text-[11px] text-amber-600 dark:text-amber-400 font-semibold mb-3 bg-amber-50/80 dark:bg-amber-900/15 px-2.5 py-1.5 rounded-lg border border-amber-200/40 dark:border-amber-800/30">
                                     <Sparkles className="w-3 h-3" />

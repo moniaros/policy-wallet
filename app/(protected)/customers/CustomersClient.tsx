@@ -3,13 +3,16 @@
 import { useState, useMemo } from "react"
 import { CustomerList, AddCustomerModal } from "@/components/agent"
 import { BulkImportModal } from "@/components/agent/BulkImportModal"
+import { AgentKpiStrip } from "@/components/agent/AgentKpiStrip"
 import { Customer } from "@/components/agent/types"
 import { getCustomers } from "../agent/actions"
 import { useRouter } from "next/navigation"
 import { Clock, User, FileText, AlertTriangle, Upload } from "lucide-react"
+import type { AgentPortalStats } from "@/lib/services/agent-portal.service"
 
 interface Props {
     initialCustomers: Customer[]
+    portalStats?: AgentPortalStats | null
 }
 
 type FilterType = 'all' | 'activated' | 'invited' | 'inactive'
@@ -29,7 +32,7 @@ interface CustomerListItem {
     avatar?: string
 }
 
-export function CustomersClient({ initialCustomers }: Props) {
+export function CustomersClient({ initialCustomers, portalStats }: Props) {
     const [customers, setCustomers] = useState(initialCustomers)
     const [isAddModalOpen, setIsAddModalOpen] = useState(false)
     const [isBulkImportOpen, setIsBulkImportOpen] = useState(false)
@@ -88,6 +91,8 @@ export function CustomersClient({ initialCustomers }: Props) {
                         </button>
                     </div>
                 </header>
+
+                {portalStats && <AgentKpiStrip stats={portalStats} className="mb-8" />}
 
                 <CustomerList
                     customers={customers}
