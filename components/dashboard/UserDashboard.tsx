@@ -108,38 +108,38 @@ export function UserDashboard({
     const getActionVariant = (variant: string) => {
         switch (variant) {
             case 'primary':
-                return 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-xl'
+                return 'bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] shadow-lg hover:shadow-xl'
             case 'success':
-                return 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white shadow-lg hover:shadow-xl'
+                return 'bg-mint text-[#1A2420] hover:bg-primary hover:text-white dark:hover:text-[#1A2420] shadow-lg hover:shadow-xl'
             case 'warning':
-                return 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-lg hover:shadow-xl'
+                return 'bg-[#F59E0B] hover:bg-[#D97706] text-white shadow-lg hover:shadow-xl'
             default:
                 return 'bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md'
         }
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-slate-950 dark:via-slate-900 dark:to-blue-950">
+        <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950">
             <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
                 {/* Personalized Hero */}
                 <section className="relative overflow-hidden">
-                    <div className="relative bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700 dark:from-blue-900 dark:via-cyan-900 dark:to-blue-950 rounded-3xl p-8 md:p-12 text-white shadow-2xl">
+                    <div className="relative bg-primary dark:bg-[#143B33] rounded-3xl p-8 md:p-12 text-white shadow-2xl">
                         {/* Decorative elements */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-cyan-400/20 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
+                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-mint/20 rounded-full blur-2xl translate-y-1/2 -translate-x-1/2" />
 
                         <div className="relative z-10">
                             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                                 <div className="flex-1">
-                                    <p className="text-blue-100 text-sm font-medium mb-2 flex items-center gap-2">
+                                    <p className="text-white/80 text-sm font-medium mb-2 flex items-center gap-2">
                                         <Sparkles className="w-4 h-4" />
                                         {getGreeting()}
                                     </p>
                                     <h1 className="text-3xl md:text-4xl font-bold mb-3">
                                         Welcome back, {user.name}
                                     </h1>
-                                    <p className="text-blue-100 text-lg max-w-2xl">
+                                    <p className="text-white/80 text-lg max-w-2xl">
                                         {user.role === 'policyholder'
                                             ? 'Your insurance portfolio is looking good. Here\'s your personalized overview.'
                                             : 'Here\'s what needs your attention today.'}
@@ -152,12 +152,12 @@ export function UserDashboard({
                                         <div className="p-2 bg-white/20 rounded-lg">
                                             {stats.primary.icon}
                                         </div>
-                                        <span className="text-sm text-blue-100">{stats.primary.label}</span>
+                                        <span className="text-sm text-white/80">{stats.primary.label}</span>
                                     </div>
                                     <div className="flex items-baseline gap-2">
                                         <span className="text-4xl font-bold">{stats.primary.value}</span>
                                         {stats.primary.trend !== undefined && (
-                                            <span className={`text-sm font-semibold flex items-center gap-1 ${stats.primary.trend > 0 ? 'text-emerald-300' : 'text-red-300'
+                                            <span className={`text-sm font-semibold flex items-center gap-1 ${stats.primary.trend > 0 ? 'text-mint' : 'text-red-300'
                                                 }`}>
                                                 <TrendingUp className={`w-4 h-4 ${stats.primary.trend < 0 ? 'rotate-180' : ''}`} />
                                                 {Math.abs(stats.primary.trend)}%
@@ -173,7 +173,7 @@ export function UserDashboard({
                                     <div key={idx} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4">
                                         <div className="flex items-center gap-2 mb-2">
                                             <div className="text-white/80">{stat.icon}</div>
-                                            <span className="text-xs text-blue-100">{stat.label}</span>
+                                            <span className="text-xs text-white/80">{stat.label}</span>
                                         </div>
                                         <p className="text-2xl font-bold">{stat.value}</p>
                                     </div>
@@ -220,7 +220,7 @@ export function UserDashboard({
                 {/* Quick Actions */}
                 <section>
                     <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                        <Zap className="w-5 h-5 text-blue-600" />
+                        <Zap className="w-5 h-5 text-primary dark:text-mint" />
                         Quick Actions
                     </h2>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -246,10 +246,10 @@ export function UserDashboard({
                     <section className="lg:col-span-2">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                <Activity className="w-5 h-5 text-blue-600" />
+                                <Activity className="w-5 h-5 text-primary dark:text-mint" />
                                 Recent Activity
                             </h2>
-                            <Link href="/activity" className="text-sm text-blue-600 hover:text-blue-700 font-medium flex items-center gap-1">
+                            <Link href="/activity" className="text-sm text-primary hover:text-primary-hover dark:text-mint font-medium flex items-center gap-1">
                                 View All <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
@@ -258,7 +258,7 @@ export function UserDashboard({
                                 {recentActivity.map((activity, idx) => (
                                     <div key={activity.id} className="p-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                                         <div className="flex gap-4">
-                                            <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${activity.status === 'success' ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' :
+                                            <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${activity.status === 'success' ? 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint' :
                                                     activity.status === 'warning' ? 'bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400' :
                                                         'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
                                                 }`}>
@@ -289,17 +289,17 @@ export function UserDashboard({
                     {/* AI Insights */}
                     <section>
                         <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                            <Sparkles className="w-5 h-5 text-purple-600" />
+                            <Sparkles className="w-5 h-5 text-primary dark:text-mint" />
                             Smart Insights
                         </h2>
                         <div className="space-y-4">
                             {insights.map(insight => (
                                 <div
                                     key={insight.id}
-                                    className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20 border border-purple-100 dark:border-purple-900/30 rounded-xl p-4"
+                                    className="bg-primary-tint dark:bg-primary/15 border border-[#E2E8F0] dark:border-slate-800 rounded-xl p-4"
                                 >
                                     <div className="flex items-start gap-3">
-                                        <div className="p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg">
+                                        <div className="p-2 bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint rounded-lg">
                                             {insight.icon}
                                         </div>
                                         <div className="flex-1">
@@ -310,7 +310,7 @@ export function UserDashboard({
                                                 {insight.description}
                                             </p>
                                             {insight.metric && (
-                                                <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-xs font-semibold">
+                                                <div className="mt-2 inline-flex items-center gap-1 px-2 py-1 bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint rounded-full text-xs font-semibold">
                                                     <TrendingUp className="w-3 h-3" />
                                                     {insight.metric}
                                                 </div>

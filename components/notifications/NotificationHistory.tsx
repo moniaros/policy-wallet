@@ -35,7 +35,7 @@ export function NotificationHistory({
                         </svg>
                     ),
                     label: 'Push',
-                    color: 'bg-purple-100 dark:bg-purple-950/50 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-900'
+                    color: 'bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint border-primary/30 dark:border-primary/30'
                 }
             case 'whatsapp':
                 return {
@@ -55,7 +55,7 @@ export function NotificationHistory({
                         </svg>
                     ),
                     label: 'Viber',
-                    color: 'bg-violet-100 dark:bg-violet-950/50 text-violet-700 dark:text-violet-400 border-violet-200 dark:border-violet-900'
+                    color: 'bg-[#7360F2]/10 dark:bg-[#7360F2]/20 text-[#7360F2] dark:text-[#B4A9F8] border-[#7360F2]/30 dark:border-[#7360F2]/40'
                 }
             default:
                 return {
@@ -71,7 +71,7 @@ export function NotificationHistory({
             case 'sent':
                 return {
                     label: 'Εστάλη',
-                    color: 'bg-teal-100 dark:bg-teal-950/50 text-teal-700 dark:text-teal-400 border-teal-200 dark:border-teal-900'
+                    color: 'bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint border-primary/30 dark:border-primary/30'
                 }
             case 'failed':
                 return {
@@ -160,7 +160,7 @@ export function NotificationHistory({
                 {/* Search */}
                 <div className="relative group">
                     <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
-                        <svg className="h-5 w-5 text-stone-400 group-focus-within:text-teal-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="h-5 w-5 text-stone-400 group-focus-within:text-primary dark:group-focus-within:text-mint transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
@@ -169,7 +169,7 @@ export function NotificationHistory({
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Αναζήτηση στις ειδοποιήσεις..."
-                        className="block w-full pl-16 pr-6 py-5 border border-stone-100 dark:border-stone-800 rounded-[24px] bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-4 focus:ring-teal-500/5 focus:border-teal-500/30 transition-all shadow-sm"
+                        className="block w-full pl-16 pr-6 py-5 border border-stone-100 dark:border-stone-800 rounded-[24px] bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary/30 transition-all shadow-sm"
                     />
                 </div>
 
@@ -183,7 +183,7 @@ export function NotificationHistory({
                             {activeFilter.type === 'event_type' && 'Τύπος'}
                             <button
                                 onClick={() => onClearFilters?.()}
-                                className="ml-1 hover:text-teal-400 p-0.5"
+                                className="ml-1 hover:text-primary dark:hover:text-mint p-0.5"
                             >
                                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M6 18L18 6M6 6l12 12" />
@@ -254,10 +254,10 @@ export function NotificationHistory({
                                                         onClick={() => onNavigateToRelatedObject?.('policy', event.related_policy_id!)}
                                                         className="flex items-center gap-2 group/link"
                                                     >
-                                                        <div className="w-6 h-6 rounded-lg bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-stone-400 group-hover/link:bg-teal-500 group-hover/link:text-white transition-all">
+                                                        <div className="w-6 h-6 rounded-lg bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-stone-400 group-hover/link:bg-primary group-hover/link:text-white dark:group-hover/link:text-[#1A2420] transition-all">
                                                             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" strokeWidth="2.5" /></svg>
                                                         </div>
-                                                        <span className="text-[10px] font-black text-stone-500 dark:text-stone-400 uppercase tracking-widest group-hover/link:text-teal-600 transition-colors">{event.related_policy_name}</span>
+                                                        <span className="text-[10px] font-black text-stone-500 dark:text-stone-400 uppercase tracking-widest group-hover/link:text-primary dark:group-hover/link:text-mint transition-colors">{event.related_policy_name}</span>
                                                     </button>
                                                 )}
                                                 {event.related_customer_name && (
@@ -265,10 +265,10 @@ export function NotificationHistory({
                                                         onClick={() => onNavigateToRelatedObject?.('customer', event.related_customer_relationship_id!)}
                                                         className="flex items-center gap-2 group/link"
                                                     >
-                                                        <div className="w-6 h-6 rounded-lg bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-stone-400 group-hover/link:bg-teal-500 group-hover/link:text-white transition-all">
+                                                        <div className="w-6 h-6 rounded-lg bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-stone-400 group-hover/link:bg-primary group-hover/link:text-white dark:group-hover/link:text-[#1A2420] transition-all">
                                                             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" strokeWidth="2.5" /></svg>
                                                         </div>
-                                                        <span className="text-[10px] font-black text-stone-500 dark:text-stone-400 uppercase tracking-widest group-hover/link:text-teal-600 transition-colors">{event.related_customer_name}</span>
+                                                        <span className="text-[10px] font-black text-stone-500 dark:text-stone-400 uppercase tracking-widest group-hover/link:text-primary dark:group-hover/link:text-mint transition-colors">{event.related_customer_name}</span>
                                                     </button>
                                                 )}
 

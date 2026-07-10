@@ -15,7 +15,7 @@ export default async function OnboardingLayout({
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-white dark:from-slate-900 dark:to-slate-950 flex flex-col">
+        <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 flex flex-col">
             {children}
         </div>
     )

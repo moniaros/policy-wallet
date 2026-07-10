@@ -32,7 +32,7 @@ export default function AgentOnboardingFlow() {
                     {[1, 2, 3, 4, 5].map(i => (
                         <div
                             key={i}
-                            className={`h-1.5 rounded-full transition-all duration-300 ${i <= step ? 'w-8 bg-emerald-500' : 'w-2 bg-slate-200 dark:bg-slate-700'
+                            className={`h-1.5 rounded-full transition-all duration-300 ${i <= step ? 'w-8 bg-primary' : 'w-2 bg-slate-200 dark:bg-slate-700'
                                 }`}
                         />
                     ))}

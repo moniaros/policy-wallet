@@ -30,7 +30,7 @@ export function PolicyWalletLogo({
 
     if (variant === 'icon-only') {
         return (
-            <div className={`${sizes.iconBox} bg-gradient-to-br from-blue-600 via-cyan-600 to-blue-700 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30 ${className}`}>
+            <div className={`${sizes.iconBox} bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/30 ${className}`}>
                 <Shield className={`${sizes.icon} text-white`} strokeWidth={2.5} />
             </div>
         )

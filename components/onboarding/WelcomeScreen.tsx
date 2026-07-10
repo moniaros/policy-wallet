@@ -20,8 +20,8 @@ export function WelcomeScreen({ userName, onNext }: WelcomeScreenProps) {
                 {/* Glass Card */}
                 <div className="relative">
                     {/* Decorative Blobs */}
-                    <div className="absolute -top-24 -left-24 w-96 h-96 bg-emerald-400/30 rounded-full blur-3xl animate-pulse" />
-                    <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-violet-400/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+                    <div className="absolute -top-24 -left-24 w-96 h-96 bg-mint/30 rounded-full blur-3xl animate-pulse" />
+                    <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
 
                     <div className="relative bg-white/90 backdrop-blur-xl rounded-3xl border border-white/30 shadow-2xl p-8 md:p-12">
                         {/* Logo */}
@@ -32,9 +32,9 @@ export function WelcomeScreen({ userName, onNext }: WelcomeScreenProps) {
                             className="flex justify-center mb-8"
                         >
                             <div className="relative">
-                                <div className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-violet-500 rounded-2xl blur-lg opacity-50" />
-                                <div className="relative bg-gradient-to-br from-indigo-600 to-violet-600 p-4 rounded-2xl">
-                                    <Shield className="w-12 h-12 text-white" />
+                                <div className="absolute inset-0 bg-primary rounded-2xl blur-lg opacity-50" />
+                                <div className="relative bg-primary p-4 rounded-2xl">
+                                    <Shield className="w-12 h-12 text-white dark:text-[#1A2420]" />
                                 </div>
                             </div>
                         </motion.div>
@@ -90,7 +90,7 @@ export function WelcomeScreen({ userName, onNext }: WelcomeScreenProps) {
                         >
                             <button
                                 onClick={onNext}
-                                className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold text-lg py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 relative overflow-hidden group"
+                                className="w-full bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] font-semibold text-lg py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 relative overflow-hidden group"
                             >
                                 {/* Shimmer Effect */}
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000" />
@@ -123,7 +123,7 @@ interface FeatureProps {
 function Feature({ icon, title, description }: FeatureProps) {
     return (
         <div className="flex items-start gap-4 p-4 rounded-xl bg-slate-50/50 border border-slate-100 hover:bg-slate-100/50 hover:border-slate-200 transition-all duration-200">
-            <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white">
+            <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary-soft flex items-center justify-center text-primary">
                 {icon}
             </div>
             <div>

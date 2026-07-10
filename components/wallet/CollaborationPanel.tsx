@@ -134,7 +134,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
     const getPermissionBadge = (permission: "view" | "edit" = "view") => {
         if (permission === "edit") {
             return (
-                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-full">
                     <Edit3 className="w-3 h-3 text-amber-600 dark:text-amber-400" />
                     <span className="text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider">{copy.canEdit}</span>
                 </div>
@@ -142,9 +142,9 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
         }
 
         return (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                <Eye className="w-3 h-3 text-blue-600 dark:text-blue-400" />
-                <span className="text-[10px] font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider">{copy.viewOnly}</span>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary-soft dark:bg-primary/15 border border-primary/30 dark:border-primary/40 rounded-full">
+                <Eye className="w-3 h-3 text-primary dark:text-mint" />
+                <span className="text-[10px] font-bold text-primary dark:text-mint uppercase tracking-wider">{copy.viewOnly}</span>
             </div>
         )
     }
@@ -166,11 +166,11 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
 
     return (
         <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 overflow-hidden transition-all duration-300 hover:shadow-xl">
-            <div className="px-6 py-5 border-b border-slate-200/50 dark:border-slate-700/50 bg-gradient-to-r from-teal-50/50 to-blue-50/50 dark:from-teal-950/20 dark:to-blue-950/20">
+            <div className="px-6 py-5 border-b border-slate-200/50 dark:border-slate-700/50 bg-primary-tint dark:bg-primary/10">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-blue-600 flex items-center justify-center shadow-lg">
-                            <Users className="w-5 h-5 text-white" />
+                        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg">
+                            <Users className="w-5 h-5 text-white dark:text-[#1A2420]" />
                         </div>
                         <div>
                             <h3 className="text-lg font-black text-slate-900 dark:text-white tracking-tight">{copy.title}</h3>
@@ -184,7 +184,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                     {isOwner && (
                         <button
                             onClick={() => setShowInviteForm(!showInviteForm)}
-                            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-teal-500/20 transition-all duration-200 active:scale-95"
+                            className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-xl font-bold text-sm shadow-lg shadow-primary/25 transition-all duration-200 active:scale-95"
                         >
                             <UserPlus className="w-4 h-4" />
                             <span className="hidden sm:inline">{copy.invite}</span>
@@ -194,22 +194,22 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
             </div>
 
             {inviteLink && (
-                <div className="mx-6 mt-6 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 border border-emerald-200 dark:border-emerald-800 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="mx-6 mt-6 bg-primary-tint dark:bg-primary/15 border border-primary-soft dark:border-primary/30 rounded-xl p-4 animate-in fade-in slide-in-from-top-2 duration-300">
                     <div className="flex items-start gap-3">
                         <div className="mt-0.5">
-                            <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                            <CheckCircle2 className="w-5 h-5 text-primary dark:text-mint" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold text-emerald-900 dark:text-emerald-100 mb-2">{walletCopy.invitationLinkCreated}</p>
+                            <p className="text-sm font-bold text-[#166534] dark:text-mint mb-2">{walletCopy.invitationLinkCreated}</p>
                             <div className="flex gap-2">
                                 <input
                                     readOnly
                                     value={inviteLink}
-                                    className="flex-1 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-mono rounded-lg border border-emerald-200 dark:border-emerald-800 text-slate-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                                    className="flex-1 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-mono rounded-lg border border-primary-soft dark:border-primary/30 text-slate-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary"
                                 />
                                 <button
                                     onClick={copyLink}
-                                    className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-xs transition-colors"
+                                    className="flex items-center gap-1.5 px-3 py-2 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-lg font-bold text-xs transition-colors"
                                 >
                                     <Copy className="w-3.5 h-3.5" />
                                     {t.common.copy}
@@ -234,7 +234,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                                 placeholder={copy.collaboratorEmailPlaceholder}
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
-                                className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition-all"
+                                className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                             />
                         </div>
 
@@ -248,17 +248,17 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                                     type="button"
                                     onClick={() => setPermissions("view")}
                                     className={`group relative px-4 py-3 rounded-xl border-2 transition-all duration-200 ${permissions === "view"
-                                        ? "bg-blue-50 dark:bg-blue-950/30 border-blue-500 dark:border-blue-400 shadow-lg shadow-blue-500/20"
-                                        : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-600"
+                                        ? "bg-primary-tint dark:bg-primary/15 border-primary dark:border-mint shadow-lg shadow-primary/20"
+                                        : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-primary/40 dark:hover:border-primary/60"
                                         }`}
                                 >
                                     <div className="flex items-center gap-2 mb-1">
-                                        <Eye className={`w-4 h-4 ${permissions === "view" ? "text-blue-600 dark:text-blue-400" : "text-slate-400"}`} />
-                                        <span className={`text-sm font-bold ${permissions === "view" ? "text-blue-900 dark:text-blue-100" : "text-slate-600 dark:text-slate-400"}`}>
+                                        <Eye className={`w-4 h-4 ${permissions === "view" ? "text-primary dark:text-mint" : "text-slate-400"}`} />
+                                        <span className={`text-sm font-bold ${permissions === "view" ? "text-primary dark:text-mint" : "text-slate-600 dark:text-slate-400"}`}>
                                             {copy.viewOnly}
                                         </span>
                                     </div>
-                                    <p className={`text-[10px] font-medium ${permissions === "view" ? "text-blue-700 dark:text-blue-300" : "text-slate-500"}`}>
+                                    <p className={`text-[10px] font-medium ${permissions === "view" ? "text-[#166534] dark:text-mint" : "text-slate-500"}`}>
                                         {copy.readOnlyAccess}
                                     </p>
                                 </button>
@@ -298,7 +298,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                             <button
                                 onClick={handleShare}
                                 disabled={loading || !email}
-                                className="flex-1 px-4 py-2.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-teal-500/20 transition-all duration-200 active:scale-95"
+                                className="flex-1 px-4 py-2.5 rounded-xl font-bold text-sm text-white dark:text-[#1A2420] bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/25 transition-all duration-200 active:scale-95"
                             >
                                 {loading ? copy.sending : copy.sendInvite}
                             </button>
@@ -310,7 +310,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
             <div className="p-6">
                 {shares.length === 0 ? (
                     <div className="text-center py-12">
-                        <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 flex items-center justify-center">
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                             <Users className="w-8 h-8 text-slate-400 dark:text-slate-500" />
                         </div>
                         <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-2">{copy.notSharedYet}</h4>
@@ -318,7 +318,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                         {isOwner && !showInviteForm && (
                             <button
                                 onClick={() => setShowInviteForm(true)}
-                                className="mt-6 inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-teal-500/20 transition-all duration-200 active:scale-95"
+                                className="mt-6 inline-flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-xl font-bold text-sm shadow-lg shadow-primary/25 transition-all duration-200 active:scale-95"
                             >
                                 <UserPlus className="w-4 h-4" />
                                 {copy.inviteCollaborator}
@@ -334,7 +334,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                         {shares.map((share, index) => (
                             <div
                                 key={share.id}
-                                className="group relative p-4 bg-white dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-teal-300 dark:hover:border-teal-600 transition-all duration-200 hover:shadow-md animate-in fade-in slide-in-from-left-2"
+                                className="group relative p-4 bg-white dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-primary/40 dark:hover:border-primary/60 transition-all duration-200 hover:shadow-md animate-in fade-in slide-in-from-left-2"
                                 style={{ animationDelay: `${index * 50}ms` }}
                             >
                                 <div className="flex items-start justify-between gap-4">
@@ -347,12 +347,12 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                                                     className="w-10 h-10 rounded-full object-cover ring-2 ring-white dark:ring-slate-700"
                                                 />
                                             ) : (
-                                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-blue-600 flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                                                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white dark:text-[#1A2420] font-bold text-sm shadow-lg">
                                                     {(share.name?.[0] || share.email[0]).toUpperCase()}
                                                 </div>
                                             )}
-                                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-800 flex items-center justify-center">
-                                                <CheckCircle2 className="w-2.5 h-2.5 text-white" />
+                                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-primary rounded-full border-2 border-white dark:border-slate-800 flex items-center justify-center">
+                                                <CheckCircle2 className="w-2.5 h-2.5 text-white dark:text-[#1A2420]" />
                                             </div>
                                         </div>
 

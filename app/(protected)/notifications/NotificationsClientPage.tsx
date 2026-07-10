@@ -116,13 +116,13 @@ export function NotificationsClientPage({ initialData, activeRole: initialRole }
                     <div className="flex gap-6">
                         <button
                             onClick={() => setActiveTab('history')}
-                            className={`pb-3 text-sm font-bold border-b-2 transition-colors cursor-pointer ${activeTab === 'history' ? 'border-teal-600 text-teal-600 dark:text-teal-400' : 'border-transparent text-stone-500'}`}
+                            className={`pb-3 text-sm font-bold border-b-2 transition-colors cursor-pointer ${activeTab === 'history' ? 'border-primary text-primary dark:text-mint' : 'border-transparent text-stone-500'}`}
                         >
                             {ui.history}
                         </button>
                         <button
                             onClick={() => setActiveTab('preferences')}
-                            className={`pb-3 text-sm font-bold border-b-2 transition-colors cursor-pointer ${activeTab === 'preferences' ? 'border-teal-600 text-teal-600 dark:text-teal-400' : 'border-transparent text-stone-500'}`}
+                            className={`pb-3 text-sm font-bold border-b-2 transition-colors cursor-pointer ${activeTab === 'preferences' ? 'border-primary text-primary dark:text-mint' : 'border-transparent text-stone-500'}`}
                         >
                             {ui.preferences}
                         </button>
@@ -154,7 +154,7 @@ export function NotificationsClientPage({ initialData, activeRole: initialRole }
             <header className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-8">
                 <div>
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="w-8 h-8 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-lg shadow-teal-600/20">
+                        <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center text-white dark:text-[#1A2420] shadow-lg shadow-primary/20">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400">{ui.communicationCenter}</span>

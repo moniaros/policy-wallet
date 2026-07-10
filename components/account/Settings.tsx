@@ -141,7 +141,7 @@ export function Settings({
 
     const getEventIcon = (eventType: string) => {
         switch (eventType) {
-            case 'login': return { Icon: LogIn, color: 'text-[#1FDC86] bg-[#1FDC86]/12 dark:bg-[#1FDC86]/12' }
+            case 'login': return { Icon: LogIn, color: 'text-primary dark:text-mint bg-primary-soft dark:bg-primary/15' }
             case 'login_failed': return { Icon: AlertTriangle, color: 'text-amber-500 bg-amber-50 dark:bg-amber-900/20' }
             case 'logout': return { Icon: LogOut, color: 'text-black/45 dark:text-white/60 bg-black/5 dark:bg-black' }
             case 'password_change': return { Icon: KeyRound, color: 'text-black/70 dark:text-white/70 bg-black/5 dark:bg-white/10' }
@@ -173,7 +173,7 @@ export function Settings({
                         className="bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[28px] p-6 shadow-sm"
                     >
                         <div className="flex items-center gap-3 mb-6">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#1FDC86]" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                             <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">{t.settings.identityMatrix}</h3>
                         </div>
 
@@ -188,9 +188,9 @@ export function Settings({
                                             value={nameDraft}
                                             onChange={(e) => setNameDraft(e.target.value)}
                                             autoFocus
-                                            className="flex-1 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-[#1FDC86] transition-all outline-none"
+                                            className="flex-1 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-primary transition-all outline-none"
                                         />
-                                        <button onClick={handleSaveName} className="p-2 bg-[#1FDC86] text-white rounded-xl shadow-lg shadow-[#1FDC86]/25 active:scale-90 transition-transform">
+                                        <button onClick={handleSaveName} className="p-2 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-xl shadow-lg shadow-primary/25 active:scale-90 transition-transform">
                                             <CheckCircle2 className="w-4 h-4" />
                                         </button>
                                         <button onClick={() => { setIsEditingName(false); setNameDraft(currentUser.name || '') }} className="p-2 border border-black/10 dark:border-white/15 rounded-xl active:scale-90 transition-transform">
@@ -198,9 +198,9 @@ export function Settings({
                                         </button>
                                     </div>
                                 ) : (
-                                    <div className="flex items-center justify-between p-4 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl group/item hover:border-[#1FDC86]/35 transition-all">
+                                    <div className="flex items-center justify-between p-4 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl group/item hover:border-primary/35 transition-all">
                                         <span className="text-sm font-black text-black dark:text-white tracking-tight">{currentUser.name || t.settings.setYourName}</span>
-                                        <button onClick={() => setIsEditingName(true)} className="opacity-0 group-hover/item:opacity-100 text-[10px] font-black uppercase tracking-widest text-[#1FDC86] dark:text-[#1FDC86] transition-all">{t.billing.edit}</button>
+                                        <button onClick={() => setIsEditingName(true)} className="opacity-0 group-hover/item:opacity-100 text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint transition-all">{t.billing.edit}</button>
                                     </div>
                                 )}
                             </div>
@@ -214,9 +214,9 @@ export function Settings({
                                             type="email"
                                             value={emailDraft}
                                             onChange={(e) => setEmailDraft(e.target.value)}
-                                            className="flex-1 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-[#1FDC86] transition-all outline-none"
+                                            className="flex-1 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-primary transition-all outline-none"
                                         />
-                                        <button onClick={handleSaveEmail} className="p-2 bg-[#1FDC86] text-white rounded-xl shadow-lg shadow-[#1FDC86]/25 active:scale-90 transition-transform">
+                                        <button onClick={handleSaveEmail} className="p-2 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-xl shadow-lg shadow-primary/25 active:scale-90 transition-transform">
                                             <CheckCircle2 className="w-4 h-4" />
                                         </button>
                                         <button onClick={() => { setIsEditingEmail(false); setEmailDraft(currentUser.email) }} className="p-2 border border-black/10 dark:border-white/15 rounded-xl active:scale-90 transition-transform">
@@ -224,9 +224,9 @@ export function Settings({
                                         </button>
                                     </div>
                                 ) : (
-                                    <div className="flex items-center justify-between p-4 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl group/item hover:border-[#1FDC86]/35 transition-all">
+                                    <div className="flex items-center justify-between p-4 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl group/item hover:border-primary/35 transition-all">
                                         <span className="text-sm font-black text-black dark:text-white tracking-tight">{currentUser.email}</span>
-                                        <button onClick={() => setIsEditingEmail(true)} className="opacity-0 group-hover/item:opacity-100 text-[10px] font-black uppercase tracking-widest text-[#1FDC86] dark:text-[#1FDC86] transition-all">{t.billing.edit}</button>
+                                        <button onClick={() => setIsEditingEmail(true)} className="opacity-0 group-hover/item:opacity-100 text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint transition-all">{t.billing.edit}</button>
                                     </div>
                                 )}
                             </div>
@@ -237,13 +237,13 @@ export function Settings({
                                 <div className="grid grid-cols-2 gap-2 p-1.5 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl">
                                     <button
                                         onClick={() => handleLanguageUpdate('el')}
-                                        className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentUser.preferred_language === 'el' ? 'bg-white dark:bg-black text-[#1FDC86] dark:text-[#1FDC86] shadow-md transform scale-[1.02]' : 'text-black/45 dark:text-white/60 hover:text-black/70 dark:hover:text-white/80'}`}
+                                        className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentUser.preferred_language === 'el' ? 'bg-white dark:bg-black text-primary dark:text-mint shadow-md transform scale-[1.02]' : 'text-black/45 dark:text-white/60 hover:text-black/70 dark:hover:text-white/80'}`}
                                     >
                                         {t.settings.greek}
                                     </button>
                                     <button
                                         onClick={() => handleLanguageUpdate('en')}
-                                        className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentUser.preferred_language === 'en' ? 'bg-white dark:bg-black text-[#1FDC86] dark:text-[#1FDC86] shadow-md transform scale-[1.02]' : 'text-black/45 dark:text-white/60 hover:text-black/70 dark:hover:text-white/80'}`}
+                                        className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentUser.preferred_language === 'en' ? 'bg-white dark:bg-black text-primary dark:text-mint shadow-md transform scale-[1.02]' : 'text-black/45 dark:text-white/60 hover:text-black/70 dark:hover:text-white/80'}`}
                                     >
                                         {t.settings.english}
                                     </button>
@@ -260,7 +260,7 @@ export function Settings({
                         className="bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[28px] p-6 shadow-sm"
                     >
                         <div className="flex items-center gap-3 mb-6">
-                            <span className="w-1.5 h-1.5 rounded-full bg-[#1FDC86]" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                             <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">{t.settings.communicationControl}</h3>
                         </div>
 
@@ -272,14 +272,14 @@ export function Settings({
                             ].map(pref => (
                                 <div key={pref.id} className="flex items-center justify-between group p-3 hover:bg-black/5 dark:hover:bg-black/80 rounded-2xl transition-all">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 flex items-center justify-center text-black/45 dark:text-white/60 group-hover:text-[#1FDC86] transition-all">
+                                        <div className="w-8 h-8 rounded-lg bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 flex items-center justify-center text-black/45 dark:text-white/60 group-hover:text-primary dark:group-hover:text-mint transition-all">
                                             <pref.icon className="w-4 h-4" />
                                         </div>
                                         <span className="text-[11px] font-bold text-black/80 dark:text-white/70 group-hover:text-black dark:group-hover:text-white transition-colors">{pref.label}</span>
                                     </div>
                                     <button
                                         onClick={() => onToggleNotification?.(pref.id, 'email', !isPreferenceEnabled(pref.id, 'email'))}
-                                        className={`w-11 h-6 rounded-full transition-all relative ${isPreferenceEnabled(pref.id, 'email') ? 'bg-[#1FDC86]' : 'bg-black/10 dark:bg-white/15'}`}
+                                        className={`w-11 h-6 rounded-full transition-all relative ${isPreferenceEnabled(pref.id, 'email') ? 'bg-primary' : 'bg-black/10 dark:bg-white/15'}`}
                                     >
                                         <motion.span
                                             animate={{ x: isPreferenceEnabled(pref.id, 'email') ? 22 : 2 }}
@@ -294,7 +294,7 @@ export function Settings({
                     {/* Secondary Identity Actions */}
                     <div className="space-y-3">
                         <div className="p-6 bg-black rounded-[28px] text-white shadow-2xl relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-[#1FDC86]/10 blur-3xl"></div>
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-mint/10 blur-3xl"></div>
                             <h4 className="text-xl font-black tracking-tight mb-4">{t.settings.securityFirst} <span className="text-white/70 italic">{t.settings.securityFirstSubtitle}</span></h4>
                             <p className="text-white/75 text-[10px] font-bold leading-relaxed mb-8 italic">
                                 {t.settings.securityFirstDesc}
@@ -317,7 +317,7 @@ export function Settings({
                         animate={{ opacity: 1, scale: 1 }}
                         className="bg-black rounded-[28px] p-6 text-white relative overflow-hidden group shadow-2xl"
                     >
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#1FDC86]/10 blur-[100px] rounded-full -mr-32 -mt-32 transition-transform duration-1000 group-hover:scale-110"></div>
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-mint/10 blur-[100px] rounded-full -mr-32 -mt-32 transition-transform duration-1000 group-hover:scale-110"></div>
 
                         <div className="flex flex-col md:flex-row items-center gap-10 relative z-10">
                             <div className="relative w-32 h-32 flex items-center justify-center">
@@ -325,7 +325,7 @@ export function Settings({
                                     <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
                                     <motion.circle
                                         cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent"
-                                        className="text-[#1FDC86]"
+                                        className="text-mint"
                                         initial={{ strokeDasharray: "365 365", strokeDashoffset: 365 }}
                                         animate={{ strokeDashoffset: 365 - (365 * 0.85) }}
                                         transition={{ duration: 1.5, ease: "easeOut" }}
@@ -339,16 +339,16 @@ export function Settings({
 
                             <div className="flex-1 text-center md:text-left">
                                 <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                                    <CheckCircle2 className="w-5 h-5 text-[#1FDC86]" />
+                                    <CheckCircle2 className="w-5 h-5 text-mint" />
                                     <h3 className="text-2xl font-black tracking-tight">{t.settings.accountShield}</h3>
                                 </div>
                                 <p className="text-white/75 text-sm font-medium leading-relaxed max-w-md">
-                                    {t.settings.securityPosture} <span className="text-white font-black">{t.settings.excellent}</span>. We found <span className="text-[#1FDC86] underline decoration-[#1FDC86]/35">{t.settings.optimizations}</span> {t.settings.securityPostureDesc}
+                                    {t.settings.securityPosture} <span className="text-white font-black">{t.settings.excellent}</span>. We found <span className="text-mint underline decoration-mint/35">{t.settings.optimizations}</span> {t.settings.securityPostureDesc}
                                 </p>
                                 <div className="flex flex-wrap gap-2 mt-6">
                                     <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest">{t.settings.verified2FA}</span>
                                     <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest">{t.settings.safeIP}</span>
-                                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest text-[#1FDC86]">{t.settings.encryptionActive}</span>
+                                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest text-mint">{t.settings.encryptionActive}</span>
                                 </div>
                             </div>
                         </div>
@@ -366,14 +366,14 @@ export function Settings({
                                 <Smartphone className="w-4 h-4 text-black/45 dark:text-white/60" />
                                 <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">{t.settings.activeSessions}</h3>
                             </div>
-                            <span className="px-3 py-1 bg-[#1FDC86]/12 dark:bg-[#1FDC86]/15 text-[#1FDC86] dark:text-[#1FDC86] text-[10px] font-black uppercase tracking-widest rounded-full">{activeSessions.length} {t.settings.total}</span>
+                            <span className="px-3 py-1 bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint text-[10px] font-black uppercase tracking-widest rounded-full">{activeSessions.length} {t.settings.total}</span>
                         </div>
 
                         <div className="divide-y divide-black/10 dark:divide-white/10">
                             {activeSessions.map((session) => (
                                 <div key={session.session_id} className="px-6 py-5 group hover:bg-black/5 dark:hover:bg-black/80 transition-all">
                                     <div className="flex items-start gap-6">
-                                        <div className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-black flex items-center justify-center text-black/45 dark:text-white/60 group-hover:text-[#1FDC86] transition-all border border-transparent group-hover:border-[#1FDC86]/20">
+                                        <div className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-black flex items-center justify-center text-black/45 dark:text-white/60 group-hover:text-primary dark:group-hover:text-mint transition-all border border-transparent group-hover:border-primary/20">
                                             {getDeviceIcon(session.device_type)}
                                         </div>
                                         <div className="flex-1">
@@ -382,7 +382,7 @@ export function Settings({
                                                     {session.device_name}
                                                 </span>
                                                 {session.is_current && (
-                                                    <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-[#1FDC86] text-white rounded shadow-sm">
+                                                    <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-primary text-white dark:text-[#1A2420] rounded-full shadow-sm">
                                                         {t.settings.activeNow}
                                                     </span>
                                                 )}
@@ -423,14 +423,14 @@ export function Settings({
                                 <Lock className="w-4 h-4 text-black/45 dark:text-white/60" />
                                 <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">{t.settings.auditTrail}</h3>
                             </div>
-                            <button className="text-[9px] font-black text-[#1FDC86] uppercase tracking-widest hover:underline">{t.settings.downloadReport}</button>
+                            <button className="text-[9px] font-black text-primary dark:text-mint uppercase tracking-widest hover:underline">{t.settings.downloadReport}</button>
                         </div>
 
                         <div className="divide-y divide-black/10 dark:divide-white/10">
                             {securityEvents.slice(0, 5).map((event) => {
                                 const config = getEventIcon(event.event_type)
                                 return (
-                                    <div key={event.event_id} className="px-6 py-4 hover:bg-black/5 dark:hover:bg-black/80 transition-all border-l-4 border-l-transparent hover:border-l-[#1FDC86]">
+                                    <div key={event.event_id} className="px-6 py-4 hover:bg-black/5 dark:hover:bg-black/80 transition-all border-l-4 border-l-transparent hover:border-l-primary">
                                         <div className="flex items-center gap-6">
                                             <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${config.color} shadow-sm`}>
                                                 <config.Icon className="w-4 h-4" />

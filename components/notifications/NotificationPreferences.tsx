@@ -49,12 +49,12 @@ export function NotificationPreferences({
             {/* Role Switcher for Dual-Role Users */}
             {isDualRole && (
                 <div className="mb-12 relative overflow-hidden bg-stone-900 dark:bg-black rounded-[32px] p-8 text-white shadow-2xl">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 blur-[100px] rounded-full -mr-32 -mt-32" />
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-mint/10 blur-[100px] rounded-full -mr-32 -mt-32" />
                     <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                         <div>
                             <div className="flex items-center gap-3 mb-2">
-                                <span className="w-8 h-px bg-teal-500" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-teal-500">Dual-Role Context</span>
+                                <span className="w-8 h-px bg-mint" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-mint">Dual-Role Context</span>
                             </div>
                             <h3 className="text-2xl font-black tracking-tight mb-2">
                                 Προτιμήσεις για <span className="text-stone-400 italic">τον Ρόλο σας</span>
@@ -123,7 +123,7 @@ export function NotificationPreferences({
                                             {/* Label and Description */}
                                             <div className="mb-8">
                                                 <div className="flex items-center justify-between mb-1">
-                                                    <div className="font-black text-stone-900 dark:text-stone-100 uppercase tracking-tight group-hover/item:text-teal-600 transition-colors">
+                                                    <div className="font-black text-stone-900 dark:text-stone-100 uppercase tracking-tight group-hover/item:text-primary dark:group-hover/item:text-mint transition-colors">
                                                         {eventType.label}
                                                     </div>
                                                 </div>
@@ -142,7 +142,7 @@ export function NotificationPreferences({
                                                             <button
                                                                 onClick={() => onToggleChannel?.(eventType.event_type, 'email', !pref.channel_email)}
                                                                 className={`relative inline-flex h-5 w-10 items-center rounded-full transition-all ${pref.channel_email
-                                                                    ? 'bg-teal-500 shadow-[0_0_12px_rgba(20,184,166,0.3)]'
+                                                                    ? 'bg-primary shadow-[0_0_12px_rgba(41,104,91,0.35)]'
                                                                     : 'bg-stone-200 dark:bg-stone-700'
                                                                     }`}
                                                             >
@@ -161,7 +161,7 @@ export function NotificationPreferences({
                                                             <button
                                                                 onClick={() => onToggleChannel?.(eventType.event_type, 'push', !pref.channel_push)}
                                                                 className={`relative inline-flex h-5 w-10 items-center rounded-full transition-all ${pref.channel_push
-                                                                    ? 'bg-teal-500 shadow-[0_0_12px_rgba(20,184,166,0.3)]'
+                                                                    ? 'bg-primary shadow-[0_0_12px_rgba(41,104,91,0.35)]'
                                                                     : 'bg-stone-200 dark:bg-stone-700'
                                                                     }`}
                                                             >
@@ -190,7 +190,7 @@ export function NotificationPreferences({
 
             {/* Info Footnote */}
             <div className="mt-16 bg-stone-50 dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[32px] p-10 flex flex-col md:flex-row items-center gap-8 shadow-sm">
-                <div className="w-16 h-16 bg-white dark:bg-stone-800 rounded-2xl flex items-center justify-center text-teal-600 shadow-sm border border-stone-100 dark:border-stone-700 flex-shrink-0">
+                <div className="w-16 h-16 bg-white dark:bg-stone-800 rounded-2xl flex items-center justify-center text-primary dark:text-mint shadow-sm border border-stone-100 dark:border-stone-700 flex-shrink-0">
                     <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>

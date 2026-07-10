@@ -99,7 +99,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                 </div>
 
                 {/* Opportunities Table */}
-                <div className="arc-card overflow-hidden border-t-4 border-t-[#1fdc86]">
+                <div className="arc-card overflow-hidden border-t-4 border-t-primary">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
@@ -145,10 +145,10 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                 )}
                                             </td>
                                             <td className="px-6 py-6">
-                                                <span className={`pw-pill uppercase tracking-widest ${opp.status === 'won' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400' :
+                                                <span className={`pw-pill uppercase tracking-widest ${opp.status === 'won' ? 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint' :
                                                     opp.status === 'lost' ? 'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400' :
-                                                        opp.status === 'quoted' ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400' :
-                                                            opp.status === 'contacted' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
+                                                        opp.status === 'quoted' ? 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400' :
+                                                            opp.status === 'contacted' ? 'bg-mint/25 text-primary dark:bg-primary/15 dark:text-mint' :
                                                                 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400'
                                                     }`}>
                                                     {opp.status}
@@ -158,7 +158,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                 {opp.conversionLikelihood ? (
                                                     <div className="flex items-center gap-1.5">
                                                         <span className={`inline-block h-2 w-2 rounded-full ${
-                                                            opp.conversionLikelihood === "high" ? "bg-emerald-500" :
+                                                            opp.conversionLikelihood === "high" ? "bg-primary" :
                                                             opp.conversionLikelihood === "medium" ? "bg-amber-500" : "bg-slate-400"
                                                         }`} />
                                                         <span className="text-xs font-bold text-slate-600 dark:text-slate-400 capitalize">

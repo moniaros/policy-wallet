@@ -102,7 +102,7 @@ export function PullToRefresh({
                 }}
             >
                 <div
-                    className="flex items-center justify-center w-10 h-10 bg-sky-600 dark:bg-sky-500 rounded-full shadow-lg"
+                    className="flex items-center justify-center w-10 h-10 bg-primary dark:bg-mint rounded-full shadow-lg"
                     style={{
                         transform: `scale(${scale}) rotate(${rotation}deg)`,
                         transition: isRefreshing || pullDistance === 0 ? 'all 0.3s ease' : 'none'
@@ -110,7 +110,7 @@ export function PullToRefresh({
                 >
                     {isRefreshing ? (
                         <svg
-                            className="w-5 h-5 text-white animate-spin"
+                            className="w-5 h-5 text-white dark:text-[#1A2420] animate-spin"
                             fill="none"
                             viewBox="0 0 24 24"
                         >
@@ -130,7 +130,7 @@ export function PullToRefresh({
                         </svg>
                     ) : (
                         <svg
-                            className="w-5 h-5 text-white"
+                            className="w-5 h-5 text-white dark:text-[#1A2420]"
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke="currentColor"

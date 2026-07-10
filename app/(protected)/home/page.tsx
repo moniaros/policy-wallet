@@ -194,7 +194,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         </p>
                         <div className="mt-3 flex items-center justify-between">
                             <p className="text-4xl font-semibold text-black dark:text-white">{activePolicies.length}</p>
-                            <Wallet className="h-6 w-6 text-[#1FDC86]" />
+                            <Wallet className="h-6 w-6 text-primary dark:text-mint" />
                         </div>
                     </Link>
 
@@ -212,7 +212,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                     <path
                                         d="M18 2 a 16 16 0 1 1 0 32 a 16 16 0 1 1 0 -32"
                                         fill="none"
-                                        className={healthScore >= 70 ? "stroke-[#1FDC86]" : healthScore >= 40 ? "stroke-amber-500" : "stroke-red-500"}
+                                        className={healthScore >= 70 ? "stroke-primary dark:stroke-mint" : healthScore >= 40 ? "stroke-amber-500" : "stroke-red-500"}
                                         strokeWidth="3"
                                         strokeDasharray={`${healthScore}, 100`}
                                     />
@@ -262,7 +262,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                             const LobIcon = meta.icon
                                             return (
                                                 <div key={lob} className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 dark:border-white/15 dark:bg-white/5">
-                                                    <LobIcon className="h-3.5 w-3.5 text-[#1FDC86]" />
+                                                    <LobIcon className="h-3.5 w-3.5 text-primary dark:text-mint" />
                                                     <span className="text-xs font-bold text-black/70 dark:text-white/75">
                                                         {formatCurrencyValue(amount)}
                                                     </span>
@@ -294,12 +294,12 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                         const { icon: PolicyIcon, label } = getLineOfBusinessMeta(policy.lineOfBusiness)
                                         const premiumLabel = formatCurrencyValue(policy.premiumAmount, policy.premiumCurrency || "EUR")
                                         const days = daysUntil(policy.endDate)
-                                        const urgencyColor = days <= 30 ? "bg-rose-500" : days <= 89 ? "bg-amber-500" : "bg-[#1FDC86]"
+                                        const urgencyColor = days <= 30 ? "bg-rose-500" : days <= 89 ? "bg-amber-500" : "bg-primary"
                                         const urgencyText = days <= 30
                                             ? "text-rose-700 dark:text-rose-300"
                                             : days <= 89
                                                 ? "text-amber-700 dark:text-amber-300"
-                                                : "text-[#1FDC86] dark:text-[#1FDC86]"
+                                                : "text-primary dark:text-mint dark:text-primary dark:text-mint"
 
                                         return (
                                             <Link
@@ -341,7 +341,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                             {t("Ανάλυση AI", "AI Analysis")}
                         </p>
                         <div className="mt-3 flex items-start gap-3">
-                            <Sparkles className="mt-0.5 h-5 w-5 text-[#1FDC86]" />
+                            <Sparkles className="mt-0.5 h-5 w-5 text-primary dark:text-mint" />
                             <div className="flex-1">
                                 <p className="text-sm text-black/80 dark:text-white/80">
                                     {openGapCount > 0
@@ -349,7 +349,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                         : t("Η κάλυψή σας φαίνεται σταθερή σήμερα.", "Your coverage looks stable today.")}
                                 </p>
                                 {openGapCount > 0 && (
-                                    <p className="mt-1.5 text-xs font-semibold text-[#1FDC86]">
+                                    <p className="mt-1.5 text-xs font-semibold text-primary dark:text-mint">
                                         {t("Δείτε λεπτομέρειες →", "View details →")}
                                     </p>
                                 )}
@@ -365,7 +365,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                             {t("Γρήγορο Upload", "Quick upload")}
                         </p>
                         <div className="mt-3 flex items-center gap-3">
-                            <div className="grid h-10 w-10 place-items-center rounded-xl bg-[#1FDC86] text-white">
+                            <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-white dark:text-[#1A2420]">
                                 <Upload className="h-5 w-5" />
                             </div>
                             <p className="text-sm text-black/80 dark:text-white/80">
@@ -415,7 +415,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         <div className="mt-3 flex items-center gap-3">
                             <span
                                 className={`inline-block h-2.5 w-2.5 rounded-full ${
-                                    customerRelationship ? "bg-[#1FDC86]" : "bg-black/30 dark:bg-white/30"
+                                    customerRelationship ? "bg-primary" : "bg-black/30 dark:bg-white/30"
                                 }`}
                             />
                             <p className="text-sm text-black/80 dark:text-white/80">
@@ -431,7 +431,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                             {t("Υπενθύμιση check-up", "Health check-up reminder")}
                         </p>
                         <div className="mt-3 flex items-start gap-3">
-                            <HeartPulse className="mt-0.5 h-5 w-5 text-[#1FDC86]" />
+                            <HeartPulse className="mt-0.5 h-5 w-5 text-primary dark:text-mint" />
                             <p className="text-sm text-black/80 dark:text-white/80">
                                 {hasHealthPolicy
                                     ? t("Το ετήσιο check-up σας είναι διαθέσιμο.", "Your annual check-up benefit is available.")
@@ -452,7 +452,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                     : t("Δεν υπάρχουν ευκαιρίες εξοικονόμησης αυτή τη στιγμή.", "No immediate savings opportunities today.")}
                             </p>
                             {savingsEstimate > 0 && (
-                                <span className="rounded-full bg-[#1FDC86]/20 px-2 py-1 text-xs font-semibold text-black dark:text-[#1FDC86]">
+                                <span className="rounded-full bg-primary/15 px-2 py-1 text-xs font-semibold text-primary dark:text-mint">
                                     {formatCurrencyValue(savingsEstimate)}
                                 </span>
                             )}
@@ -480,7 +480,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
 
             <Link
                 href="/wallet/add"
-                className="fixed bottom-24 left-1/2 z-30 grid h-14 w-14 -translate-x-1/2 place-items-center rounded-2xl bg-[#1FDC86] text-white shadow-xl transition hover:bg-[#19b870] lg:bottom-6 lg:left-auto lg:right-6 lg:translate-x-0"
+                className="fixed bottom-24 left-1/2 z-30 grid h-14 w-14 -translate-x-1/2 place-items-center rounded-2xl bg-primary text-white dark:text-[#1A2420] shadow-xl transition hover:bg-primary-hover lg:bottom-6 lg:left-auto lg:right-6 lg:translate-x-0"
                 aria-label={t("Γρήγορο upload", "Quick upload")}
             >
                 <Upload className="h-6 w-6" />

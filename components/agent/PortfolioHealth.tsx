@@ -53,10 +53,10 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
         ? "#ef4444"
         : health.coverageGapPercent > 15
             ? "#f59e0b"
-            : "#10b981"
+            : "#29685B"
 
     const profileColor = health.completeProfilePercent >= 80
-        ? "#10b981"
+        ? "#29685B"
         : health.completeProfilePercent >= 50
             ? "#f59e0b"
             : "#ef4444"
@@ -65,7 +65,7 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
         ? "#ef4444"
         : health.atRiskCount > 0
             ? "#f59e0b"
-            : "#10b981"
+            : "#29685B"
 
     const metrics = [
         {
@@ -103,7 +103,7 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
     return (
         <BrandCard className="p-5">
             <div className="flex items-center gap-2 mb-4">
-                <Activity className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                <Activity className="h-5 w-5 text-primary dark:text-mint" />
                 <h2 className="text-base font-bold text-slate-900 dark:text-white">
                     {language === "el" ? "Υγεία Χαρτοφυλακίου" : "Portfolio Health"}
                 </h2>

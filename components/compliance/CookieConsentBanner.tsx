@@ -129,10 +129,10 @@ export function CookieConsentBanner() {
                         >
                             {expanded ? copy.hidePreferences : copy.managePreferences}
                         </button>
-                        <a href={`/privacy?lang=${language}`} className="font-semibold text-teal-700 hover:text-teal-800 dark:text-teal-300 dark:hover:text-teal-200">
+                        <a href={`/privacy?lang=${language}`} className="font-semibold text-primary hover:text-primary-hover dark:text-mint dark:hover:text-mint/80">
                             {copy.privacyLink}
                         </a>
-                        <a href={`/terms?lang=${language}`} className="font-semibold text-teal-700 hover:text-teal-800 dark:text-teal-300 dark:hover:text-teal-200">
+                        <a href={`/terms?lang=${language}`} className="font-semibold text-primary hover:text-primary-hover dark:text-mint dark:hover:text-mint/80">
                             {copy.termsLink}
                         </a>
                     </div>
@@ -142,7 +142,7 @@ export function CookieConsentBanner() {
                             <label className="rounded-xl border border-slate-200 p-3 dark:border-slate-700">
                                 <p className="text-sm font-bold text-slate-900 dark:text-white">{copy.necessaryTitle}</p>
                                 <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">{copy.necessaryDescription}</p>
-                                <p className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-teal-700 dark:text-teal-300">{copy.alwaysOn}</p>
+                                <p className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-primary dark:text-mint">{copy.alwaysOn}</p>
                             </label>
 
                             <label className="rounded-xl border border-slate-200 p-3 dark:border-slate-700">
@@ -150,7 +150,7 @@ export function CookieConsentBanner() {
                                 <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">{copy.analyticsDescription}</p>
                                 <input
                                     type="checkbox"
-                                    className="mt-3 h-4 w-4 accent-teal-600"
+                                    className="mt-3 h-4 w-4 accent-primary dark:accent-mint"
                                     checked={categories.analytics}
                                     onChange={(event) =>
                                         setCategories((prev) => ({
@@ -166,7 +166,7 @@ export function CookieConsentBanner() {
                                 <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">{copy.marketingDescription}</p>
                                 <input
                                     type="checkbox"
-                                    className="mt-3 h-4 w-4 accent-teal-600"
+                                    className="mt-3 h-4 w-4 accent-primary dark:accent-mint"
                                     checked={categories.marketing}
                                     onChange={(event) =>
                                         setCategories((prev) => ({
@@ -210,7 +210,7 @@ export function CookieConsentBanner() {
                                     "banner_accept_all"
                                 )
                             }
-                            className="rounded-xl bg-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60 dark:text-[#1A2420]"
                         >
                             {copy.acceptAll}
                         </button>
@@ -219,7 +219,7 @@ export function CookieConsentBanner() {
                                 type="button"
                                 disabled={!canSave}
                                 onClick={() => persistConsent(categories, "banner_preferences")}
-                                className="rounded-xl border border-teal-300 px-4 py-2 text-sm font-semibold text-teal-700 transition hover:bg-teal-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-teal-700 dark:text-teal-300 dark:hover:bg-teal-900/30"
+                                className="rounded-xl border border-primary/40 px-4 py-2 text-sm font-semibold text-primary transition hover:bg-primary-tint disabled:cursor-not-allowed disabled:opacity-60 dark:border-mint/40 dark:text-mint dark:hover:bg-primary/15"
                             >
                                 {copy.savePreferences}
                             </button>

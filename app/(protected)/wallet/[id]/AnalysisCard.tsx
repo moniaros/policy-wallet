@@ -467,14 +467,14 @@ export function AnalysisCard({
 
     return (
         <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl shadow-lg border border-white/20 dark:border-slate-700/50 overflow-hidden transition-all duration-300 hover:shadow-xl">
-            <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-6 flex justify-between items-center">
+            <div className="bg-primary p-6 flex justify-between items-center">
                 <div className="flex items-center gap-3 text-white">
                     <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
                         <Sparkles className="w-6 h-6" />
                     </div>
                     <div>
                         <h2 className="text-lg font-black">{analysisTitle}</h2>
-                        <p className="text-sm text-emerald-100 mt-0.5">{t.wallet.analysisSubtitle}</p>
+                        <p className="text-sm text-white/80 mt-0.5">{t.wallet.analysisSubtitle}</p>
                     </div>
                 </div>
                 <button
@@ -487,24 +487,24 @@ export function AnalysisCard({
             </div>
             {analysisInProgress && (
                 <div className="px-6 pt-5">
-                    <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-800/60 dark:bg-emerald-950/20">
+                    <div className="rounded-xl border border-primary/25 bg-primary-tint p-4 dark:border-primary/35 dark:bg-primary/15">
                         <div className="flex items-start gap-3">
-                            <Loader2 className="mt-0.5 h-4 w-4 animate-spin text-emerald-700 dark:text-emerald-300" />
+                            <Loader2 className="mt-0.5 h-4 w-4 animate-spin text-primary dark:text-mint" />
                             <div className="min-w-0 flex-1">
-                                <p className="text-sm font-bold text-emerald-900 dark:text-emerald-100">
+                                <p className="text-sm font-bold text-[#166534] dark:text-mint">
                                     {runStepLabel || statusCopy.inProgress}
                                 </p>
-                                <p className="mt-1 text-xs text-emerald-800/85 dark:text-emerald-200/90">
+                                <p className="mt-1 text-xs text-[#166534]/85 dark:text-mint/90">
                                     {runStepHint || statusCopy.autoRefreshHint}
                                 </p>
                             </div>
-                            <span className="text-xs font-bold text-emerald-900 dark:text-emerald-100">
+                            <span className="text-xs font-bold text-[#166534] dark:text-mint">
                                 {runProgress}%
                             </span>
                         </div>
-                        <div className="mt-3 h-2 overflow-hidden rounded-full bg-emerald-200/80 dark:bg-emerald-900/60">
+                        <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#F1F5F9] dark:bg-white/10">
                             <div
-                                className="h-full rounded-full bg-emerald-600 transition-all duration-500"
+                                className="h-full rounded-full bg-primary transition-all duration-500"
                                 style={{ width: `${Math.max(8, Math.min(100, runProgress))}%` }}
                             />
                         </div>
@@ -632,8 +632,8 @@ export function AnalysisCard({
                         </div>
                     ) : (
                     <div className="text-center py-8">
-                        <div className="w-16 h-16 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mx-auto mb-4">
-                            <Sparkles className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                        <div className="w-16 h-16 rounded-2xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center mx-auto mb-4">
+                            <Sparkles className="w-8 h-8 text-primary dark:text-mint" />
                         </div>
                         <p className="text-sm text-slate-600 dark:text-slate-400 font-semibold mb-2">
                             {t.analysis.noGaps}
@@ -650,10 +650,10 @@ export function AnalysisCard({
                             const suggestion = language === 'el' ? (gap.aiSuggestionEl || gap.aiSuggestion) : gap.aiSuggestion
 
                             return (
-                                <div key={gap.id} className="bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 p-5 rounded-xl border border-red-200 dark:border-red-900/30 transition-all duration-300 hover:shadow-md">
+                                <div key={gap.id} className="bg-red-50 dark:bg-red-900/20 p-5 rounded-xl border border-red-200 dark:border-red-900/30 transition-all duration-300 hover:shadow-md">
                                     <div className="flex gap-4">
                                         <div className="shrink-0">
-                                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-lg">
+                                            <div className="w-10 h-10 rounded-xl bg-red-500 flex items-center justify-center shadow-lg">
                                                 <AlertTriangle className="w-5 h-5 text-white" />
                                             </div>
                                         </div>

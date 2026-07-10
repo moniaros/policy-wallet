@@ -45,7 +45,7 @@ export function MyAgentScreen({
     const copy = t.wallet.advisorScreen
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-teal-50 to-white dark:from-stone-950 dark:to-stone-900 pb-28">
+        <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 pb-28">
             <div className="bg-white/90 dark:bg-stone-900/90 border-b border-stone-200 dark:border-stone-800 sticky top-0 z-10 backdrop-blur-md">
                 <div className="max-w-md mx-auto px-4 py-4">
                     <PolicyWalletLogo size="sm" language={language} />
@@ -75,7 +75,7 @@ export function MyAgentScreen({
                                         )}
                                     </div>
                                     {agent.isOnline && (
-                                        <div className="absolute bottom-1 right-1 w-4 h-4 bg-emerald-500 border-2 border-white dark:border-stone-900 rounded-full" />
+                                        <div className="absolute bottom-1 right-1 w-4 h-4 bg-primary dark:bg-mint border-2 border-white dark:border-slate-900 rounded-full" />
                                     )}
                                 </div>
                             </div>
@@ -140,7 +140,7 @@ export function MyAgentScreen({
                                                     </div>
                                                     <p className="text-sm text-stone-600 dark:text-stone-400 truncate">{comm.preview}</p>
                                                 </div>
-                                                {comm.unread && <span className="w-2.5 h-2.5 rounded-full bg-teal-500 mt-1" />}
+                                                {comm.unread && <span className="w-2.5 h-2.5 rounded-full bg-primary dark:bg-mint mt-1" />}
                                             </div>
                                         </button>
                                     ))}

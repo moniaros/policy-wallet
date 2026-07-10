@@ -224,8 +224,8 @@ function TemplatesGrid({ templates, t, language, onEdit }: {
                     <div className="flex items-start justify-between mb-3">
                         <div>
                             <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${tpl.isSystem
-                                ? "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400"
-                                : "bg-violet-50 text-violet-600 dark:bg-violet-900/20 dark:text-violet-400"
+                                ? "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                                : "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint"
                                 }`}>
                                 {tpl.isSystem ? t.system : t.custom}
                             </span>
@@ -546,7 +546,7 @@ function SentList({ instances, t, language }: {
                                 <td className="p-4 text-slate-600 dark:text-slate-400">{inst.templateName}</td>
                                 <td className="p-4">
                                     {inst.status === "completed" ? (
-                                        <span className="inline-flex items-center gap-1 text-[10px] font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-2.5 py-1 rounded-full uppercase tracking-widest">
+                                        <span className="inline-flex items-center gap-1 text-[10px] font-black text-[#166534] bg-primary-soft dark:bg-primary/15 dark:text-mint px-2.5 py-1 rounded-full uppercase tracking-widest">
                                             <CheckCircle2 className="w-3 h-3" /> {t.completed}
                                         </span>
                                     ) : (
@@ -563,7 +563,7 @@ function SentList({ instances, t, language }: {
                                         <button
                                             onClick={() => handleAnalyze(inst.id)}
                                             disabled={analyzingId === inst.id}
-                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-colors disabled:opacity-50"
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors disabled:opacity-50"
                                         >
                                             <Sparkles className="w-3 h-3" />
                                             {analyzingId === inst.id ? "..." : t.analyze}
@@ -584,8 +584,8 @@ function SentList({ instances, t, language }: {
                         <div className="p-8">
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-violet-50 dark:bg-violet-900/20 flex items-center justify-center">
-                                        <Sparkles className="w-5 h-5 text-violet-500" />
+                                    <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center">
+                                        <Sparkles className="w-5 h-5 text-indigo-500" />
                                     </div>
                                     <div>
                                         <h3 className="text-lg font-black text-slate-900 dark:text-white">{t.analysisTitle}</h3>
@@ -625,11 +625,11 @@ function SentList({ instances, t, language }: {
 
                             {/* Recommendations */}
                             <div className="mb-6">
-                                <h4 className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-3">{t.recommendations}</h4>
+                                <h4 className="text-[10px] font-black text-primary dark:text-mint uppercase tracking-widest mb-3">{t.recommendations}</h4>
                                 <div className="space-y-2">
                                     {analysisData.recommendations.map((r: string, i: number) => (
                                         <div key={i} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
-                                            <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                                            <CheckCircle2 className="w-4 h-4 text-primary dark:text-mint flex-shrink-0 mt-0.5" />
                                             {r}
                                         </div>
                                     ))}

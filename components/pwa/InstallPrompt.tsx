@@ -96,9 +96,9 @@ export function InstallPrompt() {
                 exit={{ y: 80, opacity: 0 }}
                 className="fixed bottom-24 left-3 right-3 z-40 sm:left-auto sm:right-6 sm:w-80"
             >
-                <Card className="p-3.5 shadow-xl border-teal-200/60 dark:border-teal-900/40 bg-white/95 dark:bg-stone-900/95 backdrop-blur">
+                <Card className="p-3.5 shadow-xl border-primary/30 dark:border-mint/20 bg-white/95 dark:bg-slate-900/95 backdrop-blur">
                     <div className="flex items-start gap-3">
-                        <div className="mt-0.5 w-8 h-8 rounded-lg bg-teal-50 dark:bg-teal-900/30 text-teal-600 flex items-center justify-center">
+                        <div className="mt-0.5 w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint flex items-center justify-center">
                             <Download className="w-4 h-4" />
                         </div>
                         <div className="flex-1 min-w-0">

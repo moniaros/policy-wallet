@@ -164,7 +164,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                     <button
                         type="button"
                         onClick={() => setIsDocRequestFormOpen(true)}
-                        className="bg-indigo-600 text-white rounded-full p-4 shadow-lg shadow-indigo-600/20 hover:scale-105 transition-transform group flex items-center gap-3 pr-6"
+                        className="bg-primary text-white dark:text-[#1A2420] rounded-full p-4 shadow-lg shadow-primary/20 hover:scale-105 transition-transform group flex items-center gap-3 pr-6"
                     >
                         <FileText className="w-5 h-5" />
                         <span className="font-bold text-sm">
@@ -176,7 +176,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                     <button
                         type="button"
                         onClick={() => setIsProposalFormOpen(true)}
-                        className="bg-blue-600 text-white rounded-full p-4 shadow-lg shadow-blue-600/20 hover:scale-105 transition-transform group flex items-center gap-3 pr-6"
+                        className="bg-primary text-white dark:text-[#1A2420] rounded-full p-4 shadow-lg shadow-primary/20 hover:scale-105 transition-transform group flex items-center gap-3 pr-6"
                     >
                         <Send className="w-5 h-5" />
                         <span className="font-bold text-sm">
@@ -188,7 +188,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                     <button
                         type="button"
                         onClick={() => setIsPolicyModalOpen(true)}
-                        className="bg-teal-600 text-white rounded-full p-4 shadow-lg shadow-teal-600/20 hover:scale-105 transition-transform group flex items-center gap-3 pr-6"
+                        className="bg-primary text-white dark:text-[#1A2420] rounded-full p-4 shadow-lg shadow-primary/20 hover:scale-105 transition-transform group flex items-center gap-3 pr-6"
                     >
                         <span className="w-6 h-6 flex items-center justify-center border-2 border-white/30 rounded-full">
                             <Plus className="w-3 h-3" />
@@ -287,7 +287,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                     <div className="pw-card rounded-2xl p-5">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                <FileText className="h-5 w-5 text-indigo-500" />
+                                <FileText className="h-5 w-5 text-primary dark:text-mint" />
                                 {language === "el" ? "Αιτήματα Εγγράφων" : "Document Requests"}
                                 {documentRequests.filter(r => r.status === "pending").length > 0 && (
                                     <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white">
@@ -298,7 +298,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                             <button
                                 type="button"
                                 onClick={() => setIsDocRequestFormOpen(true)}
-                                className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+                                className="text-xs font-semibold text-primary dark:text-mint hover:underline"
                             >
                                 + {language === "el" ? "Νέο" : "New"}
                             </button>
@@ -328,10 +328,10 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                     <div className="pw-card rounded-2xl p-5">
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                <Send className="h-5 w-5 text-blue-500" />
+                                <Send className="h-5 w-5 text-primary dark:text-mint" />
                                 {language === "el" ? "Προτάσεις" : "Proposals"}
                                 {proposals.filter(p => p.status === "pending").length > 0 && (
-                                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-blue-500 px-1 text-[10px] font-bold text-white">
+                                    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white dark:text-[#1A2420]">
                                         {proposals.filter(p => p.status === "pending").length}
                                     </span>
                                 )}
@@ -339,7 +339,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                             <button
                                 type="button"
                                 onClick={() => setIsProposalFormOpen(true)}
-                                className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                                className="text-xs font-semibold text-primary dark:text-mint hover:underline"
                             >
                                 + {language === "el" ? "Νέα" : "New"}
                             </button>

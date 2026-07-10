@@ -36,28 +36,28 @@ export function MyPoliciesScreen({ policies, onViewPolicy, onAddPolicy }: MyPoli
         if (tone === 'warning') return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
         if (tone === 'inactive') return 'bg-black/5 text-black/65 dark:bg-black dark:text-white/70'
         if (tone === 'info') return 'bg-black/5 text-black/75 dark:bg-black dark:text-white/75'
-        return 'bg-[#1FDC86]/12 text-[#19b870] dark:bg-[#1FDC86]/15 dark:text-[#7de8ba]'
+        return 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint'
     }
 
     const getVisual = (policy: Policy) => {
         switch (policy.lineOfBusiness) {
             case 'motor':
-                return { Icon: CarIcon, shell: 'bg-black/5 dark:bg-black border border-black/10 dark:border-white/15', icon: 'text-[#1FDC86]' }
+                return { Icon: CarIcon, shell: 'bg-black/5 dark:bg-black border border-black/10 dark:border-white/15', icon: 'text-primary dark:text-mint' }
             case 'health':
-                return { Icon: HeartIcon, shell: 'bg-black/5 dark:bg-black border border-black/10 dark:border-white/15', icon: 'text-[#1FDC86]' }
+                return { Icon: HeartIcon, shell: 'bg-black/5 dark:bg-black border border-black/10 dark:border-white/15', icon: 'text-primary dark:text-mint' }
             case 'home':
-                return { Icon: HomeIcon, shell: 'bg-black/5 dark:bg-black border border-black/10 dark:border-white/15', icon: 'text-[#1FDC86]' }
+                return { Icon: HomeIcon, shell: 'bg-black/5 dark:bg-black border border-black/10 dark:border-white/15', icon: 'text-primary dark:text-mint' }
             case 'life':
-                return { Icon: ShieldIcon, shell: 'bg-black/5 dark:bg-black border border-black/10 dark:border-white/15', icon: 'text-[#1FDC86]' }
+                return { Icon: ShieldIcon, shell: 'bg-black/5 dark:bg-black border border-black/10 dark:border-white/15', icon: 'text-primary dark:text-mint' }
             case 'travel':
-                return { Icon: PlaneIcon, shell: 'bg-black/5 dark:bg-black border border-black/10 dark:border-white/15', icon: 'text-[#1FDC86]' }
+                return { Icon: PlaneIcon, shell: 'bg-black/5 dark:bg-black border border-black/10 dark:border-white/15', icon: 'text-primary dark:text-mint' }
             default:
-                return { Icon: BriefcaseIcon, shell: 'bg-black/5 dark:bg-black border border-black/10 dark:border-white/15', icon: 'text-[#1FDC86]' }
+                return { Icon: BriefcaseIcon, shell: 'bg-black/5 dark:bg-black border border-black/10 dark:border-white/15', icon: 'text-primary dark:text-mint' }
         }
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-white via-black/5 to-white dark:from-black dark:to-[#111111] pb-28">
+        <div className="min-h-screen bg-[#F8FAFC] dark:bg-black pb-28">
             <div className="px-5 pt-6 pb-6 flex items-center justify-between sticky top-0 z-20 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-black/10 dark:border-white/15">
                 <PolicyWalletLogo size="sm" language={language} />
                 <button
@@ -85,8 +85,8 @@ export function MyPoliciesScreen({ policies, onViewPolicy, onAddPolicy }: MyPoli
                         <p className="text-3xl font-black text-black dark:text-white mt-2">{policies.length}</p>
                         <p className="text-xs text-black/45 dark:text-white/55 mt-1">{copy.policyCount}</p>
                     </div>
-                    <div className="rounded-3xl p-4 bg-[#1FDC86]/12 dark:bg-[#1FDC86]/12 border border-[#1FDC86]/30 dark:border-[#1FDC86]/35 text-black dark:text-white">
-                        <p className="text-[11px] font-bold uppercase tracking-wider text-[#19b870] dark:text-[#7de8ba]">{copy.yearlyFootprint}</p>
+                    <div className="rounded-3xl p-4 bg-primary-tint dark:bg-primary/15 border border-primary/30 dark:border-primary/35 text-black dark:text-white">
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-primary dark:text-mint">{copy.yearlyFootprint}</p>
                         <p className="text-2xl font-black mt-2">
                             {new Intl.NumberFormat(language === 'el' ? 'el-GR' : 'en-US', { style: 'currency', currency: 'EUR' }).format(totalPremium)}
                         </p>
@@ -108,7 +108,7 @@ export function MyPoliciesScreen({ policies, onViewPolicy, onAddPolicy }: MyPoli
                         </p>
                         <button
                             onClick={onAddPolicy}
-                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1FDC86] hover:bg-[#19b870] text-black font-semibold rounded-2xl border border-[#1FDC86]/35 transition-all active:scale-[0.98] cursor-pointer"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] font-semibold rounded-2xl border border-primary/35 transition-all active:scale-[0.98] cursor-pointer"
                         >
                             {copy.addPolicy}
                         </button>

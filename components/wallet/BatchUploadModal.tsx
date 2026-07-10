@@ -237,8 +237,8 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
 
             <div data-testid="batch-upload-modal" className="relative w-full max-w-3xl bg-white dark:bg-stone-900 rounded-[40px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
                 <div className="p-8 pb-0">
-                    <div className="flex items-center gap-3 mb-4 text-teal-600">
-                        <div className="w-8 h-8 rounded-xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
+                    <div className="flex items-center gap-3 mb-4 text-primary dark:text-mint">
+                        <div className="w-8 h-8 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                             </svg>
@@ -259,8 +259,8 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                             className={`
                                 border-2 border-dashed rounded-[32px] p-12 text-center cursor-pointer transition-all
                                 ${dragOver
-                                    ? "border-teal-500 bg-teal-50 dark:bg-teal-900/20"
-                                    : "border-stone-200 dark:border-stone-700 hover:border-teal-400 hover:bg-stone-50 dark:hover:bg-stone-800/50"
+                                    ? "border-primary bg-primary-tint dark:bg-primary/15"
+                                    : "border-slate-200 dark:border-slate-700 hover:border-primary hover:bg-slate-50 dark:hover:bg-slate-800/50"
                                 }
                             `}
                         >
@@ -294,7 +294,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                                     </span>
                                 )}
                                 {successCount > 0 && (
-                                    <span className="flex items-center gap-2 px-3 py-1.5 bg-teal-100 dark:bg-teal-900/20 text-teal-700 dark:text-teal-400 rounded-full text-xs font-bold">
+                                    <span className="flex items-center gap-2 px-3 py-1.5 bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint rounded-full text-xs font-bold">
                                         OK {successCount} {copy.ready}
                                     </span>
                                 )}
@@ -314,7 +314,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                                             ${policy.status === "processing"
                                                 ? "border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-900/10"
                                                 : policy.status === "success"
-                                                    ? "border-teal-200 dark:border-teal-800 bg-teal-50/50 dark:bg-teal-900/10"
+                                                    ? "border-primary-soft dark:border-primary/30 bg-primary-tint dark:bg-primary/10"
                                                     : "border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-900/10"
                                             }
                                         `}
@@ -323,7 +323,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                                             <div className={`
                                                 w-12 h-12 rounded-xl flex items-center justify-center text-xs font-black tracking-widest flex-shrink-0
                                                 ${policy.status === "processing" ? "bg-amber-100 dark:bg-amber-900/30" : ""}
-                                                ${policy.status === "success" ? "bg-teal-100 dark:bg-teal-900/30" : ""}
+                                                ${policy.status === "success" ? "bg-primary-soft dark:bg-primary/15" : ""}
                                                 ${policy.status === "error" ? "bg-red-100 dark:bg-red-900/30" : ""}
                                             `}>
                                                 {policy.status === "processing"
@@ -375,7 +375,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                                                                     type="text"
                                                                     value={policy.data.policyNumber}
                                                                     onChange={(e) => handleUpdatePolicy(policy.id, "policyNumber", e.target.value)}
-                                                                    className="bg-transparent border-b border-stone-200 dark:border-stone-700 focus:border-teal-500 outline-none text-stone-700 dark:text-stone-300 w-32"
+                                                                    className="bg-transparent border-b border-slate-200 dark:border-slate-700 focus:border-primary outline-none text-slate-700 dark:text-slate-300 w-32"
                                                                 />
                                                             </div>
                                                             <div>
@@ -399,7 +399,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                                 onClick={() => fileInputRef.current?.click()}
                                 disabled={isProcessing}
                                 data-testid="batch-upload-add-more"
-                                className="w-full py-4 border-2 border-dashed border-stone-200 dark:border-stone-700 rounded-2xl text-stone-400 hover:text-teal-600 hover:border-teal-400 transition-colors disabled:opacity-50"
+                                className="w-full py-4 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-2xl text-slate-400 hover:text-primary dark:hover:text-mint hover:border-primary transition-colors disabled:opacity-50"
                             >
                                 + {copy.addMoreFiles}
                             </button>
@@ -419,7 +419,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                             onClick={handleSaveAll}
                             disabled={isSaving || isProcessing}
                             data-testid="batch-upload-save-all"
-                            className="flex-[2] px-8 py-5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-stone-900/10 hover:bg-teal-600 dark:hover:bg-teal-500 hover:text-white transition-all disabled:opacity-50"
+                            className="flex-[2] px-8 py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-slate-900/10 hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all disabled:opacity-50"
                         >
                             {isSaving ? copy.saving : withVars(copy.savePolicies, { count: successCount })}
                         </button>

@@ -139,13 +139,13 @@ export function OnboardingFlow({ userName, onComplete }: OnboardingFlowProps) {
     }, [onComplete])
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-violet-600 to-indigo-700">
+        <div className="min-h-screen bg-[#F8FAFC]">
             {/* Progress Bar */}
             {currentStep !== 'welcome' && currentStep !== 'success' && (
                 <div className="fixed top-0 left-0 right-0 z-50">
-                    <div className="h-1 bg-white/20">
+                    <div className="h-1 bg-[#F1F5F9]">
                         <div
-                            className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500 transition-all duration-500 ease-out"
+                            className="h-full bg-primary transition-all duration-500 ease-out"
                             style={{ width: `${(progress.currentStep / progress.totalSteps) * 100}%` }}
                         />
                     </div>

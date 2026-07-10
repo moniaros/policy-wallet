@@ -46,7 +46,7 @@ function getStatusBadge(status: string, t: any) {
     const label = t.policyStatus?.[status as keyof typeof t.policyStatus] || status
     // Aligned to widget HEX palette for visual consistency
     const styles: Record<string, string> = {
-        active:        'bg-[#F0FDF4] text-[#166534] dark:bg-emerald-900/30 dark:text-emerald-300',
+        active:        'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint',
         expiring_soon: 'bg-[#FEF3C7] text-[#B45309] dark:bg-amber-900/30 dark:text-amber-300',
         action_needed: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
         analyzing:     'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 animate-pulse',
@@ -58,7 +58,7 @@ function getStatusBadge(status: string, t: any) {
 
 // Status-semantic icon + coverage config
 const STATUS_ICON_CONFIG: Record<string, { icon: string; bg: string; bar: string }> = {
-    active:        { icon: 'text-[#29685B] dark:text-emerald-400', bg: 'bg-[#F0FDF4] dark:bg-emerald-900/30',  bar: 'bg-[#29685B]'  },
+    active:        { icon: 'text-primary dark:text-mint', bg: 'bg-primary-soft dark:bg-primary/15',  bar: 'bg-primary'  },
     expiring_soon: { icon: 'text-[#D97706] dark:text-amber-400',   bg: 'bg-[#FEF3C7] dark:bg-amber-900/30',   bar: 'bg-[#F59E0B]'  },
     action_needed: { icon: 'text-red-600 dark:text-red-400',        bg: 'bg-red-50 dark:bg-red-900/30',         bar: 'bg-red-500'    },
     cancelled:     { icon: 'text-slate-400',                        bg: 'bg-slate-100 dark:bg-slate-800',       bar: 'bg-slate-300'  },
@@ -118,7 +118,7 @@ export function PolicyCard({ policy, onView, id }: PolicyCardProps) {
                                 {displayInsurer}
                             </span>
                             {policy.verified && !isAnalyzing && (
-                                <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
+                                <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-primary dark:text-mint" />
                             )}
                         </div>
                         <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${status.className}`}>

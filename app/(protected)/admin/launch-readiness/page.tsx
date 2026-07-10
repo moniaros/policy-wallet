@@ -16,13 +16,13 @@ const LEVEL_COPY: Record<"green" | "amber" | "red", string> = {
 }
 
 const LEVEL_CLASSES: Record<"green" | "amber" | "red", string> = {
-    green: "bg-green-50 border-green-200 text-green-900 dark:bg-green-900/20 dark:border-green-800 dark:text-green-200",
+    green: "bg-primary-soft border-primary/30 text-[#166534] dark:bg-primary/15 dark:border-primary/30 dark:text-mint",
     amber: "bg-amber-50 border-amber-200 text-amber-900 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-200",
     red: "bg-red-50 border-red-200 text-red-900 dark:bg-red-900/20 dark:border-red-800 dark:text-red-200",
 }
 
 const CHECK_STATUS_CLASSES: Record<"pass" | "warn" | "fail", string> = {
-    pass: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300",
+    pass: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
     warn: "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300",
     fail: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300",
 }

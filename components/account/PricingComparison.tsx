@@ -109,7 +109,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                             }`}
                     >
                         {language === 'el' ? 'Ετήσια' : 'Yearly'}
-                        <span className="absolute -top-3 -right-3 bg-teal-500 text-white text-[9px] font-black uppercase px-2 py-0.5 rounded-full shadow-lg">
+                        <span className="absolute -top-3 -right-3 bg-primary text-white dark:text-[#1A2420] text-[9px] font-black uppercase px-2 py-0.5 rounded-full shadow-lg">
                             -20%
                         </span>
                     </button>
@@ -140,24 +140,24 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
                             className={`relative rounded-[32px] p-6 border hover:shadow-2xl transition-all duration-300 group flex flex-col ${isPopular
-                                ? 'bg-white dark:bg-stone-900 border-teal-500 dark:border-teal-500 shadow-xl shadow-teal-500/10 scale-105 z-10'
-                                : 'bg-stone-50 dark:bg-stone-900/50 border-stone-200 dark:border-stone-800 hover:border-teal-200 dark:hover:border-teal-900'
+                                ? 'bg-white dark:bg-slate-900 border-primary dark:border-primary shadow-xl shadow-primary/10 scale-105 z-10'
+                                : 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 hover:border-primary/40 dark:hover:border-primary/40'
                                 }`}
                         >
                             {tier.id === 'ph-pro' && (
-                                <div className="absolute top-0 right-0 bg-purple-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-bl-2xl rounded-tr-[30px] shadow-lg z-20">
+                                <div className="absolute top-0 right-0 bg-primary text-white dark:text-[#1A2420] text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-bl-2xl rounded-tr-[30px] shadow-lg z-20">
                                     {language === 'el' ? '14 ΗΜΕΡΕΣ ΔΩΡΕΑΝ' : '14-DAY FREE TRIAL'}
                                 </div>
                             )}
 
                             {isPopular && (
-                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-teal-500 to-emerald-500 text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest shadow-lg">
+                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white dark:text-[#1A2420] px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest shadow-lg">
                                     {tier.badge?.[language] || 'Popular'}
                                 </div>
                             )}
 
                             <div className="mb-6">
-                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${isPopular ? 'bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400' : 'bg-stone-200 dark:bg-stone-800 text-stone-500'
+                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${isPopular ? 'bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'
                                     }`}>
                                     <tier.icon className="w-6 h-6" />
                                 </div>
@@ -179,7 +179,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                     </span>
                                 </div>
                                 {billingPeriod === 'annual' && tier.annual?.savings && (
-                                    <span className="text-xs font-bold text-teal-600 dark:text-teal-400 px-2 py-1 bg-teal-50 dark:bg-teal-900/20 rounded-lg mt-2 inline-block">
+                                    <span className="text-xs font-bold text-primary dark:text-mint px-2 py-1 bg-primary-soft dark:bg-primary/15 rounded-full mt-2 inline-block">
                                         {tier.annual.savings[language]}
                                     </span>
                                 )}
@@ -192,8 +192,8 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                         : 'text-stone-400 line-through decoration-stone-300'
                                         }`}>
                                         <div className={`mt-0.5 w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${feature.included
-                                            ? 'bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400'
-                                            : 'bg-stone-100 dark:bg-stone-800 text-stone-300'
+                                            ? 'bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint'
+                                            : 'bg-slate-100 dark:bg-slate-800 text-slate-300'
                                             }`}>
                                             {feature.included ? <Check className="w-2.5 h-2.5" /> : <X className="w-2.5 h-2.5" />}
                                         </div>
@@ -210,8 +210,8 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                     : loadingPlanId === tier.id
                                         ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-none animate-pulse'
                                         : isPopular
-                                            ? 'bg-teal-600 dark:bg-teal-500 text-white hover:bg-teal-700 dark:hover:bg-teal-400 shadow-lg shadow-teal-500/25 hover:shadow-teal-500/40 active:scale-95'
-                                            : 'bg-white dark:bg-stone-800 border-2 border-stone-100 dark:border-stone-700 text-stone-900 dark:text-white hover:border-teal-500 dark:hover:border-teal-500 active:scale-95'
+                                            ? 'bg-primary dark:bg-primary text-white dark:text-[#1A2420] hover:bg-primary-hover dark:hover:bg-mint shadow-lg shadow-primary/25 hover:shadow-primary/40 active:scale-95'
+                                            : 'bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 text-slate-900 dark:text-white hover:border-primary dark:hover:border-primary active:scale-95'
                                     }`}
                             >
                                 {isCurrent
@@ -241,8 +241,8 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                             <tr className="bg-stone-50 dark:bg-stone-900/50">
                                 <th className="px-8 py-6 text-sm font-black text-stone-400 uppercase tracking-widest">Feature</th>
                                 <th className="px-8 py-6 text-sm font-black text-stone-900 dark:text-white uppercase tracking-widest">Free</th>
-                                <th className="px-8 py-6 text-sm font-black text-teal-600 dark:text-teal-400 uppercase tracking-widest">Plus</th>
-                                <th className="px-8 py-6 text-sm font-black text-purple-600 dark:text-purple-400 uppercase tracking-widest">Pro</th>
+                                <th className="px-8 py-6 text-sm font-black text-primary dark:text-mint uppercase tracking-widest">Plus</th>
+                                <th className="px-8 py-6 text-sm font-black text-primary dark:text-mint uppercase tracking-widest">Pro</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-stone-50 dark:divide-stone-800">
@@ -253,25 +253,25 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                         {typeof feat.free === 'string' ? (
                                             <span className="text-sm font-bold text-stone-500">{feat.free}</span>
                                         ) : feat.free ? (
-                                            <Check className="w-5 h-5 text-emerald-500" />
+                                            <Check className="w-5 h-5 text-primary dark:text-mint" />
                                         ) : (
                                             <X className="w-5 h-5 text-stone-300" />
                                         )}
                                     </td>
                                     <td className="px-8 py-5">
                                         {typeof feat.plus === 'string' ? (
-                                            <span className="text-sm font-bold text-teal-600">{feat.plus}</span>
+                                            <span className="text-sm font-bold text-primary dark:text-mint">{feat.plus}</span>
                                         ) : feat.plus ? (
-                                            <Check className="w-5 h-5 text-teal-500" />
+                                            <Check className="w-5 h-5 text-primary dark:text-mint" />
                                         ) : (
                                             <X className="w-5 h-5 text-stone-200" />
                                         )}
                                     </td>
                                     <td className="px-8 py-5">
                                         {typeof feat.pro === 'string' ? (
-                                            <span className="text-sm font-bold text-purple-600">{feat.pro}</span>
+                                            <span className="text-sm font-bold text-primary dark:text-mint">{feat.pro}</span>
                                         ) : feat.pro ? (
-                                            <Check className="w-5 h-5 text-purple-500" />
+                                            <Check className="w-5 h-5 text-primary dark:text-mint" />
                                         ) : (
                                             <X className="w-5 h-5 text-stone-200" />
                                         )}
@@ -284,7 +284,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
             </div>
 
             <div className="mt-16 bg-stone-50 dark:bg-stone-900/50 rounded-[32px] p-8 md:p-12 text-center relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/5 blur-[100px] rounded-full -mr-32 -mt-32"></div>
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full -mr-32 -mt-32"></div>
                 <h2 className="text-2xl font-black text-stone-900 dark:text-white mb-8 relative z-10">
                     {copy.headings.faq.title[language]}
                 </h2>

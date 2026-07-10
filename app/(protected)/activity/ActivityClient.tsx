@@ -56,20 +56,20 @@ const getCategoryDetails = (category: ActivityCategory, type: string) => {
         case 'policy':
             return {
                 icon: Shield,
-                bgClass: "bg-emerald-100 dark:bg-emerald-900/30",
-                textClass: "text-emerald-600 dark:text-emerald-400"
+                bgClass: "bg-primary-soft dark:bg-primary/15",
+                textClass: "text-primary dark:text-mint"
             }
         case 'opportunity':
             return {
                 icon: type.includes('won') ? Star : (type.includes('lost') ? XCircle : Target),
-                bgClass: "bg-blue-100 dark:bg-blue-900/30",
-                textClass: "text-blue-600 dark:text-blue-400"
+                bgClass: "bg-mint/25 dark:bg-primary/15",
+                textClass: "text-primary dark:text-mint"
             }
         case 'customer':
             return {
                 icon: type.includes('questionnaire') ? MessageSquare : Users,
-                bgClass: "bg-violet-100 dark:bg-violet-900/30",
-                textClass: "text-violet-600 dark:text-violet-400"
+                bgClass: "bg-primary-tint dark:bg-primary/15",
+                textClass: "text-primary dark:text-mint"
             }
         case 'system':
         default:
@@ -108,14 +108,14 @@ export function ActivityClient({ events }: ActivityClientProps) {
     }, [events, filter])
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-12">
+        <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 pb-12">
             
             {/* ── Header ── */}
             <div className="relative overflow-hidden bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/60">
                 <div className="max-w-[800px] mx-auto px-4 sm:px-6 py-6 lg:py-8 pt-8 relative z-10">
                     <div className="flex flex-col gap-6">
                         <div className="flex items-center gap-4">
-                            <div className="relative bg-gradient-to-br from-[#1fdc86] to-emerald-600 text-white p-3 rounded-2xl shadow-lg shadow-emerald-600/25">
+                            <div className="relative bg-primary text-white dark:text-[#1A2420] p-3 rounded-2xl shadow-lg shadow-primary/25">
                                 <Activity className="w-6 h-6" />
                             </div>
                             <div>
@@ -202,7 +202,7 @@ export function ActivityClient({ events }: ActivityClientProps) {
                                                             <div>
                                                                 <div className="flex items-center gap-2 mb-1">
                                                                     {event.isUnread && (
-                                                                        <span className="w-2 h-2 rounded-full bg-[#1fdc86] flex-shrink-0" />
+                                                                        <span className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
                                                                     )}
                                                                     <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                                                                         {event.title[isEl ? "el" : "en"]}
@@ -226,7 +226,7 @@ export function ActivityClient({ events }: ActivityClientProps) {
                                                                     {event.customerName}
                                                                 </div>
                                                                 <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                    <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                                                                    <div className="flex items-center gap-1 text-[11px] font-bold text-primary dark:text-mint">
                                                                         {t.activity.view}
                                                                         <ChevronRight className="w-3 h-3" />
                                                                     </div>

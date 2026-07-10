@@ -275,9 +275,9 @@ export function AccountClient({ initialData, userLanguage = 'en' }: AccountClien
                     >
                         {/* Mobile Summary Cards */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="relative overflow-hidden bg-gradient-to-br from-amber-500 to-orange-600 rounded-3xl p-6 text-white shadow-xl">
+                            <div className="relative overflow-hidden bg-primary rounded-3xl p-6 text-white dark:text-[#1A2420] shadow-xl">
                                 <Award className="absolute top-4 right-4 w-24 h-24 text-white/10 -mr-4 -mt-4 rotate-12" />
-                                <p className="text-xs font-bold uppercase tracking-widest text-amber-100 mb-1">Current Plan</p>
+                                <p className="text-xs font-bold uppercase tracking-widest text-white/80 dark:text-[#1A2420]/80 mb-1">Current Plan</p>
                                 <h3 className="text-3xl font-black mb-4">{initialData.currentPlan?.name || 'Free Tier'}</h3>
                                 <button
                                     onClick={() => setActiveSection('billing')}
@@ -291,7 +291,7 @@ export function AccountClient({ initialData, userLanguage = 'en' }: AccountClien
                                     <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Account Balance</p>
                                     <h3 className="text-4xl font-black mb-2">€{initialData.creditBalance || 0}</h3>
                                 </div>
-                                <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold">
+                                <div className="flex items-center gap-2 text-mint text-xs font-bold">
                                     <TrendingUp className="w-4 h-4" />
                                     <span>Syncing with Billing</span>
                                 </div>
@@ -418,7 +418,7 @@ export function AccountClient({ initialData, userLanguage = 'en' }: AccountClien
 
                         <div className="space-y-6">
                             {/* Manage Billing */}
-                            <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl p-6 md:p-8 text-white shadow-xl">
+                            <div className="bg-slate-900 rounded-3xl p-6 md:p-8 text-white shadow-xl">
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                                     <div>
                                         <div className="flex items-center gap-2 mb-2">
@@ -502,8 +502,8 @@ export function AccountClient({ initialData, userLanguage = 'en' }: AccountClien
                                         {initialData.invoices.map((inv: any) => (
                                             <div key={inv.invoice_id} className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-slate-700">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="bg-emerald-100 dark:bg-emerald-900/30 p-2 rounded-xl">
-                                                        <Mail className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                                                    <div className="bg-primary-soft dark:bg-primary/15 p-2 rounded-xl">
+                                                        <Mail className="w-4 h-4 text-primary dark:text-mint" />
                                                     </div>
                                                     <div>
                                                         <p className="text-xs font-black">{inv.invoice_number}</p>
@@ -660,15 +660,15 @@ export function AccountClient({ initialData, userLanguage = 'en' }: AccountClien
                 return (
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
                         <SectionHeader title={copy.referrals[lang]} showBack={isMobileView} />
-                        <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-8 text-white shadow-xl text-center">
+                        <div className="bg-primary rounded-3xl p-8 text-white dark:text-[#1A2420] shadow-xl text-center">
                             <Sparkles className="w-16 h-16 text-white/20 mx-auto mb-6" />
                             <h3 className="text-3xl font-black mb-2">Share & Save</h3>
-                            <p className="text-blue-100 mb-8 max-w-sm mx-auto">Refer a friend. When they start a premium subscription, you both get €10 credit.</p>
+                            <p className="text-white/80 dark:text-[#1A2420]/80 mb-8 max-w-sm mx-auto">Refer a friend. When they start a premium subscription, you both get €10 credit.</p>
                             <div className="flex flex-col gap-2">
                                 <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 font-mono text-sm tracking-widest uppercase border border-white/20">
                                     PW-{initialData.user?.user_id?.substring(0, 8) || 'REFCODE'}
                                 </div>
-                                <button className="bg-white text-blue-600 py-4 rounded-2xl font-black shadow-xl active:scale-95 transition-all">
+                                <button className="bg-white text-primary py-4 rounded-2xl font-black shadow-xl active:scale-95 transition-all">
                                     Copy Link
                                 </button>
                             </div>
@@ -685,7 +685,7 @@ export function AccountClient({ initialData, userLanguage = 'en' }: AccountClien
             <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-16">
 
                 {/* Visual Accent */}
-                <div className="fixed top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 z-50" />
+                <div className="fixed top-0 left-0 w-full h-1 bg-primary z-50" />
 
                 <div className="flex flex-col lg:flex-row gap-12">
                     {/* Navigation Rail / Sidebar */}

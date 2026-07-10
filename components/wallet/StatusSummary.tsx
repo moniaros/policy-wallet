@@ -118,7 +118,7 @@ export function StatusSummary({
                         {/* Mini Circle Progress */}
                         <svg className="w-10 h-10 transform -rotate-90">
                             <circle cx="20" cy="20" r="16" stroke="currentColor" strokeWidth="3" fill="none" className="text-black/15 dark:text-white/20" />
-                            <circle cx="20" cy="20" r="16" stroke="currentColor" strokeWidth="3" fill="none" strokeDasharray={`${2 * Math.PI * 16}`} strokeDashoffset={`${2 * Math.PI * 16 * (1 - activeCount / (totalPolicies || 1))}`} className="text-[#1FDC86] transition-all duration-1000 ease-out" strokeLinecap="round" />
+                            <circle cx="20" cy="20" r="16" stroke="currentColor" strokeWidth="3" fill="none" strokeDasharray={`${2 * Math.PI * 16}`} strokeDashoffset={`${2 * Math.PI * 16 * (1 - activeCount / (totalPolicies || 1))}`} className="text-primary dark:text-mint transition-all duration-1000 ease-out" strokeLinecap="round" />
                         </svg>
                         <div className="absolute inset-0 flex items-center justify-center">
                             <Shield className="w-4 h-4 text-black dark:text-white" />

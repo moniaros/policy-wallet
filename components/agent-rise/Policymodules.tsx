@@ -20,7 +20,7 @@ const StatusBadge = ({ status, daysToRenewal }: { status: Policy['status'], days
     switch (status) {
         case 'active':
             return (
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-[#228B22] text-white tracking-wide uppercase shadow-sm">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-primary text-white dark:text-[#1A2420] tracking-wide uppercase shadow-sm">
                     Active
                 </span>
             )
@@ -37,7 +37,7 @@ const StatusBadge = ({ status, daysToRenewal }: { status: Policy['status'], days
                     <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-slate-400 text-slate-800 uppercase">
                         Lapsed
                     </span>
-                    <button className="text-xs font-medium text-blue-600 hover:underline">
+                    <button className="text-xs font-medium text-primary dark:text-mint hover:underline">
                         Reactivate
                     </button>
                 </div>
@@ -147,7 +147,7 @@ export function AgentPolicyList({ policies, onAnalyze }: PolicyListProps) {
                         </div>
                         <button
                             onClick={() => onAnalyze(policy.id)}
-                            className="text-xs font-bold text-blue-600 flex items-center gap-1 hover:underline"
+                            className="text-xs font-bold text-primary dark:text-mint flex items-center gap-1 hover:underline"
                         >
                             {LABELS.VIEW_DETAILS} <ChevronRight className="w-3 h-3" />
                         </button>
@@ -168,7 +168,7 @@ export function ProtectionAnalysis({ profile }: AnalysisProps) {
 
     // Underinsurance Threshold Alert
     const isUnderinsured = profile.protectionScore < 0.8
-    const scoreColor = profile.protectionScore > 0.8 ? 'text-emerald-600' : profile.protectionScore > 0.5 ? 'text-amber-500' : 'text-red-600'
+    const scoreColor = profile.protectionScore > 0.8 ? 'text-primary dark:text-mint' : profile.protectionScore > 0.5 ? 'text-amber-500' : 'text-red-600'
 
     return (
         <div className="space-y-6 bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800">
@@ -220,7 +220,7 @@ export function ProtectionAnalysis({ profile }: AnalysisProps) {
 
                                 {/* Current (Front) */}
                                 <div
-                                    className={`absolute top-0 bottom-0 left-0 transition-all duration-500 ${gap.gapSeverity === 'critical' ? 'bg-red-500' : 'bg-emerald-500'
+                                    className={`absolute top-0 bottom-0 left-0 transition-all duration-500 ${gap.gapSeverity === 'critical' ? 'bg-red-500' : 'bg-primary'
                                         }`}
                                     style={{ width: `${(gap.currentLimit / gap.recommendedLimit) * 100}%` }}
                                 />
@@ -241,10 +241,10 @@ export function ProtectionAnalysis({ profile }: AnalysisProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-slate-100 dark:border-slate-800">
                 {/* Automated Analysis */}
                 <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-xs font-bold text-purple-600 uppercase">
+                    <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 uppercase">
                         <Zap className="w-3 h-3" /> Automated Analysis
                     </div>
-                    <div className="prose prose-sm prose-purple dark:prose-invert text-xs leading-relaxed bg-purple-50 dark:bg-purple-900/10 p-3 rounded-lg border border-purple-100 dark:border-purple-900/20">
+                    <div className="prose prose-sm prose-indigo dark:prose-invert text-xs leading-relaxed bg-indigo-50 dark:bg-indigo-900/10 p-3 rounded-lg border border-indigo-100 dark:border-indigo-900/20">
                         {/* Render Markdown content roughly here */}
                         <div dangerouslySetInnerHTML={{ __html: profile.aiInsights.automatedAnalysis }} />
                     </div>

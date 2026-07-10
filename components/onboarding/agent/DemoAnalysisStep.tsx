@@ -40,7 +40,7 @@ export function DemoAnalysisStep({ onNext, onBack }: StepProps) {
         <div className="space-y-6">
             {!analysisComplete ? (
                 <>
-                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20 mb-6">
+                    <div className="w-16 h-16 bg-[#4F46E5] rounded-2xl flex items-center justify-center shadow-lg shadow-[#4F46E5]/20 mb-6">
                         <Wand2 className="w-8 h-8 text-white" />
                     </div>
 
@@ -60,11 +60,11 @@ export function DemoAnalysisStep({ onNext, onBack }: StepProps) {
                         <button
                             onClick={runDemoAnalysis}
                             disabled={analyzing}
-                            className="relative border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 rounded-xl p-6 text-left hover:border-emerald-500 hover:bg-emerald-50/10 transition-all group overflow-hidden"
+                            className="relative border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 rounded-xl p-6 text-left hover:border-primary hover:bg-primary/5 transition-all group overflow-hidden"
                         >
                             {analyzing && (
                                 <motion.div
-                                    className="absolute inset-0 bg-emerald-500/5"
+                                    className="absolute inset-0 bg-primary/5"
                                     initial={{ width: "0%" }}
                                     animate={{ width: "100%" }}
                                     transition={{ duration: 2.5, ease: "linear" }}
@@ -72,7 +72,7 @@ export function DemoAnalysisStep({ onNext, onBack }: StepProps) {
                             )}
                             <div className="flex items-center gap-4 relative z-10">
                                 <div className="w-12 h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-sm">
-                                    <BarChart3 className={`w-6 h-6 ${analyzing ? 'text-emerald-500 animate-pulse' : 'text-slate-400 group-hover:text-emerald-500'}`} />
+                                    <BarChart3 className={`w-6 h-6 ${analyzing ? 'text-primary dark:text-mint animate-pulse' : 'text-slate-400 group-hover:text-primary dark:group-hover:text-mint'}`} />
                                 </div>
                                 <div>
                                     <p className="font-bold text-slate-900 dark:text-white">
@@ -108,16 +108,16 @@ export function DemoAnalysisStep({ onNext, onBack }: StepProps) {
                     animate={{ opacity: 1, y: 0 }}
                     className="space-y-6"
                 >
-                    <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-6">
+                    <div className="bg-primary-tint dark:bg-primary/15 border border-primary/20 dark:border-primary/30 rounded-xl p-6">
                         <div className="flex items-center gap-3 mb-4">
-                            <div className="w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-800 flex items-center justify-center">
-                                <Check className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                            <div className="w-8 h-8 rounded-full bg-primary-soft dark:bg-primary/30 flex items-center justify-center">
+                                <Check className="w-5 h-5 text-primary dark:text-mint" />
                             </div>
                             <div>
-                                <h3 className="font-bold text-emerald-900 dark:text-emerald-100">
+                                <h3 className="font-bold text-[#166534] dark:text-mint">
                                     {t("Η Ανάλυση Ολοκληρώθηκε", "Analysis Complete")}
                                 </h3>
-                                <p className="text-xs text-emerald-700 dark:text-emerald-300">
+                                <p className="text-xs text-primary dark:text-mint">
                                     {t("Αναλύθηκε", "Analyzed")} {proposalData?.policySummary?.type} ({proposalData?.policySummary?.insurer})
                                 </p>
                             </div>
@@ -131,7 +131,7 @@ export function DemoAnalysisStep({ onNext, onBack }: StepProps) {
                                         <p className="text-sm font-bold text-slate-900 dark:text-white">{gap.title}</p>
                                         <p className="text-xs text-slate-500 mt-1">{gap.description}</p>
                                         {gap.severity === 'high' && (
-                                            <div className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded">
+                                            <div className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-[#166534] dark:text-mint bg-primary-soft dark:bg-primary/15 px-2 py-1 rounded-full">
                                                 <Wand2 className="w-3 h-3" />
                                                 {t("Πρόταση Δημιουργήθηκε", "Proposal Generated")}
                                             </div>

@@ -73,7 +73,7 @@ export function AccountOverview({
         <div className="max-w-7xl mx-auto py-6">
             {/* Profile Header */}
             <div className="flex flex-col md:flex-row items-center gap-6 mb-10 p-6 bg-white dark:bg-black rounded-[32px] border border-black/10 dark:border-white/15 shadow-sm relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#1FDC86]/5 blur-[80px] rounded-full -mr-32 -mt-32 transition-colors group-hover:bg-[#1FDC86]/10" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[80px] rounded-full -mr-32 -mt-32 transition-colors group-hover:bg-primary/10" />
 
                 <div className="relative">
                 <div className="w-28 h-28 rounded-[24px] overflow-hidden bg-black/5 dark:bg-black border-4 border-white dark:border-white/15 shadow-2xl transition-transform active:scale-95 group-hover:scale-105 duration-500">
@@ -84,12 +84,12 @@ export function AccountOverview({
                                 className="w-full h-full object-cover"
                             />
                         ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#19b870] to-[#1FDC86] text-white">
+                            <div className="w-full h-full flex items-center justify-center bg-primary text-white dark:text-[#1A2420]">
                                 <span className="text-4xl font-black">{(currentUser.name || 'U')[0]}</span>
                             </div>
                         )}
                     </div>
-                    <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-[#1FDC86] border-4 border-white dark:border-white/15 rounded-full shadow-lg"></div>
+                    <div className="absolute -bottom-1 -right-1 w-8 h-8 bg-primary border-4 border-white dark:border-white/15 rounded-full shadow-lg"></div>
                 </div>
 
                 <div className="flex-1 text-center md:text-left relative z-10">
@@ -98,7 +98,7 @@ export function AccountOverview({
                             {currentPlan.name} {t.account.tier}
                         </span>
                         {isDualRole && (
-                            <span className="px-3 py-1 bg-[#1FDC86]/12 dark:bg-[#1FDC86]/12 rounded-full text-[10px] font-black uppercase tracking-widest text-[#1FDC86] dark:text-[#1FDC86] border border-[#1FDC86]/30 dark:border-[#1FDC86]/30">
+                            <span className="px-3 py-1 bg-primary-soft dark:bg-primary/15 rounded-full text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint border border-primary/30 dark:border-primary/30">
                                 {t.account.dualRoleAccount}
                             </span>
                         )}
@@ -119,12 +119,12 @@ export function AccountOverview({
             {/* Role Switcher for Dual-Role Users */}
             {isDualRole && (
                 <div className="mb-10 relative overflow-hidden bg-black dark:bg-black rounded-[28px] p-6 text-white shadow-2xl">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-[#1FDC86]/10 blur-[100px] rounded-full -mr-32 -mt-32" />
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-mint/10 blur-[100px] rounded-full -mr-32 -mt-32" />
                     <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                         <div>
                             <div className="flex items-center gap-3 mb-2">
-                                <span className="w-8 h-px bg-[#1FDC86]" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#1FDC86]">{t.account.dualRoleContext}</span>
+                                <span className="w-8 h-px bg-mint" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-mint">{t.account.dualRoleContext}</span>
                             </div>
                             <h3 className="text-xl font-black tracking-tight mb-2">
                                 {t.account.manageFor} <span className="text-white/70 italic">{t.account.yourRole}</span>
@@ -160,14 +160,14 @@ export function AccountOverview({
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
                 {/* Current Plan Card */}
                 <div className="lg:col-span-2 relative group">
-                    <div className="absolute -inset-0.5 bg-gradient-to-br from-[#1FDC86]/20 to-black/20 rounded-[40px] blur opacity-50 group-hover:opacity-100 transition duration-1000"></div>
+                    <div className="absolute -inset-0.5 bg-primary/20 rounded-[40px] blur opacity-50 group-hover:opacity-100 transition duration-1000"></div>
                     <div className="relative bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[32px] overflow-hidden shadow-2xl h-full">
                         <div className="p-8 border-b border-black/10 dark:border-white/15 bg-black/5 dark:bg-black">
                             <div className="flex items-start justify-between mb-8">
                                 <div>
                                     <div className="flex items-center gap-3 mb-2">
-                                        <span className="w-6 h-px bg-[#1FDC86]" />
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-[#1FDC86] dark:text-[#1FDC86]">{t.account.currentPlan}</span>
+                                        <span className="w-6 h-px bg-primary" />
+                                        <span className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint">{t.account.currentPlan}</span>
                                     </div>
                                     <h2 className="text-3xl font-black text-black dark:text-white tracking-tighter">
                                         {currentPlan.name}
@@ -200,19 +200,19 @@ export function AccountOverview({
                 {/* Credit Registry & Quick Metrics */}
                 <div className="space-y-8">
                     {/* Credit Registry */}
-                    <div className="bg-[#1FDC86] rounded-[32px] p-8 text-white shadow-2xl shadow-[#1FDC86]/30 relative overflow-hidden group">
+                    <div className="bg-primary rounded-[32px] p-8 text-white dark:text-[#1A2420] shadow-2xl shadow-primary/30 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-white/20 transition-all duration-700"></div>
                         <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-6">
                                 <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" strokeWidth="2.5" /></svg>
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-white/85">{t.account.walletCredits}</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest text-white/85 dark:text-[#1A2420]/85">{t.account.walletCredits}</span>
                             </div>
                             <div className="text-4xl font-black tracking-tighter mb-3">
                                 {formatPrice(creditBalance)}
                             </div>
-                            <p className="text-white/80 text-xs font-medium leading-relaxed italic">
+                            <p className="text-white/80 dark:text-[#1A2420]/80 text-xs font-medium leading-relaxed italic">
                                 {t.account.creditsDesc}
                             </p>
                         </div>
@@ -247,7 +247,7 @@ export function AccountOverview({
                                                         ? 'bg-red-500'
                                                         : percentage >= 70
                                                             ? 'bg-amber-500'
-                                                            : 'bg-[#1FDC86]'
+                                                            : 'bg-primary'
                                                         }`}
                                                     style={{ width: `${Math.min(percentage, 100)}%` }}
                                                 />
@@ -267,8 +267,8 @@ export function AccountOverview({
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-10 px-4">
                         <div>
                             <div className="flex items-center gap-3 mb-3">
-                                <div className="w-8 h-px bg-[#1FDC86]" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#1FDC86] dark:text-[#1FDC86]">{t.account.expandCapabilities}</span>
+                                <div className="w-8 h-px bg-primary" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary dark:text-mint">{t.account.expandCapabilities}</span>
                             </div>
                             <h2 className="text-4xl font-black text-black dark:text-white tracking-tighter">
                                 {t.account.scalingTitle} <span className="text-black/45 dark:text-white/60 italic">{t.account.scalingSubtitle}</span>
@@ -284,10 +284,10 @@ export function AccountOverview({
                                 return (
                                     <div
                                         key={plan.plan_id}
-                                        className={`bg-white dark:bg-black border ${isPro ? 'border-[#1FDC86] shadow-[#1FDC86]/15' : 'border-black/10 dark:border-white/15'} rounded-[32px] p-8 shadow-sm hover:shadow-2xl hover:scale-[1.02] transition-all group relative overflow-hidden`}
+                                        className={`bg-white dark:bg-black border ${isPro ? 'border-primary shadow-primary/15' : 'border-black/10 dark:border-white/15'} rounded-[32px] p-8 shadow-sm hover:shadow-2xl hover:scale-[1.02] transition-all group relative overflow-hidden`}
                                     >
                                         {isPro && (
-                                            <div className="absolute top-5 right-5 bg-[#1FDC86] text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">
+                                            <div className="absolute top-5 right-5 bg-primary text-white dark:text-[#1A2420] text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">
                                                 {language === 'el' ? '14 ΗΜΕΡΕΣ ΔΩΡΕΑΝ' : '14-DAY FREE TRIAL'}
                                             </div>
                                         )}
@@ -306,7 +306,7 @@ export function AccountOverview({
                                                 .slice(0, 4)
                                                 .map(([key, value]) => (
                                                     <div key={key} className="flex items-center gap-3 text-xs font-medium text-black/60 dark:text-white/60">
-                                                        <div className={`w-1.5 h-1.5 rounded-full ${isPro ? 'bg-[#1FDC86] shadow-[0_0_8px_rgba(31,220,134,0.5)]' : 'bg-[#1FDC86] shadow-[0_0_8px_rgba(31,220,134,0.45)]'}`} />
+                                                        <div className={`w-1.5 h-1.5 rounded-full ${isPro ? 'bg-primary shadow-[0_0_8px_rgba(41,104,91,0.5)]' : 'bg-primary shadow-[0_0_8px_rgba(41,104,91,0.45)]'}`} />
                                                         <span>{value === 'unlimited' ? t.account.unlimited : value} {t.account.entitlements[key as keyof typeof t.account.entitlements] || key.replace(/_/g, ' ')}</span>
                                                     </div>
                                                 ))}
@@ -314,7 +314,7 @@ export function AccountOverview({
 
                                         <button
                                             onClick={() => onUpgrade?.(plan.plan_id)}
-                                            className="w-full py-4 bg-[#1FDC86] hover:bg-[#19b870] text-white rounded-2xl text-[10px] font-black uppercase tracking-wider shadow-xl shadow-[#1FDC86]/20 transition-all active:scale-95"
+                                            className="w-full py-4 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-2xl text-[10px] font-black uppercase tracking-wider shadow-xl shadow-primary/20 transition-all active:scale-95"
                                         >
                                             {isPro
                                                 ? (language === 'el' ? 'Ξεκινήστε δωρεάν δοκιμή 14 ημερών' : 'Start 14-Day Free Trial')

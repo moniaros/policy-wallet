@@ -95,7 +95,7 @@ export function MobileWalletView({
                     <p className="text-black/65 dark:text-white/70 mb-6">{roleCopy.walletDashboard.emptyWalletDescription}</p>
                     <button
                         onClick={onAddManually}
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-[#1FDC86] hover:bg-[#19b870] text-black font-bold rounded-2xl transition-all active:scale-[0.98]"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] font-bold rounded-2xl transition-all active:scale-[0.98]"
                     >
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
@@ -117,7 +117,7 @@ export function MobileWalletView({
                     </div>
                     <button
                         onClick={onAddManually}
-                        className="w-11 h-11 flex items-center justify-center bg-[#1FDC86] hover:bg-[#19b870] text-black rounded-full transition-all active:scale-[0.95]"
+                        className="w-11 h-11 flex items-center justify-center bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-full transition-all active:scale-[0.95]"
                         aria-label={roleCopy.walletDashboard.addPolicyAria}
                     >
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -136,7 +136,7 @@ export function MobileWalletView({
                             placeholder={isGreek ? "Αναζήτηση συμβολαίου..." : "Search policies..."}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full rounded-xl border border-black/10 bg-black/5 py-2.5 pl-9 pr-9 text-sm text-black placeholder-black/40 outline-none transition focus:border-[#1FDC86]/50 focus:ring-2 focus:ring-[#1FDC86]/20 dark:border-white/15 dark:bg-white/5 dark:text-white dark:placeholder-white/40"
+                            className="w-full rounded-xl border border-black/10 bg-black/5 py-2.5 pl-9 pr-9 text-sm text-black placeholder-black/40 outline-none transition focus:border-primary/50 focus:ring-2 focus:ring-primary/20 dark:border-white/15 dark:bg-white/5 dark:text-white dark:placeholder-white/40"
                         />
                         {searchQuery && (
                             <button
@@ -155,7 +155,7 @@ export function MobileWalletView({
                     <p className="text-sm font-bold text-black/65 dark:text-white/70">{roleCopy.walletDashboard.policiesCount(filteredPolicies.length)}</p>
                     <button
                         onClick={() => setViewMode(viewMode === "hero" ? "list" : "hero")}
-                        className="text-sm font-bold text-[#1FDC86] hover:underline"
+                        className="text-sm font-bold text-primary dark:text-mint hover:underline"
                     >
                         {viewMode === "hero" ? roleCopy.walletDashboard.viewList : roleCopy.walletDashboard.viewCard}
                     </button>
@@ -179,7 +179,7 @@ export function MobileWalletView({
                                             hapticFeedback.swipe()
                                             setCurrentPolicyIndex(index)
                                         }}
-                                        className={`h-2 rounded-full transition-all ${index === currentPolicyIndex ? "w-6 bg-[#1FDC86]" : "w-2 bg-black/20 dark:bg-white/25"}`}
+                                        className={`h-2 rounded-full transition-all ${index === currentPolicyIndex ? "w-6 bg-primary dark:bg-mint" : "w-2 bg-black/20 dark:bg-white/25"}`}
                                     />
                                 ))}
                             </div>
@@ -245,7 +245,7 @@ export function MobileWalletView({
                             ))}
                         </div>
                         {gapRecommendations.length >= 3 && (
-                            <button className="w-full mt-3 text-sm font-bold text-[#1FDC86] hover:underline">
+                            <button className="w-full mt-3 text-sm font-bold text-primary dark:text-mint hover:underline">
                                 {roleCopy.walletDashboard.viewAllRecommendations}
                             </button>
                         )}

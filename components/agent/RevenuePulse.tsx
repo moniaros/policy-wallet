@@ -43,7 +43,7 @@ export function RevenuePulse({ metrics, isLoading, isPipelineGated }: RevenuePul
     return (
         <BrandCard className="p-5">
             <div className="flex items-center gap-2 mb-4">
-                <TrendingUp className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                <TrendingUp className="h-5 w-5 text-primary dark:text-mint" />
                 <h2 className="text-base font-bold text-slate-900 dark:text-white">
                     {language === "el" ? "Παλμός Εσόδων" : "Revenue Pulse"}
                 </h2>
@@ -79,7 +79,7 @@ export function RevenuePulse({ metrics, isLoading, isPipelineGated }: RevenuePul
                             {stat.change !== undefined && (
                                 <div className={`mt-1 flex items-center gap-0.5 text-xs font-medium ${
                                     stat.change >= 0
-                                        ? "text-emerald-600 dark:text-emerald-400"
+                                        ? "text-[#166534] dark:text-mint"
                                         : "text-red-600 dark:text-red-400"
                                 }`}>
                                     {stat.change >= 0 ? (

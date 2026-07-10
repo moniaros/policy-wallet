@@ -131,18 +131,18 @@ export function CustomerList({
             </div>
 
             {selectedIds.size > 0 && (
-                <div className="bg-blue-50/80 dark:bg-blue-900/15 border border-blue-200/60 dark:border-blue-800/40 rounded-2xl p-3.5 flex items-center justify-between">
+                <div className="bg-primary-tint dark:bg-primary/15 border border-primary/20 dark:border-primary/30 rounded-2xl p-3.5 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <span className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-lg">{selectedIds.size}</span>
-                        <span className="text-sm text-blue-700 dark:text-blue-300 font-medium">
+                        <span className="bg-primary text-white dark:text-[#1A2420] text-xs font-bold px-2.5 py-1 rounded-full">{selectedIds.size}</span>
+                        <span className="text-sm text-primary dark:text-mint font-medium">
                             {selectedIds.size === 1 ? roleCopy.customerList.selectedOne : roleCopy.customerList.selectedMany}
                         </span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                        <button onClick={() => onBulkAction?.("email", Array.from(selectedIds))} className="p-2 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-800/30 rounded-xl transition-colors cursor-pointer" title={roleCopy.customerList.sendEmail}>
+                        <button onClick={() => onBulkAction?.("email", Array.from(selectedIds))} className="p-2 text-primary dark:text-mint hover:bg-primary/10 dark:hover:bg-primary/25 rounded-xl transition-colors cursor-pointer" title={roleCopy.customerList.sendEmail}>
                             <Mail className="w-4 h-4" />
                         </button>
-                        <button onClick={() => onBulkAction?.("export", Array.from(selectedIds))} className="p-2 text-blue-600 hover:bg-blue-100 dark:hover:bg-blue-800/30 rounded-xl transition-colors cursor-pointer" title={roleCopy.customerList.export}>
+                        <button onClick={() => onBulkAction?.("export", Array.from(selectedIds))} className="p-2 text-primary dark:text-mint hover:bg-primary/10 dark:hover:bg-primary/25 rounded-xl transition-colors cursor-pointer" title={roleCopy.customerList.export}>
                             <Download className="w-4 h-4" />
                         </button>
                     </div>
@@ -151,13 +151,13 @@ export function CustomerList({
 
             {filteredCustomers.length === 0 ? (
                 <div className="text-center py-16 bg-white/80 dark:bg-slate-900/80 rounded-2xl border border-slate-200/60 dark:border-slate-800/60">
-                    <div className="mx-auto w-14 h-14 bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-900 text-slate-400 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
+                    <div className="mx-auto w-14 h-14 bg-slate-100 dark:bg-slate-800 text-slate-400 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
                         <User className="w-7 h-7" />
                     </div>
                     <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{roleCopy.customerList.emptyTitle}</h3>
                     <p className="text-slate-500 text-sm mb-4">{roleCopy.customerList.emptySubtitle}</p>
                     {onAddCustomer && (
-                        <button onClick={onAddCustomer} className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-semibold rounded-xl cursor-pointer">
+                        <button onClick={onAddCustomer} className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] text-sm font-semibold rounded-xl cursor-pointer">
                             <UserPlus className="w-4 h-4" />
                             {roleCopy.customerList.addClient}
                         </button>
@@ -170,7 +170,7 @@ export function CustomerList({
                             <thead className="bg-slate-50/80 dark:bg-slate-950/50 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-slate-200/60 dark:border-slate-800/60">
                                 <tr>
                                     <th className="px-4 py-3.5 w-10">
-                                        <input type="checkbox" checked={selectedIds.size === filteredCustomers.length && filteredCustomers.length > 0} onChange={toggleAll} className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                        <input type="checkbox" checked={selectedIds.size === filteredCustomers.length && filteredCustomers.length > 0} onChange={toggleAll} className="rounded border-slate-300 text-primary focus:ring-primary" />
                                     </th>
                                     <th className="px-4 py-3.5 cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 transition-colors" onClick={() => setSortBy("name")}>{roleCopy.customerList.tableClient}</th>
                                     <th className="px-4 py-3.5">{roleCopy.customerList.tableContact}</th>
@@ -184,7 +184,7 @@ export function CustomerList({
                                 {filteredCustomers.map((customer) => (
                                     <tr key={customer.id} onClick={() => onCustomerClick(customer.id)} className="group hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-all cursor-pointer">
                                         <td className="px-4 py-3.5" onClick={(e) => e.stopPropagation()}>
-                                            <input type="checkbox" checked={selectedIds.has(customer.id)} onChange={() => toggleSelection(customer.id)} className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                            <input type="checkbox" checked={selectedIds.has(customer.id)} onChange={() => toggleSelection(customer.id)} className="rounded border-slate-300 text-primary focus:ring-primary" />
                                         </td>
                                         <td className="px-4 py-3.5">
                                             <div className="font-semibold text-slate-900 dark:text-white text-[13px]">{customer.name} {customer.surname}</div>
@@ -212,8 +212,8 @@ export function CustomerList({
                                         <td className="px-4 py-3.5 text-right text-[12px] text-slate-400">{formatLastContact(customer.lastInteractionDate)}</td>
                                         <td className="px-4 py-3.5 text-right">
                                             <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                {customer.phone && <button onClick={(e) => { e.stopPropagation(); onCall?.(customer.id) }} className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-blue-600 transition-colors cursor-pointer"><Phone className="w-3.5 h-3.5" /></button>}
-                                                <button onClick={(e) => { e.stopPropagation(); onEmail?.(customer.id) }} className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-blue-600 transition-colors cursor-pointer"><Mail className="w-3.5 h-3.5" /></button>
+                                                {customer.phone && <button onClick={(e) => { e.stopPropagation(); onCall?.(customer.id) }} className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-primary dark:hover:text-mint transition-colors cursor-pointer"><Phone className="w-3.5 h-3.5" /></button>}
+                                                <button onClick={(e) => { e.stopPropagation(); onEmail?.(customer.id) }} className="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-400 hover:text-primary dark:hover:text-mint transition-colors cursor-pointer"><Mail className="w-3.5 h-3.5" /></button>
                                                 <ChevronRight className="w-4 h-4 text-slate-300 dark:text-slate-600 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                                             </div>
                                         </td>
@@ -234,7 +234,7 @@ export function CustomerList({
                                         {roleCopy.customerList[customer.activationStatus]}
                                     </span>
                                 </div>
-                                <input type="checkbox" checked={selectedIds.has(customer.id)} onChange={(e) => { e.stopPropagation(); toggleSelection(customer.id) }} className="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                                <input type="checkbox" checked={selectedIds.has(customer.id)} onChange={(e) => { e.stopPropagation(); toggleSelection(customer.id) }} className="rounded border-slate-300 text-primary focus:ring-primary" />
                             </div>
                             <div className="flex justify-between items-center text-[12px] text-slate-500 dark:text-slate-400 mb-4">
                                 <span className="flex items-center gap-1"><FileText className="w-3 h-3" />{customer.policyCount} {roleCopy.customerList.policies}</span>
@@ -251,8 +251,8 @@ export function CustomerList({
                                     {roleCopy.customerList.profile}
                                     <ChevronRight className="w-3 h-3 opacity-50" />
                                 </button>
-                                {customer.phone && <button onClick={(e) => { e.stopPropagation(); onCall?.(customer.id) }} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors cursor-pointer"><Phone className="w-4 h-4" /></button>}
-                                <button onClick={(e) => { e.stopPropagation(); onEmail?.(customer.id) }} className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-colors cursor-pointer"><Mail className="w-4 h-4" /></button>
+                                {customer.phone && <button onClick={(e) => { e.stopPropagation(); onCall?.(customer.id) }} className="p-2 text-slate-400 hover:text-primary dark:hover:text-mint hover:bg-primary-soft dark:hover:bg-primary/15 rounded-xl transition-colors cursor-pointer"><Phone className="w-4 h-4" /></button>}
+                                <button onClick={(e) => { e.stopPropagation(); onEmail?.(customer.id) }} className="p-2 text-slate-400 hover:text-primary dark:hover:text-mint hover:bg-primary-soft dark:hover:bg-primary/15 rounded-xl transition-colors cursor-pointer"><Mail className="w-4 h-4" /></button>
                             </div>
                         </div>
                     ))}

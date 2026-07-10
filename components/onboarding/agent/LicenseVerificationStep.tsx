@@ -46,7 +46,7 @@ export function LicenseVerificationStep({ onNext, onBack }: StepProps) {
 
     return (
         <div className="space-y-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20 mb-6">
+            <div className="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/20 mb-6">
                 <ShieldCheck className="w-8 h-8 text-white" />
             </div>
 
@@ -62,11 +62,11 @@ export function LicenseVerificationStep({ onNext, onBack }: StepProps) {
                 </p>
             </div>
 
-            <label className="block bg-slate-50 dark:bg-slate-900/50 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-8 text-center transition-all hover:border-emerald-500 hover:bg-emerald-50/10 group cursor-pointer">
+            <label className="block bg-slate-50 dark:bg-slate-900/50 border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-8 text-center transition-all hover:border-primary hover:bg-primary/5 group cursor-pointer">
                 {file ? (
                     <div className="flex flex-col items-center">
-                        <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center mb-3">
-                            <CheckCircle2 className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                        <div className="w-12 h-12 bg-primary-soft dark:bg-primary/15 rounded-full flex items-center justify-center mb-3">
+                            <CheckCircle2 className="w-6 h-6 text-primary dark:text-mint" />
                         </div>
                         <p className="font-bold text-slate-900 dark:text-white">{file.name}</p>
                         <p className="text-sm text-slate-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
@@ -80,8 +80,8 @@ export function LicenseVerificationStep({ onNext, onBack }: StepProps) {
                     </div>
                 ) : (
                     <>
-                        <div className="w-12 h-12 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/30 transition-colors">
-                            <FileText className="w-6 h-6 text-slate-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400" />
+                        <div className="w-12 h-12 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-primary-soft dark:group-hover:bg-primary/15 transition-colors">
+                            <FileText className="w-6 h-6 text-slate-400 group-hover:text-primary dark:group-hover:text-mint" />
                         </div>
                         <p className="font-bold text-slate-700 dark:text-slate-200">
                             {t("Κάντε κλικ για να ανεβάσετε το έγγραφο άδειας", "Click to upload license document")}

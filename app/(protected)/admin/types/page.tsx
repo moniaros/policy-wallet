@@ -24,7 +24,7 @@ export default async function AdminTypesPage() {
                                 type="text"
                                 required
                                 placeholder="e.g. Health (Υγεία)"
-                                className="w-full px-4 py-2 bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-600 rounded-lg outline-none focus:ring-2 focus:ring-teal-500"
+                                className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-primary"
                             />
                         </div>
                         <div>
@@ -34,10 +34,10 @@ export default async function AdminTypesPage() {
                                 type="text"
                                 required
                                 placeholder="e.g. health"
-                                className="w-full px-4 py-2 bg-stone-50 dark:bg-stone-900 border border-stone-300 dark:border-stone-600 rounded-lg outline-none focus:ring-2 focus:ring-teal-500"
+                                className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-primary"
                             />
                         </div>
-                        <button type="submit" className="w-full bg-teal-600 text-white py-2 rounded-lg font-medium hover:bg-teal-700 transition-colors">
+                        <button type="submit" className="w-full bg-primary text-white dark:text-[#1A2420] py-2 rounded-lg font-medium hover:bg-primary-hover transition-colors">
                             Add Type
                         </button>
                     </form>
@@ -53,7 +53,7 @@ export default async function AdminTypesPage() {
                                     <span className="text-stone-900 dark:text-stone-100 font-medium block">{t.name}</span>
                                     <span className="text-xs text-stone-500 font-mono">{t.slug}</span>
                                 </div>
-                                <span className={`text-xs px-2 py-0.5 rounded-full ${t.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                <span className={`text-xs px-2 py-0.5 rounded-full ${t.isActive ? 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint' : 'bg-red-100 text-red-700'}`}>
                                     {t.isActive ? 'Active' : 'Inactive'}
                                 </span>
                             </li>

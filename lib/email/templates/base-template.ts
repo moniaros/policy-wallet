@@ -22,7 +22,7 @@ export function getBaseEmailTemplate(content: string): string {
       background-color: #ffffff;
     }
     .header {
-      background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%);
+      background: #29685B;
       color: #ffffff;
       padding: 32px 24px;
       text-align: center;
@@ -57,7 +57,7 @@ export function getBaseEmailTemplate(content: string): string {
     }
     .button {
       display: inline-block;
-      background-color: #14B8A6;
+      background-color: #29685B;
       color: #ffffff !important;
       text-decoration: none;
       padding: 14px 28px;
@@ -67,7 +67,7 @@ export function getBaseEmailTemplate(content: string): string {
       transition: background-color 0.2s;
     }
     .button:hover {
-      background-color: #0D9488;
+      background-color: #1C4E44;
     }
     .footer {
       background-color: #F3F4F6;
@@ -78,7 +78,7 @@ export function getBaseEmailTemplate(content: string): string {
       border-top: 1px solid #E5E7EB;
     }
     .footer a {
-      color: #14B8A6;
+      color: #29685B;
       text-decoration: none;
     }
     .divider {

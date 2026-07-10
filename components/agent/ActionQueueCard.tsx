@@ -136,7 +136,7 @@ export function ActionQueueCard({ items, onAction, onViewAll, onGapClientClick, 
                 <button
                     type="button"
                     onClick={onViewAll}
-                    className="mt-3 flex w-full items-center justify-center gap-1 text-xs font-medium text-teal-700 dark:text-teal-400 hover:underline"
+                    className="mt-3 flex w-full items-center justify-center gap-1 text-xs font-medium text-primary dark:text-mint hover:underline"
                 >
                     {language === "el"
                         ? `Δείτε όλα τα ${totalCount} στοιχεία`
@@ -214,8 +214,8 @@ function GapsSummaryBanner({
 function ActionQueueEmpty({ language }: { language: string }) {
     return (
         <div className="flex flex-col items-center justify-center py-8 text-center">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">
-                <RefreshCw className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
+                <RefreshCw className="h-5 w-5 text-primary dark:text-mint" />
             </div>
             <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                 {language === "el" ? "Όλα ενημερωμένα!" : "All caught up!"}

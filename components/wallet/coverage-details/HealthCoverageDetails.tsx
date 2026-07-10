@@ -42,12 +42,12 @@ export function HealthCoverageDetails({ acordData, language }: HealthCoverageDet
       {health.hospitalClass && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-              <Building2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <Building2 className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{healthCopy.hospitalClass}</span>
           </div>
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint border border-primary/20 dark:border-primary/30">
             {health.hospitalClass}
           </span>
         </div>
@@ -56,8 +56,8 @@ export function HealthCoverageDetails({ acordData, language }: HealthCoverageDet
       {health.coordinationCentre?.name && (
         <div className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
           <div className="flex items-center gap-2.5 mb-2">
-            <div className="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
-              <Stethoscope className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <Stethoscope className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{healthCopy.coordinationCentre}</span>
           </div>
@@ -66,7 +66,7 @@ export function HealthCoverageDetails({ acordData, language }: HealthCoverageDet
             {health.coordinationCentre.phone && (
               <a
                 href={`tel:${health.coordinationCentre.phone}`}
-                className="inline-flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400 font-semibold hover:underline"
+                className="inline-flex items-center gap-1.5 text-sm text-primary dark:text-mint font-semibold hover:underline"
               >
                 <Phone className="w-3.5 h-3.5" />
                 {health.coordinationCentre.phone}
@@ -79,13 +79,13 @@ export function HealthCoverageDetails({ acordData, language }: HealthCoverageDet
       {health.annualCheckupIncluded !== undefined && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-              <ShieldCheck className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <ShieldCheck className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{healthCopy.annualCheckup}</span>
           </div>
           {health.annualCheckupIncluded ? (
-            <span className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            <span className="flex items-center gap-1 text-xs font-bold text-[#166534] dark:text-mint">
               <CheckCircle2 className="w-4 h-4" /> {copy.included}
             </span>
           ) : (
@@ -99,13 +99,13 @@ export function HealthCoverageDetails({ acordData, language }: HealthCoverageDet
       {health.directBillingAvailable !== undefined && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
-              <CreditCard className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <CreditCard className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{healthCopy.directBilling}</span>
           </div>
           {health.directBillingAvailable ? (
-            <span className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            <span className="flex items-center gap-1 text-xs font-bold text-[#166534] dark:text-mint">
               <CheckCircle2 className="w-4 h-4" /> {copy.available}
             </span>
           ) : (
@@ -145,8 +145,8 @@ export function HealthCoverageDetails({ acordData, language }: HealthCoverageDet
         <div className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center">
-                <Stethoscope className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+              <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+                <Stethoscope className="w-4 h-4 text-primary dark:text-mint" />
               </div>
               <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{healthCopy.outpatientLimit}</span>
             </div>

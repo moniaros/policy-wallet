@@ -53,12 +53,12 @@ const fmtNum = (n: number, lang: string) =>
     }).format(n)
 
 const lobLabels: Record<string, { en: string; el: string; color: string }> = {
-    motor: { en: "Motor", el: "Αυτοκίνητο", color: "#1fdc86" },
+    motor: { en: "Motor", el: "Αυτοκίνητο", color: "#29685B" },
     health: { en: "Health", el: "Υγεία", color: "#3b82f6" },
     home: { en: "Home", el: "Κατοικία", color: "#8b5cf6" },
     life: { en: "Life", el: "Ζωή", color: "#f59e0b" },
     travel: { en: "Travel", el: "Ταξίδι", color: "#ec4899" },
-    pet: { en: "Pet", el: "Κατοικίδιο", color: "#14b8a6" },
+    pet: { en: "Pet", el: "Κατοικίδιο", color: "#89D9B2" },
     other: { en: "Other", el: "Άλλο", color: "#64748b" },
 }
 
@@ -73,7 +73,7 @@ const getLobColor = (lob: string) => lobLabels[lob]?.color ?? "#64748b"
 const urgencyColor = (days: number) => {
     if (days <= 7)  return { border: "border-l-red-500", bg: "bg-red-50 dark:bg-red-950/20", text: "text-red-700 dark:text-red-400", badge: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300" }
     if (days <= 30) return { border: "border-l-amber-500", bg: "bg-amber-50 dark:bg-amber-950/20", text: "text-amber-700 dark:text-amber-400", badge: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300" }
-    return { border: "border-l-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-950/10", text: "text-emerald-700 dark:text-emerald-400", badge: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300" }
+    return { border: "border-l-primary", bg: "bg-primary-tint dark:bg-primary/15", text: "text-[#166534] dark:text-mint", badge: "bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint" }
 }
 
 const severityConfig: Record<string, { color: string; bg: string; label: { en: string; el: string } }> = {
@@ -164,35 +164,31 @@ export function InsightsClient({ data }: InsightsClientProps) {
             label: language === "el" ? "Συνολικό Ασφάλιστρο" : "Total Premium",
             value: fmtCompact(data.premiumSummary.totalPremium, language || "en"),
             icon: DollarSign,
-            accent: "from-emerald-500 to-teal-600",
-            bgAccent: "bg-emerald-50 dark:bg-emerald-950/30",
+            bgAccent: "bg-primary-tint dark:bg-primary/15",
         },
         {
             label: language === "el" ? "Μέσο Ασφάλιστρο / Πελάτη" : "Avg Premium / Customer",
             value: fmt(data.premiumSummary.avgPremiumPerCustomer, language || "en"),
             icon: TrendingUp,
-            accent: "from-blue-500 to-indigo-600",
-            bgAccent: "bg-blue-50 dark:bg-blue-950/30",
+            bgAccent: "bg-mint/20 dark:bg-primary/15",
         },
         {
             label: language === "el" ? "Ασφαλιστήρια / Πελάτη" : "Policies / Customer",
             value: fmtNum(data.premiumSummary.avgPoliciesPerCustomer, language || "en"),
             icon: FileText,
-            accent: "from-violet-500 to-purple-600",
-            bgAccent: "bg-violet-50 dark:bg-violet-950/30",
+            bgAccent: "bg-slate-100 dark:bg-slate-800",
         },
         {
             label: language === "el" ? "Ποσοστό Ενεργοποίησης" : "Activation Rate",
             value: `${data.portfolioHealth.activationRate}%`,
             icon: Zap,
-            accent: "from-amber-500 to-orange-600",
             bgAccent: "bg-amber-50 dark:bg-amber-950/30",
         },
     ], [data, language])
 
     /* Donut segments */
     const donutSegments = useMemo(() => [
-        { value: data.portfolioHealth.activeCustomers, color: "#1fdc86", label: language === "el" ? "Ενεργοί" : "Active" },
+        { value: data.portfolioHealth.activeCustomers, color: "#29685B", label: language === "el" ? "Ενεργοί" : "Active" },
         { value: data.portfolioHealth.invitedCustomers, color: "#f59e0b", label: language === "el" ? "Προσκεκλημένοι" : "Invited" },
         { value: data.portfolioHealth.inactiveCustomers, color: "#94a3b8", label: language === "el" ? "Ανενεργοί" : "Inactive" },
     ], [data.portfolioHealth, language])
@@ -211,19 +207,19 @@ export function InsightsClient({ data }: InsightsClientProps) {
             { key: "open", label: language === "el" ? "Ανοιχτά" : "Open", value: m.open, color: "#3b82f6", pct: (m.open / maxStage) * 100 },
             { key: "contacted", label: language === "el" ? "Επικοινωνία" : "Contacted", value: m.contacted, color: "#8b5cf6", pct: (m.contacted / maxStage) * 100 },
             { key: "quoted", label: language === "el" ? "Προσφορά" : "Quoted", value: m.quoted, color: "#f59e0b", pct: (m.quoted / maxStage) * 100 },
-            { key: "won", label: language === "el" ? "Κερδισμένα" : "Won", value: m.won, color: "#1fdc86", pct: (m.won / maxStage) * 100 },
+            { key: "won", label: language === "el" ? "Κερδισμένα" : "Won", value: m.won, color: "#29685B", pct: (m.won / maxStage) * 100 },
             { key: "lost", label: language === "el" ? "Χαμένα" : "Lost", value: m.lost, color: "#ef4444", pct: (m.lost / maxStage) * 100 },
         ]
     }, [data.opportunityMetrics, language])
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+        <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950">
             {/* ── Header ── */}
             <div className="relative overflow-hidden bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/60">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#1fdc86]/5 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-primary/5" />
                 <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
                     <div className="flex items-center gap-4">
-                        <div className="relative bg-gradient-to-br from-[#1fdc86] to-emerald-600 text-white p-3 rounded-2xl shadow-lg shadow-emerald-600/25">
+                        <div className="relative bg-primary text-white dark:text-[#1A2420] p-3 rounded-2xl shadow-lg shadow-primary/25">
                             <BarChart3 className="w-6 h-6" />
                         </div>
                         <div>
@@ -268,7 +264,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                     {/* Portfolio Health Ring */}
                     <FadeIn delay={0.35} className="arc-card p-6">
                         <h2 className="text-lg font-extrabold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                            <Users className="w-5 h-5 text-[#1fdc86]" />
+                            <Users className="w-5 h-5 text-primary dark:text-mint" />
                             {language === "el" ? "Υγεία Χαρτοφυλακίου" : "Portfolio Health"}
                         </h2>
                         <div className="flex flex-col sm:flex-row items-center gap-8">
@@ -307,7 +303,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                     {/* Premium Breakdown */}
                     <FadeIn delay={0.45} className="arc-card p-6">
                         <h2 className="text-lg font-extrabold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                            <BarChart3 className="w-5 h-5 text-violet-500" />
+                            <BarChart3 className="w-5 h-5 text-primary dark:text-mint" />
                             {language === "el" ? "Κατανομή Ασφαλίστρων" : "Premium Breakdown"}
                         </h2>
                         {data.policyBreakdown.length === 0 ? (
@@ -352,12 +348,12 @@ export function InsightsClient({ data }: InsightsClientProps) {
                     {/* Opportunity Funnel */}
                     <FadeIn delay={0.55} className="arc-card p-6">
                         <h2 className="text-lg font-extrabold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-                            <Target className="w-5 h-5 text-blue-500" />
+                            <Target className="w-5 h-5 text-primary dark:text-mint" />
                             {language === "el" ? "Χωνί Ευκαιριών" : "Opportunity Funnel"}
                         </h2>
                         <p className="text-xs text-slate-400 mb-6">
                             {language === "el" ? "Ποσοστό μετατροπής" : "Conversion rate"}:{" "}
-                            <span className="font-black text-[#1fdc86]">{data.opportunityMetrics.conversionRate}%</span>
+                            <span className="font-black text-primary dark:text-mint">{data.opportunityMetrics.conversionRate}%</span>
                             {" · "}
                             {language === "el" ? "Σύνολο" : "Total"}:{" "}
                             <span className="font-black text-slate-900 dark:text-white">{data.opportunityMetrics.total}</span>
@@ -405,7 +401,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
 
                         {data.renewalTimeline.length === 0 ? (
                             <div className="py-12 text-center">
-                                <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto mb-3" />
+                                <CheckCircle2 className="w-10 h-10 text-[#22C55E] mx-auto mb-3" />
                                 <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
                                     {language === "el" ? "Κανένα ασφαλιστήριο δεν λήγει σύντομα" : "No upcoming renewals"}
                                 </p>
@@ -450,12 +446,12 @@ export function InsightsClient({ data }: InsightsClientProps) {
                     <FadeIn delay={0.7} className="arc-card p-6 mb-6">
                         <div className="flex items-center justify-between mb-5">
                             <h2 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-                                <RefreshCw className="w-5 h-5 text-teal-500" />
+                                <RefreshCw className="w-5 h-5 text-primary dark:text-mint" />
                                 {language === "el" ? "Μετρικές Ανανεώσεων" : "Renewal Metrics"}
                             </h2>
                             <Link
                                 href="/renewals"
-                                className="text-xs font-bold text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
+                                className="text-xs font-bold text-primary dark:text-mint hover:text-primary-hover dark:hover:text-mint/80 transition-colors"
                             >
                                 {language === "el" ? "Διαχείριση Ανανεώσεων →" : "Manage Renewals →"}
                             </Link>
@@ -465,9 +461,9 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                 { label: language === "el" ? "Σύνολο" : "Tracked", value: data.renewalMetrics.totalTracked, color: "text-slate-900 dark:text-white" },
                                 { label: language === "el" ? "Εκκρεμείς" : "Pending", value: data.renewalMetrics.pendingRenewals, color: "text-amber-600 dark:text-amber-400" },
                                 { label: language === "el" ? "Ληξιπρόθεσμες" : "Overdue", value: data.renewalMetrics.overdueRenewals, color: "text-rose-600 dark:text-rose-400" },
-                                { label: language === "el" ? "Ανανεώθηκαν" : "Renewed", value: data.renewalMetrics.renewedThisMonth, color: "text-emerald-600 dark:text-emerald-400" },
+                                { label: language === "el" ? "Ανανεώθηκαν" : "Renewed", value: data.renewalMetrics.renewedThisMonth, color: "text-[#166534] dark:text-mint" },
                                 { label: language === "el" ? "Εκπνοή" : "Lapsed", value: data.renewalMetrics.lapsedThisMonth, color: "text-rose-600 dark:text-rose-400" },
-                                { label: language === "el" ? "Ποσοστό Ανανέωσης" : "Renewal Rate", value: `${data.renewalMetrics.renewalRate}%`, color: "text-teal-600 dark:text-teal-400" },
+                                { label: language === "el" ? "Ποσοστό Ανανέωσης" : "Renewal Rate", value: `${data.renewalMetrics.renewalRate}%`, color: "text-primary dark:text-mint" },
                                 { label: language === "el" ? "Ασφάλιστρα σε κίνδυνο" : "Premium at Risk", value: fmt(data.renewalMetrics.premiumAtRisk, language || "en"), color: "text-orange-600 dark:text-orange-400" },
                             ].map((metric) => (
                                 <div key={metric.label} className="text-center">
@@ -503,7 +499,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
 
                     {data.recentGaps.length === 0 ? (
                         <div className="py-12 text-center">
-                            <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto mb-3" />
+                            <CheckCircle2 className="w-10 h-10 text-[#22C55E] mx-auto mb-3" />
                             <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
                                 {language === "el" ? "Δεν εντοπίστηκαν κενά κάλυψης" : "No coverage gaps detected"}
                             </p>

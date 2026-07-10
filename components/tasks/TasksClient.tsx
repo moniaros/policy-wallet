@@ -139,13 +139,13 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                 <div className="px-6 pt-12 pb-8 flex items-center justify-between">
                     <div className="flex items-center gap-0.5">
                         <span className="text-2xl font-black tracking-tight text-stone-900 dark:text-white">Policy</span>
-                        <span className="text-2xl font-black tracking-tight text-teal-600">Wallet</span>
+                        <span className="text-2xl font-black tracking-tight text-primary dark:text-mint">Wallet</span>
                     </div>
                 </div>
 
                 <div className="px-6 pb-12">
                     <div className="flex items-center gap-3 mb-4">
-                        <div className="w-8 h-8 bg-teal-600 rounded-xl flex items-center justify-center text-white">
+                        <div className="w-8 h-8 bg-primary rounded-xl flex items-center justify-center text-white dark:text-[#1A2420]">
                             <Target className="w-4 h-4" />
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-500">
@@ -163,7 +163,7 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
 
                     {/* Stats Slider */}
                     <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 -mx-6 px-6 snap-x mb-12">
-                        <div className="flex-shrink-0 w-[160px] bg-gradient-to-br from-teal-600 to-teal-400 rounded-[32px] p-6 text-white shadow-xl shadow-teal-600/20 snap-start">
+                        <div className="flex-shrink-0 w-[160px] bg-primary rounded-[32px] p-6 text-white dark:text-[#1A2420] shadow-xl shadow-primary/20 snap-start">
                             <span className="text-[10px] font-black uppercase tracking-widest opacity-80 block mb-2">{t.tasks.priorities.high}</span>
                             <span className="text-4xl font-black tracking-tighter">{priorityCounts.high}</span>
                         </div>
@@ -254,9 +254,9 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                 {/* Tasks List */}
                 {sortedTasks.length === 0 ? (
                     <div className="bg-white/50 dark:bg-stone-900/50 backdrop-blur-xl rounded-[48px] p-24 text-center border border-stone-200 dark:border-stone-800 shadow-2xl shadow-stone-200/50 dark:shadow-none">
-                        <div className="w-32 h-32 bg-teal-500/10 dark:bg-teal-400/10 rounded-full flex items-center justify-center mx-auto mb-10 relative group">
-                            <div className="absolute inset-0 bg-teal-500/20 blur-2xl rounded-full scale-110 group-hover:scale-125 transition-transform duration-700" />
-                            <CheckCircle2 className="w-16 h-16 text-teal-600 dark:text-teal-400 relative z-10" />
+                        <div className="w-32 h-32 bg-primary/10 dark:bg-mint/10 rounded-full flex items-center justify-center mx-auto mb-10 relative group">
+                            <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full scale-110 group-hover:scale-125 transition-transform duration-700" />
+                            <CheckCircle2 className="w-16 h-16 text-primary dark:text-mint relative z-10" />
                         </div>
                         <h2 className="text-4xl font-black text-stone-900 dark:text-white mb-4 tracking-tight">
                             {t.tasks.everythingPerfect}
@@ -277,7 +277,7 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                                     href={task.actionUrl || '#'}
                                     className="bg-white dark:bg-stone-900 rounded-[32px] p-5 flex items-center gap-4 shadow-sm border border-stone-50 dark:border-stone-800/50 active:scale-[0.98] transition-all cursor-pointer group"
                                 >
-                                    <div className={`w-14 h-14 rounded-[20px] flex items-center justify-center transition-colors bg-stone-50 dark:bg-stone-800 text-stone-400 group-hover:bg-teal-50 group-hover:text-teal-600`}>
+                                    <div className={`w-14 h-14 rounded-[20px] flex items-center justify-center transition-colors bg-stone-50 dark:bg-stone-800 text-stone-400 group-hover:bg-primary-soft group-hover:text-primary dark:group-hover:bg-primary/15 dark:group-hover:text-mint`}>
                                         <Icon className="w-7 h-7" />
                                     </div>
                                     <div className="flex-1 min-w-0">
@@ -285,7 +285,7 @@ export function TasksClient({ actionItems, userLanguage = 'en' }: TasksClientPro
                                         <p className="text-xs font-bold text-stone-400">{task.type.toUpperCase()}</p>
                                     </div>
                                     <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${task.priority === 'high'
-                                        ? 'bg-teal-600 text-white'
+                                        ? 'bg-primary text-white dark:text-[#1A2420]'
                                         : task.priority === 'medium'
                                             ? 'bg-amber-400 text-stone-900'
                                             : 'bg-stone-100 dark:bg-stone-800 text-stone-500'

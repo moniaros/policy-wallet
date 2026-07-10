@@ -200,7 +200,7 @@ export default function HelpPage() {
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder={t.help.searchPlaceholder}
-                            className="w-full pl-12 pr-12 py-3.5 bg-stone-50 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-2xl text-sm font-medium text-stone-900 dark:text-white placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-teal-500/40"
+                            className="w-full pl-12 pr-12 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/40"
                         />
                         {query && (
                             <button
@@ -245,9 +245,9 @@ export default function HelpPage() {
                                 <button
                                     key={task.id}
                                     onClick={() => router.push(task.href)}
-                                    className="text-left p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:border-teal-300 dark:hover:border-teal-700 hover:shadow-md transition-all cursor-pointer"
+                                    className="text-left p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-primary/50 dark:hover:border-mint/40 hover:shadow-md transition-all cursor-pointer"
                                 >
-                                    <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center mb-3">
+                                    <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint flex items-center justify-center mb-3">
                                         <task.icon className="w-5 h-5" />
                                     </div>
                                     <p className="font-bold text-sm text-stone-900 dark:text-white mb-1">{task.label}</p>
@@ -273,7 +273,7 @@ export default function HelpPage() {
                                     setActiveCategory('all')
                                     setQuery('')
                                 }}
-                                className="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline cursor-pointer"
+                                className="text-xs font-bold text-primary dark:text-mint hover:underline cursor-pointer"
                             >
                                 {language === 'el' ? 'Καθαρισμός φίλτρων' : 'Clear filters'}
                             </button>
@@ -295,7 +295,7 @@ export default function HelpPage() {
                                 <button
                                     key={article.id}
                                     onClick={() => router.push(`/help/article/${article.id}`)}
-                                    className="text-left h-full p-5 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 hover:border-teal-300 dark:hover:border-teal-700 hover:shadow-md transition-all group cursor-pointer"
+                                    className="text-left h-full p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-primary/50 dark:hover:border-mint/40 hover:shadow-md transition-all group cursor-pointer"
                                 >
                                     <div className="flex items-center justify-between mb-3">
                                         <span className="px-2.5 py-1 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 text-[10px] font-bold uppercase tracking-widest">
@@ -303,11 +303,11 @@ export default function HelpPage() {
                                         </span>
                                         <span className="text-[10px] font-bold text-stone-400">{article.readTime}</span>
                                     </div>
-                                    <h3 className="text-base font-black text-stone-900 dark:text-white mb-2 leading-tight group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
+                                    <h3 className="text-base font-black text-slate-900 dark:text-white mb-2 leading-tight group-hover:text-primary dark:group-hover:text-mint transition-colors">
                                         {article.title}
                                     </h3>
                                     <p className="text-sm text-stone-500 dark:text-stone-400 line-clamp-2 mb-4">{article.subtitle}</p>
-                                    <div className="inline-flex items-center gap-1.5 text-xs font-bold text-teal-600 dark:text-teal-400">
+                                    <div className="inline-flex items-center gap-1.5 text-xs font-bold text-primary dark:text-mint">
                                         {language === 'el' ? 'Άνοιγμα οδηγού' : 'Open guide'}
                                         <ChevronRight className="w-3.5 h-3.5" />
                                     </div>
@@ -320,7 +320,7 @@ export default function HelpPage() {
                 <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     <div className="rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-6">
                         <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint flex items-center justify-center">
                                 <Mail className="w-5 h-5" />
                             </div>
                             <h3 className="text-base font-black text-stone-900 dark:text-white">{t.help.emailSupport}</h3>
@@ -337,7 +337,7 @@ export default function HelpPage() {
 
                     <div className="rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-6">
                         <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                            <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint flex items-center justify-center">
                                 <MessageCircle className="w-5 h-5" />
                             </div>
                             <h3 className="text-base font-black text-stone-900 dark:text-white">{t.help.communityChat}</h3>

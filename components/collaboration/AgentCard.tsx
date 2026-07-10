@@ -37,7 +37,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                     <p className="text-sm font-semibold text-slate-900 dark:text-white">{agent.name}</p>
                     <div className="flex items-center gap-1">
                         {agent.verificationStatus === "verified" && (
-                            <ShieldCheck className="h-3 w-3 text-emerald-500" />
+                            <ShieldCheck className="h-3 w-3 text-[#22C55E]" />
                         )}
                         <span className="text-[10px] text-slate-500 dark:text-slate-400">
                             {language === "el" ? "Πιστοποιημένος Ασφαλιστής" : "Licensed Agent"}
@@ -73,7 +73,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                             {agent.name}
                         </h3>
                         {agent.verificationStatus === "verified" && (
-                            <span className="flex items-center gap-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-400">
+                            <span className="flex items-center gap-1 rounded-full bg-primary-soft dark:bg-primary/15 px-2 py-0.5 text-[10px] font-medium text-[#166534] dark:text-mint">
                                 <ShieldCheck className="h-3 w-3" />
                                 {language === "el" ? "Πιστοποιημένος" : "Verified"}
                             </span>
@@ -88,7 +88,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                         {agent.phone && (
                             <a
                                 href={`tel:${agent.phone}`}
-                                className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition"
+                                className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-mint transition"
                             >
                                 <Phone className="h-3.5 w-3.5" />
                                 {agent.phone}
@@ -96,7 +96,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                         )}
                         <a
                             href={`mailto:${agent.email}`}
-                            className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition"
+                            className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-mint transition"
                         >
                             <Mail className="h-3.5 w-3.5" />
                             {agent.email}
@@ -106,7 +106,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                                 href={agent.website}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-teal-600 dark:hover:text-teal-400 transition"
+                                className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-mint transition"
                             >
                                 <Globe className="h-3.5 w-3.5" />
                                 {language === "el" ? "Ιστοσελίδα" : "Website"}

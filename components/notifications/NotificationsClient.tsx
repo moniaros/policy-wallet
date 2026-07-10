@@ -242,7 +242,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
             <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6">
                 <div className="mb-5 rounded-2xl border border-black/10 dark:border-white/15 bg-white dark:bg-black p-4 shadow-sm">
                     <div className="flex items-center gap-3">
-                        <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-[#1FDC86]/15 text-[#1FDC86]">
+                        <div className="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint">
                             <BellRing className="h-5 w-5" />
                         </div>
                         <div>
@@ -255,9 +255,9 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                             <p className="text-xs font-semibold text-black/65 dark:text-white/70">{tr("Ενεργά email", "Email enabled")}</p>
                             <p className="text-lg font-semibold text-black dark:text-white">{enabledEmailCount}/{totalPreferenceCount}</p>
                         </div>
-                        <div className="rounded-xl border border-[#1FDC86]/30 bg-[#1FDC86]/12 px-3 py-2">
-                            <p className="text-xs font-semibold text-black/70">{tr("Πρόσφατες ενημερώσεις", "Recent updates")}</p>
-                            <p className="text-lg font-semibold text-black">{historyItems.length}</p>
+                        <div className="rounded-xl border border-primary/30 bg-primary-soft dark:bg-primary/15 px-3 py-2">
+                            <p className="text-xs font-semibold text-black/70 dark:text-white/70">{tr("Πρόσφατες ενημερώσεις", "Recent updates")}</p>
+                            <p className="text-lg font-semibold text-black dark:text-white">{historyItems.length}</p>
                         </div>
                     </div>
                 </div>
@@ -285,7 +285,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                     >
                         {tr("Ιστορικό", "History")}
                         {unreadCount > 0 && (
-                            <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-[#1FDC86] px-1 text-[10px] font-bold text-white">
+                            <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-white dark:text-[#1A2420]">
                                 {unreadCount}
                             </span>
                         )}
@@ -315,7 +315,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                                                 onClick={() => void togglePreference(item.eventType, "email")}
                                                 disabled={savingKey === emailKey}
                                                 aria-pressed={current.email}
-                                                className={`inline-flex items-center justify-between rounded-xl border px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86] ${current.email ? "border-[#1FDC86]/35 bg-[#1FDC86]/12 text-black" : "border-black/15 dark:border-white/20 bg-white dark:bg-black text-black dark:text-white"} ${savingKey === emailKey ? "opacity-80" : ""}`}
+                                                className={`inline-flex items-center justify-between rounded-xl border px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${current.email ? "border-primary/35 bg-primary-soft dark:bg-primary/15 text-black dark:text-white" : "border-black/15 dark:border-white/20 bg-white dark:bg-black text-black dark:text-white"} ${savingKey === emailKey ? "opacity-80" : ""}`}
                                             >
                                                 <span className="inline-flex items-center gap-2">
                                                     <Mail className="h-4 w-4" />
@@ -329,7 +329,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                                                 onClick={() => void togglePreference(item.eventType, "push")}
                                                 disabled={savingKey === pushKey}
                                                 aria-pressed={current.push}
-                                                className={`inline-flex items-center justify-between rounded-xl border px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86] ${current.push ? "border-[#1FDC86]/35 bg-[#1FDC86]/12 text-black" : "border-black/15 dark:border-white/20 bg-white dark:bg-black text-black dark:text-white"} ${savingKey === pushKey ? "opacity-80" : ""}`}
+                                                className={`inline-flex items-center justify-between rounded-xl border px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${current.push ? "border-primary/35 bg-primary-soft dark:bg-primary/15 text-black dark:text-white" : "border-black/15 dark:border-white/20 bg-white dark:bg-black text-black dark:text-white"} ${savingKey === pushKey ? "opacity-80" : ""}`}
                                             >
                                                 <span className="inline-flex items-center gap-2">
                                                     <Smartphone className="h-4 w-4" />
@@ -350,7 +350,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                                         type="button"
                                         onClick={() => void handleMarkAllRead()}
                                         disabled={markingRead}
-                                        className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-[#1FDC86] transition hover:bg-[#1FDC86]/10 disabled:opacity-60"
+                                        className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-primary dark:text-mint transition hover:bg-primary/10 disabled:opacity-60"
                                     >
                                         <CheckCheck className="h-3.5 w-3.5" />
                                         {markingRead ? tr("Σήμανση...", "Marking...") : tr("Σήμανση όλων ως αναγνωσμένα", "Mark all as read")}
@@ -383,7 +383,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                                             className={`cursor-pointer rounded-2xl border p-4 shadow-sm transition ${
                                                 isRead
                                                     ? "border-black/10 dark:border-white/15 bg-white dark:bg-black"
-                                                    : "border-l-[3px] border-l-[#1FDC86] border-t-black/10 border-r-black/10 border-b-black/10 dark:border-t-white/15 dark:border-r-white/15 dark:border-b-white/15 bg-[#1FDC86]/5 dark:bg-[#1FDC86]/5"
+                                                    : "border-l-[3px] border-l-primary border-t-black/10 border-r-black/10 border-b-black/10 dark:border-t-white/15 dark:border-r-white/15 dark:border-b-white/15 bg-primary/5 dark:bg-primary/10"
                                             }`}
                                         >
                                             <div className="flex items-start justify-between gap-3">

@@ -26,7 +26,7 @@ export function EmptyState({ onAddManually }: EmptyStateProps) {
                 </p>
 
                 <div className="relative mx-auto w-fit mb-12">
-                    <div className="absolute inset-0 bg-[#1FDC86] blur-3xl opacity-20 dark:opacity-35 animate-pulse" />
+                    <div className="absolute inset-0 bg-primary dark:bg-mint blur-3xl opacity-20 dark:opacity-35 animate-pulse" />
                     <button
                         onClick={onAddManually}
                         className="group relative w-32 h-32 rounded-[2.5rem] bg-black dark:bg-white text-white dark:text-black flex items-center justify-center shadow-2xl shadow-black/40 dark:shadow-white/10 transition-all duration-500 hover:scale-110 active:scale-95"

@@ -97,7 +97,7 @@ function formatRelativeExpiry(endDate: string | null, locale: 'el' | 'en'): stri
 
 function getStatusStyle(status: string) {
     switch (status) {
-        case 'active': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+        case 'active': return 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint'
         case 'expiring_soon': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
         case 'action_needed': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
         case 'analyzing': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 animate-pulse'
@@ -197,7 +197,7 @@ export function PolicyDetailSheet({
                         {/* ── Section 1: Header (always visible) ── */}
                         <div className="px-6 pb-5 pt-5">
                             <div className="flex items-center gap-4">
-                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-xl font-black text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
+                                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-xl font-black text-primary dark:bg-primary/15 dark:text-mint">
                                     {displayInsurer[0]?.toUpperCase() || '?'}
                                 </div>
                                 <div className="min-w-0 flex-1">
@@ -206,7 +206,7 @@ export function PolicyDetailSheet({
                                             {displayInsurer}
                                         </h2>
                                         {policy.verified && (
-                                            <BadgeCheck className="h-4 w-4 shrink-0 text-emerald-500" />
+                                            <BadgeCheck className="h-4 w-4 shrink-0 text-primary dark:text-mint" />
                                         )}
                                     </div>
                                     <p className="text-sm text-black/50 dark:text-white/50">{localizedLob}</p>
@@ -230,7 +230,7 @@ export function PolicyDetailSheet({
                                     <ul className="space-y-1.5">
                                         {policy.coverageHighlights.map((h, i) => (
                                             <li key={i} className="flex items-start gap-2 text-sm text-black/70 dark:text-white/70">
-                                                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
+                                                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary dark:bg-mint" />
                                                 {h}
                                             </li>
                                         ))}
@@ -274,7 +274,7 @@ export function PolicyDetailSheet({
                                                     </span>
                                                 </div>
                                                 {policy.aiInsights.premiumBenchmark.savingsPotential > 0 && (
-                                                    <p className="mt-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                                                    <p className="mt-1 text-xs font-semibold text-[#166534] dark:text-mint">
                                                         {(t.policyCard as any)?.savingsPotential || 'Potential savings'}: {formatCurrency(policy.aiInsights.premiumBenchmark.savingsPotential)}
                                                     </p>
                                                 )}
@@ -317,7 +317,7 @@ export function PolicyDetailSheet({
                                             </p>
                                         </div>
                                     ) : (
-                                        <p className="text-sm text-emerald-600 dark:text-emerald-400">
+                                        <p className="text-sm text-[#166534] dark:text-mint">
                                             {language === 'el' ? 'Η κάλυψή σας φαίνεται καλή' : 'Your coverage looks good'}
                                         </p>
                                     )}
@@ -353,7 +353,7 @@ export function PolicyDetailSheet({
                                         type="button"
                                         onClick={() => onRunAnalysis(policy.id)}
                                         aria-label={t.wallet?.aiAnalysis || 'Run analysis'}
-                                        className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-[#1fdc86] text-sm font-bold text-white transition-colors hover:bg-[#19b870]"
+                                        className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-primary text-sm font-bold text-white dark:text-[#1A2420] transition-colors hover:bg-primary-hover"
                                     >
                                         <RefreshCw className="h-4 w-4" />
                                     </button>

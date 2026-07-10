@@ -55,15 +55,15 @@ export function FloatingActionButton({
     const getActionColor = (color: FABAction['color'] = 'sky') => {
         switch (color) {
             case 'sky':
-                return 'bg-sky-600 hover:bg-sky-700 text-white'
+                return 'bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420]'
             case 'emerald':
-                return 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                return 'bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420]'
             case 'amber':
                 return 'bg-amber-600 hover:bg-amber-700 text-white'
             case 'red':
                 return 'bg-red-600 hover:bg-red-700 text-white'
             case 'purple':
-                return 'bg-purple-600 hover:bg-purple-700 text-white'
+                return 'bg-secondary hover:bg-primary-hover text-white'
         }
     }
 
@@ -125,7 +125,7 @@ export function FloatingActionButton({
                 {/* Main FAB */}
                 <button
                     onClick={handleMainClick}
-                    className={`${getSizeClasses()} flex items-center justify-center bg-gradient-to-br from-sky-600 to-cyan-600 hover:from-sky-700 hover:to-cyan-700 text-white rounded-full shadow-2xl shadow-sky-500/40 transition-all hover:scale-110 active:scale-95 ${isExpanded ? 'rotate-45' : 'rotate-0'
+                    className={`${getSizeClasses()} flex items-center justify-center bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-full shadow-2xl shadow-primary/40 transition-all hover:scale-110 active:scale-95 ${isExpanded ? 'rotate-45' : 'rotate-0'
                         }`}
                     aria-label={isExpanded ? 'Close menu' : mainLabel}
                 >

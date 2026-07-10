@@ -28,8 +28,8 @@ export function FirstPolicyScreen({ progress, onNext, onBack }: FirstPolicyScree
                     animate={{ opacity: 1, y: 0 }}
                     className="mb-4"
                 >
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl mb-4">
-                        <FileText className="w-8 h-8 text-white" />
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-2xl mb-4">
+                        <FileText className="w-8 h-8 text-white dark:text-[#1A2420]" />
                     </div>
                 </motion.div>
 
@@ -60,10 +60,10 @@ export function FirstPolicyScreen({ progress, onNext, onBack }: FirstPolicyScree
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.3 }}
                     onClick={() => window.location.href = '/wallet/add'}
-                    className="group relative bg-white border-2 border-indigo-200 rounded-2xl p-8 hover:border-indigo-400 hover:shadow-xl transition-all duration-300 text-left"
+                    className="group relative bg-primary-tint border-2 border-[#E2E8F0] rounded-2xl p-8 hover:border-primary hover:shadow-xl transition-all duration-300 text-left"
                 >
-                    <div className="absolute top-4 right-4 w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Upload className="w-6 h-6 text-indigo-600" />
+                    <div className="absolute top-4 right-4 w-12 h-12 bg-primary-soft rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Upload className="w-6 h-6 text-primary" />
                     </div>
 
                     <h3 className="text-xl font-bold text-slate-900 mb-2 pr-12">
@@ -72,7 +72,7 @@ export function FirstPolicyScreen({ progress, onNext, onBack }: FirstPolicyScree
                     <p className="text-slate-600 text-sm mb-4">
                         PDF ή εικόνα από τον υπολογιστή σας
                     </p>
-                    <div className="text-xs text-indigo-600 font-medium">
+                    <div className="text-xs text-primary font-medium">
                         Αρχεία .pdf, .jpg, .png →
                     </div>
                 </motion.button>
@@ -83,10 +83,10 @@ export function FirstPolicyScreen({ progress, onNext, onBack }: FirstPolicyScree
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.4 }}
                     onClick={() => window.location.href = '/wallet/add?mode=camera'}
-                    className="group relative bg-white border-2 border-purple-200 rounded-2xl p-8 hover:border-purple-400 hover:shadow-xl transition-all duration-300 text-left"
+                    className="group relative bg-primary-tint border-2 border-[#E2E8F0] rounded-2xl p-8 hover:border-primary hover:shadow-xl transition-all duration-300 text-left"
                 >
-                    <div className="absolute top-4 right-4 w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Camera className="w-6 h-6 text-purple-600" />
+                    <div className="absolute top-4 right-4 w-12 h-12 bg-primary-soft rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Camera className="w-6 h-6 text-primary" />
                     </div>
 
                     <h3 className="text-xl font-bold text-slate-900 mb-2 pr-12">
@@ -95,7 +95,7 @@ export function FirstPolicyScreen({ progress, onNext, onBack }: FirstPolicyScree
                     <p className="text-slate-600 text-sm mb-4">
                         Βγάλτε φωτογραφία με την κάμερα
                     </p>
-                    <div className="text-xs text-purple-600 font-medium">
+                    <div className="text-xs text-primary font-medium">
                         Γρήγορο & εύκολο →
                     </div>
                 </motion.button>
@@ -106,7 +106,7 @@ export function FirstPolicyScreen({ progress, onNext, onBack }: FirstPolicyScree
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="bg-emerald-50 border border-emerald-200 rounded-xl p-6 mb-8"
+                className="bg-primary-tint border border-primary/20 rounded-xl p-6 mb-8"
             >
                 <h4 className="font-semibold text-slate-900 mb-3">Τι θα πάρετε αμέσως:</h4>
                 <ul className="space-y-2">
@@ -117,7 +117,7 @@ export function FirstPolicyScreen({ progress, onNext, onBack }: FirstPolicyScree
                         "Απλές εξηγήσεις για κάθε όρο"
                     ].map((benefit, index) => (
                         <li key={index} className="flex items-start gap-2 text-sm text-slate-700">
-                            <svg className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                             </svg>
                             {benefit}

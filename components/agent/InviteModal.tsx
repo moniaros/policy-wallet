@@ -34,8 +34,8 @@ export function InviteModal({
             <div className="relative w-full max-w-lg bg-white dark:bg-stone-900 rounded-[48px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
                 <div className="p-12">
                     <header className="mb-10">
-                        <div className="flex items-center gap-3 mb-4 text-teal-600">
-                            <div className="w-8 h-8 rounded-xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
+                        <div className="flex items-center gap-3 mb-4 text-primary dark:text-mint">
+                            <div className="w-8 h-8 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                             </div>
                             <span className="text-[10px] font-black uppercase tracking-[0.2em]">{t.invite.growthProtocol}</span>
@@ -52,7 +52,7 @@ export function InviteModal({
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="customer@example.com"
-                                className="w-full h-14 px-6 bg-stone-50 dark:bg-stone-800 border border-stone-100 dark:border-stone-800 rounded-2xl focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500/30 outline-none transition-all text-stone-900 dark:text-white font-black placeholder-stone-400 tracking-tight"
+                                className="w-full h-14 px-6 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-2xl focus:ring-4 focus:ring-primary/10 focus:border-primary/30 outline-none transition-all text-slate-900 dark:text-white font-black placeholder-slate-400 tracking-tight"
                             />
                         </div>
 
@@ -61,9 +61,9 @@ export function InviteModal({
                             <div className="grid grid-cols-2 gap-4">
                                 <button
                                     onClick={() => setScope('upload_only')}
-                                    className={`p-6 rounded-[28px] border text-left transition-all ${scope === 'upload_only' ? 'bg-white dark:bg-stone-900 border-teal-500 shadow-xl shadow-teal-500/5' : 'bg-stone-50/50 dark:bg-stone-800 border-transparent hover:bg-stone-100'}`}
+                                    className={`p-6 rounded-[28px] border text-left transition-all ${scope === 'upload_only' ? 'bg-white dark:bg-slate-900 border-primary dark:border-mint shadow-xl shadow-primary/5' : 'bg-slate-50/50 dark:bg-slate-800 border-transparent hover:bg-slate-100'}`}
                                 >
-                                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center mb-4 ${scope === 'upload_only' ? 'bg-teal-600 text-white shadow-lg shadow-teal-500/30' : 'bg-stone-200 dark:bg-stone-700 text-stone-500'}`}>
+                                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center mb-4 ${scope === 'upload_only' ? 'bg-primary text-white dark:text-[#1A2420] shadow-lg shadow-primary/25' : 'bg-slate-200 dark:bg-slate-700 text-slate-500'}`}>
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                     </div>
                                     <h3 className="text-sm font-black text-stone-900 dark:text-white tracking-tight mb-1">{t.invite.uploadOnly}</h3>
@@ -93,7 +93,7 @@ export function InviteModal({
                             <button
                                 onClick={handleSend}
                                 disabled={sending || !email}
-                                className="flex-[2] px-8 py-5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-stone-900/10 hover:bg-teal-600 dark:hover:bg-teal-500 hover:text-white transition-all active:scale-95 disabled:opacity-50"
+                                className="flex-[2] px-8 py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-slate-900/10 hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all active:scale-95 disabled:opacity-50"
                             >
                                 {sending ? t.invite.dispatching : t.invite.dispatch}
                             </button>

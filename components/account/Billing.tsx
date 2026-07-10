@@ -44,7 +44,7 @@ export function Billing({
             case "paid":
                 return {
                     label: t.billing.statusBadge.paid,
-                    color: "bg-[#1FDC86]/12 dark:bg-[#1FDC86]/12 text-[#1FDC86] dark:text-[#1FDC86] border-[#1FDC86]/30 dark:border-[#1FDC86]/30",
+                    color: "bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint border-primary/30 dark:border-primary/30",
                 }
             case "upcoming":
                 return {
@@ -71,10 +71,10 @@ export function Billing({
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-8">
                     <div className="bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[32px] p-8 shadow-sm relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-[#1FDC86]/5 blur-[100px] rounded-full -mr-32 -mt-32"></div>
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full -mr-32 -mt-32"></div>
                         <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="w-8 h-8 rounded-xl bg-[#1FDC86]/15 dark:bg-[#1FDC86]/15 flex items-center justify-center text-[#1FDC86] dark:text-[#1FDC86]">
+                                <div className="w-8 h-8 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center text-primary dark:text-mint">
                                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" strokeWidth="2" /></svg>
                                 </div>
                                 <span className="text-[10px] font-black uppercase tracking-widest text-black/45 dark:text-white/60">{t.billing.subscriptionStatus}</span>
@@ -98,16 +98,16 @@ export function Billing({
                             </div>
 
                             {currentSubscription.provider === "revenue_cat" ? (
-                                <div className="mt-8 p-6 bg-[#1FDC86]/12 dark:bg-[#1FDC86]/12 rounded-3xl border border-[#1FDC86]/30 dark:border-[#1FDC86]/30">
+                                <div className="mt-8 p-6 bg-primary-tint dark:bg-primary/15 rounded-3xl border border-primary/30 dark:border-primary/30">
                                     <div className="flex gap-4">
-                                        <div className="w-10 h-10 rounded-full bg-[#1FDC86] flex items-center justify-center text-white flex-shrink-0">
+                                        <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white dark:text-[#1A2420] flex-shrink-0">
                                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" strokeWidth="2.5" /></svg>
                                         </div>
                                         <div>
-                                            <h4 className="text-xs font-black uppercase tracking-widest text-[#19b870] dark:text-[#7de8ba] mb-1">
+                                            <h4 className="text-xs font-black uppercase tracking-widest text-primary dark:text-mint mb-1">
                                                 {language === "el" ? "Διαχείριση μέσω Mobile App" : "Managed via Mobile App"}
                                             </h4>
-                                            <p className="text-[10px] font-medium text-[#19b870] dark:text-[#1FDC86] leading-relaxed">
+                                            <p className="text-[10px] font-medium text-primary dark:text-mint leading-relaxed">
                                                 {language === "el"
                                                     ? "Η συνδρομή σας πραγματοποιήθηκε μέσω της εφαρμογής. Παρακαλούμε χρησιμοποιήστε το App Store ή το Google Play για διαχείριση ή ακύρωση."
                                                     : "Your subscription was made through our mobile app. Please use the App Store or Google Play to manage or cancel your plan."}
@@ -119,7 +119,7 @@ export function Billing({
                                 <div className="flex items-center gap-4 pt-8 border-t border-black/10 dark:border-white/15">
                                     <button
                                         onClick={() => onDowngrade?.(currentPlan.plan_id)}
-                                        className="px-5 py-2.5 bg-[#1FDC86] text-white rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-[#19b870] transition-all shadow-lg shadow-[#1FDC86]/20"
+                                        className="px-5 py-2.5 bg-primary text-white dark:text-[#1A2420] rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-primary-hover transition-all shadow-lg shadow-primary/20"
                                     >
                                         {t.billing.modifyPlan}
                                     </button>
@@ -177,14 +177,14 @@ export function Billing({
                                                     <td className="px-8 py-5 whitespace-nowrap text-right">
                                                         <div className="text-sm font-black text-black dark:text-white">{formatPrice(invoice.amount_total, invoice.currency)}</div>
                                                         {invoice.credits_applied && (
-                                                            <div className="text-[9px] font-bold text-[#1FDC86] dark:text-[#1FDC86] uppercase tracking-widest">-{formatPrice(invoice.credits_applied, invoice.currency)} {t.billing.applied}</div>
+                                                            <div className="text-[9px] font-bold text-primary dark:text-mint uppercase tracking-widest">-{formatPrice(invoice.credits_applied, invoice.currency)} {t.billing.applied}</div>
                                                         )}
                                                     </td>
                                                     <td className="px-8 py-5 whitespace-nowrap text-right">
                                                         {invoice.pdf_url && (
                                                             <button
                                                                 onClick={() => onDownloadInvoice?.(invoice.invoice_id)}
-                                                                className="w-8 h-8 rounded-lg bg-black/5 dark:bg-black flex items-center justify-center text-black/45 dark:text-white/60 hover:bg-[#1FDC86] hover:text-white transition-all shadow-sm"
+                                                                className="w-8 h-8 rounded-lg bg-black/5 dark:bg-black flex items-center justify-center text-black/45 dark:text-white/60 hover:bg-primary hover:text-white dark:hover:text-[#1A2420] transition-all shadow-sm"
                                                             >
                                                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" strokeWidth="2.5" /></svg>
                                                             </button>
@@ -207,7 +207,7 @@ export function Billing({
                             {defaultPaymentMethod && (
                                 <button
                                     onClick={() => onUpdatePaymentMethod?.(defaultPaymentMethod.payment_method_id)}
-                                    className="text-[10px] font-black uppercase tracking-widest text-[#1FDC86] dark:text-[#1FDC86] hover:underline"
+                                    className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint hover:underline"
                                 >
                                     {t.billing.edit}
                                 </button>
@@ -216,7 +216,7 @@ export function Billing({
 
                         {defaultPaymentMethod ? (
                             <div className="relative group">
-                                <div className="absolute -inset-4 bg-[#1FDC86]/5 rounded-[32px] opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                                <div className="absolute -inset-4 bg-primary/5 rounded-[32px] opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
                                 <div className="relative flex items-center gap-5">
                                     <div className="w-14 h-10 bg-black dark:bg-black rounded-xl flex items-center justify-center text-white border border-white/5 shadow-2xl">
                                         <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
@@ -236,9 +236,9 @@ export function Billing({
                         ) : (
                             <button
                                 onClick={() => onAddPaymentMethod?.()}
-                                className="w-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-black/10 dark:border-white/15 rounded-[32px] hover:border-[#1FDC86]/35 hover:bg-[#1FDC86]/12 transition-all group"
+                                className="w-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-black/10 dark:border-white/15 rounded-[32px] hover:border-primary/35 hover:bg-primary/10 transition-all group"
                             >
-                                <div className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-black flex items-center justify-center text-black/45 dark:text-white/60 group-hover:bg-[#1FDC86] group-hover:text-white transition-all mb-4">
+                                <div className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-black flex items-center justify-center text-black/45 dark:text-white/60 group-hover:bg-primary group-hover:text-white dark:group-hover:text-[#1A2420] transition-all mb-4">
                                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 4v16m8-8H4" strokeWidth="2.5" /></svg>
                                 </div>
                                 <span className="text-[10px] font-black uppercase tracking-widest text-black/60 dark:text-white/60 group-hover:text-black dark:group-hover:text-white">{t.billing.addPaymentSource}</span>

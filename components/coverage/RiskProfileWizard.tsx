@@ -160,16 +160,16 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
     }
 
     const inputClass =
-        "mt-1 block w-full rounded-xl border border-black/10 dark:border-white/15 bg-black/[0.03] dark:bg-white/[0.05] px-3 py-2.5 text-sm text-black dark:text-white placeholder:text-black/40 dark:placeholder:text-white/40 focus:border-[#1FDC86] focus:ring-1 focus:ring-[#1FDC86] outline-none"
+        "mt-1 block w-full rounded-xl border border-black/10 dark:border-white/15 bg-black/[0.03] dark:bg-white/[0.05] px-3 py-2.5 text-sm text-black dark:text-white placeholder:text-black/40 dark:placeholder:text-white/40 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
     const checkboxClass =
-        "rounded border-black/20 dark:border-white/25 text-[#1FDC86] focus:ring-[#1FDC86]"
+        "rounded border-black/20 dark:border-white/25 text-primary focus:ring-primary"
     const labelClass = "block text-sm font-medium text-black/75 dark:text-white/75"
 
     return (
         <div className="pw-card rounded-3xl p-6">
             <div className="flex items-center gap-3 mb-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1FDC86]/15">
-                    <ShieldCheck className="h-5 w-5 text-[#1FDC86]" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft dark:bg-primary/15">
+                    <ShieldCheck className="h-5 w-5 text-primary dark:text-mint" />
                 </div>
                 <div>
                     <h2 className="text-lg font-semibold text-black dark:text-white">
@@ -327,7 +327,7 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                             ].map((c) => {
                                 const checked = chronicConditions.includes(c.value)
                                 return (
-                                    <label key={c.value} className={`flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${checked ? "border-[#1FDC86] bg-[#1FDC86]/10 text-[#1FDC86]" : "border-black/10 dark:border-white/15 text-black/60 dark:text-white/60"}`}>
+                                    <label key={c.value} className={`flex items-center gap-1.5 cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${checked ? "border-primary bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint" : "border-black/10 dark:border-white/15 text-black/60 dark:text-white/60"}`}>
                                         <input
                                             type="checkbox"
                                             checked={checked}
@@ -456,7 +456,7 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                         <button
                             type="button"
                             onClick={() => setShowAddEvent(true)}
-                            className="text-xs font-semibold text-[#1FDC86] hover:underline flex items-center gap-1 cursor-pointer"
+                            className="text-xs font-semibold text-primary dark:text-mint hover:underline flex items-center gap-1 cursor-pointer"
                         >
                             <Plus className="h-3 w-3" />
                             {t("Προσθήκη", "Add event")}
@@ -470,7 +470,7 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                                 const Icon = eventType?.icon || User
                                 return (
                                     <div key={i} className="flex items-center gap-3 rounded-xl bg-black/[0.03] dark:bg-white/[0.05] p-2.5">
-                                        <Icon className="h-4 w-4 text-[#1FDC86] flex-shrink-0" />
+                                        <Icon className="h-4 w-4 text-primary dark:text-mint flex-shrink-0" />
                                         <span className="text-sm text-black dark:text-white flex-1">
                                             {eventType?.label[lang] || event.type}
                                         </span>
@@ -487,7 +487,7 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                     )}
 
                     {showAddEvent && (
-                        <div className="flex items-end gap-2 mb-3 rounded-xl border border-[#1FDC86]/30 bg-[#1FDC86]/5 p-3">
+                        <div className="flex items-end gap-2 mb-3 rounded-xl border border-primary/30 bg-primary-tint dark:bg-primary/15 p-3">
                             <div className="flex-1">
                                 <label htmlFor="newEventType" className="text-xs text-black/50 dark:text-white/50">{t("Τύπος", "Type")}</label>
                                 <select id="newEventType" value={newEventType} onChange={(e) => setNewEventType(e.target.value)} className={inputClass}>
@@ -534,7 +534,7 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                                     </select>
                                 </div>
                             </div>
-                            <button type="button" onClick={addLifeEvent} className="px-3 py-2.5 rounded-xl bg-[#1FDC86] text-white text-sm font-semibold hover:opacity-90 cursor-pointer">
+                            <button type="button" onClick={addLifeEvent} className="px-3 py-2.5 rounded-xl bg-primary text-white dark:text-[#1A2420] text-sm font-semibold hover:bg-primary-hover cursor-pointer">
                                 {t("OK", "OK")}
                             </button>
                             <button type="button" onClick={() => setShowAddEvent(false)} aria-label={t("Ακύρωση", "Cancel")} className="p-2.5 text-black/40 dark:text-white/40 hover:text-black dark:hover:text-white cursor-pointer">
@@ -558,7 +558,7 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3.5 bg-[#1FDC86] text-white rounded-xl font-semibold transition-opacity hover:opacity-90 disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
+                        className="w-full py-3.5 bg-primary text-white dark:text-[#1A2420] rounded-xl font-semibold transition-colors hover:bg-primary-hover disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
                     >
                         <ShieldCheck className="h-4 w-4" />
                         {loading

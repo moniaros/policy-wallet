@@ -30,15 +30,15 @@ export default function InviteCustomerPage() {
     return (
         <div className="max-w-2xl mx-auto px-4 py-12">
             <div className="bg-white dark:bg-stone-800 rounded-2xl shadow-xl border border-stone-200 dark:border-stone-700 overflow-hidden">
-                <div className="bg-teal-600 px-8 py-10 text-white">
+                <div className="bg-primary px-8 py-10 text-white dark:text-[#1A2420]">
                     <h1 className="text-3xl font-bold">Invite Customer</h1>
-                    <p className="mt-2 text-teal-100 italic">Grow your portfolio by inviting new customers to join PolicyWallet.</p>
+                    <p className="mt-2 text-white/80 dark:text-[#1A2420]/80 italic">Grow your portfolio by inviting new customers to join PolicyWallet.</p>
                 </div>
 
                 <div className="p-8">
                     {success ? (
                         <div className="text-center py-6">
-                            <div className="h-16 w-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <div className="h-16 w-16 bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint rounded-full flex items-center justify-center mx-auto mb-4">
                                 <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                                 </svg>
@@ -48,7 +48,7 @@ export default function InviteCustomerPage() {
 
                             <div className="bg-stone-50 dark:bg-stone-900/50 p-4 rounded-xl border border-stone-200 dark:border-stone-700 mb-6 text-left">
                                 <div className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-1">Invitation Token (Dev Only)</div>
-                                <code className="text-teal-600 dark:text-teal-400 font-mono break-all">{token}</code>
+                                <code className="text-primary dark:text-mint font-mono break-all">{token}</code>
                             </div>
 
                             <button
@@ -68,7 +68,7 @@ export default function InviteCustomerPage() {
                                     name="email"
                                     required
                                     placeholder="customer@example.com"
-                                    className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl focus:ring-2 focus:ring-teal-500 outline-none transition-all dark:text-white"
+                                    className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl focus:ring-2 focus:ring-primary outline-none transition-all dark:text-white"
                                 />
                                 <p className="mt-2 text-xs text-stone-500">We&apos;ll create a secure invitation link for this email.</p>
                             </div>
@@ -93,11 +93,11 @@ export default function InviteCustomerPage() {
                                 <button
                                     type="submit"
                                     disabled={isPending}
-                                    className="flex-1 px-6 py-3 bg-teal-600 text-white rounded-xl font-bold hover:bg-teal-700 transition-all shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
+                                    className="flex-1 px-6 py-3 bg-primary text-white dark:text-[#1A2420] rounded-xl font-bold hover:bg-primary-hover transition-all shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
                                 >
                                     {isPending ? (
                                         <>
-                                            <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <svg className="animate-spin h-5 w-5 text-white dark:text-[#1A2420]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                             </svg>

@@ -49,7 +49,7 @@ export function PlanGate({ userPlan, requiredPlan, featureLabel, children }: Pla
 
                     <Link
                         href="/upgrade"
-                        className="mt-1 inline-flex items-center gap-2 rounded-full bg-[#1fdc86] px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-[#19b870]"
+                        className="mt-1 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
                     >
                         <Crown className="h-3.5 w-3.5" />
                         {copy?.upgradeCta || (language === 'el' ? 'Αναβάθμιση' : 'Upgrade')}

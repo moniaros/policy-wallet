@@ -75,24 +75,24 @@ export function CommissionsClient({ data }: Props) {
 
                 {/* KPI Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-                    <div className="arc-card p-6 border-t-4 border-t-emerald-500">
+                    <div className="arc-card p-6 border-t-4 border-t-primary">
                         <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center">
-                                <DollarSign className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                            <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+                                <DollarSign className="w-5 h-5 text-primary dark:text-mint" />
                             </div>
                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.wonCommission}</span>
                         </div>
-                        <p className="text-3xl font-black text-emerald-600 dark:text-emerald-400">{fmt(data.totalWon)}</p>
+                        <p className="text-3xl font-black text-primary dark:text-mint">{fmt(data.totalWon)}</p>
                     </div>
 
-                    <div className="arc-card p-6 border-t-4 border-t-blue-500">
+                    <div className="arc-card p-6 border-t-4 border-t-mint">
                         <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
-                                <TrendingUp className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                            <div className="w-10 h-10 rounded-xl bg-mint/20 dark:bg-primary/15 flex items-center justify-center">
+                                <TrendingUp className="w-5 h-5 text-primary dark:text-mint" />
                             </div>
                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.estimatedPipeline}</span>
                         </div>
-                        <p className="text-3xl font-black text-blue-600 dark:text-blue-400">{fmt(data.totalEstimated)}</p>
+                        <p className="text-3xl font-black text-primary/70 dark:text-mint/80">{fmt(data.totalEstimated)}</p>
                     </div>
                 </div>
 
@@ -100,7 +100,7 @@ export function CommissionsClient({ data }: Props) {
                     {/* By LoB */}
                     <div className="arc-card p-6">
                         <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest mb-5 flex items-center gap-2">
-                            <Briefcase className="w-4 h-4 text-violet-500" />
+                            <Briefcase className="w-4 h-4 text-primary dark:text-mint" />
                             {t.byLine}
                         </h3>
 
@@ -131,9 +131,9 @@ export function CommissionsClient({ data }: Props) {
                                                     )}
                                                 </td>
                                                 <td className="py-3 text-right">
-                                                    <span className="font-bold text-emerald-600 dark:text-emerald-400">{fmt(row.wonCommission)}</span>
+                                                    <span className="font-bold text-primary dark:text-mint">{fmt(row.wonCommission)}</span>
                                                     {row.estimatedCommission > 0 && (
-                                                        <div className="text-xs text-blue-500">+{fmt(row.estimatedCommission)}</div>
+                                                        <div className="text-xs text-primary/60 dark:text-mint/70">+{fmt(row.estimatedCommission)}</div>
                                                     )}
                                                 </td>
                                                 <td className="py-3 text-right text-slate-500">{row.opportunityCount}</td>
@@ -148,7 +148,7 @@ export function CommissionsClient({ data }: Props) {
                     {/* Monthly Trend */}
                     <div className="arc-card p-6">
                         <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest mb-5 flex items-center gap-2">
-                            <BarChart3 className="w-4 h-4 text-teal-500" />
+                            <BarChart3 className="w-4 h-4 text-primary dark:text-mint" />
                             {t.monthlyTrend}
                         </h3>
 
@@ -161,22 +161,22 @@ export function CommissionsClient({ data }: Props) {
                                         <div className="flex items-center justify-between mb-1.5">
                                             <span className="text-xs font-bold text-slate-500">{m.month}</span>
                                             <div className="flex items-center gap-3 text-xs">
-                                                <span className="font-bold text-emerald-600 dark:text-emerald-400">{fmt(m.won)}</span>
+                                                <span className="font-bold text-primary dark:text-mint">{fmt(m.won)}</span>
                                                 {m.estimated > 0 && (
-                                                    <span className="text-blue-500">+{fmt(m.estimated)}</span>
+                                                    <span className="text-primary/60 dark:text-mint/70">+{fmt(m.estimated)}</span>
                                                 )}
                                             </div>
                                         </div>
                                         <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex">
                                             {wonPct > 0 && (
                                                 <div
-                                                    className="h-full bg-emerald-500 rounded-l-full"
+                                                    className="h-full bg-primary rounded-l-full"
                                                     style={{ width: `${Math.max(wonPct, 2)}%` }}
                                                 />
                                             )}
                                             {estPct > 0 && (
                                                 <div
-                                                    className="h-full bg-blue-400/50"
+                                                    className="h-full bg-mint"
                                                     style={{ width: `${Math.max(estPct, 2)}%` }}
                                                 />
                                             )}
@@ -188,11 +188,11 @@ export function CommissionsClient({ data }: Props) {
 
                         <div className="flex items-center gap-6 mt-5 pt-4 border-t border-slate-100 dark:border-slate-800">
                             <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                                <div className="w-3 h-3 rounded-full bg-primary" />
                                 <span className="text-xs font-bold text-slate-500">{t.won}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 rounded-full bg-blue-400/50" />
+                                <div className="w-3 h-3 rounded-full bg-mint" />
                                 <span className="text-xs font-bold text-slate-500">{t.projected}</span>
                             </div>
                         </div>

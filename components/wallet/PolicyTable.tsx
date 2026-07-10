@@ -115,7 +115,7 @@ export function PolicyTable({
         const styleByTone: Record<string, string> = {
             critical: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300',
             warning: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
-            active: 'bg-[#1FDC86]/15 dark:bg-[#1FDC86]/15 text-[#19b870] dark:text-[#7de8ba]',
+            active: 'bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint',
             inactive: 'bg-black/10 dark:bg-white/15 text-black/80 dark:text-white/85',
             info: 'bg-black/5 dark:bg-black/30 text-black/80 dark:text-white/70',
         }
@@ -143,7 +143,7 @@ export function PolicyTable({
         if (!policy.verified) {
             return { text: label.unverified, className: 'text-black/60 dark:text-white/60', icon: <ShieldAlert className="w-3.5 h-3.5" /> }
         }
-        return { text: label.noIssues, className: 'text-[#1FDC86] dark:text-[#1FDC86]', icon: <CheckCircle2 className="w-3.5 h-3.5" /> }
+        return { text: label.noIssues, className: 'text-[#166534] dark:text-mint', icon: <CheckCircle2 className="w-3.5 h-3.5" /> }
     }
 
     return (
@@ -259,7 +259,7 @@ export function PolicyTable({
                                                         setOpenMenuId(policy.id)
                                                     }
                                                 }}
-                                                className={`p-2.5 rounded-lg transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86]/40 ${isMenuOpen ? 'bg-black/5 dark:bg-black text-black dark:text-white shadow-sm' : 'hover:bg-black/5 dark:hover:bg-black/80 text-black/70 dark:text-white/70'}`}
+                                                className={`p-2.5 rounded-lg transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${isMenuOpen ? 'bg-black/5 dark:bg-black text-black dark:text-white shadow-sm' : 'hover:bg-black/5 dark:hover:bg-black/80 text-black/70 dark:text-white/70'}`}
                                                 aria-label={t.dashboard.actions}
                                                 aria-expanded={isMenuOpen}
                                                 aria-haspopup="menu"
@@ -383,7 +383,7 @@ export function PolicyTable({
                                 key={page}
                                 onClick={() => setCurrentPage(page)}
                                 className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors cursor-pointer ${currentPage === page
-                                    ? 'bg-[#1FDC86] text-white'
+                                    ? 'bg-primary text-white dark:text-[#1A2420]'
                                     : 'bg-white dark:bg-[#111111] text-black/80 dark:text-white/70 border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-black/80'
                                     }`}
                             >

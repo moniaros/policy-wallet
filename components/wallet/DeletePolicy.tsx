@@ -41,7 +41,7 @@ export function DeletePolicy({ policyId }: { policyId: string }) {
         <>
             <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-red-200/50 dark:border-red-900/30 transition-all duration-300 hover:shadow-xl">
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-lg">
+                    <div className="w-10 h-10 rounded-xl bg-red-500 flex items-center justify-center shadow-lg">
                         <AlertTriangle className="w-5 h-5 text-white" />
                     </div>
                     <h3 className="text-sm font-black text-red-600 dark:text-red-400 uppercase tracking-widest">{copy.dangerZone}</h3>
@@ -52,7 +52,7 @@ export function DeletePolicy({ policyId }: { policyId: string }) {
                 <button
                     onClick={() => setShowConfirmModal(true)}
                     disabled={isDeleting}
-                    className="group w-full py-3 px-4 bg-gradient-to-r from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 text-red-600 dark:text-red-400 rounded-xl text-sm font-bold hover:from-red-100 hover:to-rose-100 dark:hover:from-red-900/40 dark:hover:to-rose-900/40 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 border border-red-200 dark:border-red-800 hover:shadow-md cursor-pointer"
+                    className="group w-full py-3 px-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-xl text-sm font-bold hover:bg-red-100 dark:hover:bg-red-900/40 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 border border-red-200 dark:border-red-800 hover:shadow-md cursor-pointer"
                 >
                     <Trash2 className="w-4 h-4 transition-transform group-hover:scale-110" />
                     <span>{copy.deletePolicy}</span>
@@ -62,7 +62,7 @@ export function DeletePolicy({ policyId }: { policyId: string }) {
             {showConfirmModal && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                     <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200 dark:border-slate-700">
-                        <div className="bg-gradient-to-r from-red-500 to-rose-600 p-6 text-white">
+                        <div className="bg-red-500 p-6 text-white">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
@@ -102,7 +102,7 @@ export function DeletePolicy({ policyId }: { policyId: string }) {
                                 <button
                                     onClick={handleDelete}
                                     disabled={isDeleting}
-                                    className="flex-1 py-3 px-4 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-xl font-bold hover:from-red-700 hover:to-rose-700 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-red-500/30 cursor-pointer"
+                                    className="flex-1 py-3 px-4 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-all duration-300 disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-red-500/30 cursor-pointer"
                                 >
                                     <Trash2 className="w-4 h-4" />
                                     {isDeleting ? copy.deleting : copy.deleteForever}

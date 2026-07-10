@@ -1,12 +1,24 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Brand palette source of truth: components/ui/design-tokens.ts (the
+ * language advertised by the public marketing widgets). Light mode uses
+ * deep green fills with white text; dark mode flips primary to mint with
+ * dark (#1A2420) text on fills.
+ */
 @theme {
-  --color-primary: #1fdc86;
-  --color-primary-foreground: #ffffff;
-  --color-secondary: #173330;
-  --color-secondary-foreground: #ffffff;
+  /* Routed through :root/.dark runtime vars so bg-primary etc. flip to
+     mint automatically in dark mode (matching the shadcn passthroughs). */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: #DCEBDA;
+  --color-primary-tint: #F0FDF4;
+  --color-mint: #89D9B2;
+  --color-cta-dark: #1A2420;
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
 
   /* Mapping neutral to slate for premium feel */
   --color-neutral-50: #f8fafc;
@@ -20,8 +32,8 @@
   --color-neutral-800: #1e293b;
   --color-neutral-900: #0f172a;
 
-  --font-heading: 'GT America', 'IBM Plex Sans', 'Inter', sans-serif;
-  --font-body: 'GT America', 'IBM Plex Sans', 'Inter', sans-serif;
+  --font-heading: var(--font-inter), 'Inter', system-ui, sans-serif;
+  --font-body: var(--font-inter), 'Inter', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   /* Shadcn UI Variables */
@@ -49,26 +61,26 @@
 :root {
   --brand-bg-canvas: #f8fafc;
   --brand-bg-soft: #ffffff;
-  --brand-text-primary: #000000;
-  --brand-text-muted: #888888;
+  --brand-text-primary: #0F172A;
+  --brand-text-muted: #64748b;
   --brand-surface-card: #ffffff;
   --brand-surface-elevated: #f9fafb;
   --brand-border-subtle: rgba(0, 0, 0, 0.08);
   --brand-border-strong: rgba(0, 0, 0, 0.15);
-  --brand-accent-primary: #1fdc86;
-  --brand-accent-cta: #1fdc86;
-  --brand-accent-trust: #173330;
+  --brand-accent-primary: #29685B;
+  --brand-accent-cta: #29685B;
+  --brand-accent-trust: #143B33;
 
-  --pw-primary: #1fdc86;
-  --pw-primary-hover: #19b870;
+  --pw-primary: #29685B;
+  --pw-primary-hover: #1C4E44;
   --pw-bg-dark: #000000;
   --pw-bg-light: #ffffff;
   --pw-surface-dark: #111111;
   --pw-surface-light: #f9fafb;
   --pw-text-primary-dark: #ffffff;
-  --pw-text-primary-light: #000000;
-  --pw-text-muted: #888888;
-  --pw-border: rgba(0, 0, 0, 0.12);
+  --pw-text-primary-light: #0F172A;
+  --pw-text-muted: #64748b;
+  --pw-border: #E2E8F0;
   --pw-radius-button: 9999px;
   --pw-radius-card: 16px;
   --pw-shadow-card: 0 16px 48px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(15, 23, 42, 0.04);
@@ -78,14 +90,13 @@
   --foreground: #0f172a;
   /* slate-900 */
 
-  /* Primary - Emerald */
-  --primary: #1fdc86;
-  /* emerald-500 */
+  /* Primary - deep brand green (marketing widget language) */
+  --primary: #29685B;
   --primary-foreground: #ffffff;
+  --primary-hover: #1C4E44;
 
-  /* Secondary - Amber */
-  --secondary: #173330;
-  /* amber-500 */
+  /* Secondary - dark brand green */
+  --secondary: #143B33;
   --secondary-foreground: #ffffff;
 
   /* Card */
@@ -117,8 +128,7 @@
   /* slate-200 */
   --input: #e2e8f0;
   /* slate-200 */
-  --ring: #1fdc86;
-  /* emerald-500 */
+  --ring: #29685B;
 
   --radius: 0.75rem;
   /* rounded-xl (12px) for premium feel */
@@ -133,16 +143,18 @@
   --brand-surface-elevated: #1a1a1a;
   --brand-border-subtle: rgba(255, 255, 255, 0.14);
   --brand-border-strong: rgba(255, 255, 255, 0.25);
-  --brand-accent-primary: #1fdc86;
-  --brand-accent-cta: #1fdc86;
-  --brand-accent-trust: #7de8ba;
+  /* Dark mode: mint accents with dark text on fills */
+  --brand-accent-primary: #89D9B2;
+  --brand-accent-cta: #89D9B2;
+  --brand-accent-trust: #89D9B2;
 
   --background: #000000;
   --foreground: #f8fafc;
 
-  /* Primary - Emerald Dark */
-  --primary: #1fdc86;
-  --primary-foreground: #ffffff;
+  /* Primary - mint (dark surfaces) */
+  --primary: #89D9B2;
+  --primary-foreground: #1A2420;
+  --primary-hover: #7de8ba;
 
   /* Secondary - Amber */
   --secondary: #173330;
@@ -178,7 +190,12 @@
   /* slate-800 */
   --input: #1e293b;
   /* slate-800 */
-  --ring: #1fdc86;
+  --ring: #89D9B2;
+
+  --pw-primary: #89D9B2;
+  --pw-primary-hover: #7de8ba;
+  --pw-text-muted: #94a3b8;
+  --pw-border: rgba(255, 255, 255, 0.14);
 }
 
 body {
@@ -214,7 +231,7 @@ pre {
 
 @layer utilities {
   .pw-app-canvas {
-    @apply bg-[radial-gradient(circle_at_top_right,_rgba(31,220,134,0.08),_transparent_40%),linear-gradient(to_bottom_right,#f8fafc,#ffffff)];
+    @apply bg-[radial-gradient(circle_at_top_right,_rgba(41,104,91,0.06),_transparent_40%),linear-gradient(to_bottom_right,#f8fafc,#ffffff)];
   }
 
   .pw-page-shell {
@@ -256,6 +273,10 @@ pre {
     @apply inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold text-white transition-colors;
     border-radius: var(--pw-radius-button);
     background: var(--pw-primary);
+  }
+
+  .dark .pw-primary-button {
+    color: #1A2420;
   }
 
   .pw-primary-button:hover {
@@ -300,12 +321,16 @@ pre {
 
   .arc-btn {
     @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200;
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86] focus-visible:ring-offset-2;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
     @apply disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .arc-btn-primary {
-    @apply border border-[#1FDC86]/40 bg-[#1FDC86] text-white shadow-sm hover:bg-[#19b870];
+    @apply border border-primary/40 bg-primary text-white shadow-sm hover:bg-primary-hover;
+  }
+
+  .dark .arc-btn-primary {
+    @apply text-[#1A2420] hover:bg-mint;
   }
 
   .arc-btn-secondary {

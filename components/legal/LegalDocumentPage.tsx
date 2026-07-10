@@ -24,7 +24,7 @@ export function LegalDocumentPage({ language, documentKind }: LegalDocumentPageP
             <div className="mx-auto max-w-3xl rounded-2xl border border-stone-100 bg-white p-8 shadow-sm">
                 <div className="mb-8 border-b border-stone-100 pb-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
-                        <Link href="/" className="inline-block text-xl font-bold text-teal-700">
+                        <Link href="/" className="inline-block text-xl font-bold text-primary">
                             PolicyWallet
                         </Link>
                         <Link
@@ -57,10 +57,10 @@ export function LegalDocumentPage({ language, documentKind }: LegalDocumentPageP
                 </div>
 
                 <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-stone-100 pt-6">
-                    <Link href={termsHref} className="text-sm font-semibold text-teal-700 hover:text-teal-800">
+                    <Link href={termsHref} className="text-sm font-semibold text-primary hover:text-primary-hover">
                         {content.ui.openTerms}
                     </Link>
-                    <Link href={privacyHref} className="text-sm font-semibold text-teal-700 hover:text-teal-800">
+                    <Link href={privacyHref} className="text-sm font-semibold text-primary hover:text-primary-hover">
                         {content.ui.openPrivacy}
                     </Link>
                     <span className="text-stone-300">|</span>

@@ -229,7 +229,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-teal-50 px-4 py-10 dark:from-stone-950 dark:via-stone-900 dark:to-teal-950/30">
+        <div className="min-h-screen bg-[#F8FAFC] px-4 py-10 dark:bg-slate-950">
             <AiConsentModal
                 isOpen={consentModalOpen}
                 onClose={() => setConsentModalOpen(false)}
@@ -247,9 +247,9 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                         <h1 className="mt-2 text-3xl font-black tracking-tight text-stone-900 dark:text-white">
                             {displayName ? t(`Καλώς ήρθατε, ${displayName}`, `Welcome, ${displayName}`) : t("Καλώς ήρθατε", "Welcome")}
                         </h1>
-                        <div className="mt-4 h-2 w-full rounded-full bg-stone-100 dark:bg-stone-800">
+                        <div className="mt-4 h-2 w-full rounded-full bg-[#F1F5F9] dark:bg-slate-800">
                             <div
-                                className="h-2 rounded-full bg-teal-600 transition-all duration-500"
+                                className="h-2 rounded-full bg-primary transition-all duration-500"
                                 style={{ width: `${(step / TOTAL_STEPS) * 100}%` }}
                             />
                         </div>
@@ -274,8 +274,8 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                         onClick={() => setGoal(g.key)}
                                         className={`rounded-2xl border px-4 py-5 text-left transition ${
                                             goal === g.key
-                                                ? "border-teal-500 bg-teal-50 dark:bg-teal-900/20"
-                                                : "border-stone-200 bg-white hover:border-teal-400 dark:border-stone-700 dark:bg-stone-900"
+                                                ? "border-primary bg-primary-tint dark:bg-primary/15"
+                                                : "border-[#E2E8F0] bg-white hover:border-primary dark:border-slate-700 dark:bg-slate-900"
                                         }`}
                                     >
                                         <p className="text-sm font-black text-stone-900 dark:text-white">{t(g.el, g.en)}</p>
@@ -284,7 +284,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                             </div>
 
                             {currentGoalDescription && (
-                                <div className="rounded-2xl border border-teal-100 bg-teal-50 p-4 text-sm text-teal-800 dark:border-teal-900/40 dark:bg-teal-900/20 dark:text-teal-200">
+                                <div className="rounded-2xl border border-primary/20 bg-primary-tint p-4 text-sm text-primary dark:border-primary/30 dark:bg-primary/15 dark:text-mint">
                                     {currentGoalDescription}
                                 </div>
                             )}
@@ -311,8 +311,8 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 </p>
                             </div>
 
-                            <label className="flex cursor-pointer items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-stone-300 p-8 text-sm font-semibold text-stone-700 transition hover:border-teal-500 dark:border-stone-700 dark:text-stone-200">
-                                <Upload className="h-5 w-5 text-teal-600" />
+                            <label className="flex cursor-pointer items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-slate-300 p-8 text-sm font-semibold text-slate-700 transition hover:border-primary dark:border-slate-700 dark:text-slate-200">
+                                <Upload className="h-5 w-5 text-primary dark:text-mint" />
                                 {selectedFile ? selectedFile.name : t("Επιλογή PDF", "Choose PDF")}
                                 <input
                                     type="file"
@@ -360,7 +360,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                             <div className="rounded-2xl border border-stone-200 bg-stone-50 p-5 dark:border-stone-700 dark:bg-stone-800">
                                 {simulatingAi ? (
                                     <div className="flex items-center gap-3 text-sm text-stone-700 dark:text-stone-200">
-                                        <Loader2 className="h-4 w-4 animate-spin text-teal-600" />
+                                        <Loader2 className="h-4 w-4 animate-spin text-primary dark:text-mint" />
                                         {uploadedPolicyId
                                             ? t("Το AI αναλύει το συμβόλαιό σας...", "AI is analyzing your policy...")
                                             : t("Προετοιμασία...", "Preparing...")}
@@ -368,7 +368,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 ) : (
                                     <div className="space-y-3 text-sm text-stone-700 dark:text-stone-200">
                                         <div className="flex items-center gap-2">
-                                            <Sparkles className="h-4 w-4 text-violet-600" />
+                                            <Sparkles className="h-4 w-4 text-[#4F46E5] dark:text-[#818CF8]" />
                                             <span>
                                                 {uploadedPolicyId && analysisResult?.status === "completed"
                                                     ? t("Η ανάλυση AI ολοκληρώθηκε!", "AI analysis completed!")
@@ -382,11 +382,11 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                             </span>
                                         </div>
                                         {analysisResult?.healthScore != null && (
-                                            <div className="flex items-center gap-2 rounded-xl bg-teal-50 px-3 py-2 dark:bg-teal-900/20">
-                                                <span className="text-xl font-black text-teal-700 dark:text-teal-300">
+                                            <div className="flex items-center gap-2 rounded-xl bg-primary-soft px-3 py-2 dark:bg-primary/15">
+                                                <span className="text-xl font-black text-primary dark:text-mint">
                                                     {analysisResult.healthScore}%
                                                 </span>
-                                                <span className="text-xs text-teal-600 dark:text-teal-400">
+                                                <span className="text-xs text-primary dark:text-mint">
                                                     {t("Σκορ ανάλυσης", "Analysis score")}
                                                 </span>
                                             </div>
@@ -434,7 +434,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 </p>
                             </div>
 
-                            <div className="rounded-2xl border border-teal-100 bg-teal-50 p-4 text-sm text-teal-800 dark:border-teal-900/40 dark:bg-teal-900/20 dark:text-teal-200">
+                            <div className="rounded-2xl border border-primary/20 bg-primary-tint p-4 text-sm text-primary dark:border-primary/30 dark:bg-primary/15 dark:text-mint">
                                 {t(
                                     "Οι υπενθυμίσεις ανανέωσης ενεργοποιούνται αυτόματα για κάθε συμβόλαιο που προσθέτετε.",
                                     "Renewal reminders are enabled automatically for every policy you add."
@@ -467,9 +467,9 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                             </div>
 
                             {connectedAgentName ? (
-                                <div className="rounded-2xl border border-teal-200 bg-teal-50 p-5 dark:border-teal-900/40 dark:bg-teal-900/20">
+                                <div className="rounded-2xl border border-primary/20 bg-primary-tint p-5 dark:border-primary/30 dark:bg-primary/15">
                                     <div className="flex items-center gap-3">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-600 text-white">
+                                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white dark:text-[#1A2420]">
                                             <Check className="h-5 w-5" />
                                         </div>
                                         <div>
@@ -497,7 +497,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                             onClick={handleRedeemInvite}
                                             disabled={busy || !inviteCode.trim()}
                                             aria-label={t("Σύνδεση", "Connect")}
-                                            className="rounded-xl bg-teal-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-teal-500 disabled:opacity-60"
+                                            className="rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-hover disabled:opacity-60 dark:text-[#1A2420]"
                                         >
                                             <Users className="h-4 w-4" />
                                         </button>
@@ -512,7 +512,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 type="button"
                                 onClick={finishOnboarding}
                                 disabled={busy}
-                                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-600 px-4 py-3 text-sm font-black text-white transition hover:bg-teal-500 disabled:opacity-60"
+                                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-primary px-4 py-3 text-sm font-black text-white transition hover:bg-primary-hover disabled:opacity-60 dark:text-[#1A2420]"
                             >
                                 <Wallet className="h-4 w-4" />
                                 {busy ? t("Ολοκλήρωση...", "Finishing...") : t("Μετάβαση στην Αρχική", "Go to Home Dashboard")}

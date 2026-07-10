@@ -90,11 +90,11 @@ function getStatusConfig(status: string): StatusConfig {
     }
     // active / default
     return {
-        badge: 'bg-[#F0FDF4] text-[#166534] dark:bg-emerald-900/30 dark:text-emerald-300',
-        icon: 'text-[#29685B] dark:text-emerald-400',
-        iconBg: 'bg-[#F0FDF4] dark:bg-emerald-900/30',
+        badge: 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint',
+        icon: 'text-primary dark:text-mint',
+        iconBg: 'bg-primary-soft dark:bg-primary/15',
         border: 'border-[#E2E8F0] dark:border-white/8',
-        bar: 'bg-[#29685B]',
+        bar: 'bg-primary',
     }
 }
 
@@ -141,7 +141,7 @@ export function MobilePolicyCard({ policy, onView }: MobilePolicyCardProps) {
                                 {displayInsurer}
                             </span>
                             {policy.verified && !isAnalyzing && (
-                                <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-emerald-500" />
+                                <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-primary dark:text-mint" />
                             )}
                         </div>
                         <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${cfg.badge}`}>

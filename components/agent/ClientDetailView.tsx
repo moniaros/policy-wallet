@@ -85,7 +85,7 @@ export function ClientDetailView({
     const initials = `${customer.name.charAt(0)}${customer.surname.charAt(0)}`.toUpperCase()
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+        <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950">
             {/* Header */}
             <div className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/60">
                 <div className="max-w-[1200px] mx-auto px-6 py-5">
@@ -106,7 +106,7 @@ export function ClientDetailView({
                                 className="h-12 w-12 rounded-full object-cover"
                             />
                         ) : (
-                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-100 text-lg font-bold text-teal-700 dark:bg-teal-900/40 dark:text-teal-300">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft text-lg font-bold text-primary dark:bg-primary/15 dark:text-mint">
                                 {initials}
                             </div>
                         )}
@@ -133,7 +133,7 @@ export function ClientDetailView({
                                     onClick={() => setActiveTab(tab.id)}
                                     className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-xl border-b-2 transition cursor-pointer ${
                                         isActive
-                                            ? "border-teal-600 text-teal-700 dark:text-teal-400 bg-white/50 dark:bg-slate-800/50"
+                                            ? "border-primary dark:border-mint text-primary dark:text-mint bg-white/50 dark:bg-slate-800/50"
                                             : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
                                     }`}
                                 >
@@ -185,7 +185,7 @@ export function ClientDetailView({
 
 export function ClientDetailViewSkeleton() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+        <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950">
             <div className="bg-white/70 dark:bg-slate-900/70 border-b border-slate-200/60 dark:border-slate-800/60">
                 <div className="max-w-[1200px] mx-auto px-6 py-5">
                     <div className="flex items-center gap-4">

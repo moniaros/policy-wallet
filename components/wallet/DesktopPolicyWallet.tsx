@@ -63,7 +63,7 @@ export function DesktopPolicyWallet({
     const getStatusIcon = (status: Policy['status']) => {
         switch (status) {
             case 'active':
-                return <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                return <CheckCircle2 className="w-4 h-4 text-[#22C55E]" />
             case 'expiring_soon':
                 return <AlertTriangle className="w-4 h-4 text-amber-600" />
             case 'action_needed':
@@ -76,7 +76,7 @@ export function DesktopPolicyWallet({
     const getStatusColor = (status: Policy['status']) => {
         switch (status) {
             case 'active':
-                return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400'
+                return 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint'
             case 'expiring_soon':
                 return 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-400'
             case 'action_needed':
@@ -114,7 +114,7 @@ export function DesktopPolicyWallet({
                         </div>
                         <button
                             onClick={onAddPolicy}
-                            className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all flex items-center gap-2"
+                            className="px-6 py-3 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] font-semibold rounded-lg shadow-md hover:shadow-lg transition-all flex items-center gap-2"
                             style={{ fontFamily: 'Fira Sans, sans-serif' }}
                         >
                             <FileText className="w-5 h-5" />
@@ -126,8 +126,8 @@ export function DesktopPolicyWallet({
                     <div className="grid grid-cols-4 gap-4">
                         <div className="bg-slate-50 dark:bg-slate-800 rounded-lg p-4">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-blue-100 dark:bg-blue-950 rounded-lg">
-                                    <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                                <div className="p-2 bg-primary-soft dark:bg-primary/15 rounded-lg">
+                                    <Shield className="w-5 h-5 text-primary dark:text-mint" />
                                 </div>
                                 <div>
                                     <p className="text-sm text-slate-600 dark:text-slate-400">Total Policies</p>
@@ -137,10 +137,10 @@ export function DesktopPolicyWallet({
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-emerald-50 dark:bg-emerald-950/30 rounded-lg p-4">
+                        <div className="bg-primary-tint dark:bg-primary/10 rounded-lg p-4">
                             <div className="flex items-center gap-3">
-                                <div className="p-2 bg-emerald-100 dark:bg-emerald-950 rounded-lg">
-                                    <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                                <div className="p-2 bg-primary-soft dark:bg-primary/20 rounded-lg">
+                                    <CheckCircle2 className="w-5 h-5 text-[#22C55E] dark:text-mint" />
                                 </div>
                                 <div>
                                     <p className="text-sm text-slate-600 dark:text-slate-400">Active</p>
@@ -192,7 +192,7 @@ export function DesktopPolicyWallet({
                                 placeholder="Search policies..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary"
                                 style={{ fontFamily: 'Fira Sans, sans-serif' }}
                             />
                         </div>
@@ -201,7 +201,7 @@ export function DesktopPolicyWallet({
                         <select
                             value={filterStatus}
                             onChange={(e) => setFilterStatus(e.target.value as any)}
-                            className="px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
                             style={{ fontFamily: 'Fira Sans, sans-serif' }}
                         >
                             <option value="all">All Status</option>
@@ -214,7 +214,7 @@ export function DesktopPolicyWallet({
                         <select
                             value={filterType}
                             onChange={(e) => setFilterType(e.target.value)}
-                            className="px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="px-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary"
                             style={{ fontFamily: 'Fira Sans, sans-serif' }}
                         >
                             <option value="all">All Types</option>
@@ -314,7 +314,7 @@ export function DesktopPolicyWallet({
                                             e.stopPropagation()
                                             onDownloadPolicy(policy.id)
                                         }}
-                                        className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                                        className="flex-1 px-3 py-2 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
                                     >
                                         <Download className="w-4 h-4" />
                                         Download
@@ -409,7 +409,7 @@ export function DesktopPolicyWallet({
                         {!searchQuery && (
                             <button
                                 onClick={onAddPolicy}
-                                className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all"
+                                className="px-6 py-3 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] font-semibold rounded-lg shadow-md hover:shadow-lg transition-all"
                             >
                                 Add Your First Policy
                             </button>

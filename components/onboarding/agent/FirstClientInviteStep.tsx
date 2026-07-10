@@ -53,8 +53,8 @@ export function FirstClientInviteStep({ onNext, onBack }: StepProps) {
 
     return (
         <div className="space-y-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 mb-6">
-                <UserPlus className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/25 mb-6">
+                <UserPlus className="w-8 h-8 text-white dark:text-[#1A2420]" />
             </div>
 
             <div>
@@ -82,21 +82,21 @@ export function FirstClientInviteStep({ onNext, onBack }: StepProps) {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder={t("pelatis@example.com", "client@example.com")}
-                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all"
+                                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:outline-none transition-all"
                             />
                         </div>
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+                            className="w-full bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50"
                         >
                             <Send className="w-4 h-4" /> {isLoading ? t("Αποστολή...", "Sending...") : t("Αποστολή Πρόσκλησης", "Send Invite")}
                         </button>
                     </form>
                 ) : (
                     <div className="text-center py-4">
-                        <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <Check className="w-6 h-6 text-emerald-600" />
+                        <div className="w-12 h-12 bg-primary-soft dark:bg-primary/15 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <Check className="w-6 h-6 text-primary dark:text-mint" />
                         </div>
                         <p className="font-bold text-slate-900 dark:text-white">
                             {t("Η πρόσκληση στάλθηκε!", "Invite Sent!")}
@@ -106,7 +106,7 @@ export function FirstClientInviteStep({ onNext, onBack }: StepProps) {
                         </p>
                         <button
                             onClick={() => { setInviteSent(false); setEmail(""); }}
-                            className="text-sm text-emerald-600 font-bold mt-2 hover:underline"
+                            className="text-sm text-primary dark:text-mint font-bold mt-2 hover:underline"
                         >
                             {t("Αποστολή σε άλλον", "Send another")}
                         </button>
@@ -123,12 +123,12 @@ export function FirstClientInviteStep({ onNext, onBack }: StepProps) {
 
                 <div
                     onClick={copyLink}
-                    className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-emerald-500 transition-colors group"
+                    className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-primary transition-colors group"
                 >
                     <span className="text-sm text-slate-600 dark:text-slate-300 font-mono truncate max-w-[200px]">
                         {portalUrl ? portalUrl.replace("https://", "") : t("policywallet.app/agent/...", "policywallet.app/agent/...")}
                     </span>
-                    <div className="flex items-center gap-2 text-xs font-bold text-slate-500 group-hover:text-emerald-600">
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-500 group-hover:text-primary dark:group-hover:text-mint">
                         {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                         {copied ? t("Αντιγράφηκε", "Copied") : t("Αντιγραφή", "Copy")}
                     </div>

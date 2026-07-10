@@ -140,8 +140,8 @@ export function TokenUsageCard({ language = "en", className = "" }: Props) {
         usagePct >= 90
             ? "bg-red-600"
             : usagePct >= 75
-                ? "bg-orange-500"
-                : "bg-blue-600"
+                ? "bg-amber-500"
+                : "bg-primary"
 
     return (
         <div className={`arc-card p-6 space-y-5 ${className}`}>
@@ -161,7 +161,7 @@ export function TokenUsageCard({ language = "en", className = "" }: Props) {
                         {formatTokens(subscription.tokens_used)} / {formatTokens(subscription.monthly_limit)}
                     </span>
                 </div>
-                <div className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-[#F1F5F9] dark:bg-slate-700 rounded-full overflow-hidden">
                     <div
                         className={`h-full rounded-full transition-all duration-700 ${barColor}`}
                         style={{ width: `${usagePct}%` }}
@@ -174,17 +174,17 @@ export function TokenUsageCard({ language = "en", className = "" }: Props) {
 
             {/* Purchased token balance */}
             {isPaid && (
-                <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200/50 dark:border-blue-800/40">
+                <div className="p-3 rounded-lg bg-primary-tint dark:bg-primary/15 border border-primary/30 dark:border-primary/30">
                     <div className="flex items-center justify-between">
-                        <span className="text-sm font-semibold text-blue-900 dark:text-blue-200">
+                        <span className="text-sm font-semibold text-primary dark:text-mint">
                             {i18n.extraTokens}
                         </span>
-                        <span className="text-lg font-black text-blue-600 dark:text-blue-400 tabular-nums">
+                        <span className="text-lg font-black text-primary dark:text-mint tabular-nums">
                             {formatTokens(purchased.remaining)}
                         </span>
                     </div>
                     {purchased.total_used > 0 && (
-                        <p className="text-xs text-blue-700/70 dark:text-blue-400/60 mt-0.5">
+                        <p className="text-xs text-primary/70 dark:text-mint/60 mt-0.5">
                             {formatTokens(purchased.total_used)} {i18n.used}
                         </p>
                     )}
@@ -193,7 +193,7 @@ export function TokenUsageCard({ language = "en", className = "" }: Props) {
 
             {/* Success/Error messages */}
             {purchaseSuccess && (
-                <p className="text-sm text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/30 p-3 rounded-lg border border-green-200/50 dark:border-green-800/40">
+                <p className="text-sm text-[#166534] dark:text-mint bg-primary-soft dark:bg-primary/15 p-3 rounded-lg border border-primary/30 dark:border-primary/30">
                     {purchaseSuccess}
                 </p>
             )}
@@ -211,12 +211,12 @@ export function TokenUsageCard({ language = "en", className = "" }: Props) {
                             key={pkg.key}
                             onClick={() => handlePurchase(pkg.key)}
                             disabled={purchasing !== null}
-                            className="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-colors text-sm arc-text disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-primary hover:bg-primary-tint dark:hover:bg-primary/15 transition-colors text-sm arc-text disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <div className="flex items-center gap-3">
                                 <span className="font-bold">{pkg.label}</span>
                                 {pkg.popular && (
-                                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 font-semibold">
+                                    <span className="text-xs px-1.5 py-0.5 rounded-full bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint font-semibold">
                                         {i18n.mostPopular}
                                     </span>
                                 )}

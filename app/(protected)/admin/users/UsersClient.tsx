@@ -82,14 +82,14 @@ export default function UsersClient({
 
     const getRoleBadgeColor = (role: string) => {
         if (role.includes("admin")) return "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
-        if (role.includes("agent")) return "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
-        return "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+        if (role.includes("agent")) return "bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint"
+        return "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
     }
 
     const getVerificationBadge = (status: string) => {
         switch (status) {
             case "approved":
-                return <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                return <span className="flex items-center gap-1 text-xs text-[#166534] dark:text-mint">
                     <CheckCircle className="w-3 h-3" /> Verified
                 </span>
             case "pending":
@@ -129,7 +129,7 @@ export default function UsersClient({
                                 placeholder="Search by name or email..."
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-stone-300 dark:border-stone-600 rounded-lg bg-white dark:bg-stone-700 text-stone-900 dark:text-stone-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-primary focus:border-transparent"
                             />
                         </div>
                     </form>
@@ -141,7 +141,7 @@ export default function UsersClient({
                                 key={role}
                                 onClick={() => handleRoleFilterChange(role)}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${roleFilter === role
-                                    ? "bg-blue-600 text-white"
+                                    ? "bg-primary text-white dark:text-[#1A2420]"
                                     : "bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600"
                                     }`}
                             >
@@ -211,7 +211,7 @@ export default function UsersClient({
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col gap-1">
                                                 {user.emailVerified ? (
-                                                    <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                                                    <span className="flex items-center gap-1 text-xs text-[#166534] dark:text-mint">
                                                         <CheckCircle className="w-3 h-3" /> Email Verified
                                                     </span>
                                                 ) : (
@@ -240,7 +240,7 @@ export default function UsersClient({
                                                         setSelectedUser(user)
                                                         setShowDetailModal(true)
                                                     }}
-                                                    className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                                                    className="p-2 text-primary dark:text-mint hover:bg-primary-tint dark:hover:bg-primary/15 rounded-lg transition-colors"
                                                     title="View Details"
                                                 >
                                                     <Eye className="w-4 h-4" />
@@ -250,7 +250,7 @@ export default function UsersClient({
                                                         setSelectedUser(user)
                                                         setShowRoleModal(true)
                                                     }}
-                                                    className="p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg transition-colors"
+                                                    className="p-2 text-primary dark:text-mint hover:bg-primary-tint dark:hover:bg-primary/15 rounded-lg transition-colors"
                                                     title="Change Role"
                                                 >
                                                     <Shield className="w-4 h-4" />
@@ -275,7 +275,7 @@ export default function UsersClient({
                                                                 setVerificationReason("")
                                                                 setShowApproveModal(true)
                                                             }}
-                                                            className="p-2 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors"
+                                                            className="p-2 text-[#22C55E] dark:text-mint hover:bg-primary-tint dark:hover:bg-primary/15 rounded-lg transition-colors"
                                                             title="Approve Agent"
                                                         >
                                                             <CheckCircle className="w-4 h-4" />
@@ -404,7 +404,7 @@ export default function UsersClient({
                                         toast.error("Failed to approve")
                                     }
                                 }}
-                                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                                className="px-4 py-2 bg-primary text-white dark:text-[#1A2420] rounded hover:bg-primary-hover"
                             >
                                 Approve
                             </button>

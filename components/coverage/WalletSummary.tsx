@@ -39,9 +39,9 @@ export function WalletSummary({ summary }: WalletSummaryProps) {
                     <div className="text-2xl font-bold text-stone-900 dark:text-stone-100">{summary.totalPolicies}</div>
                 </div>
 
-                <div className="bg-teal-50 dark:bg-teal-900/20 rounded-lg p-4">
-                    <div className="text-sm text-teal-700 dark:text-teal-300 mb-1">{copy.annualPremium}</div>
-                    <div className="text-2xl font-bold text-teal-700 dark:text-teal-200">{formattedPremium}</div>
+                <div className="bg-primary-tint dark:bg-primary/15 rounded-lg p-4">
+                    <div className="text-sm text-primary dark:text-mint mb-1">{copy.annualPremium}</div>
+                    <div className="text-2xl font-bold text-primary dark:text-mint">{formattedPremium}</div>
                 </div>
 
                 {summary.actionNeededCount > 0 && (
@@ -57,7 +57,7 @@ export function WalletSummary({ summary }: WalletSummaryProps) {
                 <div className="space-y-2">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                            <div className="w-3 h-3 rounded-full bg-primary dark:bg-mint" />
                             <span className="text-sm text-stone-700 dark:text-stone-300">{t.policyStatus.active}</span>
                         </div>
                         <span className="text-sm font-semibold text-stone-900 dark:text-stone-100">{summary.activeCount}</span>

@@ -9,7 +9,7 @@
   "crons": [
     {
       "path": "/api/v1/jobs/synthetic-launch-check",
-      "schedule": "0 */3 * * *"
+      "schedule": "0 6 * * *"
     },
     {
       "path": "/api/v1/jobs/collaboration-reminders",

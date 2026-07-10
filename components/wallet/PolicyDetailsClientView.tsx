@@ -289,7 +289,7 @@ export function PolicyDetailsClient({
                 <nav className="mb-5 flex items-center gap-2 text-sm">
                     <Link
                         href="/wallet"
-                        className="font-semibold text-[#19b870] transition-colors hover:text-[#16985d]"
+                        className="font-semibold text-primary transition-colors hover:text-primary-hover dark:text-mint dark:hover:text-mint/80"
                     >
                         {t.wallet.title}
                     </Link>
@@ -297,8 +297,8 @@ export function PolicyDetailsClient({
                     <span className="font-semibold text-black dark:text-white">{displayPolicyNumber || localizedType}</span>
                 </nav>
 
-                <section className="relative overflow-hidden rounded-[28px] border border-white/10 bg-gradient-to-br from-[#0d1f1c] via-[#0f2420] to-[#111111] p-6 text-white shadow-2xl sm:p-8 lg:p-10">
-                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(31,220,134,0.28),_transparent_45%)]" />
+                <section className="relative overflow-hidden rounded-[28px] border border-white/10 bg-[#111111] p-6 text-white shadow-2xl sm:p-8 lg:p-10">
+                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(137,217,178,0.22),_transparent_45%)]" />
                     <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.06),transparent_40%)]" />
 
                     <div className="relative space-y-7">
@@ -317,19 +317,19 @@ export function PolicyDetailsClient({
                         <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
                             <div className="min-w-0">
                                 <div className="mb-4 flex items-start gap-4">
-                                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-[#1FDC86]/35 bg-[#1FDC86]/18">
-                                        <Shield className="h-7 w-7 text-[#9cf0c9]" />
+                                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-mint/35 bg-mint/15">
+                                        <Shield className="h-7 w-7 text-mint" />
                                     </div>
                                     <div className="min-w-0">
                                         <h1 className="text-3xl font-black leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl">
                                             {displayInsurer}
                                         </h1>
                                         {isAnalyzing && isPendingInsurer ? (
-                                            <p className="mt-2 text-sm font-bold uppercase tracking-[0.2em] text-[#9cf0c9] animate-pulse">
+                                            <p className="mt-2 text-sm font-bold uppercase tracking-[0.2em] text-mint animate-pulse">
                                                 {t.policyStatus?.analyzing || 'Analyzing'}...
                                             </p>
                                         ) : (
-                                            <p className="mt-2 text-sm font-bold uppercase tracking-[0.2em] text-[#9cf0c9]">
+                                            <p className="mt-2 text-sm font-bold uppercase tracking-[0.2em] text-mint">
                                                 {localizedType}
                                             </p>
                                         )}
@@ -366,10 +366,10 @@ export function PolicyDetailsClient({
                                     )}
 
                                     {isAnalyzing && isPendingInsurer && (
-                                        <div className="rounded-2xl border border-[#1FDC86]/25 bg-[#1FDC86]/8 px-4 py-3 sm:col-span-2">
+                                        <div className="rounded-2xl border border-mint/25 bg-mint/10 px-4 py-3 sm:col-span-2">
                                             <div className="flex items-center gap-2">
-                                                <Sparkles className="h-4 w-4 text-[#9cf0c9] animate-pulse" />
-                                                <p className="text-sm font-bold text-[#9cf0c9]">
+                                                <Sparkles className="h-4 w-4 text-mint animate-pulse" />
+                                                <p className="text-sm font-bold text-mint">
                                                     {detailsCopy.analyzingDocument || t.policyStatus?.analyzing || 'Analyzing your document'}...
                                                 </p>
                                             </div>
@@ -384,7 +384,7 @@ export function PolicyDetailsClient({
                             {getPremiumAmount() > 0 && (
                                 <div className="w-full max-w-xs rounded-3xl border border-white/15 bg-[#111111] p-5 shadow-lg">
                                     <p className="mb-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/65">
-                                        <TrendingUp className="h-3.5 w-3.5 text-[#9cf0c9]" />
+                                        <TrendingUp className="h-3.5 w-3.5 text-mint" />
                                         {t.wallet.annualPremium}
                                     </p>
                                     <p className="text-4xl font-black leading-none text-white">
@@ -431,7 +431,7 @@ export function PolicyDetailsClient({
                     <section className="space-y-6">
                         <div className="pw-card p-6 sm:p-7">
                             <h2 className="mb-3 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
-                                <FileText className="h-4 w-4 text-[#19b870]" />
+                                <FileText className="h-4 w-4 text-primary dark:text-mint" />
                                 {t.wallet.summary}
                             </h2>
                             <p className="text-sm leading-relaxed text-black/75 dark:text-white/80">
@@ -465,7 +465,7 @@ export function PolicyDetailsClient({
                                     onClick={() => setActiveTab("analysis")}
                                     className={`rounded-xl px-3 py-2.5 text-sm font-bold transition-colors cursor-pointer ${
                                         activeTab === "analysis"
-                                            ? "bg-[#1FDC86] text-white"
+                                            ? "bg-primary text-white dark:text-[#1A2420]"
                                             : "bg-black/5 text-black/70 hover:bg-black/10 dark:bg-white/10 dark:text-white/75 dark:hover:bg-white/15"
                                     }`}
                                 >
@@ -476,7 +476,7 @@ export function PolicyDetailsClient({
                                     onClick={() => setActiveTab("qa")}
                                     className={`rounded-xl px-3 py-2.5 text-sm font-bold transition-colors cursor-pointer ${
                                         activeTab === "qa"
-                                            ? "bg-[#1FDC86] text-white"
+                                            ? "bg-primary text-white dark:text-[#1A2420]"
                                             : "bg-black/5 text-black/70 hover:bg-black/10 dark:bg-white/10 dark:text-white/75 dark:hover:bg-white/15"
                                     }`}
                                 >
@@ -488,7 +488,7 @@ export function PolicyDetailsClient({
                                     disabled={!canShowCollaborationTimeline && !isFreeTier}
                                     className={`rounded-xl px-3 py-2.5 text-sm font-bold transition-colors ${
                                         activeTab === "collaboration"
-                                            ? "bg-[#1FDC86] text-white"
+                                            ? "bg-primary text-white dark:text-[#1A2420]"
                                             : "bg-black/5 text-black/70 hover:bg-black/10 dark:bg-white/10 dark:text-white/75 dark:hover:bg-white/15"
                                     } ${(!canShowCollaborationTimeline || isFreeTier) ? "cursor-not-allowed opacity-45" : "cursor-pointer"}`}
                                 >
@@ -531,11 +531,11 @@ export function PolicyDetailsClient({
                     <aside className="space-y-6">
                         {/* Tier upgrade banner for free users */}
                         {isFreeTier && !isAnalyzing && (
-                            <div className="pw-card relative overflow-hidden border-[#1FDC86]/30 p-6">
-                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#1FDC86]/8 to-transparent" />
+                            <div className="pw-card relative overflow-hidden border-primary/30 p-6">
+                                <div className="pointer-events-none absolute inset-0 bg-primary/5" />
                                 <div className="relative">
                                     <div className="mb-3 flex items-center gap-2">
-                                        <Crown className="h-4 w-4 text-[#1FDC86]" />
+                                        <Crown className="h-4 w-4 text-primary dark:text-mint" />
                                         <h3 className="text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
                                             {t.wallet.upgradePlan}
                                         </h3>
@@ -545,7 +545,7 @@ export function PolicyDetailsClient({
                                     </p>
                                     <a
                                         href="/upgrade"
-                                        className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full bg-[#1FDC86] px-4 text-sm font-bold text-white transition-colors hover:bg-[#19b870]"
+                                        className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full bg-primary px-4 text-sm font-bold text-white dark:text-[#1A2420] transition-colors hover:bg-primary-hover"
                                     >
                                         <Crown className="h-4 w-4" />
                                         {t.wallet.upgradePlan}
@@ -563,7 +563,7 @@ export function PolicyDetailsClient({
                                 <a
                                     href="#policy-qa"
                                     onClick={() => setActiveTab("qa")}
-                                    className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#1FDC86] px-4 text-sm font-bold text-white transition-colors hover:bg-[#19b870]"
+                                    className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-4 text-sm font-bold text-white dark:text-[#1A2420] transition-colors hover:bg-primary-hover"
                                 >
                                     <MessageCircle className="h-4 w-4" />
                                     {copy.askStarter}
@@ -601,7 +601,7 @@ export function PolicyDetailsClient({
 
                                 <button
                                     onClick={handleCallInsurer}
-                                    className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-[#1FDC86] px-4 text-sm font-bold text-white transition-colors hover:bg-[#19b870] cursor-pointer"
+                                    className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full bg-primary px-4 text-sm font-bold text-white dark:text-[#1A2420] transition-colors hover:bg-primary-hover cursor-pointer"
                                 >
                                     <Phone className="h-4 w-4" />
                                     {copy.contactInsurer}
@@ -611,7 +611,7 @@ export function PolicyDetailsClient({
                                     onClick={handleRenewalRequest}
                                     className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-full border border-black/15 bg-white px-4 text-sm font-semibold text-black transition-colors hover:bg-black/5 dark:border-white/20 dark:bg-black dark:text-white dark:hover:bg-white/10 cursor-pointer"
                                 >
-                                    <Sparkles className="h-4 w-4 text-[#19b870]" />
+                                    <Sparkles className="h-4 w-4 text-primary dark:text-mint" />
                                     {copy.requestRenewal}
                                 </button>
 
@@ -680,7 +680,7 @@ export function PolicyDetailsClient({
 
                         <div className="pw-card p-6">
                             <h3 className="mb-4 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
-                                <FileText className="h-4 w-4 text-[#19b870]" />
+                                <FileText className="h-4 w-4 text-primary dark:text-mint" />
                                 {copy.documentsArea}
                             </h3>
 

@@ -144,7 +144,7 @@ export function getAgentWelcomeEmail(agentName: string) {
     
     <h3>Quick Start Guide</h3>
     
-    <div style="background-color: #F0FDFA; border: 1px solid #14B8A6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+    <div style="background-color: #F0FDFA; border: 1px solid #29685B; padding: 20px; border-radius: 8px; margin: 20px 0;">
       <p style="margin: 0 0 12px 0;"><strong>1. Complete Your Profile</strong></p>
       <p style="margin: 0 0 20px 0; font-size: 14px; color: #6B7280;">
         Add your professional details, certifications, and areas of expertise
