@@ -64,6 +64,7 @@ export const en: TranslationKeys = {
         admin: 'Administration',
         users: 'Users & Roles',
         dsrQueue: 'DSR Queue',
+        extractionFlags: 'Extraction Flags',
         billingReconciliation: 'Billing Reconciliation',
         launchReadiness: 'Launch Readiness',
         insurers: 'Insurers',
