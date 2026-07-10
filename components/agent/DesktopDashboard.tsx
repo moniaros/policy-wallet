@@ -19,6 +19,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { formatRelativeDate } from "@/lib/agent/format"
 import { ActionQueueCard } from "./ActionQueueCard"
+import { AgentKpiStrip } from "./AgentKpiStrip"
 import { RevenuePulse } from "./RevenuePulse"
 import { PortfolioHealth } from "./PortfolioHealth"
 import { ClientListGrouped } from "./ClientCard"
@@ -31,6 +32,21 @@ import type {
     AgentDashboardData,
 } from "./types"
 import type { AgentTier } from "@/types/subscription-entitlements"
+
+const DASH_COPY = {
+    newClient: { el: "Νέος Πελάτης", en: "New Client" },
+    revenuePulse: { el: "Παλμός Εσόδων", en: "Revenue Pulse" },
+    clients: { el: "Πελάτες", en: "Clients" },
+    recentActivity: { el: "Πρόσφατη Δραστηριότητα", en: "Recent Activity" },
+    quickAdd: { el: "Γρήγορη Προσθήκη", en: "Quick Add" },
+    quickClient: { el: "Πελάτης", en: "Client" },
+    quickPolicy: { el: "Ασφαλιστήριο", en: "Policy" },
+    quickRequest: { el: "Αίτημα", en: "Request" },
+    action: { el: "Δράση", en: "Action" },
+} as const
+
+const pick = (pair: { el: string; en: string }, language: string) =>
+    language === "el" ? pair.el : pair.en
 
 interface DesktopDashboardProps {
     data: AgentDashboardData
@@ -112,7 +128,7 @@ export function DesktopDashboard({
                                 className="group inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] font-semibold rounded-xl shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all cursor-pointer text-sm"
                             >
                                 <UserPlus className="w-4 h-4" />
-                                {language === "el" ? "Νέος Πελάτης" : "New Client"}
+                                {pick(DASH_COPY.newClient, language)}
                             </button>
                         </div>
                     </div>
@@ -120,6 +136,9 @@ export function DesktopDashboard({
             </div>
 
             <div className="max-w-[1400px] mx-auto px-8 py-6 space-y-6">
+                {/* ── Book-of-business KPI strip ─────────────────────────── */}
+                {data.portalStats && <AgentKpiStrip stats={data.portalStats} />}
+
                 {/* ── Above the fold: Action Queue + Revenue Pulse ──────── */}
                 <div className="grid grid-cols-12 gap-5">
                     <div className="col-span-7">
@@ -135,7 +154,7 @@ export function DesktopDashboard({
                         <AgentPlanGate
                             currentTier={agentTier}
                             requiredTier="agent_starter"
-                            featureLabel={language === "el" ? "Παλμός Εσόδων" : "Revenue Pulse"}
+                            featureLabel={pick(DASH_COPY.revenuePulse, language)}
                         >
                             <RevenuePulse
                                 metrics={data.revenue}
@@ -170,7 +189,7 @@ export function DesktopDashboard({
                             <div className="flex items-center justify-between mb-4">
                                 <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                                     <Users className="h-5 w-5 text-primary dark:text-mint" />
-                                    {language === "el" ? "Πελάτες" : "Clients"}
+                                    {pick(DASH_COPY.clients, language)}
                                 </h2>
                             </div>
                             <ClientListGrouped
@@ -187,7 +206,7 @@ export function DesktopDashboard({
                         <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-5">
                             <h2 className="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                                 <Activity className="h-4 w-4 text-primary dark:text-mint" />
-                                {language === "el" ? "Πρόσφατη Δραστηριότητα" : "Recent Activity"}
+                                {pick(DASH_COPY.recentActivity, language)}
                             </h2>
                             <div className="space-y-4">
                                 {recentActivity.slice(0, 6).map((activity, i) => {
@@ -224,13 +243,13 @@ export function DesktopDashboard({
                         {onQuickAdd && (
                             <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-4">
                                 <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
-                                    {language === "el" ? "Γρήγορη Προσθήκη" : "Quick Add"}
+                                    {pick(DASH_COPY.quickAdd, language)}
                                 </h3>
                                 <div className="grid grid-cols-3 gap-2">
                                     {[
-                                        { type: "client" as const, icon: UserPlus, label: language === "el" ? "Πελάτης" : "Client" },
-                                        { type: "policy" as const, icon: FileText, label: language === "el" ? "Ασφαλιστήριο" : "Policy" },
-                                        { type: "document_request" as const, icon: Send, label: language === "el" ? "Αίτημα" : "Request" },
+                                        { type: "client" as const, icon: UserPlus, label: pick(DASH_COPY.quickClient, language) },
+                                        { type: "policy" as const, icon: FileText, label: pick(DASH_COPY.quickPolicy, language) },
+                                        { type: "document_request" as const, icon: Send, label: pick(DASH_COPY.quickRequest, language) },
                                     ].map(({ type, icon: Icon, label }) => (
                                         <button
                                             key={type}
@@ -304,7 +323,7 @@ function TodaysFollowUps({
                                 onClick={() => onAction(item)}
                                 className="shrink-0 rounded-lg bg-primary-soft dark:bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary dark:text-mint transition hover:bg-primary/20 dark:hover:bg-primary/25 cursor-pointer"
                             >
-                                {language === "el" ? "Δράση" : "Action"}
+                                {pick(DASH_COPY.action, language)}
                             </button>
                         </div>
                     ))}

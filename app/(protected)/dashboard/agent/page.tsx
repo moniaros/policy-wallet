@@ -10,6 +10,7 @@ import { resolveAgentEntitlements } from "@/lib/subscription-entitlements"
 import { computeClientHealthScore } from "@/lib/agent/health-score"
 import { classifyUrgencyTier } from "@/lib/agent/format"
 import { db as prisma } from "@/lib/db"
+import { getAgentPortalData } from "@/lib/services/agent-portal.service"
 import type { AgentDashboardData, ActionQueueItem, ClientCardData, GapsSummary } from "@/components/agent/types"
 
 export default async function DashboardPage() {
@@ -90,12 +91,13 @@ export default async function DashboardPage() {
         const endDate = new Date(policy.endDate)
         if (endDate >= now && endDate <= thirtyDaysFromNow) {
             const ownerRel = relationships.find((r) => r.policyholderUserId === policy.ownerUserId)
+            const lobLabel = policy.lineOfBusiness || "Policy"
             actionQueue.push({
                 id: `expiring-${policy.id}`,
                 type: "expiring_policy",
                 clientId: ownerRel?.customer.id || policy.ownerUserId,
                 clientName: ownerRel?.customer.name || "Client",
-                description: `${policy.lineOfBusiness || "Policy"} expires ${endDate.toLocaleDateString("el-GR")}`,
+                description: `${lobLabel} expires ${endDate.toLocaleDateString("el-GR")}`,
                 dueDate: endDate.toISOString(),
                 urgency: (endDate.getTime() - now.getTime()) < 7 * 86_400_000 ? "high" : "medium",
                 oneTapAction: "renew",
@@ -303,6 +305,11 @@ export default async function DashboardPage() {
         }
         : null
 
+    // B2B portal KPI strip (book-of-business metrics)
+    const portalStats = await getAgentPortalData(agentId)
+        .then((portal) => portal.stats)
+        .catch(() => null)
+
     const dashboardData: AgentDashboardData = {
         actionQueue,
         revenue,
@@ -310,6 +317,7 @@ export default async function DashboardPage() {
         clientsByUrgency,
         todaysFollowUps,
         gapsSummary,
+        portalStats,
     }
 
     return (

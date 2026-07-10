@@ -86,6 +86,8 @@ export interface Customer {
     opportunities?: Opportunity[]
     interactions?: Interaction[]
     crossSell?: CustomerCrossSell
+    /** Per-client portal intelligence (health score, renewal, gaps, consent, next action). */
+    intelligence?: import("@/lib/services/agent-portal.service").CustomerIntelligence
 }
 
 export interface DashboardSummary {
@@ -240,4 +242,6 @@ export interface AgentDashboardData {
     }
     todaysFollowUps: ActionQueueItem[]
     gapsSummary?: GapsSummary | null
+    /** B2B portal KPI strip data (book-of-business metrics). */
+    portalStats?: import("@/lib/services/agent-portal.service").AgentPortalStats | null
 }
