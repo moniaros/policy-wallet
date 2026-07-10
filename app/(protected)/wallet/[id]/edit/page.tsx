@@ -10,23 +10,36 @@ import Link from "next/link"
 
 interface Props {
     params: Promise<{ id: string }>
+    searchParams?: Promise<{ returnTo?: string }>
 }
 
-export default async function EditPolicyPage({ params }: Props) {
+export default async function EditPolicyPage({ params, searchParams }: Props) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) redirect("/auth/signin")
 
     const { id } = await params
+    const { returnTo } = (await searchParams) ?? {}
     const policy = await db.policy.findUnique({
         where: { id }
     })
 
     if (!policy) notFound()
 
-    // Authorization check: Only owner can edit
-    if (policy.ownerUserId !== authResult.dbUser.id) {
+    // Authorization: owner, or an active policy-scoped edit/manage grant
+    // (agent-managed policies).
+    const { getPolicyAccess } = await import("@/lib/policy-access")
+    const access = await getPolicyAccess(id, {
+        id: authResult.dbUser.id,
+        roles: authResult.dbUser.roles,
+    })
+    if (!access.canWrite) {
         redirect("/wallet")
     }
+
+    // Only allow same-origin relative return targets.
+    const safeReturnTo = returnTo && returnTo.startsWith("/") && !returnTo.startsWith("//")
+        ? returnTo
+        : undefined
 
     const preferredLanguage = (authResult.dbUser.preferredLanguage as "en" | "el") || "en"
     const t = getTranslations(preferredLanguage)
@@ -41,7 +54,7 @@ export default async function EditPolicyPage({ params }: Props) {
         <div className="min-h-screen bg-stone-50 pb-20">
             {/* Header */}
             <div className="sticky top-0 z-10 bg-white border-b border-stone-200 px-4 py-3 flex items-center gap-3">
-                <Link href={`/wallet/${id}`} className="p-2 -ml-2 hover:bg-stone-100 rounded-full">
+                <Link href={safeReturnTo ?? `/wallet/${id}`} className="p-2 -ml-2 hover:bg-stone-100 rounded-full">
                     <ChevronLeft className="w-5 h-5 text-stone-600" />
                 </Link>
                 <h1 className="text-lg font-bold text-stone-900">
@@ -53,6 +66,7 @@ export default async function EditPolicyPage({ params }: Props) {
                 <EditPolicyForm
                     policy={sanitizedPolicy}
                     t={t}
+                    returnTo={safeReturnTo}
                 />
             </main>
         </div>

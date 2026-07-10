@@ -20,9 +20,11 @@ interface EditPolicyFormProps {
         coverageSummary?: string | null
     }
     t?: any
+    /** Same-origin path to navigate back to after save (agent surfaces). */
+    returnTo?: string
 }
 
-export function EditPolicyForm({ policy, t }: EditPolicyFormProps) {
+export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
     const { t: contextT } = useLanguage()
     const i18n = t || contextT
     const router = useRouter()
@@ -76,7 +78,7 @@ export function EditPolicyForm({ policy, t }: EditPolicyFormProps) {
                 toast.error(mapWalletErrorToMessage(result.error, i18n, "updatePolicy"))
             } else {
                 toast.success(copy.success)
-                router.push(`/wallet/${policy.id}`)
+                router.push(returnTo ?? `/wallet/${policy.id}`)
                 router.refresh()
             }
         })

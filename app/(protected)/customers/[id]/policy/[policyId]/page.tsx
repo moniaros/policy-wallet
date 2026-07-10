@@ -13,23 +13,15 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
     const { id: customerId, policyId } = await params
     const { dbUser } = await getAuthenticatedUser()
 
-    // 1. Verify Access (Agent -> Customer)
-    const relationship = await db.customerRelationship.findFirst({
-        where: {
-            agentUserId: dbUser.id,
-            policyholderUserId: customerId,
-        }
+    // 1. Verify access through the central policy authorization: usable
+    // relationship OR an active grant scoped to THIS policy (previously any
+    // single grant exposed every policy of the customer here).
+    const { getPolicyAccess } = await import("@/lib/policy-access")
+    const access = await getPolicyAccess(policyId, {
+        id: dbUser.id,
+        roles: dbUser.roles,
     })
-
-    const hasGrant = await db.accessGrant.findFirst({
-        where: {
-            granterUserId: customerId,
-            granteeUserId: dbUser.id,
-            status: 'active'
-        }
-    })
-
-    if (!relationship && !hasGrant) {
+    if (!access.canRead || access.policy?.ownerUserId !== customerId) {
         notFound()
     }
 
@@ -51,11 +43,17 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
         notFound()
     }
 
-    // 3. Fetch Customer for Breadcrumbs
-    const customer = await db.user.findUnique({
-        where: { id: customerId },
-        select: { name: true }
-    })
+    // 3. Fetch Customer for Breadcrumbs + relationship for collaboration
+    const [customer, relationship] = await Promise.all([
+        db.user.findUnique({
+            where: { id: customerId },
+            select: { name: true }
+        }),
+        db.customerRelationship.findFirst({
+            where: { agentUserId: dbUser.id, policyholderUserId: customerId },
+            select: { id: true }
+        })
+    ])
 
     const status = calculatePolicyStatus(policy)
     const statusColor = getStatusColor(status)
