@@ -1,11 +1,13 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { useIsMobile } from "@/hooks/useResponsive"
 import { useLanguage } from "@/contexts/LanguageContext"
 import type { Policy } from "@/components/wallet/types"
-import { Mail, Phone, Globe, ShieldCheck, Building2, MessageSquare, FileText, Send, Inbox } from "lucide-react"
+import { Mail, Phone, Globe, ShieldCheck, Building2, MessageSquare, FileText, Send, Inbox, Handshake } from "lucide-react"
+import { EmptyState as SharedEmptyState } from "@/components/ui/EmptyState"
+import { redeemInviteCode } from "@/app/onboarding/actions"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { DocumentRequestRespond, DocumentRequestCard } from "@/components/collaboration/DocumentRequestFlow"
@@ -43,6 +45,127 @@ interface AgentClientProps {
 }
 
 type Tab = "overview" | "messages" | "documents" | "proposals"
+
+const PAGE_COPY = {
+    kicker: { el: "Ο Σύμβουλός μου", en: "My Agent" },
+    tabOverview: { el: "Επισκόπηση", en: "Overview" },
+    tabMessages: { el: "Μηνύματα", en: "Messages" },
+    tabDocuments: { el: "Έγγραφα", en: "Documents" },
+    tabProposals: { el: "Προτάσεις", en: "Proposals" },
+    advisorFallback: { el: "Ασφαλιστικός σύμβουλος", en: "Insurance advisor" },
+    call: { el: "Κλήση", en: "Call" },
+    noDocumentRequests: { el: "Δεν υπάρχουν αιτήματα εγγράφων", en: "No document requests yet" },
+    completedSection: { el: "Ολοκληρωμένα", en: "Completed" },
+    noProposals: { el: "Δεν υπάρχουν προτάσεις ακόμα", en: "No proposals yet" },
+} as const
+
+const pick = (pair: { el: string; en: string }, language: string) =>
+    language === "el" ? pair.el : pair.en
+
+const NO_AGENT_COPY = {
+    headline: { el: "Συνδεθείτε με τον ασφαλιστικό σας σύμβουλο", en: "Connect with your insurance advisor" },
+    benefit: {
+        el: "Μοιραστείτε μόνο ό,τι επιλέγετε και αποκτήστε επαγγελματική ματιά στα κενά κάλυψής σας.",
+        en: "Share only what you choose and get a professional eye on your coverage gaps.",
+    },
+    previewLabel: { el: "Παράδειγμα", en: "Example" },
+    exampleName: { el: "Γιώργος Π. — Ασφαλιστικός Σύμβουλος", en: "George P. — Insurance Advisor" },
+    exampleMeta: { el: "Πιστοποιημένος συνεργάτης", en: "Verified partner" },
+    exampleBadge: { el: "Συνδεδεμένος", en: "Connected" },
+    inputLabel: { el: "Κωδικός πρόσκλησης", en: "Invite code" },
+    inputPlaceholder: { el: "π.χ. 8f3a-…", en: "e.g. 8f3a-…" },
+    submit: { el: "Σύνδεση με σύμβουλο", en: "Connect with advisor" },
+    submitting: { el: "Σύνδεση…", en: "Connecting…" },
+    trust: {
+        el: "Εσείς ελέγχετε την πρόσβαση — μπορείτε να την ανακαλέσετε ανά πάσα στιγμή",
+        en: "You control the access — revoke it at any time",
+    },
+    errors: {
+        invalid: { el: "Μη έγκυρος κωδικός. Ελέγξτε τον και δοκιμάστε ξανά.", en: "Invalid code. Check it and try again." },
+        already_used: { el: "Ο κωδικός έχει ήδη χρησιμοποιηθεί.", en: "This code has already been used." },
+        expired: { el: "Ο κωδικός έχει λήξει. Ζητήστε νέο από τον σύμβουλό σας.", en: "This code has expired. Ask your advisor for a new one." },
+    },
+} as const
+
+function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
+    const router = useRouter()
+    const [code, setCode] = useState("")
+    const [error, setError] = useState<string | null>(null)
+    const [isPending, startTransition] = useTransition()
+    const lang = language
+
+    const submit = () => {
+        if (!code.trim() || isPending) return
+        setError(null)
+        startTransition(async () => {
+            const result = await redeemInviteCode(code.trim())
+            if (result.success) {
+                router.refresh()
+            } else {
+                const key = ("error" in result ? result.error : "invalid") as keyof typeof NO_AGENT_COPY.errors
+                setError(NO_AGENT_COPY.errors[key]?.[lang] ?? NO_AGENT_COPY.errors.invalid[lang])
+            }
+        })
+    }
+
+    return (
+        <div className="mx-auto max-w-3xl px-4 py-10">
+            <p className="pw-kicker mb-4">{PAGE_COPY.kicker[lang]}</p>
+            <SharedEmptyState
+                icon={Handshake}
+                headline={NO_AGENT_COPY.headline[lang]}
+                description={NO_AGENT_COPY.benefit[lang]}
+                previewLabel={NO_AGENT_COPY.previewLabel[lang]}
+                preview={
+                    <div className="flex items-center gap-3 rounded-xl bg-white p-3 shadow-sm dark:bg-black">
+                        <div className="grid h-10 w-10 flex-shrink-0 place-items-center rounded-full bg-primary text-sm font-bold text-white dark:text-[#1A2420]">
+                            Γ
+                        </div>
+                        <div className="min-w-0 flex-1 text-left">
+                            <p className="truncate text-[13px] font-semibold text-[#0F172A] dark:text-white">
+                                {NO_AGENT_COPY.exampleName[lang]}
+                            </p>
+                            <p className="inline-flex items-center gap-1 text-[11px] text-[#64748B] dark:text-white/55">
+                                <ShieldCheck className="h-3 w-3 text-primary dark:text-mint" />
+                                {NO_AGENT_COPY.exampleMeta[lang]}
+                            </p>
+                        </div>
+                        <span className="flex-shrink-0 rounded-full bg-primary-soft px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-[#166534] dark:bg-primary/15 dark:text-mint">
+                            {NO_AGENT_COPY.exampleBadge[lang]}
+                        </span>
+                    </div>
+                }
+                trust={NO_AGENT_COPY.trust[lang]}
+                secondary={
+                    <div className="text-left">
+                        <label htmlFor="agent-invite-code" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-[#64748B] dark:text-white/55">
+                            {NO_AGENT_COPY.inputLabel[lang]}
+                        </label>
+                        <div className="flex gap-2">
+                            <input
+                                id="agent-invite-code"
+                                value={code}
+                                onChange={(e) => setCode(e.target.value)}
+                                onKeyDown={(e) => e.key === "Enter" && submit()}
+                                placeholder={NO_AGENT_COPY.inputPlaceholder[lang]}
+                                className="min-w-0 flex-1 rounded-full border border-[#E2E8F0] bg-white px-4 py-2.5 text-sm text-[#0F172A] outline-none transition-colors focus:border-primary dark:border-white/15 dark:bg-black dark:text-white dark:focus:border-mint"
+                            />
+                            <button
+                                type="button"
+                                onClick={submit}
+                                disabled={isPending || !code.trim()}
+                                className="flex-shrink-0 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-primary-hover active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 dark:text-[#1A2420]"
+                            >
+                                {isPending ? NO_AGENT_COPY.submitting[lang] : NO_AGENT_COPY.submit[lang]}
+                            </button>
+                        </div>
+                        {error && <p className="mt-2 text-xs text-[#B91C1C]">{error}</p>}
+                    </div>
+                }
+            />
+        </div>
+    )
+}
 
 export function AgentClient({ policies, user, agent, relationshipId }: AgentClientProps) {
     const isMobile = useIsMobile()
@@ -159,44 +282,30 @@ export function AgentClient({ policies, user, agent, relationshipId }: AgentClie
     }
 
     const tabs: { id: Tab; label: string; icon: React.ElementType; count?: number }[] = [
-        { id: "overview", label: language === "el" ? "Επισκόπηση" : "Overview", icon: Building2 },
-        { id: "messages", label: language === "el" ? "Μηνύματα" : "Messages", icon: MessageSquare },
+        { id: "overview", label: pick(PAGE_COPY.tabOverview, language), icon: Building2 },
+        { id: "messages", label: pick(PAGE_COPY.tabMessages, language), icon: MessageSquare },
         {
             id: "documents",
-            label: language === "el" ? "Έγγραφα" : "Documents",
+            label: pick(PAGE_COPY.tabDocuments, language),
             icon: FileText,
             count: documentRequests.filter(r => r.status === "pending").length || undefined,
         },
         {
             id: "proposals",
-            label: language === "el" ? "Προτάσεις" : "Proposals",
+            label: pick(PAGE_COPY.tabProposals, language),
             icon: Send,
             count: proposals.filter(p => p.status === "pending").length || undefined,
         },
     ]
 
     if (!agent) {
-        return (
-            <div className="mx-auto max-w-3xl px-4 py-10">
-                <div className="pw-card rounded-3xl p-8">
-                    <p className="pw-kicker">{language === "el" ? "Ο Σύμβουλός μου" : "My Agent"}</p>
-                    <div className="mt-5 rounded-2xl border border-dashed border-black/30 dark:border-white/30 p-6 text-center">
-                        <Inbox className="w-10 h-10 mx-auto mb-3 text-black/30 dark:text-white/30" />
-                        <p className="text-sm text-black/70 dark:text-white/75">
-                            {language === "el"
-                                ? "Δεν έχετε συνδεδεμένο σύμβουλο ακόμα. Εισάγετε τον κωδικό πρόσκλησης από τον σύμβουλό σας."
-                                : "No connected advisor yet. Enter an invite code from your advisor to connect."}
-                        </p>
-                    </div>
-                </div>
-            </div>
-        )
+        return <NoAgentEmptyState language={language === "el" ? "el" : "en"} />
     }
 
     return (
         <div className={`mx-auto ${isMobile ? 'px-4 py-6' : 'max-w-3xl px-4 py-10'}`}>
             <div className="pw-card rounded-3xl p-6 sm:p-8">
-                <p className="pw-kicker mb-4">{language === "el" ? "Ο Σύμβουλός μου" : "My Agent"}</p>
+                <p className="pw-kicker mb-4">{pick(PAGE_COPY.kicker, language)}</p>
 
                 {/* Tabs */}
                 <div className="flex gap-1 mb-6 overflow-x-auto scrollbar-hide -mx-2 px-2">
@@ -296,7 +405,7 @@ function OverviewTab({ agent, language }: { agent: NonNullable<AgentClientProps[
                         <div className="flex items-center gap-2 mt-0.5">
                             <Building2 className="w-3.5 h-3.5 text-slate-400" />
                             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-                                {agent.branding?.agencyName || agent.company || (language === "el" ? "Ασφαλιστικός σύμβουλος" : "Insurance advisor")}
+                                {agent.branding?.agencyName || agent.company || pick(PAGE_COPY.advisorFallback, language)}
                             </p>
                         </div>
                         {agent.branding?.licenseNumber && (
@@ -315,7 +424,7 @@ function OverviewTab({ agent, language }: { agent: NonNullable<AgentClientProps[
                     className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold text-white transition hover:opacity-90 shadow-lg min-h-[44px]"
                     style={{ backgroundColor: agent.branding?.brandColor || "#29685B" }}
                 >
-                    <Phone className="h-4 w-4" /> {language === "el" ? "Κλήση" : "Call"}
+                    <Phone className="h-4 w-4" /> {pick(PAGE_COPY.call, language)}
                 </a>
                 <a
                     href={`mailto:${agent.email}`}
@@ -366,7 +475,7 @@ function DocumentsTab({
             <div className="flex flex-col items-center text-center py-10">
                 <FileText className="w-10 h-10 mb-3 text-black/20 dark:text-white/20" />
                 <p className="text-sm text-black/60 dark:text-white/60">
-                    {language === "el" ? "Δεν υπάρχουν αιτήματα εγγράφων" : "No document requests yet"}
+                    {pick(PAGE_COPY.noDocumentRequests, language)}
                 </p>
             </div>
         )
@@ -389,7 +498,7 @@ function DocumentsTab({
             {completed.length > 0 && (
                 <div className="space-y-2">
                     <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mt-4 mb-2">
-                        {language === "el" ? "Ολοκληρωμένα" : "Completed"}
+                        {pick(PAGE_COPY.completedSection, language)}
                     </p>
                     {completed.map(request => (
                         <DocumentRequestCard
@@ -431,7 +540,7 @@ function ProposalsTab({
             <div className="flex flex-col items-center text-center py-10">
                 <Send className="w-10 h-10 mb-3 text-black/20 dark:text-white/20" />
                 <p className="text-sm text-black/60 dark:text-white/60">
-                    {language === "el" ? "Δεν υπάρχουν προτάσεις ακόμα" : "No proposals yet"}
+                    {pick(PAGE_COPY.noProposals, language)}
                 </p>
             </div>
         )

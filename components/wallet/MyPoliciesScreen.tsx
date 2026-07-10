@@ -7,6 +7,8 @@ import { CarIcon, HomeIcon, DocumentIcon, ShieldIcon, HeartIcon, BriefcaseIcon, 
 import { calculatePremiumFootprint } from '@/lib/wallet/premium-footprint'
 import { getDocumentPolicySummary } from '@/lib/wallet/document-insights'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
+import { Wallet, Car } from 'lucide-react'
+import { EmptyState as SharedEmptyState, PolicyPreviewRow } from '@/components/ui/EmptyState'
 
 interface MyPoliciesScreenProps {
     policies: Policy[]
@@ -96,23 +98,22 @@ export function MyPoliciesScreen({ policies, onViewPolicy, onAddPolicy }: MyPoli
 
             <div className="px-5 space-y-3">
                 {policies.length === 0 ? (
-                    <div className="text-center py-16 bg-white dark:bg-black rounded-3xl border border-dashed border-black/15 dark:border-white/20">
-                        <div className="w-16 h-16 mx-auto mb-5 bg-black/5 dark:bg-black rounded-full flex items-center justify-center border border-black/10 dark:border-white/15">
-                            <DocumentIcon className="w-10 h-10 text-black/45 dark:text-white/60" />
-                        </div>
-                        <h3 className="text-xl font-black text-black dark:text-white mb-2">
-                            {copy.emptyTitle}
-                        </h3>
-                        <p className="text-black/55 dark:text-white/65 mb-6 max-w-[240px] mx-auto text-sm">
-                            {copy.emptyDescription}
-                        </p>
-                        <button
-                            onClick={onAddPolicy}
-                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] font-semibold rounded-2xl border border-primary/35 transition-all active:scale-[0.98] cursor-pointer"
-                        >
-                            {copy.addPolicy}
-                        </button>
-                    </div>
+                    <SharedEmptyState
+                        icon={Wallet}
+                        headline={t.wallet.emptyState.headline}
+                        description={t.wallet.emptyState.benefit}
+                        cta={{ label: t.wallet.emptyState.ctaPrimary, onClick: onAddPolicy }}
+                        previewLabel={t.wallet.emptyState.previewLabel}
+                        preview={
+                            <PolicyPreviewRow
+                                icon={Car}
+                                name={t.wallet.emptyState.exampleMotor}
+                                meta={t.wallet.emptyState.exampleMotorMeta}
+                                statusLabel={t.wallet.emptyState.exampleMotorStatus}
+                            />
+                        }
+                        trust={t.wallet.emptyState.trust}
+                    />
                 ) : (
                     policies.map((policy) => {
                         const typeLabel = policy.lineOfBusiness

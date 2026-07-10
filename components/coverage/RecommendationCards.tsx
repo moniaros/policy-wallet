@@ -19,6 +19,7 @@ import {
     X,
 } from "lucide-react"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
+import { EmptyState, RecommendationPreviewCard } from "@/components/ui/EmptyState"
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -45,6 +46,8 @@ interface Recommendation {
 interface RecommendationCardsProps {
     recommendations: Recommendation[]
     language: "en" | "el"
+    /** True when the risk-profile wizard is rendered on the same page. */
+    profileIncomplete?: boolean
 }
 
 // ── LOB icon map ─────────────────────────────────────────────────────
@@ -110,6 +113,7 @@ const URGENCY_LABELS: Record<string, { en: string; el: string }> = {
 export function RecommendationCards({
     recommendations,
     language,
+    profileIncomplete = false,
 }: RecommendationCardsProps) {
     const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set())
     const [expandedId, setExpandedId] = useState<string | null>(null)
@@ -140,7 +144,44 @@ export function RecommendationCards({
         }
     }
 
-    if (visible.length === 0) return null
+    if (visible.length === 0) {
+        return (
+            <EmptyState
+                icon={Lightbulb}
+                headline={t("Οι προτάσεις σας ετοιμάζονται", "Your recommendations are on the way")}
+                description={t(
+                    "Όσο πληρέστερο το προφίλ και τα συμβόλαιά σας, τόσο πιο εύστοχες οι προτάσεις της AI.",
+                    "The more complete your profile and policies, the sharper the AI's recommendations."
+                )}
+                cta={
+                    profileIncomplete
+                        ? {
+                              label: t("Συμπλήρωση προφίλ κινδύνου", "Complete your risk profile"),
+                              onClick: () =>
+                                  document
+                                      .getElementById("risk-profile-wizard")
+                                      ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+                          }
+                        : { label: t("Προσθήκη συμβολαίου", "Add a policy"), href: "/wallet/add" }
+                }
+                previewLabel={t("Παράδειγμα", "Example")}
+                preview={
+                    <RecommendationPreviewCard
+                        title={t("Αύξηση κάλυψης κατοικίας", "Increase home coverage")}
+                        meta={t(
+                            "Η κάλυψη περιεχομένου φαίνεται χαμηλή για το προφίλ σας.",
+                            "Your contents coverage looks low for your profile."
+                        )}
+                        urgencyLabel={t("Συνιστάται", "Recommended")}
+                    />
+                }
+                trust={t(
+                    "Ενημερωτικές προτάσεις — όχι ασφαλιστική συμβουλή",
+                    "Informational suggestions — not insurance advice"
+                )}
+            />
+        )
+    }
 
     return (
         <div className="pw-card rounded-3xl p-6">

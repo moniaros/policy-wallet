@@ -18,6 +18,7 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { EmptyState, RenewalPreviewRow } from "@/components/ui/EmptyState"
 import type { RenewalView } from "./actions"
 import { updateRenewalOutcome, getAgentRenewals, sendBatchRenewalReminder } from "./actions"
 
@@ -57,10 +58,19 @@ const copy = {
         sendBatchReminder: "Send Reminders",
         noRenewals: "No renewals to display",
         noRenewalsDesc: "Renewals will appear here as policies approach their expiry dates.",
+        emptyHeadline: "No renewal alerts",
+        emptyBenefit: "As client policies come in, expirations appear here 90 days ahead — never miss a renewal again.",
+        emptyCta: "Add client policies",
+        emptyPreviewLabel: "Example",
+        emptyExampleName: "Maria K. — Motor",
+        emptyExampleMeta: "Interamerican · €312/yr",
+        emptyExampleDays: "in 45 days",
         selected: "selected",
         notes: "Notes (optional)",
         save: "Save",
         cancel: "Cancel",
+        outcomeRecorded: "Outcome recorded",
+        actionFailed: "Failed",
     },
     el: {
         title: "Ανανεώσεις",
@@ -97,10 +107,19 @@ const copy = {
         sendBatchReminder: "Αποστολή Υπενθυμίσεων",
         noRenewals: "Δεν υπάρχουν ανανεώσεις",
         noRenewalsDesc: "Οι ανανεώσεις θα εμφανιστούν εδώ καθώς πλησιάζουν οι ημερομηνίες λήξης.",
+        emptyHeadline: "Κανένας συναγερμός ανανέωσης",
+        emptyBenefit: "Μόλις προστεθούν συμβόλαια πελατών, οι λήξεις εμφανίζονται εδώ 90 ημέρες πριν — ποτέ ξανά χαμένη ανανέωση.",
+        emptyCta: "Προσθήκη συμβολαίων πελατών",
+        emptyPreviewLabel: "Παράδειγμα",
+        emptyExampleName: "Μαρία Κ. — Αυτοκίνητο",
+        emptyExampleMeta: "Interamerican · €312/έτος",
+        emptyExampleDays: "σε 45 ημέρες",
         selected: "επιλεγμένα",
         notes: "Σημειώσεις (προαιρετικά)",
         save: "Αποθήκευση",
         cancel: "Ακύρωση",
+        outcomeRecorded: "Αποτέλεσμα καταγράφηκε",
+        actionFailed: "Αποτυχία",
     },
 }
 
@@ -158,7 +177,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
         setIsSaving(false)
 
         if (result.success) {
-            toast.success(language === "el" ? "Αποτέλεσμα καταγράφηκε" : "Outcome recorded")
+            toast.success(t.outcomeRecorded)
             setOutcomeModal(null)
             setOutcomeNotes("")
             router.refresh()
@@ -166,7 +185,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
             const updated = await getAgentRenewals({ status: statusFilter === "all" ? undefined : statusFilter, timeframe })
             setRenewals(updated)
         } else {
-            toast.error(result.error || "Failed")
+            toast.error(result.error || t.actionFailed)
         }
     }
 
@@ -184,7 +203,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
             )
             setSelectedIds(new Set())
         } else {
-            toast.error(result.error || "Failed")
+            toast.error(result.error || t.actionFailed)
         }
     }
 
@@ -305,11 +324,28 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
 
                 {/* Timeline Table */}
                 {renewals.length === 0 ? (
-                    <div className="arc-card p-12 text-center">
-                        <CalendarClock className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-                        <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300 mb-1">{t.noRenewals}</h3>
-                        <p className="text-sm text-slate-500 dark:text-slate-400">{t.noRenewalsDesc}</p>
-                    </div>
+                    stats.total === 0 ? (
+                        <EmptyState
+                            icon={CalendarClock}
+                            headline={t.emptyHeadline}
+                            description={t.emptyBenefit}
+                            cta={{ label: t.emptyCta, href: "/customers" }}
+                            previewLabel={t.emptyPreviewLabel}
+                            preview={
+                                <RenewalPreviewRow
+                                    name={t.emptyExampleName}
+                                    meta={t.emptyExampleMeta}
+                                    daysLabel={t.emptyExampleDays}
+                                />
+                            }
+                        />
+                    ) : (
+                        <div className="arc-card p-12 text-center">
+                            <CalendarClock className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+                            <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300 mb-1">{t.noRenewals}</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">{t.noRenewalsDesc}</p>
+                        </div>
+                    )
                 ) : (
                     <div className="arc-card overflow-hidden">
                         <div className="overflow-x-auto">

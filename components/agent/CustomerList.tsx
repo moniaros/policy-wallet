@@ -6,6 +6,7 @@ import { Search, Phone, Mail, User, LayoutList, LayoutGrid, Download, UserPlus, 
 import { Customer, CustomerListProps } from "./types"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
+import { EmptyState, CustomerPreviewRow } from "@/components/ui/EmptyState"
 
 export function CustomerList({
     customers,
@@ -149,19 +150,44 @@ export function CustomerList({
                 </div>
             )}
 
-            {filteredCustomers.length === 0 ? (
+            {customers.length === 0 ? (
+                <EmptyState
+                    icon={UserPlus}
+                    headline={roleCopy.customerList.zeroHeadline}
+                    description={roleCopy.customerList.zeroBenefit}
+                    cta={onAddCustomer ? { label: roleCopy.customerList.zeroCta, onClick: onAddCustomer } : undefined}
+                    previewLabel={roleCopy.customerList.zeroPreviewLabel}
+                    preview={
+                        <>
+                            <CustomerPreviewRow
+                                name={roleCopy.customerList.zeroExampleName1}
+                                meta={roleCopy.customerList.zeroExampleMeta1}
+                                initial={roleCopy.customerList.zeroExampleName1.charAt(0)}
+                            />
+                            <CustomerPreviewRow
+                                name={roleCopy.customerList.zeroExampleName2}
+                                meta={roleCopy.customerList.zeroExampleMeta2}
+                                initial={roleCopy.customerList.zeroExampleName2.charAt(0)}
+                                healthy={false}
+                            />
+                        </>
+                    }
+                    trust={roleCopy.customerList.zeroTrust}
+                />
+            ) : filteredCustomers.length === 0 && statusFilter === "invited" && !searchQuery.trim() ? (
+                <EmptyState
+                    icon={Mail}
+                    headline={roleCopy.customerList.invitedEmptyTitle}
+                    description={roleCopy.customerList.invitedEmptySubtitle}
+                    cta={onAddCustomer ? { label: roleCopy.customerList.invitedEmptyCta, onClick: onAddCustomer } : undefined}
+                />
+            ) : filteredCustomers.length === 0 ? (
                 <div className="text-center py-16 bg-white/80 dark:bg-slate-900/80 rounded-2xl border border-slate-200/60 dark:border-slate-800/60">
                     <div className="mx-auto w-14 h-14 bg-slate-100 dark:bg-slate-800 text-slate-400 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
                         <User className="w-7 h-7" />
                     </div>
                     <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">{roleCopy.customerList.emptyTitle}</h3>
                     <p className="text-slate-500 text-sm mb-4">{roleCopy.customerList.emptySubtitle}</p>
-                    {onAddCustomer && (
-                        <button onClick={onAddCustomer} className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] text-sm font-semibold rounded-xl cursor-pointer">
-                            <UserPlus className="w-4 h-4" />
-                            {roleCopy.customerList.addClient}
-                        </button>
-                    )}
                 </div>
             ) : viewMode === "table" ? (
                 <div className="bg-white/80 dark:bg-slate-900/80 rounded-2xl border border-slate-200/60 dark:border-slate-800/60 overflow-hidden shadow-sm">

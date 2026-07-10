@@ -105,6 +105,18 @@ type RoleCopy = {
         openOpportunityOne: string
         openOpportunityMany: string
         profile: string
+        zeroHeadline: string
+        zeroBenefit: string
+        zeroCta: string
+        zeroTrust: string
+        zeroPreviewLabel: string
+        zeroExampleName1: string
+        zeroExampleMeta1: string
+        zeroExampleName2: string
+        zeroExampleMeta2: string
+        invitedEmptyTitle: string
+        invitedEmptySubtitle: string
+        invitedEmptyCta: string
     }
     walletDashboard: {
         checkExpirations: string
@@ -273,6 +285,18 @@ const roleCopy: Record<Language, RoleCopy> = {
             openOpportunityOne: "ανοικτή ευκαιρία",
             openOpportunityMany: "ανοικτές ευκαιρίες",
             profile: "Προφίλ",
+            zeroHeadline: "Χτίστε το πελατολόγιό σας",
+            zeroBenefit: "Προσθέστε τον πρώτο σας πελάτη και δείτε καλύψεις, κενά και ανανεώσεις σε ένα ταμπλό.",
+            zeroCta: "Προσθήκη πρώτου πελάτη",
+            zeroTrust: "Τα δεδομένα πελατών μένουν ιδιωτικά — πρόσβαση μόνο με σχέση ή άδεια",
+            zeroPreviewLabel: "Παράδειγμα",
+            zeroExampleName1: "Μαρία Κ.",
+            zeroExampleMeta1: "3 συμβόλαια · 1 κενό κάλυψης",
+            zeroExampleName2: "Νίκος Δ.",
+            zeroExampleMeta2: "2 συμβόλαια · ανανέωση σε 45 ημέρες",
+            invitedEmptyTitle: "Καμία εκκρεμής πρόσκληση",
+            invitedEmptySubtitle: "Οι προσκλήσεις ενεργοποιούν τους πελάτες σας — και το προφίλ σας γίνεται ο σύμβουλός τους στο app.",
+            invitedEmptyCta: "Αποστολή πρόσκλησης",
         },
         walletDashboard: {
             checkExpirations: "Ελέγξτε λήξεις και πιθανά κενά κάλυψης.",
@@ -439,6 +463,18 @@ const roleCopy: Record<Language, RoleCopy> = {
             openOpportunityOne: "open opportunity",
             openOpportunityMany: "open opportunities",
             profile: "Profile",
+            zeroHeadline: "Build your client book",
+            zeroBenefit: "Add your first client and see coverage, gaps and renewals in one dashboard.",
+            zeroCta: "Add your first client",
+            zeroTrust: "Client data stays private — access only via relationship or permission",
+            zeroPreviewLabel: "Example",
+            zeroExampleName1: "Maria K.",
+            zeroExampleMeta1: "3 policies · 1 coverage gap",
+            zeroExampleName2: "Nikos D.",
+            zeroExampleMeta2: "2 policies · renewal in 45 days",
+            invitedEmptyTitle: "No pending invitations",
+            invitedEmptySubtitle: "Invitations activate your clients — and you become their in-app advisor.",
+            invitedEmptyCta: "Send an invitation",
         },
         walletDashboard: {
             checkExpirations: "Check expirations and potential coverage gaps.",
