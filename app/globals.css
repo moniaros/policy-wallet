@@ -8,15 +8,17 @@
  * dark (#1A2420) text on fills.
  */
 @theme {
-  --color-primary: #29685B;
-  --color-primary-foreground: #ffffff;
-  --color-primary-hover: #1C4E44;
+  /* Routed through :root/.dark runtime vars so bg-primary etc. flip to
+     mint automatically in dark mode (matching the shadcn passthroughs). */
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
   --color-primary-soft: #DCEBDA;
   --color-primary-tint: #F0FDF4;
   --color-mint: #89D9B2;
   --color-cta-dark: #1A2420;
-  --color-secondary: #143B33;
-  --color-secondary-foreground: #ffffff;
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
 
   /* Mapping neutral to slate for premium feel */
   --color-neutral-50: #f8fafc;
@@ -91,6 +93,7 @@
   /* Primary - deep brand green (marketing widget language) */
   --primary: #29685B;
   --primary-foreground: #ffffff;
+  --primary-hover: #1C4E44;
 
   /* Secondary - dark brand green */
   --secondary: #143B33;
@@ -151,6 +154,7 @@
   /* Primary - mint (dark surfaces) */
   --primary: #89D9B2;
   --primary-foreground: #1A2420;
+  --primary-hover: #7de8ba;
 
   /* Secondary - Amber */
   --secondary: #173330;
