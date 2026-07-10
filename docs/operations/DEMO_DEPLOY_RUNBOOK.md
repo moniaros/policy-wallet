@@ -84,3 +84,13 @@ Green on all six = demo-ready. File anything broken as a defect; re-deploys are 
 
 ## Not in scope for the demo (gate before real traffic — see STATUS Phase 3)
 Pooled-DB load verification, queued AI pipeline (QStash), k6 load run, auth hardening (email-verify hard gate / passkey / session), and the go/no-go human sign-offs.
+
+## 7. Fresh-Supabase-project gotchas (learned on the 8–10 Jul prod cutover)
+
+A brand-new Supabase project ships with defaults that silently break auth email:
+
+1. **Auth → URL Configuration**: Site URL defaults to `http://localhost:3000` → every Supabase-generated email links to localhost. Set it to the live origin and add redirect allowlist entries (`https://<host>/**`, preview wildcard, `https://*.policywallet.gr/**`).
+2. **Auth → Sign In / Providers → Email → "Confirm email"**: ON by default → Supabase sends its own unbranded confirmation email *in addition to* the app's custom token flow (`app/auth/actions.ts`). Turn it OFF — the app verifies via its own Brevo email and marks the Supabase user confirmed with the service role.
+3. **Brevo "Authorised IPs" (Security → Authorised IPs)**: if activated for API keys, Brevo rejects every send from Vercel (dynamic egress IPs) with `unauthorized` — the app's branded emails simply never send. Deactivate blocking for API keys.
+4. **DB connection strings**: use the **pooler** host (`aws-0-<region>.pooler.supabase.com`, username `postgres.<ref>`) — the direct `db.<ref>.supabase.co` host is IPv6-only and unreachable from Vercel functions ("Can't reach database server").
+5. **Supabase SMTP** (for the few emails Supabase still sends, e.g. magic links): the password is a Brevo **SMTP key** (`xsmtpsib-…`), NOT the v3 API key (`xkeysib-…`) — see `BREVO_SMTP_SETUP.md`.

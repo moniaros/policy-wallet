@@ -14,7 +14,22 @@
       "Bash(grep -r \"PolicyComparison\\\\|import.*Comparison\" '/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/components/wallet' --include=*.tsx)",
       "Bash(node scripts/check-utf8.js)",
       "Bash(npx eslint *)",
-      "PowerShell(Select-String -Path \"$env:TEMP/tc.txt\" -Pattern \"error TS\" | Select-Object -ExpandProperty Line)"
+      "PowerShell(Select-String -Path \"$env:TEMP/tc.txt\" -Pattern \"error TS\" | Select-Object -ExpandProperty Line)",
+      "Bash(gh auth *)",
+      "mcp__plugin_vercel_vercel__get_project",
+      "Bash(npx -y vercel@latest env ls)",
+      "mcp__plugin_sentry_sentry__find_organizations",
+      "mcp__plugin_supabase_supabase__list_projects",
+      "Bash(npx -y vercel@latest env pull --environment=production /private/tmp/claude-501/-Users-yannismoniaros-Workspace-policywallet-policy-wallet/06f338bf-7f86-4131-b973-8774b4911760/scratchpad/prod.env)",
+      "mcp__plugin_sentry_sentry__find_projects",
+      "Bash(curl *)",
+      "Bash(mv *)",
+      "Bash(node -e \"require\\('sharp'\\)\")",
+      "Bash(git checkout *)"
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "playwright",
+    "perplexity-docs"
+  ]
 }
