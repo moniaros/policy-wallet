@@ -38,8 +38,15 @@ import {
     getActiveRecommendations,
     matchProductsToRecommendations,
     deriveProfileTags,
+    type RecommendationInput,
     type RecommendationOutput,
 } from "./recommendation-generator"
+import {
+    evaluatePortfolioRules,
+    buildProfileGapEvidence,
+    type PortfolioGap,
+    type SmartCardContent,
+} from "./portfolio-rules"
 import type { AIRiskProfileAnalysisResponse } from "@/lib/services/ai/ai-service.interface"
 
 // ── Public types ─────────────────────────────────────────────────────
@@ -53,6 +60,11 @@ export interface GapEngineResult {
     syncStats: { created: number; dismissed: number }
     /** AI-generated risk insights (null if AI unavailable or failed) */
     aiInsights: AIRiskProfileAnalysisResponse | null
+    /** Evidence / next-action / review-target per recommendation ruleId,
+     *  computed fresh from the live portfolio on every run. */
+    smartContent: Record<string, SmartCardContent>
+    /** Whether the user has an active advisor relationship. */
+    hasAgent: boolean
 }
 
 export interface RunGapEngineOptions {
@@ -77,7 +89,7 @@ export interface CachedProtectionScore {
  */
 export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): Promise<GapEngineResult> {
     // 1. Load user data in parallel
-    const [profileRecord, policies, openGapInstances] = await Promise.all([
+    const [profileRecord, policies, openGapInstances, activeRelationships] = await Promise.all([
         db.policyholderProfile.findUnique({
             where: { userId },
         }),
@@ -93,6 +105,7 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
                 startDate: true,
                 endDate: true,
                 coverageSummary: true,
+                acordData: true,
             },
         }),
         db.gapInstance.findMany({
@@ -119,7 +132,11 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
                 },
             },
         }),
+        db.customerRelationship.count({
+            where: { policyholderUserId: userId, status: "active" },
+        }),
     ])
+    const hasAgent = activeRelationships > 0
 
     // 2. Convert to engine types
     const profile = toProfileFields(profileRecord)
@@ -147,17 +164,67 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
     )
     const scoreTier = getScoreTier(protectionScore.overallScore)
 
+    // 4b. Detect portfolio-level gaps (expiring policies, duplicates,
+    // low limits, unclear exclusions, missing advisor)
+    const portfolioGaps = evaluatePortfolioRules(
+        policies.map((p) => ({
+            id: p.id,
+            lineOfBusiness: p.lineOfBusiness,
+            status: p.status,
+            insurerName: p.insurerName,
+            policyNumber: p.policyNumber,
+            startDate: p.startDate,
+            endDate: p.endDate,
+            acordData: p.acordData,
+        })),
+        { hasAgent }
+    )
+
     // 5. Generate recommendations from both profile gaps and policy gaps
     const profileRecs = profileGapsToRecommendations(userId, profileGaps)
     const policyRecs = policyGapsToRecommendations(userId, openGapInstances)
-    const allRecs = prioritizeRecommendations([...profileRecs, ...policyRecs])
 
-    // 5b. Match recommendations to insurance products from catalog
+    // 5b. Match recommendations to insurance products from catalog.
+    // Portfolio recs are deliberately excluded — suggesting a product on a
+    // "duplicate coverage" or "expiring policy" card would read as a pitch.
     const profileTags = deriveProfileTags(profile)
-    const matchedRecs = await matchProductsToRecommendations(allRecs, profileTags)
+    const matchedRecs = await matchProductsToRecommendations(
+        prioritizeRecommendations([...profileRecs, ...policyRecs]),
+        profileTags
+    )
+    const portfolioRecs: RecommendationInput[] = portfolioGaps.map((gap) => ({
+        userId,
+        lineOfBusiness: gap.lineOfBusiness,
+        ruleId: gap.ruleId,
+        gapInstanceId: null,
+        title: gap.name,
+        description: gap.reason,
+        urgency: gap.severity,
+        estimatedCostEur: null,
+        personalReason: gap.reason,
+    }))
 
     // 6. Sync recommendations to DB
-    const syncStats = await syncRecommendations(userId, matchedRecs)
+    const syncStats = await syncRecommendations(userId, [...matchedRecs, ...portfolioRecs])
+
+    // 6b. Smart-card content (evidence / next action / review target),
+    // recomputed from live data every run so it never goes stale.
+    const activePolicyCount = policies.filter((p) => p.status === "active").length
+    const smartContent: Record<string, SmartCardContent> = {}
+    for (const gap of portfolioGaps) {
+        smartContent[gap.ruleId] = {
+            evidence: gap.evidence,
+            nextAction: gap.nextAction,
+            reviewHref: gap.reviewHref,
+        }
+    }
+    for (const gap of profileGaps) {
+        smartContent[gap.ruleId] = buildProfileGapEvidence(
+            gap.ruleId,
+            gap.lineOfBusiness,
+            activePolicyCount
+        )
+    }
 
     // 7. Cache protection score
     await cacheProtectionScore(userId, protectionScore)
@@ -191,6 +258,8 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
         profileCompleteness,
         syncStats,
         aiInsights,
+        smartContent,
+        hasAgent,
     }
 }
 
@@ -418,6 +487,8 @@ export {
     deriveProfileTags,
 } from "./recommendation-generator"
 export { generatePlaybook, generateAgentPlaybooks } from "./agent-playbook"
+export { evaluatePortfolioRules, buildProfileGapEvidence } from "./portfolio-rules"
+export type { PortfolioGap, PortfolioPolicyFacts, SmartCardContent } from "./portfolio-rules"
 export type { ProfileGap, ProfileFields, GapSeverity } from "./profile-gap-rules"
 export type { ProtectionScoreResult, CategoryScore } from "./protection-score"
 export type { RecommendationOutput, MatchedProduct } from "./recommendation-generator"
