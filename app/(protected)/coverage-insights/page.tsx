@@ -148,6 +148,7 @@ export default async function CoverageInsightsPage() {
                             }))}
                             language={userLanguage}
                             profileIncomplete={engineResult.profileCompleteness < 80}
+                            smartContent={engineResult.smartContent}
                         />
                     </div>
                 </div>

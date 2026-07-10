@@ -1,25 +1,29 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { toast } from "sonner"
 import {
     AlertTriangle,
+    ArrowRight,
     Car,
     ChevronDown,
     ChevronUp,
+    FileSearch,
     Heart,
     Home,
     Lightbulb,
+    MessageCircle,
     PawPrint,
     Plane,
     Scale,
     Shield,
     ShieldAlert,
     Umbrella,
-    X,
 } from "lucide-react"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import { EmptyState, RecommendationPreviewCard } from "@/components/ui/EmptyState"
+import type { SmartCardContent } from "@/lib/services/gap-engine/portfolio-rules"
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -48,6 +52,8 @@ interface RecommendationCardsProps {
     language: "en" | "el"
     /** True when the risk-profile wizard is rendered on the same page. */
     profileIncomplete?: boolean
+    /** Evidence / next action / review target per ruleId (from the gap engine). */
+    smartContent?: Record<string, SmartCardContent>
 }
 
 // ── LOB icon map ─────────────────────────────────────────────────────
@@ -114,6 +120,7 @@ export function RecommendationCards({
     recommendations,
     language,
     profileIncomplete = false,
+    smartContent = {},
 }: RecommendationCardsProps) {
     const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set())
     const [expandedId, setExpandedId] = useState<string | null>(null)
@@ -125,13 +132,13 @@ export function RecommendationCards({
     const visible = recommendations.filter((r) => !dismissedIds.has(r.id))
     const displayed = showAll ? visible : visible.slice(0, 3)
 
-    async function handleDismiss(id: string) {
+    async function handleDismiss(id: string, reason: string) {
         setDismissedIds((prev) => new Set(prev).add(id))
         try {
             const res = await fetch(`/api/v1/recommendations/${id}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ action: "dismiss", reason: "user_dismissed" }),
+                body: JSON.stringify({ action: "dismiss", reason }),
             })
             if (!res.ok) throw new Error("DISMISS_FAILED")
         } catch {
@@ -210,6 +217,12 @@ export function RecommendationCards({
                     const Icon = LOB_ICON[rec.lineOfBusiness.toLowerCase()] || Shield
                     const urgLabel = URGENCY_LABELS[rec.urgency] || URGENCY_LABELS.low
                     const isExpanded = expandedId === rec.id
+                    const smart = rec.ruleId ? smartContent[rec.ruleId] : undefined
+                    const reviewHref = smart?.reviewHref ?? null
+                    const isAgentCard = rec.ruleId === "no_agent_connected"
+                    const reviewLabel = t("Έλεγχος", "Review this")
+                    const reviewClasses =
+                        "inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-[11px] font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
 
                     return (
                         <div
@@ -224,6 +237,7 @@ export function RecommendationCards({
 
                                 {/* Content */}
                                 <div className="flex-1 min-w-0">
+                                    {/* Risk detected + severity */}
                                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                                         <h3 className="text-sm font-semibold text-black dark:text-white">
                                             {rec.title[lang] || rec.title.en}
@@ -238,9 +252,34 @@ export function RecommendationCards({
                                         </span>
                                     </div>
 
+                                    {/* Plain-language explanation */}
                                     <p className="text-xs text-black/65 dark:text-white/65 leading-relaxed">
                                         {rec.personalReason[lang] || rec.personalReason.en}
                                     </p>
+
+                                    {/* Source evidence from the user's own policy data */}
+                                    {smart && (
+                                        <div className="mt-2.5 rounded-xl border border-black/8 bg-white/70 p-2.5 dark:border-white/10 dark:bg-black/30">
+                                            <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-black/45 dark:text-white/50">
+                                                <FileSearch className="h-3 w-3" />
+                                                {t("Από τα στοιχεία σας", "From your policy data")}
+                                            </p>
+                                            <p className="mt-1 text-xs leading-relaxed text-black/70 dark:text-white/75">
+                                                {smart.evidence[lang] || smart.evidence.en}
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {/* Suggested next action */}
+                                    {smart && (
+                                        <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-black/70 dark:text-white/75">
+                                            <ArrowRight className="mt-0.5 h-3 w-3 flex-shrink-0 text-primary dark:text-mint" />
+                                            <span>
+                                                <span className="font-semibold">{t("Επόμενο βήμα:", "Next step:")}</span>{" "}
+                                                {smart.nextAction[lang] || smart.nextAction.en}
+                                            </span>
+                                        </p>
+                                    )}
 
                                     {/* Expanded details */}
                                     {isExpanded && (
@@ -250,12 +289,15 @@ export function RecommendationCards({
                                             </p>
                                             {rec.matchedProduct && (
                                                 <div className="rounded-lg bg-black/[0.03] dark:bg-white/[0.04] p-2.5 space-y-1.5">
+                                                    <p className="text-[10px] font-bold uppercase tracking-wider text-black/40 dark:text-white/45">
+                                                        {t("Ενδεικτική επιλογή στην αγορά", "One option on the market")}
+                                                    </p>
                                                     <p className="text-xs font-semibold text-black/80 dark:text-white/80">
                                                         {rec.matchedProduct.name[lang] || rec.matchedProduct.name.en}
                                                     </p>
                                                     {rec.matchedProduct.premiumRangeLow != null && rec.matchedProduct.premiumRangeHigh != null && (
                                                         <p className="text-xs text-black/60 dark:text-white/60">
-                                                            {t("Εύρος ασφαλίστρου", "Premium range")}:{" "}
+                                                            {t("Ενδεικτικό εύρος ασφαλίστρου", "Typical premium range")}:{" "}
                                                             <span className="font-medium text-primary dark:text-mint">
                                                                 €{rec.matchedProduct.premiumRangeLow}–€{rec.matchedProduct.premiumRangeHigh}{t("/έτος", "/yr")}
                                                             </span>
@@ -275,7 +317,7 @@ export function RecommendationCards({
                                             )}
                                             {!rec.matchedProduct && rec.estimatedCostEur != null && (
                                                 <p className="text-xs font-medium text-black/70 dark:text-white/70">
-                                                    {t("Εκτιμώμενο κόστος", "Estimated cost")}:{" "}
+                                                    {t("Ενδεικτικό κόστος στην αγορά", "Typical market cost")}:{" "}
                                                     <span className="text-primary dark:text-mint font-semibold">
                                                         ~€{rec.estimatedCostEur}
                                                         {t("/έτος", "/year")}
@@ -285,36 +327,62 @@ export function RecommendationCards({
                                         </div>
                                     )}
 
-                                    {/* Actions row */}
-                                    <div className="flex items-center gap-3 mt-2.5">
+                                    {/* CTA row */}
+                                    <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+                                        {reviewHref ? (
+                                            <Link href={reviewHref} className={reviewClasses}>
+                                                {reviewLabel}
+                                                <ArrowRight className="h-3 w-3" />
+                                            </Link>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                onClick={() => setExpandedId(isExpanded ? null : rec.id)}
+                                                className={`${reviewClasses} cursor-pointer`}
+                                            >
+                                                {reviewLabel}
+                                                {isExpanded ? (
+                                                    <ChevronUp className="h-3 w-3" />
+                                                ) : (
+                                                    <ChevronDown className="h-3 w-3" />
+                                                )}
+                                            </button>
+                                        )}
+
+                                        {!isAgentCard && (
+                                            <Link
+                                                href="/agent"
+                                                className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
+                                            >
+                                                <MessageCircle className="h-3 w-3" />
+                                                {t("Ρωτήστε τον σύμβουλό μου", "Ask my agent")}
+                                            </Link>
+                                        )}
+
                                         <button
                                             type="button"
-                                            onClick={() =>
-                                                setExpandedId(isExpanded ? null : rec.id)
-                                            }
-                                            className="text-xs font-semibold text-primary dark:text-mint hover:underline flex items-center gap-1 cursor-pointer"
+                                            onClick={() => handleDismiss(rec.id, "not_relevant")}
+                                            className="text-xs text-black/45 hover:text-black/70 hover:underline cursor-pointer dark:text-white/45 dark:hover:text-white/70"
                                         >
-                                            {isExpanded
-                                                ? t("Λιγότερα", "Less")
-                                                : t("Περισσότερα", "More")}
-                                            {isExpanded ? (
-                                                <ChevronUp className="h-3 w-3" />
-                                            ) : (
-                                                <ChevronDown className="h-3 w-3" />
-                                            )}
+                                            {t("Μη σχετικό για εμένα", "Mark as not relevant")}
                                         </button>
+
+                                        {reviewHref && (
+                                            <button
+                                                type="button"
+                                                onClick={() => setExpandedId(isExpanded ? null : rec.id)}
+                                                className="ml-auto flex items-center gap-1 text-xs font-semibold text-primary dark:text-mint hover:underline cursor-pointer"
+                                            >
+                                                {isExpanded ? t("Λιγότερα", "Less") : t("Περισσότερα", "More")}
+                                                {isExpanded ? (
+                                                    <ChevronUp className="h-3 w-3" />
+                                                ) : (
+                                                    <ChevronDown className="h-3 w-3" />
+                                                )}
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
-
-                                {/* Dismiss button */}
-                                <button
-                                    type="button"
-                                    onClick={() => handleDismiss(rec.id)}
-                                    aria-label={t("Απόρριψη πρότασης", "Dismiss recommendation")}
-                                    className="flex-shrink-0 p-1 text-black/30 dark:text-white/30 hover:text-black/60 dark:hover:text-white/60 cursor-pointer rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-                                >
-                                    <X className="h-3.5 w-3.5" />
-                                </button>
                             </div>
                         </div>
                     )
