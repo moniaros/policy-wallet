@@ -42,9 +42,9 @@ type ThreadDetail = Thread & {
 }
 
 const THREAD_TYPE_CONFIG: Record<ThreadType, { icon: React.ElementType; label: string; color: string }> = {
-    message: { icon: MessageSquare, label: "Message", color: "text-blue-500" },
+    message: { icon: MessageSquare, label: "Message", color: "text-primary dark:text-mint" },
     document_request: { icon: FileUp, label: "Document Request", color: "text-amber-500" },
-    proposal: { icon: FileText, label: "Proposal", color: "text-emerald-500" },
+    proposal: { icon: FileText, label: "Proposal", color: "text-primary dark:text-mint" },
 }
 
 const MESSAGE_TEMPLATES = [
@@ -292,7 +292,7 @@ export function CollaborationTimeline({
                     </select>
                     <button
                         onClick={createThread}
-                        className="rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-3 py-2"
+                        className="rounded-lg bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] text-sm font-semibold px-3 py-2"
                     >
                         Create
                     </button>
@@ -318,7 +318,7 @@ export function CollaborationTimeline({
                                         onClick={() => setSelectedId(thread.id)}
                                         className={`w-full text-left p-3 rounded-lg border transition ${
                                             selectedId === thread.id
-                                                ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/20"
+                                                ? "border-primary bg-primary-tint dark:bg-primary/15"
                                                 : "border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
                                         }`}
                                     >
@@ -355,7 +355,7 @@ export function CollaborationTimeline({
                                 <h4 className="text-sm font-bold text-slate-900 dark:text-white">{selected.subject}</h4>
                                 <div className="flex gap-2">
                                     <button onClick={() => patchThreadStatus("open")} className="text-xs px-2 py-1 rounded border border-slate-300 dark:border-slate-600">Open</button>
-                                    <button onClick={() => patchThreadStatus("resolved")} className="text-xs px-2 py-1 rounded border border-emerald-400 text-emerald-700">Resolve</button>
+                                    <button onClick={() => patchThreadStatus("resolved")} className="text-xs px-2 py-1 rounded border border-primary text-primary dark:text-mint">Resolve</button>
                                     <button onClick={() => patchThreadStatus("closed")} className="text-xs px-2 py-1 rounded border border-slate-400">Close</button>
                                 </div>
                             </div>
@@ -365,7 +365,7 @@ export function CollaborationTimeline({
                                 <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${
                                     selected.threadType === "document_request"
                                         ? "bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40"
-                                        : "bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/40"
+                                        : "bg-primary-tint dark:bg-primary/15 border border-primary/30 dark:border-primary/40"
                                 }`}>
                                     {(() => {
                                         const cfg = THREAD_TYPE_CONFIG[selected.threadType as ThreadType]
@@ -442,7 +442,7 @@ export function CollaborationTimeline({
                                                 <button
                                                     type="button"
                                                     onClick={() => setShowTemplates(!showTemplates)}
-                                                    className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                                                    className="text-[10px] font-semibold text-primary dark:text-mint hover:underline"
                                                 >
                                                     {showTemplates ? "Hide templates" : "Templates"}
                                                 </button>
@@ -513,7 +513,7 @@ export function CollaborationTimeline({
                                         className="rounded border border-slate-300 dark:border-slate-600 px-2 py-1.5 text-sm bg-white dark:bg-slate-950"
                                     />
                                 </div>
-                                <button onClick={addAction} className="mt-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-3 py-2">
+                                <button onClick={addAction} className="mt-2 rounded bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] text-sm px-3 py-2">
                                     Add action
                                 </button>
                             </div>

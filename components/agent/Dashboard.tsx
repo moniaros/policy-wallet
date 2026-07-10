@@ -44,7 +44,7 @@ export function Dashboard({ summary, priorities, onPriorityClick, onInviteCustom
                     <button
                         type="button"
                         onClick={onInviteCustomer}
-                        className="inline-flex items-center gap-2 rounded-xl border border-teal-300 bg-teal-50 px-4 py-2 text-sm font-semibold text-teal-800 transition hover:bg-teal-100 dark:border-teal-800 dark:bg-teal-900/30 dark:text-teal-200 dark:hover:bg-teal-900/50"
+                        className="inline-flex items-center gap-2 rounded-xl border border-primary/40 bg-primary-tint px-4 py-2 text-sm font-semibold text-primary transition hover:bg-primary-soft dark:border-primary/40 dark:bg-primary/15 dark:text-mint dark:hover:bg-primary/25"
                     >
                         <UserPlus className="h-4 w-4" />
                         {roleCopy.customerList.addClient}
@@ -62,7 +62,7 @@ export function Dashboard({ summary, priorities, onPriorityClick, onInviteCustom
                 </article>
                 <article className="rounded-2xl border border-[var(--pw-border)] bg-white p-4 dark:bg-slate-900">
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">{roleCopy.customerList.activated}</div>
-                    <p className="mt-2 text-2xl font-black text-emerald-700 dark:text-emerald-400">{summary.activated}</p>
+                    <p className="mt-2 text-2xl font-black text-[#166534] dark:text-mint">{summary.activated}</p>
                 </article>
                 <article className="rounded-2xl border border-[var(--pw-border)] bg-white p-4 dark:bg-slate-900">
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">{roleCopy.customerList.invited}</div>

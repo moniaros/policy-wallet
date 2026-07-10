@@ -57,10 +57,10 @@ const THREAD_TYPE_LABELS: Record<string, { en: string; el: string }> = {
 
 const STATUS_STYLES: Record<string, string> = {
     open: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-    resolved: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+    resolved: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
     closed: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
     waiting_agent: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-    waiting_policyholder: "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
+    waiting_policyholder: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
 }
 
 export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: AgentInboxProps) {
@@ -142,7 +142,7 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
             {/* Header */}
             <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    <Inbox className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                    <Inbox className="h-5 w-5 text-primary dark:text-mint" />
                     {language === "el" ? "Εισερχόμενα" : "Inbox"}
                     {threads.length > 0 && (
                         <span className="text-xs text-slate-400 font-normal">({threads.length})</span>
@@ -251,7 +251,7 @@ function ThreadRow({
         <button
             type="button"
             onClick={() => onClick(thread.id)}
-            className="flex w-full items-center gap-3 rounded-xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-3 text-left transition hover:shadow-md hover:border-teal-300 dark:hover:border-teal-700 cursor-pointer"
+            className="flex w-full items-center gap-3 rounded-xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-3 text-left transition hover:shadow-md hover:border-primary/40 dark:hover:border-mint/40 cursor-pointer"
         >
             <div className="relative shrink-0">
                 <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800">

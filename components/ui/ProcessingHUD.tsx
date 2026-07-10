@@ -25,8 +25,8 @@ export function ProcessingHUD({ isVisible, message = "Processing action..." }: P
                         className="bg-white dark:bg-stone-900 p-8 rounded-[32px] shadow-2xl border border-stone-100 dark:border-stone-800 flex flex-col items-center gap-6 max-w-xs w-full text-center"
                     >
                         <div className="relative">
-                            <div className="absolute inset-0 bg-teal-500/20 blur-xl rounded-full"></div>
-                            <Loader2 className="w-10 h-10 text-teal-600 dark:text-teal-400 animate-spin relative z-10" />
+                            <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full"></div>
+                            <Loader2 className="w-10 h-10 text-primary dark:text-mint animate-spin relative z-10" />
                         </div>
 
                         <div>
@@ -42,17 +42,17 @@ export function ProcessingHUD({ isVisible, message = "Processing action..." }: P
                             <motion.span
                                 animate={{ opacity: [0.3, 1, 0.3] }}
                                 transition={{ repeat: Infinity, duration: 1.5, delay: 0 }}
-                                className="w-1 h-1 rounded-full bg-teal-500"
+                                className="w-1 h-1 rounded-full bg-primary"
                             />
                             <motion.span
                                 animate={{ opacity: [0.3, 1, 0.3] }}
                                 transition={{ repeat: Infinity, duration: 1.5, delay: 0.2 }}
-                                className="w-1 h-1 rounded-full bg-teal-500"
+                                className="w-1 h-1 rounded-full bg-primary"
                             />
                             <motion.span
                                 animate={{ opacity: [0.3, 1, 0.3] }}
                                 transition={{ repeat: Infinity, duration: 1.5, delay: 0.4 }}
-                                className="w-1 h-1 rounded-full bg-teal-500"
+                                className="w-1 h-1 rounded-full bg-primary"
                             />
                         </div>
                     </motion.div>

@@ -195,7 +195,7 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
         return (
             <BrandCard className="p-5">
                 <div className="flex flex-col items-center text-center py-4">
-                    <CheckCircle2 className="h-10 w-10 text-emerald-500 mb-3" />
+                    <CheckCircle2 className="h-10 w-10 text-[#22C55E] mb-3" />
                     <p className="text-sm font-medium text-slate-900 dark:text-white">
                         {language === "el" ? "Το έγγραφο στάλθηκε!" : "Document uploaded!"}
                     </p>
@@ -316,7 +316,7 @@ export function DocumentRequestCard({ request, viewerRole, agentName, onRespond 
     }
     const statusColors: Record<string, string> = {
         pending: "text-amber-600 bg-amber-50 dark:bg-amber-900/30 dark:text-amber-400",
-        uploaded: "text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-400",
+        uploaded: "text-[#166534] bg-primary-soft dark:bg-primary/15 dark:text-mint",
         expired: "text-red-600 bg-red-50 dark:bg-red-900/30 dark:text-red-400",
     }
 

@@ -110,7 +110,7 @@ export function UpgradePrompt({
 
     return (
         <div
-            className={`relative bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 border-2 border-blue-300 dark:border-blue-700 rounded-2xl p-6 ${className}`}
+            className={`relative bg-primary-tint dark:bg-primary/15 border-2 border-primary/30 dark:border-primary/40 rounded-2xl p-6 ${className}`}
         >
             {onDismiss && (
                 <button
@@ -122,8 +122,8 @@ export function UpgradePrompt({
                 </button>
             )}
 
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl flex items-center justify-center mb-4">
-                <Sparkles className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center mb-4">
+                <Sparkles className="w-6 h-6 text-white dark:text-[#1A2420]" />
             </div>
 
             <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">
@@ -136,7 +136,7 @@ export function UpgradePrompt({
             <ul className="space-y-2 mb-6">
                 {benefits.map((benefit, idx) => (
                     <li key={idx} className="flex items-center gap-2 text-sm text-slate-700 dark:text-slate-300">
-                        <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                        <Check className="w-4 h-4 text-primary dark:text-mint flex-shrink-0" />
                         <span>{benefit}</span>
                     </li>
                 ))}
@@ -145,7 +145,7 @@ export function UpgradePrompt({
             <div className="flex flex-col sm:flex-row gap-3">
                 <button
                     onClick={handleUpgrade}
-                    className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-xl transition-all duration-200"
+                    className="flex-1 px-6 py-3 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] font-bold rounded-xl shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-200"
                 >
                     {copy.cta.upgrade[language]}
                 </button>

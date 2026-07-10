@@ -58,15 +58,15 @@ function VerifyEmailContent() {
     }, [token, email, router])
 
     return (
-        <div className={`${ibmPlexSans.className} relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#F9FAFB] px-4 py-12 dark:bg-[#000000]`}>
-            <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-slate-800 dark:bg-[#111111] sm:p-10 text-center">
+        <div className={`${ibmPlexSans.className} relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#F8FAFC] px-4 py-12 dark:bg-black`}>
+            <div className="w-full max-w-md rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-white/10 dark:bg-[#111111] sm:p-10 text-center">
                 <Link href="/" className="inline-block mb-8">
                     <PolicyWalletLogo size="md" language={language} />
                 </Link>
 
                 {status === "loading" && (
                     <div className="flex flex-col items-center py-8">
-                        <Loader2 className="h-12 w-12 animate-spin text-[#1FDC86] mb-6" />
+                        <Loader2 className="h-12 w-12 animate-spin text-primary mb-6" />
                         <h2 className="text-xl font-bold text-slate-900 dark:text-white">
                             {t("Επαλήθευση email...", "Verifying your email...")}
                         </h2>
@@ -75,8 +75,8 @@ function VerifyEmailContent() {
 
                 {status === "success" && (
                     <div className="py-2">
-                        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#1FDC86]/10 mb-6 border border-[#1FDC86]/20">
-                            <svg className="h-10 w-10 text-[#1FDC86]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 mb-6 border border-primary/20">
+                            <svg className="h-10 w-10 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                             </svg>
                         </div>
@@ -89,7 +89,7 @@ function VerifyEmailContent() {
                                 "Your email has been successfully verified. You can now access all features."
                             )}
                         </p>
-                        <Link href="/auth/signin" className="block w-full rounded-full bg-[#1FDC86] px-4 py-3.5 text-sm font-bold text-slate-900 transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                        <Link href="/auth/signin" className="block w-full rounded-full bg-primary px-4 py-3.5 text-sm font-bold text-white dark:text-[#1A2420] transition-all hover:bg-primary-hover hover:-translate-y-0.5 hover:shadow-lg">
                             {t("Συνέχεια στην εφαρμογή", "Continue to App")}
                         </Link>
                     </div>
@@ -108,7 +108,7 @@ function VerifyEmailContent() {
                         <p className="text-slate-600 dark:text-slate-400 mb-8">
                             {message}. {t("Ο σύνδεσμος μπορεί να μην είναι έγκυρος ή να έχει λήξει.", "The link may be invalid or expired.")}
                         </p>
-                        <Link href="/auth/signin" className="font-bold text-[#1FDC86] hover:underline transition-colors">
+                        <Link href="/auth/signin" className="font-bold text-primary hover:underline transition-colors">
                             {t("Επιστροφή στη σύνδεση", "Back to Sign In")}
                         </Link>
                     </div>
@@ -120,7 +120,7 @@ function VerifyEmailContent() {
 
 export default function VerifyEmailPage() {
     return (
-        <Suspense fallback={<div className={`${ibmPlexSans.className} flex min-h-screen items-center justify-center`}><Loader2 className="h-7 w-7 animate-spin text-[#1FDC86]" /></div>}>
+        <Suspense fallback={<div className={`${ibmPlexSans.className} flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-black`}><Loader2 className="h-7 w-7 animate-spin text-primary" /></div>}>
             <VerifyEmailContent />
         </Suspense>
     )

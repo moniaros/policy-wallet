@@ -51,7 +51,7 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
           onClick={() => setActiveTab("covered")}
           className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${
             activeTab === "covered"
-              ? "bg-white dark:bg-slate-700 text-emerald-700 dark:text-emerald-300 shadow-sm"
+              ? "bg-white dark:bg-slate-700 text-primary dark:text-mint shadow-sm"
               : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
           }`}
         >
@@ -93,8 +93,8 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
                   className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60"
                 >
                   <div className="flex items-start gap-2.5">
-                    <div className="w-6 h-6 rounded-md bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mt-0.5 flex-shrink-0">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <div className="w-6 h-6 rounded-md bg-primary-soft dark:bg-primary/15 flex items-center justify-center mt-0.5 flex-shrink-0">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-[#166534] dark:text-mint" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-slate-900 dark:text-white">{coverage.name}</p>

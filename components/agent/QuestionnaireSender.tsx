@@ -85,7 +85,7 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
         <>
             <button
                 onClick={() => setIsOpen(true)}
-                className="group flex items-center gap-2 px-3 py-1.5 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 rounded-lg text-xs font-black uppercase tracking-widest hover:bg-teal-600 hover:text-white transition-all"
+                className="group flex items-center gap-2 px-3 py-1.5 bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint rounded-lg text-xs font-black uppercase tracking-widest hover:bg-primary hover:text-white dark:hover:text-[#1A2420] transition-all"
             >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -102,7 +102,7 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
 
                     <div className="relative bg-white dark:bg-stone-800 rounded-[32px] w-full max-w-md overflow-hidden shadow-2xl border border-stone-200 dark:border-stone-700 animate-in zoom-in-95 slide-in-from-bottom-8 duration-500">
                         <div className="p-10">
-                            <div className="w-12 h-12 bg-teal-100 dark:bg-teal-900/50 rounded-2xl flex items-center justify-center text-teal-600 dark:text-teal-400 mb-6">
+                            <div className="w-12 h-12 bg-primary-soft dark:bg-primary/15 rounded-2xl flex items-center justify-center text-primary dark:text-mint mb-6">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                                 </svg>
@@ -129,18 +129,18 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
                                                     key={t.id}
                                                     onClick={() => setSelectedTemplate(t.id)}
                                                     className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all text-left ${selectedTemplate === t.id
-                                                        ? 'border-teal-600 bg-teal-50 dark:bg-teal-900/20'
+                                                        ? 'border-primary dark:border-mint bg-primary-tint dark:bg-primary/15'
                                                         : 'border-stone-100 dark:border-stone-700 hover:border-stone-200 bg-stone-50 dark:bg-stone-900/50'
                                                         }`}
                                                 >
                                                     <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${selectedTemplate === t.id
-                                                        ? 'bg-teal-600 text-white'
+                                                        ? 'bg-primary text-white dark:text-[#1A2420]'
                                                         : 'bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400'
                                                         }`}>
                                                         <Icon className="w-4 h-4" />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <p className={`font-bold text-sm ${selectedTemplate === t.id ? 'text-teal-900 dark:text-teal-100' : 'text-stone-900 dark:text-white'}`}>
+                                                        <p className={`font-bold text-sm ${selectedTemplate === t.id ? 'text-primary dark:text-mint' : 'text-slate-900 dark:text-white'}`}>
                                                             {t.name}
                                                         </p>
                                                         <p className="text-[10px] text-stone-500 uppercase tracking-widest mt-0.5">
@@ -148,7 +148,7 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
                                                         </p>
                                                     </div>
                                                     {selectedTemplate === t.id && (
-                                                        <div className="w-5 h-5 bg-teal-600 rounded-full flex items-center justify-center text-white flex-shrink-0">
+                                                        <div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center text-white dark:text-[#1A2420] flex-shrink-0">
                                                             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" /></svg>
                                                         </div>
                                                     )}
@@ -161,7 +161,7 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
 
                             {status === 'success' && (
                                 <div className="mt-6 flex flex-col gap-4 animate-in fade-in slide-in-from-top-2">
-                                    <div className="p-4 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 rounded-2xl text-sm font-bold flex items-center gap-3">
+                                    <div className="p-4 bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint rounded-2xl text-sm font-bold flex items-center gap-3">
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="2" /></svg>
                                         {t.requestSent}
                                     </div>

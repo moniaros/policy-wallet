@@ -129,7 +129,7 @@ export function CurrentPlanCard({
                                 ? 'bg-red-500'
                                 : usagePercentage >= 75
                                     ? 'bg-amber-500'
-                                    : 'bg-teal-500'
+                                    : 'bg-primary'
                                 }`}
                             style={{ width: `${usagePercentage}%` }}
                         />
@@ -154,7 +154,7 @@ export function CurrentPlanCard({
                 {!isPremium && (
                     <button
                         onClick={onUpgrade}
-                        className="flex-1 px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-teal-600/20 active:scale-95 transition-all"
+                        className="flex-1 px-8 py-4 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-primary/20 active:scale-95 transition-all"
                     >
                         {copy.cta.upgrade[language]}
                     </button>
@@ -180,7 +180,7 @@ export function CurrentPlanCard({
                 {isCanceled && (
                     <button
                         onClick={onUpgrade}
-                        className="flex-1 px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-teal-600/20 active:scale-95 transition-all"
+                        className="flex-1 px-8 py-4 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] text-[10px] font-black uppercase tracking-widest rounded-2xl shadow-xl shadow-primary/20 active:scale-95 transition-all"
                     >
                         {copy.cta.reactivate[language]}
                     </button>
@@ -201,7 +201,7 @@ export function CurrentPlanCard({
                             copy.features.interactiveQA,
                         ].map((feature, idx) => (
                             <li key={idx} className="flex items-center gap-3 text-sm font-bold text-stone-700 dark:text-stone-300">
-                                <CheckCircle2 className="w-4 h-4 text-teal-500 flex-shrink-0" />
+                                <CheckCircle2 className="w-4 h-4 text-primary dark:text-mint flex-shrink-0" />
                                 <span>{feature[language]}</span>
                             </li>
                         ))}

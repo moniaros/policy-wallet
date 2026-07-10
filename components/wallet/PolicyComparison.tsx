@@ -72,7 +72,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'active': return 'bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400'
+            case 'active': return 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint'
             case 'expiring_soon': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
             default: return 'bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400'
         }
@@ -149,8 +149,8 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                 {/* Header */}
                 <div className="p-8 pb-0 border-b border-stone-100 dark:border-stone-800">
                     <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3 text-teal-600">
-                            <div className="w-8 h-8 rounded-xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
+                        <div className="flex items-center gap-3 text-primary dark:text-mint">
+                            <div className="w-8 h-8 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                 </svg>
@@ -198,8 +198,8 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                             className={`
                                                 p-4 rounded-2xl text-left transition-all border-2
                                                 ${isSelected
-                                                    ? 'border-teal-500 bg-teal-50 dark:bg-teal-900/20'
-                                                    : 'border-stone-200 dark:border-stone-700 hover:border-stone-300 dark:hover:border-stone-600'
+                                                    ? 'border-primary bg-primary-tint dark:bg-primary/15'
+                                                    : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'
                                                 }
                                                 ${isDisabled ? 'opacity-40 cursor-not-allowed' : ''}
                                             `}
@@ -225,7 +225,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                                     </div>
                                                 </div>
                                                 {isSelected && (
-                                                    <div className="flex-shrink-0 w-6 h-6 bg-teal-500 rounded-full flex items-center justify-center text-white">
+                                                    <div className="flex-shrink-0 w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white dark:text-[#1A2420]">
                                                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
                                                         </svg>
@@ -253,7 +253,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                                     </span>
                                                     <button
                                                         onClick={() => router.push(`/wallet/${policy.id}`)}
-                                                        className="text-xs text-teal-600 hover:underline"
+                                                        className="text-xs text-primary dark:text-mint hover:underline"
                                                     >
                                                         View Details →
                                                     </button>
@@ -278,13 +278,13 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                                     }) && policy.premiumAmount
 
                                                 return (
-                                                    <td key={policy.id} className={`py-4 px-6 text-center ${isLowest ? 'bg-teal-50 dark:bg-teal-900/20' : ''}`}>
+                                                    <td key={policy.id} className={`py-4 px-6 text-center ${isLowest ? 'bg-primary-tint dark:bg-primary/15' : ''}`}>
                                                         {row.isStatus ? (
                                                             <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(value as string)}`}>
                                                                 {(value as string).replace('_', ' ')}
                                                             </span>
                                                         ) : (
-                                                            <span className={`text-sm ${isLowest ? 'text-teal-600 dark:text-teal-400 font-bold' : 'text-stone-700 dark:text-stone-300'}`}>
+                                                            <span className={`text-sm ${isLowest ? 'text-primary dark:text-mint font-bold' : 'text-slate-700 dark:text-slate-300'}`}>
                                                                 {value}
                                                                 {isLowest && <span className="ml-1">⭐</span>}
                                                             </span>
@@ -313,7 +313,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                         return (
                                             <div className="bg-white dark:bg-stone-900 p-4 rounded-xl">
                                                 <p className="text-xs text-stone-400 font-bold uppercase mb-1">Lowest Premium</p>
-                                                <p className="text-lg font-bold text-teal-600">{lowest.insurerName}</p>
+                                                <p className="text-lg font-bold text-primary dark:text-mint">{lowest.insurerName}</p>
                                                 <p className="text-sm text-stone-500">{formatCurrency(lowest.premiumAmount)}/year</p>
                                             </div>
                                         )
@@ -361,7 +361,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                     {selectedIds.length >= 2 && (
                         <button
                             onClick={() => setSelectedIds([])}
-                            className="flex-1 px-8 py-4 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-teal-600 dark:hover:bg-teal-500 hover:text-white transition-all"
+                            className="flex-1 px-8 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all"
                         >
                             Compare Different Policies
                         </button>

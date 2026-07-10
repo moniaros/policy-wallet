@@ -173,7 +173,7 @@ export default function DashboardTour({ onComplete }: DashboardTourProps) {
                 </button>
 
                 <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">
+                    <span className="text-xs font-bold text-primary dark:text-mint uppercase tracking-wider">
                         {lang === "el" ? "Συμβουλή" : "Tip"} {currentStep + 1}/{steps.length}
                     </span>
                 </div>
@@ -191,7 +191,7 @@ export default function DashboardTour({ onComplete }: DashboardTourProps) {
                         {steps.map((_, i) => (
                             <div
                                 key={i}
-                                className={`w-2 h-2 rounded-full transition-colors ${i === currentStep ? 'bg-indigo-500' : 'bg-slate-200 dark:bg-slate-700'}`}
+                                className={`w-2 h-2 rounded-full transition-colors ${i === currentStep ? 'bg-primary' : 'bg-slate-200 dark:bg-slate-700'}`}
                             />
                         ))}
                     </div>

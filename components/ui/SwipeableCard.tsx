@@ -43,9 +43,9 @@ export function SwipeableCard({
             case 'red':
                 return 'bg-red-500 text-white'
             case 'blue':
-                return 'bg-sky-500 text-white'
+                return 'bg-mint text-[#1A2420]'
             case 'green':
-                return 'bg-emerald-500 text-white'
+                return 'bg-primary text-white dark:text-[#1A2420]'
             case 'amber':
                 return 'bg-amber-500 text-white'
             case 'slate':

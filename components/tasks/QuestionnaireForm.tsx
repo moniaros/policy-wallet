@@ -51,9 +51,9 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
     if (isSuccess) {
         return (
             <div className="flex flex-col items-center justify-center py-24 animate-in fade-in zoom-in duration-500">
-                <div className="w-24 h-24 bg-teal-500/10 rounded-full flex items-center justify-center mb-8 relative">
-                    <div className="absolute inset-0 bg-teal-500/20 blur-2xl rounded-full scale-125 animate-pulse" />
-                    <CheckCircle2 className="w-12 h-12 text-teal-600 relative z-10" />
+                <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-8 relative">
+                    <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full scale-125 animate-pulse" />
+                    <CheckCircle2 className="w-12 h-12 text-primary dark:text-mint relative z-10" />
                 </div>
                 <h2 className="text-3xl font-black text-stone-900 dark:text-white mb-2 tracking-tight">
                     {language === 'el' ? 'Ευχαριστούμε!' : 'Thank You!'}
@@ -76,7 +76,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                     </div>
                     <div className="h-2 bg-stone-100 dark:bg-stone-900 rounded-full overflow-hidden">
                         <div
-                            className="h-full bg-teal-500 transition-all duration-700 ease-out shadow-[0_0_12px_rgba(20,184,166,0.5)]"
+                            className="h-full bg-primary transition-all duration-700 ease-out shadow-[0_0_12px_rgba(41,104,91,0.5)]"
                             style={{ width: `${progress}%` }}
                         />
                     </div>
@@ -89,24 +89,24 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
 
             <form onSubmit={handleSubmit} className="bg-white dark:bg-stone-800 rounded-[40px] p-8 md:p-16 border border-stone-200 dark:border-stone-700 shadow-2xl shadow-stone-200/50 dark:shadow-none relative overflow-hidden">
                 {/* Decorative background element */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/5 blur-[120px] rounded-full -mr-32 -mt-32 pointer-events-none" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[120px] rounded-full -mr-32 -mt-32 pointer-events-none" />
 
                 <h2 className="text-4xl font-black text-stone-900 dark:text-white mb-12 tracking-tight flex items-center gap-4">
                     {templateName}
-                    <span className="w-2 h-2 rounded-full bg-teal-500" />
+                    <span className="w-2 h-2 rounded-full bg-primary dark:bg-mint" />
                 </h2>
 
                 <div className="space-y-16">
                     {questions.map((q, idx) => (
                         <div key={q.id} className="group space-y-6 relative">
                             <div className="flex items-start gap-6">
-                                <span className="flex-shrink-0 w-10 h-10 rounded-2xl bg-stone-50 dark:bg-stone-900 border border-stone-100 dark:border-stone-800 flex items-center justify-center text-xs font-black text-stone-400 group-hover:border-teal-500 group-hover:text-teal-500 transition-all duration-300 mt-1">
+                                <span className="flex-shrink-0 w-10 h-10 rounded-2xl bg-stone-50 dark:bg-stone-900 border border-stone-100 dark:border-stone-800 flex items-center justify-center text-xs font-black text-stone-400 group-hover:border-primary group-hover:text-primary dark:group-hover:border-mint dark:group-hover:text-mint transition-all duration-300 mt-1">
                                     {String(idx + 1).padStart(2, '0')}
                                 </span>
                                 <div className="flex-1 space-y-6">
                                     <label className="block text-xl font-bold text-stone-800 dark:text-stone-200 leading-tight tracking-tight">
                                         {q.label}
-                                        {q.required && <span className="text-teal-500 ml-1.5">*</span>}
+                                        {q.required && <span className="text-primary dark:text-mint ml-1.5">*</span>}
                                     </label>
 
                                     {q.type === 'boolean' && (
@@ -139,7 +139,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                                             type="text"
                                             required={q.required}
                                             onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
-                                            className="w-full bg-stone-50/50 dark:bg-stone-900 border-2 border-stone-100 dark:border-stone-800 rounded-2xl px-8 py-5 focus:border-teal-500 focus:bg-white dark:focus:bg-stone-900 outline-none transition-all text-stone-900 dark:text-white font-medium placeholder:text-stone-300"
+                                            className="w-full bg-stone-50/50 dark:bg-stone-900 border-2 border-stone-100 dark:border-stone-800 rounded-2xl px-8 py-5 focus:border-primary dark:focus:border-mint focus:bg-white dark:focus:bg-stone-900 outline-none transition-all text-stone-900 dark:text-white font-medium placeholder:text-stone-300"
                                             placeholder={t.tasks.typeAnswer}
                                         />
                                     )}
@@ -149,7 +149,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                                             type="number"
                                             required={q.required}
                                             onChange={(e) => setAnswers({ ...answers, [q.id]: parseInt(e.target.value) })}
-                                            className="w-full max-w-xs bg-stone-50/50 dark:bg-stone-900 border-2 border-stone-100 dark:border-stone-800 rounded-2xl px-8 py-5 focus:border-teal-500 focus:bg-white dark:focus:bg-stone-900 outline-none transition-all text-stone-900 dark:text-white font-medium placeholder:text-stone-300"
+                                            className="w-full max-w-xs bg-stone-50/50 dark:bg-stone-900 border-2 border-stone-100 dark:border-stone-800 rounded-2xl px-8 py-5 focus:border-primary dark:focus:border-mint focus:bg-white dark:focus:bg-stone-900 outline-none transition-all text-stone-900 dark:text-white font-medium placeholder:text-stone-300"
                                             placeholder="0"
                                         />
                                     )}
@@ -162,7 +162,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                                                     type="button"
                                                     onClick={() => setAnswers({ ...answers, [q.id]: opt })}
                                                     className={`py-4 px-6 rounded-2xl text-xs font-black border-2 transition-all duration-300 ${answers[q.id] === opt
-                                                        ? 'bg-teal-600 border-teal-600 text-white shadow-lg shadow-teal-600/20'
+                                                        ? 'bg-primary border-primary text-white dark:text-[#1A2420] shadow-lg shadow-primary/20'
                                                         : 'bg-stone-50/50 dark:bg-stone-900 border-stone-100 dark:border-stone-800 text-stone-500 hover:border-stone-200 dark:hover:border-stone-700'
                                                         }`}
                                                 >

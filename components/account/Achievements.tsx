@@ -98,7 +98,7 @@ export function AchievementsPanel({ language }: AchievementsProps) {
                     initial={{ width: 0 }}
                     animate={{ width: `${progressPct}%` }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
-                    className="h-full rounded-full bg-gradient-to-r from-amber-400 to-orange-500"
+                    className="h-full rounded-full bg-primary"
                 />
             </div>
 

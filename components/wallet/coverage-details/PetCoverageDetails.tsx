@@ -64,8 +64,8 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
           className="w-full flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
         >
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-              <Heart className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <Heart className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <div className="text-left">
               <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{petCopy.microchipNumber}</span>
@@ -83,8 +83,8 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
         <div className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+                <Shield className="w-4 h-4 text-primary dark:text-mint" />
               </div>
               <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{petCopy.annualLimit}</span>
             </div>
@@ -93,7 +93,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
           <div className="ml-10.5">
             <div className="w-full h-3 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
               <div
-                className={`h-full rounded-full transition-all ${usagePercent > 80 ? "bg-red-500" : usagePercent > 50 ? "bg-amber-500" : "bg-emerald-500"}`}
+                className={`h-full rounded-full transition-all ${usagePercent > 80 ? "bg-red-500" : usagePercent > 50 ? "bg-amber-500" : "bg-primary"}`}
                 style={{ width: `${usagePercent}%` }}
               />
             </div>
@@ -101,7 +101,7 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
               <span className="text-slate-500 dark:text-slate-400">
                 {copy.used}: {formatCurrency(pet.annualLimitUsed ?? 0)}
               </span>
-              <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+              <span className="font-semibold text-[#166534] dark:text-mint">
                 {copy.remaining}: {formatCurrency(pet.annualLimitTotal - (pet.annualLimitUsed ?? 0))}
               </span>
             </div>
@@ -112,25 +112,25 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
       {pet.leishmaniaCovered !== undefined && (
         <div className={`flex items-center justify-between p-3 rounded-xl border ${
           pet.leishmaniaCovered
-            ? "bg-emerald-50/80 dark:bg-emerald-900/20 border-emerald-200/60 dark:border-emerald-800/60"
+            ? "bg-primary-tint dark:bg-primary/15 border-primary/20 dark:border-primary/30"
             : "bg-red-50/80 dark:bg-red-900/20 border-red-200/60 dark:border-red-800/60"
         }`}>
           <div className="flex items-center gap-2.5">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
               pet.leishmaniaCovered
-                ? "bg-emerald-100 dark:bg-emerald-900/30"
+                ? "bg-primary-soft dark:bg-primary/15"
                 : "bg-red-100 dark:bg-red-900/30"
             }`}>
-              <Bug className={`w-4 h-4 ${pet.leishmaniaCovered ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`} />
+              <Bug className={`w-4 h-4 ${pet.leishmaniaCovered ? "text-[#166534] dark:text-mint" : "text-red-600 dark:text-red-400"}`} />
             </div>
             <span className={`text-sm font-bold ${
               pet.leishmaniaCovered
-                ? "text-emerald-700 dark:text-emerald-300"
+                ? "text-[#166534] dark:text-mint"
                 : "text-red-700 dark:text-red-300"
             }`}>{petCopy.leishmaniaCoverage}</span>
           </div>
           {pet.leishmaniaCovered ? (
-            <span className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            <span className="flex items-center gap-1 text-xs font-bold text-[#166534] dark:text-mint">
               <CheckCircle2 className="w-4 h-4" /> {copy.covered}
             </span>
           ) : (
@@ -144,14 +144,14 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
       {pet.breedSpecificDiseases && pet.breedSpecificDiseases.length > 0 && (
         <div className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
           <div className="flex items-center gap-2.5 mb-2">
-            <div className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
-              <Stethoscope className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <Stethoscope className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{petCopy.breedSpecificDiseases}</span>
           </div>
           <div className="ml-10.5 flex flex-wrap gap-1.5">
             {pet.breedSpecificDiseases.map((disease, i) => (
-              <span key={i} className="px-2.5 py-1 rounded-full text-xs font-semibold bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-800">
+              <span key={i} className="px-2.5 py-1 rounded-full text-xs font-semibold bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint border border-primary/20 dark:border-primary/30">
                 {disease}
               </span>
             ))}
@@ -162,13 +162,13 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
       {pet.directVetPayment !== undefined && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
-              <CreditCard className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <CreditCard className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{petCopy.directVetPayment}</span>
           </div>
           {pet.directVetPayment ? (
-            <span className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            <span className="flex items-center gap-1 text-xs font-bold text-[#166534] dark:text-mint">
               <CheckCircle2 className="w-4 h-4" /> {copy.available}
             </span>
           ) : (

@@ -127,8 +127,8 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                     {view === 'choice' && (
                         <div className="space-y-10">
                             <header>
-                                <div className="flex items-center gap-3 mb-4 text-teal-600">
-                                    <div className="w-8 h-8 rounded-xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
+                                <div className="flex items-center gap-3 mb-4 text-primary dark:text-mint">
+                                    <div className="w-8 h-8 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                     </div>
                                     <span className="text-[10px] font-black uppercase tracking-[0.2em]">CRM Entry</span>
@@ -153,7 +153,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     onClick={() => fileInputRef.current?.click()}
                                     className="p-8 rounded-[40px] border border-stone-100 dark:border-stone-800 text-left transition-all bg-stone-50/50 dark:bg-stone-800/30 hover:bg-white dark:hover:bg-stone-800 hover:shadow-2xl hover:shadow-stone-900/5 group"
                                 >
-                                    <div className="w-12 h-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center mb-6 shadow-xl shadow-teal-500/20 group-hover:scale-110 transition-transform">
+                                    <div className="w-12 h-12 rounded-2xl bg-primary text-white dark:text-[#1A2420] flex items-center justify-center mb-6 shadow-xl shadow-primary/25 group-hover:scale-110 transition-transform">
                                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                     </div>
                                     <h3 className="text-lg font-black text-stone-900 dark:text-white tracking-tight mb-2">Smart PDF Upload</h3>
@@ -174,8 +174,8 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                     {view === 'parsing' && (
                         <div className="py-20 text-center">
                             <div className="relative w-24 h-24 mx-auto mb-10">
-                                <div className="absolute inset-0 rounded-full border-4 border-teal-500/10 border-t-teal-500 animate-spin" />
-                                <div className="absolute inset-4 rounded-full bg-teal-500/10 flex items-center justify-center text-teal-600">
+                                <div className="absolute inset-0 rounded-full border-4 border-primary/10 border-t-primary animate-spin" />
+                                <div className="absolute inset-4 rounded-full bg-primary/10 flex items-center justify-center text-primary dark:text-mint">
                                     <svg className="w-8 h-8 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.989-2.386l-.548-.547z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                 </div>
                             </div>
@@ -189,7 +189,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                             <header className="flex justify-between items-start">
                                 <div>
                                     <h2 className="text-2xl font-black text-stone-900 dark:text-white tracking-tighter mb-1">Customer <span className="text-stone-400 italic">Details.</span></h2>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-teal-600">Manual Entry Protocol</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint">Manual Entry Protocol</p>
                                 </div>
                                 <button type="button" onClick={() => setView('choice')} className="text-[10px] font-black uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors">Change Method</button>
                             </header>
@@ -201,7 +201,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                         required
                                         value={formData.name}
                                         onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full h-14 px-6 bg-stone-50 dark:bg-stone-800 border-none rounded-2xl focus:ring-4 focus:ring-teal-500/10 outline-none transition-all text-sm font-bold"
+                                        className="w-full h-14 px-6 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
                                         placeholder="John"
                                     />
                                 </div>
@@ -211,7 +211,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                         required
                                         value={formData.surname}
                                         onChange={e => setFormData({ ...formData, surname: e.target.value })}
-                                        className="w-full h-14 px-6 bg-stone-50 dark:bg-stone-800 border-none rounded-2xl focus:ring-4 focus:ring-teal-500/10 outline-none transition-all text-sm font-bold"
+                                        className="w-full h-14 px-6 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
                                         placeholder="Doe"
                                     />
                                 </div>
@@ -222,7 +222,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                         type="email"
                                         value={formData.email}
                                         onChange={e => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full h-14 px-6 bg-stone-50 dark:bg-stone-800 border-none rounded-2xl focus:ring-4 focus:ring-teal-500/10 outline-none transition-all text-sm font-bold"
+                                        className="w-full h-14 px-6 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
                                         placeholder="john@example.com"
                                     />
                                 </div>
@@ -231,7 +231,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     <input
                                         value={formData.phone}
                                         onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                                        className="w-full h-14 px-6 bg-stone-50 dark:bg-stone-800 border-none rounded-2xl focus:ring-4 focus:ring-teal-500/10 outline-none transition-all text-sm font-bold"
+                                        className="w-full h-14 px-6 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
                                         placeholder="+30 690 000 0000"
                                     />
                                 </div>
@@ -243,7 +243,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                         type="checkbox"
                                         checked={formData.addPolicy}
                                         onChange={e => setFormData({ ...formData, addPolicy: e.target.checked })}
-                                        className="w-5 h-5 rounded-lg border-stone-300 text-teal-600 focus:ring-teal-500/30"
+                                        className="w-5 h-5 rounded-lg border-slate-300 text-primary focus:ring-primary/30"
                                     />
                                     <span className="text-sm font-black text-stone-900 dark:text-white tracking-tight">Include Initial Policy Details</span>
                                 </label>
@@ -256,7 +256,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                                 required={formData.addPolicy}
                                                 value={formData.policy.insurerName}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, insurerName: e.target.value } })}
-                                                className="w-full h-12 px-5 bg-white dark:bg-stone-800 border-none rounded-xl focus:ring-4 focus:ring-teal-500/10 outline-none transition-all text-xs font-bold"
+                                                className="w-full h-12 px-5 bg-white dark:bg-slate-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
                                                 placeholder="e.g. Allianz"
                                             />
                                         </div>
@@ -266,7 +266,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                                 required={formData.addPolicy}
                                                 value={formData.policy.policyNumber}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, policyNumber: e.target.value } })}
-                                                className="w-full h-12 px-5 bg-white dark:bg-stone-800 border-none rounded-xl focus:ring-4 focus:ring-teal-500/10 outline-none transition-all text-xs font-bold"
+                                                className="w-full h-12 px-5 bg-white dark:bg-slate-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
                                                 placeholder="POL-123456"
                                             />
                                         </div>
@@ -276,7 +276,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                                 required={formData.addPolicy}
                                                 value={formData.policy.lineOfBusiness}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, lineOfBusiness: e.target.value } })}
-                                                className="w-full h-12 px-5 bg-white dark:bg-stone-800 border-none rounded-xl focus:ring-4 focus:ring-teal-500/10 outline-none transition-all text-xs font-bold appearance-none"
+                                                className="w-full h-12 px-5 bg-white dark:bg-slate-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold appearance-none"
                                             >
                                                 <option value="motor">Motor</option>
                                                 <option value="health">Health</option>
@@ -292,7 +292,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                                 type="number"
                                                 value={formData.policy.premiumAmount}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, premiumAmount: e.target.value } })}
-                                                className="w-full h-12 px-5 bg-white dark:bg-stone-800 border-none rounded-xl focus:ring-4 focus:ring-teal-500/10 outline-none transition-all text-xs font-bold"
+                                                className="w-full h-12 px-5 bg-white dark:bg-slate-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
                                                 placeholder="0.00"
                                             />
                                         </div>
@@ -303,7 +303,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                                 type="date"
                                                 value={formData.policy.startDate}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, startDate: e.target.value } })}
-                                                className="w-full h-12 px-5 bg-white dark:bg-stone-800 border-none rounded-xl focus:ring-4 focus:ring-teal-500/10 outline-none transition-all text-xs font-bold"
+                                                className="w-full h-12 px-5 bg-white dark:bg-slate-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
                                             />
                                         </div>
                                         <div className="space-y-1.5">
@@ -313,7 +313,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                                 type="date"
                                                 value={formData.policy.endDate}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, endDate: e.target.value } })}
-                                                className="w-full h-12 px-5 bg-white dark:bg-stone-800 border-none rounded-xl focus:ring-4 focus:ring-teal-500/10 outline-none transition-all text-xs font-bold"
+                                                className="w-full h-12 px-5 bg-white dark:bg-slate-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
                                             />
                                         </div>
                                     </div>
@@ -333,7 +333,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="flex-[2] px-8 py-5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-stone-900/10 hover:bg-teal-600 dark:hover:bg-teal-500 hover:text-white transition-all disabled:opacity-50"
+                                    className="flex-[2] px-8 py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-slate-900/10 hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all disabled:opacity-50"
                                 >
                                     {loading ? 'Processing...' : 'Add to Pipeline'}
                                 </button>
@@ -343,14 +343,14 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
 
                     {view === 'success' && (
                         <div className="py-20 text-center">
-                            <div className="w-24 h-24 rounded-[32px] bg-teal-500 text-white flex items-center justify-center mx-auto mb-10 shadow-2xl shadow-teal-500/20 scale-110">
+                            <div className="w-24 h-24 rounded-[32px] bg-primary text-white dark:text-[#1A2420] flex items-center justify-center mx-auto mb-10 shadow-2xl shadow-primary/25 scale-110">
                                 <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" /></svg>
                             </div>
                             <h2 className="text-3xl font-black text-stone-900 dark:text-white tracking-tighter mb-4 leading-tight">Customer <span className="text-stone-400 italic">Registered.</span></h2>
                             <p className="text-stone-500 dark:text-stone-400 font-medium mb-12 max-w-sm mx-auto">The customer has been added to your CRM. You can invite them to their digital wallet from their profile page at any time.</p>
                             <button
                                 onClick={() => { reset(); onClose(); }}
-                                className="px-12 py-5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-stone-900/10 hover:bg-teal-600 dark:hover:bg-teal-500 hover:text-white transition-all"
+                                className="px-12 py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-slate-900/10 hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all"
                             >
                                 Continue to CRM
                             </button>

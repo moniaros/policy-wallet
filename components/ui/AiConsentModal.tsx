@@ -53,7 +53,7 @@ export function AiConsentModal({ isOpen, onClose, onConsented, source = "ai_cons
         <Modal isOpen={isOpen} onClose={onClose} showCloseButton={false}>
             <div className="p-6 md:p-8">
                 <div className="flex items-start gap-4">
-                    <div className="rounded-2xl bg-teal-50 p-3 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300">
+                    <div className="rounded-2xl bg-primary-soft p-3 text-primary dark:bg-primary/15 dark:text-mint">
                         <ShieldCheck className="h-6 w-6" />
                     </div>
                     <div>
@@ -79,7 +79,7 @@ export function AiConsentModal({ isOpen, onClose, onConsented, source = "ai_cons
                         type="button"
                         onClick={accept}
                         disabled={saving}
-                        className="rounded-full bg-teal-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-teal-700 disabled:opacity-50"
+                        className="rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white transition hover:bg-primary-hover disabled:opacity-50 dark:text-[#1A2420]"
                     >
                         {t.common.aiConsentAccept}
                     </button>

@@ -179,7 +179,7 @@ export default function DashboardClient({ metrics, activityLogs, pendingAgentsCo
                     <div className="space-y-2">
                         <div className="flex justify-between text-sm">
                             <span className="text-stone-600 dark:text-stone-400">Active</span>
-                            <span className="font-medium text-green-600 dark:text-green-400">
+                            <span className="font-medium text-[#166534] dark:text-mint">
                                 {metrics.policies.active}
                             </span>
                         </div>
@@ -254,7 +254,7 @@ export default function DashboardClient({ metrics, activityLogs, pendingAgentsCo
                     <div className="p-4 border-t border-stone-200 dark:border-stone-700">
                         <a
                             href="/admin/activity"
-                            className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                            className="text-sm text-primary dark:text-mint hover:underline"
                         >
                             View all activity →
                         </a>
@@ -276,10 +276,10 @@ interface MetricsCardProps {
 
 function MetricsCard({ title, value, change, changeLabel, icon, color }: MetricsCardProps) {
     const colorClasses = {
-        blue: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
-        green: "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400",
-        purple: "bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400",
-        emerald: "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400"
+        blue: "bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint",
+        green: "bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint",
+        purple: "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400",
+        emerald: "bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint"
     }
 
     return (

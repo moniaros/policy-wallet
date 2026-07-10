@@ -87,13 +87,13 @@ export function MyProfileScreen({
                                     className="w-full h-full object-cover"
                                 />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center bg-[#1FDC86] text-white">
+                                <div className="w-full h-full flex items-center justify-center bg-primary text-white dark:text-[#1A2420]">
                                     <span className="text-2xl font-black">{(user?.name || copy.defaultUser)[0]}</span>
                                 </div>
                             )}
                         </div>
                         {user?.isOnline && (
-                            <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-[#1FDC86] border-2 border-white dark:border-black rounded-full" />
+                            <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-primary dark:bg-mint border-2 border-white dark:border-black rounded-full" />
                         )}
                     </div>
 
@@ -110,9 +110,9 @@ export function MyProfileScreen({
                         <button
                             key={index}
                             onClick={item.onClick}
-                            className={`w-full flex items-center gap-4 p-4 bg-white dark:bg-black rounded-2xl border border-black/10 dark:border-white/15 transition-all active:scale-[0.98] text-left cursor-pointer ${item.danger ? 'hover:border-red-300 dark:hover:border-red-800' : 'hover:border-[#1FDC86]/35'}`}
+                            className={`w-full flex items-center gap-4 p-4 bg-white dark:bg-black rounded-2xl border border-black/10 dark:border-white/15 transition-all active:scale-[0.98] text-left cursor-pointer ${item.danger ? 'hover:border-red-300 dark:hover:border-red-800' : 'hover:border-primary/35 dark:hover:border-mint/35'}`}
                         >
-                            <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${item.danger ? 'bg-red-50 dark:bg-red-900/20 text-red-600' : 'bg-black/5 dark:bg-black text-[#1FDC86]'}`}>
+                            <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${item.danger ? 'bg-red-50 dark:bg-red-900/20 text-red-600' : 'bg-black/5 dark:bg-black text-primary dark:text-mint'}`}>
                                 {item.icon}
                             </div>
                             <div className="flex-1 min-w-0">

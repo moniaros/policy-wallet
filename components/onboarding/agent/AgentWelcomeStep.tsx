@@ -36,8 +36,8 @@ export function AgentWelcomeStep({ onNext }: StepProps) {
 
     return (
         <div className="space-y-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 mb-6">
-                <Briefcase className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/25 mb-6">
+                <Briefcase className="w-8 h-8 text-white dark:text-[#1A2420]" />
             </div>
 
             <div>
@@ -63,7 +63,7 @@ export function AgentWelcomeStep({ onNext }: StepProps) {
                             placeholder={t("π.χ. Ανώτερος Ασφαλιστικός Σύμβουλος", "e.g. Senior Insurance Advisor")}
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all"
+                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:outline-none transition-all"
                         />
                     </div>
                 </div>
@@ -77,7 +77,7 @@ export function AgentWelcomeStep({ onNext }: StepProps) {
                             placeholder={t("π.χ. Ασφαλιστικό Γραφείο Παπαδόπουλος", "e.g. Papadopoulos Insurance Agency")}
                             value={agencyName}
                             onChange={(e) => setAgencyName(e.target.value)}
-                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none transition-all"
+                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:outline-none transition-all"
                         />
                     </div>
                 </div>

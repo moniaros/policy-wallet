@@ -187,9 +187,9 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                         <div className="space-y-4">
                             {/* Stats */}
                             <div className="grid grid-cols-3 gap-4">
-                                <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
-                                    <div className="text-3xl font-bold text-green-700 dark:text-green-400">{validCount}</div>
-                                    <div className="text-sm font-medium text-green-600 dark:text-green-500">Valid</div>
+                                <div className="bg-primary-tint dark:bg-primary/15 border border-primary/20 dark:border-primary/30 rounded-xl p-4">
+                                    <div className="text-3xl font-bold text-[#166534] dark:text-mint">{validCount}</div>
+                                    <div className="text-sm font-medium text-primary dark:text-mint">Valid</div>
                                 </div>
                                 <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
                                     <div className="text-3xl font-bold text-red-700 dark:text-red-400">{invalidCount}</div>
@@ -222,11 +222,11 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                                 <td className="px-4 py-3 text-stone-600 dark:text-stone-400">{customer.phone}</td>
                                                 <td className="px-4 py-3">
                                                     {customer.status === 'valid' ? (
-                                                        <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded text-xs font-bold">
+                                                        <span className="px-2 py-1 bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint rounded-full text-xs font-bold">
                                                             Valid
                                                         </span>
                                                     ) : (
-                                                        <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded text-xs font-bold">
+                                                        <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-xs font-bold">
                                                             {customer.error}
                                                         </span>
                                                     )}
@@ -248,7 +248,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                 <button
                                     onClick={handleImport}
                                     disabled={validCount === 0 || isProcessing}
-                                    className="flex-1 px-6 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-teal-500/30"
+                                    className="flex-1 px-6 py-3 rounded-xl font-bold text-white dark:text-[#1A2420] bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/25"
                                 >
                                     Import {validCount} Customer{validCount !== 1 ? 's' : ''}
                                 </button>
@@ -258,7 +258,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
 
                     {step === 'importing' && (
                         <div className="py-12 text-center">
-                            <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-teal-200 border-t-teal-600 mb-4"></div>
+                            <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary/20 border-t-primary mb-4"></div>
                             <h3 className="text-xl font-bold text-stone-900 dark:text-white">Importing Customers...</h3>
                             <p className="text-stone-600 dark:text-stone-400 mt-2">Please wait while we process your data</p>
                         </div>
@@ -266,8 +266,8 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
 
                     {step === 'complete' && (
                         <div className="py-12 text-center">
-                            <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full mb-4">
-                                <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-soft dark:bg-primary/15 rounded-full mb-4">
+                                <svg className="w-8 h-8 text-primary dark:text-mint" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>

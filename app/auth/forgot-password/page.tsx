@@ -79,22 +79,22 @@ export default function ForgotPasswordPage() {
     }
 
     const inputBase =
-        "w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[14px] text-[#0F172A] outline-none transition placeholder:text-[#94A3B8] focus-visible:border-[#29685B] focus-visible:ring-2 focus-visible:ring-[#29685B]/20"
+        "w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[14px] text-[#0F172A] outline-none transition placeholder:text-[#94A3B8] focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 dark:border-white/15 dark:bg-black dark:text-white dark:placeholder:text-white/40"
 
     return (
-        <div className={`${inter.className} flex min-h-screen flex-col bg-[#F8FAFC]`}>
+        <div className={`${inter.className} flex min-h-screen flex-col bg-[#F8FAFC] dark:bg-black`}>
             {/* Header bar */}
             <header className="flex items-center justify-between px-6 py-4">
                 <Link
                     href="/"
-                    className="text-[13px] font-medium text-[#475569] transition hover:text-[#29685B]"
+                    className="text-[13px] font-medium text-[#475569] transition hover:text-primary dark:text-white/60 dark:hover:text-mint"
                 >
                     {copy.backHome}
                 </Link>
                 <button
                     type="button"
                     onClick={() => setLanguage(isGreek ? "en" : "el")}
-                    className="rounded-full border border-[#E2E8F0] bg-white px-3 py-1 text-[12px] font-semibold text-[#475569] transition hover:bg-[#F8FAFC]"
+                    className="rounded-full border border-[#E2E8F0] bg-white px-3 py-1 text-[12px] font-semibold text-[#475569] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10"
                 >
                     {isGreek ? "EN" : "EL"}
                 </button>
@@ -106,44 +106,44 @@ export default function ForgotPasswordPage() {
                     initial={{ opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="w-full max-w-[440px] rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-[0_4px_24px_rgba(0,0,0,0.06)] sm:p-10"
+                    className="w-full max-w-[440px] rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-[0_4px_24px_rgba(0,0,0,0.06)] dark:border-white/10 dark:bg-[#111111] sm:p-10"
                 >
                     {/* Top meta row */}
-                    <div className="mb-5 flex items-center justify-between text-xs font-semibold text-[#64748B]">
-                        <span className="rounded-full bg-[#F1F5F9] px-2.5 py-1">
+                    <div className="mb-5 flex items-center justify-between text-xs font-semibold text-[#64748B] dark:text-white/60">
+                        <span className="rounded-full bg-[#F1F5F9] px-2.5 py-1 dark:bg-white/10">
                             {t("Ασφαλής ανάκτηση", "Secure recovery")}
                         </span>
-                        <span className="inline-flex items-center gap-1 text-[#475569]">
-                            <ShieldCheck className="h-3.5 w-3.5 text-[#29685B]" />
+                        <span className="inline-flex items-center gap-1 text-[#475569] dark:text-white/65">
+                            <ShieldCheck className="h-3.5 w-3.5 text-primary" />
                             {copy.trust}
                         </span>
                     </div>
 
                     {/* Logo + heading */}
                     <div className="mb-6 text-center">
-                        <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-[#F8FAFC] px-3 py-2">
+                        <div className="mb-4 inline-flex items-center justify-center rounded-xl bg-[#F8FAFC] px-3 py-2 dark:bg-white/5">
                             <PolicyWalletLogo size="md" language={language} />
                         </div>
-                        <h1 className="text-2xl font-bold tracking-tight text-[#0F172A]">{copy.title}</h1>
-                        <p className="mt-1.5 text-sm text-[#64748B]">{copy.subtitle}</p>
+                        <h1 className="text-2xl font-bold tracking-tight text-[#0F172A] dark:text-white">{copy.title}</h1>
+                        <p className="mt-1.5 text-sm text-[#64748B] dark:text-white/65">{copy.subtitle}</p>
                     </div>
 
                     {submittedEmail ? (
                         <div className="space-y-4">
-                            <div className="rounded-xl border border-[#E2E8F0] bg-[#F0FDF4] p-4">
+                            <div className="rounded-xl border border-[#E2E8F0] bg-[#F0FDF4] p-4 dark:border-primary/30 dark:bg-primary/15">
                                 <div className="flex items-start gap-2">
-                                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-[#29685B]" />
+                                    <CheckCircle2 className="mt-0.5 h-4 w-4 text-primary" />
                                     <div>
-                                        <p className="text-sm font-semibold text-[#0F172A]">{copy.sentTitle}</p>
-                                        <p className="mt-1 text-sm text-[#475569]">{copy.sentBody}</p>
-                                        <p className="mt-1 break-all text-xs font-semibold text-[#29685B]">{submittedEmail}</p>
-                                        <p className="mt-2 text-xs text-[#64748B]">{copy.sentHint}</p>
+                                        <p className="text-sm font-semibold text-[#0F172A] dark:text-white">{copy.sentTitle}</p>
+                                        <p className="mt-1 text-sm text-[#475569] dark:text-white/65">{copy.sentBody}</p>
+                                        <p className="mt-1 break-all text-xs font-semibold text-primary">{submittedEmail}</p>
+                                        <p className="mt-2 text-xs text-[#64748B] dark:text-white/60">{copy.sentHint}</p>
                                     </div>
                                 </div>
                             </div>
                             <Link
                                 href="/auth/signin"
-                                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#E2E8F0] bg-white px-4 py-3 text-sm font-semibold text-[#475569] transition hover:bg-[#F8FAFC]"
+                                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#E2E8F0] bg-white px-4 py-3 text-sm font-semibold text-[#475569] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10"
                             >
                                 <ArrowLeft className="h-4 w-4" />
                                 {copy.backToSignIn}
@@ -169,7 +169,7 @@ export default function ForgotPasswordPage() {
                             <div>
                                 <label
                                     htmlFor="forgot-email"
-                                    className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#64748B]"
+                                    className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65"
                                 >
                                     {copy.emailLabel}
                                 </label>
@@ -192,7 +192,7 @@ export default function ForgotPasswordPage() {
                             <button
                                 type="submit"
                                 disabled={submitting}
-                                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#29685B] px-4 py-3.5 text-[15px] font-semibold text-white transition hover:bg-[#1C4E44] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#29685B]/40 disabled:cursor-not-allowed disabled:opacity-70"
+                                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-3.5 text-[15px] font-semibold text-white transition hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-70 dark:text-[#1A2420]"
                             >
                                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                                 {submitting ? copy.sending : copy.send}
@@ -200,7 +200,7 @@ export default function ForgotPasswordPage() {
 
                             <Link
                                 href="/auth/signin"
-                                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#E2E8F0] bg-white px-4 py-3 text-sm font-semibold text-[#475569] transition hover:bg-[#F8FAFC]"
+                                className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-[#E2E8F0] bg-white px-4 py-3 text-sm font-semibold text-[#475569] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10"
                             >
                                 <ArrowLeft className="h-4 w-4" />
                                 {copy.backToSignIn}

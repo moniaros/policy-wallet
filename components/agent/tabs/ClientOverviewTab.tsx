@@ -51,7 +51,7 @@ export function ClientOverviewTab({
                             <circle cx={60} cy={60} r={52} fill="none" stroke="currentColor" strokeWidth={8} className="text-slate-200 dark:text-slate-700" />
                             <circle
                                 cx={60} cy={60} r={52} fill="none"
-                                stroke={healthScore >= 70 ? "#10b981" : healthScore >= 40 ? "#f59e0b" : "#ef4444"}
+                                stroke={healthScore >= 70 ? "#29685B" : healthScore >= 40 ? "#f59e0b" : "#ef4444"}
                                 strokeWidth={8}
                                 strokeDasharray={2 * Math.PI * 52}
                                 strokeDashoffset={2 * Math.PI * 52 * (1 - healthScore / 100)}
@@ -78,7 +78,7 @@ export function ClientOverviewTab({
                 <BrandCard className="p-5">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            <Shield className="h-5 w-5 text-teal-600" />
+                            <Shield className="h-5 w-5 text-primary dark:text-mint" />
                             {language === "el" ? "Ενεργά Ασφαλιστήρια" : "Active Policies"}
                             <span className="text-xs text-slate-400 font-normal">({activePolicies.length})</span>
                         </h3>
@@ -98,8 +98,8 @@ export function ClientOverviewTab({
                                     key={policy.policyId}
                                     className="flex items-center gap-3 rounded-xl border border-slate-200/60 dark:border-slate-700/60 p-3"
                                 >
-                                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-50 dark:bg-teal-900/30">
-                                        <Shield className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-soft dark:bg-primary/15">
+                                        <Shield className="h-4 w-4 text-primary dark:text-mint" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-medium text-slate-900 dark:text-white">
@@ -154,9 +154,9 @@ export function ClientOverviewTab({
                                                 {opp.gapTitle}
                                             </p>
                                             {opp.conversionLikelihood && (
-                                                <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold ${
+                                                <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${
                                                     opp.conversionLikelihood === "high"
-                                                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                                                        ? "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint"
                                                         : opp.conversionLikelihood === "medium"
                                                             ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
                                                             : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
@@ -173,7 +173,7 @@ export function ClientOverviewTab({
                                             <button
                                                 type="button"
                                                 onClick={() => onCreateProposal(opp.gapId)}
-                                                className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-teal-700 dark:text-teal-400 hover:underline cursor-pointer"
+                                                className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary dark:text-mint hover:underline cursor-pointer"
                                             >
                                                 <Plus className="h-3 w-3" />
                                                 {language === "el" ? "Δημιουργία Πρότασης" : "Create Proposal"}
@@ -192,7 +192,7 @@ export function ClientOverviewTab({
                 <div className="col-span-12">
                     <BrandCard className="p-5">
                         <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
-                            <Users className="h-5 w-5 text-indigo-500" />
+                            <Users className="h-5 w-5 text-primary dark:text-mint" />
                             {language === "el" ? "Ανάγκες Κάλυψης" : "Coverage Needs"}
                         </h3>
                         <div className="flex items-center gap-3">
@@ -208,7 +208,7 @@ export function ClientOverviewTab({
                                 {customer.crossSell.existingLines.map((line) => (
                                     <span
                                         key={line}
-                                        className="rounded-full bg-emerald-100 dark:bg-emerald-900/30 px-3 py-1 text-xs font-medium text-emerald-700 dark:text-emerald-400"
+                                        className="rounded-full bg-primary-soft dark:bg-primary/15 px-3 py-1 text-xs font-medium text-[#166534] dark:text-mint"
                                     >
                                         {LOB_LABELS[line]?.[language] || line}
                                     </span>

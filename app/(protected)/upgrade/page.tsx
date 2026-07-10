@@ -65,9 +65,9 @@ export default function PricingPage() {
         <div className="min-h-screen bg-white dark:bg-stone-950 pb-20 relative overflow-hidden">
             {/* High-Fidelity Background Patterns */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-teal-500/5 blur-[120px] rounded-full"></div>
-                <div className="absolute top-[20%] -right-[10%] w-[30%] h-[50%] bg-purple-500/5 blur-[120px] rounded-full"></div>
-                <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-stone-50/50 dark:from-stone-900/20 to-transparent"></div>
+                <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-primary/5 blur-[120px] rounded-full"></div>
+                <div className="absolute top-[20%] -right-[10%] w-[30%] h-[50%] bg-primary/5 blur-[120px] rounded-full"></div>
+                <div className="absolute bottom-0 left-0 w-full h-1/2 bg-[#F8FAFC]/50 dark:bg-slate-900/20"></div>
 
                 {/* Geometric Grid Overlay */}
                 <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
@@ -89,7 +89,7 @@ export default function PricingPage() {
                         <span className="font-bold text-sm">Back</span>
                     </button>
                     <div className="flex items-center gap-2 text-stone-400 text-xs font-bold uppercase tracking-widest">
-                        <ShieldCheck className="w-4 h-4 text-teal-500" />
+                        <ShieldCheck className="w-4 h-4 text-primary dark:text-mint" />
                         {secureText}
                     </div>
                 </div>
@@ -102,7 +102,7 @@ export default function PricingPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-50 dark:bg-teal-900/20 border border-teal-100 dark:border-teal-900/30 text-teal-600 dark:text-teal-400 text-xs font-black uppercase tracking-widest mb-8">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-soft dark:bg-primary/15 border border-primary/20 dark:border-primary/30 text-primary dark:text-mint text-xs font-black uppercase tracking-widest mb-8">
                         <Zap className="w-3.5 h-3.5" />
                         Unleash Full Potential
                     </div>
@@ -133,9 +133,9 @@ export default function PricingPage() {
                     <div className="flex flex-wrap justify-center items-center gap-12 opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
                         {/* Mock Logos or SVG Patterns */}
                         <div className="text-xl font-black italic tracking-tighter">ALLIANZ</div>
-                        <div className="text-xl font-black italic tracking-tighter text-teal-600">AXA</div>
+                        <div className="text-xl font-black italic tracking-tighter text-primary dark:text-mint">AXA</div>
                         <div className="text-xl font-black italic tracking-tighter">METLIFE</div>
-                        <div className="text-xl font-black italic tracking-tighter text-teal-600">PWC</div>
+                        <div className="text-xl font-black italic tracking-tighter text-primary dark:text-mint">PWC</div>
                         <div className="text-xl font-black italic tracking-tighter">SWISS RE</div>
                     </div>
                 </div>

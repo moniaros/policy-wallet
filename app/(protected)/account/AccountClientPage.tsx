@@ -121,7 +121,7 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                                     flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider
                                     transition-all duration-300 relative isolate whitespace-nowrap
                                     ${activeTab === tab.id
-                                        ? 'text-black dark:text-[#1FDC86]'
+                                        ? 'text-black dark:text-mint'
                                         : 'text-black/45 dark:text-white/60 hover:text-black dark:hover:text-white'
                                     }
                                 `}

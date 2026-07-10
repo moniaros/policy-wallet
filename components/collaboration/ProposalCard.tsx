@@ -279,7 +279,7 @@ export function ProposalView({
         },
         accepted: {
             label: { en: "Accepted", el: "Αποδεκτή" },
-            style: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+            style: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
         },
         declined: {
             label: { en: "Declined", el: "Απορρίφθηκε" },
@@ -294,7 +294,7 @@ export function ProposalView({
     const statusBadge = statusBadges[proposal.status] || statusBadges.pending
 
     return (
-        <BrandCard className="p-5 border-l-4 border-l-blue-500">
+        <BrandCard className="p-5 border-l-4 border-l-primary">
             {/* Header */}
             <div className="flex items-start justify-between mb-4">
                 <div>
@@ -322,7 +322,7 @@ export function ProposalView({
 
             {/* Plain language summary */}
             {proposal.plainLanguageSummary && (
-                <div className="rounded-xl bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/50 dark:border-blue-800/30 p-4 mb-4">
+                <div className="rounded-xl bg-primary-tint dark:bg-primary/15 border border-primary/20 dark:border-primary/30 p-4 mb-4">
                     <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                         {proposal.plainLanguageSummary}
                     </p>

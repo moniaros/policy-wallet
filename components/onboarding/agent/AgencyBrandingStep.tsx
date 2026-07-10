@@ -65,8 +65,8 @@ export function AgencyBrandingStep({ onNext, onBack }: StepProps) {
 
     return (
         <div className="space-y-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-500/20 mb-6">
-                <Palette className="w-8 h-8 text-white" />
+            <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/25 mb-6">
+                <Palette className="w-8 h-8 text-white dark:text-[#1A2420]" />
             </div>
 
             <div>
@@ -103,7 +103,7 @@ export function AgencyBrandingStep({ onNext, onBack }: StepProps) {
                             />
                         </label>
                         <div className="flex-1">
-                            <label className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 cursor-pointer">
+                            <label className="text-sm font-semibold text-primary dark:text-mint hover:text-primary-hover cursor-pointer">
                                 {t("Ανεβάστε Λογότυπο", "Upload Logo")}
                                 <input
                                     type="file"
@@ -132,7 +132,7 @@ export function AgencyBrandingStep({ onNext, onBack }: StepProps) {
                                 placeholder="+30 690 000 0000"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:outline-none"
                             />
                         </div>
                     </div>
@@ -147,7 +147,7 @@ export function AgencyBrandingStep({ onNext, onBack }: StepProps) {
                                 placeholder="https://myagency.com"
                                 value={website}
                                 onChange={(e) => setWebsite(e.target.value)}
-                                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                                className="w-full pl-10 pr-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:outline-none"
                             />
                         </div>
                     </div>

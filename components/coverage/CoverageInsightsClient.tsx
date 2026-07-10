@@ -96,8 +96,8 @@ export function CoverageInsightsClient({
                     en: 'Your overall coverage is stable and balanced.'
                 },
                 summary: { el: 'Η κάλυψή σας είναι ισχυρή.', en: 'Your coverage is strong.' },
-                color: 'text-[#19b870] dark:text-[#7de8ba]',
-                bg: 'bg-[#1FDC86]/12 dark:bg-[#1FDC86]/15'
+                color: 'text-[#166534] dark:text-mint',
+                bg: 'bg-primary-soft dark:bg-primary/15'
             }
         }
 
@@ -218,9 +218,9 @@ export function CoverageInsightsClient({
                 </div>
 
                 {isFreeTier && (
-                    <div className="mb-8 rounded-2xl border border-[#1FDC86]/35 bg-[#1FDC86]/10 dark:bg-[#1FDC86]/10 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="mb-8 rounded-2xl border border-primary/35 bg-primary-tint dark:bg-primary/15 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div className="flex items-start gap-3">
-                            <Lock className="w-5 h-5 text-black dark:text-[#1FDC86] mt-0.5" />
+                            <Lock className="w-5 h-5 text-primary dark:text-mint mt-0.5" />
                             <div>
                                 <p className="font-semibold text-black dark:text-white">{copy.liteTitle}</p>
                                 <p className="text-sm text-black/75 dark:text-white/80">{copy.liteDescription}</p>
@@ -254,7 +254,7 @@ export function CoverageInsightsClient({
                             ))
                         ) : (
                             <div className="text-center py-10 pw-card rounded-3xl">
-                                <Sparkles className="w-8 h-8 text-[#1FDC86] mx-auto mb-3" />
+                                <Sparkles className="w-8 h-8 text-primary dark:text-mint mx-auto mb-3" />
                                 <p className="text-black dark:text-white font-semibold">{copy.allGoodTitle}</p>
                                 <p className="text-black/55 dark:text-white/65 text-sm">{copy.allGoodDescription}</p>
                             </div>
@@ -269,7 +269,7 @@ export function CoverageInsightsClient({
                             {policiesOk.map((policy) => (
                                 <div key={policy.id} className="p-4 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-full bg-[#1FDC86]/15 flex items-center justify-center text-[#1FDC86]">
+                                        <div className="w-8 h-8 rounded-full bg-primary-soft dark:bg-primary/15 flex items-center justify-center text-[#166534] dark:text-mint">
                                             <CheckCircle2 className="w-4 h-4" />
                                         </div>
                                         <div>
@@ -291,7 +291,7 @@ export function CoverageInsightsClient({
                     <div className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
                         <button
                             onClick={() => router.push('/wallet')}
-                            className="flex-1 py-3.5 bg-[#1FDC86] text-white rounded-xl font-semibold transition-opacity hover:opacity-90 flex items-center justify-center gap-2 cursor-pointer"
+                            className="flex-1 py-3.5 bg-primary text-white dark:text-[#1A2420] rounded-xl font-semibold transition-colors hover:bg-primary-hover flex items-center justify-center gap-2 cursor-pointer"
                         >
                             <span>{copy.backToWallet}</span>
                             <ArrowRight className="w-4 h-4" />

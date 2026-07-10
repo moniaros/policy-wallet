@@ -17,12 +17,12 @@ interface OpportunityUpdateModalProps {
 }
 
 const OPPORTUNITY_STATUSES = [
-    { value: 'open', label: 'Open', color: 'amber' },
-    { value: 'contacted', label: 'Contacted', color: 'blue' },
-    { value: 'quoted', label: 'Quoted', color: 'purple' },
-    { value: 'won', label: 'Won', color: 'green' },
-    { value: 'lost', label: 'Lost', color: 'red' },
-    { value: 'on_hold', label: 'On Hold', color: 'gray' },
+    { value: 'open', label: 'Open', color: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-2 border-amber-500' },
+    { value: 'contacted', label: 'Contacted', color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-2 border-blue-500' },
+    { value: 'quoted', label: 'Quoted', color: 'bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint border-2 border-primary' },
+    { value: 'won', label: 'Won', color: 'bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint border-2 border-primary' },
+    { value: 'lost', label: 'Lost', color: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-2 border-red-500' },
+    { value: 'on_hold', label: 'On Hold', color: 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-2 border-slate-400' },
 ]
 
 export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate }: OpportunityUpdateModalProps) {
@@ -92,7 +92,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                                     type="button"
                                     onClick={() => setStatus(s.value)}
                                     className={`px-4 py-3 rounded-xl font-semibold text-sm transition-all ${status === s.value
-                                            ? `bg-${s.color}-100 dark:bg-${s.color}-900/30 text-${s.color}-700 dark:text-${s.color}-400 border-2 border-${s.color}-500`
+                                            ? s.color
                                             : 'bg-stone-50 dark:bg-stone-700 text-stone-600 dark:text-stone-400 border-2 border-transparent hover:border-stone-300 dark:hover:border-stone-600'
                                         }`}
                                 >
@@ -112,7 +112,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                             rows={4}
-                            className="w-full px-4 py-3 rounded-xl border-2 border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-white focus:border-teal-500 dark:focus:border-teal-400 focus:ring-0 transition-colors"
+                            className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-primary dark:focus:border-mint focus:ring-0 transition-colors"
                             placeholder="Add notes about this opportunity..."
                         />
                     </div>
@@ -127,7 +127,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                             id="nextActionDate"
                             value={nextActionDate}
                             onChange={(e) => setNextActionDate(e.target.value)}
-                            className="w-full px-4 py-3 rounded-xl border-2 border-stone-200 dark:border-stone-600 bg-white dark:bg-stone-700 text-stone-900 dark:text-white focus:border-teal-500 dark:focus:border-teal-400 focus:ring-0 transition-colors"
+                            className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-primary dark:focus:border-mint focus:ring-0 transition-colors"
                         />
                     </div>
 
@@ -143,7 +143,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="flex-1 px-6 py-3 rounded-xl font-bold text-white bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-700 hover:to-teal-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-teal-500/30"
+                            className="flex-1 px-6 py-3 rounded-xl font-bold text-white dark:text-[#1A2420] bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/25"
                         >
                             {isSubmitting ? 'Updating...' : 'Update Opportunity'}
                         </button>

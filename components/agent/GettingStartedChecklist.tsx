@@ -156,7 +156,7 @@ export function AgentGettingStartedChecklist({
 
             <div className="mt-3 h-1.5 w-full rounded-full bg-black/8 dark:bg-white/10">
                 <motion.div
-                    className="h-1.5 rounded-full bg-[#1FDC86]"
+                    className="h-1.5 rounded-full bg-primary"
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.6, ease: "easeOut" }}
@@ -186,14 +186,14 @@ export function AgentGettingStartedChecklist({
                                             href={item.href}
                                             className={`flex items-center gap-3 rounded-xl border px-3 py-2.5 transition ${
                                                 item.completed
-                                                    ? "border-[#1FDC86]/30 bg-[#1FDC86]/5 dark:border-[#1FDC86]/20 dark:bg-[#1FDC86]/5"
+                                                    ? "border-primary/30 bg-primary/5 dark:border-primary/20 dark:bg-primary/5"
                                                     : "border-black/8 bg-black/[0.02] hover:bg-black/[0.05] dark:border-white/10 dark:bg-white/[0.02] dark:hover:bg-white/[0.05]"
                                             }`}
                                         >
                                             <span
                                                 className={`grid h-8 w-8 flex-shrink-0 place-items-center rounded-lg ${
                                                     item.completed
-                                                        ? "bg-[#1FDC86] text-white"
+                                                        ? "bg-primary text-white dark:text-[#1A2420]"
                                                         : "bg-white text-black/60 dark:bg-black dark:text-white/60"
                                                 }`}
                                             >
@@ -207,7 +207,7 @@ export function AgentGettingStartedChecklist({
                                                 <p
                                                     className={`text-xs font-semibold ${
                                                         item.completed
-                                                            ? "text-[#1FDC86] line-through dark:text-[#1FDC86]"
+                                                            ? "text-primary line-through dark:text-mint"
                                                             : "text-black dark:text-white"
                                                     }`}
                                                 >

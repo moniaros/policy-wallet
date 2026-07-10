@@ -30,15 +30,15 @@ const INTERACTION_ICONS: Record<string, React.ElementType> = {
 }
 
 const INTERACTION_COLORS: Record<string, string> = {
-    invite_sent: "text-blue-500 bg-blue-50 dark:bg-blue-900/30",
-    invite_opened: "text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30",
-    policy_uploaded: "text-teal-500 bg-teal-50 dark:bg-teal-900/30",
-    questionnaire_sent: "text-violet-500 bg-violet-50 dark:bg-violet-900/30",
+    invite_sent: "text-primary bg-primary-soft dark:bg-primary/15 dark:text-mint",
+    invite_opened: "text-primary bg-primary-soft dark:bg-primary/15 dark:text-mint",
+    policy_uploaded: "text-primary bg-primary-soft dark:bg-primary/15 dark:text-mint",
+    questionnaire_sent: "text-primary bg-primary-soft dark:bg-primary/15 dark:text-mint",
     opportunity_contacted: "text-amber-500 bg-amber-50 dark:bg-amber-900/30",
     reminder_sent: "text-orange-500 bg-orange-50 dark:bg-orange-900/30",
-    message_sent: "text-indigo-500 bg-indigo-50 dark:bg-indigo-900/30",
+    message_sent: "text-primary bg-primary-soft dark:bg-primary/15 dark:text-mint",
     note_added: "text-slate-500 bg-slate-50 dark:bg-slate-800",
-    relationship_created: "text-teal-500 bg-teal-50 dark:bg-teal-900/30",
+    relationship_created: "text-primary bg-primary-soft dark:bg-primary/15 dark:text-mint",
 }
 
 interface ClientActivityTabProps {

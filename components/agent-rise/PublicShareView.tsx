@@ -57,7 +57,7 @@ export function PublicShareView({ linkMetadata }: PublicShareViewProps) {
             <div className="min-h-screen bg-slate-100 flex flex-col items-center justify-center p-4 font-sans">
                 <div className="w-full max-w-sm bg-white rounded-xl shadow-lg overflow-hidden border border-slate-200">
                     <div className="bg-slate-900 p-6 text-center">
-                        <Shield className="w-10 h-10 text-emerald-500 mx-auto mb-3" />
+                        <Shield className="w-10 h-10 text-mint mx-auto mb-3" />
                         <h1 className="text-white font-bold text-lg">Secure Document Portal</h1>
                         <p className="text-slate-400 text-xs mt-1">
                             Provided by {linkMetadata.insurerName}
@@ -81,7 +81,7 @@ export function PublicShareView({ linkMetadata }: PublicShareViewProps) {
                                         value={otp}
                                         onChange={e => setOtp(e.target.value)}
                                         placeholder="0000"
-                                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none font-mono tracking-widest text-center text-lg"
+                                        className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded focus:ring-2 focus:ring-primary focus:border-primary outline-none font-mono tracking-widest text-center text-lg"
                                         maxLength={4}
                                     />
                                 </div>
@@ -91,7 +91,7 @@ export function PublicShareView({ linkMetadata }: PublicShareViewProps) {
                             <button
                                 onClick={handleUnlock}
                                 disabled={loading}
-                                className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded shadow-sm transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+                                className="w-full py-3 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] font-bold rounded shadow-sm transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
                             >
                                 {loading ? 'Verifying...' : 'Unlock Secure View'}
                             </button>
@@ -150,14 +150,14 @@ export function PublicShareView({ linkMetadata }: PublicShareViewProps) {
                 <div className="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
                     <div className="px-4 py-3 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
                         <h2 className="text-sm font-bold text-slate-700">Available Documents</h2>
-                        <span className="text-[10px] bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full font-bold uppercase">
+                        <span className="text-[10px] bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint px-2 py-0.5 rounded-full font-bold uppercase">
                             Verified
                         </span>
                     </div>
                     <div className="divide-y divide-slate-100">
                         <div className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded flex items-center justify-center">
+                                <div className="w-10 h-10 bg-primary-soft text-primary rounded flex items-center justify-center">
                                     <FileText className="w-5 h-5" />
                                 </div>
                                 <div>
@@ -165,14 +165,14 @@ export function PublicShareView({ linkMetadata }: PublicShareViewProps) {
                                     <p className="text-xs text-slate-500">PDF • 2.4 MB</p>
                                 </div>
                             </div>
-                            <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors">
+                            <button className="p-2 text-slate-400 hover:text-primary hover:bg-primary-soft rounded-full transition-colors">
                                 <Download className="w-5 h-5" />
                             </button>
                         </div>
 
                         <div className="p-4 flex items-center justify-between hover:bg-slate-50 transition-colors opacity-75">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-purple-50 text-purple-600 rounded flex items-center justify-center">
+                                <div className="w-10 h-10 bg-slate-100 text-slate-600 rounded flex items-center justify-center">
                                     <Shield className="w-5 h-5" />
                                 </div>
                                 <div>
@@ -180,7 +180,7 @@ export function PublicShareView({ linkMetadata }: PublicShareViewProps) {
                                     <p className="text-xs text-slate-500">PDF • 1.1 MB</p>
                                 </div>
                             </div>
-                            <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors">
+                            <button className="p-2 text-slate-400 hover:text-primary hover:bg-primary-soft rounded-full transition-colors">
                                 <Download className="w-5 h-5" />
                             </button>
                         </div>

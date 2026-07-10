@@ -16,8 +16,8 @@ export default function AuthCodeErrorPage() {
     const t = (el: string, en: string) => (language === "el" ? el : en)
 
     return (
-        <div className={`${ibmPlexSans.className} relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#F9FAFB] px-4 py-12 dark:bg-[#000000]`}>
-            <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-slate-800 dark:bg-[#111111] sm:p-10 text-center">
+        <div className={`${ibmPlexSans.className} relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#F8FAFC] px-4 py-12 dark:bg-black`}>
+            <div className="w-full max-w-md rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-white/10 dark:bg-[#111111] sm:p-10 text-center">
                 <Link href="/" className="inline-block mb-8">
                     <PolicyWalletLogo size="md" language={language} />
                 </Link>
@@ -38,7 +38,7 @@ export default function AuthCodeErrorPage() {
 
                 <Link
                     href="/auth/signin"
-                    className="block w-full rounded-full bg-[#1FDC86] px-4 py-3.5 text-sm font-bold text-slate-900 transition-all hover:-translate-y-0.5 hover:shadow-lg"
+                    className="block w-full rounded-full bg-primary px-4 py-3.5 text-sm font-bold text-white dark:text-[#1A2420] transition-all hover:bg-primary-hover hover:-translate-y-0.5 hover:shadow-lg"
                 >
                     {t("Επιστροφή στη σύνδεση", "Return to Sign In")}
                 </Link>

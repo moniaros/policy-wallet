@@ -158,16 +158,16 @@ export function TeamClient({ team, pipeline }: Props) {
                 {/* Team Stats */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                     <StatCard
-                        icon={<Users className="w-5 h-5 text-violet-500" />}
+                        icon={<Users className="w-5 h-5 text-primary dark:text-mint" />}
                         label={t.totalMembers}
                         value={String(team.stats.totalMembers)}
-                        color="violet"
+                        color="primary"
                     />
                     <StatCard
-                        icon={<Briefcase className="w-5 h-5 text-blue-500" />}
+                        icon={<Briefcase className="w-5 h-5 text-slate-500 dark:text-slate-400" />}
                         label={t.totalCustomers}
                         value={String(team.stats.totalCustomers)}
-                        color="blue"
+                        color="slate"
                     />
                     <StatCard
                         icon={<TrendingUp className="w-5 h-5 text-amber-500" />}
@@ -176,10 +176,10 @@ export function TeamClient({ team, pipeline }: Props) {
                         color="amber"
                     />
                     <StatCard
-                        icon={<DollarSign className="w-5 h-5 text-emerald-500" />}
+                        icon={<DollarSign className="w-5 h-5 text-primary dark:text-mint" />}
                         label={t.totalWon}
                         value={fmt(team.stats.totalWon)}
-                        color="emerald"
+                        color="primary"
                     />
                 </div>
 
@@ -207,10 +207,15 @@ function StatCard({ icon, label, value, color }: {
     value: string
     color: string
 }) {
+    const bgMap: Record<string, string> = {
+        primary: "bg-primary-soft dark:bg-primary/15",
+        slate: "bg-slate-100 dark:bg-slate-800",
+        amber: "bg-amber-50 dark:bg-amber-900/20",
+    }
     return (
         <div className="arc-card p-5">
             <div className="flex items-center gap-3 mb-2">
-                <div className={`w-9 h-9 rounded-xl bg-${color}-50 dark:bg-${color}-900/20 flex items-center justify-center`}>
+                <div className={`w-9 h-9 rounded-xl ${bgMap[color] ?? bgMap.slate} flex items-center justify-center`}>
                     {icon}
                 </div>
             </div>
@@ -244,7 +249,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
 
     const roleIcon = (role: string) => {
         if (role === "owner") return <Crown className="w-3.5 h-3.5 text-amber-500" />
-        if (role === "manager") return <Shield className="w-3.5 h-3.5 text-blue-500" />
+        if (role === "manager") return <Shield className="w-3.5 h-3.5 text-primary dark:text-mint" />
         return <User className="w-3.5 h-3.5 text-slate-400" />
     }
 
@@ -264,12 +269,12 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
         <div className="arc-card p-6">
             <div className="flex items-center justify-between mb-5">
                 <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
-                    <Users className="w-4 h-4 text-violet-500" />
+                    <Users className="w-4 h-4 text-primary dark:text-mint" />
                     {t.members}
                 </h3>
                 <button
                     onClick={() => setShowInvite(!showInvite)}
-                    className="text-[10px] font-black text-emerald-600 hover:text-emerald-700 uppercase tracking-widest flex items-center gap-1"
+                    className="text-[10px] font-black text-primary hover:text-primary-hover dark:text-mint uppercase tracking-widest flex items-center gap-1"
                 >
                     <UserPlus className="w-3.5 h-3.5" />
                     {t.invite}
@@ -309,7 +314,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                         <button
                             onClick={handleInvite}
                             disabled={inviteLoading || !inviteEmail}
-                            className="flex-1 px-3 py-2 bg-emerald-600 text-white rounded-xl text-xs font-black hover:bg-emerald-700 disabled:opacity-50"
+                            className="flex-1 px-3 py-2 bg-primary text-white dark:text-[#1A2420] rounded-xl text-xs font-black hover:bg-primary-hover disabled:opacity-50"
                         >
                             {inviteLoading ? "..." : t.invite}
                         </button>
@@ -338,7 +343,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                                 <span className="text-[10px] font-bold text-slate-400">
                                     {m.customerCount} {t.customers}
                                 </span>
-                                <span className="text-[10px] font-bold text-emerald-500">
+                                <span className="text-[10px] font-bold text-primary dark:text-mint">
                                     {fmt(m.wonValue)}
                                 </span>
                             </div>
@@ -393,16 +398,16 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
 }) {
     const statusColor: Record<string, string> = {
         open: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
-        contacted: "bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400",
+        contacted: "bg-mint/25 text-primary dark:bg-primary/15 dark:text-mint",
         quoted: "bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400",
-        won: "bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400",
+        won: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
         lost: "bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400",
     }
 
     return (
         <div className="arc-card p-6">
             <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest mb-5 flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 text-teal-500" />
+                <TrendingUp className="w-4 h-4 text-primary dark:text-mint" />
                 {t.sharedPipeline}
             </h3>
 
@@ -479,8 +484,8 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
         <div className="pw-page-shell min-h-screen">
             <div className="max-w-lg mx-auto px-4 py-16">
                 <div className="arc-card p-8 text-center">
-                    <div className="w-16 h-16 rounded-2xl bg-violet-50 dark:bg-violet-900/20 flex items-center justify-center mx-auto mb-6">
-                        <Building2 className="w-8 h-8 text-violet-500" />
+                    <div className="w-16 h-16 rounded-2xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center mx-auto mb-6">
+                        <Building2 className="w-8 h-8 text-primary dark:text-mint" />
                     </div>
                     <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">
                         {t.noTeam}

@@ -95,7 +95,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                     <div className="md:col-span-2 space-y-6">
                         {/* Verification Status Banner */}
                         <div className={`p-4 rounded-3xl border flex items-center gap-4 ${verificationStatus === 'verified'
-                                ? 'bg-emerald-50 border-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:border-emerald-800 dark:text-emerald-400'
+                                ? 'bg-primary-soft border-primary/20 text-[#166534] dark:bg-primary/15 dark:border-primary/30 dark:text-mint'
                                 : 'bg-amber-50 border-amber-100 text-amber-800 dark:bg-amber-900/20 dark:border-amber-800 dark:text-amber-400'
                             }`}>
                             {verificationStatus === 'verified' ? (
@@ -116,7 +116,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                         </div>
 
                         {/* Agency Profile */}
-                        <div className="arc-card p-8 space-y-8 border-t-4 border-t-[#1fdc86]">
+                        <div className="arc-card p-8 space-y-8 border-t-4 border-t-primary">
                             <div className="space-y-6">
                                 <div className="space-y-2">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{roleCopy.agentSettings.agencyName}</label>
@@ -125,7 +125,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                         value={agencyName}
                                         onChange={(e) => setAgencyName(e.target.value)}
                                         placeholder={roleCopy.agentSettings.agencyNamePlaceholder}
-                                        className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-5 py-4 text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-[#1fdc86] transition-all outline-none"
+                                        className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-5 py-4 text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-primary transition-all outline-none"
                                     />
                                 </div>
 
@@ -136,7 +136,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                         value={licenseNumber}
                                         onChange={(e) => setLicenseNumber(e.target.value)}
                                         placeholder={roleCopy.agentSettings.licenseNumberPlaceholder}
-                                        className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-5 py-4 text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-[#1fdc86] transition-all outline-none"
+                                        className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-2xl px-5 py-4 text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-primary transition-all outline-none"
                                     />
                                 </div>
                             </div>
@@ -154,10 +154,10 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                         </div>
 
                         {/* Commission Rates */}
-                        <div className="arc-card p-8 space-y-6 border-t-4 border-t-emerald-500">
+                        <div className="arc-card p-8 space-y-6 border-t-4 border-t-primary">
                             <div>
                                 <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
-                                    <Percent className="w-4 h-4 text-emerald-500" />
+                                    <Percent className="w-4 h-4 text-primary dark:text-mint" />
                                     {language === "el" ? "Ποσοστά Προμήθειας" : "Commission Rates"}
                                 </h3>
                                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -182,7 +182,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                                 value={commissionRates[lob.key] ?? ""}
                                                 onChange={(e) => handleCommissionChange(lob.key, e.target.value)}
                                                 placeholder="—"
-                                                className="w-16 bg-white dark:bg-slate-700 border-none rounded-lg px-2 py-1.5 text-sm font-bold text-center text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-emerald-500 outline-none"
+                                                className="w-16 bg-white dark:bg-slate-700 border-none rounded-lg px-2 py-1.5 text-sm font-bold text-center text-slate-900 dark:text-white placeholder:text-slate-300 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-primary outline-none"
                                             />
                                             <span className="text-xs font-bold text-slate-400">%</span>
                                         </div>
@@ -194,7 +194,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                 <button
                                     onClick={handleSave}
                                     disabled={isSaving}
-                                    className="arc-btn bg-emerald-600 hover:bg-emerald-700 text-white w-full md:w-auto px-8 flex items-center justify-center gap-2 disabled:opacity-50"
+                                    className="arc-btn bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] w-full md:w-auto px-8 flex items-center justify-center gap-2 disabled:opacity-50"
                                 >
                                     <Save className="w-4 h-4" />
                                     {isSaving
@@ -206,15 +206,15 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
 
                         {/* Subscription */}
                         {subscription && (
-                            <div className="arc-card p-8 space-y-4 border-t-4 border-t-teal-500">
+                            <div className="arc-card p-8 space-y-4 border-t-4 border-t-primary">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">
                                         {language === "el" ? "Συνδρομή" : "Subscription"}
                                     </h3>
                                     <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${
                                         subscription.isPaid
-                                            ? "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400"
-                                            : "bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400"
+                                            ? "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint"
+                                            : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
                                     }`}>
                                         {subscription.tier.replace(/_/g, " ")}
                                     </span>
@@ -244,7 +244,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
 
                                 <Link
                                     href="/agent/pricing"
-                                    className="inline-flex items-center gap-2 text-sm font-bold text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
+                                    className="inline-flex items-center gap-2 text-sm font-bold text-primary dark:text-mint hover:text-primary-hover dark:hover:text-mint transition-colors"
                                 >
                                     {language === "el" ? "Αναβάθμιση πλάνου" : "Upgrade plan"}
                                     <ArrowUpRight className="w-4 h-4" />

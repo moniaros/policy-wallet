@@ -13,7 +13,7 @@ export function NotificationCard({ event, onNavigate }: NotificationCardProps) {
     return (
         <div className="bg-white dark:bg-stone-800 p-4 rounded-2xl border border-stone-100 dark:border-stone-700 shadow-sm active:scale-[0.99] transition-transform relative overflow-hidden">
             {/* Status Indicator Line */}
-            <div className={`absolute left-0 top-0 bottom-0 w-1 ${isFailed ? 'bg-red-500' : 'bg-teal-500'
+            <div className={`absolute left-0 top-0 bottom-0 w-1 ${isFailed ? 'bg-red-500' : 'bg-primary'
                 }`} />
 
             <div className="pl-3">
@@ -42,7 +42,7 @@ export function NotificationCard({ event, onNavigate }: NotificationCardProps) {
                     {event.related_policy_name && (
                         <button
                             onClick={() => onNavigate('policy', event.related_policy_id)}
-                            className="text-[10px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wide flex items-center gap-1 hover:underline"
+                            className="text-[10px] font-bold text-primary dark:text-mint uppercase tracking-wide flex items-center gap-1 hover:underline"
                         >
                             View Policy
                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>

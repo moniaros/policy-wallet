@@ -287,7 +287,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                             setReviewData(null)
                                             pollingStartRef.current = Date.now()
                                         }}
-                                        className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white rounded-2xl py-4 font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/20"
+                                        className="w-full bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-2xl py-4 font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-primary/25"
                                     >
                                         <span className="flex items-center justify-center gap-2">
                                             <RefreshCw className="w-5 h-5" />
@@ -320,8 +320,8 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                             <div className="space-y-6">
                                 <div className="flex flex-col items-center gap-4 py-4">
                                     <div className="relative">
-                                        <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                                            <Sparkles className="w-7 h-7 text-emerald-500 animate-pulse" />
+                                        <div className="w-16 h-16 rounded-full bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+                                            <Sparkles className="w-7 h-7 text-primary dark:text-mint animate-pulse" />
                                         </div>
                                     </div>
                                     <div className="text-center">
@@ -362,7 +362,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                             <div className="space-y-6">
                                 {/* Insurer header */}
                                 <div className="flex items-center gap-4">
-                                    <div className="w-14 h-14 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-700 dark:text-emerald-300 text-xl font-black shrink-0">
+                                    <div className="w-14 h-14 rounded-2xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center text-primary dark:text-mint text-xl font-black shrink-0">
                                         {(reviewData.insurerName || localizedLob || '?')[0]?.toUpperCase()}
                                     </div>
                                     <div>
@@ -371,7 +371,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                                 {reviewData.insurerName || localizedLob}
                                             </h2>
                                             {reviewData.verified && (
-                                                <BadgeCheck className="w-4 h-4 text-emerald-500" />
+                                                <BadgeCheck className="w-4 h-4 text-primary dark:text-mint" />
                                             )}
                                         </div>
                                         {reviewData.insurerName && localizedLob && (
@@ -387,8 +387,8 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     {/* Coverage Summary */}
                                     {reviewData.coverageSummary && (
                                         <div className="flex items-start gap-4 py-4">
-                                            <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center shrink-0">
-                                                <Shield className="w-4 h-4 text-blue-500" />
+                                            <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center shrink-0">
+                                                <Shield className="w-4 h-4 text-primary dark:text-mint" />
                                             </div>
                                             <div>
                                                 <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
@@ -440,8 +440,8 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     {/* Premium */}
                                     {reviewData.premiumAmount != null && reviewData.premiumAmount > 0 && (
                                         <div className="flex items-start gap-4 py-4">
-                                            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center shrink-0">
-                                                <Banknote className="w-4 h-4 text-emerald-500" />
+                                            <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center shrink-0">
+                                                <Banknote className="w-4 h-4 text-primary dark:text-mint" />
                                             </div>
                                             <div>
                                                 <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
@@ -463,7 +463,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                             toast.success(reviewCopy.success)
                                             router.push('/wallet')
                                         }}
-                                        className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white rounded-2xl py-4 font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-emerald-500/20"
+                                        className="w-full bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-2xl py-4 font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-primary/25"
                                     >
                                         <span className="flex items-center justify-center gap-2">
                                             <Check className="w-5 h-5" />
@@ -529,11 +529,11 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
 
                     {/* File Upload Section */}
                     <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 shadow-xl border border-slate-200 dark:border-slate-800 relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
 
                         <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-6">
-                                <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                                <div className="w-10 h-10 bg-primary-soft dark:bg-primary/15 rounded-xl flex items-center justify-center text-primary dark:text-mint">
                                     <UploadCloud className="w-5 h-5" />
                                 </div>
                                 <h2 className="text-xl font-black text-slate-900 dark:text-white">
@@ -545,8 +545,8 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                 className={`
                                     border-2 border-dashed rounded-2xl p-8 text-center transition-all cursor-pointer
                                     ${dragActive
-                                        ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20'
-                                        : 'border-slate-200 dark:border-slate-700 hover:border-emerald-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+                                        ? 'border-primary bg-primary-tint dark:bg-primary/15'
+                                        : 'border-slate-200 dark:border-slate-700 hover:border-primary hover:bg-slate-50 dark:hover:bg-slate-800'
                                     }
                                 `}
                                 onDragEnter={handleDrag}
@@ -564,7 +564,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     onChange={handleFileChange}
                                 />
                                 <label htmlFor="file-upload" className="cursor-pointer block">
-                                    <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-full shadow-lg flex items-center justify-center mx-auto mb-4 text-emerald-500">
+                                    <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-full shadow-lg flex items-center justify-center mx-auto mb-4 text-primary dark:text-mint">
                                         <FileText className="w-8 h-8" />
                                     </div>
                                     <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
@@ -597,9 +597,9 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                 </div>
                             )}
 
-                            <div className="mt-4 flex items-center gap-2 p-3 bg-emerald-50/50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/20">
-                                <Shield className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                                <p className="text-xs font-semibold text-emerald-800 dark:text-emerald-200">
+                            <div className="mt-4 flex items-center gap-2 p-3 bg-primary-tint dark:bg-primary/10 rounded-xl border border-primary-soft dark:border-primary/20">
+                                <Shield className="w-4 h-4 text-primary dark:text-mint" />
+                                <p className="text-xs font-semibold text-primary dark:text-mint">
                                     {t.wallet.aiExtraction}
                                 </p>
                             </div>
@@ -627,7 +627,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     <select
                                         name="lineOfBusiness"
                                         required
-                                        className="w-full appearance-none bg-emerald-50/50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-800 rounded-xl px-4 py-3.5 text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:bg-white dark:focus:bg-slate-800 transition-all"
+                                        className="w-full appearance-none bg-primary-tint dark:bg-primary/10 border border-primary-soft dark:border-primary/30 rounded-xl px-4 py-3.5 text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:bg-white dark:focus:bg-slate-800 transition-all"
                                     >
                                         <option value="">{t.wallet.selectTypePlaceholder}</option>
                                         {types.map(typeItem => (
@@ -708,7 +708,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                     <button
                         type="submit"
                         disabled={isPending}
-                        className="w-full group relative overflow-hidden bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white rounded-2xl py-4 font-bold text-sm uppercase tracking-widest hover:scale-[1.01] active:scale-[0.99] transition-all shadow-xl hover:shadow-2xl shadow-emerald-500/20 disabled:opacity-70 disabled:scale-100"
+                        className="w-full group relative overflow-hidden bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-2xl py-4 font-bold text-sm uppercase tracking-widest hover:scale-[1.01] active:scale-[0.99] transition-all shadow-xl hover:shadow-2xl shadow-primary/25 disabled:opacity-70 disabled:scale-100"
                     >
                         <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                         <span className="relative z-10 flex items-center justify-center gap-2">

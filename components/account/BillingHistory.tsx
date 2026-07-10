@@ -98,7 +98,7 @@ function getStatusBadge(status: Invoice['status'], language: 'el' | 'en') {
         paid: {
             icon: CheckCircle2,
             label: { el: 'Πληρώθηκε', en: 'Paid' },
-            className: 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400',
+            className: 'bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint',
         },
         pending: {
             icon: Clock,

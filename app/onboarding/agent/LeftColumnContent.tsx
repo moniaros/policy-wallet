@@ -30,8 +30,8 @@ export function LeftColumnContent() {
 function FeatureRow({ text }: { text: string }) {
     return (
         <div className="flex items-center gap-3">
-            <div className="w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                <svg className="w-4 h-4 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="w-6 h-6 rounded-full bg-mint/20 flex items-center justify-center">
+                <svg className="w-4 h-4 text-mint" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
             </div>

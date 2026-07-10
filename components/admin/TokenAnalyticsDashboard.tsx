@@ -72,7 +72,7 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
     if (loading || !stats) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
         )
     }
@@ -121,10 +121,10 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
             {/* Overview Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Total Tokens */}
-                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30 rounded-2xl border-2 border-blue-200 dark:border-blue-800 p-6">
+                <div className="bg-primary-tint dark:bg-primary/15 rounded-2xl border-2 border-[#E2E8F0] dark:border-slate-800 p-6">
                     <div className="flex items-center justify-between mb-2">
-                        <Coins className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-                        <div className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-sm font-bold">
+                        <Coins className="w-8 h-8 text-primary dark:text-mint" />
+                        <div className="flex items-center gap-1 text-[#166534] dark:text-mint text-sm font-bold">
                             <ArrowUp className="w-4 h-4" />
                             12%
                         </div>
@@ -138,9 +138,9 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                 </div>
 
                 {/* Total Cost */}
-                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 rounded-2xl border-2 border-emerald-200 dark:border-emerald-800 p-6">
+                <div className="bg-primary-tint dark:bg-primary/15 rounded-2xl border-2 border-[#E2E8F0] dark:border-slate-800 p-6">
                     <div className="flex items-center justify-between mb-2">
-                        <DollarSign className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+                        <DollarSign className="w-8 h-8 text-primary dark:text-mint" />
                         <div className="flex items-center gap-1 text-red-600 dark:text-red-400 text-sm font-bold">
                             <ArrowUp className="w-4 h-4" />
                             8%
@@ -158,9 +158,9 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                 </div>
 
                 {/* Operations */}
-                <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 rounded-2xl border-2 border-purple-200 dark:border-purple-800 p-6">
+                <div className="bg-slate-50 dark:bg-slate-900/50 rounded-2xl border-2 border-[#E2E8F0] dark:border-slate-800 p-6">
                     <div className="flex items-center justify-between mb-2">
-                        <Activity className="w-8 h-8 text-purple-600 dark:text-purple-400" />
+                        <Activity className="w-8 h-8 text-slate-500 dark:text-slate-400" />
                     </div>
                     <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">
                         {copy.operations[language]}
@@ -171,9 +171,9 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                 </div>
 
                 {/* Active Users */}
-                <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950/30 dark:to-red-950/30 rounded-2xl border-2 border-orange-200 dark:border-orange-800 p-6">
+                <div className="bg-amber-50 dark:bg-amber-950/30 rounded-2xl border-2 border-amber-200 dark:border-amber-800 p-6">
                     <div className="flex items-center justify-between mb-2">
-                        <Users className="w-8 h-8 text-orange-600 dark:text-orange-400" />
+                        <Users className="w-8 h-8 text-[#D97706] dark:text-amber-400" />
                     </div>
                     <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">
                         {copy.activeUsers[language]}
@@ -203,9 +203,9 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                                             {formatTokens(op.tokens)}
                                         </span>
                                     </div>
-                                    <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                                    <div className="w-full bg-[#F1F5F9] dark:bg-slate-700 rounded-full h-2">
                                         <div
-                                            className="bg-gradient-to-r from-blue-600 to-cyan-600 h-full rounded-full"
+                                            className="bg-primary h-full rounded-full"
                                             style={{
                                                 width: `${(op.tokens / stats.total.tokens) * 100}%`,
                                             }}
@@ -228,16 +228,16 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                     <div className="space-y-4">
                         {stats.byTier.map((tier, idx) => {
                             const tierColors = {
-                                free: 'from-slate-500 to-slate-600',
-                                essential: 'from-blue-500 to-cyan-500',
-                                professional: 'from-purple-500 to-pink-500',
+                                free: 'text-slate-600 dark:text-slate-300',
+                                essential: 'text-primary dark:text-mint',
+                                professional: 'text-secondary dark:text-mint',
                             }
-                            const color = tierColors[tier.tier as keyof typeof tierColors] || 'from-gray-500 to-gray-600'
+                            const color = tierColors[tier.tier as keyof typeof tierColors] || 'text-slate-600 dark:text-slate-300'
 
                             return (
                                 <div key={idx} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800">
                                     <div className="flex justify-between items-center mb-2">
-                                        <span className={`text-sm font-black bg-gradient-to-r ${color} bg-clip-text text-transparent uppercase`}>
+                                        <span className={`text-sm font-black ${color} uppercase`}>
                                             {tier.tier}
                                         </span>
                                         <span className="text-xs text-slate-500 dark:text-slate-400">

@@ -27,8 +27,8 @@ export default async function BillingReconciliationPage() {
                 </p>
             </div>
 
-            <div className={`p-4 rounded-lg border ${snapshot.needsAttention ? "bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800" : "bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800"}`}>
-                <p className={`text-sm font-semibold ${snapshot.needsAttention ? "text-amber-900 dark:text-amber-200" : "text-green-900 dark:text-green-200"}`}>
+            <div className={`p-4 rounded-lg border ${snapshot.needsAttention ? "bg-amber-50 border-amber-200 dark:bg-amber-900/20 dark:border-amber-800" : "bg-primary-soft border-primary/30 dark:bg-primary/15 dark:border-primary/30"}`}>
+                <p className={`text-sm font-semibold ${snapshot.needsAttention ? "text-amber-900 dark:text-amber-200" : "text-[#166534] dark:text-mint"}`}>
                     {snapshot.needsAttention
                         ? "Billing reconciliation requires attention. Review issues below before go/no-go."
                         : "No critical billing reconciliation issues detected in this window."}

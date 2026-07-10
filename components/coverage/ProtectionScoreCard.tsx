@@ -65,21 +65,12 @@ export function ProtectionScoreCard({
 
     const scoreColor =
         tier.color === "green"
-            ? "text-[#1FDC86]"
+            ? "text-primary dark:text-mint"
             : tier.color === "amber"
                 ? "text-amber-500"
                 : tier.color === "orange"
                     ? "text-orange-500"
                     : "text-red-500"
-
-    const ringColor =
-        tier.color === "green"
-            ? "#1FDC86"
-            : tier.color === "amber"
-                ? "#F59E0B"
-                : tier.color === "orange"
-                    ? "#F97316"
-                    : "#EF4444"
 
     // SVG donut ring
     const radius = 54
@@ -110,12 +101,13 @@ export function ProtectionScoreCard({
                             cy="70"
                             r={radius}
                             fill="none"
-                            stroke={ringColor}
+                            stroke="currentColor"
                             strokeWidth="10"
                             strokeDasharray={circumference}
                             strokeDashoffset={strokeDashoffset}
                             strokeLinecap="round"
                             transform="rotate(-90 70 70)"
+                            className={scoreColor}
                             style={{ transition: "stroke-dashoffset 1s ease" }}
                         />
                     </svg>
@@ -159,7 +151,7 @@ export function ProtectionScoreCard({
                         {applicableCategories.map((cat) => {
                             const barColor =
                                 cat.score >= 70
-                                    ? "bg-[#1FDC86]"
+                                    ? "bg-primary dark:bg-mint"
                                     : cat.score >= 40
                                         ? "bg-amber-400"
                                         : "bg-red-400"
@@ -229,7 +221,7 @@ export function ProtectionScoreCard({
                                     router.push("/account")
                                 }
                             }}
-                            className="text-xs font-semibold text-[#1FDC86] hover:underline cursor-pointer flex-shrink-0 flex items-center gap-1"
+                            className="text-xs font-semibold text-primary dark:text-mint hover:underline cursor-pointer flex-shrink-0 flex items-center gap-1"
                         >
                             {copy.updateProfile}
                             <ChevronRight className="w-3 h-3" />

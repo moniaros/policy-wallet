@@ -204,12 +204,12 @@ export default function AgentPricingPage() {
                                 key={plan.id}
                                 className={`relative rounded-2xl border p-6 flex flex-col ${
                                     plan.popular
-                                        ? "border-teal-500 bg-teal-50/30 dark:bg-teal-950/20 ring-2 ring-teal-500/20"
+                                        ? "border-primary bg-primary-tint dark:bg-primary/15 ring-2 ring-primary/20"
                                         : "border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900"
                                 }`}
                             >
                                 {plan.popular && (
-                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-teal-600 text-white text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-full">
+                                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white dark:text-[#1A2420] text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-full">
                                         {t.popular}
                                     </div>
                                 )}
@@ -217,8 +217,8 @@ export default function AgentPricingPage() {
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
                                         plan.popular
-                                            ? "bg-teal-600 text-white"
-                                            : "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300"
+                                            ? "bg-primary text-white dark:text-[#1A2420]"
+                                            : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
                                     }`}>
                                         <Icon className="w-5 h-5" />
                                     </div>
@@ -242,7 +242,7 @@ export default function AgentPricingPage() {
                                 <ul className="space-y-2.5 mb-8 flex-1">
                                     {features.map((feature, i) => (
                                         <li key={i} className="flex items-start gap-2 text-sm text-stone-700 dark:text-stone-300">
-                                            <Check className="w-4 h-4 text-teal-600 dark:text-teal-400 mt-0.5 flex-shrink-0" />
+                                            <Check className="w-4 h-4 text-primary dark:text-mint mt-0.5 flex-shrink-0" />
                                             {feature}
                                         </li>
                                     ))}
@@ -253,7 +253,7 @@ export default function AgentPricingPage() {
                                     disabled={loadingPlanId !== null}
                                     className={`w-full py-3 rounded-xl font-bold text-sm transition-all ${
                                         plan.popular
-                                            ? "bg-teal-600 text-white hover:bg-teal-700 shadow-lg shadow-teal-500/20"
+                                            ? "bg-primary text-white dark:text-[#1A2420] hover:bg-primary-hover shadow-lg shadow-primary/20"
                                             : plan.priceEur === 0
                                                 ? "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700"
                                                 : "bg-stone-900 dark:bg-white text-white dark:text-stone-900 hover:bg-stone-800 dark:hover:bg-stone-100"

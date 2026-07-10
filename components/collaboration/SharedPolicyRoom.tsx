@@ -113,13 +113,13 @@ export function SharedPolicyRoom({
             {/* Active Policies */}
             <BrandCard className="p-5">
                 <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
-                    <Shield className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                    <Shield className="h-5 w-5 text-primary dark:text-mint" />
                     {language === "el" ? "Ενεργά Ασφαλιστήρια" : "Active Policies"}
                 </h3>
                 <div className="space-y-2">
                     {data.policies.map((policy) => {
                         const statusColors: Record<string, string> = {
-                            active: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+                            active: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
                             expiring_soon: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
                             expired: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
                         }
@@ -131,8 +131,8 @@ export function SharedPolicyRoom({
                                 onClick={() => onViewPolicy?.(policy.id)}
                                 className="flex w-full items-center gap-3 rounded-xl border border-[var(--brand-border-subtle)] p-3 text-left transition hover:shadow-sm cursor-pointer"
                             >
-                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-50 dark:bg-teal-900/30">
-                                    <Shield className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-soft dark:bg-primary/15">
+                                    <Shield className="h-4 w-4 text-primary dark:text-mint" />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
@@ -169,7 +169,7 @@ export function SharedPolicyRoom({
             {hasDocuments && (
                 <BrandCard className="p-5">
                     <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
-                        <FileText className="h-5 w-5 text-indigo-500" />
+                        <FileText className="h-5 w-5 text-primary dark:text-mint" />
                         {language === "el" ? "Κοινά Έγγραφα" : "Shared Documents"}
                     </h3>
                     <div className="space-y-2">
@@ -204,7 +204,7 @@ export function SharedPolicyRoom({
             {viewerRole === "policyholder" && data.proposals.length > 0 && (
                 <BrandCard className="p-5">
                     <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
-                        <Send className="h-5 w-5 text-blue-500" />
+                        <Send className="h-5 w-5 text-primary dark:text-mint" />
                         {language === "el" ? "Προτάσεις" : "Proposals"}
                     </h3>
                     <div className="space-y-2">
@@ -213,9 +213,9 @@ export function SharedPolicyRoom({
                                 key={proposal.id}
                                 type="button"
                                 onClick={() => onViewProposal?.(proposal.id)}
-                                className="flex w-full items-center gap-3 rounded-xl border border-blue-200 dark:border-blue-800/50 bg-blue-50/30 dark:bg-blue-950/20 p-3 text-left transition hover:shadow-sm cursor-pointer"
+                                className="flex w-full items-center gap-3 rounded-xl border border-primary/20 dark:border-primary/30 bg-primary-tint dark:bg-primary/15 p-3 text-left transition hover:shadow-sm cursor-pointer"
                             >
-                                <Send className="h-4 w-4 text-blue-600 shrink-0" />
+                                <Send className="h-4 w-4 text-primary dark:text-mint shrink-0" />
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
                                         {proposal.insurerName} — {proposal.lineOfBusiness}
@@ -241,8 +241,8 @@ function SharedPolicyRoomEmpty({ viewerRole, language }: { viewerRole: ViewerRol
     return (
         <BrandCard className="p-8">
             <div className="flex flex-col items-center text-center">
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-teal-100 dark:bg-teal-900/30">
-                    <Inbox className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
+                    <Inbox className="h-5 w-5 text-primary dark:text-mint" />
                 </div>
                 <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     {viewerRole === "agent"

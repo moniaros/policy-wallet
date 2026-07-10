@@ -58,9 +58,9 @@ const ACTIVITY_ICONS: Record<string, React.ElementType> = {
 }
 
 const ACTIVITY_COLORS: Record<string, string> = {
-    policy_added: "text-emerald-500",
-    customer_invited: "text-blue-500",
-    renewal_completed: "text-violet-500",
+    policy_added: "text-[#22C55E]",
+    customer_invited: "text-primary dark:text-mint",
+    renewal_completed: "text-slate-500",
     claim_filed: "text-amber-500",
 }
 
@@ -81,13 +81,13 @@ export function DesktopDashboard({
     const greeting = getGreeting(language)
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+        <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950">
             {/* Header */}
             <div className="relative overflow-hidden bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/60">
                 <div className="max-w-[1400px] mx-auto px-8 py-6">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                            <div className="relative bg-gradient-to-br from-teal-600 to-emerald-600 text-white p-3 rounded-2xl shadow-lg shadow-teal-600/25">
+                            <div className="relative bg-primary text-white dark:text-[#1A2420] p-3 rounded-2xl shadow-lg shadow-primary/25">
                                 <Briefcase className="w-6 h-6" />
                             </div>
                             <div>
@@ -109,7 +109,7 @@ export function DesktopDashboard({
                             <button
                                 type="button"
                                 onClick={onInviteCustomer}
-                                className="group inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 text-white font-semibold rounded-xl shadow-lg shadow-teal-600/25 hover:shadow-teal-600/40 hover:-translate-y-0.5 transition-all cursor-pointer text-sm"
+                                className="group inline-flex items-center gap-2 px-5 py-2.5 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] font-semibold rounded-xl shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:-translate-y-0.5 transition-all cursor-pointer text-sm"
                             >
                                 <UserPlus className="w-4 h-4" />
                                 {language === "el" ? "Νέος Πελάτης" : "New Client"}
@@ -169,7 +169,7 @@ export function DesktopDashboard({
                         <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-5">
                             <div className="flex items-center justify-between mb-4">
                                 <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                                    <Users className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                                    <Users className="h-5 w-5 text-primary dark:text-mint" />
                                     {language === "el" ? "Πελάτες" : "Clients"}
                                 </h2>
                             </div>
@@ -186,7 +186,7 @@ export function DesktopDashboard({
                         {/* Activity Feed */}
                         <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-5">
                             <h2 className="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                                <Activity className="h-4 w-4 text-violet-500" />
+                                <Activity className="h-4 w-4 text-primary dark:text-mint" />
                                 {language === "el" ? "Πρόσφατη Δραστηριότητα" : "Recent Activity"}
                             </h2>
                             <div className="space-y-4">
@@ -238,7 +238,7 @@ export function DesktopDashboard({
                                             onClick={() => onQuickAdd(type)}
                                             className="flex flex-col items-center gap-1.5 rounded-xl border border-[var(--brand-border-subtle)] p-3 text-center transition hover:bg-[var(--brand-surface-elevated)] hover:shadow-sm cursor-pointer"
                                         >
-                                            <Icon className="h-4 w-4 text-teal-600 dark:text-teal-400" />
+                                            <Icon className="h-4 w-4 text-primary dark:text-mint" />
                                             <span className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
                                                 {label}
                                             </span>
@@ -268,7 +268,7 @@ function TodaysFollowUps({
     return (
         <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-5">
             <div className="flex items-center gap-2 mb-4">
-                <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <Calendar className="h-5 w-5 text-primary dark:text-mint" />
                 <h2 className="text-base font-bold text-slate-900 dark:text-white">
                     {language === "el" ? "Σημερινά Follow-ups" : "Today's Follow-ups"}
                 </h2>
@@ -278,7 +278,7 @@ function TodaysFollowUps({
             </div>
             {items.length === 0 ? (
                 <div className="flex flex-col items-center py-6 text-center">
-                    <CheckCircle2 className="h-8 w-8 text-emerald-400 mb-2" />
+                    <CheckCircle2 className="h-8 w-8 text-[#22C55E] mb-2" />
                     <p className="text-sm text-slate-500 dark:text-slate-400">
                         {language === "el"
                             ? "Κανένα follow-up για σήμερα"
@@ -292,7 +292,7 @@ function TodaysFollowUps({
                             key={item.id}
                             className="flex items-center gap-3 rounded-xl border border-slate-200/60 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-800/50 p-3"
                         >
-                            <Clock className="h-4 w-4 text-blue-500 shrink-0" />
+                            <Clock className="h-4 w-4 text-primary dark:text-mint shrink-0" />
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
                                     {item.clientName}
@@ -302,7 +302,7 @@ function TodaysFollowUps({
                             <button
                                 type="button"
                                 onClick={() => onAction(item)}
-                                className="shrink-0 rounded-lg bg-teal-50 dark:bg-teal-900/30 px-3 py-1.5 text-xs font-semibold text-teal-700 dark:text-teal-300 transition hover:bg-teal-100 dark:hover:bg-teal-900/50 cursor-pointer"
+                                className="shrink-0 rounded-lg bg-primary-soft dark:bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary dark:text-mint transition hover:bg-primary/20 dark:hover:bg-primary/25 cursor-pointer"
                             >
                                 {language === "el" ? "Δράση" : "Action"}
                             </button>

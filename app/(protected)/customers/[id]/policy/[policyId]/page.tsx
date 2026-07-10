@@ -66,12 +66,12 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
         <div className="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
             {/* Breadcrumbs */}
             <nav className="flex items-center gap-2 mb-8 text-sm font-medium">
-                <Link href="/customers" className="text-stone-400 hover:text-teal-600 transition-colors">Customers</Link>
+                <Link href="/customers" className="text-stone-400 hover:text-primary dark:hover:text-mint transition-colors">Customers</Link>
                 <svg className="w-4 h-4 text-stone-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                 </svg>
                 {customer ? (
-                    <Link href={`/customers/${customerId}`} className="text-stone-400 hover:text-teal-600 transition-colors">
+                    <Link href={`/customers/${customerId}`} className="text-stone-400 hover:text-primary dark:hover:text-mint transition-colors">
                         {customer.name}
                     </Link>
                 ) : (
@@ -140,7 +140,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                             <h2 className="text-sm font-black text-stone-400 uppercase tracking-widest mb-6">Coverage Highlights</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="flex items-start gap-4">
-                                    <div className="mt-1 w-5 h-5 rounded-full bg-teal-50 dark:bg-teal-900/30 flex items-center justify-center text-teal-600 shrink-0">
+                                    <div className="mt-1 w-5 h-5 rounded-full bg-primary-soft dark:bg-primary/15 flex items-center justify-center text-primary dark:text-mint shrink-0">
                                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" /></svg>
                                     </div>
                                     <div>
@@ -149,7 +149,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-4">
-                                    <div className="mt-1 w-5 h-5 rounded-full bg-teal-50 dark:bg-teal-900/30 flex items-center justify-center text-teal-600 shrink-0">
+                                    <div className="mt-1 w-5 h-5 rounded-full bg-primary-soft dark:bg-primary/15 flex items-center justify-center text-primary dark:text-mint shrink-0">
                                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" /></svg>
                                     </div>
                                     <div>
@@ -184,7 +184,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center gap-3">
                                     <h2 className="text-sm font-black text-stone-900 dark:text-white uppercase tracking-widest">AI Policy Insights</h2>
-                                    <span className="px-2 py-0.5 rounded-full bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 text-[9px] font-black uppercase tracking-widest border border-teal-100 dark:border-teal-800">
+                                    <span className="px-2 py-0.5 rounded-full bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint text-[9px] font-black uppercase tracking-widest border border-primary/20 dark:border-primary/30">
                                         ACORD Verified
                                     </span>
                                 </div>
@@ -213,7 +213,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                         </div>
                                         <div>
                                             <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">Premium Found</p>
-                                            <p className="text-xs font-bold text-teal-600 dark:text-teal-400">
+                                            <p className="text-xs font-bold text-primary dark:text-mint">
                                                 {(policy as any).acordData.policy?.premium?.amount} {(policy as any).acordData.policy?.premium?.currency}
                                             </p>
                                         </div>
@@ -229,7 +229,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                                     <span className="font-black text-stone-900 dark:text-stone-100 uppercase tracking-tighter">{cov.name}</span>
                                                     {cov.deductible && <span className="text-[9px] text-stone-400">Deductible: {cov.deductible}</span>}
                                                 </div>
-                                                <span className="font-mono text-teal-600 dark:text-teal-400 font-black">{cov.limit}</span>
+                                                <span className="font-mono text-primary dark:text-mint font-black">{cov.limit}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -261,7 +261,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
 
                         <div className="pt-4 border-t border-stone-100 dark:border-stone-700">
                             <div className="flex items-center gap-2">
-                                <span className={`w-2 h-2 rounded-full ${policy.status === 'active' ? 'bg-teal-500' : 'bg-stone-400'}`}></span>
+                                <span className={`w-2 h-2 rounded-full ${policy.status === 'active' ? 'bg-primary' : 'bg-slate-400'}`}></span>
                                 <span className="text-xs font-bold text-stone-500 uppercase">Agent Access Active</span>
                             </div>
                         </div>
@@ -282,7 +282,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                 {policy.documents.map((doc: any) => (
                                     <li key={doc.id}>
                                         <a href={doc.fileUrl} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-3 rounded-2xl hover:bg-stone-50 dark:hover:bg-stone-700/50 group transition-all">
-                                            <div className="w-10 h-10 rounded-xl bg-stone-100 dark:bg-stone-900 flex items-center justify-center text-stone-400 group-hover:text-teal-600 transition-colors">
+                                            <div className="w-10 h-10 rounded-xl bg-stone-100 dark:bg-stone-900 flex items-center justify-center text-stone-400 group-hover:text-primary dark:group-hover:text-mint transition-colors">
                                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
                                             </div>
                                             <div className="overflow-hidden">

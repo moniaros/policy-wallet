@@ -32,7 +32,7 @@ export function CustomerProfile({ party }: CustomerProfileProps) {
             {/* Identity Ribbon */}
             <div className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 p-4 flex justify-between items-center">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white dark:text-[#1A2420] font-bold text-lg shadow-sm">
                         {party.displayName.substring(0, 1)}
                     </div>
                     <div>
@@ -43,8 +43,8 @@ export function CustomerProfile({ party }: CustomerProfileProps) {
                             <span className="flex items-center gap-1 text-xs text-slate-500 font-mono">
                                 <Mail className="w-3 h-3" /> {party.primaryEmail}
                             </span>
-                            <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] uppercase font-bold border ${party.gdprConsentStatus === 'granted'
-                                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] uppercase font-bold border ${party.gdprConsentStatus === 'granted'
+                                    ? 'bg-primary-soft text-[#166534] border-primary/20 dark:bg-primary/15 dark:text-mint dark:border-primary/30'
                                     : 'bg-red-50 text-red-700 border-red-200'
                                 }`}>
                                 <ShieldCheck className="w-3 h-3" /> GDPR: {party.gdprConsentStatus}
@@ -97,10 +97,10 @@ export function CustomerProfile({ party }: CustomerProfileProps) {
                                     {comm.type === 'email' ? <Mail className="w-3 h-3 text-slate-400" /> : <Smartphone className="w-3 h-3 text-slate-400" />}
                                     <span className="truncate font-mono text-xs">{comm.value}</span>
                                     {comm.isPrimary && (
-                                        <span className="text-[9px] bg-blue-100 text-blue-700 px-1 py-0.5 rounded font-bold uppercase">Primary</span>
+                                        <span className="text-[9px] bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint px-1 py-0.5 rounded-full font-bold uppercase">Primary</span>
                                     )}
                                 </div>
-                                <span className="text-[9px] text-emerald-600 flex items-center gap-0.5" title={`Validated: ${comm.lastValidatedAt}`}>
+                                <span className="text-[9px] text-primary dark:text-mint flex items-center gap-0.5" title={`Validated: ${comm.lastValidatedAt}`}>
                                     <ShieldCheck className="w-3 h-3" /> Valid
                                 </span>
                             </div>
@@ -155,11 +155,11 @@ export function ShareCenter({ policyId, activeLinks, onRevokeLink }: ShareCenter
         <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <h3 className="font-bold text-lg flex items-center gap-2">
-                    <LinkIcon className="w-5 h-5 text-blue-600" /> Share Center
+                    <LinkIcon className="w-5 h-5 text-primary dark:text-mint" /> Share Center
                 </h3>
                 <button
                     onClick={() => setShowConfig(!showConfig)}
-                    className="px-4 py-2 bg-blue-600 text-white text-sm font-bold rounded hover:bg-blue-700 transition-colors duration-200"
+                    className="px-4 py-2 bg-primary text-white dark:text-[#1A2420] text-sm font-bold rounded hover:bg-primary-hover transition-colors duration-200"
                 >
                     + Generate Secure Link
                 </button>
@@ -167,7 +167,7 @@ export function ShareCenter({ policyId, activeLinks, onRevokeLink }: ShareCenter
 
             {/* Secure Config Modal (Inline for Zero-Latency) */}
             {showConfig && (
-                <div className="bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-900 rounded-lg p-4 shadow-lg animate-in fade-in zoom-in-95 duration-200">
+                <div className="bg-white dark:bg-slate-900 border border-primary/30 dark:border-primary/40 rounded-lg p-4 shadow-lg animate-in fade-in zoom-in-95 duration-200">
                     <div className="flex justify-between mb-4 border-b border-slate-100 pb-2">
                         <h4 className="font-bold text-sm uppercase text-slate-600">Configure Access Scope</h4>
                         <button onClick={() => setShowConfig(false)}><X className="w-4 h-4 text-slate-400" /></button>
@@ -200,7 +200,7 @@ export function ShareCenter({ policyId, activeLinks, onRevokeLink }: ShareCenter
                                     type="date"
                                     value={expiresAt}
                                     onChange={e => setExpiresAt(e.target.value)}
-                                    className="w-full text-sm p-2 border border-slate-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full text-sm p-2 border border-slate-300 rounded focus:ring-2 focus:ring-primary outline-none"
                                 />
                             </div>
                             <label className="flex items-center justify-between p-2 bg-slate-100 rounded">
@@ -218,7 +218,7 @@ export function ShareCenter({ policyId, activeLinks, onRevokeLink }: ShareCenter
                     </div>
 
                     <div className="mt-4 pt-4 border-t border-slate-100 flex justify-end">
-                        <button className="px-6 py-2 bg-emerald-600 text-white font-bold text-sm rounded hover:bg-emerald-700 shadow-sm">
+                        <button className="px-6 py-2 bg-primary text-white dark:text-[#1A2420] font-bold text-sm rounded hover:bg-primary-hover shadow-sm">
                             Create Link
                         </button>
                     </div>
@@ -241,7 +241,7 @@ export function ShareCenter({ policyId, activeLinks, onRevokeLink }: ShareCenter
                             <tr key={link.uuid} className="group hover:bg-white dark:hover:bg-slate-900 transition-colors">
                                 <td className="px-4 py-3">
                                     <div className="flex flex-col">
-                                        <span className="font-mono text-xs text-blue-600">{link.uuid.substring(0, 8)}...</span>
+                                        <span className="font-mono text-xs text-primary dark:text-mint">{link.uuid.substring(0, 8)}...</span>
                                         <span className="text-xs text-slate-500">
                                             {[
                                                 link.scope.schedule && 'Schedule',
@@ -253,7 +253,7 @@ export function ShareCenter({ policyId, activeLinks, onRevokeLink }: ShareCenter
                                 </td>
                                 <td className="px-4 py-3">
                                     <div className="flex items-center gap-2">
-                                        {link.security.oneTimeView && <span className="p-1 bg-purple-100 text-purple-700 rounded text-[10px] font-bold uppercase">1-View</span>}
+                                        {link.security.oneTimeView && <span className="p-1 bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint rounded-full text-[10px] font-bold uppercase">1-View</span>}
                                         <span className="text-xs text-slate-500 flex items-center gap-1">
                                             <Clock className="w-3 h-3" /> {new Date(link.security.expiresAt).toLocaleDateString()}
                                         </span>

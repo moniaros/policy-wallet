@@ -215,7 +215,7 @@ export function RecommendationCards({
                                                     {rec.matchedProduct.premiumRangeLow != null && rec.matchedProduct.premiumRangeHigh != null && (
                                                         <p className="text-xs text-black/60 dark:text-white/60">
                                                             {t("Εύρος ασφαλίστρου", "Premium range")}:{" "}
-                                                            <span className="font-medium text-[#1FDC86]">
+                                                            <span className="font-medium text-primary dark:text-mint">
                                                                 €{rec.matchedProduct.premiumRangeLow}–€{rec.matchedProduct.premiumRangeHigh}{t("/έτος", "/yr")}
                                                             </span>
                                                         </p>
@@ -224,7 +224,7 @@ export function RecommendationCards({
                                                         <ul className="text-[11px] text-black/55 dark:text-white/55 space-y-0.5">
                                                             {rec.matchedProduct.keyBenefits.slice(0, 3).map((b, i) => (
                                                                 <li key={i} className="flex items-center gap-1.5">
-                                                                    <span className="h-1 w-1 rounded-full bg-[#1FDC86] flex-shrink-0" />
+                                                                    <span className="h-1 w-1 rounded-full bg-primary dark:bg-mint flex-shrink-0" />
                                                                     {b[lang] || b.en}
                                                                 </li>
                                                             ))}
@@ -235,7 +235,7 @@ export function RecommendationCards({
                                             {!rec.matchedProduct && rec.estimatedCostEur != null && (
                                                 <p className="text-xs font-medium text-black/70 dark:text-white/70">
                                                     {t("Εκτιμώμενο κόστος", "Estimated cost")}:{" "}
-                                                    <span className="text-[#1FDC86] font-semibold">
+                                                    <span className="text-primary dark:text-mint font-semibold">
                                                         ~€{rec.estimatedCostEur}
                                                         {t("/έτος", "/year")}
                                                     </span>
@@ -251,7 +251,7 @@ export function RecommendationCards({
                                             onClick={() =>
                                                 setExpandedId(isExpanded ? null : rec.id)
                                             }
-                                            className="text-xs font-semibold text-[#1FDC86] hover:underline flex items-center gap-1 cursor-pointer"
+                                            className="text-xs font-semibold text-primary dark:text-mint hover:underline flex items-center gap-1 cursor-pointer"
                                         >
                                             {isExpanded
                                                 ? t("Λιγότερα", "Less")
@@ -285,7 +285,7 @@ export function RecommendationCards({
                 <button
                     type="button"
                     onClick={() => setShowAll(!showAll)}
-                    className="mt-4 w-full text-center text-xs font-semibold text-[#1FDC86] hover:underline cursor-pointer flex items-center justify-center gap-1"
+                    className="mt-4 w-full text-center text-xs font-semibold text-primary dark:text-mint hover:underline cursor-pointer flex items-center justify-center gap-1"
                 >
                     {showAll
                         ? t("Εμφάνιση λιγότερων", "Show fewer")

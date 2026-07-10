@@ -210,7 +210,7 @@ export function AgentClient({ policies, user, agent, relationshipId }: AgentClie
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all min-h-[44px] ${
                                     isActive
-                                        ? 'bg-[#1FDC86]/15 text-black dark:text-[#1FDC86]'
+                                        ? 'bg-primary/15 text-primary dark:text-mint'
                                         : 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                                 }`}
                             >
@@ -273,8 +273,8 @@ function OverviewTab({ agent, language }: { agent: NonNullable<AgentClientProps[
             <div
                 className="rounded-2xl p-6 relative overflow-hidden"
                 style={{
-                    background: `linear-gradient(135deg, ${agent.branding?.brandColor || "#10b981"}15, ${agent.branding?.brandColor || "#10b981"}05)`,
-                    borderLeft: `4px solid ${agent.branding?.brandColor || "#10b981"}`,
+                    background: `linear-gradient(135deg, ${agent.branding?.brandColor || "#29685B"}15, ${agent.branding?.brandColor || "#29685B"}05)`,
+                    borderLeft: `4px solid ${agent.branding?.brandColor || "#29685B"}`,
                 }}
             >
                 <div className="flex items-start gap-4">
@@ -283,7 +283,7 @@ function OverviewTab({ agent, language }: { agent: NonNullable<AgentClientProps[
                     ) : (
                         <div
                             className="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-lg font-black shadow-lg"
-                            style={{ backgroundColor: agent.branding?.brandColor || "#10b981" }}
+                            style={{ backgroundColor: agent.branding?.brandColor || "#29685B" }}
                         >
                             {agent.name.charAt(0)}
                         </div>
@@ -291,7 +291,7 @@ function OverviewTab({ agent, language }: { agent: NonNullable<AgentClientProps[
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                             <h1 className="text-2xl font-black text-slate-900 dark:text-white truncate">{agent.name}</h1>
-                            {agent.branding?.verified && <ShieldCheck className="w-5 h-5 text-emerald-500 flex-shrink-0" />}
+                            {agent.branding?.verified && <ShieldCheck className="w-5 h-5 text-primary dark:text-mint flex-shrink-0" />}
                         </div>
                         <div className="flex items-center gap-2 mt-0.5">
                             <Building2 className="w-3.5 h-3.5 text-slate-400" />
@@ -313,7 +313,7 @@ function OverviewTab({ agent, language }: { agent: NonNullable<AgentClientProps[
                 <a
                     href={`tel:${agent.phone}`}
                     className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold text-white transition hover:opacity-90 shadow-lg min-h-[44px]"
-                    style={{ backgroundColor: agent.branding?.brandColor || "#1FDC86" }}
+                    style={{ backgroundColor: agent.branding?.brandColor || "#29685B" }}
                 >
                     <Phone className="h-4 w-4" /> {language === "el" ? "Κλήση" : "Call"}
                 </a>

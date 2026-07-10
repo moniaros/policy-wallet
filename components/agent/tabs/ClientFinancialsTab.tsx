@@ -57,7 +57,7 @@ export function ClientFinancialsTab({ financials, agentTier }: ClientFinancialsT
                 {/* Premiums by LoB */}
                 <BrandCard className="p-5">
                     <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
-                        <BarChart3 className="h-5 w-5 text-indigo-500" />
+                        <BarChart3 className="h-5 w-5 text-primary dark:text-mint" />
                         {language === "el" ? "Ασφάλιστρα ανά Κλάδο" : "Premiums by Line of Business"}
                     </h3>
                     <div className="space-y-3">
@@ -77,7 +77,7 @@ export function ClientFinancialsTab({ financials, agentTier }: ClientFinancialsT
                                     </div>
                                     <div className="h-2 rounded-full bg-slate-100 dark:bg-slate-800">
                                         <div
-                                            className="h-2 rounded-full bg-teal-500 transition-all duration-500"
+                                            className="h-2 rounded-full bg-primary transition-all duration-500"
                                             style={{ width: `${percentage}%` }}
                                         />
                                     </div>
@@ -90,7 +90,7 @@ export function ClientFinancialsTab({ financials, agentTier }: ClientFinancialsT
                 {/* Renewal Probability */}
                 <BrandCard className="p-5">
                     <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
-                        <RefreshCw className="h-5 w-5 text-emerald-500" />
+                        <RefreshCw className="h-5 w-5 text-primary dark:text-mint" />
                         {language === "el" ? "Πιθανότητα Ανανέωσης" : "Renewal Probability"}
                     </h3>
                     <div className="flex items-center gap-4">
@@ -99,7 +99,7 @@ export function ClientFinancialsTab({ financials, agentTier }: ClientFinancialsT
                                 <circle cx={48} cy={48} r={40} fill="none" stroke="currentColor" strokeWidth={6} className="text-slate-200 dark:text-slate-700" />
                                 <circle
                                     cx={48} cy={48} r={40} fill="none"
-                                    stroke={financials.renewalProbability >= 70 ? "#10b981" : financials.renewalProbability >= 40 ? "#f59e0b" : "#ef4444"}
+                                    stroke={financials.renewalProbability >= 70 ? "#29685B" : financials.renewalProbability >= 40 ? "#f59e0b" : "#ef4444"}
                                     strokeWidth={6}
                                     strokeDasharray={2 * Math.PI * 40}
                                     strokeDashoffset={2 * Math.PI * 40 * (1 - financials.renewalProbability / 100)}

@@ -26,7 +26,7 @@ const LOB_LABELS: Record<string, { en: string; el: string }> = {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-    active: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+    active: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
     expiring_soon: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
     expired: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
     incomplete: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
@@ -57,8 +57,8 @@ export function ClientPoliciesTab({
         return (
             <BrandCard className="p-8">
                 <div className="flex flex-col items-center text-center">
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-teal-100 dark:bg-teal-900/30">
-                        <Shield className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
+                        <Shield className="h-5 w-5 text-primary dark:text-mint" />
                     </div>
                     <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                         {language === "el"
@@ -141,8 +141,8 @@ export function ClientPoliciesTab({
                     return (
                         <BrandCard key={policy.policyId} className="p-4">
                             <div className="flex items-center gap-4">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 dark:bg-teal-900/30">
-                                    <Shield className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft dark:bg-primary/15">
+                                    <Shield className="h-5 w-5 text-primary dark:text-mint" />
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
@@ -165,7 +165,7 @@ export function ClientPoliciesTab({
                                         {formatDateGreek(policy.endDate)}
                                     </div>
                                     {showCommission && viewerRole === "agent" && commissionRate > 0 && (
-                                        <p className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 mt-0.5">
+                                        <p className="text-[10px] font-medium text-primary dark:text-mint mt-0.5">
                                             {commissionRate}% {language === "el" ? "προμήθεια" : "commission"}
                                         </p>
                                     )}
@@ -177,7 +177,7 @@ export function ClientPoliciesTab({
                                         <button
                                             type="button"
                                             onClick={() => onRenewPolicy(policy.policyId)}
-                                            className="rounded-lg bg-teal-50 dark:bg-teal-900/30 px-3 py-1.5 text-xs font-semibold text-teal-700 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900/50 transition cursor-pointer flex items-center gap-1"
+                                            className="rounded-lg bg-primary-soft dark:bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary dark:text-mint hover:bg-primary/20 dark:hover:bg-primary/25 transition cursor-pointer flex items-center gap-1"
                                         >
                                             <RefreshCw className="h-3 w-3" />
                                             {language === "el" ? "Ανανέωση" : "Renew"}

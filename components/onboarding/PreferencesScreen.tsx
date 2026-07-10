@@ -12,10 +12,10 @@ interface PreferencesScreenProps {
 }
 
 const INSURANCE_TYPES = [
-    { id: 'motor', label: 'Motor', icon: Car, color: 'from-blue-500 to-blue-600' },
-    { id: 'home', label: 'Home', icon: Home, color: 'from-orange-500 to-orange-600' },
-    { id: 'health', label: 'Health', icon: Heart, color: 'from-red-500 to-red-600' },
-    { id: 'life', label: 'Life', icon: Briefcase, color: 'from-purple-500 to-purple-600' },
+    { id: 'motor', label: 'Motor', icon: Car, color: 'bg-primary' },
+    { id: 'home', label: 'Home', icon: Home, color: 'bg-orange-500' },
+    { id: 'health', label: 'Health', icon: Heart, color: 'bg-red-500' },
+    { id: 'life', label: 'Life', icon: Briefcase, color: 'bg-slate-600' },
 ]
 
 export function PreferencesScreen({ progress, onNext, onBack }: PreferencesScreenProps) {
@@ -62,7 +62,7 @@ export function PreferencesScreen({ progress, onNext, onBack }: PreferencesScree
                         <h2 className="text-3xl font-bold text-slate-900 mb-2">
                             Let's personalize your experience
                         </h2>
-                        <div className="h-1 w-20 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full" />
+                        <div className="h-1 w-20 bg-primary rounded-full" />
                     </div>
 
                     {/* Progress Indicator */}
@@ -78,8 +78,8 @@ export function PreferencesScreen({ progress, onNext, onBack }: PreferencesScree
                                     <div
                                         key={i}
                                         className={`h-1 flex-1 rounded-full transition-all duration-300 ${i < progress.currentStep
-                                            ? 'bg-gradient-to-r from-indigo-500 to-violet-500'
-                                            : 'bg-slate-200'
+                                            ? 'bg-primary'
+                                            : 'bg-[#F1F5F9]'
                                             }`}
                                     />
                                 ))}
@@ -106,13 +106,13 @@ export function PreferencesScreen({ progress, onNext, onBack }: PreferencesScree
                                     transition={{ delay: index * 0.1 }}
                                     onClick={() => handleToggleType(type.id)}
                                     className={`relative p-6 rounded-2xl border-2 transition-all duration-200 cursor-pointer group ${isSelected
-                                        ? 'border-emerald-500 bg-emerald-50 shadow-lg shadow-emerald-100'
-                                        : 'border-slate-200 bg-white hover:border-indigo-300 hover:shadow-md'
+                                        ? 'border-primary bg-primary-tint shadow-lg shadow-primary/10'
+                                        : 'border-[#E2E8F0] bg-white hover:border-primary/40 hover:shadow-md'
                                         }`}
                                 >
                                     {/* Selected Checkmark */}
                                     {isSelected && (
-                                        <div className="absolute top-3 right-3 w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
+                                        <div className="absolute top-3 right-3 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
                                             <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                             </svg>
@@ -120,12 +120,12 @@ export function PreferencesScreen({ progress, onNext, onBack }: PreferencesScree
                                     )}
 
                                     {/* Icon */}
-                                    <div className={`w-16 h-16 mx-auto mb-3 rounded-xl bg-gradient-to-br ${type.color} flex items-center justify-center transform group-hover:scale-110 transition-transform duration-200`}>
+                                    <div className={`w-16 h-16 mx-auto mb-3 rounded-xl ${type.color} flex items-center justify-center transform group-hover:scale-110 transition-transform duration-200`}>
                                         <Icon className="w-8 h-8 text-white" />
                                     </div>
 
                                     {/* Label */}
-                                    <p className={`text-lg font-semibold text-center ${isSelected ? 'text-emerald-700' : 'text-slate-900'
+                                    <p className={`text-lg font-semibold text-center ${isSelected ? 'text-primary' : 'text-slate-900'
                                         }`}>
                                         {type.label}
                                     </p>
@@ -137,7 +137,7 @@ export function PreferencesScreen({ progress, onNext, onBack }: PreferencesScree
                     {/* Other Types Button */}
                     <button
                         onClick={() => setShowOthers(!showOthers)}
-                        className="w-full py-3 px-4 rounded-xl border-2 border-dashed border-slate-300 hover:border-indigo-400 hover:bg-indigo-50/50 transition-all duration-200 flex items-center justify-center gap-2 text-slate-600 hover:text-indigo-600 mb-8"
+                        className="w-full py-3 px-4 rounded-xl border-2 border-dashed border-slate-300 hover:border-primary hover:bg-primary-tint/50 transition-all duration-200 flex items-center justify-center gap-2 text-slate-600 hover:text-primary mb-8"
                     >
                         <Plus className="w-5 h-5" />
                         <span className="font-medium">Other Types</span>
@@ -148,7 +148,7 @@ export function PreferencesScreen({ progress, onNext, onBack }: PreferencesScree
                         onClick={handleContinue}
                         disabled={selectedTypes.length === 0}
                         className={`w-full py-4 px-8 rounded-xl font-semibold text-lg transition-all duration-200 ${selectedTypes.length > 0
-                            ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 cursor-pointer'
+                            ? 'bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 cursor-pointer'
                             : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                             }`}
                     >

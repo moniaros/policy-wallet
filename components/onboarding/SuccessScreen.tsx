@@ -19,9 +19,9 @@ export function SuccessScreen({ userName, onComplete }: SuccessScreenProps) {
                 className="mb-8"
             >
                 <div className="relative">
-                    <div className="absolute inset-0 bg-emerald-400 rounded-full blur-2xl opacity-50" />
-                    <div className="relative w-24 h-24 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full flex items-center justify-center">
-                        <CheckCircle className="w-12 h-12 text-white" />
+                    <div className="absolute inset-0 bg-mint rounded-full blur-2xl opacity-50" />
+                    <div className="relative w-24 h-24 bg-primary rounded-full flex items-center justify-center">
+                        <CheckCircle className="w-12 h-12 text-white dark:text-[#1A2420]" />
                     </div>
                 </div>
             </motion.div>
@@ -65,7 +65,7 @@ export function SuccessScreen({ userName, onComplete }: SuccessScreenProps) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
                 onClick={onComplete}
-                className="group px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                className="group px-8 py-4 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
             >
                 <span className="flex items-center gap-2">
                     <Sparkles className="w-5 h-5" />

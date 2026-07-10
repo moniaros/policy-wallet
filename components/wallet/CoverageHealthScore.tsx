@@ -20,10 +20,10 @@ function calculateHealthScore(policy: Policy & { gapCount?: number }): number {
     return Math.max(0, Math.min(100, score))
 }
 
-function getScoreColor(score: number): { stroke: string; text: string; bg: string } {
-    if (score <= 40) return { stroke: '#ef4444', text: 'text-red-500', bg: 'bg-red-50 dark:bg-red-900/20' }
-    if (score <= 70) return { stroke: '#f59e0b', text: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' }
-    return { stroke: '#1fdc86', text: 'text-emerald-500', bg: 'bg-emerald-50 dark:bg-emerald-900/20' }
+function getScoreColor(score: number): { ring: string; text: string; bg: string } {
+    if (score <= 40) return { ring: 'text-red-500', text: 'text-red-500', bg: 'bg-red-50 dark:bg-red-900/20' }
+    if (score <= 70) return { ring: 'text-amber-500', text: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' }
+    return { ring: 'text-primary dark:text-mint', text: 'text-primary dark:text-mint', bg: 'bg-primary-tint dark:bg-primary/15' }
 }
 
 function DonutRing({ score, size = 96, strokeWidth = 8 }: { score: number; size?: number; strokeWidth?: number }) {
@@ -50,12 +50,12 @@ function DonutRing({ score, size = 96, strokeWidth = 8 }: { score: number; size?
                 cy={size / 2}
                 r={radius}
                 fill="none"
-                stroke={color.stroke}
+                stroke="currentColor"
                 strokeWidth={strokeWidth}
                 strokeLinecap="round"
                 strokeDasharray={circumference}
                 strokeDashoffset={offset}
-                className="transition-all duration-700 ease-out"
+                className={`transition-all duration-700 ease-out ${color.ring}`}
             />
         </svg>
     )
@@ -121,7 +121,7 @@ export function CoverageHealthScore({ policy, userPlan }: CoverageHealthScorePro
                         </p>
                     </div>
                     <div className="rounded-xl border border-black/5 bg-black/[0.02] p-3 text-center dark:border-white/10 dark:bg-white/[0.03]">
-                        <BadgeCheck className="mx-auto h-4 w-4 text-emerald-500" />
+                        <BadgeCheck className="mx-auto h-4 w-4 text-[#22C55E]" />
                         <p className="mt-1 text-lg font-bold text-black dark:text-white">
                             {policy.verified ? '✓' : '—'}
                         </p>
@@ -137,7 +137,7 @@ export function CoverageHealthScore({ policy, userPlan }: CoverageHealthScorePro
                 <PlanGate userPlan={userPlan} requiredPlan="pro" featureLabel={copy.recommendations || 'AI Recommendations'}>
                     <div className="space-y-2">
                         <div className="flex items-center gap-2">
-                            <Sparkles className="h-4 w-4 text-[#1fdc86]" />
+                            <Sparkles className="h-4 w-4 text-primary dark:text-mint" />
                             <span className="text-xs font-bold uppercase tracking-wider text-black/50 dark:text-white/50">
                                 {copy.recommendations || (language === 'el' ? 'AI Συστάσεις' : 'AI Recommendations')}
                             </span>

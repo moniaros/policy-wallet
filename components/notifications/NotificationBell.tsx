@@ -42,7 +42,7 @@ export function NotificationBell({ initialNotifications = [], initialUnreadCount
         switch (eventType) {
             case 'policy_added':
                 return (
-                    <div className="w-8 h-8 bg-teal-100 dark:bg-teal-900/30 rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-primary-soft dark:bg-primary/15 rounded-lg flex items-center justify-center">
                         <span className="text-lg">📋</span>
                     </div>
                 )
@@ -157,7 +157,7 @@ export function NotificationBell({ initialNotifications = [], initialUnreadCount
                         {unreadCount > 0 && (
                             <button
                                 onClick={handleMarkAllRead}
-                                className="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline"
+                                className="text-xs font-bold text-primary dark:text-mint hover:underline"
                             >
                                 Mark all read
                             </button>
@@ -181,7 +181,7 @@ export function NotificationBell({ initialNotifications = [], initialUnreadCount
                                     <button
                                         key={notification.id}
                                         onClick={() => handleNotificationClick(notification)}
-                                        className={`w-full px-4 py-3 flex items-start gap-3 text-left hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors ${!notification.isRead ? 'bg-teal-50/50 dark:bg-teal-900/10' : ''
+                                        className={`w-full px-4 py-3 flex items-start gap-3 text-left hover:bg-stone-50 dark:hover:bg-stone-800/50 transition-colors ${!notification.isRead ? 'bg-primary-tint dark:bg-primary/10' : ''
                                             }`}
                                     >
                                         {getEventIcon(notification.eventType)}
@@ -194,7 +194,7 @@ export function NotificationBell({ initialNotifications = [], initialUnreadCount
                                                     {notification.title}
                                                 </p>
                                                 {!notification.isRead && (
-                                                    <span className="w-2 h-2 bg-teal-500 rounded-full flex-shrink-0" />
+                                                    <span className="w-2 h-2 bg-primary rounded-full flex-shrink-0" />
                                                 )}
                                             </div>
                                             <p className="text-xs text-stone-500 dark:text-stone-400 line-clamp-2 mt-0.5">
@@ -218,7 +218,7 @@ export function NotificationBell({ initialNotifications = [], initialUnreadCount
                                     setIsOpen(false)
                                     router.push('/notifications')
                                 }}
-                                className="w-full py-2 text-sm font-bold text-center text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
+                                className="w-full py-2 text-sm font-bold text-center text-primary dark:text-mint hover:text-primary-hover dark:hover:text-mint transition-colors"
                             >
                                 View all notifications
                             </button>

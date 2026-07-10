@@ -126,15 +126,15 @@ export function PolicyWallet({
                         </div>
                     </div>
                 ) : (
-                    <div className="bg-[#1FDC86]/12 dark:bg-[#1FDC86]/12 border border-[#1FDC86]/35 dark:border-[#1FDC86]/35 rounded-2xl p-4 flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-[#1FDC86]/15 dark:bg-[#1FDC86]/15 flex items-center justify-center text-[#1FDC86] flex-shrink-0">
+                    <div className="bg-primary-tint dark:bg-primary/15 border border-primary/30 dark:border-primary/35 rounded-2xl p-4 flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/20 flex items-center justify-center text-primary dark:text-mint flex-shrink-0">
                             <Sparkles className="w-5 h-5" />
                         </div>
                         <div>
-                            <h3 className="text-sm font-bold text-black dark:text-[#7de8ba]">
+                            <h3 className="text-sm font-bold text-black dark:text-mint">
                                 {(t.dashboard as any).portfolioInsights?.allGood || roleCopy.walletDashboard.allPoliciesActive}
                             </h3>
-                            <p className="text-xs text-[#19b870] dark:text-[#7de8ba]">
+                            <p className="text-xs text-[#166534] dark:text-mint">
                                 {roleCopy.walletDashboard.coverageUpToDate}
                             </p>
                         </div>
@@ -150,7 +150,7 @@ export function PolicyWallet({
                             placeholder={t.wallet.searchPlaceholder}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10 pr-4 py-2.5 bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#1FDC86]/30 w-full placeholder:text-black/45 dark:placeholder:text-white/45"
+                            className="pl-10 pr-4 py-2.5 bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/30 w-full placeholder:text-black/45 dark:placeholder:text-white/45"
                         />
                         <svg className="w-4 h-4 text-black/45 dark:text-white/55 absolute left-3 top-1/2 -translate-y-1/2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -325,7 +325,7 @@ export function PolicyWallet({
                         <button
                             id="tour-fab"
                             onClick={() => setShowAddMenu((prev) => !prev)}
-                            className="flex items-center justify-center w-16 h-16 bg-[#1FDC86] text-white rounded-2xl shadow-2xl hover:bg-[#19b870] hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer border border-[#1FDC86]/40"
+                            className="flex items-center justify-center w-16 h-16 bg-primary text-white dark:text-[#1A2420] rounded-2xl shadow-2xl hover:bg-primary-hover hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer border border-primary/40"
                             aria-label={roleCopy.walletDashboard.addPolicyAria}
                             aria-expanded={showAddMenu}
                             aria-haspopup="menu"
@@ -337,7 +337,7 @@ export function PolicyWallet({
                     <button
                         onClick={onAddManually}
                         id="tour-fab"
-                        className="group relative flex items-center justify-center w-16 h-16 bg-[#1FDC86] text-white rounded-2xl shadow-xl hover:-translate-y-1 hover:bg-[#19b870] transition-all duration-300 border border-[#1FDC86]/40 cursor-pointer"
+                        className="group relative flex items-center justify-center w-16 h-16 bg-primary text-white dark:text-[#1A2420] rounded-2xl shadow-xl hover:-translate-y-1 hover:bg-primary-hover transition-all duration-300 border border-primary/40 cursor-pointer"
                         aria-label={roleCopy.walletDashboard.addPolicyAria}
                     >
                         <svg className="w-8 h-8 transition-transform duration-300 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">

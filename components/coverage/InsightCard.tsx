@@ -90,7 +90,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                                 {config.label[language]}
                             </span>
                             {insight.isPlusFeature && (
-                                <span className="text-[10px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#1FDC86]/15 text-black dark:text-[#1FDC86] border border-[#1FDC86]/30 flex items-center gap-1">
+                                <span className="text-[10px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint border border-primary/30 flex items-center gap-1">
                                     <Lock className="w-3 h-3" />
                                     PLUS
                                 </span>
@@ -130,8 +130,8 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                             <div className="space-y-2">
                                 {insight.checkedItems.slice(0, 3).map((item, idx) => (
                                     <div key={idx} className="flex items-center gap-2.5 text-sm text-black/70 dark:text-white/70">
-                                        <div className="w-5 h-5 rounded-full bg-[#1FDC86]/15 flex items-center justify-center flex-shrink-0">
-                                            <CheckCircle2 className="w-3.5 h-3.5 text-[#1FDC86]" />
+                                        <div className="w-5 h-5 rounded-full bg-primary-soft dark:bg-primary/15 flex items-center justify-center flex-shrink-0">
+                                            <CheckCircle2 className="w-3.5 h-3.5 text-primary dark:text-mint" />
                                         </div>
                                         <span>{item}</span>
                                     </div>
@@ -142,7 +142,7 @@ export function InsightCard({ insight, onAction, language = 'el', collapsed = fa
                         <button
                             type="button"
                             onClick={() => onAction('primary', insight.id, insight.primaryAction.label)}
-                            className="w-full flex items-center justify-between px-4 py-3 bg-[#1FDC86] text-white rounded-xl text-sm font-semibold shadow-sm hover:opacity-90 transition-opacity cursor-pointer"
+                            className="w-full flex items-center justify-between px-4 py-3 bg-primary text-white dark:text-[#1A2420] rounded-xl text-sm font-semibold shadow-sm hover:bg-primary-hover transition-colors cursor-pointer"
                         >
                             <span>{insight.primaryAction.label}</span>
                             <ChevronRight className="w-4 h-4" />

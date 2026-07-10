@@ -47,14 +47,14 @@ function HandoverContent() {
     }
 
     return (
-        <div className={`${ibmPlexSans.className} relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#F9FAFB] px-4 py-12 dark:bg-[#000000]`}>
-            <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-slate-800 dark:bg-[#111111] sm:p-10 text-center">
+        <div className={`${ibmPlexSans.className} relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-[#F8FAFC] px-4 py-12 dark:bg-black`}>
+            <div className="w-full max-w-md rounded-2xl border border-[#E2E8F0] bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-white/10 dark:bg-[#111111] sm:p-10 text-center">
                 <div className="inline-block mb-8">
                     <PolicyWalletLogo size="md" language={language} />
                 </div>
 
-                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#1FDC86]/10 mb-6 border border-[#1FDC86]/20">
-                    <svg className="w-10 h-10 text-[#1FDC86]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 mb-6 border border-primary/20">
+                    <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     </svg>
                 </div>
@@ -74,7 +74,7 @@ function HandoverContent() {
                     {isMobile && (
                         <button
                             onClick={handleOpenApp}
-                            className="w-full rounded-full bg-[#1FDC86] px-4 py-3.5 font-bold text-slate-900 transition-all hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98]"
+                            className="w-full rounded-full bg-primary px-4 py-3.5 font-bold text-white dark:text-[#1A2420] transition-all hover:bg-primary-hover hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98]"
                         >
                             {t("Άνοιγμα εφαρμογής PolicyWallet", "Open PolicyWallet App")}
                         </button>
@@ -83,8 +83,8 @@ function HandoverContent() {
                     <button
                         onClick={handleContinueWeb}
                         className={`w-full py-3.5 rounded-full font-bold transition-all active:scale-[0.98] hover:-translate-y-0.5 ${isMobile
-                            ? "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-[#111111] dark:text-slate-300"
-                            : "bg-[#1FDC86] text-slate-900 hover:shadow-lg"
+                            ? "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 dark:border-white/15 dark:bg-[#111111] dark:text-slate-300"
+                            : "bg-primary text-white dark:text-[#1A2420] hover:bg-primary-hover hover:shadow-lg"
                             }`}
                     >
                         {isMobile
@@ -93,9 +93,9 @@ function HandoverContent() {
                     </button>
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800">
+                <div className="mt-8 pt-6 border-t border-[#E2E8F0] dark:border-white/10">
                     <p className="text-xs text-slate-500 flex items-center justify-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-[#1FDC86] animate-pulse"></span>
+                        <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
                         {t(`Ασφαλής ταυτοποίηση ${email}...`, `Securely authenticating ${email}...`)}
                     </p>
                 </div>
@@ -107,8 +107,8 @@ function HandoverContent() {
 export default function HandoverPage() {
     return (
         <Suspense fallback={
-            <div className={`${ibmPlexSans.className} flex min-h-screen items-center justify-center bg-[#F9FAFB] dark:bg-[#000000]`}>
-                <Loader2 className="h-7 w-7 animate-spin text-[#1FDC86]" />
+            <div className={`${ibmPlexSans.className} flex min-h-screen items-center justify-center bg-[#F8FAFC] dark:bg-black`}>
+                <Loader2 className="h-7 w-7 animate-spin text-primary" />
             </div>
         }>
             <HandoverContent />

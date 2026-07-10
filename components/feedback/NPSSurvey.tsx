@@ -32,7 +32,7 @@ export function NPSSurvey({ language, onSubmit, onDismiss }: NPSSurveyProps) {
     const getScoreColor = (s: number) => {
         if (s <= 6) return "bg-rose-500 text-white"
         if (s <= 8) return "bg-amber-500 text-white"
-        return "bg-[#1FDC86] text-white"
+        return "bg-primary text-white dark:text-[#1A2420]"
     }
 
     return (
@@ -58,8 +58,8 @@ export function NPSSurvey({ language, onSubmit, onDismiss }: NPSSurveyProps) {
                         animate={{ opacity: 1 }}
                         className="flex flex-col items-center gap-3 py-4 text-center"
                     >
-                        <div className="grid h-12 w-12 place-items-center rounded-full bg-[#1FDC86]/20">
-                            <MessageSquare className="h-6 w-6 text-[#1FDC86]" />
+                        <div className="grid h-12 w-12 place-items-center rounded-full bg-primary-soft dark:bg-primary/15">
+                            <MessageSquare className="h-6 w-6 text-primary dark:text-mint" />
                         </div>
                         <p className="text-sm font-semibold text-black dark:text-white">
                             {t("Ευχαριστούμε πολύ!", "Thank you!")}
@@ -109,7 +109,7 @@ export function NPSSurvey({ language, onSubmit, onDismiss }: NPSSurveyProps) {
                                     value={comment}
                                     onChange={(e) => setComment(e.target.value)}
                                     placeholder={t("Γράψτε εδώ (προαιρετικό)...", "Write here (optional)...")}
-                                    className="w-full resize-none rounded-xl border border-black/10 bg-black/[0.02] px-3 py-2 text-xs text-black outline-none placeholder:text-black/40 focus:border-[#1FDC86] dark:border-white/10 dark:bg-white/[0.02] dark:text-white dark:placeholder:text-white/40"
+                                    className="w-full resize-none rounded-xl border border-black/10 bg-black/[0.02] px-3 py-2 text-xs text-black outline-none placeholder:text-black/40 focus:border-primary dark:focus:border-mint dark:border-white/10 dark:bg-white/[0.02] dark:text-white dark:placeholder:text-white/40"
                                     rows={2}
                                 />
                             </motion.div>

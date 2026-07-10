@@ -52,12 +52,12 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
       {motor.coverageTier && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-              <Shield className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <Shield className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{motorCopy.coverageTier}</span>
           </div>
-          <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 capitalize">
+          <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint border border-primary/20 dark:border-primary/30 capitalize">
             {motor.coverageTier.replace(/_/g, " ")}
           </span>
         </div>
@@ -108,8 +108,8 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
       {motor.namedDrivers && motor.namedDrivers.length > 0 && (
         <div className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
           <div className="flex items-center gap-2.5 mb-2">
-            <div className="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-              <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <Users className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{motorCopy.namedDrivers}</span>
           </div>
@@ -131,8 +131,8 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
       {motor.greenCardExpiry && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-              <CreditCard className="w-4 h-4 text-green-600 dark:text-green-400" />
+            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <CreditCard className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <div>
               <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{motorCopy.greenCard}</span>
@@ -146,7 +146,7 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
               ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800"
               : greenCardStatus === "expiring"
                 ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800"
-                : "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
+                : "bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint border-primary/20 dark:border-primary/30"
           }`}>
             {greenCardStatus === "expired" ? copy.expired : greenCardStatus === "expiring" ? copy.expiringSoon : copy.valid}
           </span>
@@ -156,13 +156,13 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
       {motor.ownVehicleDamage !== undefined && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
-              <Car className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <Car className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{motorCopy.ownVehicleDamage}</span>
           </div>
           {motor.ownVehicleDamage ? (
-            <span className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            <span className="flex items-center gap-1 text-xs font-bold text-[#166534] dark:text-mint">
               <CheckCircle2 className="w-4 h-4" /> {copy.covered}
             </span>
           ) : (
@@ -176,13 +176,13 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
       {motor.glassBreakage !== undefined && (
         <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center">
-              <Shield className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+            <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+              <Shield className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{motorCopy.glassBreakage}</span>
           </div>
           {motor.glassBreakage ? (
-            <span className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            <span className="flex items-center gap-1 text-xs font-bold text-[#166534] dark:text-mint">
               <CheckCircle2 className="w-4 h-4" /> {copy.covered}
             </span>
           ) : (

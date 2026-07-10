@@ -76,7 +76,7 @@ export default function ArticlePage() {
 
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10">
                     <div className="flex items-center gap-4 mb-6">
-                        <span className="px-3 py-1 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 text-xs font-bold uppercase tracking-widest rounded-full">
+                        <span className="px-3 py-1 bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint text-xs font-bold uppercase tracking-widest rounded-full">
                             {article.category}
                         </span>
                         <div className="flex items-center text-stone-500 dark:text-stone-400 text-xs font-semibold uppercase tracking-widest">
@@ -89,7 +89,7 @@ export default function ArticlePage() {
                         {article.title}
                     </h1>
 
-                    <p className="text-lg md:text-xl text-stone-600 dark:text-stone-300 font-medium leading-relaxed border-l-4 border-teal-500 pl-6">
+                    <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 font-medium leading-relaxed border-l-4 border-primary pl-6">
                         {article.subtitle}
                     </p>
                 </motion.div>
@@ -120,7 +120,7 @@ export default function ArticlePage() {
                                         <ul className="space-y-3 mb-5 bg-stone-50 dark:bg-stone-800/50 p-5 rounded-2xl">
                                             {section.list.map((item, i) => (
                                                 <li key={i} className="flex items-start gap-3 text-stone-700 dark:text-stone-300">
-                                                    <div className="w-1.5 h-1.5 rounded-full bg-teal-500 mt-2.5 shrink-0" />
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2.5 shrink-0" />
                                                     <span className="leading-relaxed">{item}</span>
                                                 </li>
                                             ))}
@@ -181,7 +181,7 @@ export default function ArticlePage() {
                                 <p className="text-sm text-stone-600 dark:text-stone-400 mb-4">{copy.supportDescription}</p>
                                 <a
                                     href="mailto:support@policywallet.com"
-                                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm px-4 py-2.5 transition-colors"
+                                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] font-bold text-sm px-4 py-2.5 transition-colors"
                                 >
                                     {copy.contactSupport}
                                 </a>

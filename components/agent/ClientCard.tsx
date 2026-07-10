@@ -27,7 +27,7 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
         <button
             type="button"
             onClick={() => onClick(client.id)}
-            className="flex w-full items-center gap-3 rounded-xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-3 text-left transition-all hover:shadow-md hover:border-teal-300 dark:hover:border-teal-700 cursor-pointer"
+            className="flex w-full items-center gap-3 rounded-xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-3 text-left transition-all hover:shadow-md hover:border-primary/40 dark:hover:border-mint/40 cursor-pointer"
         >
             {/* Avatar */}
             <div className="relative shrink-0">
@@ -38,7 +38,7 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                         className="h-10 w-10 rounded-full object-cover"
                     />
                 ) : (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-100 text-sm font-bold text-teal-700 dark:bg-teal-900/40 dark:text-teal-300">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-soft text-sm font-bold text-primary dark:bg-primary/15 dark:text-mint">
                         {getInitials(client.name, client.surname)}
                     </div>
                 )}
@@ -74,7 +74,7 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                     <span
                         className={`text-xs font-bold ${
                             client.protectionScore >= 70
-                                ? "text-emerald-600 dark:text-emerald-400"
+                                ? "text-[#166534] dark:text-mint"
                                 : client.protectionScore >= 40
                                     ? "text-amber-600 dark:text-amber-400"
                                     : "text-red-600 dark:text-red-400"
@@ -123,8 +123,8 @@ export function ClientListGrouped({ clients, onClientClick, onInviteClient, isLo
         return (
             <BrandCard className="p-8">
                 <div className="flex flex-col items-center text-center">
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-teal-100 dark:bg-teal-900/30">
-                        <UserPlus className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
+                        <UserPlus className="h-5 w-5 text-primary dark:text-mint" />
                     </div>
                     <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                         {language === "el"

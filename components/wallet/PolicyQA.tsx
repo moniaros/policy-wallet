@@ -65,7 +65,7 @@ export function PolicyQA({ policyId }: { policyId: string }) {
 
     return (
         <div className="bg-white/90 dark:bg-black/90 backdrop-blur-xl rounded-2xl shadow-lg border border-black/10 dark:border-white/15 overflow-hidden transition-all duration-300 hover:shadow-xl">
-            <div className="bg-gradient-to-r from-black via-[#111111] to-black p-6 text-white">
+            <div className="bg-[#111111] p-6 text-white">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
@@ -102,7 +102,7 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                                 <div className="flex justify-start">
                                     <div className="bg-black/5 dark:bg-white/10 rounded-2xl p-4">
                                         <div className="flex items-center gap-2">
-                                            <Loader2 className="w-4 h-4 animate-spin text-[#1FDC86]" />
+                                            <Loader2 className="w-4 h-4 animate-spin text-primary dark:text-mint" />
                                             <span className="text-sm text-black/60 dark:text-white/70">{t.wallet.thinking}</span>
                                         </div>
                                     </div>
@@ -119,9 +119,9 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                                     <button
                                         key={idx}
                                         onClick={() => setQuestion(q)}
-                                        className="w-full text-left px-4 py-3 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 rounded-xl text-sm text-black/75 dark:text-white/75 transition-colors border border-black/10 dark:border-white/15 hover:border-[#1FDC86]/35 cursor-pointer"
+                                        className="w-full text-left px-4 py-3 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 rounded-xl text-sm text-black/75 dark:text-white/75 transition-colors border border-black/10 dark:border-white/15 hover:border-primary/35 dark:hover:border-mint/35 cursor-pointer"
                                     >
-                                        <MessageCircle className="w-4 h-4 inline mr-2 text-[#1FDC86]" />
+                                        <MessageCircle className="w-4 h-4 inline mr-2 text-primary dark:text-mint" />
                                         {q}
                                     </button>
                                 ))}
@@ -140,12 +140,12 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                             onChange={(e) => setQuestion(e.target.value)}
                             placeholder={t.wallet.askAiPlaceholder}
                             disabled={isAsking}
-                            className="w-full px-4 py-3 pr-12 rounded-xl border-2 border-black/10 dark:border-white/15 bg-white dark:bg-black text-black dark:text-white placeholder:text-black/45 dark:placeholder:text-white/45 focus:border-[#1FDC86] dark:focus:border-[#1FDC86] focus:outline-none transition-colors disabled:opacity-50"
+                            className="w-full px-4 py-3 pr-12 rounded-xl border-2 border-black/10 dark:border-white/15 bg-white dark:bg-black text-black dark:text-white placeholder:text-black/45 dark:placeholder:text-white/45 focus:border-primary dark:focus:border-mint focus:outline-none transition-colors disabled:opacity-50"
                         />
                         <button
                             type="submit"
                             disabled={!question.trim() || isAsking}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-[#1FDC86] text-white flex items-center justify-center hover:bg-[#19b870] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[#1FDC86]/25 cursor-pointer"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg bg-primary text-white dark:text-[#1A2420] flex items-center justify-center hover:bg-primary-hover transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/25 cursor-pointer"
                         >
                             {isAsking ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                         </button>
