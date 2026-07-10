@@ -17,6 +17,17 @@ const TEST_USER = {
     password: 'StrongerPass123!'
 };
 
+async function dismissCookieBanner(page: import('@playwright/test').Page) {
+    const necessaryOnly = page.locator(
+        'button:has-text("Μόνο Απαραίτητα"), button:has-text("Necessary Only")'
+    );
+    const visible = await necessaryOnly.first().isVisible({ timeout: 3000 }).catch(() => false);
+    if (visible) {
+        await necessaryOnly.first().click();
+        console.log('🍪 Cookie banner dismissed (necessary only)');
+    }
+}
+
 setup('authenticate as policyholder', async ({ page }) => {
     setup.setTimeout(180000); // Allow ample time for flows
     console.log('🔐 Authenticating test user...');
@@ -25,9 +36,12 @@ setup('authenticate as policyholder', async ({ page }) => {
     await page.goto('/auth/signin');
     await page.waitForLoadState('networkidle');
 
-    // Fill in credentials
-    await page.fill('#email', TEST_USER.email);
-    await page.fill('#password', TEST_USER.password);
+    // The consent banner overlays the submit button — clear it first
+    await dismissCookieBanner(page);
+
+    // Fill in credentials (signin form has no #email id — target by type)
+    await page.fill('input[type="email"]', TEST_USER.email);
+    await page.fill('#signin-password', TEST_USER.password);
 
     // Click sign in button
     const signInButton = page.locator('button[type="submit"], button:has-text("Sign In"), button:has-text("Σύνδεση")');
@@ -42,9 +56,10 @@ setup('authenticate as policyholder', async ({ page }) => {
     } catch (e) {
         console.log('⚠️ Login failed or timed out. Attempting registration with new user...');
 
-        // Navigate to signup
-        await page.goto('/auth/signup');
+        // Navigate to the policyholder signup form directly (role chooser skipped)
+        await page.goto('/auth/signup/policyholder');
         await page.waitForLoadState('networkidle');
+        await dismissCookieBanner(page);
 
         // Generate dynamic user
         dynamicUser = {
@@ -54,14 +69,14 @@ setup('authenticate as policyholder', async ({ page }) => {
 
         console.log(`📝 Registering as ${dynamicUser.email}...`);
 
-        // Fill registration form
-        await page.fill('input[name="name"]', dynamicUser.name);
-        await page.fill('input[name="email"]', dynamicUser.email);
-        await page.fill('input[name="password"]', dynamicUser.password);
-        await page.fill('input[name="confirmPassword"]', dynamicUser.password);
+        // Fill registration form (current SignupForm ids; no confirm-password field)
+        await page.fill('#signup-name', dynamicUser.name);
+        await page.fill('#signup-mobile', `+30 69${Date.now() % 100000000}`);
+        await page.fill('#signup-email', dynamicUser.email);
+        await page.fill('#signup-password', dynamicUser.password);
 
         // Accept terms (click checkbox)
-        await page.click('input#termsAccepted', { force: true });
+        await page.click('#signup-terms', { force: true });
 
         // Initial signup button
         console.log('🚀 Clicking submit...');
