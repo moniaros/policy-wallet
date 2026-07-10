@@ -8,7 +8,7 @@ vi.mock('@/lib/db', () => ({
         policyAnalysisRun: { create: vi.fn(), update: vi.fn() },
         gapDefinition: { count: vi.fn() },
         user: { findUnique: vi.fn(), updateMany: vi.fn() },
-        accessGrant: { findFirst: vi.fn() },
+        accessGrant: { findFirst: vi.fn(), findMany: vi.fn(async () => []) },
         customerRelationship: { findFirst: vi.fn() },
     },
 }))
@@ -138,7 +138,7 @@ describe('AI-processing consent gate — legacy GapAnalysisService.analyzePolicy
         },
         gapDefinition: { findMany: vi.fn(async () => []) },
         gapInstance: { deleteMany: vi.fn() },
-        accessGrant: { findFirst: vi.fn(async () => null) },
+        accessGrant: { findFirst: vi.fn(async () => null), findMany: vi.fn(async () => []) },
         customerRelationship: { findFirst: vi.fn(async () => null) },
     }) as any
 

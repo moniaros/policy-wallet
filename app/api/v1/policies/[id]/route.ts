@@ -1,7 +1,7 @@
 import { db } from "@/lib/db"
 import { z } from "zod"
 import { createApiResponse, createApiError } from "@/lib/api-utils"
-import { ensureOwnership } from "@/lib/security"
+import { getPolicyAccess } from "@/lib/policy-access"
 import { logger } from "@/lib/logger"
 import { requireApiUser } from "@/lib/api-auth"
 import { withApiGuard } from "@/lib/api-guard"
@@ -29,8 +29,12 @@ export async function GET(
 
     const { id } = await params
 
-    const ownership = await ensureOwnership(db.policy, id, authResult.dbUser.id)
-    if (!ownership.success) return ownership.error!
+    const access = await getPolicyAccess(id, {
+        id: authResult.dbUser.id,
+        roles: authResult.dbUser.roles,
+    })
+    if (!access.exists) return createApiError("NOT_FOUND", "Policy not found", 404)
+    if (!access.canRead) return createApiError("FORBIDDEN", "Access denied", 403)
 
     try {
         const policy = await db.policy.findUnique({
@@ -94,8 +98,12 @@ export const PATCH = withApiGuard(
         const authResult = auth!
         const { id } = params
 
-        const ownership = await ensureOwnership(db.policy, id, authResult.dbUser.id)
-        if (!ownership.success) return ownership.error!
+        const access = await getPolicyAccess(id, {
+            id: authResult.dbUser.id,
+            roles: authResult.dbUser.roles,
+        })
+        if (!access.exists) return createApiError("NOT_FOUND", "Policy not found", 404)
+        if (!access.canWrite) return createApiError("FORBIDDEN", "You do not have permission to edit this policy", 403)
 
         try {
             const policy = await db.policy.update({
@@ -125,8 +133,12 @@ export const DELETE = withApiGuard(
         const authResult = auth!
         const { id } = params
 
-        const ownership = await ensureOwnership(db.policy, id, authResult.dbUser.id)
-        if (!ownership.success) return ownership.error!
+        const access = await getPolicyAccess(id, {
+            id: authResult.dbUser.id,
+            roles: authResult.dbUser.roles,
+        })
+        if (!access.exists) return createApiError("NOT_FOUND", "Policy not found", 404)
+        if (!access.canDelete) return createApiError("FORBIDDEN", "You do not have permission to delete this policy", 403)
 
         try {
             await db.policy.update({

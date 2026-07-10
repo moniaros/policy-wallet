@@ -572,7 +572,7 @@ export async function getPolicyShares(policyId: string) {
         name: g.grantee.name,
         image: g.grantee.image,
         grantedAt: g.grantedAt,
-        permissions: g.permissions as 'view' | 'edit'
+        permissions: g.permissions as 'view' | 'edit' | 'manage'
     }))
 }
 
@@ -659,8 +659,15 @@ export async function deletePolicy(policyId: string) {
 
     if (!policy) return { error: "Policy not found" }
 
-    // Case 1: Owner - Full Delete
-    if (policy.ownerUserId === authResult.dbUser.id) {
+    const { getPolicyAccess } = await import("@/lib/policy-access")
+    const access = await getPolicyAccess(policyId, {
+        id: authResult.dbUser.id,
+        roles: authResult.dbUser.roles,
+    })
+
+    // Case 1: Owner or managing agent (active "manage" grant) - Full Delete.
+    // The owner controls this capability: revoking the manage grant removes it.
+    if (access.canDelete) {
         // 1. Delete physical files
         for (const doc of policy.documents) {
             await deleteFile(doc.fileUrl)
@@ -917,19 +924,14 @@ export async function runPolicyAnalysis(policyId: string) {
 
     if (!policy) return { error: "Policy not found" }
 
-    // Check ownership or access grant
-    const isOwner = policy.ownerUserId === authResult.dbUser.id
-    if (!isOwner) {
-        const grant = await db.accessGrant.findFirst({
-            where: {
-                granterUserId: policy.ownerUserId,
-                granteeUserId: authResult.dbUser.id,
-                scope: `policy:${policyId}`,
-                status: 'active'
-            }
-        })
-        if (!grant) return { error: "Unauthorized" }
-    }
+    // Central rule: owner, write/manage grant, or relationship-connected
+    // agent may spend analysis resources; pure read grants may not.
+    const { getPolicyAccess } = await import("@/lib/policy-access")
+    const access = await getPolicyAccess(policyId, {
+        id: authResult.dbUser.id,
+        roles: authResult.dbUser.roles,
+    })
+    if (!access.canAnalyze) return { error: "Unauthorized" }
 
     const language = (authResult.dbUser.preferredLanguage as 'en' | 'el') || 'en'
 

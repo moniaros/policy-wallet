@@ -3,6 +3,7 @@ import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { withApiGuard } from "@/lib/api-guard"
 import { z } from "zod"
 import { msFromNow, SIGNED_URL_EXPIRY_MS } from "@/lib/constants/time"
+import { getPolicyAccess } from "@/lib/policy-access"
 
 const policyDocumentParamsSchema = z.object({
     id: z.string().min(1),
@@ -25,22 +26,30 @@ export const POST = withApiGuard(
         try {
             const formData = await req.formData()
             const file = formData.get("file") as File
-            const source = formData.get("source") || "policyholder"
 
             if (!file) {
                 return createApiError("BAD_REQUEST", "No file provided", 400)
             }
 
-            const policy = await db.policy.findFirst({
-                where: {
-                    id,
-                    ownerUserId: authResult.dbUser.id
-                }
+            const access = await getPolicyAccess(id, {
+                id: authResult.dbUser.id,
+                roles: authResult.dbUser.roles,
             })
+            if (!access.exists) {
+                return createApiError("NOT_FOUND", "Policy not found", 404)
+            }
+            if (!access.canManageDocuments) {
+                return createApiError("FORBIDDEN", "You do not have permission to add documents to this policy", 403)
+            }
 
+            const policy = await db.policy.findUnique({ where: { id } })
             if (!policy) {
                 return createApiError("NOT_FOUND", "Policy not found", 404)
             }
+
+            // Derive source from the uploader's actual role in this policy —
+            // never trust the form value for provenance.
+            const source = access.isOwner ? "policyholder" : "agent"
 
             // Mock upload to object storage
             const mockUrl = `https://storage.googleapis.com/policywallet-uploads/${crypto.randomUUID()}-${file.name}`

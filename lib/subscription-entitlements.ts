@@ -307,6 +307,44 @@ export async function canAgentAddCustomer(userId: string): Promise<{
     return { allowed: true, current: customerCount, limit }
 }
 
+/**
+ * Per-customer policy cap for agent-managed policies: counts policies this
+ * agent created for this customer against the tier's maxPoliciesPerCustomer.
+ */
+export async function canAgentAddPolicyForCustomer(
+    agentId: string,
+    customerId: string
+): Promise<{
+    allowed: boolean
+    reason?: string
+    current?: number
+    limit?: number | null
+}> {
+    const entitlements = await resolveAgentEntitlements(agentId)
+    const limit = entitlements.limits.maxPoliciesPerCustomer
+
+    if (limit === null || limit === undefined) return { allowed: true }
+
+    const policyCount = await prisma.policy.count({
+        where: {
+            ownerUserId: customerId,
+            createdByUserId: agentId,
+            status: { not: "deleted" },
+        },
+    })
+
+    if (policyCount >= limit) {
+        return {
+            allowed: false,
+            reason: "policy_per_customer_limit",
+            current: policyCount,
+            limit,
+        }
+    }
+
+    return { allowed: true, current: policyCount, limit }
+}
+
 export async function canAgentRunAnalysis(userId: string): Promise<{
     allowed: boolean
     reason?: string
@@ -322,9 +360,12 @@ export async function canAgentRunAnalysis(userId: string): Promise<{
     startOfMonth.setDate(1)
     startOfMonth.setHours(0, 0, 0, 0)
 
+    // Count runs the agent actually INITIATED this month (run.userId), not
+    // runs on policies they created — grants let agents analyze customer-
+    // shared policies too, and those must count against the same cap.
     const analysisCount = await prisma.policyAnalysisRun.count({
         where: {
-            policy: { createdByUserId: userId },
+            userId,
             createdAt: { gte: startOfMonth },
         },
     })

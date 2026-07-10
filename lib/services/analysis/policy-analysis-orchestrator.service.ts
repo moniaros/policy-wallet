@@ -2531,15 +2531,23 @@ export class PolicyAnalysisOrchestratorService {
         const isOwner = policy.ownerUserId === userId
         if (isOwner) return policy
 
-        const hasAccess = await db.accessGrant.findFirst({
+        // Grant-level rule: write/manage grants (managing agents) may trigger
+        // analysis; pure read/view grants remain read-only viewers (M4).
+        const grants = await db.accessGrant.findMany({
             where: {
-                granterUserId: policy.ownerUserId,
                 granteeUserId: userId,
+                scope: `policy:${policyId}`,
                 status: "active",
             },
+            select: { permissions: true },
         })
-        // M4: AccessGrant recipients are read-only viewers — they cannot trigger analysis runs
-        if (hasAccess) {
+        if (grants.length > 0) {
+            const { normalizePermissions } = await import("@/lib/policy-access")
+            const canWrite = grants.some((grant) =>
+                ["write", "manage"].includes(normalizePermissions(grant.permissions))
+            )
+            if (canWrite) return policy
+
             throw new OrchestrationError("Shared viewers cannot trigger policy analysis", {
                 code: "SHARED_VIEWER_NOT_ALLOWED",
                 hardFailure: true,
@@ -2551,6 +2559,7 @@ export class PolicyAnalysisOrchestratorService {
             where: {
                 agentUserId: userId,
                 policyholderUserId: policy.ownerUserId,
+                status: { not: "inactive" },
             },
         })
         if (hasRelationship) return policy

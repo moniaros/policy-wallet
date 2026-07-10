@@ -192,12 +192,15 @@ export class PolicyService extends BaseService {
                 throw AppError.notFound('Policy', policyId)
             }
 
-            // 2. Verify ownership
-            if (policy.ownerUserId !== userId) {
+            // 2. Verify write access: owner, or an active policy-scoped grant
+            // with edit/manage permission (agent-managed policies).
+            const { getPolicyAccess } = await import('@/lib/policy-access')
+            const access = await getPolicyAccess(policyId, { id: userId })
+            if (!access.canWrite) {
                 throw AppError.forbidden(
                     language === 'el'
-                        ? 'Μόνο ο κάτοχος μπορεί να επεξεργαστεί αυτήν την πολιτική'
-                        : 'Only the owner can edit this policy'
+                        ? 'Δεν έχετε δικαίωμα επεξεργασίας αυτού του συμβολαίου'
+                        : 'You do not have permission to edit this policy'
                 )
             }
 

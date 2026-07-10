@@ -161,6 +161,18 @@ export async function redeemInvite(token: string, userId: string) {
 
     const isShareInvite = ["share", "policy_share", "access_grant"].includes(invite.inviteType)
     if (isShareInvite && invite.scope) {
+        // Self-grant no-op: if the redeemer already OWNS the scoped policy,
+        // a grant would be meaningless (owners hold full capabilities) —
+        // consume the invite (done above) but mint nothing.
+        if (invite.scope.startsWith("policy:")) {
+            const scopedPolicyId = invite.scope.slice("policy:".length)
+            const scopedPolicy = await db.policy.findUnique({
+                where: { id: scopedPolicyId },
+                select: { ownerUserId: true },
+            })
+            if (scopedPolicy?.ownerUserId === userId) return
+        }
+
         const existingGrant = await db.accessGrant.findFirst({
             where: {
                 granterUserId: invite.inviterUserId,
@@ -248,6 +260,10 @@ export async function registerUser(formData: FormData) {
         let userId = ""
 
         if (existingUser) {
+            // Phantom rows created by an agent may carry agent-attested AI
+            // consent; clear it on activation so the customer decides
+            // first-hand in the consent gate.
+            const { isAgentAttestedConsent } = await import("@/lib/ai-consent")
             const updated = await db.user.update({
                 where: { email: authEmail },
                 data: {
@@ -256,6 +272,9 @@ export async function registerUser(formData: FormData) {
                     preferredLanguage: language,
                     phoneNumber: normalizedPhone,
                     emailVerified: isSyntheticEmail ? new Date() : existingUser.emailVerified,
+                    ...(isAgentAttestedConsent(existingUser.aiProcessingConsentVersion)
+                        ? { aiProcessingConsentVersion: null }
+                        : {}),
                 },
             })
             userId = updated.id

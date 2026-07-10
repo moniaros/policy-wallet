@@ -152,7 +152,8 @@ export class CustomerService extends BaseService {
                 premium: p.premiumAmount,
                 startDate: p.startDate,
                 expiresAt: p.endDate,
-                gaps: p.gapInstances.length
+                gaps: p.gapInstances.length,
+                createdByUserId: p.createdByUserId
             })),
             opportunities: relationship.opportunities.map(o => ({
                 id: o.id,

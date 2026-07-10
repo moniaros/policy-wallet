@@ -51,27 +51,17 @@ export default async function PolicyDetailPage({
         notFound()
     }
 
-    // Authorization Check
-    const isOwner = policy.ownerUserId === dbUser.id
-    if (!isOwner) {
-        // Check for Access Grant
-        const grant = await db.accessGrant.findFirst({
-            where: {
-                granterUserId: policy.ownerUserId,
-                granteeUserId: dbUser.id,
-                scope: `policy:${policyId}`,
-                status: 'active'
-            }
-        })
-
-        if (!grant) {
-            // Optional: Check if they are the assigned Agent via CustomerRelationship
-            // Depending on business rules, an active relationship might grant read access to all policies
-            // For now, let's stick to explicit grants or assume relationship checking if needed.
-            // As per plan, we allow if AccessGrant exists.
-            notFound() // Or redirect/unauthorized
-        }
+    // Authorization: owner, active policy-scoped grant, or a relationship-
+    // connected agent (central rule in lib/policy-access).
+    const { getPolicyAccess } = await import("@/lib/policy-access")
+    const access = await getPolicyAccess(policyId, {
+        id: dbUser.id,
+        roles: dbUser.roles,
+    })
+    if (!access.canRead) {
+        notFound()
     }
+    const isOwner = access.isOwner
 
     const shares = sharesResult || []
 

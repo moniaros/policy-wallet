@@ -9,27 +9,24 @@ import { AnalysisCard } from "@/app/(protected)/wallet/[id]/AnalysisCard"
 import { CollaborationTimeline } from "@/components/collaboration/CollaborationTimeline"
 import { TrendingUp, MessageSquare, Plus, FileText } from "lucide-react"
 
+const PAGE_COPY = {
+    managedByYou: { el: "Διαχειριζόμενο από εσάς", en: "Managed by you" },
+    edit: { el: "Επεξεργασία", en: "Edit" },
+} as const
+
 export default async function AgentPolicyDetailPage({ params }: { params: Promise<{ id: string, policyId: string }> }) {
     const { id: customerId, policyId } = await params
     const { dbUser } = await getAuthenticatedUser()
 
-    // 1. Verify Access (Agent -> Customer)
-    const relationship = await db.customerRelationship.findFirst({
-        where: {
-            agentUserId: dbUser.id,
-            policyholderUserId: customerId,
-        }
+    // 1. Verify access through the central policy authorization: usable
+    // relationship OR an active grant scoped to THIS policy (previously any
+    // single grant exposed every policy of the customer here).
+    const { getPolicyAccess } = await import("@/lib/policy-access")
+    const access = await getPolicyAccess(policyId, {
+        id: dbUser.id,
+        roles: dbUser.roles,
     })
-
-    const hasGrant = await db.accessGrant.findFirst({
-        where: {
-            granterUserId: customerId,
-            granteeUserId: dbUser.id,
-            status: 'active'
-        }
-    })
-
-    if (!relationship && !hasGrant) {
+    if (!access.canRead || access.policy?.ownerUserId !== customerId) {
         notFound()
     }
 
@@ -51,16 +48,26 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
         notFound()
     }
 
-    // 3. Fetch Customer for Breadcrumbs
-    const customer = await db.user.findUnique({
-        where: { id: customerId },
-        select: { name: true }
-    })
+    // 3. Fetch Customer for Breadcrumbs + relationship for collaboration
+    const [customer, relationship] = await Promise.all([
+        db.user.findUnique({
+            where: { id: customerId },
+            select: { name: true }
+        }),
+        db.customerRelationship.findFirst({
+            where: { agentUserId: dbUser.id, policyholderUserId: customerId },
+            select: { id: true }
+        })
+    ])
 
     const status = calculatePolicyStatus(policy)
     const statusColor = getStatusColor(status)
     const statusLabel = getStatusLabel(status)
     const daysLeft = getDaysUntilExpiry(policy.endDate)
+
+    const language = ((dbUser.preferredLanguage as 'el' | 'en') || 'el')
+    const isManagedByViewer = access.grantLevel === 'manage' || policy.createdByUserId === dbUser.id
+    const editHref = `/wallet/${policyId}/edit?returnTo=${encodeURIComponent(`/customers/${customerId}/policy/${policyId}`)}`
 
     return (
         <div className="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -95,6 +102,14 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                     </div>
                 </div>
                 <div className="flex items-center gap-3 w-full md:w-auto">
+                    {access.canWrite && (
+                        <Link
+                            href={editHref}
+                            className="flex-1 md:flex-none px-6 py-2.5 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-2xl text-xs font-black uppercase tracking-widest text-center shadow-lg shadow-primary/20 transition-all active:scale-95"
+                        >
+                            {PAGE_COPY.edit[language]}
+                        </Link>
+                    )}
                     <button className="flex-1 md:flex-none px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-amber-500/20 transition-all active:scale-95">
                         New Quote
                     </button>
@@ -116,6 +131,11 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                         <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${statusColor.bg} ${statusColor.text} border ${statusColor.border}`}>
                                             {statusLabel}
                                         </span>
+                                        {isManagedByViewer && (
+                                            <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint">
+                                                {PAGE_COPY.managedByYou[language]}
+                                            </span>
+                                        )}
                                         {daysLeft >= 0 && daysLeft <= 30 && (
                                             <span className="text-amber-600 dark:text-amber-400 text-xs font-bold">
                                                 Expires in {daysLeft} days
