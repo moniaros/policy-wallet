@@ -1,0 +1,465 @@
+<title>PolicyWallet — Data Flows, Extensibility & Cybersecurity</title>
+<style>
+  :root{
+    --brand:#29685B; --brand-ink:#1A2420; --brand-soft:#E8F4EF;
+    --paper:#FAFBFA; --card:#FFFFFF; --ink:#1A2420; --muted:#53645C;
+    --line:#D8E2DD; --ai:#4F46E5; --amber:#B7791F; --red:#B23B3B;
+    --chip-bg:#E8F4EF; --chip-ink:#29685B;
+    --diagram-bg:#FFFFFF;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --brand:#89D9B2; --brand-soft:#22322C;
+      --paper:#141B18; --card:#1C2620; --ink:#E8F0EC; --muted:#9DB2A8;
+      --line:#2E3D36; --ai:#8B85F0; --amber:#D9A85F; --red:#E08A8A;
+      --chip-bg:#22322C; --chip-ink:#89D9B2;
+      --diagram-bg:#F4F7F5;
+    }
+  }
+  :root[data-theme="dark"]{/* toggle override */
+    --brand:#89D9B2; --brand-soft:#22322C;
+    --paper:#141B18; --card:#1C2620; --ink:#E8F0EC; --muted:#9DB2A8;
+    --line:#2E3D36; --ai:#8B85F0; --amber:#D9A85F; --red:#E08A8A;
+    --chip-bg:#22322C; --chip-ink:#89D9B2;
+    --diagram-bg:#F4F7F5;
+  }
+  :root[data-theme="light"]{
+    --brand:#29685B; --brand-soft:#E8F4EF;
+    --paper:#FAFBFA; --card:#FFFFFF; --ink:#1A2420; --muted:#53645C;
+    --line:#D8E2DD; --ai:#4F46E5; --amber:#B7791F;
+    --chip-bg:#E8F4EF; --chip-ink:#29685B;
+    --diagram-bg:#FFFFFF;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:Inter,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    font-size:16px; line-height:1.55;
+  }
+  .slide{
+    min-height:100vh; padding:56px clamp(24px,6vw,96px) 72px;
+    display:flex; flex-direction:column; justify-content:center; gap:22px;
+    border-bottom:1px solid var(--line); position:relative;
+  }
+  .eyebrow{
+    font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--brand); font-weight:700; display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::after{content:""; height:1px; flex:0 0 56px; background:var(--brand); opacity:.5}
+  h1{font-size:clamp(34px,5vw,58px); line-height:1.08; margin:0; text-wrap:balance; font-weight:800; letter-spacing:-.02em}
+  h2{font-size:clamp(26px,3.4vw,40px); line-height:1.12; margin:0; text-wrap:balance; font-weight:750; letter-spacing:-.015em}
+  h3{font-size:17px; margin:0 0 6px; font-weight:700}
+  p{margin:0; max-width:72ch}
+  .lead{font-size:clamp(17px,1.6vw,21px); color:var(--muted); max-width:62ch}
+  .num{
+    position:absolute; top:28px; right:clamp(24px,6vw,96px);
+    font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; letter-spacing:.08em;
+  }
+  .grid{display:grid; gap:16px}
+  .cols-2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .cols-3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:12px;
+    padding:18px 20px;
+  }
+  .card p{font-size:14.5px; color:var(--muted)}
+  .card .big{font-size:34px; font-weight:800; color:var(--brand); font-variant-numeric:tabular-nums; line-height:1.1}
+  .chip{
+    display:inline-block; padding:3px 10px; border-radius:999px;
+    background:var(--chip-bg); color:var(--chip-ink); font-size:12px; font-weight:700; letter-spacing:.02em;
+  }
+  .chip.ai{background:color-mix(in srgb,var(--ai) 14%, transparent); color:var(--ai)}
+  .chip.warn{background:color-mix(in srgb,var(--amber) 16%, transparent); color:var(--amber)}
+  .chip.risk{background:color-mix(in srgb,var(--red) 14%, transparent); color:var(--red)}
+  table{border-collapse:collapse; width:100%; font-size:14px}
+  th,td{padding:9px 12px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top}
+  th{font-size:11.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted)}
+  td:first-child{font-weight:650; white-space:nowrap}
+  .tablewrap{overflow-x:auto; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:6px 8px}
+  .diagram{
+    background:var(--diagram-bg); border:1px solid var(--line); border-radius:12px;
+    padding:14px; overflow-x:auto;
+  }
+  .diagram svg{display:block; min-width:760px; width:100%; height:auto}
+  a{color:var(--brand); font-weight:600; text-decoration-thickness:1px; text-underline-offset:3px}
+  .links{display:flex; flex-wrap:wrap; gap:10px 22px; font-size:14.5px}
+  .flow{display:flex; flex-direction:column; gap:0; counter-reset:step}
+  .step{
+    display:grid; grid-template-columns:44px 1fr auto; gap:14px; align-items:start;
+    padding:13px 4px; border-bottom:1px dashed var(--line);
+  }
+  .step:last-child{border-bottom:0}
+  .step::before{
+    counter-increment:step; content:counter(step);
+    width:30px; height:30px; border-radius:999px; display:grid; place-items:center;
+    background:var(--brand); color:var(--paper); font-weight:800; font-size:14px;
+  }
+  .step b{display:block; font-size:15px}
+  .step span{font-size:13.5px; color:var(--muted)}
+  .step .t{font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; padding-top:4px}
+  .layers{display:flex; flex-direction:column; gap:10px}
+  .layer{
+    border:1px solid var(--line); border-left:4px solid var(--brand); border-radius:10px;
+    background:var(--card); padding:13px 16px; display:grid; grid-template-columns:190px 1fr; gap:14px; align-items:baseline;
+  }
+  .layer b{font-size:15px}
+  .layer span{font-size:14px; color:var(--muted)}
+  .split{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media(max-width:820px){.split{grid-template-columns:1fr}.layer{grid-template-columns:1fr}}
+  .k{font-variant-numeric:tabular-nums; font-weight:750; color:var(--brand)}
+  .foot{font-size:12.5px; color:var(--muted)}
+  .titlewrap{max-width:900px; display:flex; flex-direction:column; gap:18px}
+  .brandmark{display:flex; align-items:center; gap:10px; font-weight:800; font-size:15px; letter-spacing:.02em}
+  .brandmark i{width:12px;height:12px;border-radius:3px;background:var(--brand);display:inline-block}
+  code{background:var(--chip-bg); padding:1px 6px; border-radius:6px; font-size:.9em}
+  ul.tight{margin:0; padding-left:18px; display:flex; flex-direction:column; gap:7px; font-size:14.5px}
+  ul.tight li{color:var(--muted)}
+  ul.tight li b{color:var(--ink)}
+</style>
+
+<!-- 1 · TITLE -->
+<section class="slide">
+  <span class="num">01 / 12</span>
+  <div class="titlewrap">
+    <div class="brandmark"><i></i>PolicyWallet</div>
+    <div class="eyebrow">Technical Overview · Ιούλιος 2026</div>
+    <h1>Ροές δεδομένων, επεκτασιμότητα &amp; σχέδιο κυβερνοασφάλειας</h1>
+    <p class="lead">Πώς κινούνται τα ασφαλιστικά δεδομένα μέσα στην πλατφόρμα, πώς ανοίγει το σύστημα σε τρίτους μέσω API, και ποιο είναι το πλάνο ασφάλειας — από τα σημερινά controls έως το launch-hardening backlog.</p>
+    <div class="links">
+      <span class="chip">Production · Vercel</span>
+      <span class="chip">Next.js 16 · Prisma · Supabase</span>
+      <span class="chip ai">AI pipeline · Gemini / Claude / GPT</span>
+    </div>
+  </div>
+</section>
+
+<!-- 2 · ARCHITECTURE -->
+<section class="slide">
+  <span class="num">02 / 12</span>
+  <div class="eyebrow">Ροές δεδομένων</div>
+  <h2>Το σύστημα με μια ματιά</h2>
+  <p class="lead">Κάθε αίτημα περνά από τέσσερα στρώματα. Οι εξωτερικές κλήσεις φεύγουν μόνο server-side — ο browser δεν μιλά ποτέ απευθείας με τρίτους (πλην Stripe Checkout).</p>
+  <div class="diagram">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 790" font-family="inherit">
+      <rect x="120" y="30" width="220" height="70" rx="10" fill="#E8F4EF" stroke="#29685B" stroke-width="2"/>
+      <text x="230" y="60" text-anchor="middle" font-size="16" font-weight="bold" fill="#1A2420">Policyholder</text>
+      <text x="230" y="82" text-anchor="middle" font-size="12" fill="#3D5147">Web / PWA (EL/EN)</text>
+      <rect x="420" y="30" width="220" height="70" rx="10" fill="#E8F4EF" stroke="#29685B" stroke-width="2"/>
+      <text x="530" y="60" text-anchor="middle" font-size="16" font-weight="bold" fill="#1A2420">Agent</text>
+      <text x="530" y="82" text-anchor="middle" font-size="12" fill="#3D5147">Portfolio &amp; collaboration</text>
+      <rect x="720" y="30" width="220" height="70" rx="10" fill="#E8F4EF" stroke="#29685B" stroke-width="2"/>
+      <text x="830" y="60" text-anchor="middle" font-size="16" font-weight="bold" fill="#1A2420">Admin</text>
+      <text x="830" y="82" text-anchor="middle" font-size="12" fill="#3D5147">Ops, jobs, activity log</text>
+      <rect x="120" y="160" width="820" height="80" rx="10" fill="#29685B" stroke="#1A2420" stroke-width="2"/>
+      <text x="530" y="193" text-anchor="middle" font-size="16" font-weight="bold" fill="#FFFFFF">Vercel Edge — proxy.ts middleware</text>
+      <text x="530" y="218" text-anchor="middle" font-size="12" fill="#D7EFE4">Rate limit (Upstash Redis) · Supabase session · RBAC redirects · Security headers / CSP</text>
+      <rect x="120" y="300" width="250" height="90" rx="10" fill="#F4F6F5" stroke="#5B7268" stroke-width="2"/>
+      <text x="245" y="333" text-anchor="middle" font-size="15" font-weight="bold" fill="#1A2420">(public) pages</text>
+      <text x="245" y="356" text-anchor="middle" font-size="12" fill="#3D5147">Landing, pricing, guides</text>
+      <text x="245" y="374" text-anchor="middle" font-size="12" fill="#3D5147">SEO / JSON-LD</text>
+      <rect x="405" y="300" width="250" height="90" rx="10" fill="#F4F6F5" stroke="#5B7268" stroke-width="2"/>
+      <text x="530" y="333" text-anchor="middle" font-size="15" font-weight="bold" fill="#1A2420">(protected) pages</text>
+      <text x="530" y="356" text-anchor="middle" font-size="12" fill="#3D5147">Layouts re-check auth</text>
+      <text x="530" y="374" text-anchor="middle" font-size="12" fill="#3D5147">Admin layout gates role</text>
+      <rect x="690" y="300" width="250" height="90" rx="10" fill="#F4F6F5" stroke="#5B7268" stroke-width="2"/>
+      <text x="815" y="333" text-anchor="middle" font-size="15" font-weight="bold" fill="#1A2420">/api/v1 — 92 routes</text>
+      <text x="815" y="356" text-anchor="middle" font-size="12" fill="#3D5147">requireApiUser + roles</text>
+      <text x="815" y="374" text-anchor="middle" font-size="12" fill="#3D5147">Zod validation, versioned</text>
+      <rect x="120" y="450" width="250" height="90" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"/>
+      <text x="245" y="483" text-anchor="middle" font-size="15" font-weight="bold" fill="#1A2420">AI Provider Factory</text>
+      <text x="245" y="506" text-anchor="middle" font-size="12" fill="#3D5147">Gemini / Anthropic / OpenAI</text>
+      <text x="245" y="524" text-anchor="middle" font-size="12" fill="#3D5147">mock για tests · μέσω env keys</text>
+      <rect x="405" y="450" width="250" height="90" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"/>
+      <text x="530" y="483" text-anchor="middle" font-size="15" font-weight="bold" fill="#1A2420">Analysis + Gap Engine</text>
+      <text x="530" y="506" text-anchor="middle" font-size="12" fill="#3D5147">Extract, translate, score</text>
+      <text x="530" y="524" text-anchor="middle" font-size="12" fill="#3D5147">Recommendations</text>
+      <rect x="690" y="450" width="250" height="90" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="2"/>
+      <text x="815" y="483" text-anchor="middle" font-size="15" font-weight="bold" fill="#1A2420">Billing / Compliance</text>
+      <text x="815" y="506" text-anchor="middle" font-size="12" fill="#3D5147">Stripe subscriptions</text>
+      <text x="815" y="524" text-anchor="middle" font-size="12" fill="#3D5147">GDPR DSR export / delete</text>
+      <rect x="120" y="600" width="345" height="90" rx="10" fill="#FFF7E8" stroke="#B7791F" stroke-width="2"/>
+      <text x="292" y="633" text-anchor="middle" font-size="15" font-weight="bold" fill="#1A2420">Supabase Postgres</text>
+      <text x="292" y="656" text-anchor="middle" font-size="12" fill="#3D5147">Prisma singleton, pooled URLs</text>
+      <text x="292" y="674" text-anchor="middle" font-size="12" fill="#3D5147">59 tables, 29 migrations</text>
+      <rect x="500" y="600" width="200" height="90" rx="10" fill="#FFF7E8" stroke="#B7791F" stroke-width="2"/>
+      <text x="600" y="633" text-anchor="middle" font-size="15" font-weight="bold" fill="#1A2420">Supabase Auth</text>
+      <text x="600" y="656" text-anchor="middle" font-size="12" fill="#3D5147">Sessions, magic links</text>
+      <text x="600" y="674" text-anchor="middle" font-size="12" fill="#3D5147">Email verification</text>
+      <rect x="735" y="600" width="205" height="90" rx="10" fill="#FFF7E8" stroke="#B7791F" stroke-width="2"/>
+      <text x="837" y="633" text-anchor="middle" font-size="15" font-weight="bold" fill="#1A2420">Upstash Redis</text>
+      <text x="837" y="656" text-anchor="middle" font-size="12" fill="#3D5147">Rate-limit counters</text>
+      <text x="837" y="674" text-anchor="middle" font-size="12" fill="#3D5147">Χωρίς PII</text>
+      <rect x="1000" y="160" width="230" height="70" rx="10" fill="#FDECEC" stroke="#B23B3B" stroke-width="2"/>
+      <text x="1115" y="190" text-anchor="middle" font-size="14" font-weight="bold" fill="#1A2420">Stripe</text>
+      <text x="1115" y="212" text-anchor="middle" font-size="11" fill="#3D5147">Checkout + signed webhooks</text>
+      <rect x="1000" y="250" width="230" height="70" rx="10" fill="#FDECEC" stroke="#B23B3B" stroke-width="2"/>
+      <text x="1115" y="280" text-anchor="middle" font-size="14" font-weight="bold" fill="#1A2420">Brevo</text>
+      <text x="1115" y="302" text-anchor="middle" font-size="11" fill="#3D5147">Transactional email (EL)</text>
+      <rect x="1000" y="340" width="230" height="70" rx="10" fill="#FDECEC" stroke="#B23B3B" stroke-width="2"/>
+      <text x="1115" y="370" text-anchor="middle" font-size="14" font-weight="bold" fill="#1A2420">Sentry</text>
+      <text x="1115" y="392" text-anchor="middle" font-size="11" fill="#3D5147">Errors + monitoring tunnel</text>
+      <rect x="1000" y="430" width="230" height="70" rx="10" fill="#FDECEC" stroke="#B23B3B" stroke-width="2"/>
+      <text x="1115" y="460" text-anchor="middle" font-size="14" font-weight="bold" fill="#1A2420">AI APIs</text>
+      <text x="1115" y="482" text-anchor="middle" font-size="11" fill="#3D5147">Gemini / Claude / GPT</text>
+      <rect x="1000" y="520" width="230" height="70" rx="10" fill="#FDECEC" stroke="#B23B3B" stroke-width="2"/>
+      <text x="1115" y="550" text-anchor="middle" font-size="14" font-weight="bold" fill="#1A2420">QStash (planned)</text>
+      <text x="1115" y="572" text-anchor="middle" font-size="11" fill="#3D5147">Async analysis queue</text>
+      <line x1="230" y1="100" x2="230" y2="160" stroke="#29685B" stroke-width="2"/><polygon points="230,160 225,150 235,150" fill="#29685B"/>
+      <line x1="530" y1="100" x2="530" y2="160" stroke="#29685B" stroke-width="2"/><polygon points="530,160 525,150 535,150" fill="#29685B"/>
+      <line x1="830" y1="100" x2="830" y2="160" stroke="#29685B" stroke-width="2"/><polygon points="830,160 825,150 835,150" fill="#29685B"/>
+      <line x1="245" y1="240" x2="245" y2="300" stroke="#5B7268" stroke-width="2"/><polygon points="245,300 240,290 250,290" fill="#5B7268"/>
+      <line x1="530" y1="240" x2="530" y2="300" stroke="#5B7268" stroke-width="2"/><polygon points="530,300 525,290 535,290" fill="#5B7268"/>
+      <line x1="815" y1="240" x2="815" y2="300" stroke="#5B7268" stroke-width="2"/><polygon points="815,300 810,290 820,290" fill="#5B7268"/>
+      <line x1="530" y1="390" x2="530" y2="450" stroke="#4F46E5" stroke-width="2"/><polygon points="530,450 525,440 535,440" fill="#4F46E5"/>
+      <line x1="815" y1="390" x2="815" y2="450" stroke="#4F46E5" stroke-width="2"/><polygon points="815,450 810,440 820,440" fill="#4F46E5"/>
+      <line x1="245" y1="390" x2="245" y2="450" stroke="#4F46E5" stroke-width="2"/><polygon points="245,450 240,440 250,440" fill="#4F46E5"/>
+      <line x1="292" y1="540" x2="292" y2="600" stroke="#B7791F" stroke-width="2"/><polygon points="292,600 287,590 297,590" fill="#B7791F"/>
+      <line x1="600" y1="540" x2="600" y2="600" stroke="#B7791F" stroke-width="2"/><polygon points="600,600 595,590 605,590" fill="#B7791F"/>
+      <line x1="837" y1="540" x2="837" y2="600" stroke="#B7791F" stroke-width="2"/><polygon points="837,600 832,590 842,590" fill="#B7791F"/>
+      <line x1="940" y1="200" x2="1000" y2="195" stroke="#B23B3B" stroke-width="2"/><polygon points="1000,195 990,191 990,201" fill="#B23B3B"/>
+      <line x1="940" y1="490" x2="1000" y2="465" stroke="#B23B3B" stroke-width="2"/><polygon points="1000,465 990,463 992,473" fill="#B23B3B"/>
+    </svg>
+  </div>
+  <p class="foot">Επεξεργάσιμη έκδοση στο Lucidchart: <a href="https://lucid.app/lucidchart/445d2396-3a18-401b-aa24-42a9c777d07c/view">System Architecture &amp; Data Flows</a></p>
+</section>
+
+<!-- 3 · PIPELINE -->
+<section class="slide">
+  <span class="num">03 / 12</span>
+  <div class="eyebrow">Ροές δεδομένων</div>
+  <h2>Κύκλος ζωής συμβολαίου: PDF → AI → Gaps</h2>
+  <div class="split">
+    <div class="flow card">
+      <div class="step"><div><b>Upload PDF</b><span>Ο χρήστης ανεβάζει το συμβόλαιο· δημιουργείται Policy με status <code>analyzing</code></span></div><span class="t">&lt;1s</span></div>
+      <div class="step"><div><b>Background analysis</b><span>Next.js <code>after()</code> εκκινεί το pipeline χωρίς να μπλοκάρει τον χρήστη</span></div><span class="t">async</span></div>
+      <div class="step"><div><b>AI extraction</b><span>Δομημένη εξαγωγή καλύψεων &amp; όρων (60s timeout, 1 retry)</span></div><span class="t">5–15s</span></div>
+      <div class="step"><div><b>Gap analysis</b><span>Εντοπισμός κενών κάλυψης, protection score, συστάσεις</span></div><span class="t">5–20s</span></div>
+      <div class="step"><div><b>Dedup &amp; persist</b><span>Έλεγχος διπλότυπου αριθμού συμβολαίου· Policy → <code>active</code> ή <code>action_needed</code></span></div><span class="t">&lt;1s</span></div>
+      <div class="step"><div><b>Notify</b><span>NotificationEvent + branded email· το UI κάνει poll κάθε 3s και δείχνει τα αποτελέσματα</span></div><span class="t">3s poll</span></div>
+    </div>
+    <div class="grid" style="align-content:start">
+      <div class="card"><h3>Τυπική διάρκεια</h3><div class="big">10–35s</div><p>end-to-end· έως ~248s στο χειρότερο σενάριο με retries. Αποτυχία → <code>action_needed</code> με δυνατότητα manual retry.</p></div>
+      <div class="card"><h3>Τι βλέπει το AI</h3><p>Μόνο το περιεχόμενο του PDF του συμβολαίου, για τη διάρκεια της ανάλυσης. Ο provider επιλέγεται από env keys — καμία αλλαγή κώδικα.</p></div>
+      <div class="card"><h3>Επόμενο βήμα κλίμακας</h3><p>Μεταφορά του pipeline σε QStash queue ώστε το upload path να μην τρέχει inline (ήδη στο backlog — slide 11).</p></div>
+    </div>
+  </div>
+  <p class="foot">Πλήρες sequence diagram στο Lucidchart: <a href="https://lucid.app/lucidchart/1cc4282a-80cd-4ef3-af1b-0a887d018f84/view">Policy Upload &amp; AI Analysis Sequence</a></p>
+</section>
+
+<!-- 4 · ROLES & SHARING -->
+<section class="slide">
+  <span class="num">04 / 12</span>
+  <div class="eyebrow">Ροές δεδομένων</div>
+  <h2>Ρόλοι &amp; κοινή χρήση δεδομένων</h2>
+  <p class="lead">Τρεις ρόλοι, αυστηρά διαχωρισμένα δεδομένα. Η κοινή χρήση γίνεται μόνο μέσα από δύο ελεγχόμενους μηχανισμούς — ποτέ με «γυμνά» IDs.</p>
+  <div class="grid cols-3">
+    <div class="card"><span class="chip">Policyholder</span><h3 style="margin-top:10px">Ιδιοκτήτης δεδομένων</h3><p>Κάθε Policy, έγγραφο, gap και score δένεται σε <code>ownerUserId</code>. Όλα τα queries φιλτράρουν στην ιδιοκτησία του καλούντος.</p></div>
+    <div class="card"><span class="chip">Agent</span><h3 style="margin-top:10px">Πρόσβαση μέσω σχέσης</h3><p>Βλέπει δεδομένα πελάτη μόνο μέσω ενεργού <code>CustomerRelationship</code> ή ρητού <code>AccessGrant</code> (πρόσκληση από τον πελάτη).</p></div>
+    <div class="card"><span class="chip warn">Admin</span><h3 style="margin-top:10px">Λειτουργικός ρόλος</h3><p>Gated σε layout, middleware και API (<code>roles:['admin']</code>). Κάθε admin ενέργεια περνά από <code>verifyAdminRole()</code> και activity log.</p></div>
+  </div>
+  <div class="card">
+    <h3>Μηχανισμοί κοινής χρήσης</h3>
+    <ul class="tight">
+      <li><b>AccessGrant</b> — ρητή, ανά-συμβόλαιο παραχώρηση πρόσβασης με scope <code>policy:&lt;id&gt;</code>, μέσω πρόσκλησης με token.</li>
+      <li><b>CustomerRelationship</b> — η σχέση agent↔πελάτη ανοίγει τα collaboration threads, τα προτεινόμενα προϊόντα και τα renewals· ο κεντρικός έλεγχος <code>assertThreadAccess</code> επιβεβαιώνει τη συμμετοχή και στις δύο πλευρές.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 5 · DATA MAP -->
+<section class="slide">
+  <span class="num">05 / 12</span>
+  <div class="eyebrow">Ροές δεδομένων</div>
+  <h2>Χάρτης δεδομένων: τι πάει πού</h2>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Υπηρεσία</th><th>Ρόλος</th><th>Δεδομένα που δέχεται</th><th>Σημείωση GDPR</th></tr></thead>
+      <tbody>
+        <tr><td>Supabase Postgres</td><td>Primary store</td><td>Πλήρη δεδομένα: χρήστες, συμβόλαια, έγγραφα, gaps, billing state</td><td>Πηγή αλήθειας για DSR export / deletion</td></tr>
+        <tr><td>Supabase Auth</td><td>Identity</td><td>Email, credentials, sessions, ρόλος στο metadata</td><td>Site URL + redirect allowlist κλειδωμένα</td></tr>
+        <tr><td>AI provider</td><td>Ανάλυση</td><td>Περιεχόμενο PDF συμβολαίου, μόνο κατά την ανάλυση</td><td>Χωρίς training use· επιλέξιμος provider ανά env</td></tr>
+        <tr><td>Stripe</td><td>Πληρωμές</td><td>Email, στοιχεία συνδρομής — ποτέ δεδομένα καρτών στο app</td><td>PCI στο Stripe· signed webhooks</td></tr>
+        <tr><td>Brevo</td><td>Email</td><td>Email, όνομα, μεταδεδομένα ειδοποίησης</td><td>Verified sender <code>info@policywallet.gr</code></td></tr>
+        <tr><td>Sentry</td><td>Monitoring</td><td>Stack traces, request metadata</td><td>Χωρίς σκόπιμη αποστολή PII σε events</td></tr>
+        <tr><td>Upstash Redis</td><td>Rate limiting</td><td>Μετρητές ανά IP</td><td>Χωρίς PII, βραχύβια TTL</td></tr>
+        <tr><td>Google Analytics</td><td>Product analytics</td><td>Ανώνυμα usage events</td><td>Πίσω από consent flow</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="foot">Δικαιώματα υποκειμένων: αυτοεξυπηρετούμενα <code>data-export</code> και <code>deletion-request</code> endpoints + DSR operator runbook με μηνιαία evidence snapshots.</p>
+</section>
+
+<!-- 6 · API SURFACE -->
+<section class="slide">
+  <span class="num">06 / 12</span>
+  <div class="eyebrow">Επεκτασιμότητα</div>
+  <h2>API-first: μετρήσιμο, versioned, ελεγχόμενο</h2>
+  <div class="grid cols-3">
+    <div class="card"><div class="big">92</div><p>API routes συνολικά, όλα κάτω από <code>app/api/**</code>, νέα production endpoints πάντα σε <code>/api/v1</code></p></div>
+    <div class="card"><div class="big">62 + 15</div><p>user-authenticated + role-gated (agent/admin) routes με <code>requireApiUser</code></p></div>
+    <div class="card"><div class="big">11 + 4</div><p>public routes (allowlisted στο proxy.ts) + signed webhooks</p></div>
+  </div>
+  <div class="split">
+    <div class="card">
+      <h3>Συμβόλαιο ποιότητας για κάθε endpoint</h3>
+      <ul class="tight">
+        <li><b>Zod validation</b> σε κάθε input· τυποποιημένα responses (<code>createApiResponse</code> / <code>createApiError</code>).</li>
+        <li><b>Policy inventory</b>: κάθε route έχει καταχωρημένο auth mode, methods και controls στο <code>api-route-policy-inventory.json</code> — το CI μπλοκάρει αποκλίσεις (<code>audit:api-auth</code>).</li>
+        <li><b>Rate limiting</b> global στο edge + αυστηρότερα profiles σε 35 ευαίσθητα routes.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Postman collection (live)</h3>
+      <p>Το integration surface τεκμηριωμένο και έτοιμο για δοκιμές: Public, Policies, Insights, GDPR, Agent, Webhooks — με <code>{{baseUrl}}</code> / bearer variables.</p>
+      <p style="margin-top:10px"><a href="https://go.postman.co/workspace/ecababe4-0f7a-4a25-89ad-34793c6962ec">PolicyWallet API v1 — Integration Surface → MONIAROS Team workspace</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · INTEGRATION PATTERNS -->
+<section class="slide">
+  <span class="num">07 / 12</span>
+  <div class="eyebrow">Επεκτασιμότητα</div>
+  <h2>Σημεία επέκτασης &amp; integrations</h2>
+  <div class="grid cols-2">
+    <div class="card">
+      <h3>Σήμερα σε λειτουργία</h3>
+      <ul class="tight">
+        <li><b>Inbound webhooks</b> — Stripe billing, RevenueCat (mobile-ready), signed job triggers.</li>
+        <li><b>Pluggable AI providers</b> — Gemini / Anthropic / OpenAI πίσω από κοινό interface· εναλλαγή με ένα env key, mock provider για CI.</li>
+        <li><b>Scheduled jobs API</b> — renewals, weekly digest, churn prevention, protection-score refresh: όλα admin-gated <code>/api/v1/jobs/*</code> endpoints, καλούμενα από cron.</li>
+        <li><b>Bulk import</b> — μαζική εισαγωγή πελατολογίου για agents.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Σχεδιασμένη επόμενη φάση</h3>
+      <ul class="tight">
+        <li><b>QStash async queue</b> — αποσύνδεση του AI pipeline από το request path για κλίμακα.</li>
+        <li><b>Partner API keys</b> — machine-to-machine auth για ασφαλιστικές / brokers πάνω στο υπάρχον <code>/api/v1</code>.</li>
+        <li><b>OpenAPI spec</b> — παραγωγή από το route inventory, ώστε τεκμηρίωση και CI audit να έχουν κοινή πηγή.</li>
+        <li><b>Insurer data feeds</b> — απευθείας εισαγωγή συμβολαίων χωρίς PDF, πάνω στο ίδιο analysis pipeline.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="foot">Η αρχιτεκτονική «route inventory + guards + versioning» σημαίνει ότι νέο integration = νέο route + μία γραμμή στο inventory — το CI επιβάλλει τα υπόλοιπα.</p>
+</section>
+
+<!-- 8 · DEFENSE IN DEPTH -->
+<section class="slide">
+  <span class="num">08 / 12</span>
+  <div class="eyebrow">Κυβερνοασφάλεια</div>
+  <h2>Άμυνα σε βάθος: 4 στρώματα ελέγχου</h2>
+  <p class="lead">Κάθε στρώμα επαληθεύει ξανά ταυτότητα και ιδιοκτησία. Η παράκαμψη ενός ελέγχου δεν αρκεί για πρόσβαση σε δεδομένα.</p>
+  <div class="layers">
+    <div class="layer"><b>1 · Edge</b><span>proxy.ts: global rate-limit (Upstash), Supabase session check, RBAC redirects ανά ρόλο, security headers &amp; CSP με origin παραγόμενο από env</span></div>
+    <div class="layer"><b>2 · Application</b><span>Protected layouts ξανακαλούν <code>getAuthenticatedUser()</code>· admin layout ελέγχει ρόλο· server actions με auth guard πριν από κάθε data access</span></div>
+    <div class="layer"><b>3 · API</b><span><code>requireApiUser({ roles })</code> σε κάθε route, Zod σε κάθε input, signature verification στα webhooks, CI-enforced policy inventory</span></div>
+    <div class="layer"><b>4 · Data</b><span>Ownership scoping σε κάθε Prisma query (<code>ownerUserId</code> / relationship / grant), Prisma singleton, pooled συνδέσεις, secrets μόνο σε env</span></div>
+  </div>
+</section>
+
+<!-- 9 · IDENTITY & ACCESS -->
+<section class="slide">
+  <span class="num">09 / 12</span>
+  <div class="eyebrow">Κυβερνοασφάλεια</div>
+  <h2>Ταυτότητα, πρόσβαση &amp; έλεγχος IDOR</h2>
+  <div class="split">
+    <div class="card">
+      <h3>Authentication</h3>
+      <ul class="tight">
+        <li><b>Supabase Auth</b> με password + magic links· redirect allowlist κλειδωμένη στο live site.</li>
+        <li><b>Email verification</b> με δικό μας token flow μέσω Brevo· hard gate έτοιμο πίσω από <code>ENFORCE_EMAIL_VERIFICATION</code> flag.</li>
+        <li><b>Sessions</b> σε httpOnly cookies — καμία αποθήκευση tokens στον browser.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Authorization</h3>
+      <ul class="tight">
+        <li><b>RBAC</b> σε τρία επίπεδα: middleware routing, layouts, API guards.</li>
+        <li><b>Ownership scoping</b>: τα δεδομένα φιλτράρονται στη βάση με το ID του καλούντος — όχι έλεγχοι μετά την ανάγνωση.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Συστηματικός έλεγχος IDOR (05/2026)</h3>
+    <p>Ελέγχθηκαν <span class="k">395 Prisma queries σε 85 αρχεία</span> + και οι 19 server-action files για guards και ownership. Τα ευρήματα κατηγοριοποιήθηκαν (Critical → Low) με συγκεκριμένα fixes· οι ασφαλείς επιφάνειες τεκμηριώθηκαν ρητά. Ο έλεγχος επαναλαμβάνεται σε κάθε νέα επιφάνεια δεδομένων πριν το launch sign-off.</p>
+  </div>
+</section>
+
+<!-- 10 · SECURE SDLC -->
+<section class="slide">
+  <span class="num">10 / 12</span>
+  <div class="eyebrow">Κυβερνοασφάλεια</div>
+  <h2>Secure SDLC: η ασφάλεια ως CI gate</h2>
+  <div class="split">
+    <div class="card">
+      <h3>Blocking checks σε κάθε commit</h3>
+      <ul class="tight">
+        <li><b>audit:api-auth</b> — κανένα route χωρίς δηλωμένη πολιτική auth.</li>
+        <li><b>type-check (strict)</b> + <b>lint</b> + <b>unit tests (145/145)</b> + production build.</li>
+        <li><b>verify:migrations</b> — schema και migrations πάντα σε συγχρονισμό.</li>
+        <li><b>i18n / UTF-8 checks</b> — καμία διαρροή hardcoded strings ή mojibake.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Λειτουργική ετοιμότητα</h3>
+      <ul class="tight">
+        <li><b>Sentry</b> server + browser (tunnel για anonymous)· καθημερινό synthetic launch check.</li>
+        <li><b>Incident runbooks</b>: auth session, billing webhook failure, AI provider degradation, localization regression.</li>
+        <li><b>Compliance evidence</b>: DSR e2e, billing rollback drill, SRE restore drill — αρχειοθετημένα ανά κύκλο (GR-GA-2026.03).</li>
+        <li><b>Audits</b>: IDOR + AI advice compliance στο <code>docs/audits/</code>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 11 · CYBERSEC PLAN -->
+<section class="slide">
+  <span class="num">11 / 12</span>
+  <div class="eyebrow">Κυβερνοασφάλεια</div>
+  <h2>Σχέδιο: από το σήμερα στο GA</h2>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Ορίζοντας</th><th>Ενέργεια</th><th>Γιατί</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip risk">Πριν από traffic</span></td><td>Ενεργοποίηση <code>ENFORCE_EMAIL_VERIFICATION=1</code></td><td>Κλείνει τη δημιουργία λογαριασμών με ξένα emails</td></tr>
+        <tr><td><span class="chip risk">Πριν από traffic</span></td><td>Rotation κλειδιών τρίτων παρόχων &amp; DB credentials</td><td>Υγιεινή secrets μετά τη φάση setup</td></tr>
+        <tr><td><span class="chip risk">Πριν από traffic</span></td><td>End-to-end δοκιμή money path με Stripe test keys</td><td>Το billing είναι η πιο εκτεθειμένη ροή· σήμερα αδοκίμαστη σε prod</td></tr>
+        <tr><td><span class="chip warn">Επόμενος κύκλος</span></td><td>QStash queue + k6 load test στο upload/analysis path</td><td>Ανθεκτικότητα σε burst — το pipeline σήμερα τρέχει inline</td></tr>
+        <tr><td><span class="chip warn">Επόμενος κύκλος</span></td><td>Ολοκλήρωση sign-offs: legal / DPO / UAT / SRE-restore</td><td>Το go/no-go packet παραμένει σε HOLD μέχρι τότε</td></tr>
+        <tr><td><span class="chip">Μετά το GA</span></td><td>Εξωτερικό penetration test στο <code>/api/v1</code> surface</td><td>Ανεξάρτητη επιβεβαίωση των εσωτερικών audits</td></tr>
+        <tr><td><span class="chip">Μετά το GA</span></td><td>Partner API keys + OpenAPI + επαναληπτικός IDOR κύκλος</td><td>Κάθε νέο integration μεγαλώνει την επιφάνεια επίθεσης</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="foot">Διαχωρισμός backlog: τα κόκκινα «gates launch» είναι blockers· τα υπόλοιπα είναι hardening χωρίς να μπλοκάρουν το GA.</p>
+</section>
+
+<!-- 12 · ASSETS -->
+<section class="slide">
+  <span class="num">12 / 12</span>
+  <div class="eyebrow">Παραδοτέα</div>
+  <h2>Υλικό αναφοράς</h2>
+  <div class="grid cols-3">
+    <div class="card">
+      <h3>Lucidchart — Αρχιτεκτονική</h3>
+      <p>Πλήρες layered diagram με όλες τις ροές και τους τρίτους παρόχους.</p>
+      <p style="margin-top:10px"><a href="https://lucid.app/lucidchart/445d2396-3a18-401b-aa24-42a9c777d07c/view">System Architecture &amp; Data Flows →</a></p>
+    </div>
+    <div class="card">
+      <h3>Lucidchart — Sequence</h3>
+      <p>Βήμα-βήμα η ροή upload → AI → gaps με timeouts, retries και polling.</p>
+      <p style="margin-top:10px"><a href="https://lucid.app/lucidchart/1cc4282a-80cd-4ef3-af1b-0a887d018f84/view">Policy Upload &amp; AI Analysis →</a></p>
+    </div>
+    <div class="card">
+      <h3>Postman — API surface</h3>
+      <p>Runnable collection με 6 φακέλους και variables για κάθε περιβάλλον.</p>
+      <p style="margin-top:10px"><a href="https://go.postman.co/workspace/ecababe4-0f7a-4a25-89ad-34793c6962ec">PolicyWallet API v1 — Integration Surface →</a></p>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Τεκμηρίωση στο repo</h3>
+    <p><code>docs/architecture/AI_PIPELINE.md</code> · <code>docs/audits/idor-policyholder-data.md</code> · <code>scripts/api-route-policy-inventory.json</code> · <code>docs/operations/RUNBOOK_*.md</code> · <code>docs/compliance/DSR_*.md</code></p>
+  </div>
+</section>
