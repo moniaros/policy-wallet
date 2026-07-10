@@ -30,7 +30,7 @@ export function MainNav({ navigation, onNavigate }: MainNavProps) {
                     w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold
                     transition-all duration-300 group relative isolate
                     ${item.isActive
-                                            ? 'text-black'
+                                            ? 'text-white dark:text-[#1A2420]'
                                             : 'text-black/60 dark:text-white/65 hover:text-black dark:hover:text-white'
                                         }
                     ${item.isLocked ? 'opacity-70 grayscale-[0.5]' : ''}
@@ -40,7 +40,7 @@ export function MainNav({ navigation, onNavigate }: MainNavProps) {
                                     {item.isActive && (
                                         <motion.div
                                             layoutId="activeNav"
-                                            className="absolute inset-0 bg-[#1FDC86] rounded-2xl shadow-xl -z-10"
+                                            className="absolute inset-0 bg-primary rounded-2xl shadow-xl -z-10"
                                             transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
                                         />
                                     )}
@@ -49,7 +49,7 @@ export function MainNav({ navigation, onNavigate }: MainNavProps) {
                                     <div className="absolute inset-0 bg-black/5 dark:bg-white/10 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity -z-20" />
 
                                     {item.icon && (
-                                        <span className={`flex-shrink-0 w-5 h-5 transition-all duration-300 group-hover:scale-110 ${item.isActive ? 'text-black' : 'text-black/45 dark:text-white/55 group-hover:text-black dark:group-hover:text-[#1FDC86]'}`}>
+                                        <span className={`flex-shrink-0 w-5 h-5 transition-all duration-300 group-hover:scale-110 ${item.isActive ? 'text-white dark:text-[#1A2420]' : 'text-black/45 dark:text-white/55 group-hover:text-black dark:group-hover:text-mint'}`}>
                                             {item.icon}
                                         </span>
                                     )}
@@ -64,7 +64,7 @@ export function MainNav({ navigation, onNavigate }: MainNavProps) {
                                     )}
 
                                     {item.variant === 'plus' && !item.isLocked && (
-                                        <span className="px-1.5 py-0.5 rounded-md bg-[#1FDC86]/20 text-black dark:text-[#1FDC86] text-[10px] font-bold uppercase tracking-widest border border-[#1FDC86]/30">
+                                        <span className="px-1.5 py-0.5 rounded-md bg-primary/15 text-primary dark:text-mint text-[10px] font-bold uppercase tracking-widest border border-primary/30">
                                             Plus
                                         </span>
                                     )}
@@ -83,8 +83,8 @@ export function MainNav({ navigation, onNavigate }: MainNavProps) {
                                             className={`
                         flex-shrink-0 px-2 py-0.5 text-xs font-semibold rounded-full
                         ${item.isActive
-                                                    ? 'bg-black/20 text-black'
-                                                    : 'bg-[#1FDC86]/15 text-black dark:text-[#1FDC86]'
+                                                    ? 'bg-white/20 text-white dark:bg-black/15 dark:text-[#1A2420]'
+                                                    : 'bg-primary/15 text-primary dark:text-mint'
                                                 }
                       `}
                                         >

@@ -37,14 +37,14 @@ export function AgentMobileNav() {
                             key={item.key}
                             onClick={() => router.push(item.path)}
                             className={`flex flex-col items-center gap-0.5 rounded-xl px-3 py-2 transition-all ${
-                                isActive ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400 dark:text-slate-500"
+                                isActive ? "text-primary dark:text-mint" : "text-slate-400 dark:text-slate-500"
                             }`}
                         >
                             <Icon className={`h-5 w-5 transition-transform ${isActive ? "scale-110" : ""}`} />
                             <span className="text-[9px] font-black uppercase tracking-widest">
                                 {language === "el" ? item.labelEl : item.labelEn}
                             </span>
-                            {isActive && <div className="mt-0.5 h-1 w-1 rounded-full bg-emerald-500" />}
+                            {isActive && <div className="mt-0.5 h-1 w-1 rounded-full bg-primary" />}
                         </button>
                     )
                 })}

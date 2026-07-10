@@ -1,6 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
+import { Inter } from "next/font/google";
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin", "greek"],
+  variable: "--font-inter",
+  display: "swap",
+});
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { Toaster } from "sonner";
@@ -36,7 +43,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0d9488",
+  themeColor: "#29685B",
 };
 
 export default function RootLayout({
@@ -45,10 +52,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="el" suppressHydrationWarning>
+    <html lang="el" suppressHydrationWarning className={inter.variable}>
       <body className="antialiased min-h-screen bg-background text-foreground">
         <NextTopLoader
-          color="#0d9488"
+          color="#29685B"
           initialPosition={0.08}
           crawlSpeed={200}
           height={3}

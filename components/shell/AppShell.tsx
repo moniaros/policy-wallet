@@ -156,7 +156,7 @@ export function AppShell({
 
                 {/* Role change confirmation toast */}
                 {roleChangeToast && (
-                    <div className="fixed top-4 right-4 z-50 bg-[#1FDC86] text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
+                    <div className="fixed top-4 right-4 z-50 bg-primary text-white dark:text-[#1A2420] px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
                         <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                         </svg>
@@ -228,13 +228,13 @@ export function AppShell({
                                     <div className="flex bg-black/5 dark:bg-white/10 rounded-lg p-0.5">
                                         <button
                                             onClick={() => user.preferred_language !== 'el' && onNavigate?.('/?lang=el')}
-                                            className={`px-2.5 py-1.5 text-xs font-bold rounded-md transition-all ${user.preferred_language === 'el' ? 'bg-white dark:bg-black shadow-sm text-black dark:text-[#1FDC86]' : 'text-black/50 dark:text-white/60'}`}
+                                            className={`px-2.5 py-1.5 text-xs font-bold rounded-md transition-all ${user.preferred_language === 'el' ? 'bg-white dark:bg-black shadow-sm text-black dark:text-mint' : 'text-black/50 dark:text-white/60'}`}
                                         >
                                             GR
                                         </button>
                                         <button
                                             onClick={() => user.preferred_language !== 'en' && onNavigate?.('/?lang=en')}
-                                            className={`px-2.5 py-1.5 text-xs font-bold rounded-md transition-all ${user.preferred_language === 'en' ? 'bg-white dark:bg-black shadow-sm text-black dark:text-[#1FDC86]' : 'text-black/50 dark:text-white/60'}`}
+                                            className={`px-2.5 py-1.5 text-xs font-bold rounded-md transition-all ${user.preferred_language === 'en' ? 'bg-white dark:bg-black shadow-sm text-black dark:text-mint' : 'text-black/50 dark:text-white/60'}`}
                                         >
                                             EN
                                         </button>
@@ -293,8 +293,8 @@ export function AppShell({
                                 <button
                                     key={item.id}
                                     onClick={() => handleNavigate(item.href, 'mobile_nav', item.id)}
-                                    className={`min-h-[44px] rounded-xl flex flex-col items-center justify-center gap-0.5 transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1FDC86] focus-visible:ring-offset-2 ${isActive
-                                        ? 'text-black dark:text-[#1FDC86] bg-[#1FDC86]/25 dark:bg-[#1FDC86]/15'
+                                    className={`min-h-[44px] rounded-xl flex flex-col items-center justify-center gap-0.5 transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${isActive
+                                        ? 'text-primary dark:text-mint bg-primary/15 dark:bg-primary/15'
                                         : 'text-black/55 dark:text-white/60 hover:text-black dark:hover:text-white'
                                         }`}
                                     aria-label={item.label}
@@ -306,7 +306,7 @@ export function AppShell({
                                             strokeWidth={2.5}
                                         />
                                         {item.id === 'notifications' && notificationCount > 0 && (
-                                            <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[#1FDC86] text-white text-[10px] font-black rounded-full flex items-center justify-center shadow-lg">
+                                            <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-white dark:text-[#1A2420] text-[10px] font-black rounded-full flex items-center justify-center shadow-lg">
                                                 {notificationCount > 9 ? '9+' : notificationCount}
                                             </span>
                                         )}

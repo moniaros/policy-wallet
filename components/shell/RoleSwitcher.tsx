@@ -51,7 +51,7 @@ export function RoleSwitcher({ currentRole, availableRoles, onRoleSwitch }: Role
                                 className={`
                                     w-full px-5 py-3 text-left text-[11px] font-bold uppercase tracking-widest transition-all
                                     ${role.role === currentRole.role
-                                        ? 'bg-[#1FDC86] text-white'
+                                        ? 'bg-primary text-white dark:text-[#1A2420]'
                                         : 'text-black/60 dark:text-white/70 hover:bg-black/5 dark:hover:bg-white/10'
                                     }
                                 `}

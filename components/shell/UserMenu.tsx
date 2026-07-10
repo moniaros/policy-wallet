@@ -64,7 +64,7 @@ export function UserMenu({
                 />
 
                 {/* Avatar */}
-                <button className="w-8 h-8 rounded-full bg-teal-600 text-white text-sm font-medium flex items-center justify-center">
+                <button className="w-8 h-8 rounded-full bg-primary text-white dark:text-[#1A2420] text-sm font-medium flex items-center justify-center">
                     {initials}
                 </button>
             </div>
@@ -77,7 +77,7 @@ export function UserMenu({
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors"
             >
-                <div className="w-10 h-10 rounded-full bg-teal-600 text-white text-sm font-medium flex items-center justify-center flex-shrink-0">
+                <div className="w-10 h-10 rounded-full bg-primary text-white dark:text-[#1A2420] text-sm font-medium flex items-center justify-center flex-shrink-0">
                     {initials}
                 </div>
                 <div className="flex-1 min-w-0 text-left">
@@ -133,7 +133,7 @@ export function UserMenu({
                                     className={`
                     flex-1 px-3 py-1.5 text-xs font-medium rounded transition-colors
                     ${language === 'el'
-                                            ? 'bg-teal-600 text-white'
+                                            ? 'bg-primary text-white dark:text-[#1A2420]'
                                             : 'bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600'
                                         }
                     ${isPending ? 'opacity-50 cursor-not-allowed' : ''}
@@ -147,7 +147,7 @@ export function UserMenu({
                                     className={`
                     flex-1 px-3 py-1.5 text-xs font-medium rounded transition-colors
                     ${language === 'en'
-                                            ? 'bg-teal-600 text-white'
+                                            ? 'bg-primary text-white dark:text-[#1A2420]'
                                             : 'bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-600'
                                         }
                     ${isPending ? 'opacity-50 cursor-not-allowed' : ''}
