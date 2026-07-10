@@ -139,18 +139,23 @@ export function getDocumentPolicySummary(
         }
     })()
 
+    const reviewStatePending =
+        extraction?.reviewState === 'unconfirmed' || extraction?.reviewState === 'flagged'
     const computedRequiresReview = Boolean(
         extraction?.requiresReview
+        || reviewStatePending
         || (typeof extraction?.confidence?.overall === 'number' && extraction.confidence.overall < 80)
         || (Array.isArray(extraction?.missingCriticalFields) && extraction.missingCriticalFields.length > 0)
     )
-    const isVerified = typeof policy.verified === 'boolean'
+    const isVerified = (typeof policy.verified === 'boolean'
         ? policy.verified
-        : !computedRequiresReview
+        : !computedRequiresReview) && !reviewStatePending
 
     const verificationLabel = isVerified
         ? (language === "el" ? "ΕΠΙΒΕΒΑΙΩΜΕΝΗ" : "VERIFIED")
-        : (language === "el" ? "ΧΡΕΙΑΖΕΤΑΙ ΕΛΕΓΧΟ" : "REVIEW REQUIRED")
+        : reviewStatePending
+            ? (language === "el" ? "ΕΛΕΓΞΤΕ ΤΑ ΔΕΔΟΜΕΝΑ AI" : "REVIEW EXTRACTED DATA")
+            : (language === "el" ? "ΧΡΕΙΑΖΕΤΑΙ ΕΛΕΓΧΟ" : "REVIEW REQUIRED")
 
     const verificationTone = isVerified ? "active" : "warning"
 

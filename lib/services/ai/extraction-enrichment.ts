@@ -1,3 +1,5 @@
+import type { PremiumFrequency } from './ai-service.interface'
+
 type RawExtractionPayload = {
     insurerName?: unknown
     policyNumber?: unknown
@@ -5,6 +7,9 @@ type RawExtractionPayload = {
     startDate?: unknown
     endDate?: unknown
     premiumAmount?: unknown
+    issueDate?: unknown
+    premiumFrequency?: unknown
+    renewalDate?: unknown
     customerName?: unknown
     customerSurname?: unknown
     customerEmail?: unknown
@@ -32,6 +37,16 @@ const CRITICAL_FIELDS = [
     'endDate',
     'premiumAmount',
 ] as const
+
+// Scored for confidence but never "critical" — their absence does not
+// trigger requiresReview.
+const EXTENDED_FIELDS = [
+    'issueDate',
+    'premiumFrequency',
+    'renewalDate',
+] as const
+
+const CONFIDENCE_FIELDS = [...CRITICAL_FIELDS, ...EXTENDED_FIELDS]
 
 function asText(value: unknown): string {
     return String(value ?? '').trim()
@@ -63,7 +78,7 @@ function extractConfidenceMap(payload: RawExtractionPayload): Record<string, num
     const rawFields = raw?.fields || raw?.fieldConfidence || {}
     const result: Record<string, number> = {}
 
-    for (const key of CRITICAL_FIELDS) {
+    for (const key of CONFIDENCE_FIELDS) {
         const normalized = normalizeConfidenceValue(rawFields?.[key])
         if (normalized !== null) {
             result[key] = normalized
@@ -71,6 +86,17 @@ function extractConfidenceMap(payload: RawExtractionPayload): Record<string, num
     }
 
     return result
+}
+
+export function normalizePremiumFrequency(value: unknown): PremiumFrequency | null {
+    const text = asText(value).toLowerCase()
+    if (!text) return null
+    if (/^(annual|yearly|ετήσι|ετησ)/.test(text) || text === 'year') return 'annual'
+    if (/^(semiannual|semi-annual|semi annual|biannual|εξαμην|εξάμην)/.test(text)) return 'semiannual'
+    if (/^(quarterly|τριμην|τρίμην)/.test(text)) return 'quarterly'
+    if (/^(monthly|μηνια|μηνιά)/.test(text) || text === 'month') return 'monthly'
+    if (/^(one_off|one-off|one off|single|lump|εφάπαξ|εφαπαξ)/.test(text)) return 'one_off'
+    return null
 }
 
 function getMissingCriticalFields(payload: RawExtractionPayload): string[] {
@@ -129,6 +155,7 @@ export function enrichExtractionPayload(
             },
             missingCriticalFields,
             requiresReview,
+            reviewState: (baseAcord?.extraction?.reviewState as string) || 'unconfirmed',
         },
         policy: {
             ...(baseAcord?.policy || {}),
@@ -137,6 +164,10 @@ export function enrichExtractionPayload(
             lineOfBusiness: asText(payload.lineOfBusiness) || baseAcord?.policy?.lineOfBusiness || null,
             effectiveDate: asText(payload.startDate) || baseAcord?.policy?.effectiveDate || null,
             expirationDate: asText(payload.endDate) || baseAcord?.policy?.expirationDate || null,
+            issueDate: asText(payload.issueDate) || baseAcord?.policy?.issueDate || null,
+            renewalDate: asText(payload.renewalDate) || baseAcord?.policy?.renewalDate || null,
+            premiumFrequency: normalizePremiumFrequency(payload.premiumFrequency)
+                || baseAcord?.policy?.premiumFrequency || null,
             premium: {
                 ...(baseAcord?.policy?.premium || {}),
                 amount: Number.isFinite(Number(payload.premiumAmount))

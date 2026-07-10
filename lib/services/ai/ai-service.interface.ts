@@ -81,6 +81,12 @@ export interface AIGapAnalysisResponse {
 }
 
 /**
+ * Normalized premium payment frequency (extraction enrichment maps free-form
+ * provider output onto this union).
+ */
+export type PremiumFrequency = 'annual' | 'semiannual' | 'quarterly' | 'monthly' | 'one_off'
+
+/**
  * Policy extraction result from AI
  */
 export interface AIPolicyExtractionResponse {
@@ -91,6 +97,9 @@ export interface AIPolicyExtractionResponse {
     endDate: string
     premiumAmount: number
     coverageSummary: string
+    issueDate?: string
+    premiumFrequency?: string
+    renewalDate?: string
     customerName?: string
     customerSurname?: string
     customerEmail?: string

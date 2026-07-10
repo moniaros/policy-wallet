@@ -130,6 +130,12 @@ export default async function WalletPage() {
             })),
             coverageHighlights: [], // Mock or parse from summary
             verified: hasExtraction && !requiresReview,
+            reviewState:
+                extraction?.reviewState === 'unconfirmed' ||
+                extraction?.reviewState === 'confirmed' ||
+                extraction?.reviewState === 'flagged'
+                    ? extraction.reviewState
+                    : null,
             documents: p.documents.map((d: any) => ({
                 id: d.id,
                 fileName: d.fileName,

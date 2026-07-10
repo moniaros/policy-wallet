@@ -6,7 +6,7 @@ import {
     CarIcon, HeartIcon, HomeIcon, ShieldIcon, PlaneIcon,
     DocumentIcon,
 } from '@/components/icons/PolicyIcons'
-import { BadgeCheck, Sparkles } from 'lucide-react'
+import { AlertTriangle, BadgeCheck, Sparkles } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
 
 // ── Props ────────────────────────────────────────────────────────────────────
@@ -156,6 +156,16 @@ export function MobilePolicyCard({ policy, onView }: MobilePolicyCardProps) {
                             <> · {formatRelativeExpiry(policy.endDate, locale)}</>
                         )}
                     </p>
+
+                    {/* Needs-review chip — only for explicitly unconfirmed/flagged extractions */}
+                    {!isAnalyzing && (policy.reviewState === 'unconfirmed' || policy.reviewState === 'flagged') && (
+                        <span className="mb-1.5 inline-flex items-center gap-1 rounded-full bg-[#FEF3C7] px-2 py-0.5 text-[10px] font-semibold text-[#B45309] dark:bg-amber-900/30 dark:text-amber-400">
+                            <AlertTriangle className="h-3 w-3" />
+                            {policy.reviewState === 'flagged'
+                                ? (t.wallet as any)?.review?.flaggedChip
+                                : (t.wallet as any)?.review?.needsReviewChip}
+                        </span>
+                    )}
 
                     {/* Row 3: coverage progress bar */}
                     {!isAnalyzing ? (

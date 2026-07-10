@@ -2216,7 +2216,20 @@ export class PolicyAnalysisOrchestratorService {
                 startDate: extraction.startDate,
                 endDate: extraction.endDate,
                 premiumAmount: extraction.premiumAmount,
+                issueDate: extraction.issueDate,
+                premiumFrequency: extraction.premiumFrequency,
+                renewalDate: extraction.renewalDate,
                 exclusions: clarity.coverageSnapshot.exclusions,
+                // Re-feed the extraction step's confidence so the persisted
+                // acordData keeps the real per-field scores (re-enriching
+                // without this clobbers them with an empty map).
+                extractionConfidence: extraction.extractionMeta
+                    ? {
+                          overall: extraction.extractionMeta.overallConfidence,
+                          requiresReview: extraction.extractionMeta.requiresReview,
+                          fields: extraction.extractionMeta.fieldConfidence,
+                      }
+                    : undefined,
                 acordData: {
                     ...(extraction.acordData || {}),
                     ...(clarity.acordData || {}),
@@ -2237,6 +2250,14 @@ export class PolicyAnalysisOrchestratorService {
 
         const mergedAcord = {
             ...enriched.acordData,
+            // A fresh extraction supersedes any earlier user confirmation or
+            // flag — the user must review the new values.
+            extraction: {
+                ...((enriched.acordData as any)?.extraction || {}),
+                reviewState: "unconfirmed",
+                confirmedAt: null,
+                flaggedAt: null,
+            },
             analysis: {
                 ...((enriched.acordData as any)?.analysis || {}),
                 clarity: compactClarity,

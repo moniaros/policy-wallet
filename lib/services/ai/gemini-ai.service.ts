@@ -201,6 +201,9 @@ Do not include Citations, text should be in Greek (Primary and language of sourc
         endDate: z.string().optional().describe("Policy end date in YYYY-MM-DD"),
         premiumAmount: z.number().optional().describe("Annual premium amount, numeric only (look for Ασφάλιστρο, Premium)"),
         premiumCurrency: z.string().optional().describe("Currency code, e.g. EUR"),
+        issueDate: z.string().optional().describe("Policy issue/signature date in YYYY-MM-DD (look for Ημερομηνία έκδοσης, Issue date)"),
+        premiumFrequency: z.enum(["annual", "semiannual", "quarterly", "monthly", "one_off"]).optional().describe("Premium payment frequency (look for Συχνότητα καταβολής, δόσεις, payment frequency/installments)"),
+        renewalDate: z.string().optional().describe("Policy renewal date in YYYY-MM-DD if stated (look for Ημερομηνία ανανέωσης, Renewal)"),
         coverageSummary: z.string().optional().describe("Brief summary of main coverages, max 200 chars"),
         customerName: z.string().optional().describe("Policyholder first name"),
         customerSurname: z.string().optional().describe("Policyholder surname"),
@@ -209,7 +212,7 @@ Do not include Citations, text should be in Greek (Primary and language of sourc
         extractionConfidence: z.object({
           overall: z.number().describe("0-100 confidence score"),
           requiresReview: z.boolean().describe("True if overall < 80 or critical fields missing"),
-          fields: z.record(z.string(), z.number()).describe("Per-field confidence scores 0-100")
+          fields: z.record(z.string(), z.number()).describe("Per-field confidence scores 0-100 for: insurerName, policyNumber, lineOfBusiness, startDate, endDate, premiumAmount, issueDate, premiumFrequency, renewalDate")
         }).optional(),
         acordData: AcordDataSchema.optional().describe("Type-specific structured data matching the detected lineOfBusiness")
       })
@@ -270,6 +273,9 @@ Do not include Citations, text should be in Greek (Primary and language of sourc
         endDate: extracted.endDate || daysFromNow(DEFAULT_POLICY_DURATION_DAYS).toISOString().split('T')[0],
         premiumAmount: extracted.premiumAmount || 0,
         coverageSummary: extracted.coverageSummary || 'Extracted from document',
+        issueDate: extracted.issueDate,
+        premiumFrequency: extracted.premiumFrequency,
+        renewalDate: extracted.renewalDate,
         customerName: extracted.customerName,
         customerSurname: extracted.customerSurname,
         customerEmail: extracted.customerEmail,

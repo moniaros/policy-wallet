@@ -26,6 +26,7 @@ import { collaborationService } from "@/lib/services/collaboration.service"
 import { sendPolicyInviteEmail, sendPolicySharedAccessEmail } from "@/lib/email/invite-emails"
 import { PolicyAnalysisOrchestratorService } from "@/lib/services/analysis/policy-analysis-orchestrator.service"
 import { daysFromNow, POLICY_SHARE_EXPIRY_DAYS } from "@/lib/constants/time"
+import { buildPolicyReviewData, sumInsuredTargetPath } from "@/lib/wallet/policy-review"
 
 const PolicySchema = z.object({
     insurerName: z.string().min(1, "Insurer name is required"),
@@ -191,36 +192,196 @@ export async function getPolicyReviewData(policyId: string) {
             premiumAmount: true,
             premiumCurrency: true,
             policyNumber: true,
+            coverageSummary: true,
             acordData: true,
         }
     })
 
     if (!policy) return { error: "Not found" }
 
-    // Sanitize — never expose raw placeholders
-    const sanitize = (val: string | null | undefined, marker?: string): string | null => {
-        if (!val) return null
-        if (val === '__PENDING_EXTRACTION__') return null
-        if (marker && val.startsWith(marker)) return null
-        return val
+    return buildPolicyReviewData(policy)
+}
+
+const ConfirmReviewSchema = z.object({
+    insurerName: z.string().min(1).max(200).optional(),
+    policyNumber: z.string().min(1).max(100).optional(),
+    lineOfBusiness: z.enum([
+        "motor", "health", "home", "life", "travel", "liability",
+        "pet", "breakdown", "legal_expenses", "income_protection",
+        "gadget", "bicycle", "business", "cyber", "motorbike",
+        "public_liability", "renters", "other"
+    ]).optional(),
+    startDate: z.string().optional(),
+    endDate: z.string().optional(),
+    issueDate: z.string().optional(),
+    renewalDate: z.string().optional(),
+    premiumAmount: z.coerce.number().nonnegative().optional(),
+    premiumFrequency: z.enum(["annual", "semiannual", "quarterly", "monthly", "one_off"]).optional(),
+    sumInsured: z.coerce.number().nonnegative().optional(),
+})
+
+export type ConfirmReviewInput = z.infer<typeof ConfirmReviewSchema>
+
+/**
+ * User confirmed the AI-extracted data (optionally with corrections).
+ * Applies column edits + acordData envelope edits and stamps
+ * extraction.reviewState = 'confirmed' in one transaction.
+ */
+export async function confirmPolicyReview(policyId: string, edits: ConfirmReviewInput = {}) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+    const dbUser = authResult.dbUser
+
+    const parsed = ConfirmReviewSchema.safeParse(edits)
+    if (!parsed.success) return { error: "Invalid input" }
+    const input = parsed.data
+
+    const policy = await db.policy.findFirst({
+        where: { id: policyId, ownerUserId: dbUser.id },
+    })
+    if (!policy) return { error: "Not found" }
+    if (policy.status === 'analyzing') return { error: "ANALYSIS_IN_PROGRESS" }
+
+    const effectiveStart = input.startDate ? new Date(input.startDate) : policy.startDate
+    const effectiveEnd = input.endDate ? new Date(input.endDate) : policy.endDate
+    if ((input.startDate || input.endDate) && effectiveStart && effectiveEnd && effectiveEnd <= effectiveStart) {
+        return { error: "END_DATE_BEFORE_START" }
     }
 
-    const acordData = policy.acordData as any
-    const coverageSummary = acordData?.coverageSummary || acordData?.extraction?.coverageSummary || null
+    const columnData: Record<string, unknown> = {}
+    if (input.insurerName) columnData.insurerName = input.insurerName
+    if (input.policyNumber) columnData.policyNumber = input.policyNumber
+    if (input.lineOfBusiness) columnData.lineOfBusiness = input.lineOfBusiness
+    if (input.startDate) columnData.startDate = new Date(input.startDate)
+    if (input.endDate) columnData.endDate = new Date(input.endDate)
+    if (input.premiumAmount !== undefined) columnData.premiumAmount = input.premiumAmount
 
-    return {
-        id: policy.id,
-        status: policy.status,
-        insurerName: sanitize(policy.insurerName),
-        lineOfBusiness: policy.lineOfBusiness,
-        policyNumber: sanitize(policy.policyNumber, 'PENDING-'),
-        startDate: policy.startDate?.toISOString() || null,
-        endDate: policy.endDate?.toISOString() || null,
-        premiumAmount: policy.premiumAmount ? Number(policy.premiumAmount) : null,
-        premiumCurrency: policy.premiumCurrency || 'EUR',
-        coverageSummary,
-        verified: Boolean(acordData?.extraction && !acordData.extraction.requiresReview),
+    const acord = (policy.acordData as Record<string, any> | null) || {}
+    const effectiveLob = input.lineOfBusiness || policy.lineOfBusiness
+    const nextAcord: Record<string, any> = {
+        ...acord,
+        policy: {
+            ...(acord.policy || {}),
+            ...(input.insurerName ? { insurerName: input.insurerName } : {}),
+            ...(input.policyNumber ? { policyNumber: input.policyNumber } : {}),
+            ...(input.lineOfBusiness ? { lineOfBusiness: input.lineOfBusiness } : {}),
+            ...(input.startDate ? { effectiveDate: input.startDate } : {}),
+            ...(input.endDate ? { expirationDate: input.endDate } : {}),
+            ...(input.issueDate ? { issueDate: input.issueDate } : {}),
+            ...(input.renewalDate ? { renewalDate: input.renewalDate } : {}),
+            ...(input.premiumFrequency ? { premiumFrequency: input.premiumFrequency } : {}),
+        },
+        extraction: {
+            ...(acord.extraction || {}),
+            reviewState: 'confirmed',
+            confirmedAt: new Date().toISOString(),
+            flaggedAt: null,
+        },
     }
+    if (input.sumInsured !== undefined) {
+        // Write target derived server-side from the post-edit LOB.
+        const [section, key] = sumInsuredTargetPath(effectiveLob)
+        nextAcord[section] = { ...(nextAcord[section] || {}), [key]: input.sumInsured }
+    }
+
+    try {
+        await db.$transaction([
+            db.policy.update({
+                where: { id: policyId },
+                data: { ...columnData, acordData: nextAcord },
+            }),
+            (db as any).activityLog.create({
+                data: {
+                    adminUserId: dbUser.id,
+                    adminEmail: dbUser.email || "unknown",
+                    actionType: "POLICY_REVIEW_CONFIRMED",
+                    description: `Confirmed AI-extracted data for policy ${input.policyNumber || policy.policyNumber}`,
+                    metadata: {
+                        policyId,
+                        editedFields: Object.keys(input),
+                    },
+                },
+            }),
+        ])
+    } catch (e: any) {
+        logger('error', 'Confirm policy review failed', { policyId, error: e.message })
+        return { error: "Confirm failed" }
+    }
+
+    revalidatePath("/wallet")
+    revalidatePath(`/wallet/${policyId}`)
+    return { success: true }
+}
+
+/**
+ * User flagged the AI extraction as incorrect. Stamps
+ * extraction.reviewState = 'flagged' (policy columns untouched — soft gate)
+ * and records the report for triage.
+ */
+export async function flagPolicyExtraction(policyId: string, reason?: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+    const dbUser = authResult.dbUser
+
+    const policy = await db.policy.findFirst({
+        where: { id: policyId, ownerUserId: dbUser.id },
+    })
+    if (!policy) return { error: "Not found" }
+
+    const trimmedReason = (reason || '').trim().slice(0, 500) || null
+    const acord = (policy.acordData as Record<string, any> | null) || {}
+    const nextAcord = {
+        ...acord,
+        extraction: {
+            ...(acord.extraction || {}),
+            reviewState: 'flagged',
+            flaggedAt: new Date().toISOString(),
+            flagReason: trimmedReason,
+        },
+    }
+
+    try {
+        await db.$transaction([
+            db.policy.update({
+                where: { id: policyId },
+                data: { acordData: nextAcord },
+            }),
+            db.notificationEvent.create({
+                data: {
+                    userId: dbUser.id,
+                    eventType: "extraction_flagged",
+                    channel: "in_app",
+                    title: "AI extraction flagged",
+                    message: `Policy ${policy.policyNumber}: ${trimmedReason || "flagged as incorrect"}`,
+                    relatedObjectType: "policy",
+                    relatedObjectId: policyId,
+                    status: "sent",
+                    sentAt: new Date(),
+                },
+            }),
+            (db as any).activityLog.create({
+                data: {
+                    adminUserId: dbUser.id,
+                    adminEmail: dbUser.email || "unknown",
+                    actionType: "POLICY_EXTRACTION_FLAGGED",
+                    description: `Flagged AI extraction for policy ${policy.policyNumber}`,
+                    metadata: {
+                        policyId,
+                        reason: trimmedReason,
+                        overallConfidence: acord?.extraction?.confidence?.overall ?? null,
+                        provider: acord?.extraction?.source ?? null,
+                    },
+                },
+            }),
+        ])
+    } catch (e: any) {
+        logger('error', 'Flag policy extraction failed', { policyId, error: e.message })
+        return { error: "Flag failed" }
+    }
+
+    revalidatePath("/wallet")
+    revalidatePath(`/wallet/${policyId}`)
+    return { success: true }
 }
 
 export async function retryPolicyAnalysis(policyId: string) {

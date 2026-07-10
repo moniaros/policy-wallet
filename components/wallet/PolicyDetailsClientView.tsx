@@ -11,6 +11,7 @@ import { AIUsageWidget } from "@/app/(protected)/wallet/[id]/AIUsageWidget"
 import { CollaborationTimeline } from "@/components/collaboration/CollaborationTimeline"
 import { CoverageTabView } from "@/components/wallet/coverage-details/CoverageTabView"
 import {
+    AlertTriangle,
     Calendar,
     Crown,
     Download,
@@ -296,6 +297,22 @@ export function PolicyDetailsClient({
                     <span className="text-black/35 dark:text-white/40">/</span>
                     <span className="font-semibold text-black dark:text-white">{displayPolicyNumber || localizedType}</span>
                 </nav>
+
+                {/* Extraction review banner — shown until the owner confirms the AI-extracted data */}
+                {isOwner && (policy.reviewState === 'unconfirmed' || policy.reviewState === 'flagged') && (
+                    <div className="mb-5 flex flex-wrap items-center gap-3 rounded-2xl border border-amber-200 bg-[#FEF3C7]/60 p-4 dark:border-amber-900/40 dark:bg-amber-950/20">
+                        <AlertTriangle className="h-5 w-5 flex-shrink-0 text-[#B45309] dark:text-amber-400" />
+                        <p className="min-w-0 flex-1 text-sm font-medium text-[#B45309] dark:text-amber-400">
+                            {t.wallet.review.reviewBannerCta}
+                        </p>
+                        <Link
+                            href={`/wallet/${policy.id}/review`}
+                            className="flex-shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
+                        >
+                            {t.wallet.review.reviewNow}
+                        </Link>
+                    </div>
+                )}
 
                 <section className="relative overflow-hidden rounded-[28px] border border-white/10 bg-[#111111] p-6 text-white shadow-2xl sm:p-8 lg:p-10">
                     <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(137,217,178,0.22),_transparent_45%)]" />

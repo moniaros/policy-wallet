@@ -117,6 +117,23 @@ export const AcordDataSchema = z.object({
     }).optional(),
 
     // ─── Cross-section fields ───────────────────────────────────────────
+    // Canonical policy envelope — extraction enrichment normalizes provider
+    // output into this shape; the review screen reads/writes it.
+    policy: z.object({
+        insurerName: z.string().nullable().optional(),
+        policyNumber: z.string().nullable().optional(),
+        lineOfBusiness: z.string().nullable().optional(),
+        effectiveDate: z.string().nullable().optional(),
+        expirationDate: z.string().nullable().optional(),
+        issueDate: z.string().nullable().optional().describe("Policy issue/signature date, ISO"),
+        renewalDate: z.string().nullable().optional().describe("Renewal date, ISO"),
+        premiumFrequency: z.enum(["annual", "semiannual", "quarterly", "monthly", "one_off"]).nullable().optional(),
+        sumInsured: z.number().nullable().optional().describe("Generic sum insured for LOBs without a dedicated section"),
+        premium: z.object({
+            amount: z.number().nullable().optional(),
+        }).optional(),
+    }).optional(),
+
     beneficiaries: z.array(z.object({
         name: z.string().optional(),
         relationship: z.string().optional(),
