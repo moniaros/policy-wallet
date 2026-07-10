@@ -93,7 +93,7 @@ export function PolicyAnalysisTabs({
                         <div className="flex items-center justify-between mb-6">
                             <div className="flex items-center gap-3">
                                 <h2 className="text-sm font-black text-black dark:text-white uppercase tracking-widest">{heading(t.wallet.aiPolicyInsights)}</h2>
-                                <span className="px-2 py-0.5 rounded-full bg-[#1FDC86]/12 dark:bg-[#1FDC86]/15 text-[#19b870] dark:text-[#7de8ba] text-[9px] font-black uppercase tracking-widest border border-[#1FDC86]/30 dark:border-[#1FDC86]/35">
+                                <span className="px-2 py-0.5 rounded-full bg-primary/10 dark:bg-primary/15 text-primary dark:text-mint text-[9px] font-black uppercase tracking-widest border border-primary/30 dark:border-primary/35">
                                     {heading(t.wallet.acordVerified)}
                                 </span>
                             </div>
@@ -122,9 +122,9 @@ export function PolicyAnalysisTabs({
                                             {String((acordData as any).policy?.insurer || '')}
                                         </p>
                                     </div>
-                                    <div className="p-3 bg-[#1FDC86]/12 dark:bg-[#1FDC86]/12 rounded-xl border border-[#1FDC86]/30">
+                                    <div className="p-3 bg-primary/10 dark:bg-primary/15 rounded-xl border border-primary/30">
                                         <p className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-widest mb-1">{heading(t.wallet.premiumFound)}</p>
-                                        <p className="text-xs font-bold text-[#19b870] dark:text-[#7de8ba]">
+                                        <p className="text-xs font-bold text-primary dark:text-mint">
                                             {String((acordData as any).policy?.premium?.amount || '')} {String((acordData as any).policy?.premium?.currency || '')}
                                         </p>
                                     </div>
@@ -135,7 +135,7 @@ export function PolicyAnalysisTabs({
                                 <p className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-widest mb-2">{heading(t.wallet.structuredCoverages)}</p>
                                 <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                                     {(acordData as any).coverages?.map((cov: any, idx: number) => (
-                                        <div key={idx} className="flex flex-col gap-2 p-3 bg-white dark:bg-black rounded-xl border border-black/10 dark:border-white/15 hover:border-[#1FDC86]/35 transition-colors shadow-sm group">
+                                        <div key={idx} className="flex flex-col gap-2 p-3 bg-white dark:bg-black rounded-xl border border-black/10 dark:border-white/15 hover:border-primary/35 transition-colors shadow-sm group">
                                             <div className="flex justify-between items-start">
                                                 <div className="flex flex-col">
                                                     <span className="font-bold text-xs text-black dark:text-white uppercase tracking-tight">
@@ -143,7 +143,7 @@ export function PolicyAnalysisTabs({
                                                     </span>
                                                     {cov.deductible && <span className="text-[9px] text-black/45 dark:text-white/60">{t.wallet.deductibleLabel} {String(cov.deductible)}</span>}
                                                 </div>
-                                                <span className="font-mono text-xs text-[#19b870] dark:text-[#7de8ba] font-black bg-[#1FDC86]/12 dark:bg-[#1FDC86]/12 px-2 py-1 rounded-lg">{String(cov.limit || '')}</span>
+                                                <span className="font-mono text-xs text-primary dark:text-mint font-black bg-primary/10 dark:bg-primary/15 px-2 py-1 rounded-lg">{String(cov.limit || '')}</span>
                                             </div>
 
                                             {getExplanation(cov) && (

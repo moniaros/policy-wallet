@@ -33,7 +33,7 @@ export function AIUsageWidget({ count, limit, t }: AIUsageWidgetProps) {
                 <>
                     <div className="h-2 bg-white/20 rounded-full overflow-hidden mb-4">
                         <div
-                            className="h-full bg-[#1FDC86] transition-all duration-500 ease-out"
+                            className="h-full bg-primary transition-all duration-500 ease-out"
                             style={{ width: `${percentage}%` }}
                         />
                     </div>
@@ -47,7 +47,7 @@ export function AIUsageWidget({ count, limit, t }: AIUsageWidgetProps) {
                 href="/upgrade?reason=ai_analysis_limit"
                 className="w-full py-3 bg-white text-black rounded-xl font-bold hover:bg-black/5 transition-colors flex items-center justify-center gap-2 text-sm"
             >
-                <svg className="w-4 h-4 text-[#1FDC86]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                <svg className="w-4 h-4 text-primary dark:text-mint" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                 {t.wallet.upgradePlan}
             </a>
         </div>
