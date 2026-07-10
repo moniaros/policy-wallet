@@ -33,4 +33,4 @@ _Living dashboard — not a log. Updated at the end of each session with meaning
 ## Next 3 actions
 1. Finish email: user pastes Brevo SMTP key in Supabase; e2e test — fresh signup → one branded email from info@policywallet.gr with live-site link; magic-link round trip.
 2. Money path: add Stripe test keys, run `setup-billing-catalog.ts --apply`, walk signup→trial→paywall→checkout on prod; set `GEMINI_API_KEY` + QStash to exercise the real AI pipeline (also lights up real per-field confidence on the new review screen — mock provider until then).
-3. SEO follow-through: Search Console property + sitemap submission; then apex-domain cutover (marketing → policywallet.gr, B2C/B2B subdomains) per SEO_STRATEGY.md. Follow-up backlog: admin triage view for `extraction_flagged` events.
+3. SEO follow-through: Search Console property + sitemap submission; then apex-domain cutover (marketing → policywallet.gr, B2C/B2B subdomains) per SEO_STRATEGY.md. (Flagged-extraction admin triage shipped — `/admin/extraction-flags`.)

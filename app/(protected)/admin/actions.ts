@@ -1292,3 +1292,113 @@ export async function updateGapDefinition(
     revalidatePath("/admin/gaps")
     return updated
 }
+
+// ── Extraction flag triage ───────────────────────────────────────────
+// Users flag incorrect AI extractions from the upload review screen;
+// flags are stored as notificationEvents (eventType 'extraction_flagged').
+// This queue lets admins triage them: see the reason, the policy's current
+// review state (a re-analysis or user confirm self-heals the flag), and
+// mark the report handled.
+
+export interface ExtractionFlagQueueItem {
+    id: string
+    userName: string | null
+    userEmail: string
+    reason: string
+    flaggedAt: string
+    handled: boolean
+    handledAt: string | null
+    policyId: string | null
+    policyNumber: string | null
+    insurerName: string | null
+    lineOfBusiness: string | null
+    /** Current review state on the policy — 'flagged' means still unresolved;
+     *  'unconfirmed'/'confirmed' means a re-analysis or user confirm superseded it. */
+    currentReviewState: string | null
+    currentConfidence: number | null
+    provider: string | null
+}
+
+export async function getExtractionFlagQueue(options?: { limit?: number }) {
+    await verifyAdminRole()
+
+    const safeLimit = Math.min(Math.max(options?.limit ?? 100, 1), 200)
+
+    const events = await db.notificationEvent.findMany({
+        where: { eventType: "extraction_flagged" },
+        include: { user: { select: { name: true, email: true } } },
+        orderBy: { createdAt: "desc" },
+        take: safeLimit,
+    })
+
+    const policyIds = [...new Set(events.map((e) => e.relatedObjectId).filter(Boolean))] as string[]
+    const policies = policyIds.length
+        ? await db.policy.findMany({
+              where: { id: { in: policyIds } },
+              select: {
+                  id: true,
+                  policyNumber: true,
+                  insurerName: true,
+                  lineOfBusiness: true,
+                  acordData: true,
+              },
+          })
+        : []
+    const policyById = new Map(policies.map((p) => [p.id, p]))
+
+    const items: ExtractionFlagQueueItem[] = events.map((event) => {
+        const policy = event.relatedObjectId ? policyById.get(event.relatedObjectId) : undefined
+        const extraction = (policy?.acordData as any)?.extraction || null
+        return {
+            id: event.id,
+            userName: event.user?.name ?? null,
+            userEmail: event.user?.email ?? "unknown",
+            reason: event.message,
+            flaggedAt: event.createdAt.toISOString(),
+            handled: event.status === "read",
+            handledAt: event.readAt?.toISOString() ?? null,
+            policyId: policy?.id ?? null,
+            policyNumber: policy?.policyNumber ?? null,
+            insurerName: policy?.insurerName ?? null,
+            lineOfBusiness: policy?.lineOfBusiness ?? null,
+            currentReviewState: typeof extraction?.reviewState === "string" ? extraction.reviewState : null,
+            currentConfidence:
+                typeof extraction?.confidence?.overall === "number" ? extraction.confidence.overall : null,
+            provider: typeof extraction?.source === "string" ? extraction.source : null,
+        }
+    })
+
+    return {
+        items,
+        summary: {
+            open: items.filter((i) => !i.handled).length,
+            selfHealed: items.filter(
+                (i) => !i.handled && i.currentReviewState !== null && i.currentReviewState !== "flagged"
+            ).length,
+            total: items.length,
+        },
+    }
+}
+
+export async function resolveExtractionFlag(eventId: string) {
+    const admin = await verifyAdminRole()
+
+    const result = await db.notificationEvent.updateMany({
+        where: { id: eventId, eventType: "extraction_flagged", status: { not: "read" } },
+        data: { status: "read", readAt: new Date() },
+    })
+    if (result.count === 0) {
+        return { error: "Flag not found or already handled" }
+    }
+
+    await logAdminAction(
+        admin.id,
+        admin.email,
+        "EXTRACTION_FLAG_RESOLVED",
+        `Marked extraction flag ${eventId} as handled`,
+        { eventId }
+    )
+
+    revalidatePath("/admin/extraction-flags")
+    return { success: true }
+}

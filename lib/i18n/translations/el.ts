@@ -61,6 +61,7 @@ export const el = {
         admin: 'Διαχείριση',
         users: 'Χρήστες & Ρόλοι',
         dsrQueue: 'DSR Queue',
+        extractionFlags: 'Αναφορές Εξαγωγής AI',
         billingReconciliation: 'Συμφωνία Χρεώσεων',
         launchReadiness: 'Ετοιμότητα Έναρξης',
         insurers: 'Ασφαλιστικές Εταιρείες',
