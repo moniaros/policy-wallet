@@ -125,6 +125,10 @@ export default async function PolicyDetailPage({
                 (Array.isArray(ext.missingCriticalFields) && ext.missingCriticalFields.length > 0)
             )
         })(),
+        reviewState: (() => {
+            const state = (policy.acordData as any)?.extraction?.reviewState
+            return state === 'unconfirmed' || state === 'confirmed' || state === 'flagged' ? state : null
+        })(),
         premiumCurrency: policy.premiumCurrency,
         documents: policy.documents.map(d => ({
             ...d,

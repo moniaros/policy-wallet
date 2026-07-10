@@ -95,6 +95,11 @@ export class MockAIService implements IAIService {
             endDate: daysFromNow(DEFAULT_POLICY_DURATION_DAYS).toISOString().split('T')[0],
             premiumAmount: 500,
             coverageSummary: 'Mock policy with standard coverage',
+            // Deliberately spans high/medium/low confidence so the review UI
+            // exercises green, amber and red chips in dev.
+            issueDate: daysFromNow(-30).toISOString().split('T')[0],
+            premiumFrequency: 'annual',
+            renewalDate: daysFromNow(DEFAULT_POLICY_DURATION_DAYS).toISOString().split('T')[0],
             customerName: 'John',
             customerSurname: 'Doe',
             customerEmail: 'john.doe@example.com',
@@ -108,13 +113,82 @@ export class MockAIService implements IAIService {
                     startDate: 84,
                     endDate: 85,
                     premiumAmount: 88,
+                    issueDate: 76,
+                    premiumFrequency: 88,
+                    renewalDate: 42,
                 }
             },
             acordData: {
                 policy: {
                     insurerName: 'Mock Insurance Co.',
                     policyNumber: `MOCK-${Date.now()}`,
-                }
+                },
+                vehicle: {
+                    estimatedMarketValue: 12000,
+                },
+                coverages: [
+                    {
+                        name: 'Third-party liability',
+                        type: 'liability',
+                        limit: '€1,300,000',
+                        explanation: {
+                            en: 'Covers damage you cause to other people and vehicles.',
+                            el: 'Καλύπτει ζημιές που προκαλείτε σε τρίτους και οχήματα.',
+                        },
+                    },
+                    {
+                        name: 'Glass breakage',
+                        type: 'partial_damage',
+                        limit: '€1,500',
+                        deductible: '€100',
+                        explanation: {
+                            en: 'Windscreen and window replacement.',
+                            el: 'Αντικατάσταση παρμπρίζ και κρυστάλλων.',
+                        },
+                    },
+                    {
+                        name: 'Roadside assistance',
+                        type: 'assistance',
+                        explanation: {
+                            en: '24/7 towing and on-the-spot repairs.',
+                            el: 'Οδική βοήθεια και επιτόπου επισκευές 24/7.',
+                        },
+                    },
+                ],
+                perksAndBenefits: [
+                    {
+                        perkType: 'assistance',
+                        name: { en: 'Replacement vehicle', el: 'Όχημα αντικατάστασης' },
+                        description: {
+                            en: 'Free replacement car for up to 7 days after an accident.',
+                            el: 'Δωρεάν όχημα αντικατάστασης έως 7 ημέρες μετά από ατύχημα.',
+                        },
+                        usageLimit: '7 days',
+                        contactPhone: '+30 210 1234567',
+                    },
+                ],
+                notableConditions: [
+                    {
+                        conditionType: 'claim_deadline',
+                        summary: {
+                            en: 'Claims must be reported within 8 days of the incident.',
+                            el: 'Οι ζημιές πρέπει να δηλωθούν εντός 8 ημερών από το συμβάν.',
+                        },
+                        value: '8 days',
+                        userActionRequired: true,
+                    },
+                ],
+                finePrintClauses: [
+                    {
+                        clause: 'Coverage is void if the vehicle is driven by an unlisted driver under 23.',
+                        section: 'Special Conditions',
+                        riskLevel: 'warning',
+                        impactSummary: {
+                            en: 'Young unlisted drivers are not covered.',
+                            el: 'Νεαροί μη δηλωμένοι οδηγοί δεν καλύπτονται.',
+                        },
+                    },
+                ],
             }
         }
         const enriched = enrichExtractionPayload(base, undefined, 'mock')

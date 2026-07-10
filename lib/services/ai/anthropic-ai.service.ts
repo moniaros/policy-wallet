@@ -129,6 +129,9 @@ export class AnthropicAIService implements IAIService {
             startDate: z.string().optional().describe("Policy start date YYYY-MM-DD"),
             endDate: z.string().optional().describe("Policy end date YYYY-MM-DD"),
             premiumAmount: z.number().optional().describe("Annual premium, numeric only"),
+            issueDate: z.string().optional().describe("Policy issue/signature date YYYY-MM-DD (Ημερομηνία έκδοσης)"),
+            premiumFrequency: z.enum(["annual", "semiannual", "quarterly", "monthly", "one_off"]).optional().describe("Premium payment frequency (Συχνότητα καταβολής ασφαλίστρων)"),
+            renewalDate: z.string().optional().describe("Policy renewal date YYYY-MM-DD if stated (Ημερομηνία ανανέωσης)"),
             coverageSummary: z.string().optional().describe("Brief summary of main coverages, max 200 chars"),
             customerName: z.string().optional(),
             customerSurname: z.string().optional(),
@@ -137,7 +140,7 @@ export class AnthropicAIService implements IAIService {
             extractionConfidence: z.object({
                 overall: z.number().describe("0-100 confidence score"),
                 requiresReview: z.boolean(),
-                fields: z.record(z.string(), z.number()),
+                fields: z.record(z.string(), z.number()).describe("Per-field confidence 0-100 for: insurerName, policyNumber, lineOfBusiness, startDate, endDate, premiumAmount, issueDate, premiumFrequency, renewalDate"),
             }).optional(),
             acordData: AcordDataSchema.optional().describe("Type-specific structured data matching the detected lineOfBusiness"),
         })
@@ -242,6 +245,9 @@ Do not include Citations, text should be in Greek (Primary and language of sourc
             endDate: extracted.endDate || daysFromNow(DEFAULT_POLICY_DURATION_DAYS).toISOString().split("T")[0],
             premiumAmount: extracted.premiumAmount || 0,
             coverageSummary: extracted.coverageSummary || "Extracted from document",
+            issueDate: extracted.issueDate,
+            premiumFrequency: extracted.premiumFrequency,
+            renewalDate: extracted.renewalDate,
             customerName: extracted.customerName,
             customerSurname: extracted.customerSurname,
             customerEmail: extracted.customerEmail,

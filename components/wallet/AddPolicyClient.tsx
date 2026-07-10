@@ -9,6 +9,8 @@ import { createPolicy, getPolicyReviewData, retryPolicyAnalysis } from "@/app/(p
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
+import { PolicyReviewScreen } from "@/components/wallet/PolicyReviewScreen"
+import type { PolicyReviewData } from "@/lib/wallet/policy-review"
 import {
     UploadCloud,
     FileText,
@@ -35,20 +37,6 @@ interface AddPolicyClientProps {
 
 type Phase = 'form' | 'reviewing'
 
-interface ReviewData {
-    id: string
-    status: string
-    insurerName: string | null
-    lineOfBusiness: string
-    policyNumber: string | null
-    startDate: string | null
-    endDate: string | null
-    premiumAmount: number | null
-    premiumCurrency: string
-    coverageSummary: string | null
-    verified: boolean
-}
-
 function getAnalyzingStep(elapsed: number, t: any): string {
     const steps = (t.wallet as any)?.review
     if (elapsed < 5) return steps?.stepUploading || 'Uploading document...'
@@ -74,7 +62,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
     // Review phase state
     const [phase, setPhase] = useState<Phase>('form')
     const [createdPolicyId, setCreatedPolicyId] = useState<string | null>(null)
-    const [reviewData, setReviewData] = useState<ReviewData | null>(null)
+    const [reviewData, setReviewData] = useState<PolicyReviewData | null>(null)
     const pollingStartRef = useRef<number>(0)
 
     // File Handling
@@ -197,7 +185,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
             if ('error' in data) return
 
             if (data.status !== 'analyzing') {
-                setReviewData(data as ReviewData)
+                setReviewData(data as PolicyReviewData)
             }
         } catch {
             // silent
@@ -358,131 +346,23 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                 </div>
                             </div>
                         ) : (
-                            /* ── Review Data Display ── */
-                            <div className="space-y-6">
-                                {/* Insurer header */}
-                                <div className="flex items-center gap-4">
-                                    <div className="w-14 h-14 rounded-2xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center text-primary dark:text-mint text-xl font-black shrink-0">
-                                        {(reviewData.insurerName || localizedLob || '?')[0]?.toUpperCase()}
-                                    </div>
-                                    <div>
-                                        <div className="flex items-center gap-2">
-                                            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                                                {reviewData.insurerName || localizedLob}
-                                            </h2>
-                                            {reviewData.verified && (
-                                                <BadgeCheck className="w-4 h-4 text-primary dark:text-mint" />
-                                            )}
-                                        </div>
-                                        {reviewData.insurerName && localizedLob && (
-                                            <p className="text-sm text-slate-500 dark:text-slate-400">
-                                                {localizedLob}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Data rows */}
-                                <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                                    {/* Coverage Summary */}
-                                    {reviewData.coverageSummary && (
-                                        <div className="flex items-start gap-4 py-4">
-                                            <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center shrink-0">
-                                                <Shield className="w-4 h-4 text-primary dark:text-mint" />
-                                            </div>
-                                            <div>
-                                                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                                                    {reviewCopy.coverageType || 'Coverage'}
-                                                </p>
-                                                <p className="mt-0.5 text-sm font-medium text-slate-900 dark:text-white">
-                                                    {reviewData.coverageSummary}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Policy Number */}
-                                    {reviewData.policyNumber && (
-                                        <div className="flex items-start gap-4 py-4">
-                                            <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0">
-                                                <Hash className="w-4 h-4 text-slate-500" />
-                                            </div>
-                                            <div>
-                                                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                                                    {t.wallet.policyNumber}
-                                                </p>
-                                                <p className="mt-0.5 text-sm font-medium text-slate-900 dark:text-white">
-                                                    {reviewData.policyNumber}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Period */}
-                                    {(reviewData.startDate || reviewData.endDate) && (
-                                        <div className="flex items-start gap-4 py-4">
-                                            <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center shrink-0">
-                                                <Calendar className="w-4 h-4 text-amber-500" />
-                                            </div>
-                                            <div>
-                                                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                                                    {reviewCopy.period || 'Period'}
-                                                </p>
-                                                <p className="mt-0.5 text-sm font-medium text-slate-900 dark:text-white">
-                                                    {reviewData.startDate ? formatDate(reviewData.startDate) : '—'}
-                                                    {' — '}
-                                                    {reviewData.endDate ? formatDate(reviewData.endDate) : '—'}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {/* Premium */}
-                                    {reviewData.premiumAmount != null && reviewData.premiumAmount > 0 && (
-                                        <div className="flex items-start gap-4 py-4">
-                                            <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center shrink-0">
-                                                <Banknote className="w-4 h-4 text-primary dark:text-mint" />
-                                            </div>
-                                            <div>
-                                                <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-                                                    {reviewCopy.premium || 'Premium'}
-                                                </p>
-                                                <p className="mt-0.5 text-sm font-bold text-slate-900 dark:text-white">
-                                                    {formatCurrency(reviewData.premiumAmount, reviewData.premiumCurrency)}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* CTAs */}
-                                <div className="flex flex-col gap-3 pt-4">
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            toast.success(reviewCopy.success)
-                                            router.push('/wallet')
-                                        }}
-                                        className="w-full bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-2xl py-4 font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-primary/25"
-                                    >
-                                        <span className="flex items-center justify-center gap-2">
-                                            <Check className="w-5 h-5" />
-                                            {reviewCopy.confirm || 'Confirm & Save'}
-                                        </span>
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => router.push(`/wallet/${createdPolicyId}/edit`)}
-                                        className="w-full rounded-2xl py-3.5 font-bold text-sm text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                                    >
-                                        <span className="flex items-center justify-center gap-2">
-                                            <Pencil className="w-4 h-4" />
-                                            {reviewCopy.edit || 'Edit details'}
-                                        </span>
-                                    </button>
-                                </div>
-                            </div>
+                            /* ── Full extraction review (edit / confirm / flag) ── */
+                            <PolicyReviewScreen
+                                data={reviewData}
+                                insurers={insurers}
+                                types={types}
+                                onDone={() => router.push('/wallet')}
+                                onRetry={async () => {
+                                    if (!createdPolicyId) return
+                                    const result = await retryPolicyAnalysis(createdPolicyId)
+                                    if ('error' in result) {
+                                        toast.error(mapWalletErrorToMessage(result.error, t, 'analysis'))
+                                        return
+                                    }
+                                    setReviewData(null)
+                                    pollingStartRef.current = Date.now()
+                                }}
+                            />
                         )}
                     </div>
                 </div>
