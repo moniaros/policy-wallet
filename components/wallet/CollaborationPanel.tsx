@@ -15,8 +15,13 @@ export interface Share {
     name: string | null
     image: string | null
     grantedAt: string
-    permissions?: "view" | "edit"
+    permissions?: "view" | "edit" | "manage"
 }
+
+const MANAGE_BADGE_COPY = {
+    el: "Διαχειρίζεται το συμβόλαιο",
+    en: "Manages this policy",
+} as const
 
 interface CollaborationPanelProps {
     policyId: string
@@ -61,7 +66,7 @@ const DEFAULT_WALLET_COPY = {
 } as const
 
 export function CollaborationPanel({ policyId, policyNumber: _policyNumber, initialShares, isOwner }: CollaborationPanelProps) {
-    const { t } = useLanguage()
+    const { t, language } = useLanguage()
     const walletCopy = t.wallet ?? DEFAULT_WALLET_COPY
     const copy = walletCopy.collaboration ?? DEFAULT_WALLET_COPY.collaboration
     const locale = t.common.locale || "en-US"
@@ -131,7 +136,16 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
         }
     }
 
-    const getPermissionBadge = (permission: "view" | "edit" = "view") => {
+    const getPermissionBadge = (permission: "view" | "edit" | "manage" = "view") => {
+        if (permission === "manage") {
+            return (
+                <div className="flex items-center gap-1.5 px-2.5 py-1 bg-primary-soft dark:bg-primary/15 border border-primary/30 dark:border-primary/40 rounded-full">
+                    <Shield className="w-3 h-3 text-[#166534] dark:text-mint" />
+                    <span className="text-[10px] font-bold text-[#166534] dark:text-mint uppercase tracking-wider">{MANAGE_BADGE_COPY[language]}</span>
+                </div>
+            )
+        }
+
         if (permission === "edit") {
             return (
                 <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-full">

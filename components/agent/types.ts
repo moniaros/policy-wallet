@@ -25,6 +25,8 @@ export interface Policy {
     startDate: string
     endDate: string
     status: 'active' | 'expiring_soon' | 'expired' | 'incomplete'
+    /** True when the viewing agent created (manages) this policy. */
+    managedByAgent?: boolean
 }
 
 export interface Opportunity {

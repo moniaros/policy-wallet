@@ -23,6 +23,19 @@ interface Props {
     healthScore: number
 }
 
+const PROFILE_COPY = {
+    requestDocument: { el: "Αίτημα Εγγράφου", en: "Request Document" },
+    createProposal: { el: "Δημιουργία Πρότασης", en: "Create Proposal" },
+    addPolicy: { el: "Προσθήκη Ασφαλιστηρίου", en: "Add Policy" },
+    createTask: { el: "Δημιουργία Task", en: "Create Task" },
+    documentRequests: { el: "Αιτήματα Εγγράφων", en: "Document Requests" },
+    newRequest: { el: "Νέο", en: "New" },
+    noDocumentRequests: { el: "Δεν υπάρχουν αιτήματα", en: "No document requests" },
+    proposals: { el: "Προτάσεις", en: "Proposals" },
+    newProposal: { el: "Νέα", en: "New" },
+    noProposals: { el: "Δεν υπάρχουν προτάσεις", en: "No proposals" },
+} as const
+
 export function CustomerProfileClient({ initialCustomer, agentTier, healthScore }: Props) {
     const router = useRouter()
     const { language } = useLanguage()
@@ -168,7 +181,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                     >
                         <FileText className="w-5 h-5" />
                         <span className="font-bold text-sm">
-                            {language === "el" ? "Αίτημα Εγγράφου" : "Request Document"}
+                            {PROFILE_COPY.requestDocument[language]}
                         </span>
                     </button>
 
@@ -180,7 +193,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                     >
                         <Send className="w-5 h-5" />
                         <span className="font-bold text-sm">
-                            {language === "el" ? "Δημιουργία Πρότασης" : "Create Proposal"}
+                            {PROFILE_COPY.createProposal[language]}
                         </span>
                     </button>
 
@@ -194,7 +207,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                             <Plus className="w-3 h-3" />
                         </span>
                         <span className="font-bold text-sm">
-                            {language === "el" ? "Προσθήκη Ασφαλιστηρίου" : "Add Policy"}
+                            {PROFILE_COPY.addPolicy[language]}
                         </span>
                     </button>
 
@@ -208,7 +221,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                             <Plus className="w-3 h-3" />
                         </span>
                         <span className="font-bold text-sm">
-                            {language === "el" ? "Δημιουργία Task" : "Create Task"}
+                            {PROFILE_COPY.createTask[language]}
                         </span>
                     </button>
 
@@ -233,6 +246,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                 onClose={() => setIsPolicyModalOpen(false)}
                 customerId={initialCustomer.id}
                 customerName={customerFullName}
+                customerEmail={initialCustomer.email || undefined}
             />
 
             {/* Document Request Modal */}
@@ -288,7 +302,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                                 <FileText className="h-5 w-5 text-primary dark:text-mint" />
-                                {language === "el" ? "Αιτήματα Εγγράφων" : "Document Requests"}
+                                {PROFILE_COPY.documentRequests[language]}
                                 {documentRequests.filter(r => r.status === "pending").length > 0 && (
                                     <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-bold text-white">
                                         {documentRequests.filter(r => r.status === "pending").length}
@@ -300,7 +314,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                                 onClick={() => setIsDocRequestFormOpen(true)}
                                 className="text-xs font-semibold text-primary dark:text-mint hover:underline"
                             >
-                                + {language === "el" ? "Νέο" : "New"}
+                                + {PROFILE_COPY.newRequest[language]}
                             </button>
                         </div>
                         {isLoadingDocs ? (
@@ -309,7 +323,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                             </div>
                         ) : documentRequests.length === 0 ? (
                             <p className="text-sm text-slate-500 text-center py-4">
-                                {language === "el" ? "Δεν υπάρχουν αιτήματα" : "No document requests"}
+                                {PROFILE_COPY.noDocumentRequests[language]}
                             </p>
                         ) : (
                             <div className="space-y-2">
@@ -329,7 +343,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                         <div className="flex items-center justify-between mb-4">
                             <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                                 <Send className="h-5 w-5 text-primary dark:text-mint" />
-                                {language === "el" ? "Προτάσεις" : "Proposals"}
+                                {PROFILE_COPY.proposals[language]}
                                 {proposals.filter(p => p.status === "pending").length > 0 && (
                                     <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white dark:text-[#1A2420]">
                                         {proposals.filter(p => p.status === "pending").length}
@@ -341,7 +355,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                                 onClick={() => setIsProposalFormOpen(true)}
                                 className="text-xs font-semibold text-primary dark:text-mint hover:underline"
                             >
-                                + {language === "el" ? "Νέα" : "New"}
+                                + {PROFILE_COPY.newProposal[language]}
                             </button>
                         </div>
                         {isLoadingProposals ? (
@@ -350,7 +364,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                             </div>
                         ) : proposals.length === 0 ? (
                             <p className="text-sm text-slate-500 text-center py-4">
-                                {language === "el" ? "Δεν υπάρχουν προτάσεις" : "No proposals"}
+                                {PROFILE_COPY.noProposals[language]}
                             </p>
                         ) : (
                             <div className="space-y-3">

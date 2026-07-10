@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -10,7 +11,79 @@ interface AddPolicyForCustomerModalProps {
     onClose: () => void
     customerId: string
     customerName: string
+    customerEmail?: string
 }
+
+const COPY = {
+    consentLabel: {
+        el: "Βεβαιώνω ότι έχω λάβει τη συγκατάθεση του πελάτη για επεξεργασία των εγγράφων του με AI",
+        en: "I confirm I have obtained the customer's consent for AI processing of their documents",
+    },
+    consentHelper: {
+        el: "Καταγράφεται ως αποδεικτικό",
+        en: "Recorded as evidence",
+    },
+    limitTitle: {
+        el: "Φτάσατε το όριο συμβολαίων ανά πελάτη",
+        en: "Per-customer policy limit reached",
+    },
+    limitBody: {
+        el: "Το πλάνο σας επιτρέπει έως {limit} συμβόλαια ανά πελάτη (τρέχοντα: {current}).",
+        en: "Your plan allows up to {limit} policies per customer (current: {current}).",
+    },
+    upgradeCta: {
+        el: "Αναβάθμιση πλάνου",
+        en: "Upgrade plan",
+    },
+    successTitle: {
+        el: "Το ασφαλιστήριο προστέθηκε",
+        en: "Policy added",
+    },
+    analysisStartedNotice: {
+        el: "Η ανάλυση AI ξεκίνησε για αυτό το ασφαλιστήριο.",
+        en: "AI analysis has started for this policy.",
+    },
+    consentRequiredNotice: {
+        el: "Το έγγραφο αποθηκεύτηκε, αλλά απαιτείται συγκατάθεση του πελάτη πριν την ανάλυση AI.",
+        en: "The document was saved, but customer consent is required before AI analysis.",
+    },
+    requestConsentCta: {
+        el: "Αίτημα συγκατάθεσης",
+        en: "Request consent",
+    },
+    consentRequestSent: {
+        el: "Το αίτημα συγκατάθεσης στάλθηκε",
+        en: "Consent request sent",
+    },
+    consentRequestFailed: {
+        el: "Αποτυχία αποστολής αιτήματος συγκατάθεσης",
+        en: "Failed to send consent request",
+    },
+    analysisLimitNotice: {
+        el: "Το έγγραφο αποθηκεύτηκε, αλλά φτάσατε το όριο αναλύσεων AI του πλάνου σας.",
+        en: "The document was saved, but you reached your plan's AI analysis limit.",
+    },
+    viewPlansCta: {
+        el: "Δείτε τα πλάνα",
+        en: "View plans",
+    },
+    inviteCustomerCta: {
+        el: "Πρόσκληση πελάτη στο wallet του",
+        en: "Invite customer to their wallet",
+    },
+    inviteSent: {
+        el: "Η πρόσκληση στάλθηκε",
+        en: "Invitation sent",
+    },
+    inviteFailed: {
+        el: "Αποτυχία αποστολής πρόσκλησης",
+        en: "Failed to send invitation",
+    },
+    closeCta: {
+        el: "Κλείσιμο",
+        en: "Close",
+    },
+} as const
 
 interface PolicyFormData {
     insurerName: string
@@ -78,18 +151,39 @@ const policyTypes = [
     { value: "liability", label: "⚖️ Liability", icon: "⚖️" },
 ]
 
+type AnalysisState = 'started' | 'consent_required' | 'limit_reached' | 'none'
+
+interface AddPolicyResult {
+    success: boolean
+    policyId?: string
+    analysisState?: AnalysisState
+    error?: string
+    reason?: string
+    current?: number
+    limit?: number
+}
+
 export function AddPolicyForCustomerModal({
     isOpen,
     onClose,
     customerId,
-    customerName
+    customerName,
+    customerEmail
 }: AddPolicyForCustomerModalProps) {
     const router = useRouter()
     const { language } = useLanguage()
     const isEl = language === "el"
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isScanning, setIsScanning] = useState(false)
-    const [step, setStep] = useState<'type' | 'details' | 'confirm'>('type')
+    const [step, setStep] = useState<'type' | 'details' | 'confirm' | 'success'>('type')
+    const [scannedFile, setScannedFile] = useState<File | null>(null)
+    const [attestedAiConsent, setAttestedAiConsent] = useState(false)
+    const [limitInfo, setLimitInfo] = useState<{ current?: number; limit?: number } | null>(null)
+    const [successResult, setSuccessResult] = useState<{ policyId: string; analysisState: AnalysisState } | null>(null)
+    const [isRequestingConsent, setIsRequestingConsent] = useState(false)
+    const [consentRequested, setConsentRequested] = useState(false)
+    const [isInviting, setIsInviting] = useState(false)
+    const [inviteSent, setInviteSent] = useState(false)
     const [formData, setFormData] = useState<PolicyFormData>({
         insurerName: "",
         policyNumber: "",
@@ -121,6 +215,8 @@ export function AddPolicyForCustomerModal({
                     endDate: data.endDate || "",
                     premiumAmount: data.premiumAmount?.toString() || ""
                 }))
+                // Keep the scanned file so it can be attached to the policy on submit.
+                setScannedFile(file)
                 toast.success(isEl ? "Το ασφαλιστήριο σαρώθηκε επιτυχώς!" : "Policy scanned successfully!")
                 setStep('details')
             } else {
@@ -149,11 +245,19 @@ export function AddPolicyForCustomerModal({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsSubmitting(true)
+        setLimitInfo(null)
 
         try {
             const { addPolicyForCustomer } = await import("@/app/(protected)/agent/actions")
 
-            const result = await addPolicyForCustomer({
+            // Re-attach the scanned document (if any) so the server can persist it.
+            let documentFormData: FormData | undefined
+            if (scannedFile) {
+                documentFormData = new FormData()
+                documentFormData.append("file", scannedFile)
+            }
+
+            const result = (await addPolicyForCustomer({
                 customerId,
                 policy: {
                     insurerName: formData.insurerName,
@@ -164,13 +268,17 @@ export function AddPolicyForCustomerModal({
                     premiumAmount: parseFloat(formData.premiumAmount) || undefined,
                     premiumCurrency: formData.premiumCurrency,
                     carPlate: formData.carPlate
-                }
-            })
+                },
+                attestedAiConsent
+            }, documentFormData)) as AddPolicyResult
 
-            if (result.success) {
+            if (result.success && result.policyId) {
                 toast.success(isEl ? "Το ασφαλιστήριο προστέθηκε επιτυχώς!" : "Policy added successfully!")
                 router.refresh()
-                handleClose()
+                setSuccessResult({ policyId: result.policyId, analysisState: result.analysisState || 'none' })
+                setStep('success')
+            } else if (result.reason === 'policy_per_customer_limit') {
+                setLimitInfo({ current: result.current, limit: result.limit })
             } else {
                 toast.error(result.error || (isEl ? "Αποτυχία προσθήκης ασφαλιστηρίου" : "Failed to add policy"))
             }
@@ -179,6 +287,46 @@ export function AddPolicyForCustomerModal({
             toast.error(isEl ? "Προέκυψε σφάλμα κατά την προσθήκη" : "An error occurred while adding the policy")
         } finally {
             setIsSubmitting(false)
+        }
+    }
+
+    const handleRequestConsent = async () => {
+        if (!successResult) return
+        setIsRequestingConsent(true)
+        try {
+            const { requestAiConsent } = await import("@/app/(protected)/agent/actions")
+            const result = await requestAiConsent(successResult.policyId)
+            if (result && "success" in result && result.success) {
+                setConsentRequested(true)
+                toast.success(COPY.consentRequestSent[language])
+            } else {
+                toast.error((result as { error?: string }).error || COPY.consentRequestFailed[language])
+            }
+        } catch (error) {
+            console.error(error)
+            toast.error(COPY.consentRequestFailed[language])
+        } finally {
+            setIsRequestingConsent(false)
+        }
+    }
+
+    const handleInviteCustomer = async () => {
+        if (!customerEmail) return
+        setIsInviting(true)
+        try {
+            const { createAgentInvite } = await import("@/app/(protected)/agent/actions")
+            const result = (await createAgentInvite(customerEmail, 'portfolio')) as { success: boolean; error?: string }
+            if (result.success) {
+                setInviteSent(true)
+                toast.success(COPY.inviteSent[language])
+            } else {
+                toast.error(result.error || COPY.inviteFailed[language])
+            }
+        } catch (error) {
+            console.error(error)
+            toast.error(COPY.inviteFailed[language])
+        } finally {
+            setIsInviting(false)
         }
     }
 
@@ -194,6 +342,12 @@ export function AddPolicyForCustomerModal({
             premiumCurrency: "EUR",
             carPlate: ""
         })
+        setScannedFile(null)
+        setAttestedAiConsent(false)
+        setLimitInfo(null)
+        setSuccessResult(null)
+        setConsentRequested(false)
+        setInviteSent(false)
         onClose()
     }
 
@@ -527,6 +681,44 @@ export function AddPolicyForCustomerModal({
                                 </span>
                             </div>
 
+                            {/* AI-consent attestation */}
+                            <div className="bg-stone-50 dark:bg-stone-800/50 rounded-2xl p-4">
+                                <label className="flex items-start gap-3 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={attestedAiConsent}
+                                        onChange={(e) => setAttestedAiConsent(e.target.checked)}
+                                        className="mt-0.5 h-4 w-4 shrink-0 rounded border-stone-300 dark:border-stone-600 text-primary focus:ring-primary"
+                                    />
+                                    <span className="text-sm text-stone-700 dark:text-stone-300">
+                                        {COPY.consentLabel[language]}
+                                    </span>
+                                </label>
+                                <p className="mt-2 pl-7 text-xs text-stone-400">
+                                    {COPY.consentHelper[language]}
+                                </p>
+                            </div>
+
+                            {/* Per-customer policy limit reached — inline upgrade card */}
+                            {limitInfo && (
+                                <div className="bg-primary-tint border border-[#E2E8F0] rounded-2xl p-5">
+                                    <p className="text-sm font-bold text-stone-900">
+                                        {COPY.limitTitle[language]}
+                                    </p>
+                                    <p className="mt-1 text-xs text-stone-600">
+                                        {COPY.limitBody[language]
+                                            .replace("{limit}", String(limitInfo.limit ?? "-"))
+                                            .replace("{current}", String(limitInfo.current ?? "-"))}
+                                    </p>
+                                    <Link
+                                        href="/agent/pricing"
+                                        className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary hover:bg-primary-hover px-4 py-2 text-xs font-bold text-white dark:text-[#1A2420] transition-colors"
+                                    >
+                                        {COPY.upgradeCta[language]}
+                                    </Link>
+                                </div>
+                            )}
+
                             {/* Actions */}
                             <div className="flex gap-3 pt-2">
                                 <button
@@ -557,6 +749,82 @@ export function AddPolicyForCustomerModal({
                                             Add Policy
                                         </>
                                     )}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Step 4: Success */}
+                    {step === 'success' && successResult && (
+                        <div className="space-y-5">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-primary-soft dark:bg-primary/15 flex items-center justify-center shrink-0">
+                                    <svg className="w-5 h-5 text-primary dark:text-mint" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p className="text-lg font-black text-stone-900 dark:text-white tracking-tight">
+                                        {COPY.successTitle[language]}
+                                    </p>
+                                    {successResult.analysisState === 'started' && (
+                                        <p className="text-xs text-stone-500 mt-0.5">
+                                            {COPY.analysisStartedNotice[language]}
+                                        </p>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* AI consent still required for analysis */}
+                            {successResult.analysisState === 'consent_required' && (
+                                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-2xl p-4">
+                                    <p className="text-sm text-amber-800 dark:text-amber-300">
+                                        {COPY.consentRequiredNotice[language]}
+                                    </p>
+                                    <button
+                                        type="button"
+                                        onClick={handleRequestConsent}
+                                        disabled={isRequestingConsent || consentRequested}
+                                        className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary hover:bg-primary-hover px-4 py-2 text-xs font-bold text-white dark:text-[#1A2420] disabled:opacity-50 transition-colors"
+                                    >
+                                        {consentRequested ? COPY.consentRequestSent[language] : COPY.requestConsentCta[language]}
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Agent AI-analysis limit reached */}
+                            {successResult.analysisState === 'limit_reached' && (
+                                <div className="bg-primary-tint border border-[#E2E8F0] rounded-2xl p-4">
+                                    <p className="text-sm text-stone-700">
+                                        {COPY.analysisLimitNotice[language]}
+                                    </p>
+                                    <Link
+                                        href="/agent/pricing"
+                                        className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary hover:bg-primary-hover px-4 py-2 text-xs font-bold text-white dark:text-[#1A2420] transition-colors"
+                                    >
+                                        {COPY.viewPlansCta[language]}
+                                    </Link>
+                                </div>
+                            )}
+
+                            {/* Actions */}
+                            <div className="flex flex-col gap-3 pt-2">
+                                {customerEmail && (
+                                    <button
+                                        type="button"
+                                        onClick={handleInviteCustomer}
+                                        disabled={isInviting || inviteSent}
+                                        className="w-full px-4 py-3 bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint font-bold rounded-full hover:bg-primary/20 dark:hover:bg-primary/25 disabled:opacity-50 transition-colors"
+                                    >
+                                        {inviteSent ? COPY.inviteSent[language] : COPY.inviteCustomerCta[language]}
+                                    </button>
+                                )}
+                                <button
+                                    type="button"
+                                    onClick={handleClose}
+                                    className="w-full px-4 py-3 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 font-bold rounded-full hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
+                                >
+                                    {COPY.closeCta[language]}
                                 </button>
                             </div>
                         </div>

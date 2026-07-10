@@ -25,6 +25,18 @@ const LOB_LABELS: Record<string, { en: string; el: string }> = {
     travel: { en: "Travel", el: "Ταξίδι" },
 }
 
+const TAB_COPY = {
+    noPolicies: { el: "Δεν υπάρχουν ασφαλιστήρια ακόμα", en: "No policies linked yet" },
+    addPolicy: { el: "Προσθήκη Ασφαλιστηρίου", en: "Add Policy" },
+    allTypes: { el: "Όλοι οι τύποι", en: "All types" },
+    allStatuses: { el: "Όλες οι καταστάσεις", en: "All statuses" },
+    commission: { el: "Προμήθειες", en: "Commission" },
+    add: { el: "Προσθήκη", en: "Add" },
+    commissionUnit: { el: "προμήθεια", en: "commission" },
+    renew: { el: "Ανανέωση", en: "Renew" },
+    managedByYou: { el: "Διαχειριζόμενο από εσάς", en: "Managed by you" },
+} as const
+
 const STATUS_STYLES: Record<string, string> = {
     active: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
     expiring_soon: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
@@ -61,14 +73,12 @@ export function ClientPoliciesTab({
                         <Shield className="h-5 w-5 text-primary dark:text-mint" />
                     </div>
                     <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                        {language === "el"
-                            ? "Δεν υπάρχουν ασφαλιστήρια ακόμα"
-                            : "No policies linked yet"}
+                        {TAB_COPY.noPolicies[language]}
                     </p>
                     {onUploadPolicy && (
                         <BrandActionButton onClick={onUploadPolicy} className="mt-4 text-sm">
                             <Plus className="h-4 w-4" />
-                            {language === "el" ? "Προσθήκη Ασφαλιστηρίου" : "Add Policy"}
+                            {TAB_COPY.addPolicy[language]}
                         </BrandActionButton>
                     )}
                 </div>
@@ -87,7 +97,7 @@ export function ClientPoliciesTab({
                         onChange={(e) => setFilterLob(e.target.value || null)}
                         className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs text-slate-700 dark:text-slate-300"
                     >
-                        <option value="">{language === "el" ? "Όλοι οι τύποι" : "All types"}</option>
+                        <option value="">{TAB_COPY.allTypes[language]}</option>
                         {uniqueLobs.map((lob) => (
                             <option key={lob} value={lob}>
                                 {LOB_LABELS[lob]?.[language] || lob}
@@ -99,7 +109,7 @@ export function ClientPoliciesTab({
                         onChange={(e) => setFilterStatus(e.target.value || null)}
                         className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs text-slate-700 dark:text-slate-300"
                     >
-                        <option value="">{language === "el" ? "Όλες οι καταστάσεις" : "All statuses"}</option>
+                        <option value="">{TAB_COPY.allStatuses[language]}</option>
                         {uniqueStatuses.map((status) => (
                             <option key={status} value={status}>{status}</option>
                         ))}
@@ -118,13 +128,13 @@ export function ClientPoliciesTab({
                             ) : (
                                 <Eye className="h-3.5 w-3.5" />
                             )}
-                            {language === "el" ? "Προμήθειες" : "Commission"}
+                            {TAB_COPY.commission[language]}
                         </button>
                     )}
                     {onUploadPolicy && (
                         <BrandActionButton onClick={onUploadPolicy} variant="secondary" className="text-xs py-1.5">
                             <Plus className="h-3.5 w-3.5" />
-                            {language === "el" ? "Προσθήκη" : "Add"}
+                            {TAB_COPY.add[language]}
                         </BrandActionButton>
                     )}
                 </div>
@@ -152,6 +162,11 @@ export function ClientPoliciesTab({
                                         <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_STYLES[policy.status] || STATUS_STYLES.active}`}>
                                             {policy.status}
                                         </span>
+                                        {policy.managedByAgent && (
+                                            <span className="rounded-full px-2 py-0.5 text-[10px] font-medium bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint">
+                                                {TAB_COPY.managedByYou[language]}
+                                            </span>
+                                        )}
                                     </div>
                                     <p className="text-xs text-slate-500 dark:text-slate-400">
                                         {policy.insurerName}
@@ -166,7 +181,7 @@ export function ClientPoliciesTab({
                                     </div>
                                     {showCommission && viewerRole === "agent" && commissionRate > 0 && (
                                         <p className="text-[10px] font-medium text-primary dark:text-mint mt-0.5">
-                                            {commissionRate}% {language === "el" ? "προμήθεια" : "commission"}
+                                            {commissionRate}% {TAB_COPY.commissionUnit[language]}
                                         </p>
                                     )}
                                 </div>
@@ -180,7 +195,7 @@ export function ClientPoliciesTab({
                                             className="rounded-lg bg-primary-soft dark:bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary dark:text-mint hover:bg-primary/20 dark:hover:bg-primary/25 transition cursor-pointer flex items-center gap-1"
                                         >
                                             <RefreshCw className="h-3 w-3" />
-                                            {language === "el" ? "Ανανέωση" : "Renew"}
+                                            {TAB_COPY.renew[language]}
                                         </button>
                                     )}
                                 </div>

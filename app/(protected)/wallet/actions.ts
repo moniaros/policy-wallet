@@ -572,7 +572,7 @@ export async function getPolicyShares(policyId: string) {
         name: g.grantee.name,
         image: g.grantee.image,
         grantedAt: g.grantedAt,
-        permissions: g.permissions as 'view' | 'edit'
+        permissions: g.permissions as 'view' | 'edit' | 'manage'
     }))
 }
 

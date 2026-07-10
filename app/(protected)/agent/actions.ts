@@ -178,7 +178,8 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
                 lineOfBusiness: p.type as any,
                 startDate: p.startDate ? new Date(p.startDate).toISOString() : new Date().toISOString(),
                 endDate: new Date(p.expiresAt).toISOString(),
-                status: 'active'
+                status: 'active',
+                managedByAgent: p.createdByUserId === authResult.dbUser.id
             })),
             opportunities: await Promise.all(profile.opportunities.map(async (o) => {
                 // Compute a lightweight conversion score from available data
