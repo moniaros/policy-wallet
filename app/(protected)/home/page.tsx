@@ -8,6 +8,8 @@ import { fixMojibakeText } from "@/lib/i18n/fix-mojibake"
 import type { User } from "@prisma/client"
 import { getProtectionScore } from "@/lib/services/gap-engine"
 import {
+    ArrowRight,
+    CalendarClock,
     Car,
     CircleHelp,
     FileText,
@@ -287,7 +289,39 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         </div>
                         <div className="mt-3">
                             {upcomingRenewals.length === 0 ? (
-                                <p className="text-sm text-black/55 dark:text-white/65">{t("Δεν υπάρχουν ανανεώσεις τους επόμενους 6 μήνες.", "No renewals in the next 6 months.")}</p>
+                                <div className="flex items-start gap-3 rounded-xl border border-dashed border-black/10 bg-black/[0.02] p-3.5 dark:border-white/15 dark:bg-white/[0.03]">
+                                    <span className="grid h-9 w-9 flex-shrink-0 place-items-center rounded-[10px] bg-primary-soft dark:bg-primary/15">
+                                        <CalendarClock className="h-4 w-4 text-primary dark:text-mint" />
+                                    </span>
+                                    <div className="min-w-0 flex-1">
+                                        {policies.length === 0 ? (
+                                            <>
+                                                <p className="text-sm font-semibold text-black/75 dark:text-white/85">
+                                                    {t("Παρακολουθούμε τις λήξεις για εσάς", "We track your expirations for you")}
+                                                </p>
+                                                <p className="mt-0.5 text-xs text-black/55 dark:text-white/65">
+                                                    {t("Προσθέστε συμβόλαια και θα σας ειδοποιούμε 90 ημέρες πριν από κάθε ανανέωση.", "Add policies and we will alert you 90 days before every renewal.")}
+                                                </p>
+                                                <Link
+                                                    href="/wallet/add"
+                                                    className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint"
+                                                >
+                                                    {t("Προσθήκη συμβολαίου", "Add a policy")}
+                                                    <ArrowRight className="h-3 w-3" />
+                                                </Link>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <p className="text-sm font-semibold text-black/75 dark:text-white/85">
+                                                    {t("Καμία λήξη τους επόμενους 6 μήνες", "No expirations in the next 6 months")}
+                                                </p>
+                                                <p className="mt-0.5 text-xs text-black/55 dark:text-white/65">
+                                                    {t("Θα σας ειδοποιήσουμε εγκαίρως πριν από κάθε ανανέωση.", "We will alert you well before every renewal.")}
+                                                </p>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
                             ) : (
                                 <div className="space-y-2">
                                     {upcomingRenewals.slice(0, 6).map((policy) => {

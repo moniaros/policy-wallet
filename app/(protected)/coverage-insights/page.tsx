@@ -141,15 +141,14 @@ export default async function CoverageInsightsPage() {
                             </div>
                         )}
 
-                        {engineResult.recommendations.length > 0 && (
-                            <RecommendationCards
-                                recommendations={engineResult.recommendations.map((r) => ({
-                                    ...r,
-                                    createdAt: r.createdAt.toISOString(),
-                                }))}
-                                language={userLanguage}
-                            />
-                        )}
+                        <RecommendationCards
+                            recommendations={engineResult.recommendations.map((r) => ({
+                                ...r,
+                                createdAt: r.createdAt.toISOString(),
+                            }))}
+                            language={userLanguage}
+                            profileIncomplete={engineResult.profileCompleteness < 80}
+                        />
                     </div>
                 </div>
             )}
@@ -176,7 +175,7 @@ export default async function CoverageInsightsPage() {
                         insurerName: ((p as any).insurerName && (p as any).insurerName !== '__PENDING_EXTRACTION__') ? (p as any).insurerName : (p.lineOfBusiness || 'Policy'),
                         lineOfBusiness: {
                             code: (p.acordData as any)?.policy?.lineOfBusiness?.code || p.lineOfBusiness || 'other',
-                            name: (p.acordData as any)?.policy?.lineOfBusiness?.Description || p.lineOfBusiness || 'Other Policy'
+                            name: (p.acordData as any)?.policy?.lineOfBusiness?.Description || p.lineOfBusiness || (userLanguage === 'el' ? 'Άλλο Συμβόλαιο' : 'Other Policy')
                         }
                     }))}
                 />
