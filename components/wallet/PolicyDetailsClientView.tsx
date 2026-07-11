@@ -605,6 +605,7 @@ export function PolicyDetailsClient({
                                     contract: t.wallet.contract,
                                     preview: t.wallet.preview,
                                     upgradeToPlusPreview: t.wallet.upgradeToPlusPreview,
+                                    previewLabels: t.wallet.documentPreview,
                                 }}
                             />
                         </section>

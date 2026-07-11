@@ -20,6 +20,11 @@ interface DocumentsCardProps {
         contract: string
         preview: string
         upgradeToPlusPreview: string
+        previewLabels: {
+            download: string
+            previewUnavailable: string
+            downloadFile: string
+        }
     }
 }
 
@@ -84,6 +89,7 @@ export function DocumentsCard({ documents, isFreeTier, copy }: DocumentsCardProp
                 isOpen={!!previewDoc}
                 onClose={() => setPreviewDoc(null)}
                 document={previewDoc}
+                labels={copy.previewLabels}
             />
         </div>
     )

@@ -25,7 +25,7 @@ export function AIUsageWidget({ count, limit, t }: AIUsageWidgetProps) {
             <div className="flex items-end justify-between mb-2">
                 <span className="text-3xl font-black">{count}</span>
                 <span className="text-sm opacity-60 mb-1">
-                    / {isUnlimited ? (t.common?.unlimited || "Unlimited") : safeLimit} {t.wallet.analyses}
+                    / {isUnlimited ? t.wallet.unlimited : safeLimit} {t.wallet.analyses}
                 </span>
             </div>
 
@@ -38,7 +38,7 @@ export function AIUsageWidget({ count, limit, t }: AIUsageWidgetProps) {
                         />
                     </div>
                     <p className="text-xs opacity-80 mb-5">
-                        {remaining} {t.wallet.analysesRemaining || "analyses remaining this month"}
+                        {remaining} {t.wallet.analysesRemaining}
                     </p>
                 </>
             )}

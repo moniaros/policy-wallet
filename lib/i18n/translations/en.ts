@@ -221,6 +221,14 @@ export const en: TranslationKeys = {
         // Usage Widget
         aiPlanUsage: 'AI Plan Usage',
         analyses: 'analyses',
+        unlimited: 'Unlimited',
+        analysesRemaining: 'analyses remaining this month',
+        // Document preview modal
+        documentPreview: {
+            download: 'Download',
+            previewUnavailable: 'Preview not available for this file type',
+            downloadFile: 'Download file',
+        },
         upgradePlan: 'Upgrade Plan',
         comparePolicies: 'Compare policies',
         detectedGaps: "Detected Gaps",

@@ -218,6 +218,14 @@ export const el = {
         // Usage Widget
         aiPlanUsage: 'Χρήση Πλάνου AI',
         analyses: 'αναλύσεις',
+        unlimited: 'Απεριόριστες',
+        analysesRemaining: 'αναλύσεις απομένουν αυτόν τον μήνα',
+        // Document preview modal
+        documentPreview: {
+            download: 'Λήψη',
+            previewUnavailable: 'Η προεπισκόπηση δεν είναι διαθέσιμη για αυτόν τον τύπο αρχείου',
+            downloadFile: 'Λήψη αρχείου',
+        },
         upgradePlan: 'Αναβάθμιση',
         comparePolicies: 'Σύγκριση συμβολαίων',
         detectedGaps: 'Εντοπισμένα Κενά',
