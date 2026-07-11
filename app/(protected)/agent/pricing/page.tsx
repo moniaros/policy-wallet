@@ -7,6 +7,16 @@ import { Check, Loader2, Users, Zap, Crown, Building2, ChevronLeft } from "lucid
 import { useLanguage } from "@/contexts/LanguageContext"
 import { upgradeSubscription } from "../../account/actions"
 
+const PRICING_COPY = {
+    redirecting: { el: "Μεταφορά στο Stripe...", en: "Redirecting to Stripe..." },
+    genericError: { el: "Κάτι πήγε στραβά.", en: "Something went wrong." },
+    freeBadge: { el: "Δωρεάν", en: "Free" },
+    agencyBadge: { el: "Πρακτορείο", en: "Agency" },
+} as const
+
+const pick = (pair: { el: string; en: string }, language: string) =>
+    language === "el" ? pair.el : pair.en
+
 const AGENT_PLANS = [
     {
         id: "agent-free",
@@ -161,14 +171,11 @@ export default function AgentPricingPage() {
                 return
             }
             if (result.url) {
-                toast.success(language === "el" ? "Μεταφορά στο Stripe..." : "Redirecting to Stripe...")
+                toast.success(pick(PRICING_COPY.redirecting, language))
                 setTimeout(() => { window.location.href = result.url! }, 800)
-            } else if (result.success) {
-                toast.success(language === "el" ? "Το πλάνο ενημερώθηκε!" : "Plan updated!")
-                router.refresh()
             }
         } catch {
-            toast.error(language === "el" ? "Κάτι πήγε στραβά." : "Something went wrong.")
+            toast.error(pick(PRICING_COPY.genericError, language))
         } finally {
             setLoadingPlanId(null)
         }
@@ -223,10 +230,10 @@ export default function AgentPricingPage() {
                                         <Icon className="w-5 h-5" />
                                     </div>
                                     <h3 className="text-lg font-bold text-stone-900 dark:text-white">
-                                        {plan.tier === "agent_free" && (language === "el" ? "Δωρεάν" : "Free")}
+                                        {plan.tier === "agent_free" && pick(PRICING_COPY.freeBadge, language)}
                                         {plan.tier === "agent_starter" && "Starter"}
                                         {plan.tier === "agent_pro" && "Pro"}
-                                        {plan.tier === "agency" && (language === "el" ? "Πρακτορείο" : "Agency")}
+                                        {plan.tier === "agency" && pick(PRICING_COPY.agencyBadge, language)}
                                     </h3>
                                 </div>
 

@@ -3,6 +3,7 @@ import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 import { withApiGuard } from "@/lib/api-guard"
+import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 
 const policySchema = z.object({
     insurerName: z.string().min(1),
@@ -40,6 +41,30 @@ export const POST = withApiGuard(
             const { policies } = body!
 
             const userId = authResult.dbUser.id
+
+            // Enforce the plan's policy quota — batch upload must not bypass
+            // the same limit that single-policy creation enforces.
+            const entitlements = await resolveUserEntitlements(userId)
+            const policyLimit = entitlements.limits.policies
+            if (policyLimit !== null) {
+                const currentCount = await db.policy.count({
+                    where: { ownerUserId: userId, status: { not: "deleted" } },
+                })
+                const remaining = Math.max(policyLimit - currentCount, 0)
+                if (policies.length > remaining) {
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error: "POLICY_LIMIT_REACHED",
+                            limit: policyLimit,
+                            current: currentCount,
+                            remaining,
+                        },
+                        { status: 403 }
+                    )
+                }
+            }
+
             const createdPolicies: Array<{ id: string }> = []
             const failedPolicies: Array<{ index: number; policyNumber: string; error: string }> = []
 

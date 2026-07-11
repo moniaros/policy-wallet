@@ -1,14 +1,7 @@
 import { requireApiUser } from "@/lib/api-auth"
 import { createApiResponse } from "@/lib/api-utils"
-import { getMonthlyUsage, getTokenBalance } from "@/lib/token-tracking"
+import { getMonthlyUsage, getTokenBalance, TOKEN_LIMITS } from "@/lib/token-tracking"
 import { getUserSubscription } from "@/lib/subscription-limits"
-import type { PlanTier } from "@/types/subscription-entitlements"
-
-const TOKEN_LIMITS: Record<PlanTier, number> = {
-    free: 250_000,
-    plus: 1_000_000,
-    pro: 5_000_000,
-}
 
 export async function GET() {
     const authCheck = await requireApiUser()
@@ -22,9 +15,13 @@ export async function GET() {
         getTokenBalance(userId),
     ])
 
-    // tier is already normalized to free|plus|pro by resolveUserEntitlements
-    const monthlyLimit = TOKEN_LIMITS[tier] ?? TOKEN_LIMITS.free
-    const usagePercent = Math.round((monthlyUsage.total_tokens / monthlyLimit) * 100)
+    // tier is already normalized to free|plus|pro by resolveUserEntitlements.
+    // Same table as enforcement (lib/token-tracking) — the display and the
+    // gate must never disagree. Free = 0 (AI is paid-only past the trial).
+    const monthlyLimit = TOKEN_LIMITS[tier as 'free' | 'plus' | 'pro'] ?? 0
+    const usagePercent = monthlyLimit > 0
+        ? Math.round((monthlyUsage.total_tokens / monthlyLimit) * 100)
+        : (monthlyUsage.total_tokens > 0 ? 100 : 0)
 
     return createApiResponse({
         tier,

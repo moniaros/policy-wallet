@@ -131,7 +131,6 @@ export function AccountClient({ initialData, userLanguage = 'en' }: AccountClien
             const res = await upgradeSubscription(planId)
             if (res.error) toast.error(res.error)
             else if (res.url) window.location.href = res.url
-            else if (res.success) toast.success(lang === 'el' ? "Η συνδρομή ενημερώθηκε!" : "Subscription updated!")
         } catch (err) {
             toast.error(lang === 'el' ? "Αποτυχία αναβάθμισης" : "Upgrade failed")
         } finally {

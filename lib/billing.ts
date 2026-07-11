@@ -36,9 +36,33 @@ const ANNUAL_PRICE_BY_PLAN: Record<string, number> = {
 }
 
 /**
- * Create a real Stripe Checkout Session
+ * Only same-origin app paths may be used as post-checkout return targets —
+ * never absolute URLs (open-redirect guard).
  */
-export async function createCheckoutSession(userId: string, planId: string, billingPeriod: "monthly" | "annual" = "monthly") {
+export function sanitizeReturnPath(returnTo: string | null | undefined): string | null {
+    if (!returnTo) return null
+    if (!returnTo.startsWith("/") || returnTo.startsWith("//")) return null
+    return returnTo
+}
+
+/** Plans whose Stripe subscription starts with a free trial. */
+const TRIAL_DAYS_BY_PLAN: Record<string, number> = {
+    "ph-pro": 14,
+}
+
+/**
+ * Create a real Stripe Checkout Session.
+ *
+ * `returnTo` preserves the feature context the user upgraded from: success
+ * lands on /upgrade/success (which verifies the session and deep-links back),
+ * cancel returns straight to the origin surface instead of a dead route.
+ */
+export async function createCheckoutSession(
+    userId: string,
+    planId: string,
+    billingPeriod: "monthly" | "annual" = "monthly",
+    returnTo?: string | null
+) {
     const user = await db.user.findUnique({ where: { id: userId }, select: { email: true } })
     const plan = await db.plan.findUnique({ where: { id: planId } })
 
@@ -50,6 +74,14 @@ export async function createCheckoutSession(userId: string, planId: string, bill
         ? (ANNUAL_PRICE_BY_PLAN[planId] ?? monthlyPrice * 12)
         : monthlyPrice
     const vat = calculateVAT(periodPrice)
+
+    const base = process.env.NEXTAUTH_URL || "http://localhost:3000"
+    const safeReturn = sanitizeReturnPath(returnTo)
+    const successUrl =
+        `${base}/upgrade/success?session_id={CHECKOUT_SESSION_ID}` +
+        (safeReturn ? `&return=${encodeURIComponent(safeReturn)}` : "")
+    const cancelUrl = `${base}${safeReturn || "/account"}`
+    const trialDays = TRIAL_DAYS_BY_PLAN[planId]
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
@@ -70,8 +102,9 @@ export async function createCheckoutSession(userId: string, planId: string, bill
             },
         ],
         mode: "subscription",
-        success_url: `${process.env.NEXTAUTH_URL}/wallet?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${process.env.NEXTAUTH_URL}/settings/billing`,
+        subscription_data: trialDays ? { trial_period_days: trialDays } : undefined,
+        success_url: successUrl,
+        cancel_url: cancelUrl,
         customer_email: user.email!,
         metadata: {
             userId,
@@ -96,12 +129,22 @@ export async function handleSubscriptionSuccess(userId: string, planId: string, 
     const plan = await db.plan.findUnique({ where: { id: planId } })
     if (!plan) return
 
-    // Create or update subscription
+    // Idempotent: the webhook AND the /upgrade/success page both call this —
+    // whichever runs first wins, the other is a no-op.
+    if (stripeSubscriptionId) {
+        const existing = await db.subscription.findUnique({
+            where: { stripeSubscriptionId },
+            select: { id: true },
+        })
+        if (existing) return
+    }
+
     await db.subscription.create({
         data: {
             userId,
             planId,
             status: 'active',
+            stripeSubscriptionId: stripeSubscriptionId || null,
             currentPeriodStart: new Date(),
             currentPeriodEnd: daysFromNow(SUBSCRIPTION_PERIOD_DAYS), // +30 days
         }

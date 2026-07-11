@@ -22,7 +22,7 @@ export { formatTokens, formatCost, TOKEN_COSTS, type AIModel, type OperationType
 // analysis, which bypasses this gate at the orchestrator. Pro is capped at 3M
 // so worst-case provider cost stays under the plan price (see
 // docs/planning/TOKEN_ECONOMICS_2026-07.md).
-const TOKEN_LIMITS: Record<'free' | 'plus' | 'pro', number | null> = {
+export const TOKEN_LIMITS: Record<'free' | 'plus' | 'pro', number | null> = {
     free: 0,
     plus: 1_000_000,
     pro: 3_000_000,
