@@ -19,11 +19,13 @@ import { ClaimsGuidanceCard } from "@/components/wallet/policy-detail/ClaimsGuid
 import {
     calculatePolicyHealthScore,
     deriveClaimDeadlines,
+    derivePolicyMeta,
     extractPolicySections,
     formatPolicyDate,
     hasAutoRenewal,
     normalizeRenewalHistory,
     parsePolicyDate,
+    type PolicyRenewalEntry,
 } from "@/lib/wallet/policy-detail"
 import {
     AlertTriangle,
@@ -70,6 +72,7 @@ interface PolicyDetailsClientProps {
         [key: string]: any
     }
     relatedRecommendations?: any[]
+    renewals?: PolicyRenewalEntry[]
 }
 
 export function PolicyDetailsClient({
@@ -85,6 +88,7 @@ export function PolicyDetailsClient({
     tier = 'free',
     tierLimits,
     relatedRecommendations = [],
+    renewals = [],
 }: PolicyDetailsClientProps) {
     const [previewDoc, setPreviewDoc] = useState<{ fileName: string; fileUrl: string } | null>(null)
 
@@ -111,6 +115,7 @@ export function PolicyDetailsClient({
     // renewal's end date supersedes the originally extracted expiration.
     const renewalHistory = useMemo(() => normalizeRenewalHistory(policy?.acordData), [policy])
     const latestRenewalEnd = parsePolicyDate(renewalHistory[0]?.endDate)
+    const { renewalDate, premiumFrequency } = derivePolicyMeta(policy?.acordData)
 
     const getStartDate = () => policy.acordData?.policy?.effectiveDate || policy.startDate
     const getEndDate = () => {
@@ -447,7 +452,9 @@ export function PolicyDetailsClient({
                                 <div className="w-full max-w-xs rounded-3xl border border-white/15 bg-[#111111] p-5 shadow-lg">
                                     <p className="mb-2 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-white/65">
                                         <TrendingUp className="h-3.5 w-3.5 text-mint" />
-                                        {t.wallet.annualPremium}
+                                        {premiumFrequency && premiumFrequency !== "annual"
+                                            ? `${detailsCopy.premiumLabel} · ${detailsCopy.premiumFrequency[premiumFrequency]}`
+                                            : t.wallet.annualPremium}
                                     </p>
                                     <p className="text-4xl font-black leading-none text-white">
                                         {getPremiumAmount().toLocaleString(locale, {
@@ -590,17 +597,20 @@ export function PolicyDetailsClient({
                                 <KeyDatesCard
                                     startDate={getStartDate()}
                                     endDate={getEndDate()}
+                                    renewalDate={renewalDate}
                                     daysLeft={computedDaysLeft}
                                     statusLabel={statusLabel}
                                     statusColor={statusColor}
                                     hasAutoRenewal={autoRenewal}
                                     renewalHistory={renewalHistory}
+                                    renewals={renewals}
                                     locale={locale}
                                     copy={{
                                         keyDatesTitle: detailsCopy.keyDatesTitle,
                                         startedOn: detailsCopy.startedOn,
                                         expiresOn: detailsCopy.expiresOn,
                                         expiredOn: detailsCopy.expiredOn,
+                                        renewalDateLabel: detailsCopy.renewalDateLabel,
                                         renewalStatusLabel: detailsCopy.renewalStatusLabel,
                                         periodProgress: detailsCopy.periodProgress,
                                         autoRenewalNote: detailsCopy.autoRenewalNote,
@@ -608,6 +618,7 @@ export function PolicyDetailsClient({
                                         noRenewalHistory: detailsCopy.noRenewalHistory,
                                         expiresIn: t.wallet.expiresIn,
                                         days: t.wallet.days,
+                                        reminders: detailsCopy.renewalReminders,
                                     }}
                                 />
                             </section>

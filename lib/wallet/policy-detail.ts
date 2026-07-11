@@ -149,6 +149,29 @@ export function hasAutoRenewal(conditions: NotableCondition[]): boolean {
     return conditions.some((c) => c.conditionType === "auto_renewal")
 }
 
+/** One reminder milestone recorded by the renewal-check cron (days before expiry + send time). */
+export interface RenewalReminderMilestone {
+    milestone: number
+    sentAt: string
+}
+
+/** Serialized PolicyRenewal row as the detail page receives it. */
+export interface PolicyRenewalEntry {
+    id: string
+    policyEndDate: string
+    status: string
+    outcome: string | null
+    lastReminderAt: string | null
+    remindersSent: RenewalReminderMilestone[]
+}
+
+/** remindersSent is an untyped Json column — keep only well-formed milestones. */
+export function normalizeRemindersSent(value: unknown): RenewalReminderMilestone[] {
+    return asArray<Record<string, unknown>>(value)
+        .filter((m) => m && typeof m.milestone === "number" && typeof m.sentAt === "string")
+        .map((m) => ({ milestone: m.milestone as number, sentAt: m.sentAt as string }))
+}
+
 export type PolicyHealthLevel = "good" | "moderate" | "attention"
 
 export interface PolicyHealthScore {

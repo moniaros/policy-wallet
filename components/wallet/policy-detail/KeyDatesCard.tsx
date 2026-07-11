@@ -2,26 +2,32 @@
 
 import { Calendar, RefreshCw } from "lucide-react"
 
+import { RenewalRemindersList } from "@/components/wallet/policy-detail/RenewalRemindersList"
 import {
     formatPolicyDate,
     parsePolicyDate,
+    type PolicyRenewalEntry,
     type RenewalHistoryEntry,
 } from "@/lib/wallet/policy-detail"
 
 interface KeyDatesCardProps {
     startDate: string | null
     endDate: string | null
+    /** Extracted renewal date from acordData.policy — often differs from the end date. */
+    renewalDate: string | null
     daysLeft: number
     statusLabel: string
     statusColor: { bg: string; text: string; border: string }
     hasAutoRenewal: boolean
     renewalHistory: RenewalHistoryEntry[]
+    renewals: PolicyRenewalEntry[]
     locale: string
     copy: {
         keyDatesTitle: string
         startedOn: string
         expiresOn: string
         expiredOn: string
+        renewalDateLabel: string
         renewalStatusLabel: string
         periodProgress: string
         autoRenewalNote: string
@@ -29,6 +35,12 @@ interface KeyDatesCardProps {
         noRenewalHistory: string
         expiresIn: string
         days: string
+        reminders: {
+            title: string
+            periodEnding: string
+            daysBeforeExpiry: string
+            statuses: Record<string, string>
+        }
     }
 }
 
@@ -39,11 +51,13 @@ interface KeyDatesCardProps {
 export function KeyDatesCard({
     startDate,
     endDate,
+    renewalDate,
     daysLeft,
     statusLabel,
     statusColor,
     hasAutoRenewal,
     renewalHistory,
+    renewals,
     locale,
     copy,
 }: KeyDatesCardProps) {
@@ -99,6 +113,12 @@ export function KeyDatesCard({
                         </p>
                     </div>
                 )}
+                {renewalDate && (
+                    <div className="rounded-2xl border border-black/10 bg-black/[0.03] px-4 py-3 dark:border-white/15 dark:bg-white/5">
+                        <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">{copy.renewalDateLabel}</p>
+                        <p className="text-sm font-bold text-black dark:text-white">{formatPolicyDate(renewalDate, locale)}</p>
+                    </div>
+                )}
             </div>
 
             {elapsedPct !== null && (
@@ -144,6 +164,8 @@ export function KeyDatesCard({
                     </ul>
                 )}
             </div>
+
+            <RenewalRemindersList renewals={renewals} locale={locale} copy={copy.reminders} />
         </div>
     )
 }

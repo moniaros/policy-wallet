@@ -5,6 +5,7 @@ import {
     derivePolicyMeta,
     extractPolicySections,
     hasAutoRenewal,
+    normalizeRemindersSent,
     normalizeRenewalHistory,
     pickLang,
 } from '@/lib/wallet/policy-detail'
@@ -113,6 +114,28 @@ describe('normalizeRenewalHistory', () => {
         expect(history).toHaveLength(2)
         expect(history[0].endDate).toBe('2026-01-01')
         expect(history[1].startDate).toBeNull()
+    })
+})
+
+describe('normalizeRemindersSent', () => {
+    it('returns [] for non-array values', () => {
+        expect(normalizeRemindersSent(null)).toEqual([])
+        expect(normalizeRemindersSent('[]')).toEqual([])
+        expect(normalizeRemindersSent({ milestone: 30 })).toEqual([])
+    })
+
+    it('keeps only well-formed milestones', () => {
+        const milestones = normalizeRemindersSent([
+            { milestone: 30, sentAt: '2026-06-01T08:00:00Z' },
+            { milestone: '7', sentAt: '2026-06-24T08:00:00Z' }, // milestone not a number
+            { milestone: 7 }, // no sentAt
+            null,
+            { milestone: 7, sentAt: '2026-06-24T08:00:00Z', extra: true },
+        ])
+        expect(milestones).toEqual([
+            { milestone: 30, sentAt: '2026-06-01T08:00:00Z' },
+            { milestone: 7, sentAt: '2026-06-24T08:00:00Z' },
+        ])
     })
 })
 

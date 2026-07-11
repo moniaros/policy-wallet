@@ -391,6 +391,28 @@ export const el = {
                 moderate: 'Θέλει μια ματιά',
                 attention: 'Χρειάζεται προσοχή',
             },
+            // Renewal data extracted from the policy or tracked by the reminder cron
+            renewalDateLabel: 'Ημερομηνία ανανέωσης',
+            premiumLabel: 'Ασφάλιστρα',
+            premiumFrequency: {
+                annual: 'Ετήσια',
+                semiannual: 'Εξάμηνη',
+                quarterly: 'Τριμηνιαία',
+                monthly: 'Μηνιαία',
+                one_off: 'Εφάπαξ',
+            },
+            renewalReminders: {
+                title: 'Υπενθυμίσεις ανανέωσης',
+                periodEnding: 'Λήξη περιόδου',
+                daysBeforeExpiry: 'ημέρες πριν τη λήξη',
+                statuses: {
+                    pending: 'Σε αναμονή',
+                    contacted: 'Έγινε επικοινωνία',
+                    renewed: 'Ανανεώθηκε',
+                    lapsed: 'Έληξε χωρίς ανανέωση',
+                    cancelled: 'Ακυρώθηκε',
+                },
+            },
         },
         deletePolicyModal: {
             dangerZone: 'Ζώνη κινδύνου',

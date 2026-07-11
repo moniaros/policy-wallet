@@ -394,6 +394,28 @@ export const en: TranslationKeys = {
                 moderate: 'Worth a look',
                 attention: 'Needs attention',
             },
+            // Renewal data extracted from the policy or tracked by the reminder cron
+            renewalDateLabel: 'Renewal date',
+            premiumLabel: 'Premium',
+            premiumFrequency: {
+                annual: 'Annual',
+                semiannual: 'Semi-annual',
+                quarterly: 'Quarterly',
+                monthly: 'Monthly',
+                one_off: 'One-off',
+            },
+            renewalReminders: {
+                title: 'Renewal reminders',
+                periodEnding: 'Period ending',
+                daysBeforeExpiry: 'days before expiry',
+                statuses: {
+                    pending: 'Pending',
+                    contacted: 'Contacted',
+                    renewed: 'Renewed',
+                    lapsed: 'Lapsed',
+                    cancelled: 'Cancelled',
+                },
+            },
         },
         deletePolicyModal: {
             dangerZone: 'Danger Zone',

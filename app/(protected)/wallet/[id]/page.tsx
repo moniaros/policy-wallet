@@ -9,6 +9,7 @@ import { getTranslations } from "@/lib/i18n"
 import { getAIUsageStats } from "../actions"
 import { PolicyDetailsClient } from "./PolicyDetailsClient"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
+import { normalizeRemindersSent } from "@/lib/wallet/policy-detail"
 
 export default async function PolicyDetailPage({
     params
@@ -20,7 +21,7 @@ export default async function PolicyDetailPage({
     const language = (dbUser.preferredLanguage as 'el' | 'en') || 'el'
     const t = getTranslations(language)
 
-    const [policy, sharesResult, aiUsageStats, entitlements] = await Promise.all([
+    const [policy, sharesResult, aiUsageStats, entitlements, renewalRows] = await Promise.all([
         db.policy.findUnique({
             where: { id: policyId },
             include: {
@@ -38,7 +39,12 @@ export default async function PolicyDetailPage({
             return []
         }),
         getAIUsageStats(),
-        resolveUserEntitlements(dbUser.id)
+        resolveUserEntitlements(dbUser.id),
+        db.policyRenewal.findMany({
+            where: { policyId },
+            orderBy: { policyEndDate: 'desc' },
+            take: 5
+        })
     ])
 
     if (!policy) {
@@ -108,6 +114,16 @@ export default async function PolicyDetailPage({
         grantedAt: s.grantedAt ? s.grantedAt.toISOString() : new Date().toISOString()
     })) : []
 
+    // Renewal-reminder trail written by the renewal-check cron.
+    const serializedRenewals = renewalRows.map(r => ({
+        id: r.id,
+        policyEndDate: r.policyEndDate.toISOString(),
+        status: r.status,
+        outcome: r.outcome,
+        lastReminderAt: r.lastReminderAt?.toISOString() || null,
+        remindersSent: normalizeRemindersSent(r.remindersSent)
+    }))
+
     const serializedPolicy = {
         ...policy,
         startDate: policy.startDate.toISOString(),
@@ -160,6 +176,7 @@ export default async function PolicyDetailPage({
             tier={entitlements.tier}
             tierLimits={entitlements.limits}
             relatedRecommendations={relatedRecommendations}
+            renewals={serializedRenewals}
         />
     )
 }
