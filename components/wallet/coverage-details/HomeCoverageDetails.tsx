@@ -47,19 +47,19 @@ export function HomeCoverageDetails({ acordData, language }: HomeCoverageDetails
   return (
     <div className="space-y-3">
       {home.enfiaEligible !== undefined && (
-        <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <Home className="w-4 h-4 text-primary dark:text-mint" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{homeCopy.enfiaEligibility}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{homeCopy.enfiaEligibility}</span>
           </div>
           {home.enfiaEligible ? (
             <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint border border-primary/20 dark:border-primary/30">
               <CheckCircle2 className="w-3.5 h-3.5" /> {copy.eligible}
             </span>
           ) : (
-            <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+            <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-black/5 dark:bg-white/10 text-black/55 dark:text-white/60 border border-black/10 dark:border-white/15">
               <XCircle className="w-3.5 h-3.5" /> {copy.notEligible}
             </span>
           )}
@@ -67,12 +67,12 @@ export function HomeCoverageDetails({ acordData, language }: HomeCoverageDetails
       )}
 
       {home.catastropheCoverage && (
-        <div className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5 mb-3">
             <div className="w-8 h-8 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
               <Shield className="w-4 h-4 text-orange-600 dark:text-orange-400" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{homeCopy.catastropheCoverage}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{homeCopy.catastropheCoverage}</span>
           </div>
           <div className="grid grid-cols-3 gap-2 ml-10.5">
             <div className={`flex flex-col items-center p-2 rounded-lg border ${
@@ -81,7 +81,7 @@ export function HomeCoverageDetails({ acordData, language }: HomeCoverageDetails
                 : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
             }`}>
               <Flame className={`w-4 h-4 mb-1 ${home.catastropheCoverage.fire ? "text-[#166534] dark:text-mint" : "text-red-400 dark:text-red-500"}`} />
-              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{homeCopy.fire}</span>
+              <span className="text-xs font-semibold text-black/75 dark:text-white/80">{homeCopy.fire}</span>
               {home.catastropheCoverage.fire
                 ? <CheckCircle2 className="w-3.5 h-3.5 text-[#22C55E] mt-0.5" />
                 : <XCircle className="w-3.5 h-3.5 text-red-400 mt-0.5" />}
@@ -92,7 +92,7 @@ export function HomeCoverageDetails({ acordData, language }: HomeCoverageDetails
                 : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
             }`}>
               <Mountain className={`w-4 h-4 mb-1 ${home.catastropheCoverage.earthquake ? "text-[#166534] dark:text-mint" : "text-red-400 dark:text-red-500"}`} />
-              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{homeCopy.earthquake}</span>
+              <span className="text-xs font-semibold text-black/75 dark:text-white/80">{homeCopy.earthquake}</span>
               {home.catastropheCoverage.earthquake
                 ? <CheckCircle2 className="w-3.5 h-3.5 text-[#22C55E] mt-0.5" />
                 : <XCircle className="w-3.5 h-3.5 text-red-400 mt-0.5" />}
@@ -103,7 +103,7 @@ export function HomeCoverageDetails({ acordData, language }: HomeCoverageDetails
                 : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
             }`}>
               <Waves className={`w-4 h-4 mb-1 ${home.catastropheCoverage.flood ? "text-[#166534] dark:text-mint" : "text-red-400 dark:text-red-500"}`} />
-              <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{homeCopy.flood}</span>
+              <span className="text-xs font-semibold text-black/75 dark:text-white/80">{homeCopy.flood}</span>
               {home.catastropheCoverage.flood
                 ? <CheckCircle2 className="w-3.5 h-3.5 text-[#22C55E] mt-0.5" />
                 : <XCircle className="w-3.5 h-3.5 text-red-400 mt-0.5" />}
@@ -134,36 +134,36 @@ export function HomeCoverageDetails({ acordData, language }: HomeCoverageDetails
       )}
 
       {home.mortgageeBank && (
-        <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <Building2 className="w-4 h-4 text-primary dark:text-mint" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{homeCopy.mortgageeBank}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{homeCopy.mortgageeBank}</span>
           </div>
-          <span className="text-sm font-bold text-slate-900 dark:text-white">{home.mortgageeBank}</span>
+          <span className="text-sm font-bold text-black dark:text-white">{home.mortgageeBank}</span>
         </div>
       )}
 
       {(home.insuredValue !== undefined || home.replacementValue !== undefined) && (
-        <div className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5 mb-2">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <Home className="w-4 h-4 text-primary dark:text-mint" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{homeCopy.valueComparison}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{homeCopy.valueComparison}</span>
           </div>
           <div className="ml-10.5 space-y-1.5">
             {home.insuredValue !== undefined && (
               <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-600 dark:text-slate-400">{homeCopy.insuredValue}</span>
-                <span className="font-bold text-slate-900 dark:text-white">{formatCurrency(home.insuredValue)}</span>
+                <span className="text-black/60 dark:text-white/65">{homeCopy.insuredValue}</span>
+                <span className="font-bold text-black dark:text-white">{formatCurrency(home.insuredValue)}</span>
               </div>
             )}
             {home.replacementValue !== undefined && (
               <div className="flex items-center justify-between text-sm">
-                <span className="text-slate-600 dark:text-slate-400">{homeCopy.replacementValue}</span>
-                <span className="font-bold text-slate-900 dark:text-white">{formatCurrency(home.replacementValue)}</span>
+                <span className="text-black/60 dark:text-white/65">{homeCopy.replacementValue}</span>
+                <span className="font-bold text-black dark:text-white">{formatCurrency(home.replacementValue)}</span>
               </div>
             )}
           </div>
@@ -171,26 +171,26 @@ export function HomeCoverageDetails({ acordData, language }: HomeCoverageDetails
       )}
 
       {home.theftCoverageLimit !== undefined && (
-        <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-              <Lock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+              <Lock className="w-4 h-4 text-[#B45309] dark:text-amber-400" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{homeCopy.theftCoverageLimit}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{homeCopy.theftCoverageLimit}</span>
           </div>
-          <span className="text-sm font-bold text-slate-900 dark:text-white">{formatCurrency(home.theftCoverageLimit)}</span>
+          <span className="text-sm font-bold text-black dark:text-white">{formatCurrency(home.theftCoverageLimit)}</span>
         </div>
       )}
 
       {home.contentsVsStructure && (
-        <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <Home className="w-4 h-4 text-primary dark:text-mint" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{homeCopy.contentsVsStructure}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{homeCopy.contentsVsStructure}</span>
           </div>
-          <span className="text-sm font-bold text-slate-900 dark:text-white">{home.contentsVsStructure}</span>
+          <span className="text-sm font-bold text-black dark:text-white">{home.contentsVsStructure}</span>
         </div>
       )}
     </div>

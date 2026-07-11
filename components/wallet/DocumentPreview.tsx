@@ -10,6 +10,11 @@ interface DocumentPreviewProps {
         fileName: string
         fileUrl: string
     } | null
+    labels: {
+        download: string
+        previewUnavailable: string
+        downloadFile: string
+    }
 }
 
 function getFileType(fileName: string): "pdf" | "image" | "other" {
@@ -19,7 +24,7 @@ function getFileType(fileName: string): "pdf" | "image" | "other" {
     return "other"
 }
 
-export function DocumentPreview({ isOpen, onClose, document }: DocumentPreviewProps) {
+export function DocumentPreview({ isOpen, onClose, document, labels }: DocumentPreviewProps) {
     if (!document) return null
 
     const fileType = getFileType(document.fileName)
@@ -38,7 +43,7 @@ export function DocumentPreview({ isOpen, onClose, document }: DocumentPreviewPr
                         className="ml-3 flex shrink-0 items-center gap-1.5 rounded-full border border-black/10 px-3 py-1.5 text-xs font-semibold text-black/70 transition-colors hover:bg-black/5 dark:border-white/15 dark:text-white/70 dark:hover:bg-white/10"
                     >
                         <Download className="h-3.5 w-3.5" />
-                        Download
+                        {labels.download}
                     </a>
                 </div>
 
@@ -59,14 +64,14 @@ export function DocumentPreview({ isOpen, onClose, document }: DocumentPreviewPr
                         </div>
                     ) : (
                         <div className="flex h-full flex-col items-center justify-center gap-3 text-black/50 dark:text-white/50">
-                            <p className="text-sm">Preview not available for this file type</p>
+                            <p className="text-sm">{labels.previewUnavailable}</p>
                             <a
                                 href={document.fileUrl}
                                 target="_blank"
                                 rel="noreferrer"
                                 className="rounded-full bg-black/10 px-4 py-2 text-sm font-semibold text-black/70 transition-colors hover:bg-black/20 dark:bg-white/10 dark:text-white/70 dark:hover:bg-white/20"
                             >
-                                Download file
+                                {labels.downloadFile}
                             </a>
                         </div>
                     )}

@@ -6,27 +6,22 @@ import { notFound } from "next/navigation"
 import { calculatePolicyStatus, getStatusColor, getStatusLabel, getDaysUntilExpiry } from "@/lib/policy-status"
 import { getPolicyShares } from "../actions"
 import { getTranslations } from "@/lib/i18n"
-import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { getAIUsageStats } from "../actions"
 import { PolicyDetailsClient } from "./PolicyDetailsClient"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
+import { normalizeRemindersSent } from "@/lib/wallet/policy-detail"
 
 export default async function PolicyDetailPage({
-    params,
-    searchParams
+    params
 }: {
     params: Promise<{ id: string }>
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
     const { id: policyId } = await params
-    const resolvedSearchParams = await searchParams
-    const shouldOpenWallet = resolvedSearchParams.openWallet === 'true'
     const { dbUser } = await getAuthenticatedUser()
     const language = (dbUser.preferredLanguage as 'el' | 'en') || 'el'
     const t = getTranslations(language)
-    const roleCopy = getRoleCopy(language)
 
-    const [policy, sharesResult, aiUsageStats, entitlements] = await Promise.all([
+    const [policy, sharesResult, aiUsageStats, entitlements, renewalRows] = await Promise.all([
         db.policy.findUnique({
             where: { id: policyId },
             include: {
@@ -44,7 +39,12 @@ export default async function PolicyDetailPage({
             return []
         }),
         getAIUsageStats(),
-        resolveUserEntitlements(dbUser.id)
+        resolveUserEntitlements(dbUser.id),
+        db.policyRenewal.findMany({
+            where: { policyId },
+            orderBy: { policyEndDate: 'desc' },
+            take: 5
+        })
     ])
 
     if (!policy) {
@@ -70,6 +70,23 @@ export default async function PolicyDetailPage({
     const statusLabel = getStatusLabel(status)
     const daysLeft = getDaysUntilExpiry(policy.endDate)
 
+    // Related recommendations (owner only): reuse the persisted gap-engine
+    // output, preferring same-line-of-business suggestions. Read-only — the
+    // engine itself is not re-run here.
+    let relatedRecommendations: Array<Record<string, unknown>> = []
+    if (isOwner) {
+        try {
+            const { getActiveRecommendations } = await import("@/lib/services/gap-engine")
+            const recommendations = await getActiveRecommendations(dbUser.id)
+            const sameLob = recommendations.filter(r => r.lineOfBusiness === policy.lineOfBusiness)
+            relatedRecommendations = (sameLob.length > 0 ? sameLob : recommendations)
+                .slice(0, 4)
+                .map(r => ({ ...r, createdAt: r.createdAt.toISOString() }))
+        } catch (error) {
+            console.error("Failed to load related recommendations:", error)
+        }
+    }
+
     let relationshipId: string | null = null
     if (isOwner) {
         const rel = await db.customerRelationship.findFirst({
@@ -92,21 +109,20 @@ export default async function PolicyDetailPage({
         relationshipId = rel?.id || null
     }
 
-    // Create serializable policy object for Client Component
-    const walletPolicy = {
-        id: policy.id,
-        policyNumber: policy.policyNumber,
-        insurerName: policy.insurerName,
-        lineOfBusiness: policy.lineOfBusiness,
-        startDate: policy.startDate ? policy.startDate.toISOString() : null,
-        endDate: policy.endDate ? policy.endDate.toISOString() : null,
-        status: status || 'incomplete'
-    }
-
     const serializedShares = Array.isArray(shares) ? shares.map(s => ({
         ...s,
         grantedAt: s.grantedAt ? s.grantedAt.toISOString() : new Date().toISOString()
     })) : []
+
+    // Renewal-reminder trail written by the renewal-check cron.
+    const serializedRenewals = renewalRows.map(r => ({
+        id: r.id,
+        policyEndDate: r.policyEndDate.toISOString(),
+        status: r.status,
+        outcome: r.outcome,
+        lastReminderAt: r.lastReminderAt?.toISOString() || null,
+        remindersSent: normalizeRemindersSent(r.remindersSent)
+    }))
 
     const serializedPolicy = {
         ...policy,
@@ -149,19 +165,18 @@ export default async function PolicyDetailPage({
     return (
         <PolicyDetailsClient
             policy={serializedPolicy}
-            walletPolicy={walletPolicy}
             serializedShares={serializedShares}
             aiUsageStats={aiUsageStats}
             statusLabel={statusLabel}
             statusColor={statusColor}
             daysLeft={daysLeft}
-            holderName={dbUser.name || roleCopy.defaults.policyholderName}
-            shouldOpenWallet={shouldOpenWallet}
             isOwner={isOwner}
             relationshipId={relationshipId}
             t={t}
             tier={entitlements.tier}
             tierLimits={entitlements.limits}
+            relatedRecommendations={relatedRecommendations}
+            renewals={serializedRenewals}
         />
     )
 }
