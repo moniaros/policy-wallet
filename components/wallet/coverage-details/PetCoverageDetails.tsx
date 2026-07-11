@@ -61,44 +61,44 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
       {pet.microchipNumber && (
         <button
           onClick={handleCopyMicrochip}
-          className="w-full flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+          className="w-full flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-white/10 transition-colors cursor-pointer"
         >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <Heart className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <div className="text-left">
-              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{petCopy.microchipNumber}</span>
-              <p className="text-xs text-slate-500 dark:text-slate-400">{copy.tapToCopy}</p>
+              <span className="text-sm font-semibold text-black/75 dark:text-white/80">{petCopy.microchipNumber}</span>
+              <p className="text-xs text-black/55 dark:text-white/60">{copy.tapToCopy}</p>
             </div>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-sm font-mono font-bold text-slate-900 dark:text-white">{pet.microchipNumber}</span>
-            <Copy className="w-3.5 h-3.5 text-slate-400" />
+            <span className="text-sm font-mono font-bold text-black dark:text-white">{pet.microchipNumber}</span>
+            <Copy className="w-3.5 h-3.5 text-black/45 dark:text-white/50" />
           </div>
         </button>
       )}
 
       {pet.annualLimitTotal !== undefined && (
-        <div className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
                 <Shield className="w-4 h-4 text-primary dark:text-mint" />
               </div>
-              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{petCopy.annualLimit}</span>
+              <span className="text-sm font-semibold text-black/75 dark:text-white/80">{petCopy.annualLimit}</span>
             </div>
-            <span className="text-sm font-bold text-slate-900 dark:text-white">{formatCurrency(pet.annualLimitTotal)}</span>
+            <span className="text-sm font-bold text-black dark:text-white">{formatCurrency(pet.annualLimitTotal)}</span>
           </div>
           <div className="ml-10.5">
-            <div className="w-full h-3 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+            <div className="w-full h-3 rounded-full bg-black/10 dark:bg-white/15 overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all ${usagePercent > 80 ? "bg-red-500" : usagePercent > 50 ? "bg-amber-500" : "bg-primary"}`}
                 style={{ width: `${usagePercent}%` }}
               />
             </div>
             <div className="flex justify-between mt-1 text-xs">
-              <span className="text-slate-500 dark:text-slate-400">
+              <span className="text-black/55 dark:text-white/60">
                 {copy.used}: {formatCurrency(pet.annualLimitUsed ?? 0)}
               </span>
               <span className="font-semibold text-[#166534] dark:text-mint">
@@ -142,12 +142,12 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
       )}
 
       {pet.breedSpecificDiseases && pet.breedSpecificDiseases.length > 0 && (
-        <div className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5 mb-2">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <Stethoscope className="w-4 h-4 text-primary dark:text-mint" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{petCopy.breedSpecificDiseases}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{petCopy.breedSpecificDiseases}</span>
           </div>
           <div className="ml-10.5 flex flex-wrap gap-1.5">
             {pet.breedSpecificDiseases.map((disease, i) => (
@@ -160,19 +160,19 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
       )}
 
       {pet.directVetPayment !== undefined && (
-        <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <CreditCard className="w-4 h-4 text-primary dark:text-mint" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{petCopy.directVetPayment}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{petCopy.directVetPayment}</span>
           </div>
           {pet.directVetPayment ? (
             <span className="flex items-center gap-1 text-xs font-bold text-[#166534] dark:text-mint">
               <CheckCircle2 className="w-4 h-4" /> {copy.available}
             </span>
           ) : (
-            <span className="flex items-center gap-1 text-xs font-bold text-slate-400 dark:text-slate-500">
+            <span className="flex items-center gap-1 text-xs font-bold text-black/45 dark:text-white/50">
               <XCircle className="w-4 h-4" /> {copy.notAvailable}
             </span>
           )}
@@ -180,18 +180,18 @@ export function PetCoverageDetails({ acordData, language }: PetCoverageDetailsPr
       )}
 
       {pet.waitingPeriods && pet.waitingPeriods.length > 0 && (
-        <div className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5 mb-2">
             <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-              <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+              <Clock className="w-4 h-4 text-[#B45309] dark:text-amber-400" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{petCopy.waitingPeriods}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{petCopy.waitingPeriods}</span>
           </div>
           <div className="ml-10.5 space-y-1.5">
             {pet.waitingPeriods.map((wp, i) => (
               <div key={i} className="flex items-center justify-between text-sm">
-                <span className="text-slate-600 dark:text-slate-400">{wp.type || "-"}</span>
-                <span className="text-slate-900 dark:text-white font-medium">
+                <span className="text-black/60 dark:text-white/65">{wp.type || "-"}</span>
+                <span className="text-black dark:text-white font-medium">
                   {wp.endDate
                     ? `${copy.endsOn} ${new Date(wp.endDate).toLocaleDateString(language === "el" ? "el-GR" : "en-GB")}`
                     : wp.durationDays

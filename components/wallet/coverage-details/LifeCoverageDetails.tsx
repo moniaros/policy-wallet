@@ -50,7 +50,7 @@ export function LifeCoverageDetails({ acordData, language }: LifeCoverageDetails
               <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
                 <Wallet className="w-5 h-5 text-primary dark:text-mint" />
               </div>
-              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{lifeCopy.fundValue}</span>
+              <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.fundValue}</span>
             </div>
             <span className="text-xl font-black text-primary dark:text-mint">{formatCurrency(life.currentFundValue)}</span>
           </div>
@@ -64,26 +64,26 @@ export function LifeCoverageDetails({ acordData, language }: LifeCoverageDetails
               <span className={`text-sm font-bold ${life.ytdGrowth >= 0 ? "text-[#166534] dark:text-mint" : "text-red-500 dark:text-red-400"}`}>
                 {life.ytdGrowth > 0 ? "+" : ""}{life.ytdGrowth.toFixed(2)}%
               </span>
-              <span className="text-xs text-slate-500 dark:text-slate-400">{lifeCopy.ytdGrowth}</span>
+              <span className="text-xs text-black/55 dark:text-white/60">{lifeCopy.ytdGrowth}</span>
             </div>
           )}
         </div>
       )}
 
       {life.taxFreeAtMaturity !== undefined && (
-        <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <Shield className="w-4 h-4 text-primary dark:text-mint" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{lifeCopy.taxFreeAtMaturity}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.taxFreeAtMaturity}</span>
           </div>
           {life.taxFreeAtMaturity ? (
             <span className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint border border-primary/20 dark:border-primary/30">
               <CheckCircle2 className="w-3.5 h-3.5" /> {copy.taxFree}
             </span>
           ) : (
-            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-[#B45309] dark:text-amber-300 border border-amber-200 dark:border-amber-800">
               {copy.taxable}
             </span>
           )}
@@ -91,15 +91,15 @@ export function LifeCoverageDetails({ acordData, language }: LifeCoverageDetails
       )}
 
       {(life.guaranteedPercentage !== undefined || life.unitLinkedPercentage !== undefined) && (
-        <div className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5 mb-3">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <PieChart className="w-4 h-4 text-primary dark:text-mint" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{lifeCopy.guaranteedVsUnitLinked}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.guaranteedVsUnitLinked}</span>
           </div>
           <div className="ml-10.5">
-            <div className="w-full h-4 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden flex">
+            <div className="w-full h-4 rounded-full bg-black/10 dark:bg-white/15 overflow-hidden flex">
               {life.guaranteedPercentage !== undefined && (
                 <div
                   className="h-full bg-primary dark:bg-mint rounded-l-full"
@@ -108,7 +108,7 @@ export function LifeCoverageDetails({ acordData, language }: LifeCoverageDetails
               )}
               {life.unitLinkedPercentage !== undefined && (
                 <div
-                  className="h-full bg-slate-400 dark:bg-slate-500"
+                  className="h-full bg-black/30 dark:bg-white/30"
                   style={{ width: `${life.unitLinkedPercentage}%` }}
                 />
               )}
@@ -117,7 +117,7 @@ export function LifeCoverageDetails({ acordData, language }: LifeCoverageDetails
               <span className="text-primary dark:text-mint">
                 {lifeCopy.guaranteed}: {life.guaranteedPercentage ?? 0}%
               </span>
-              <span className="text-slate-500 dark:text-slate-400">
+              <span className="text-black/55 dark:text-white/60">
                 {lifeCopy.unitLinked}: {life.unitLinkedPercentage ?? 0}%
               </span>
             </div>
@@ -126,23 +126,23 @@ export function LifeCoverageDetails({ acordData, language }: LifeCoverageDetails
       )}
 
       {acordData.beneficiaries && acordData.beneficiaries.length > 0 && (
-        <div className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5 mb-2">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <Users className="w-4 h-4 text-primary dark:text-mint" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{lifeCopy.beneficiaries}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.beneficiaries}</span>
           </div>
           <div className="ml-10.5 space-y-1.5">
             {acordData.beneficiaries.map((ben, i) => (
               <div key={i} className="flex items-center justify-between text-sm">
-                <span className="text-slate-900 dark:text-white font-medium">{ben.name || "-"}</span>
+                <span className="text-black dark:text-white font-medium">{ben.name || "-"}</span>
                 <div className="flex items-center gap-2">
                   {ben.relationship && (
-                    <span className="text-xs text-slate-500 dark:text-slate-400">{ben.relationship}</span>
+                    <span className="text-xs text-black/55 dark:text-white/60">{ben.relationship}</span>
                   )}
                   {ben.percentage !== undefined && (
-                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                    <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-[#EFF6FF] dark:bg-blue-900/30 text-[#1E40AF] dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                       {ben.percentage}%
                     </span>
                   )}
@@ -154,37 +154,37 @@ export function LifeCoverageDetails({ acordData, language }: LifeCoverageDetails
       )}
 
       {life.surrenderValue !== undefined && (
-        <div className="p-3 rounded-xl bg-amber-50/80 dark:bg-amber-900/20 border border-amber-200/60 dark:border-amber-800/60">
+        <div className="p-3 rounded-xl bg-[#FEF3C7]/60 dark:bg-amber-900/30 border border-amber-200/60 dark:border-amber-800/60">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                <AlertTriangle className="w-4 h-4 text-[#B45309] dark:text-amber-400" />
               </div>
               <div>
-                <span className="text-sm font-semibold text-amber-700 dark:text-amber-300">{lifeCopy.surrenderValue}</span>
-                <p className="text-xs text-amber-600/80 dark:text-amber-400/80">{lifeCopy.surrenderWarning}</p>
+                <span className="text-sm font-semibold text-[#B45309] dark:text-amber-300">{lifeCopy.surrenderValue}</span>
+                <p className="text-xs text-[#B45309]/80 dark:text-amber-400/80">{lifeCopy.surrenderWarning}</p>
               </div>
             </div>
-            <span className="text-sm font-bold text-amber-700 dark:text-amber-300">{formatCurrency(life.surrenderValue)}</span>
+            <span className="text-sm font-bold text-[#B45309] dark:text-amber-300">{formatCurrency(life.surrenderValue)}</span>
           </div>
         </div>
       )}
 
       {life.lastPremiumDate && (
-        <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <Calendar className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <div>
-              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{lifeCopy.lastPremiumDate}</span>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <span className="text-sm font-semibold text-black/75 dark:text-white/80">{lifeCopy.lastPremiumDate}</span>
+              <p className="text-xs text-black/55 dark:text-white/60">
                 {lifeCopy.paidOn} {new Date(life.lastPremiumDate).toLocaleDateString(language === "el" ? "el-GR" : "en-GB")}
               </p>
             </div>
           </div>
           {life.lastPremiumAmount !== undefined && (
-            <span className="text-sm font-bold text-slate-900 dark:text-white">{formatCurrency(life.lastPremiumAmount)}</span>
+            <span className="text-sm font-bold text-black dark:text-white">{formatCurrency(life.lastPremiumAmount)}</span>
           )}
         </div>
       )}

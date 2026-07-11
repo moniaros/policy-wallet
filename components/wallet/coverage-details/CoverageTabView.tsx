@@ -46,13 +46,13 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
 
   return (
     <div className="space-y-4">
-      <div className="flex rounded-xl bg-slate-100 dark:bg-slate-800/80 p-1 border border-slate-200/60 dark:border-slate-700/60">
+      <div className="flex rounded-xl bg-black/5 dark:bg-white/5 p-1 border border-black/10 dark:border-white/15">
         <button
           onClick={() => setActiveTab("covered")}
           className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${
             activeTab === "covered"
-              ? "bg-white dark:bg-slate-700 text-primary dark:text-mint shadow-sm"
-              : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+              ? "bg-white dark:bg-white/10 text-primary dark:text-mint shadow-sm"
+              : "text-black/55 dark:text-white/60 hover:text-black/75 dark:hover:text-white/80"
           }`}
         >
           <ShieldCheck className="w-4 h-4" />
@@ -62,8 +62,8 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
           onClick={() => setActiveTab("not_covered")}
           className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${
             activeTab === "not_covered"
-              ? "bg-white dark:bg-slate-700 text-red-600 dark:text-red-400 shadow-sm"
-              : "text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+              ? "bg-white dark:bg-white/10 text-red-600 dark:text-red-400 shadow-sm"
+              : "text-black/55 dark:text-white/60 hover:text-black/75 dark:hover:text-white/80"
           }`}
         >
           <ShieldOff className="w-4 h-4" />
@@ -83,38 +83,38 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
           {hasCoverages && (
             <div className="space-y-3">
               {typeSpecific && (
-                <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 uppercase tracking-wider px-1">
+                <h3 className="text-sm font-semibold text-black/60 dark:text-white/65 uppercase tracking-wider px-1">
                   {copy.structuredCoverages}
                 </h3>
               )}
               {acordData.coverages!.map((coverage, i) => (
                 <div
                   key={i}
-                  className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60"
+                  className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15"
                 >
                   <div className="flex items-start gap-2.5">
                     <div className="w-6 h-6 rounded-md bg-primary-soft dark:bg-primary/15 flex items-center justify-center mt-0.5 flex-shrink-0">
                       <CheckCircle2 className="w-3.5 h-3.5 text-[#166534] dark:text-mint" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-900 dark:text-white">{coverage.name}</p>
+                      <p className="text-sm font-semibold text-black dark:text-white">{coverage.name}</p>
                       {coverage.description && (
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{coverage.description}</p>
+                        <p className="text-xs text-black/55 dark:text-white/60 mt-0.5">{coverage.description}</p>
                       )}
                       {coverage.explanation && (
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        <p className="text-xs text-black/55 dark:text-white/60 mt-0.5">
                           {language === "el" ? coverage.explanation.el : coverage.explanation.en}
                         </p>
                       )}
                       {(coverage.limit || coverage.deductible) && (
                         <div className="flex flex-wrap gap-2 mt-1.5">
                           {coverage.limit && (
-                            <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
+                            <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#EFF6FF] dark:bg-blue-900/30 text-[#1E40AF] dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
                               {copy.limit}: {coverage.limit}
                             </span>
                           )}
                           {coverage.deductible && (
-                            <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60">
+                            <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#FEF3C7]/60 dark:bg-amber-900/30 text-[#B45309] dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60">
                               {copy.deductible}: {coverage.deductible}
                             </span>
                           )}
@@ -129,11 +129,11 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
 
           {!hasCoveredContent && (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3">
-                <ShieldCheck className="w-6 h-6 text-slate-400 dark:text-slate-500" />
+              <div className="w-12 h-12 rounded-xl bg-black/5 dark:bg-white/10 flex items-center justify-center mb-3">
+                <ShieldCheck className="w-6 h-6 text-black/45 dark:text-white/50" />
               </div>
-              <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">{copy.noCoverageData}</p>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{copy.noCoverageDataDesc}</p>
+              <p className="text-sm font-semibold text-black/60 dark:text-white/65">{copy.noCoverageData}</p>
+              <p className="text-xs text-black/45 dark:text-white/50 mt-1">{copy.noCoverageDataDesc}</p>
             </div>
           )}
         </div>
@@ -154,18 +154,18 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
                   <p className="text-sm text-red-800 dark:text-red-300 font-medium">{exclusion}</p>
                 </div>
               ))}
-              <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-50/60 dark:bg-amber-900/10 border border-amber-200/40 dark:border-amber-800/30">
+              <div className="flex items-start gap-2 p-3 rounded-xl bg-[#FEF3C7]/60 dark:bg-amber-900/10 border border-amber-200/40 dark:border-amber-800/30">
                 <AlertTriangle className="w-4 h-4 text-amber-500 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-amber-700 dark:text-amber-400">{copy.exclusionsDisclaimer}</p>
+                <p className="text-xs text-[#B45309] dark:text-amber-400">{copy.exclusionsDisclaimer}</p>
               </div>
             </>
           ) : (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3">
-                <ShieldOff className="w-6 h-6 text-slate-400 dark:text-slate-500" />
+              <div className="w-12 h-12 rounded-xl bg-black/5 dark:bg-white/10 flex items-center justify-center mb-3">
+                <ShieldOff className="w-6 h-6 text-black/45 dark:text-white/50" />
               </div>
-              <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">{copy.noExclusions}</p>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{copy.noExclusionsDesc}</p>
+              <p className="text-sm font-semibold text-black/60 dark:text-white/65">{copy.noExclusions}</p>
+              <p className="text-xs text-black/45 dark:text-white/50 mt-1">{copy.noExclusionsDesc}</p>
             </div>
           )}
         </div>

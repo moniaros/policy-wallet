@@ -50,12 +50,12 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
   return (
     <div className="space-y-3">
       {motor.coverageTier && (
-        <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <Shield className="w-4 h-4 text-primary dark:text-mint" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{motorCopy.coverageTier}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.coverageTier}</span>
           </div>
           <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint border border-primary/20 dark:border-primary/30 capitalize">
             {motor.coverageTier.replace(/_/g, " ")}
@@ -87,38 +87,38 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
       {motor.roadsideAssistancePhone && (
         <a
           href={`tel:${motor.roadsideAssistancePhone}`}
-          className="flex items-center justify-between p-3 rounded-xl bg-amber-50/80 dark:bg-amber-900/20 border border-amber-200/60 dark:border-amber-800/60 hover:shadow-md transition-shadow"
+          className="flex items-center justify-between p-3 rounded-xl bg-[#FEF3C7]/60 dark:bg-amber-900/30 border border-amber-200/60 dark:border-amber-800/60 hover:shadow-md transition-shadow"
         >
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-              <Car className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+              <Car className="w-4 h-4 text-[#B45309] dark:text-amber-400" />
             </div>
             <div>
-              <span className="text-sm font-bold text-amber-700 dark:text-amber-300">{motorCopy.roadsideAssistance}</span>
-              <p className="text-xs text-amber-600/80 dark:text-amber-400/80">{copy.call}</p>
+              <span className="text-sm font-bold text-[#B45309] dark:text-amber-300">{motorCopy.roadsideAssistance}</span>
+              <p className="text-xs text-[#B45309]/80 dark:text-amber-400/80">{copy.call}</p>
             </div>
           </div>
           <div className="flex items-center gap-1.5">
-            <Phone className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-            <span className="text-sm font-bold text-amber-700 dark:text-amber-300">{motor.roadsideAssistancePhone}</span>
+            <Phone className="w-4 h-4 text-[#B45309] dark:text-amber-400" />
+            <span className="text-sm font-bold text-[#B45309] dark:text-amber-300">{motor.roadsideAssistancePhone}</span>
           </div>
         </a>
       )}
 
       {motor.namedDrivers && motor.namedDrivers.length > 0 && (
-        <div className="p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5 mb-2">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <Users className="w-4 h-4 text-primary dark:text-mint" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{motorCopy.namedDrivers}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.namedDrivers}</span>
           </div>
           <div className="ml-10.5 space-y-1.5">
             {motor.namedDrivers.map((driver, i) => (
               <div key={i} className="flex items-center justify-between text-sm">
-                <span className="text-slate-900 dark:text-white font-medium">{driver.name || "-"}</span>
+                <span className="text-black dark:text-white font-medium">{driver.name || "-"}</span>
                 {driver.licenseNumber && (
-                  <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+                  <span className="text-xs text-black/55 dark:text-white/60 font-mono">
                     {motorCopy.license}: {driver.licenseNumber}
                   </span>
                 )}
@@ -129,14 +129,14 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
       )}
 
       {motor.greenCardExpiry && (
-        <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <CreditCard className="w-4 h-4 text-primary dark:text-mint" />
             </div>
             <div>
-              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{motorCopy.greenCard}</span>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.greenCard}</span>
+              <p className="text-xs text-black/55 dark:text-white/60">
                 {copy.expires}: {new Date(motor.greenCardExpiry).toLocaleDateString(language === "el" ? "el-GR" : "en-GB")}
               </p>
             </div>
@@ -145,7 +145,7 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
             greenCardStatus === "expired"
               ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800"
               : greenCardStatus === "expiring"
-                ? "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800"
+                ? "bg-amber-100 dark:bg-amber-900/30 text-[#B45309] dark:text-amber-300 border-amber-200 dark:border-amber-800"
                 : "bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint border-primary/20 dark:border-primary/30"
           }`}>
             {greenCardStatus === "expired" ? copy.expired : greenCardStatus === "expiring" ? copy.expiringSoon : copy.valid}
@@ -154,19 +154,19 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
       )}
 
       {motor.ownVehicleDamage !== undefined && (
-        <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <Car className="w-4 h-4 text-primary dark:text-mint" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{motorCopy.ownVehicleDamage}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.ownVehicleDamage}</span>
           </div>
           {motor.ownVehicleDamage ? (
             <span className="flex items-center gap-1 text-xs font-bold text-[#166534] dark:text-mint">
               <CheckCircle2 className="w-4 h-4" /> {copy.covered}
             </span>
           ) : (
-            <span className="flex items-center gap-1 text-xs font-bold text-slate-400 dark:text-slate-500">
+            <span className="flex items-center gap-1 text-xs font-bold text-black/45 dark:text-white/50">
               <XCircle className="w-4 h-4" /> {copy.notCovered}
             </span>
           )}
@@ -174,19 +174,19 @@ export function MotorCoverageDetails({ acordData, language }: MotorCoverageDetai
       )}
 
       {motor.glassBreakage !== undefined && (
-        <div className="flex items-center justify-between p-3 rounded-xl bg-white/60 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60">
+        <div className="flex items-center justify-between p-3 rounded-xl bg-black/[0.02] dark:bg-white/5 border border-black/10 dark:border-white/15">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
               <Shield className="w-4 h-4 text-primary dark:text-mint" />
             </div>
-            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{motorCopy.glassBreakage}</span>
+            <span className="text-sm font-semibold text-black/75 dark:text-white/80">{motorCopy.glassBreakage}</span>
           </div>
           {motor.glassBreakage ? (
             <span className="flex items-center gap-1 text-xs font-bold text-[#166534] dark:text-mint">
               <CheckCircle2 className="w-4 h-4" /> {copy.covered}
             </span>
           ) : (
-            <span className="flex items-center gap-1 text-xs font-bold text-slate-400 dark:text-slate-500">
+            <span className="flex items-center gap-1 text-xs font-bold text-black/45 dark:text-white/50">
               <XCircle className="w-4 h-4" /> {copy.notCovered}
             </span>
           )}
