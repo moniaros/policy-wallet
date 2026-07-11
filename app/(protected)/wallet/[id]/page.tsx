@@ -70,6 +70,23 @@ export default async function PolicyDetailPage({
     const statusLabel = getStatusLabel(status)
     const daysLeft = getDaysUntilExpiry(policy.endDate)
 
+    // Related recommendations (owner only): reuse the persisted gap-engine
+    // output, preferring same-line-of-business suggestions. Read-only — the
+    // engine itself is not re-run here.
+    let relatedRecommendations: Array<Record<string, unknown>> = []
+    if (isOwner) {
+        try {
+            const { getActiveRecommendations } = await import("@/lib/services/gap-engine")
+            const recommendations = await getActiveRecommendations(dbUser.id)
+            const sameLob = recommendations.filter(r => r.lineOfBusiness === policy.lineOfBusiness)
+            relatedRecommendations = (sameLob.length > 0 ? sameLob : recommendations)
+                .slice(0, 4)
+                .map(r => ({ ...r, createdAt: r.createdAt.toISOString() }))
+        } catch (error) {
+            console.error("Failed to load related recommendations:", error)
+        }
+    }
+
     let relationshipId: string | null = null
     if (isOwner) {
         const rel = await db.customerRelationship.findFirst({
@@ -162,6 +179,7 @@ export default async function PolicyDetailPage({
             t={t}
             tier={entitlements.tier}
             tierLimits={entitlements.limits}
+            relatedRecommendations={relatedRecommendations}
         />
     )
 }
