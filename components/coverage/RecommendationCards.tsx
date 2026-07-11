@@ -24,6 +24,7 @@ import {
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import { EmptyState, RecommendationPreviewCard } from "@/components/ui/EmptyState"
 import type { SmartCardContent } from "@/lib/services/gap-engine/portfolio-rules"
+import { LockedInsightPreview } from "@/components/monetization/LockedInsightPreview"
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -54,6 +55,8 @@ interface RecommendationCardsProps {
     profileIncomplete?: boolean
     /** Evidence / next action / review target per ruleId (from the gap engine). */
     smartContent?: Record<string, SmartCardContent>
+    /** When "free", evidence/next-step details render behind a soft paywall. */
+    tier?: "free" | "plus" | "pro"
 }
 
 // ── LOB icon map ─────────────────────────────────────────────────────
@@ -121,7 +124,9 @@ export function RecommendationCards({
     language,
     profileIncomplete = false,
     smartContent = {},
+    tier,
 }: RecommendationCardsProps) {
+    const evidenceLocked = tier === "free"
     const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set())
     const [expandedId, setExpandedId] = useState<string | null>(null)
     const [showAll, setShowAll] = useState(false)
@@ -257,29 +262,50 @@ export function RecommendationCards({
                                         {rec.personalReason[lang] || rec.personalReason.en}
                                     </p>
 
-                                    {/* Source evidence from the user's own policy data */}
-                                    {smart && (
-                                        <div className="mt-2.5 rounded-xl border border-black/8 bg-white/70 p-2.5 dark:border-white/10 dark:bg-black/30">
-                                            <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-black/45 dark:text-white/50">
-                                                <FileSearch className="h-3 w-3" />
-                                                {t("Από τα στοιχεία σας", "From your policy data")}
+                                    {/* Source evidence + next step — soft-locked on the free tier (Trigger C) */}
+                                    {smart && evidenceLocked ? (
+                                        <LockedInsightPreview
+                                            featureKey="advanced_gap_detection"
+                                            triggerSource="recommendation_evidence"
+                                            className="mt-2.5"
+                                        >
+                                            <div className="rounded-xl border border-black/8 bg-white/70 p-2.5 dark:border-white/10 dark:bg-black/30">
+                                                <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-black/45 dark:text-white/50">
+                                                    <FileSearch className="h-3 w-3" />
+                                                    {t("Από τα στοιχεία σας", "From your policy data")}
+                                                </p>
+                                                <p className="mt-1 text-xs leading-relaxed text-black/70 dark:text-white/75">
+                                                    {smart.evidence[lang] || smart.evidence.en}
+                                                </p>
+                                                <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-black/70 dark:text-white/75">
+                                                    <ArrowRight className="mt-0.5 h-3 w-3 flex-shrink-0 text-primary dark:text-mint" />
+                                                    <span>
+                                                        <span className="font-semibold">{t("Επόμενο βήμα:", "Next step:")}</span>{" "}
+                                                        {smart.nextAction[lang] || smart.nextAction.en}
+                                                    </span>
+                                                </p>
+                                            </div>
+                                        </LockedInsightPreview>
+                                    ) : smart ? (
+                                        <>
+                                            <div className="mt-2.5 rounded-xl border border-black/8 bg-white/70 p-2.5 dark:border-white/10 dark:bg-black/30">
+                                                <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-black/45 dark:text-white/50">
+                                                    <FileSearch className="h-3 w-3" />
+                                                    {t("Από τα στοιχεία σας", "From your policy data")}
+                                                </p>
+                                                <p className="mt-1 text-xs leading-relaxed text-black/70 dark:text-white/75">
+                                                    {smart.evidence[lang] || smart.evidence.en}
+                                                </p>
+                                            </div>
+                                            <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-black/70 dark:text-white/75">
+                                                <ArrowRight className="mt-0.5 h-3 w-3 flex-shrink-0 text-primary dark:text-mint" />
+                                                <span>
+                                                    <span className="font-semibold">{t("Επόμενο βήμα:", "Next step:")}</span>{" "}
+                                                    {smart.nextAction[lang] || smart.nextAction.en}
+                                                </span>
                                             </p>
-                                            <p className="mt-1 text-xs leading-relaxed text-black/70 dark:text-white/75">
-                                                {smart.evidence[lang] || smart.evidence.en}
-                                            </p>
-                                        </div>
-                                    )}
-
-                                    {/* Suggested next action */}
-                                    {smart && (
-                                        <p className="mt-2 flex items-start gap-1.5 text-xs leading-relaxed text-black/70 dark:text-white/75">
-                                            <ArrowRight className="mt-0.5 h-3 w-3 flex-shrink-0 text-primary dark:text-mint" />
-                                            <span>
-                                                <span className="font-semibold">{t("Επόμενο βήμα:", "Next step:")}</span>{" "}
-                                                {smart.nextAction[lang] || smart.nextAction.en}
-                                            </span>
-                                        </p>
-                                    )}
+                                        </>
+                                    ) : null}
 
                                     {/* Expanded details */}
                                     {isExpanded && (

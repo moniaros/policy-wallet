@@ -4,11 +4,13 @@ import { useState } from "react"
 import { askPolicyQuestion } from "@/app/(protected)/wallet/actions"
 import { toast } from "sonner"
 import { MessageCircle, Send, Sparkles, Loader2, Minus, Plus } from "lucide-react"
+import { usePathname } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { LimitReachedModal } from '@/components/account/LimitReachedModal'
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
+import { UpgradeModal } from "@/components/monetization/UpgradeModal"
+import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 
 interface Message {
     role: 'user' | 'assistant'
@@ -16,8 +18,10 @@ interface Message {
     timestamp: Date
 }
 
-export function PolicyQA({ policyId }: { policyId: string }) {
-    const { t, language } = useLanguage()
+export function PolicyQA({ policyId, tier }: { policyId: string; tier?: 'free' | 'plus' | 'pro' }) {
+    const { t } = useLanguage()
+    const pathname = usePathname()
+    const isFreeTier = tier === 'free'
     const [question, setQuestion] = useState("")
     const [messages, setMessages] = useState<Message[]>([])
     const [isAsking, setIsAsking] = useState(false)
@@ -119,7 +123,8 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                                     <button
                                         key={idx}
                                         onClick={() => setQuestion(q)}
-                                        className="w-full text-left px-4 py-3 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 rounded-xl text-sm text-black/75 dark:text-white/75 transition-colors border border-black/10 dark:border-white/15 hover:border-primary/35 dark:hover:border-mint/35 cursor-pointer"
+                                        disabled={isFreeTier}
+                                        className="w-full text-left px-4 py-3 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 rounded-xl text-sm text-black/75 dark:text-white/75 transition-colors border border-black/10 dark:border-white/15 hover:border-primary/35 dark:hover:border-mint/35 cursor-pointer disabled:cursor-default disabled:opacity-60 disabled:hover:bg-black/5 dark:disabled:hover:bg-white/10"
                                     >
                                         <MessageCircle className="w-4 h-4 inline mr-2 text-primary dark:text-mint" />
                                         {q}
@@ -131,7 +136,20 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                 </div>
             )}
 
-            {showChat && (
+            {/* Free tier gets 0 AI questions — pre-empt instead of failing after typing */}
+            {showChat && isFreeTier && (
+                <div className="p-4 pt-0">
+                    <UpgradeTriggerCard
+                        featureKey="unlimited_ai_questions"
+                        triggerSource="policy_qa_preempt"
+                        returnTo={pathname || undefined}
+                        variant="inline"
+                    />
+                    <AiDisclaimer variant="inline" className="mt-3 justify-center text-center" />
+                </div>
+            )}
+
+            {showChat && !isFreeTier && (
                 <div className="p-4 pt-0">
                     <form onSubmit={handleAsk} className="relative">
                         <input
@@ -156,7 +174,13 @@ export function PolicyQA({ policyId }: { policyId: string }) {
                 </div>
             )}
 
-            <LimitReachedModal isOpen={limitReached} reason={limitReason} language={language as 'el' | 'en'} onDismiss={() => setLimitReached(false)} />
+            <UpgradeModal
+                isOpen={limitReached}
+                onClose={() => setLimitReached(false)}
+                featureKey="unlimited_ai_questions"
+                triggerSource={limitReason === "feature_locked" ? "policy_qa_locked" : "policy_qa_daily_limit"}
+                returnTo={pathname || undefined}
+            />
         </div>
     )
 }

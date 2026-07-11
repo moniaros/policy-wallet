@@ -86,15 +86,27 @@ interface DocumentPreviewButtonProps {
     isLocked?: boolean
     label: string
     lockedLabel?: string
+    /** Locked-state click-through (opens the upgrade flow instead of the preview). */
+    onLockedClick?: () => void
 }
 
-export function DocumentPreviewButton({ onClick, isLocked, label, lockedLabel }: DocumentPreviewButtonProps) {
+export function DocumentPreviewButton({ onClick, isLocked, label, lockedLabel, onLockedClick }: DocumentPreviewButtonProps) {
     if (isLocked) {
         return (
-            <span className="flex items-center gap-1 text-xs text-black/40 dark:text-white/40" title={lockedLabel}>
+            <button
+                type="button"
+                onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    onLockedClick?.()
+                }}
+                className="flex items-center gap-1 rounded-md px-1.5 py-1 text-xs text-black/40 transition-colors hover:bg-black/5 hover:text-black/70 dark:text-white/40 dark:hover:bg-white/10 dark:hover:text-white/70"
+                title={lockedLabel}
+                aria-label={lockedLabel}
+            >
                 <Crown className="h-3 w-3" />
                 <Eye className="h-3.5 w-3.5" />
-            </span>
+            </button>
         )
     }
 

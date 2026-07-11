@@ -47,7 +47,6 @@ export function LockedInsightPreview({
             feature_requested: featureKey,
             locale: language,
         })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const openModal = () => {

@@ -9,6 +9,16 @@ import { hapticFeedback } from "@/utils/haptic"
 import { PlusIcon, ChatIcon, TrendingUpIcon, DocumentIcon } from "@/components/icons/PolicyIcons"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { Search, X } from "lucide-react"
+import { UpgradeModal } from "@/components/monetization/UpgradeModal"
+
+const SEARCH_COPY = {
+    placeholder: { el: "Αναζήτηση συμβολαίου...", en: "Search policies..." },
+    clear: { el: "Καθαρισμός αναζήτησης", en: "Clear search" },
+} as const
+
+function pickCopy(pair: { el: string; en: string }, isGreek: boolean) {
+    return isGreek ? pair.el : pair.en
+}
 
 export function MobileWalletView({
     policies,
@@ -23,6 +33,7 @@ export function MobileWalletView({
     const [currentPolicyIndex, setCurrentPolicyIndex] = useState(0)
     const [viewMode, setViewMode] = useState<"hero" | "list">("hero")
     const [searchQuery, setSearchQuery] = useState("")
+    const [upgradeOpen, setUpgradeOpen] = useState(false)
 
     const filteredPolicies = useMemo(() => {
         if (!searchQuery.trim()) return policies
@@ -133,7 +144,7 @@ export function MobileWalletView({
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black/40 dark:text-white/45" />
                         <input
                             type="search"
-                            placeholder={isGreek ? "Αναζήτηση συμβολαίου..." : "Search policies..."}
+                            placeholder={pickCopy(SEARCH_COPY.placeholder, isGreek)}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full rounded-xl border border-black/10 bg-black/5 py-2.5 pl-9 pr-9 text-sm text-black placeholder-black/40 outline-none transition focus:border-primary/50 focus:ring-2 focus:ring-primary/20 dark:border-white/15 dark:bg-white/5 dark:text-white dark:placeholder-white/40"
@@ -143,7 +154,7 @@ export function MobileWalletView({
                                 type="button"
                                 onClick={() => setSearchQuery("")}
                                 className="absolute right-3 top-1/2 -translate-y-1/2 text-black/40 dark:text-white/45"
-                                aria-label={isGreek ? "Καθαρισμός αναζήτησης" : "Clear search"}
+                                aria-label={pickCopy(SEARCH_COPY.clear, isGreek)}
                             >
                                 <X className="h-4 w-4" />
                             </button>
@@ -226,6 +237,7 @@ export function MobileWalletView({
                     </button>
 
                     <button
+                        onClick={() => setUpgradeOpen(true)}
                         className="flex flex-col items-center gap-2 p-4 bg-black dark:bg-white text-white dark:text-black rounded-2xl hover:bg-[#111111] dark:hover:bg-white/90 transition-all active:scale-[0.98]"
                         aria-label={roleCopy.walletDashboard.upgrade}
                     >
@@ -252,6 +264,14 @@ export function MobileWalletView({
                     </div>
                 )}
             </div>
+
+            <UpgradeModal
+                isOpen={upgradeOpen}
+                onClose={() => setUpgradeOpen(false)}
+                featureKey="full_ai_policy_analysis"
+                triggerSource="mobile_wallet_tile"
+                returnTo="/wallet"
+            />
         </div>
     )
 }
