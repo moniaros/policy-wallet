@@ -1,72 +1,95 @@
 import { test, expect } from '@playwright/test';
+import { LOGGED_OUT, dismissCookieBanner } from '../helpers/ui';
+
+// These specs assert LOGGED-OUT behavior — drop the project's authed state.
+test.use({ storageState: LOGGED_OUT });
 
 test.describe('Authentication Flow', () => {
-    test('should navigate to signin page', async ({ page }) => {
-        await page.goto('/');
-
-        // Should redirect to signin if not authenticated
+    test('protected routes redirect anonymous users to signin', async ({ page }) => {
+        await page.goto('/wallet');
         await expect(page).toHaveURL(/.*auth\/signin/);
     });
 
-    test('should show signin form', async ({ page }) => {
-        await page.goto('/auth/signin');
-
-        // Check for email and password fields
-        await expect(page.getByLabel(/email/i)).toBeVisible();
-        await expect(page.getByLabel(/password/i)).toBeVisible();
-        await expect(page.getByRole('button', { name: /sign in/i })).toBeVisible();
+    test('landing page is public (no signin redirect)', async ({ page }) => {
+        await page.goto('/');
+        await expect(page).not.toHaveURL(/.*auth\/signin/);
     });
 
-    test('should show validation errors for empty form', async ({ page }) => {
+    test('signin form renders email, password and submit', async ({ page }) => {
         await page.goto('/auth/signin');
 
-        // Try to submit empty form
-        await page.getByRole('button', { name: /sign in/i }).click();
-
-        // Should show validation errors (implementation dependent)
-        // This is a placeholder - adjust based on your actual validation
+        // Current form: email input has no id; password is #signin-password
+        await expect(page.locator('input[type="email"]').first()).toBeVisible();
+        await expect(page.locator('#signin-password')).toBeVisible();
+        await expect(page.locator('button[type="submit"]').first()).toBeVisible();
     });
 
-    test('should have link to signup page', async ({ page }) => {
+    test('invalid credentials show an error and stay on signin', async ({ page }) => {
         await page.goto('/auth/signin');
+        await dismissCookieBanner(page);
 
-        // Check for signup link
-        const signupLink = page.getByRole('link', { name: /sign up/i });
+        await page.fill('input[type="email"]', 'nobody@example.com');
+        await page.fill('#signin-password', 'definitely-wrong');
+        await page.click('button[type="submit"]');
+
+        // Stays on signin; an error message appears (EL or EN)
+        await expect(page).toHaveURL(/.*auth\/signin/);
+        await expect(
+            page.getByText(/invalid|λάθος|αποτυχία|credentials|σφάλμα/i).first()
+        ).toBeVisible({ timeout: 10000 });
+    });
+
+    test('signin links to signup', async ({ page }) => {
+        await page.goto('/auth/signin');
+        await dismissCookieBanner(page);
+
+        const signupLink = page.getByRole('link', { name: /sign ?up|εγγραφή/i }).first();
         await expect(signupLink).toBeVisible();
-
-        // Click and verify navigation
         await signupLink.click();
         await expect(page).toHaveURL(/.*auth\/signup/);
     });
 });
 
 test.describe('Signup Flow', () => {
-    test('should show signup form', async ({ page }) => {
-        await page.goto('/auth/signup');
+    test('policyholder signup form: mobile + optional email + password + terms, no name field', async ({ page }) => {
+        await page.goto('/auth/signup/policyholder');
 
-        // Check for required fields
-        await expect(page.getByLabel(/name/i)).toBeVisible();
-        await expect(page.getByLabel(/email/i)).toBeVisible();
-        await expect(page.getByLabel(/password/i)).toBeVisible();
-        await expect(page.getByRole('button', { name: /sign up/i })).toBeVisible();
+        await expect(page.locator('#signup-mobile')).toBeVisible();
+        await expect(page.locator('#signup-email')).toBeVisible();
+        await expect(page.locator('#signup-password')).toBeVisible();
+        await expect(page.locator('#signup-terms')).toBeVisible();
+        // The full-name field is agent-only
+        await expect(page.locator('#signup-name')).toHaveCount(0);
     });
 
-    test('should have link back to signin', async ({ page }) => {
-        await page.goto('/auth/signup');
+    test('agent signup form additionally has the full-name field', async ({ page }) => {
+        await page.goto('/auth/signup/agent');
 
-        const signinLink = page.getByRole('link', { name: /sign in/i });
+        await expect(page.locator('#signup-name')).toBeVisible();
+        await expect(page.locator('#signup-mobile')).toBeVisible();
+        await expect(page.locator('#signup-email')).toBeVisible();
+        await expect(page.locator('#signup-password')).toBeVisible();
+    });
+
+    test('/auth/signup redirects to the policyholder variant', async ({ page }) => {
+        await page.goto('/auth/signup');
+        await expect(page).toHaveURL(/auth\/signup\/policyholder/);
+    });
+
+    test('signup links back to signin', async ({ page }) => {
+        await page.goto('/auth/signup/policyholder');
+        const signinLink = page.getByRole('link', { name: /sign ?in|σύνδεση/i }).first();
         await expect(signinLink).toBeVisible();
     });
 });
 
 test.describe('Password Reset Flow', () => {
-    test('should navigate to forgot password page', async ({ page }) => {
+    test('signin offers a password-recovery entry point', async ({ page }) => {
         await page.goto('/auth/signin');
+        await dismissCookieBanner(page);
 
-        const forgotLink = page.getByRole('link', { name: /forgot.*password/i });
-        if (await forgotLink.isVisible()) {
-            await forgotLink.click();
-            await expect(page).toHaveURL(/.*auth\/forgot-password/);
-        }
+        // Link text: «Ξέχασα τον κωδικό μου» / "Forgot my password"
+        const forgotTrigger = page.getByText(/forgot|ξέχασα/i).first();
+        await expect(forgotTrigger).toBeVisible();
     });
 });

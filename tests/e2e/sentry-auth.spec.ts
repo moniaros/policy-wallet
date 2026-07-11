@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test'
 import { SentryTestHelper } from '../helpers/sentry-helper'
+import { dismissCookieBanner } from '../helpers/ui'
 
 test.describe('Auth flow error capture', () => {
   test.use({ storageState: { cookies: [], origins: [] } })
@@ -43,12 +44,14 @@ test.describe('Auth flow error capture', () => {
 
     await page.goto('/auth/signin')
     await page.waitForSelector('input[type="email"]')
+    await dismissCookieBanner(page)
 
     await page.fill('input[type="email"]', 'nonexistent@example.com')
     await page.fill('input[type="password"]', 'wrongpassword123')
     await page.click('button[type="submit"]')
 
-    const errorElement = page.locator('.text-red-500, .text-red-700, .text-red-300, [class*="text-red"]').first()
+    // Signin errors render in a rose-toned notice box (not red)
+    const errorElement = page.locator('[class*="text-rose"], [class*="text-red"]').first()
     await expect(errorElement).toBeVisible({ timeout: 15000 })
   })
 
@@ -58,6 +61,7 @@ test.describe('Auth flow error capture', () => {
 
     await page.goto('/auth/signin')
     await page.waitForSelector('input[type="email"]')
+    await dismissCookieBanner(page)
 
     await page.fill('input[type="email"]', 'invalid@test.com')
     await page.fill('input[type="password"]', 'wrong')

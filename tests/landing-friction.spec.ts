@@ -20,7 +20,8 @@ test.describe("Landing Friction Regressions", () => {
     test("contact CTA routes to contact page instead of mailto", async ({ page }) => {
         await page.goto("/")
 
-        const contactCta = page.getByRole("link", { name: /contact us|επικοινωνία/i })
+        // Both header and footer carry the contact link — assert the first
+        const contactCta = page.getByRole("link", { name: /contact us|επικοινωνία/i }).first()
         await expect(contactCta).toHaveAttribute("href", "/contact")
     })
 
