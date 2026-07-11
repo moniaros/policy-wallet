@@ -18,7 +18,7 @@ import { enqueueAnalysisRun } from "@/lib/services/analysis/analysis-queue"
 import { refreshProtectionScore } from "@/lib/services/gap-engine"
 import { PolicyService } from "@/lib/services/policy.service"
 import { canUserUseTokens } from "@/lib/token-tracking"
-import { canUserAddPolicy, canUserUseFeature, getUpgradeMessage, getUserSubscription, SUBSCRIPTION_LIMITS } from "@/lib/subscription-limits"
+import { canUserAddPolicy, canUserUseFeature, getUserSubscription, SUBSCRIPTION_LIMITS } from "@/lib/subscription-limits"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { after } from 'next/server'
@@ -67,7 +67,10 @@ export async function createPolicy(formData: FormData) {
     const userId = dbUser.id
     const canAdd = await canUserAddPolicy(userId)
     if (!canAdd.allowed) {
-        throw new Error(getUpgradeMessage("policy_limit_reached", (dbUser.preferredLanguage as "el" | "en") || "en"))
+        // Structured code — the client maps this to the policy_limit upgrade
+        // modal. (Previously threw a localized sentence the error mapper
+        // couldn't match, so EL users saw a generic failure toast.)
+        throw new Error("POLICY_LIMIT_REACHED")
     }
 
     const rawData = {
@@ -472,7 +475,7 @@ export async function uploadPolicyDocument(formData: FormData) {
     const userId = authResult.dbUser.id
     const canAdd = await canUserAddPolicy(userId)
     if (!canAdd.allowed) {
-        return { error: getUpgradeMessage("policy_limit_reached", (authResult.dbUser.preferredLanguage as "el" | "en") || "en") }
+        return { error: "POLICY_LIMIT_REACHED" }
     }
     const file = formData.get("file") as File
 

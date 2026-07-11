@@ -226,6 +226,29 @@ function normalizeAgentTier(raw?: string | null): AgentTier {
     return "agent_free"
 }
 
+/**
+ * A paid subscription row counts only while it is genuinely live:
+ * - Stripe-backed rows (stripeSubscriptionId set) follow their status —
+ *   the webhook lifecycle owns them.
+ * - Rows WITHOUT a Stripe id (legacy free-grant fallback, now removed)
+ *   are grandfathered ONLY until their currentPeriodEnd, per the
+ *   2026-07-11 decision. After that they resolve to free.
+ */
+export function isSubscriptionLive(subscription: {
+    status: string
+    stripeSubscriptionId?: string | null
+    currentPeriodEnd?: Date | null
+    provider?: string | null
+} | null | undefined): boolean {
+    if (!subscription) return false
+    if (subscription.status !== "active") return false
+    if (subscription.stripeSubscriptionId || subscription.provider === "revenue_cat") return true
+    // Rows without an expiry date can't be aged out — treat as live
+    // (the prod schema requires currentPeriodEnd; this guards mocks/legacy).
+    if (!(subscription.currentPeriodEnd instanceof Date)) return true
+    return subscription.currentPeriodEnd.getTime() > Date.now()
+}
+
 export async function resolveUserEntitlements(userId: string): Promise<UserEntitlements> {
     const subscription = await prisma.subscription.findFirst({
         where: { userId },
@@ -233,10 +256,11 @@ export async function resolveUserEntitlements(userId: string): Promise<UserEntit
         orderBy: { createdAt: "desc" },
     })
 
-    const tier = normalizeTier(subscription?.plan?.name)
+    const live = isSubscriptionLive(subscription)
+    const tier = live ? normalizeTier(subscription?.plan?.name) : "free"
     return {
         tier,
-        status: subscription?.status || "active",
+        status: live ? (subscription?.status || "active") : "active",
         isPaid: tier !== "free",
         limits: ENTITLEMENT_LIMITS[tier],
     }
@@ -249,8 +273,8 @@ export async function resolveAgentEntitlements(userId: string): Promise<AgentEnt
         orderBy: { createdAt: "desc" },
     })
 
-    // Agent plans have planType = "agent"
-    const isAgentPlan = subscription?.plan?.planType === "agent"
+    // Agent plans have planType = "agent"; same liveness rules as B2C.
+    const isAgentPlan = subscription?.plan?.planType === "agent" && isSubscriptionLive(subscription)
     const tier = isAgentPlan
         ? normalizeAgentTier(subscription?.plan?.name)
         : "agent_free"

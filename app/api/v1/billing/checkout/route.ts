@@ -7,6 +7,9 @@ import { withApiGuard } from "@/lib/api-guard"
 const checkoutRequestSchema = z.object({
     planId: z.string().min(1, "Plan ID is required"),
     billingPeriod: z.enum(["monthly", "annual"]).default("monthly"),
+    // Same-origin app path to return to after checkout (context preservation);
+    // validated server-side in createCheckoutSession.
+    returnTo: z.string().max(500).optional(),
 })
 
 export const POST = withApiGuard(
@@ -23,8 +26,8 @@ export const POST = withApiGuard(
         const language = (auth!.dbUser.preferredLanguage as "el" | "en") || "el"
 
         try {
-            const { planId, billingPeriod } = body!
-            const checkout = await createCheckoutSession(auth!.dbUser.id, planId, billingPeriod)
+            const { planId, billingPeriod, returnTo } = body!
+            const checkout = await createCheckoutSession(auth!.dbUser.id, planId, billingPeriod, returnTo)
 
             return createApiResponse(
                 {

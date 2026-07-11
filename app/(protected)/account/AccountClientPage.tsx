@@ -59,9 +59,9 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
     }
 
     const handleUpgrade = async (planId: string) => {
-        const result = await upgradeSubscription(planId)
-        if (result.success) {
-            alert('Plan updated successfully!')
+        const result = await upgradeSubscription(planId, 'monthly', '/account')
+        if (result.url) {
+            window.location.href = result.url
         }
     }
 

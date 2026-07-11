@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { ChevronLeft, ShieldCheck, Zap } from 'lucide-react'
 import { toast } from 'sonner'
 import { motion } from 'framer-motion'
@@ -11,20 +11,50 @@ import { getSubscriptionCopy } from '@/lib/subscription-copy'
 import { upgradeSubscription } from '../account/actions'
 import { trackJourneyEvent } from '@/lib/journey/funnel'
 
+const TIER_TO_PLAN_ID: Record<string, string> = {
+    free: 'ph-free',
+    plus: 'ph-plus',
+    pro: 'ph-pro',
+}
+
+const UPGRADE_COPY = {
+    redirecting: { el: 'Μεταφορά στο Stripe...', en: 'Redirecting to Stripe...' },
+    genericError: { el: 'Κάτι πήγε στραβά. Δοκιμάστε ξανά.', en: 'Something went wrong. Please try again.' },
+} as const
+
+const pick = (pair: { el: string; en: string }, language: string) =>
+    language === 'el' ? pair.el : pair.en
+
 export default function PricingPage() {
     const router = useRouter()
+    const searchParams = useSearchParams()
     const { language } = useLanguage()
     const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null)
 
-    // In a real app, we would fetch the current plan from an API or Context
-    const currentPlanId = 'ph-free'
+    // Real current plan (was hardcoded 'ph-free' — paid users saw themselves
+    // as free). The tokens/usage endpoint already returns the resolved tier.
+    const [currentPlanId, setCurrentPlanId] = useState('ph-free')
+    useEffect(() => {
+        fetch('/api/v1/tokens/usage')
+            .then((res) => (res.ok ? res.json() : null))
+            .then((payload) => {
+                const tier = payload?.data?.tier || payload?.tier
+                if (tier && TIER_TO_PLAN_ID[tier]) setCurrentPlanId(TIER_TO_PLAN_ID[tier])
+            })
+            .catch(() => { /* keep free default */ })
+    }, [])
+
+    // Context preservation: the trigger that sent the user here passes
+    // ?return=<path>; after Stripe, /upgrade/success deep-links back to it.
+    const returnTo = searchParams.get('return') || undefined
+    const triggerReason = searchParams.get('reason') || 'direct'
 
     const handleSubscribe = async (planId: string) => {
         if (planId === currentPlanId) return
 
         setLoadingPlanId(planId)
         try {
-            const result = await upgradeSubscription(planId)
+            const result = await upgradeSubscription(planId, 'monthly', returnTo)
 
             if (result.error) {
                 toast.error(result.error)
@@ -33,25 +63,17 @@ export default function PricingPage() {
 
             if (result.url) {
                 trackJourneyEvent('upgrade_started', {
-                    source: 'protected_upgrade_page',
+                    source: `protected_upgrade_page:${triggerReason}`,
                     tier: planId,
                 })
-                toast.success(language === 'el' ? 'Μεταφορά στο Stripe...' : 'Redirecting to Stripe...')
+                toast.success(pick(UPGRADE_COPY.redirecting, language))
                 // Wait a moment for the toast
                 setTimeout(() => {
                     window.location.href = result.url!
                 }, 800)
-            } else if (result.success) {
-                trackJourneyEvent('upgrade_completed', {
-                    source: 'protected_upgrade_page',
-                    tier: planId,
-                })
-                toast.success(language === 'el' ? 'Το πλάνο ενημερώθηκε!' : 'Plan updated successfully!')
-                router.refresh()
-                router.back()
             }
         } catch (error) {
-            toast.error(language === 'el' ? 'Κάτι πήγε στραβά. Δοκιμάστε ξανά.' : "Something went wrong. Please try again.")
+            toast.error(pick(UPGRADE_COPY.genericError, language))
         } finally {
             setLoadingPlanId(null)
         }

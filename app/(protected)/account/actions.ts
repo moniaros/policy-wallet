@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { logger } from "@/lib/logger"
 import { stripe } from "@/lib/stripe"
+import { createCheckoutSession } from "@/lib/billing"
 import { env } from "@/lib/env"
 import { syncRevenueCatSubscription } from "@/lib/services/revenuecat.service"
 import { daysFromNow, TRIAL_PERIOD_DAYS } from "@/lib/constants/time"
@@ -287,62 +288,32 @@ export async function logoutAllSessions() {
     return { success: true }
 }
 
-export async function upgradeSubscription(planId: string) {
+/**
+ * Start a paid upgrade. ALWAYS goes through Stripe Checkout — the old
+ * "no stripePriceId → grant the plan for free" fallback was a revenue bug
+ * (existing free-granted subscriptions are grandfathered until their
+ * currentPeriodEnd; see docs/STATUS.md).
+ */
+export async function upgradeSubscription(
+    planId: string,
+    billingPeriod: "monthly" | "annual" = "monthly",
+    returnTo?: string
+) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
     const plan = await db.plan.findUnique({ where: { id: planId } })
     if (!plan) return { error: "Plan not found" }
-
-    const isProPlan = plan.name.toLowerCase().includes('pro')
-
-    if (!plan.stripePriceId) {
-        // Fallback or development mode: manual update
-        await db.subscription.updateMany({
-            where: { userId: authResult.dbUser.id, status: 'active' },
-            data: { status: 'expired' }
-        })
-
-        const trialDays = isProPlan ? 14 : 30
-
-        await db.subscription.create({
-            data: {
-                userId: authResult.dbUser.id,
-                planId: planId,
-                status: 'active',
-                currentPeriodStart: new Date(),
-                currentPeriodEnd: new Date(Date.now() + trialDays * 24 * 60 * 60 * 1000),
-                autoRenew: true
-            }
-        })
-
-        revalidatePath('/account')
-        return { success: true }
-    }
+    if (Number(plan.price) <= 0) return { error: "Plan is not purchasable" }
 
     try {
-        const session = await stripe.checkout.sessions.create({
-            customer: authResult.dbUser.stripeCustomerId || undefined,
-            customer_email: authResult.dbUser.stripeCustomerId ? undefined : authResult.dbUser.email,
-            line_items: [
-                {
-                    price: plan.stripePriceId,
-                    quantity: 1,
-                },
-            ],
-            mode: 'subscription',
-            subscription_data: isProPlan ? {
-                trial_period_days: 14
-            } : undefined,
-            success_url: `${env.NEXTAUTH_URL || 'http://localhost:3000'}/account?session_id={CHECKOUT_SESSION_ID}`,
-            cancel_url: `${env.NEXTAUTH_URL || 'http://localhost:3000'}/account`,
-            metadata: {
-                userId: authResult.dbUser.id,
-                planId: plan.id,
-            },
-        })
-
-        return { url: session.url }
+        const checkout = await createCheckoutSession(
+            authResult.dbUser.id,
+            planId,
+            billingPeriod,
+            returnTo
+        )
+        return { url: checkout.url }
     } catch (error) {
         logger('error', 'Stripe checkout creation failed', { error })
         return { error: "Failed to initialize payment" }

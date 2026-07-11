@@ -9,6 +9,7 @@ import { createPolicy, getPolicyReviewData, retryPolicyAnalysis } from "@/app/(p
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
+import { LimitReachedModal } from "@/components/account/LimitReachedModal"
 import { PolicyReviewScreen } from "@/components/wallet/PolicyReviewScreen"
 import type { PolicyReviewData } from "@/lib/wallet/policy-review"
 import {
@@ -58,6 +59,9 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
     const [aiConsent, setAiConsent] = useState(hasAiConsent)
     const [consentModalOpen, setConsentModalOpen] = useState(false)
     const pendingFormDataRef = useRef<FormData | null>(null)
+
+    // Policy-limit upgrade modal (Trigger A — free tier holds 3 policies)
+    const [limitModalOpen, setLimitModalOpen] = useState(false)
 
     // Review phase state
     const [phase, setPhase] = useState<Phase>('form')
@@ -172,7 +176,14 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                 }
             } catch (error: any) {
                 console.error(error)
-                toast.error(mapWalletErrorToMessage(error?.message || error, t, "addPolicy"))
+                const message = String(error?.message || error)
+                if (message.includes("POLICY_LIMIT_REACHED")) {
+                    // Natural upgrade moment — show the plan prompt instead of
+                    // a dead-end error toast.
+                    setLimitModalOpen(true)
+                    return
+                }
+                toast.error(mapWalletErrorToMessage(message, t, "addPolicy"))
             }
         })
     }
@@ -403,6 +414,13 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                         if (pending) submitPolicy(pending)
                     }}
                     source="wallet_add_policy"
+                />
+
+                <LimitReachedModal
+                    isOpen={limitModalOpen}
+                    reason="policy_limit"
+                    language={language}
+                    onDismiss={() => setLimitModalOpen(false)}
                 />
 
                 <form onSubmit={handleSubmit} className="space-y-8">
