@@ -1,52 +1,50 @@
 import { test, expect } from '@playwright/test';
 
-// Note: These tests require a logged-in user
-// You may need to set up authentication state before running these tests
+/**
+ * Wallet smoke tests — run with the policyholder auth state provisioned by
+ * global-setup. Assertions are structural/bilingual (Greek-default UI) and
+ * independent of how many policies the account holds.
+ */
 
 test.describe('Policy Wallet', () => {
-    test.skip('should display wallet page after login', async ({ page }) => {
-        // Skip for now - requires authentication setup
+    test('wallet page renders for an authenticated user', async ({ page }) => {
         await page.goto('/wallet');
-        await expect(page.getByRole('heading', { name: /policy wallet/i })).toBeVisible();
+
+        // No signin bounce; wallet chrome renders
+        await expect(page).toHaveURL(/\/wallet/);
+        await expect(
+            page.getByRole('heading', { name: /πορτοφόλι|wallet|συμβόλαι|policies/i }).first()
+        ).toBeVisible({ timeout: 15000 });
     });
 
-    test.skip('should show add policy button', async ({ page }) => {
+    test('wallet shows either policies or the premium empty state', async ({ page }) => {
         await page.goto('/wallet');
-        await expect(page.getByRole('button', { name: /add policy/i })).toBeVisible();
+
+        // Either a policy card/table row exists, or the first-policy empty state pitch
+        const anyContent = page
+            .getByText(/πρώτο συμβόλαιο|first policy|λήγει|expires|ενεργό|active/i)
+            .first();
+        await expect(anyContent).toBeVisible({ timeout: 15000 });
     });
 
-    test.skip('should open add policy modal', async ({ page }) => {
-        await page.goto('/wallet');
+    test('add-policy page is reachable', async ({ page }) => {
+        await page.goto('/wallet/add');
 
-        const addButton = page.getByRole('button', { name: /add policy/i });
-        await addButton.click();
-
-        // Check for modal or dropdown menu
-        await expect(page.getByText(/add manually/i)).toBeVisible();
-    });
-});
-
-test.describe('Policy Management', () => {
-    test.skip('should allow manual policy entry', async ({ page }) => {
-        await page.goto('/wallet');
-
-        // Open add menu
-        await page.getByRole('button', { name: /add policy/i }).click();
-        await page.getByText(/add manually/i).click();
-
-        // Should navigate to add policy page
-        await expect(page).toHaveURL(/.*wallet\/add/);
+        await expect(page).toHaveURL(/\/wallet\/add/);
+        // The upload/manual form renders (file dropzone or insurer field)
+        await expect(
+            page.locator('input[type="file"], input[name="insurerName"], form').first()
+        ).toBeVisible({ timeout: 15000 });
     });
 });
 
-test.describe('Gap Analysis', () => {
-    test.skip('should display gap analysis for policies', async ({ page }) => {
-        await page.goto('/wallet');
+test.describe('Coverage Insights', () => {
+    test('coverage insights page renders for an authenticated user', async ({ page }) => {
+        await page.goto('/coverage-insights');
 
-        // If policies exist, check for gap indicators
-        const gapIndicator = page.getByText(/coverage gap/i).first();
-        if (await gapIndicator.isVisible()) {
-            await expect(gapIndicator).toBeVisible();
-        }
+        await expect(page).not.toHaveURL(/auth\/signin/);
+        await expect(
+            page.getByText(/κάλυψη|coverage|προστασία|protection|προτάσεις|recommendation/i).first()
+        ).toBeVisible({ timeout: 20000 });
     });
 });

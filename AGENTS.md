@@ -69,8 +69,10 @@ E2E (Playwright) is **not** in CI — run it locally before merging UI changes. 
 ### Test layout & Playwright quirks
 
 - Unit tests live in `tests/unit/**` (jsdom, `globals: true`, shared setup in `tests/setup.ts`). Playwright specs are `tests/*.spec.ts` + `tests/e2e/` — Vitest excludes them and Playwright ignores `tests/unit`.
-- Playwright's `baseURL` defaults to `http://localhost:5000`, but `npm run dev` serves on **3000** — run E2E against a local dev server with `BASE_URL=http://localhost:3000 npx playwright test …`.
-- Auth is handled by setup projects that store state in `playwright/.auth/`: the `chromium`/`firefox`/mobile projects run signed in as a **policyholder** (`auth.setup.ts`), `agent-chromium` as an **agent** (`agent-auth.setup.ts`).
+- E2E runs end-to-end on port **3000** (config + dev server aligned; never use :5000 — macOS AirPlay squats it and fools readiness probes). The webServer starts `npm run dev` itself with dummy Upstash env. If Playwright's browsers aren't installed, set `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`.
+- **Test users are auto-provisioned** by `tests/global-setup.ts` (Supabase `auth.users` via SQL + Prisma rows + one fixture policy) against the local-dev Supabase from `.env.local` — it refuses to run against prod. Accounts/creds live in `tests/e2e-users.ts`; the auth setups (`playwright/.auth/*.json`) do UI **login only**, never signup.
+- Standard local run: `npx playwright test --project=chromium --project=agent-chromium --project=sentry`. `agent-chromium` runs only `agent-journey.spec.ts`; sentry specs run unauthenticated in their own project. Audit suites are opt-in: `RUN_UX_AUDIT=1` (UX/a11y checklists) and `RUN_VISUAL=1` (screenshot baselines).
+- When a click mysteriously times out, it's usually the cookie-consent banner — use `dismissCookieBanner` from `tests/helpers/ui.ts` (locator.isVisible() does NOT wait; the helper uses waitFor).
 
 ## Architecture
 

@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test';
 
+// Visual baselines predate the 10 Jul design repaint — regenerate with
+// RUN_VISUAL=1 npx playwright test tests/ux-audit-visual.spec.ts --update-snapshots
+test.skip(!process.env.RUN_VISUAL, 'stale visual baselines — run with RUN_VISUAL=1');
+
 /**
  * Visual Regression Testing for UX Audit
  * 

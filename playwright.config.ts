@@ -3,17 +3,32 @@ import { defineConfig, devices } from '@playwright/test';
 const systemChromiumPath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined;
 const defaultLaunchArgs = ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu', '--disable-dev-shm-usage'];
 
+// Specs excluded from the policyholder-authenticated projects:
+// - unit tests belong to Vitest
+// - sentry specs assert UNauthenticated behavior (own `sentry` project)
+// - agent-journey needs the agent session (own `agent-chromium` project)
+const policyholderIgnores = [
+    '**/tests/unit/**',
+    '**/sentry-*.spec.ts',
+    '**/agent-journey.spec.ts',
+];
+
 export default defineConfig({
     testDir: './tests',
     testIgnore: ['**/tests/unit/**'],
+    globalSetup: './tests/global-setup.ts',
     fullyParallel: true,
     forbidOnly: !!process.env.CI,
-    retries: process.env.CI ? 2 : 0,
+    // 1 local retry: the suite runs against a dev server + remote dev DB,
+    // where transient auth/DB hiccups under parallel load are expected.
+    retries: process.env.CI ? 2 : 1,
     workers: process.env.CI ? 1 : undefined,
     reporter: 'html',
 
     use: {
-        baseURL: process.env.BASE_URL || 'http://localhost:5000',
+        // npm run dev binds :3000 (macOS AirPlay squats :5000 and answers 403,
+        // which Playwright's readiness probe would happily accept — never use 5000).
+        baseURL: process.env.BASE_URL || 'http://localhost:3000',
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
     },
@@ -21,7 +36,7 @@ export default defineConfig({
     projects: [
         {
             name: 'setup',
-            testMatch: /auth\.setup\.ts/,
+            testMatch: /(^|\/)auth\.setup\.ts/,
             use: { launchOptions: { executablePath: systemChromiumPath, args: defaultLaunchArgs } },
         },
         {
@@ -31,6 +46,7 @@ export default defineConfig({
         },
         {
             name: 'chromium',
+            testIgnore: policyholderIgnores,
             use: {
                 ...devices['Desktop Chrome'],
                 storageState: 'playwright/.auth/user.json',
@@ -40,6 +56,7 @@ export default defineConfig({
         },
         {
             name: 'firefox',
+            testIgnore: policyholderIgnores,
             use: {
                 ...devices['Desktop Firefox'],
                 storageState: 'playwright/.auth/user.json',
@@ -48,6 +65,7 @@ export default defineConfig({
         },
         {
             name: 'webkit',
+            testIgnore: policyholderIgnores,
             use: {
                 ...devices['Desktop Safari'],
                 storageState: 'playwright/.auth/user.json',
@@ -56,6 +74,7 @@ export default defineConfig({
         },
         {
             name: 'Mobile Chrome',
+            testIgnore: policyholderIgnores,
             use: {
                 ...devices['Pixel 5'],
                 storageState: 'playwright/.auth/user.json',
@@ -65,6 +84,7 @@ export default defineConfig({
         },
         {
             name: 'Mobile Safari',
+            testIgnore: policyholderIgnores,
             use: {
                 ...devices['iPhone 12'],
                 storageState: 'playwright/.auth/user.json',
@@ -73,6 +93,7 @@ export default defineConfig({
         },
         {
             name: 'agent-chromium',
+            testMatch: /agent-journey\.spec\.ts/,
             use: {
                 ...devices['Desktop Chrome'],
                 storageState: 'playwright/.auth/agent.json',
@@ -92,8 +113,15 @@ export default defineConfig({
 
     webServer: {
         command: 'npm run dev',
-        url: 'http://localhost:5000',
+        url: 'http://localhost:3000',
         reuseExistingServer: !process.env.CI,
         timeout: 120 * 1000,
+        env: {
+            // .env.local carries a placeholder UPSTASH url that crashes every
+            // page at module-evaluation time; these dummies keep dev healthy.
+            UPSTASH_REDIS_REST_URL: 'https://dummy.upstash.io',
+            UPSTASH_REDIS_REST_TOKEN: 'dummy-token',
+            RATELIMIT_ALLOW_LOCAL: '1',
+        },
     },
 });
