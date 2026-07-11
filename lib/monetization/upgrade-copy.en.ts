@@ -1,0 +1,161 @@
+/**
+ * English conversion copy — mirror of upgrade-copy.el.ts (keys parity-tested).
+ */
+
+import type { FeatureKey } from "./feature-gates"
+import type { UpgradeTriggerCopy } from "./upgrade-copy.el"
+
+const TRUST = "Secure payment with Stripe · Cancel anytime · No hidden fees"
+
+export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
+    policy_upload_limit: {
+        headline: "Organize your whole portfolio",
+        body: "You've already uploaded 3 policies. Upgrade to organize your entire insurance portfolio in one place.",
+        primaryCta: "Upgrade for more policies",
+        secondaryCta: "Not now",
+        benefits: [
+            "Up to 10 policies (Plus) or unlimited (Pro)",
+            "Full AI analysis for every policy",
+            "One view across all your insurers",
+            "Smart renewal reminders",
+        ],
+        trust: TRUST,
+        successMessage: "Upgrade complete. You can now add all your policies.",
+        successCta: "Continue adding",
+    },
+    full_ai_policy_analysis: {
+        headline: "Unlock the full analysis",
+        body: "Your basic summary is ready. Unlock the full analysis to see gaps, exclusions, limits and suggested actions.",
+        primaryCta: "Unlock full analysis",
+        secondaryCta: "Not now",
+        benefits: [
+            "Detailed view of coverages and limits",
+            "Exclusions and fine print in plain language",
+            "Detection of possible coverage gaps",
+            "Suggested next actions",
+        ],
+        trust: TRUST,
+        successMessage: "Upgrade complete. You unlocked full analysis for your policies.",
+        successCta: "Continue to analysis",
+    },
+    advanced_gap_detection: {
+        headline: "See what the coverage gap means",
+        body: "We detected a possible coverage gap. Upgrade to see what it means, where it comes from and what you can do.",
+        primaryCta: "See the coverage gap",
+        secondaryCta: "Not now",
+        benefits: [
+            "Full explanation of each gap with evidence",
+            "Prioritized by severity",
+            "Avoid duplicate coverage",
+            "Concrete next steps",
+        ],
+        trust: TRUST,
+        successMessage: "Upgrade complete. All coverage findings are available.",
+        successCta: "See the findings",
+    },
+    unlimited_ai_questions: {
+        headline: "Keep asking the AI",
+        body: "You've used your free questions for this month. Upgrade to keep asking the AI about your policies.",
+        primaryCta: "Continue with unlimited questions",
+        secondaryCta: "Not now",
+        benefits: [
+            "Questions about coverages, limits and exclusions",
+            "Answers grounded in your own policy",
+            "Available for all your policies",
+            "Greek and English",
+        ],
+        trust: TRUST,
+        successMessage: "Upgrade complete. AI questions are available again.",
+        successCta: "Continue asking",
+    },
+    multi_insurer_insights: {
+        headline: "See your full portfolio picture",
+        body: "You have policies from different insurers. Upgrade to see the complete picture, possible overlaps and gaps.",
+        primaryCta: "See full portfolio picture",
+        secondaryCta: "Not now",
+        benefits: [
+            "One view across all your insurers",
+            "Spot possible coverage overlaps",
+            "See gaps between policies more clearly",
+            "Make better use of your insurance",
+        ],
+        trust: TRUST,
+        successMessage: "Upgrade complete. Your full portfolio picture is ready.",
+        successCta: "View portfolio",
+    },
+    agent_collaboration: {
+        headline: "Connect with your advisor",
+        body: "Share selected information with your insurance advisor, with your approval and the ability to revoke at any time.",
+        primaryCta: "Connect with advisor",
+        secondaryCta: "Not now",
+        benefits: [
+            "You share only what you choose",
+            "Revoke access at any time",
+            "Notes and proposals from your advisor",
+            "Document requests without emails",
+        ],
+        trust: TRUST,
+        successMessage: "Upgrade complete. Advisor collaboration is available.",
+        successCta: "Connect with advisor",
+    },
+    export_report: {
+        headline: "Unlock report export",
+        body: "Download a clean summary of your policies, renewals and key coverages.",
+        primaryCta: "Unlock report export",
+        secondaryCta: "Not now",
+        benefits: [
+            "Summary of all policies in one file",
+            "Key coverages and renewal dates",
+            "Ideal for discussing with your advisor",
+            "Always up to date with current data",
+        ],
+        trust: TRUST,
+        successMessage: "Upgrade complete. Report export is available.",
+        successCta: "Download report",
+    },
+    advanced_renewal_reminders: {
+        headline: "Smart renewal reminders",
+        body: "Don't wait for the expiry date to go looking for your policy. Unlock smart renewal reminders.",
+        primaryCta: "Enable smart reminders",
+        secondaryCta: "Not now",
+        benefits: [
+            "Email alerts before every expiry",
+            "Multiple reminders per policy",
+            "Pre-renewal checklist",
+            "Never miss a renewal again",
+        ],
+        trust: TRUST,
+        successMessage: "Upgrade complete. Smart reminders are active.",
+        successCta: "Set up reminders",
+    },
+    pdf_preview: {
+        headline: "Document preview",
+        body: "View your policy PDFs directly inside the app, no downloads needed.",
+        primaryCta: "Unlock preview",
+        secondaryCta: "Not now",
+        benefits: [
+            "Open PDFs inside the app",
+            "Quick access to any page",
+            "All documents in one secure place",
+            "Available on mobile too",
+        ],
+        trust: TRUST,
+        successMessage: "Upgrade complete. PDF preview is available.",
+        successCta: "View documents",
+    },
+    token_topup: {
+        headline: "Continue your AI analyses",
+        body: "This month's AI tokens are used up. Upgrade your plan or add tokens to continue.",
+        primaryCta: "Continue with more tokens",
+        secondaryCta: "Not now",
+        benefits: [
+            "Monthly tokens that renew automatically",
+            "Option to buy extra packs",
+            "Priority analysis queue (Pro)",
+            "Full usage control from your account",
+        ],
+        trust: TRUST,
+        successMessage: "Upgrade complete. Your AI tokens have been renewed.",
+        successCta: "Continue to analysis",
+    },
+}

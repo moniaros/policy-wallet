@@ -12,6 +12,7 @@ export function LimitReachedModal({
     onDismiss,
     reason,
     language,
+    returnTo,
     className
 }: LimitReachedModalProps) {
     return (
@@ -25,6 +26,7 @@ export function LimitReachedModal({
                     reason={reason}
                     language={language}
                     onDismiss={onDismiss}
+                    returnTo={returnTo}
                     className="border-0 shadow-none !bg-transparent"
                 />
             </div>
