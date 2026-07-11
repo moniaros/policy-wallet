@@ -420,6 +420,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                     isOpen={limitModalOpen}
                     reason="policy_limit"
                     language={language}
+                    returnTo="/wallet/add"
                     onDismiss={() => setLimitModalOpen(false)}
                 />
 

@@ -11,10 +11,13 @@ export interface UpgradePromptProps {
     language: 'el' | 'en'
     onDismiss?: () => void
     className?: string
+    /** Same-origin path to return to after checkout (context preservation). */
+    returnTo?: string
 }
 
 export function UpgradePrompt({
     reason,
+    returnTo,
     language,
     onDismiss,
     className = '',
@@ -105,7 +108,9 @@ export function UpgradePrompt({
         trackJourneyEvent('upgrade_started', {
             source: 'upgrade_prompt_component',
         })
-        router.push('/upgrade')
+        const params = new URLSearchParams({ reason })
+        if (returnTo) params.set('return', returnTo)
+        router.push(`/upgrade?${params.toString()}`)
     }
 
     return (

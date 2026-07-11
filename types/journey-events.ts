@@ -23,6 +23,40 @@ export type JourneyEventName =
     | "upgrade_prompt_viewed"
     | "upgrade_started"
     | "upgrade_completed"
+    // Conversion funnel (2026-07 monetization pass)
+    | "pricing_viewed"
+    | "upgrade_trigger_viewed"
+    | "upgrade_trigger_clicked"
+    | "upgrade_modal_opened"
+    | "plan_selected"
+    | "billing_period_selected"
+    | "checkout_started"
+    | "checkout_completed"
+    | "checkout_cancelled"
+    | "feature_unlocked"
+    | "paywall_dismissed"
+    | "upload_limit_reached"
+    | "ai_question_limit_reached"
+    | "feature_locked_viewed"
+
+/**
+ * Standard payload for conversion-funnel events. All fields optional —
+ * emit what the surface knows; the analytics layer tolerates gaps.
+ */
+export interface ConversionPayload {
+    plan?: string
+    trigger_source?: string
+    screen?: string
+    feature_requested?: string
+    billing_period?: "monthly" | "annual"
+    policy_count?: number
+    insurer_count?: number
+    insurance_branch?: string
+    device_type?: "mobile" | "desktop"
+    locale?: string
+    /** Index signature keeps this assignable to the GA AnalyticsPayload. */
+    [key: string]: string | number | boolean | null | undefined
+}
 
 export interface JourneyEventPayloadMap {
     onboarding_step_viewed: {
@@ -146,4 +180,18 @@ export interface JourneyEventPayloadMap {
         tier?: string
         source?: string
     }
+    pricing_viewed: ConversionPayload
+    upgrade_trigger_viewed: ConversionPayload
+    upgrade_trigger_clicked: ConversionPayload
+    upgrade_modal_opened: ConversionPayload
+    plan_selected: ConversionPayload
+    billing_period_selected: ConversionPayload
+    checkout_started: ConversionPayload
+    checkout_completed: ConversionPayload
+    checkout_cancelled: ConversionPayload
+    feature_unlocked: ConversionPayload
+    paywall_dismissed: ConversionPayload
+    upload_limit_reached: ConversionPayload
+    ai_question_limit_reached: ConversionPayload
+    feature_locked_viewed: ConversionPayload
 }
