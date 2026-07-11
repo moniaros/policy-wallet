@@ -273,8 +273,6 @@ export const el = {
             sharePolicy: 'Κοινοποίηση σε σύμβουλο ή οικογένεια',
             reviewRenewal: 'Έλεγχος λήξης και ανανέωσης',
             contactInsurer: 'Επικοινωνία με ασφαλιστή',
-            requestRenewal: 'Αίτημα προσφοράς ανανέωσης',
-            renewalRequested: 'Το αίτημα ανανέωσης στάλθηκε.',
             noInsurerPhone: 'Δεν υπάρχει διαθέσιμο τηλέφωνο ασφαλιστή.',
             documentsArea: 'Έγγραφα συμβολαίου',
             shareCanceled: 'Η κοινοποίηση ακυρώθηκε.',
@@ -387,6 +385,12 @@ export const el = {
             // Agent section
             agentSectionTitle: 'Σημειώσεις συμβούλου & συνεργασία',
             agentLockedHint: 'Η συνεργασία με τον σύμβουλό σας είναι διαθέσιμη στα Plus και Pro.',
+            // Per-policy health signal (summary card donut)
+            healthLevels: {
+                good: 'Σε καλή κατάσταση',
+                moderate: 'Θέλει μια ματιά',
+                attention: 'Χρειάζεται προσοχή',
+            },
         },
         deletePolicyModal: {
             dangerZone: 'Ζώνη κινδύνου',

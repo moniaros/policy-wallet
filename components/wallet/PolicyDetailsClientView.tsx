@@ -17,6 +17,7 @@ import { ExclusionsCard } from "@/components/wallet/policy-detail/ExclusionsCard
 import { PerksCard } from "@/components/wallet/policy-detail/PerksCard"
 import { ClaimsGuidanceCard } from "@/components/wallet/policy-detail/ClaimsGuidanceCard"
 import {
+    calculatePolicyHealthScore,
     deriveClaimDeadlines,
     extractPolicySections,
     formatPolicyDate,
@@ -46,7 +47,6 @@ import { DocumentPreview, DocumentPreviewButton } from "@/components/wallet/Docu
 
 interface PolicyDetailsClientProps {
     policy: any
-    walletPolicy: any
     serializedShares: any[]
     aiUsageStats: {
         count: number
@@ -57,8 +57,6 @@ interface PolicyDetailsClientProps {
     statusLabel: string
     statusColor: any
     daysLeft: number
-    holderName: string
-    shouldOpenWallet: boolean
     isOwner: boolean
     relationshipId?: string | null
     t: any
@@ -76,14 +74,11 @@ interface PolicyDetailsClientProps {
 
 export function PolicyDetailsClient({
     policy,
-    walletPolicy,
     serializedShares,
     aiUsageStats,
     statusLabel,
     statusColor,
     daysLeft,
-    holderName,
-    shouldOpenWallet,
     isOwner,
     relationshipId,
     t,
@@ -91,10 +86,6 @@ export function PolicyDetailsClient({
     tierLimits,
     relatedRecommendations = [],
 }: PolicyDetailsClientProps) {
-    // wallet pass feature removed — parked for future
-    void shouldOpenWallet
-    void walletPolicy
-    void holderName
     const [previewDoc, setPreviewDoc] = useState<{ fileName: string; fileUrl: string } | null>(null)
 
     const locale = t.common?.locale || "en-US"
@@ -171,6 +162,18 @@ export function PolicyDetailsClient({
     const coverageCount = Array.isArray(policy.acordData?.coverages) ? policy.acordData.coverages.length : 0
     const conditionsCount = notableConditions.length + finePrint.length
 
+    const health = calculatePolicyHealthScore({
+        gapCount: (policy.gapInstances || []).length,
+        exclusionCount: exclusions.length,
+        verified: Boolean(policy.verified),
+    })
+    const healthColorClass =
+        health.level === "good"
+            ? "text-primary dark:text-mint"
+            : health.level === "moderate"
+              ? "text-amber-500 dark:text-amber-400"
+              : "text-red-500 dark:text-red-400"
+
     const hasCoverageDetails = (() => {
         const line = getCoverageType()
         const typeSpecificFields = ["health", "motor", "home", "life", "pet"] as const
@@ -244,10 +247,6 @@ export function PolicyDetailsClient({
             return
         }
         window.open(firstDocumentUrl, "_blank", "noopener,noreferrer")
-    }
-
-    const handleRenewalRequest = () => {
-        toast.success(detailsCopy.renewalRequested)
     }
 
     const coverageType = getCoverageType()
@@ -506,15 +505,55 @@ export function PolicyDetailsClient({
                         {/* 1 ── Plain-language AI summary ─────────────────── */}
                         <section id="summary" className="scroll-mt-24">
                             <div className="pw-card p-6 sm:p-7">
-                                <div className="mb-3 flex flex-wrap items-center gap-2">
-                                    <h2 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
-                                        <FileText className="h-4 w-4 text-primary dark:text-mint" />
-                                        {detailsCopy.summaryTitle}
-                                    </h2>
-                                    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-primary dark:bg-primary/15 dark:text-mint">
-                                        <Sparkles className="h-3 w-3" />
-                                        {detailsCopy.summaryAiChip}
-                                    </span>
+                                <div className="mb-3 flex flex-wrap items-start justify-between gap-4">
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        <h2 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+                                            <FileText className="h-4 w-4 text-primary dark:text-mint" />
+                                            {detailsCopy.summaryTitle}
+                                        </h2>
+                                        <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest text-primary dark:bg-primary/15 dark:text-mint">
+                                            <Sparkles className="h-3 w-3" />
+                                            {detailsCopy.summaryAiChip}
+                                        </span>
+                                    </div>
+
+                                    {!isAnalyzing && (
+                                        <div className="flex items-center gap-3">
+                                            <div className="relative h-14 w-14">
+                                                <svg viewBox="0 0 36 36" className="h-14 w-14 -rotate-90">
+                                                    <circle
+                                                        cx="18"
+                                                        cy="18"
+                                                        r="15.9155"
+                                                        fill="none"
+                                                        strokeWidth="3.5"
+                                                        className="stroke-current text-black/10 dark:text-white/15"
+                                                    />
+                                                    <circle
+                                                        cx="18"
+                                                        cy="18"
+                                                        r="15.9155"
+                                                        fill="none"
+                                                        strokeWidth="3.5"
+                                                        strokeLinecap="round"
+                                                        strokeDasharray={`${health.score} 100`}
+                                                        className={`stroke-current ${healthColorClass}`}
+                                                    />
+                                                </svg>
+                                                <span className="absolute inset-0 flex items-center justify-center text-sm font-black text-black dark:text-white">
+                                                    {health.score}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                                                    {t.wallet.healthScore.title}
+                                                </p>
+                                                <p className={`text-xs font-bold ${healthColorClass}`}>
+                                                    {detailsCopy.healthLevels[health.level]}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                                 <p className="text-sm leading-relaxed text-black/75 dark:text-white/80">
                                     {policy.coverageSummary || t.wallet.summaryFallback}
@@ -567,11 +606,9 @@ export function PolicyDetailsClient({
                                         autoRenewalNote: detailsCopy.autoRenewalNote,
                                         renewalHistory: detailsCopy.renewalHistory,
                                         noRenewalHistory: detailsCopy.noRenewalHistory,
-                                        requestRenewal: detailsCopy.requestRenewal,
                                         expiresIn: t.wallet.expiresIn,
                                         days: t.wallet.days,
                                     }}
-                                    onRequestRenewal={handleRenewalRequest}
                                 />
                             </section>
                         )}

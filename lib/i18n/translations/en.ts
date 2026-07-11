@@ -276,8 +276,6 @@ export const en: TranslationKeys = {
             sharePolicy: 'Share with agent or family',
             reviewRenewal: 'Review expiry and renewal',
             contactInsurer: 'Contact insurer',
-            requestRenewal: 'Request renewal quote',
-            renewalRequested: 'Renewal request sent.',
             noInsurerPhone: 'No insurer phone number available.',
             documentsArea: 'Policy documents',
             shareCanceled: 'Share canceled.',
@@ -390,6 +388,12 @@ export const en: TranslationKeys = {
             // Agent section
             agentSectionTitle: 'Agent notes & collaboration',
             agentLockedHint: 'Collaboration with your agent is available on Plus and Pro.',
+            // Per-policy health signal (summary card donut)
+            healthLevels: {
+                good: 'Looking good',
+                moderate: 'Worth a look',
+                attention: 'Needs attention',
+            },
         },
         deletePolicyModal: {
             dangerZone: 'Danger Zone',

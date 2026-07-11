@@ -6,25 +6,19 @@ import { notFound } from "next/navigation"
 import { calculatePolicyStatus, getStatusColor, getStatusLabel, getDaysUntilExpiry } from "@/lib/policy-status"
 import { getPolicyShares } from "../actions"
 import { getTranslations } from "@/lib/i18n"
-import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { getAIUsageStats } from "../actions"
 import { PolicyDetailsClient } from "./PolicyDetailsClient"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 
 export default async function PolicyDetailPage({
-    params,
-    searchParams
+    params
 }: {
     params: Promise<{ id: string }>
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
     const { id: policyId } = await params
-    const resolvedSearchParams = await searchParams
-    const shouldOpenWallet = resolvedSearchParams.openWallet === 'true'
     const { dbUser } = await getAuthenticatedUser()
     const language = (dbUser.preferredLanguage as 'el' | 'en') || 'el'
     const t = getTranslations(language)
-    const roleCopy = getRoleCopy(language)
 
     const [policy, sharesResult, aiUsageStats, entitlements] = await Promise.all([
         db.policy.findUnique({
@@ -109,17 +103,6 @@ export default async function PolicyDetailPage({
         relationshipId = rel?.id || null
     }
 
-    // Create serializable policy object for Client Component
-    const walletPolicy = {
-        id: policy.id,
-        policyNumber: policy.policyNumber,
-        insurerName: policy.insurerName,
-        lineOfBusiness: policy.lineOfBusiness,
-        startDate: policy.startDate ? policy.startDate.toISOString() : null,
-        endDate: policy.endDate ? policy.endDate.toISOString() : null,
-        status: status || 'incomplete'
-    }
-
     const serializedShares = Array.isArray(shares) ? shares.map(s => ({
         ...s,
         grantedAt: s.grantedAt ? s.grantedAt.toISOString() : new Date().toISOString()
@@ -166,14 +149,11 @@ export default async function PolicyDetailPage({
     return (
         <PolicyDetailsClient
             policy={serializedPolicy}
-            walletPolicy={walletPolicy}
             serializedShares={serializedShares}
             aiUsageStats={aiUsageStats}
             statusLabel={statusLabel}
             statusColor={statusColor}
             daysLeft={daysLeft}
-            holderName={dbUser.name || roleCopy.defaults.policyholderName}
-            shouldOpenWallet={shouldOpenWallet}
             isOwner={isOwner}
             relationshipId={relationshipId}
             t={t}
