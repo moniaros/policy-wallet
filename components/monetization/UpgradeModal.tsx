@@ -82,7 +82,6 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                 if (resolved === "free" || resolved === "plus" || resolved === "pro") setTier(resolved)
             })
             .catch(() => { /* keep free default */ })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen])
 
     const selectPeriod = (period: "monthly" | "annual") => {

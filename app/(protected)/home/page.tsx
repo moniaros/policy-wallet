@@ -25,6 +25,9 @@ import {
     Wallet,
 } from "lucide-react"
 import { GettingStartedWrapper } from "@/components/dashboard/GettingStartedWrapper"
+import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
+import { FREE_POLICY_LIMIT } from "@/lib/monetization/feature-gates"
+import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 
 function daysUntil(date: Date) {
     return Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
@@ -85,8 +88,14 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         include: { agent: true },
     })
 
+    const entitlements = await resolveUserEntitlements(dbUser.id)
+    const isFreeTier = entitlements.tier === "free"
+
     const now = new Date()
     const activePolicies = policies.filter((policy) => policy.status === "active")
+    const insurerCount = new Set(
+        activePolicies.map((policy) => policy.insurerName).filter(Boolean)
+    ).size
     const sixMonthsOut = new Date(now.getTime() + 180 * 24 * 60 * 60 * 1000)
     const upcomingRenewals = policies
         .filter((policy) => policy.endDate > now && policy.endDate <= sixMonthsOut)
@@ -186,6 +195,27 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                     />
                 </div>
 
+                {/* Free-tier usage banner (Trigger A surface: approaching the policy cap) */}
+                {isFreeTier && activePolicies.length >= 2 && (
+                    <div className="mb-4">
+                        <UpgradeTriggerCard
+                            featureKey="policy_upload_limit"
+                            triggerSource="home_usage_banner"
+                            returnTo="/home"
+                            dismissible
+                            meter={{
+                                label: t("Συμβόλαια στο δωρεάν πλάνο", "Policies on the free plan"),
+                                used: activePolicies.length,
+                                limit: FREE_POLICY_LIMIT,
+                                hint: t(
+                                    "Το Plus έχει χώρο για έως 10 συμβόλαια, το Pro απεριόριστα.",
+                                    "Plus fits up to 10 policies, Pro is unlimited."
+                                ),
+                            }}
+                        />
+                    </div>
+                )}
+
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                     <Link
                         href="/wallet"
@@ -276,6 +306,17 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         </div>
                     )}
 
+                    {/* Trigger G: multi-insurer portfolio insight for free tier */}
+                    {isFreeTier && insurerCount >= 2 && (
+                        <UpgradeTriggerCard
+                            featureKey="multi_insurer_insights"
+                            triggerSource="home_multi_insurer"
+                            returnTo="/coverage-insights"
+                            dismissible
+                            className="lg:col-span-3"
+                        />
+                    )}
+
                     <div className="pw-card p-5">
                         <div className="flex items-center justify-between">
                             <p className="pw-kicker">
@@ -361,6 +402,16 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                         )
                                     })}
                                 </div>
+                            )}
+                            {/* Trigger D: smart renewal reminders teaser for free tier */}
+                            {isFreeTier && upcomingRenewals.length > 0 && (
+                                <UpgradeTriggerCard
+                                    featureKey="advanced_renewal_reminders"
+                                    triggerSource="home_renewals"
+                                    returnTo="/home"
+                                    variant="inline"
+                                    className="mt-3"
+                                />
                             )}
                         </div>
                     </div>

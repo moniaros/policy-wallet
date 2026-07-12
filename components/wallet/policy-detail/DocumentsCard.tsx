@@ -1,9 +1,11 @@
 "use client"
 
 import { useState } from "react"
+import { usePathname } from "next/navigation"
 import { Download, FileText } from "lucide-react"
 
 import { DocumentPreview, DocumentPreviewButton } from "@/components/wallet/DocumentPreview"
+import { UpgradeModal } from "@/components/monetization/UpgradeModal"
 
 interface PolicyDocumentItem {
     id: string
@@ -33,7 +35,9 @@ interface DocumentsCardProps {
  * Owns the preview-modal state so the page orchestrator stays stateless.
  */
 export function DocumentsCard({ documents, isFreeTier, copy }: DocumentsCardProps) {
+    const pathname = usePathname()
     const [previewDoc, setPreviewDoc] = useState<{ fileName: string; fileUrl: string } | null>(null)
+    const [upgradeOpen, setUpgradeOpen] = useState(false)
 
     return (
         <div className="pw-card p-6">
@@ -74,6 +78,7 @@ export function DocumentsCard({ documents, isFreeTier, copy }: DocumentsCardProp
                                                 isLocked={isPreviewLocked}
                                                 label={copy.preview}
                                                 lockedLabel={copy.upgradeToPlusPreview}
+                                                onLockedClick={() => setUpgradeOpen(true)}
                                             />
                                         )}
                                         <Download className="h-4 w-4 shrink-0 text-black/45 dark:text-white/55" />
@@ -90,6 +95,14 @@ export function DocumentsCard({ documents, isFreeTier, copy }: DocumentsCardProp
                 onClose={() => setPreviewDoc(null)}
                 document={previewDoc}
                 labels={copy.previewLabels}
+            />
+
+            <UpgradeModal
+                isOpen={upgradeOpen}
+                onClose={() => setUpgradeOpen(false)}
+                featureKey="pdf_preview"
+                triggerSource="document_preview"
+                returnTo={pathname || undefined}
             />
         </div>
     )

@@ -1,7 +1,8 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { CollaborationPanel } from "@/components/wallet/CollaborationPanel"
 import { DeletePolicy } from "@/components/wallet/DeletePolicy"
@@ -30,7 +31,25 @@ import {
     parsePolicyDate,
     type PolicyRenewalEntry,
 } from "@/lib/wallet/policy-detail"
-import { AlertTriangle, Crown, Lock, RefreshCw, ShieldCheck, Users } from "lucide-react"
+import { AlertTriangle, Crown, FileDown, Lock, RefreshCw, ShieldCheck, Users } from "lucide-react"
+import { UpgradeModal } from "@/components/monetization/UpgradeModal"
+import { trackJourneyEvent } from "@/lib/journey/funnel"
+
+// Trigger J: savings-report export (Pro). Bilingual copy kept as a pair map
+// so the changed-file i18n lint stays clean.
+const EXPORT_COPY = {
+    title: { el: "Αναφορά εξοικονόμησης", en: "Savings report" },
+    subtitle: {
+        el: "Κατέβασε μια καθαρή σύνοψη καλύψεων, κενών και πιθανής εξοικονόμησης για αυτό το συμβόλαιο.",
+        en: "Download a clean summary of coverages, gaps and potential savings for this policy.",
+    },
+    exportCta: { el: "Εξαγωγή αναφοράς", en: "Export report" },
+    unlockCta: { el: "Ξεκλείδωμα εξαγωγής αναφοράς", en: "Unlock report export" },
+} as const
+
+function pickCopy(pair: { el: string; en: string }, lang: "el" | "en") {
+    return pair[lang]
+}
 
 interface PolicyDetailsClientProps {
     policy: any
@@ -78,6 +97,9 @@ export function PolicyDetailsClient({
     const locale = t.common?.locale || "en-US"
     const lang: "el" | "en" = locale.startsWith("el") ? "el" : "en"
     const detailsCopy = t.wallet.policyDetailsPage
+
+    const pathname = usePathname()
+    const [exportUpgradeOpen, setExportUpgradeOpen] = useState(false)
 
     const canUseCollaboration = tierLimits?.agentCollaboration !== false
     const canShowCollaborationPanel = (isOwner || (serializedShares?.length ?? 0) > 0) && canUseCollaboration
@@ -491,13 +513,14 @@ export function PolicyDetailsClient({
                                 <RecommendationCards
                                     recommendations={relatedRecommendations}
                                     language={lang}
+                                    tier={tier}
                                 />
                             </section>
                         )}
 
                         {/* 8 ── Ask AI about this policy ──────────────────── */}
                         <section id="policy-qa" className="scroll-mt-24">
-                            <PolicyQA policyId={policy.id} />
+                            <PolicyQA policyId={policy.id} tier={tier} />
                         </section>
 
                         {/* 9 ── Claims guidance ───────────────────────────── */}
@@ -594,6 +617,45 @@ export function PolicyDetailsClient({
                             </div>
                         )}
 
+                        {/* Trigger J: savings report export — visible to all, Pro-unlocked */}
+                        {isOwner && (
+                            <div className="pw-card p-6">
+                                <h3 className="mb-2 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+                                    <FileDown className="h-4 w-4 text-primary dark:text-mint" />
+                                    {pickCopy(EXPORT_COPY.title, lang)}
+                                </h3>
+                                <p className="mb-4 text-xs leading-relaxed text-black/60 dark:text-white/65">
+                                    {pickCopy(EXPORT_COPY.subtitle, lang)}
+                                </p>
+                                {tier === "pro" ? (
+                                    <a
+                                        href={`/api/v1/policies/${policy.id}/savings-report`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full bg-primary px-4 text-sm font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
+                                    >
+                                        <FileDown className="h-4 w-4" />
+                                        {pickCopy(EXPORT_COPY.exportCta, lang)}
+                                    </a>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            trackJourneyEvent("upgrade_trigger_clicked", {
+                                                trigger_source: "savings_report_export",
+                                                feature_requested: "export_report",
+                                            })
+                                            setExportUpgradeOpen(true)
+                                        }}
+                                        className="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full border border-primary/40 bg-primary-soft px-4 text-sm font-bold text-primary transition-colors hover:bg-primary/15 dark:bg-primary/10 dark:text-mint"
+                                    >
+                                        <Crown className="h-4 w-4" />
+                                        {pickCopy(EXPORT_COPY.unlockCta, lang)}
+                                    </button>
+                                )}
+                            </div>
+                        )}
+
                         {/* Uploaded documents */}
                         <section id="documents" className="scroll-mt-24">
                             <DocumentsCard
@@ -637,6 +699,13 @@ export function PolicyDetailsClient({
                 </div>
             </div>
 
+            <UpgradeModal
+                isOpen={exportUpgradeOpen}
+                onClose={() => setExportUpgradeOpen(false)}
+                featureKey="export_report"
+                triggerSource="savings_report_export"
+                returnTo={pathname || undefined}
+            />
         </div>
     )
 }

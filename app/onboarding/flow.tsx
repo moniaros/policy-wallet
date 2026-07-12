@@ -7,6 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { fixMojibakeText } from "@/lib/i18n/fix-mojibake"
 import { completeOnboardingStep, uploadOnboardingPolicy, redeemInviteCode, triggerOnboardingAnalysis } from "./actions"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
+import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 
 type GoalType = "save_money" | "health_family" | "my_car" | "organize_policies" | "review_policy" | "investments_reminders"
 
@@ -401,12 +402,11 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                             </div>
 
                             {uploadedPolicyId && !simulatingAi && (
-                                <p className="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-200">
-                                    {t(
-                                        "Αυτή ήταν η δωρεάν δοκιμαστική σας ανάλυση. Οι αναλύσεις AI είναι διαθέσιμες στα πλάνα Plus και Pro.",
-                                        "This was your complimentary trial analysis. AI analyses are available on the Plus and Pro plans."
-                                    )}
-                                </p>
+                                <UpgradeTriggerCard
+                                    featureKey="full_ai_policy_analysis"
+                                    triggerSource="onboarding_trial"
+                                    returnTo={`/wallet/${uploadedPolicyId}`}
+                                />
                             )}
 
                             <button
