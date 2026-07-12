@@ -1,12 +1,17 @@
 # PolicyWallet — Project Status
 
 _Living dashboard — not a log. Updated at the end of each session with meaningful work. Keep it under one screen._
-**Last updated:** 2026-07-11
+**Last updated:** 2026-07-12
 
 ## Current phase
-**DEPLOYED TO PRODUCTION** (policy-wallet-omega.vercel.app, Vercel project `policy-wallet`, team moniaros-projects). PR #45 merged the full stack (product-revision + scale-hardening + seo-geo-aeo) into `NEW-UI` on 8 Jul; subsequent env/config fixes deployed via CLI. Greece GA go/no-go packet still `HOLD` on human sign-offs.
+**DEPLOYED TO PRODUCTION** (policy-wallet-omega.vercel.app, Vercel project `policy-wallet`, team moniaros-projects). Free→paid conversion overhaul (4 phases, PRs #59–#63) fully shipped 11–12 Jul. Greece GA go/no-go packet still `HOLD` on human sign-offs.
 
 ## Done (recent)
+- **CONVERSION OVERHAUL COMPLETE (PRs #59, #60, #61, #62, #63 — deployed 11–12 Jul):** audit-first, 4 phases per the approved plan.
+  - **P1 revenue integrity (#59):** closed the free-Pro loophole (`upgradeSubscription` now always goes through Stripe; existing free-granted subs grandfathered until `currentPeriodEnd` via `isSubscriptionLive`); batch upload now enforces the 3-policy cap; context-preserving checkout loop (`returnTo` → `/upgrade/success` verifies sessions directly with Stripe, webhook-independent; cancel no longer 404s); ph-pro 14-day trial wired into checkout; GA unblocked in CSP; token meter numbers = enforcement numbers; EL policy-limit toast fixed → LimitReachedModal.
+  - **P2 gate system (#60):** `lib/monetization/` (FEATURE_GATES ×10, PLAN_PRICING, EL/EN trigger copy — parity-tested vs entitlements + pricing page, forbidden-urgency-phrase tests) + `components/monetization/` (UpgradeModal in-place checkout w/ monthly/annual toggle, LockedInsightPreview real-data blur, UsageMeter, PlanBadge, BillingTrustBox); 14 typed funnel events.
+  - **P3 triggers (#61, #62):** home usage banner (2/3 meter) + multi-insurer card + renewal teaser + carried-plan card (signup-selected plan finally activatable — straight to checkout); PolicyQA free-tier pre-empt; recommendation evidence soft-lock; onboarding trial-exhausted CTA; PDF-lock click-through; mobile Upgrade tile wired; savings-report export card (Pro); **token top-up actually charges now** (hosted Checkout mode:payment + idempotent fulfillment — was a dead PaymentIntent); billing portal button; annual-savings nudge; TokenUsageCard mounted.
+  - **P4 analytics (#63):** server-side `conv_*` mirror (NotificationEvent) on checkout started/completed + limit hits with trigger-source attribution; 30-day conversion funnel card on admin dashboard (signups→activated→trial→limit hits→checkouts) + per-source checkout chips. 281 unit tests green.
 - **Policy detail page REDESIGNED (PR #57, deployed 11 Jul):** `/wallet/[id]` rebuilt as a 60-second scannable flow — anchored section nav; plain-language AI summary with per-policy health donut + at-a-glance chips; key dates & renewal (period progress, extracted renewal date/frequency, auto-renewal warning, cron reminder trail); **first-ever rendering of extracted `notableConditions`/`finePrintClauses`/`perksAndBenefits`** (risk-badged fine print, claim deadlines, perk hotlines); data-aware claims guidance; related recommendations (persisted gap-engine output, same-LOB); agent timeline promoted from tab. Monolith decomposed into `components/wallet/policy-detail/*` + shared read model `lib/wallet/policy-detail.ts` (24 new unit tests, 257 total). Verified live on prod alias, zero runtime errors.
 - **E2E suite REPAIRED (11 Jul):** Playwright green end-to-end for the first time — `--project=chromium --project=agent-chromium --project=sentry`. Root causes fixed: config waited on :5000 while dev binds :3000 (AirPlay's 403 masked it); test users now auto-provisioned by `tests/global-setup.ts` (Supabase auth via SQL + Prisma rows + fixture policy; prod-guarded) with login-only setups; `.env.local` had a typo'd anon key (broke all local auth) and a placeholder DIRECT_URL (broke every dev Prisma call); old dev DB was 3 migrations behind (now current). Audit suites opt-in (`RUN_UX_AUDIT`/`RUN_VISUAL`); a11y gate = no critical violations (known serious color-contrast findings from the repaint logged for the UX backlog). Docs updated in CLAUDE.md/AGENTS.md.
 - **Prod env keys SET (11 Jul):** Brevo SMTP key, Stripe test keys, `GEMINI_API_KEY` configured in Vercel — activated by redeploy; AI pipeline now runs on Gemini (real per-field confidence on the upload review screen), magic-link emails live, money path testable.
@@ -22,17 +27,18 @@ _Living dashboard — not a log. Updated at the end of each session with meaning
 - Prior passes: production hardening (Sentry, rate-limit, pooled DB), 3 endpoint scope-gap fixes, pricing-cutover copy, nodemailer 9, design-sync, monetization stack. All guardrails + 145/145 unit tests green.
 
 ## Blocked / user-gated
-- **Billing catalog** — run `setup-billing-catalog.ts --apply` against the new Stripe test keys, then walk signup→trial→paywall→checkout. QStash keys still unset → AI analysis inline.
-- **Housekeeping:** Supabase "outstanding invoices" banner (pay to avoid disruption); Brevo API key + prod DB password passed through chat — rotate both cheaply; old Supabase project (`lzqvtvjggylcujenlelh`, 31 demo accounts) idle — decide keep/pause.
+- **sk_test key (chat paste pending)** — needed to run `setup-billing-catalog.ts --apply` (Stripe MCP is LIVE-mode, unusable for this) and to register the TEST webhook → `/api/v1/billing/webhook` + set `STRIPE_WEBHOOK_SECRET` + redeploy. Checkout works without it (success page verifies sessions directly), but catalog rows + webhook redundancy wait on the key. QStash keys still unset → AI analysis inline.
+- **Card-entry step** — full money-path test (4242…) is user-performed at the Stripe hosted page; then verify subscription activation + token crediting end-to-end.
+- **Housekeeping:** Supabase "outstanding invoices" banner (pay to avoid disruption); Brevo API key + prod DB password passed through chat — rotate both cheaply; old Supabase project (`lzqvtvjggylcujenlelh`, 31 demo accounts) idle — decide keep/pause; grandfathered free-granted subs may deserve a courtesy in-app note before their period lapses.
 
 ## Top risks (ranked)
-1. **High — money path untested in prod**: Stripe test keys now set, but signup→trial→paywall→checkout still never exercised (billing catalog not applied).
-2. **Medium — email deliverability fresh**: first branded sends just unblocked; Brevo free tier caps 300/day; sender domain DKIM state unverified via API (domains endpoint still propagating).
-3. **Medium — scale**: upload path still inline (QStash follow-up), pooled DB unverified under load, no k6 run.
+1. **High — money path not walked end-to-end**: checkout verified to the Stripe hosted page + all revenue leaks closed, but no card has completed a purchase in prod (blocked on user card step; webhook unregistered — success page is the only fulfillment path today).
+2. **Medium — email deliverability fresh**: Brevo free tier caps 300/day; sender domain DKIM state unverified via API.
+3. **Medium — scale**: upload path still inline (QStash follow-up), pooled DB `connection_limit=1` workaround in place, no k6 run.
 4. **Medium — governance HOLD**: legal/DPO/product + UAT + SRE-restore sign-offs pending; email-verify hard gate off (flip `ENFORCE_EMAIL_VERIFICATION=1` before real traffic).
-5. **Low — Vercel git auto-deploy off**: pushes to `NEW-UI` don't build; deploys go via `vercel deploy --prod` CLI. Re-enable in Vercel Git settings or keep CLI discipline.
+5. **Low — Vercel git auto-deploy off**: deploys via `vercel deploy --prod` CLI only.
 
 ## Next 3 actions
-1. Money path: run `setup-billing-catalog.ts --apply`, walk signup→trial→paywall→checkout on prod (keys are in).
-2. Email round trip: fresh signup → one branded email from info@policywallet.gr + magic-link login; then a real PDF upload to verify Gemini extraction + confidence chips live.
-3. SEO follow-through: Search Console property + sitemap submission; then apex-domain cutover (marketing → policywallet.gr, B2C/B2B subdomains) per SEO_STRATEGY.md.
+1. Money path close-out: paste sk_test key → apply billing catalog + register TEST webhook + `STRIPE_WEBHOOK_SECRET`; user completes a 4242 checkout; verify sub activation, token top-up crediting, and conv_* rows in the admin funnel.
+2. E2E extension: money-path spec (checkout return + gate rendering) + mobile viewport pass over the new trigger surfaces; run the full local Playwright suite.
+3. SEO follow-through: Search Console property + sitemap submission; then apex-domain cutover per SEO_STRATEGY.md.
