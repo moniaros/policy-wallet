@@ -1,6 +1,7 @@
 import { z } from "zod"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { createCheckoutSession } from "@/lib/billing"
+import { recordConversionEvent } from "@/lib/journey/conversion-events"
 import { logger } from "@/lib/logger"
 import { withApiGuard } from "@/lib/api-guard"
 
@@ -10,6 +11,8 @@ const checkoutRequestSchema = z.object({
     // Same-origin app path to return to after checkout (context preservation);
     // validated server-side in createCheckoutSession.
     returnTo: z.string().max(500).optional(),
+    // Analytics label of the trigger surface that opened checkout.
+    triggerSource: z.string().max(100).optional(),
 })
 
 export const POST = withApiGuard(
@@ -26,8 +29,14 @@ export const POST = withApiGuard(
         const language = (auth!.dbUser.preferredLanguage as "el" | "en") || "el"
 
         try {
-            const { planId, billingPeriod, returnTo } = body!
+            const { planId, billingPeriod, returnTo, triggerSource } = body!
             const checkout = await createCheckoutSession(auth!.dbUser.id, planId, billingPeriod, returnTo)
+
+            await recordConversionEvent(auth!.dbUser.id, "checkout_started", {
+                plan: planId,
+                billingPeriod,
+                source: triggerSource,
+            })
 
             return createApiResponse(
                 {

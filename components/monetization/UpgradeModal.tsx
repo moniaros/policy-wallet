@@ -110,6 +110,7 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                     planId: pricing.planId,
                     billingPeriod,
                     returnTo: effectiveReturn,
+                    triggerSource,
                 }),
             })
             const payload = await res.json()

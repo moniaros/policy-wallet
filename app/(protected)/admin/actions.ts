@@ -130,6 +130,41 @@ export async function getDashboardMetrics() {
             return total + (sub.plan.billingPeriod === "monthly" ? planPrice : planPrice / 12)
         }, 0)
 
+        // Conversion funnel (30d) from the server-side conv_* event mirror —
+        // measurable even with client analytics blocked.
+        const [
+            activatedNewUsers,
+            trialUsedLast30Days,
+            limitHitsLast30Days,
+            checkoutStartedEvents,
+            checkoutCompletedLast30Days,
+        ] = await Promise.all([
+            db.user.count({
+                where: { createdAt: { gte: thirtyDaysAgo }, policiesOwned: { some: {} } },
+            }),
+            db.user.count({ where: { trialAnalysisUsedAt: { gte: thirtyDaysAgo } } }),
+            db.notificationEvent.count({
+                where: { eventType: "conv_limit_hit", createdAt: { gte: thirtyDaysAgo } },
+            }),
+            db.notificationEvent.findMany({
+                where: { eventType: "conv_checkout_started", createdAt: { gte: thirtyDaysAgo } },
+                select: { relatedObjectType: true },
+            }),
+            db.notificationEvent.count({
+                where: { eventType: "conv_checkout_completed", createdAt: { gte: thirtyDaysAgo } },
+            }),
+        ])
+
+        const triggerSourceBreakdown: Record<string, number> = {}
+        for (const event of checkoutStartedEvents) {
+            const source = event.relatedObjectType || "unknown"
+            triggerSourceBreakdown[source] = (triggerSourceBreakdown[source] || 0) + 1
+        }
+
+        const paidActiveSubscriptions = subscriptions.filter(
+            (sub) => Number(sub.plan.price) > 0
+        ).length
+
         return {
             users: {
                 total: totalUsers,
@@ -160,6 +195,16 @@ export async function getDashboardMetrics() {
                 openDeletionRequests,
                 approvedDeletionRequests,
                 totalOpen: pendingDataExports + openDeletionRequests
+            },
+            funnel: {
+                signups: newUsersLast30Days,
+                activated: activatedNewUsers,
+                trialUsed: trialUsedLast30Days,
+                limitHits: limitHitsLast30Days,
+                checkoutStarted: checkoutStartedEvents.length,
+                checkoutCompleted: checkoutCompletedLast30Days,
+                paidActive: paidActiveSubscriptions,
+                triggerSources: triggerSourceBreakdown,
             }
         }
     } catch (error) {

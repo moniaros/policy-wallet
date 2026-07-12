@@ -33,6 +33,16 @@ interface DashboardMetrics {
         approvedDeletionRequests: number
         totalOpen: number
     }
+    funnel?: {
+        signups: number
+        activated: number
+        trialUsed: number
+        limitHits: number
+        checkoutStarted: number
+        checkoutCompleted: number
+        paidActive: number
+        triggerSources: Record<string, number>
+    }
 }
 
 interface ActivityLog {
@@ -139,6 +149,54 @@ export default function DashboardClient({ metrics, activityLogs, pendingAgentsCo
                     color="emerald"
                 />
             </div>
+
+            {/* Conversion Funnel (last 30 days, server-side conv_* events) */}
+            {metrics.funnel && (
+                <div className="mb-8 p-6 bg-white dark:bg-stone-800 rounded-lg border border-stone-200 dark:border-stone-700">
+                    <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-sm font-medium text-stone-600 dark:text-stone-400">
+                            Conversion Funnel — last 30 days
+                        </h3>
+                        <TrendingUp className="w-4 h-4 text-stone-400" />
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                        {[
+                            { label: "Signups", value: metrics.funnel.signups },
+                            { label: "Activated (≥1 policy)", value: metrics.funnel.activated },
+                            { label: "Trial analysis used", value: metrics.funnel.trialUsed },
+                            { label: "Limit hits", value: metrics.funnel.limitHits },
+                            { label: "Checkouts started", value: metrics.funnel.checkoutStarted },
+                            { label: "Checkouts completed", value: metrics.funnel.checkoutCompleted },
+                        ].map((step) => (
+                            <div key={step.label} className="text-center p-3 rounded-lg bg-stone-50 dark:bg-stone-900/40">
+                                <p className="text-2xl font-bold text-stone-900 dark:text-stone-100">{step.value}</p>
+                                <p className="mt-1 text-xs text-stone-500 dark:text-stone-400">{step.label}</p>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-stone-500 dark:text-stone-400">
+                        <span>
+                            Paid active subscriptions:{" "}
+                            <span className="font-semibold text-stone-900 dark:text-stone-100">{metrics.funnel.paidActive}</span>
+                        </span>
+                        {Object.keys(metrics.funnel.triggerSources).length > 0 && (
+                            <span className="flex flex-wrap items-center gap-2">
+                                Checkout trigger sources:
+                                {Object.entries(metrics.funnel.triggerSources)
+                                    .sort(([, a], [, b]) => b - a)
+                                    .map(([source, count]) => (
+                                        <span
+                                            key={source}
+                                            className="rounded-full bg-stone-100 dark:bg-stone-700 px-2 py-0.5 font-medium text-stone-700 dark:text-stone-200"
+                                        >
+                                            {source} · {count}
+                                        </span>
+                                    ))}
+                            </span>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* Secondary Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
