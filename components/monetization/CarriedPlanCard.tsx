@@ -83,7 +83,7 @@ export function CarriedPlanCard({ planId, billingPeriod, className = "" }: Carri
             const res = await fetch("/api/v1/billing/checkout", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ planId, billingPeriod, returnTo: "/home" }),
+                body: JSON.stringify({ planId, billingPeriod, returnTo: "/home", triggerSource: "carried_plan" }),
             })
             const json = await res.json()
             const url = json?.data?.checkout_url

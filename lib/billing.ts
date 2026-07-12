@@ -2,6 +2,7 @@ import { db } from "./db"
 import { stripe } from "./stripe"
 import { daysFromNow, SUBSCRIPTION_PERIOD_DAYS } from "@/lib/constants/time"
 import { TOKEN_PACKAGES, type TokenPackageKey } from "@/lib/billing/token-packages"
+import { recordConversionEvent } from "@/lib/journey/conversion-events"
 
 export interface VATInfo {
     rate: number
@@ -219,6 +220,10 @@ export async function fulfillTokenPurchaseSession(sessionId: string, userId: str
         credited = true
     })
 
+    if (credited) {
+        await recordConversionEvent(userId, "checkout_completed", { source: "token_topup", tokens: tokensPurchased })
+    }
+
     return credited
 }
 
@@ -259,4 +264,6 @@ export async function handleSubscriptionSuccess(userId: string, planId: string, 
             description: `Subscription started for plan ${plan.name}`,
         }
     })
+
+    await recordConversionEvent(userId, "checkout_completed", { plan: planId })
 }

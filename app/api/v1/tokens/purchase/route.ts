@@ -3,6 +3,7 @@ import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { stripe } from "@/lib/stripe"
 import { getUserSubscription } from "@/lib/subscription-limits"
 import { createTokenCheckoutSession } from "@/lib/billing"
+import { recordConversionEvent } from "@/lib/journey/conversion-events"
 import { logger } from "@/lib/logger"
 import { TOKEN_PACKAGES, type TokenPackageKey } from "@/lib/billing/token-packages"
 
@@ -69,6 +70,11 @@ export async function POST(req: Request) {
             package: body.package,
             tokens: pkg.tokens,
             amountEur: pkg.priceEur,
+        })
+
+        await recordConversionEvent(userId, "checkout_started", {
+            source: "token_topup",
+            tokens: pkg.tokens,
         })
 
         return createApiResponse({

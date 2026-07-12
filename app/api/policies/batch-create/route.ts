@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache"
 import { z } from "zod"
 import { withApiGuard } from "@/lib/api-guard"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
+import { recordConversionEvent } from "@/lib/journey/conversion-events"
 
 const policySchema = z.object({
     insurerName: z.string().min(1),
@@ -52,6 +53,7 @@ export const POST = withApiGuard(
                 })
                 const remaining = Math.max(policyLimit - currentCount, 0)
                 if (policies.length > remaining) {
+                    await recordConversionEvent(userId, "limit_hit", { kind: "policy", source: "batch_create" })
                     return NextResponse.json(
                         {
                             success: false,

@@ -20,6 +20,7 @@ import { PolicyService } from "@/lib/services/policy.service"
 import { canUserUseTokens } from "@/lib/token-tracking"
 import { canUserAddPolicy, canUserUseFeature, getUserSubscription, SUBSCRIPTION_LIMITS } from "@/lib/subscription-limits"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
+import { recordConversionEvent } from "@/lib/journey/conversion-events"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { after } from 'next/server'
 import { collaborationService } from "@/lib/services/collaboration.service"
@@ -70,6 +71,7 @@ export async function createPolicy(formData: FormData) {
         // Structured code — the client maps this to the policy_limit upgrade
         // modal. (Previously threw a localized sentence the error mapper
         // couldn't match, so EL users saw a generic failure toast.)
+        await recordConversionEvent(userId, "limit_hit", { kind: "policy", source: "create_policy" })
         throw new Error("POLICY_LIMIT_REACHED")
     }
 
@@ -475,6 +477,7 @@ export async function uploadPolicyDocument(formData: FormData) {
     const userId = authResult.dbUser.id
     const canAdd = await canUserAddPolicy(userId)
     if (!canAdd.allowed) {
+        await recordConversionEvent(userId, "limit_hit", { kind: "policy", source: "upload_document" })
         return { error: "POLICY_LIMIT_REACHED" }
     }
     const file = formData.get("file") as File
@@ -969,6 +972,7 @@ export async function askPolicyQuestion(policyId: string, question: string) {
     // agents on granted policies are metered by their agent-plan budgets.
     const isAllowed = await canUserUseFeature(authResult.dbUser.id, 'interactiveQA')
     if (!isAllowed && !authResult.dbUser.roles.includes('admin') && !authResult.dbUser.roles.includes('agent')) {
+        await recordConversionEvent(authResult.dbUser.id, "limit_hit", { kind: "ai_question", source: "policy_qa" })
         return { error: "UPGRADE_REQUIRED" }
     }
 
@@ -989,6 +993,7 @@ export async function askPolicyQuestion(policyId: string, question: string) {
         })
 
         if (count >= dailyLimit) {
+            await recordConversionEvent(authResult.dbUser.id, "limit_hit", { kind: "ai_question", source: "policy_qa_daily" })
             return {
                 error: "LIMIT_REACHED"
             }
