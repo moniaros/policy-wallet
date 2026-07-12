@@ -684,8 +684,17 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
  */
 
 export async function getQuestionnaireTemplates() {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) throw new Error("Unauthorized")
+
+    // Same visibility rule as the questionnaire manager: system templates
+    // plus the caller's own — never other agents' custom templates.
     return await db.questionnaireTemplate.findMany({
-        where: { isActive: true }
+        where: {
+            isActive: true,
+            OR: [{ isSystem: true }, { createdByUserId: authResult.dbUser.id }],
+        },
+        orderBy: [{ isSystem: "desc" }, { name: "asc" }],
     })
 }
 

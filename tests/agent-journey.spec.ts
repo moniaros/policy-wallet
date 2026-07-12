@@ -40,4 +40,24 @@ test.describe('Agent Journey', () => {
         await expect(page).not.toHaveURL(/auth\/signin/);
         await expect(page.getByText(/ανανεώσ|renewal/i).first()).toBeVisible({ timeout: 20000 });
     });
+    test('questionnaire manager lists the professional system templates', async ({ page }) => {
+        await page.goto('/questionnaires');
+
+        await expect(page).toHaveURL(/questionnaires/);
+        const templates = [
+            'Motor Insurance Intake',
+            'Home Insurance Assessment',
+            'Health Insurance Needs Analysis',
+            'Life Insurance Review',
+            'Pet Insurance Questionnaire',
+            'Travel Insurance Intake',
+            'Annual Insurance Needs Review',
+        ];
+        for (const name of templates) {
+            await expect(page.getByText(name).first()).toBeVisible({ timeout: 20000 });
+        }
+        // Retired English-only seed placeholders must not surface.
+        await expect(page.getByText('Motor Risk Assessment')).toHaveCount(0);
+        await expect(page.getByText('Health & Lifestyle Assessment')).toHaveCount(0);
+    });
 });

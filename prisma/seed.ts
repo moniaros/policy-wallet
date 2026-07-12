@@ -579,71 +579,10 @@ async function main() {
         }
     }
 
-    // 8. Questionnaire Templates
-    await prisma.questionnaireTemplate.upsert({
-        where: { id: 'motor-risk-v1' },
-        update: {},
-        create: {
-            id: 'motor-risk-v1',
-            name: 'Motor Risk Assessment',
-            lineOfBusiness: 'motor',
-            version: 1,
-            questions: [
-                {
-                    id: 'business_use',
-                    type: 'boolean',
-                    label: 'Do you use the vehicle for business or commercial delivery?',
-                    required: true
-                },
-                {
-                    id: 'additional_drivers',
-                    type: 'text',
-                    label: 'Are there any other regular drivers of this vehicle?',
-                    required: false
-                },
-                {
-                    id: 'private_garage',
-                    type: 'boolean',
-                    label: 'Is the vehicle parked in a private locked garage at night?',
-                    required: true
-                }
-            ],
-            isActive: true
-        }
-    })
-
-    await prisma.questionnaireTemplate.upsert({
-        where: { id: 'health-lifestyle-v1' },
-        update: {},
-        create: {
-            id: 'health-lifestyle-v1',
-            name: 'Health & Lifestyle Assessment',
-            lineOfBusiness: 'health',
-            version: 1,
-            questions: [
-                {
-                    id: 'dangerous_sports',
-                    type: 'boolean',
-                    label: 'Do you participate in any high-risk sports (e.g., skydiving, racing)?',
-                    required: true
-                },
-                {
-                    id: 'smoking_status',
-                    type: 'select',
-                    label: 'Smoking Status',
-                    options: ['Non-smoker', 'Occasional', 'Regular'],
-                    required: true
-                },
-                {
-                    id: 'dependants_count',
-                    type: 'number',
-                    label: 'How many dependants would you like to cover?',
-                    required: true
-                }
-            ],
-            isActive: true
-        }
-    })
+    // 8. Questionnaire templates are system data shipped via migrations
+    // (20260321190000 + 20260713100000_professional_system_questionnaires) —
+    // do not seed them here: the old English-only placeholder templates this
+    // block used to create are retired (is_active=false) by that migration.
 
     console.log('Seeding finished.')
 }
