@@ -9,7 +9,7 @@ import { signOut } from "@/app/auth/actions"
 import { db } from "@/lib/db"
 import type { NavigationSection, UserRole } from "@/types/navigation"
 
-import { Wallet, Shield, PieChart, Bell, LayoutDashboard, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, DollarSign, UsersRound, FileQuestion, Flag } from 'lucide-react'
+import { Wallet, Shield, PieChart, Bell, LayoutDashboard, LayoutGrid, Users, Lightbulb, Settings, Building2, Gavel, ShieldAlert, ReceiptText, ClipboardList, Activity, RefreshCw, DollarSign, UsersRound, FileQuestion, Flag } from 'lucide-react'
 
 export default async function ProtectedLayout({
     children,
@@ -44,6 +44,7 @@ export default async function ProtectedLayout({
             items: [
                 { label: t.nav.home, href: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
                 { label: t.nav.wallet, href: "/wallet", icon: <Wallet className="w-5 h-5" /> },
+                { label: t.nav.branches, href: "/branches", icon: <LayoutGrid className="w-5 h-5" /> },
                 {
                     label: t.nav.coverageInsights,
                     href: "/coverage-insights",
