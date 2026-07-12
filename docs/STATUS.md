@@ -28,19 +28,20 @@ _Living dashboard — not a log. Updated at the end of each session with meaning
 - **Hobby-plan cron fix:** synthetic-launch-check cron now daily (sub-daily rejected at deploy).
 - Prior passes: production hardening (Sentry, rate-limit, pooled DB), 3 endpoint scope-gap fixes, pricing-cutover copy, nodemailer 9, design-sync, monetization stack. All guardrails + 145/145 unit tests green.
 
+## Money path — VERIFIED END-TO-END WITH A REAL CARD (12 Jul)
+sk_test key received → billing catalog applied to Stripe TEST (5 plans monthly+annual + 4 token packs → `lib/billing-catalog.json`); prod `plans` rows updated with real price IDs (placeholders gone); TEST webhook registered + `STRIPE_WEBHOOK_SECRET` set in Vercel; **PR #65** fixed the proxy 307-redirecting Stripe's anonymous webhook POSTs to signin (would have silently killed delivery — endpoint now answers 400 missing-signature). **4242 purchase completed** (Agent Starter, €24.79 incl. 24% VAT): Stripe session paid → `subscriptions` row active with `stripeSubscriptionId` (period 12 Jul→11 Aug) → success page won the fulfillment race; webhook event delivered, signature-verified and no-oped idempotently (`processed_webhook_events`) → `conv_checkout_completed` mirrored for the admin funnel. PR #66 (parallel session) shipped the money-path E2E spec + the MyPoliciesScreen mobile upgrade trigger; deployed together with #65. Token packs share the (unit-tested) payment-mode path but haven't had a card test yet.
+
 ## Blocked / user-gated
-- **sk_test key (chat paste pending)** — needed to run `setup-billing-catalog.ts --apply` (Stripe MCP is LIVE-mode, unusable for this) and to register the TEST webhook → `/api/v1/billing/webhook` + set `STRIPE_WEBHOOK_SECRET` + redeploy. Checkout works without it (success page verifies sessions directly), but catalog rows + webhook redundancy wait on the key. QStash keys still unset → AI analysis inline.
-- **Card-entry step** — full money-path test (4242…) is user-performed at the Stripe hosted page; then verify subscription activation + token crediting end-to-end.
-- **Housekeeping:** Supabase "outstanding invoices" banner (pay to avoid disruption); Brevo API key + prod DB password passed through chat — rotate both cheaply; old Supabase project (`lzqvtvjggylcujenlelh`, 31 demo accounts) idle — decide keep/pause; grandfathered free-granted subs may deserve a courtesy in-app note before their period lapses.
+- **Housekeeping:** Supabase "outstanding invoices" banner (pay to avoid disruption); **rotate Brevo API key, prod DB password AND the sk_test key** (all transited chat); old Supabase project (`lzqvtvjggylcujenlelh`, 31 demo accounts) idle — decide keep/pause; grandfathered free-granted subs may deserve a courtesy in-app note before their period lapses. QStash keys still unset → AI analysis inline.
 
 ## Top risks (ranked)
-1. **High — money path not walked end-to-end**: checkout verified to the Stripe hosted page + all revenue leaks closed, but no card has completed a purchase in prod (blocked on user card step; webhook unregistered — success page is the only fulfillment path today).
-2. **Medium — email deliverability fresh**: Brevo free tier caps 300/day; sender domain DKIM state unverified via API.
-3. **Medium — scale**: upload path still inline (QStash follow-up), pooled DB `connection_limit=1` workaround in place, no k6 run.
-4. **Medium — governance HOLD**: legal/DPO/product + UAT + SRE-restore sign-offs pending; email-verify hard gate off (flip `ENFORCE_EMAIL_VERIFICATION=1` before real traffic).
+1. **Medium — email deliverability fresh**: Brevo free tier caps 300/day; sender domain DKIM state unverified via API.
+2. **Medium — scale**: upload path still inline (QStash follow-up), pooled DB `connection_limit=1` workaround in place, no k6 run.
+3. **Medium — governance HOLD**: legal/DPO/product + UAT + SRE-restore sign-offs pending; email-verify hard gate off (flip `ENFORCE_EMAIL_VERIFICATION=1` before real traffic).
+4. **Low — TEST-mode billing**: catalog/webhook/keys are Stripe TEST; live cutover (live keys + live webhook/secret + catalog re-run) required before charging real cards.
 5. **Low — Vercel git auto-deploy off**: deploys via `vercel deploy --prod` CLI only.
 
 ## Next 3 actions
-1. Money path close-out: paste sk_test key → apply billing catalog + register TEST webhook + `STRIPE_WEBHOOK_SECRET`; user completes a 4242 checkout; verify sub activation, token top-up crediting, and conv_* rows in the admin funnel.
-2. Deploy: `vercel deploy --prod` to ship PR #66 (mobile upgrade surface is currently missing for all phone users in prod).
+1. Token-pack card test (Account → billing → buy a pack) to exercise payment-mode fulfillment with a real card; verify `token_purchases` completed + balance credit + funnel row.
+2. Run the full local Playwright suite incl. the new `tests/money-path.spec.ts` (PR #66) + a mobile viewport pass over the new trigger surfaces.
 3. SEO follow-through: Search Console property + sitemap submission; then apex-domain cutover per SEO_STRATEGY.md.
