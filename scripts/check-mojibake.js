@@ -17,6 +17,18 @@ const TARGETS = [
   "components/coverage/CoverageInsightsClient.tsx",
   "components/coverage/InsightCard.tsx",
   "components/notifications/NotificationsClient.tsx",
+  // Greek-heavy branch content bundles
+  "lib/insurance/taxonomy.ts",
+  "lib/insurance/content/index.ts",
+  "lib/insurance/content/motor.ts",
+  "lib/insurance/content/home.ts",
+  "lib/insurance/content/health.ts",
+  "lib/insurance/content/life.ts",
+  "lib/insurance/content/pension.ts",
+  "lib/insurance/content/travel.ts",
+  "lib/insurance/content/cyber.ts",
+  "lib/insurance/content/pet.ts",
+  "lib/insurance/content/business.ts",
 ];
 
 const SUSPICIOUS = /\u00C3|\u00C2|\u00E2\u20AC|\uFFFD|\?{3,}/u;

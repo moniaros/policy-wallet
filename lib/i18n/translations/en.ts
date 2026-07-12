@@ -798,6 +798,30 @@ export const en: TranslationKeys = {
         other: "Other",
     },
 
+    // Branch pages & branch content chrome (per-branch copy lives in lib/insurance/content)
+    branches: {
+        title: 'Insurance branches',
+        subtitle: 'See per branch what you have, what appears to be missing and how to get more from what you already pay for.',
+        whyItMatters: 'Why it matters',
+        whatWeAnalyze: 'What PolicyWallet analyzes',
+        howToUseBetter: 'How to use it better',
+        commonGaps: 'Common coverage gaps',
+        recommendedActions: 'Recommended actions',
+        suggestedQuestions: 'Ask the AI about your policy',
+        claimsPrep: 'If something happens',
+        renewal: 'Renewal',
+        policiesInBranch: 'Your policies',
+        detectedGaps: 'Detected gaps',
+        upcomingRenewals: 'Upcoming renewals',
+        detectedInPortfolio: 'Detected in your portfolio',
+        askAgent: 'Ask your advisor',
+        viewBranch: 'View branch',
+        statusCovered: 'Covered',
+        statusAttention: 'Needs attention',
+        statusGap: 'Possible gap',
+        statusNeutral: 'Not assessed',
+    },
+
     // Policy Status
     policyStatus: {
         active: 'Active',

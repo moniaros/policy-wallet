@@ -795,6 +795,30 @@ export const el = {
         other: "Άλλο",
     },
 
+    // Branch pages & branch content chrome (per-branch copy lives in lib/insurance/content)
+    branches: {
+        title: 'Κλάδοι ασφάλισης',
+        subtitle: 'Δες ανά κλάδο τι έχεις, τι φαίνεται να λείπει και πώς να αξιοποιήσεις όσα ήδη πληρώνεις.',
+        whyItMatters: 'Γιατί έχει σημασία',
+        whatWeAnalyze: 'Τι αναλύει το PolicyWallet',
+        howToUseBetter: 'Πώς να το αξιοποιήσεις καλύτερα',
+        commonGaps: 'Συχνά κενά κάλυψης',
+        recommendedActions: 'Προτεινόμενες ενέργειες',
+        suggestedQuestions: 'Ρώτησε το AI για το συμβόλαιό σου',
+        claimsPrep: 'Αν συμβεί ζημιά',
+        renewal: 'Ανανέωση',
+        policiesInBranch: 'Τα συμβόλαιά σου',
+        detectedGaps: 'Εντοπισμένα κενά',
+        upcomingRenewals: 'Επερχόμενες ανανεώσεις',
+        detectedInPortfolio: 'Εντοπίστηκε στο χαρτοφυλάκιό σου',
+        askAgent: 'Ρώτησε τον σύμβουλό σου',
+        viewBranch: 'Δες τον κλάδο',
+        statusCovered: 'Καλυμμένο',
+        statusAttention: 'Χρειάζεται προσοχή',
+        statusGap: 'Πιθανό κενό',
+        statusNeutral: 'Δεν έχει αξιολογηθεί',
+    },
+
     // Policy Status
     policyStatus: {
         active: 'ΕΝΕΡΓΗ',
