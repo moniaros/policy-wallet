@@ -3,6 +3,7 @@ import { stripe } from "./stripe"
 import { daysFromNow, SUBSCRIPTION_PERIOD_DAYS } from "@/lib/constants/time"
 import { TOKEN_PACKAGES, type TokenPackageKey } from "@/lib/billing/token-packages"
 import { recordConversionEvent } from "@/lib/journey/conversion-events"
+import { logger } from "@/lib/logger"
 
 export interface VATInfo {
     rate: number
@@ -242,6 +243,36 @@ export async function handleSubscriptionSuccess(userId: string, planId: string, 
             select: { id: true },
         })
         if (existing) return
+    }
+
+    // Replace, don't stack: a new plan of the same type supersedes any prior
+    // active subscription of that type. Without this, a monthly→annual switch
+    // (or any re-purchase) left BOTH Stripe subscriptions billing.
+    const priors = await db.subscription.findMany({
+        where: {
+            userId,
+            status: "active",
+            plan: { planType: plan.planType },
+            ...(stripeSubscriptionId ? { NOT: { stripeSubscriptionId } } : {}),
+        },
+        select: { id: true, stripeSubscriptionId: true },
+    })
+    for (const prior of priors) {
+        if (prior.stripeSubscriptionId) {
+            try {
+                await stripe.subscriptions.cancel(prior.stripeSubscriptionId)
+            } catch (error) {
+                // Already canceled / gone on Stripe's side — expire locally anyway
+                logger("warn", "Prior Stripe subscription cancel failed", {
+                    stripeSubscriptionId: prior.stripeSubscriptionId,
+                    error: error instanceof Error ? error.message : String(error),
+                })
+            }
+        }
+        await db.subscription.update({
+            where: { id: prior.id },
+            data: { status: "expired", autoRenew: false },
+        })
     }
 
     await db.subscription.create({
