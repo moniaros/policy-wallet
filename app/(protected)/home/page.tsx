@@ -28,6 +28,7 @@ import { GettingStartedWrapper } from "@/components/dashboard/GettingStartedWrap
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { FREE_POLICY_LIMIT } from "@/lib/monetization/feature-gates"
 import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
+import { CarriedPlanCard } from "@/components/monetization/CarriedPlanCard"
 
 function daysUntil(date: Date) {
     return Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
@@ -90,6 +91,21 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
 
     const entitlements = await resolveUserEntitlements(dbUser.id)
     const isFreeTier = entitlements.tier === "free"
+
+    // Plan picked at signup but never activated (carried through onboarding)
+    let carriedPlan: "ph-plus" | "ph-pro" | null = null
+    let carriedBilling: "monthly" | "annual" = "monthly"
+    if (isFreeTier) {
+        const profile = await db.policyholderProfile.findUnique({
+            where: { userId: dbUser.id },
+            select: { preferences: true },
+        })
+        const prefs = (profile?.preferences ?? {}) as Record<string, unknown>
+        if (prefs.selectedPlan === "ph-plus" || prefs.selectedPlan === "ph-pro") {
+            carriedPlan = prefs.selectedPlan
+            carriedBilling = prefs.selectedBilling === "annual" ? "annual" : "monthly"
+        }
+    }
 
     const now = new Date()
     const activePolicies = policies.filter((policy) => policy.status === "active")
@@ -194,6 +210,13 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         notificationsEnabled={Boolean(hasNotificationPref)}
                     />
                 </div>
+
+                {/* Signup-selected plan continuity (never activated → offer checkout) */}
+                {carriedPlan && (
+                    <div className="mb-4">
+                        <CarriedPlanCard planId={carriedPlan} billingPeriod={carriedBilling} />
+                    </div>
+                )}
 
                 {/* Free-tier usage banner (Trigger A surface: approaching the policy cap) */}
                 {isFreeTier && activePolicies.length >= 2 && (

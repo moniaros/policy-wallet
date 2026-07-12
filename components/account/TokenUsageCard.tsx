@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react"
 import type { PlanTier } from "@/types/subscription-entitlements"
 import { TOKEN_PACKAGES as SHARED_TOKEN_PACKAGES } from "@/lib/billing/token-packages"
+import { trackJourneyEvent } from "@/lib/journey/funnel"
+import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 
 interface TokenUsageData {
     tier: PlanTier
@@ -58,6 +60,7 @@ export function TokenUsageCard({ language = "en", className = "" }: Props) {
             cancel: "Ακύρωση",
             remaining: "διαθέσιμα",
             used: "χρησιμοποιήθηκαν",
+            purchaseFailed: "Σφάλμα κατά την αγορά. Δοκιμάστε ξανά.",
         },
         en: {
             title: "AI Token Usage",
@@ -69,6 +72,7 @@ export function TokenUsageCard({ language = "en", className = "" }: Props) {
             cancel: "Cancel",
             remaining: "remaining",
             used: "used",
+            purchaseFailed: "Purchase failed. Please try again.",
         },
     } as const
     const i18n = I18N[language === "el" ? "el" : "en"]
@@ -86,33 +90,31 @@ export function TokenUsageCard({ language = "en", className = "" }: Props) {
         setPurchaseError(null)
         setPurchaseSuccess(null)
 
+        trackJourneyEvent("checkout_started", {
+            trigger_source: "token_usage_card",
+            feature_requested: "token_topup",
+            locale: language,
+        })
+
         try {
             const res = await fetch("/api/v1/tokens/purchase", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ package: pkgKey }),
+                body: JSON.stringify({ package: pkgKey, returnTo: "/account" }),
             })
             const json = await res.json()
+            const checkoutUrl = json?.data?.checkout_url || json?.checkout_url
 
-            if (!res.ok) {
-                setPurchaseError(json.message || "Purchase failed")
+            if (!res.ok || !checkoutUrl) {
+                setPurchaseError(json.message || i18n.purchaseFailed)
                 return
             }
 
-            // In a real app you'd open a Stripe Payment Element here.
-            // For now, show success state indicating the payment intent was created.
-            setPurchaseSuccess(
-                language === "el"
-                    ? "Αίτημα αγοράς δημιουργήθηκε. Ολοκληρώστε την πληρωμή."
-                    : "Purchase initiated. Complete your payment."
-            )
-            setShowPackages(false)
+            // Hosted Stripe Checkout completes the payment; /upgrade/success
+            // credits the tokens on return.
+            window.location.href = checkoutUrl
         } catch {
-            setPurchaseError(
-                language === "el"
-                    ? "Σφάλμα κατά την αγορά. Δοκιμάστε ξανά."
-                    : "Purchase failed. Please try again."
-            )
+            setPurchaseError(i18n.purchaseFailed)
         } finally {
             setPurchasing(null)
         }
@@ -246,7 +248,12 @@ export function TokenUsageCard({ language = "en", className = "" }: Props) {
                             {i18n.buyExtra}
                         </button>
                     ) : (
-                        <p className="text-xs arc-text-muted text-center">{i18n.freeTierNote}</p>
+                        <UpgradeTriggerCard
+                            featureKey="token_topup"
+                            triggerSource="token_usage_card"
+                            returnTo="/account"
+                            variant="inline"
+                        />
                     )}
                 </>
             )}

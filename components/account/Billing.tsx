@@ -2,6 +2,26 @@
 
 import type { BillingProps } from "./types"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { TokenUsageCard } from "./TokenUsageCard"
+
+const BILLING_COPY = {
+    managePayments: { el: "Διαχείριση πληρωμών", en: "Manage payments" },
+    annualNudgeTitle: { el: "Πέρασε σε ετήσιο πλάνο", en: "Switch to annual billing" },
+    annualNudgeBody: {
+        el: "Με ετήσια χρέωση πληρώνεις 10 μήνες αντί για 12 — 2 μήνες δωρεάν.",
+        en: "Annual billing costs 10 months instead of 12 — 2 months free.",
+    },
+    annualNudgeCta: { el: "Αλλαγή σε ετήσιο", en: "Switch to annual" },
+    rcTitle: { el: "Διαχείριση μέσω Mobile App", en: "Managed via Mobile App" },
+    rcBody: {
+        el: "Η συνδρομή σας πραγματοποιήθηκε μέσω της εφαρμογής. Παρακαλούμε χρησιμοποιήστε το App Store ή το Google Play για διαχείριση ή ακύρωση.",
+        en: "Your subscription was made through our mobile app. Please use the App Store or Google Play to manage or cancel your plan.",
+    },
+} as const
+
+function pickCopy(pair: { el: string; en: string }, language: string) {
+    return language === "el" ? pair.el : pair.en
+}
 
 export function Billing({
     currentSubscription,
@@ -13,6 +33,8 @@ export function Billing({
     onUpdatePaymentMethod,
     onDowngrade,
     onCancel,
+    onOpenPortal,
+    onSwitchToAnnual,
 }: BillingProps) {
     const { t, language } = useLanguage()
 
@@ -105,12 +127,10 @@ export function Billing({
                                         </div>
                                         <div>
                                             <h4 className="text-xs font-black uppercase tracking-widest text-primary dark:text-mint mb-1">
-                                                {language === "el" ? "Διαχείριση μέσω Mobile App" : "Managed via Mobile App"}
+                                                {pickCopy(BILLING_COPY.rcTitle, language)}
                                             </h4>
                                             <p className="text-[10px] font-medium text-primary dark:text-mint leading-relaxed">
-                                                {language === "el"
-                                                    ? "Η συνδρομή σας πραγματοποιήθηκε μέσω της εφαρμογής. Παρακαλούμε χρησιμοποιήστε το App Store ή το Google Play για διαχείριση ή ακύρωση."
-                                                    : "Your subscription was made through our mobile app. Please use the App Store or Google Play to manage or cancel your plan."}
+                                                {pickCopy(BILLING_COPY.rcBody, language)}
                                             </p>
                                         </div>
                                     </div>
@@ -123,6 +143,14 @@ export function Billing({
                                     >
                                         {t.billing.modifyPlan}
                                     </button>
+                                    {onOpenPortal && (
+                                        <button
+                                            onClick={() => onOpenPortal()}
+                                            className="px-5 py-2.5 border border-black/15 dark:border-white/20 text-black/70 dark:text-white/75 rounded-xl text-[10px] font-black uppercase tracking-wider hover:border-primary/40 hover:text-primary dark:hover:text-mint transition-all"
+                                        >
+                                            {pickCopy(BILLING_COPY.managePayments, language)}
+                                        </button>
+                                    )}
                                     <button
                                         onClick={() => onCancel?.()}
                                         className="px-5 py-2.5 text-black/45 dark:text-white/60 hover:text-red-500 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all"
@@ -131,6 +159,29 @@ export function Billing({
                                     </button>
                                 </div>
                             )}
+
+                            {/* Annual-savings nudge: paid monthly plan, Stripe-managed */}
+                            {onSwitchToAnnual &&
+                                currentPlan.price > 0 &&
+                                currentPlan.billing_interval === "month" &&
+                                currentSubscription.provider !== "revenue_cat" && (
+                                    <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 rounded-3xl border border-primary/25 bg-primary-tint p-5 dark:bg-primary/10">
+                                        <div className="min-w-0 flex-1">
+                                            <h4 className="text-xs font-black uppercase tracking-widest text-primary dark:text-mint">
+                                                {pickCopy(BILLING_COPY.annualNudgeTitle, language)}
+                                            </h4>
+                                            <p className="mt-1 text-[11px] font-medium leading-relaxed text-black/60 dark:text-white/65">
+                                                {pickCopy(BILLING_COPY.annualNudgeBody, language)}
+                                            </p>
+                                        </div>
+                                        <button
+                                            onClick={() => onSwitchToAnnual()}
+                                            className="px-5 py-2.5 bg-primary text-white dark:text-[#1A2420] rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-primary-hover transition-all"
+                                        >
+                                            {pickCopy(BILLING_COPY.annualNudgeCta, language)}
+                                        </button>
+                                    </div>
+                                )}
                         </div>
                     </div>
 
@@ -254,6 +305,9 @@ export function Billing({
                             </div>
                         </div>
                     </div>
+
+                    {/* AI token usage + top-up */}
+                    <TokenUsageCard language={language === "el" ? "el" : "en"} />
                 </div>
             </div>
         </div>

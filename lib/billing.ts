@@ -1,6 +1,7 @@
 import { db } from "./db"
 import { stripe } from "./stripe"
 import { daysFromNow, SUBSCRIPTION_PERIOD_DAYS } from "@/lib/constants/time"
+import { TOKEN_PACKAGES, type TokenPackageKey } from "@/lib/billing/token-packages"
 
 export interface VATInfo {
     rate: number
@@ -120,6 +121,105 @@ export async function createCheckoutSession(
         vatAmount: vat.amount,
         total: vat.totalWithVat
     }
+}
+
+/**
+ * One-off Stripe Checkout for a token pack (mode: "payment").
+ *
+ * A pending TokenPurchase row keyed by the session id is created up front;
+ * fulfillTokenPurchaseSession() (webhook or /upgrade/success) flips it to
+ * completed and credits the balance, idempotently.
+ */
+export async function createTokenCheckoutSession(
+    userId: string,
+    packageKey: TokenPackageKey,
+    returnTo?: string | null
+) {
+    const pkg = TOKEN_PACKAGES[packageKey]
+    if (!pkg) throw new Error("Unknown token package")
+
+    const user = await db.user.findUnique({ where: { id: userId }, select: { email: true } })
+    if (!user) throw new Error("User not found")
+
+    const base = process.env.NEXTAUTH_URL || "http://localhost:3000"
+    const safeReturn = sanitizeReturnPath(returnTo)
+    const successUrl =
+        `${base}/upgrade/success?session_id={CHECKOUT_SESSION_ID}` +
+        (safeReturn ? `&return=${encodeURIComponent(safeReturn)}` : "")
+    const cancelUrl = `${base}${safeReturn || "/account"}`
+
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        mode: "payment",
+        line_items: [
+            {
+                price_data: {
+                    currency: "eur",
+                    product_data: {
+                        name: `PolicyWallet AI tokens — ${pkg.label}`,
+                    },
+                    unit_amount: Math.round(pkg.priceEur * 100),
+                },
+                quantity: 1,
+            },
+        ],
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+        customer_email: user.email!,
+        metadata: {
+            userId,
+            tokenPackage: packageKey,
+            tokensPurchased: String(pkg.tokens),
+            priceEur: String(pkg.priceEur),
+        },
+    })
+
+    await db.tokenPurchase.create({
+        data: {
+            userId,
+            tokensPurchased: BigInt(pkg.tokens),
+            amountEur: pkg.priceEur,
+            stripeSessionId: session.id,
+            status: "pending",
+        },
+    })
+
+    return { id: session.id, url: session.url!, amountEur: pkg.priceEur, tokens: pkg.tokens }
+}
+
+/**
+ * Complete a Checkout-based token purchase: flip the pending row and credit
+ * the balance. Idempotent — the webhook and the success page may both call
+ * this; only a still-pending row is fulfilled.
+ */
+export async function fulfillTokenPurchaseSession(sessionId: string, userId: string, tokensPurchased: number) {
+    if (!sessionId || !userId || !tokensPurchased) return false
+
+    let credited = false
+    await db.$transaction(async (tx) => {
+        const updated = await tx.tokenPurchase.updateMany({
+            where: { userId, stripeSessionId: sessionId, status: "pending" },
+            data: { status: "completed" },
+        })
+        if (updated.count === 0) return
+
+        await tx.tokenBalance.upsert({
+            where: { userId },
+            create: {
+                userId,
+                purchasedTokens: BigInt(tokensPurchased),
+                usedTokens: BigInt(0),
+                lastPurchaseAt: new Date(),
+            },
+            update: {
+                purchasedTokens: { increment: BigInt(tokensPurchased) },
+                lastPurchaseAt: new Date(),
+            },
+        })
+        credited = true
+    })
+
+    return credited
 }
 
 /**
