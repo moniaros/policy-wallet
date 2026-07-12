@@ -189,6 +189,10 @@ export interface BillingProps {
     onDowngrade?: (planId: string) => void
     /** Called when user wants to cancel their subscription */
     onCancel?: () => void
+    /** Opens the Stripe billing portal (manage payment method / cancel) */
+    onOpenPortal?: () => void
+    /** Starts a checkout that switches the current plan to annual billing */
+    onSwitchToAnnual?: () => void
 }
 
 export interface ReferralsProps {

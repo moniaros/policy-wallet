@@ -13,11 +13,13 @@ import {
     logoutAllSessions,
     upgradeSubscription,
     cancelSubscription,
+    createBillingPortalSession,
     updateProfile,
     updateEmail,
     updatePassword,
     toggleNotificationPreference
 } from "./actions"
+import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useIsMobile } from "@/hooks/useResponsive"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -69,6 +71,27 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
         const result = await cancelSubscription()
         if (result.success) {
             alert('Auto-renewal disabled.')
+        }
+    }
+
+    const handleOpenPortal = async () => {
+        const res = await createBillingPortalSession()
+        if ('url' in res && res.url) {
+            window.location.href = res.url
+        } else {
+            toast.error((t as any).errors?.somethingWentWrong)
+        }
+    }
+
+    const handleSwitchToAnnual = async () => {
+        // Same plan, annual cadence — Stripe checkout replaces the monthly sub
+        const planId = initialData.currentPlan?.plan_id
+        if (!planId) return
+        const result = await upgradeSubscription(planId, 'annual', '/account')
+        if (result.url) {
+            window.location.href = result.url
+        } else if (result.error) {
+            toast.error(result.error)
         }
     }
 
@@ -165,6 +188,8 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                             invoices={initialData.invoices}
                             onCancel={handleCancel}
                             onDowngrade={() => router.push('/upgrade')}
+                            onOpenPortal={handleOpenPortal}
+                            onSwitchToAnnual={handleSwitchToAnnual}
                         />
                     )}
                     {activeTab === 'referrals' && (

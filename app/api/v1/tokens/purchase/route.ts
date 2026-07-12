@@ -1,9 +1,8 @@
-import { NextResponse } from "next/server"
 import { requireApiUser } from "@/lib/api-auth"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { stripe } from "@/lib/stripe"
 import { getUserSubscription } from "@/lib/subscription-limits"
-import { db } from "@/lib/db"
+import { createTokenCheckoutSession } from "@/lib/billing"
 import { logger } from "@/lib/logger"
 import { TOKEN_PACKAGES, type TokenPackageKey } from "@/lib/billing/token-packages"
 
@@ -53,49 +52,19 @@ export async function POST(req: Request) {
         return createApiError("SERVICE_UNAVAILABLE", "Payment service not configured", 503)
     }
 
+    // Same-origin path to land back on after Stripe (context preservation)
+    const returnTo = typeof (body as any).returnTo === "string" ? (body as any).returnTo : null
+
     try {
-        // Ensure user has a Stripe customer ID
-        let stripeCustomerId = authResult.dbUser.stripeCustomerId
-        if (!stripeCustomerId) {
-            const customer = await (stripe as any).customers.create({
-                email: authResult.dbUser.email,
-                name: authResult.dbUser.name || authResult.dbUser.email,
-                metadata: { userId },
-            })
-            stripeCustomerId = customer.id
-            await db.user.update({
-                where: { id: userId },
-                data: { stripeCustomerId },
-            })
-        }
+        // Hosted Stripe Checkout (mode: payment) — the previous bare
+        // PaymentIntent flow had no payment UI, so purchases stayed pending.
+        const session = await createTokenCheckoutSession(
+            userId,
+            body.package as TokenPackageKey,
+            returnTo
+        )
 
-        const amountCents = Math.round(pkg.priceEur * 100)
-
-        const paymentIntent = await (stripe as any).paymentIntents.create({
-            amount: amountCents,
-            currency: "eur",
-            customer: stripeCustomerId,
-            description: `PolicyWallet token purchase: ${pkg.label}`,
-            metadata: {
-                userId,
-                tokenPackage: body.package,
-                tokensPurchased: String(pkg.tokens),
-                priceEur: String(pkg.priceEur),
-            },
-        })
-
-        // Create a pending token purchase record
-        await db.tokenPurchase.create({
-            data: {
-                userId,
-                tokensPurchased: BigInt(pkg.tokens),
-                amountEur: pkg.priceEur,
-                stripePaymentIntentId: paymentIntent.id,
-                status: "pending",
-            },
-        })
-
-        logger("info", "Token purchase payment intent created", {
+        logger("info", "Token purchase checkout session created", {
             userId,
             package: body.package,
             tokens: pkg.tokens,
@@ -103,14 +72,14 @@ export async function POST(req: Request) {
         })
 
         return createApiResponse({
-            client_secret: paymentIntent.client_secret,
-            payment_intent_id: paymentIntent.id,
+            checkout_url: session.url,
+            session_id: session.id,
             package: body.package,
             tokens: pkg.tokens,
             amount_eur: pkg.priceEur,
         })
     } catch (error) {
-        logger("error", "Failed to create token purchase payment intent", {
+        logger("error", "Failed to create token purchase checkout session", {
             userId,
             package: body.package,
             error: error instanceof Error ? error.message : String(error),
