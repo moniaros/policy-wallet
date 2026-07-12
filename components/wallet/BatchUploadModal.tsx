@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
+import { UploadDropzone } from "@/components/ui/UploadDropzone"
 
 interface ExtractedPolicy {
     id: string
@@ -42,7 +43,6 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
     const [policies, setPolicies] = useState<ExtractedPolicy[]>([])
     const [isProcessing, setIsProcessing] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
-    const [dragOver, setDragOver] = useState(false)
 
     if (!isOpen) return null
 
@@ -120,19 +120,6 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
         setPolicies(results)
         setIsProcessing(false)
     }
-
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault()
-        setDragOver(false)
-        handleFiles(e.dataTransfer.files)
-    }
-
-    const handleDragOver = (e: React.DragEvent) => {
-        e.preventDefault()
-        setDragOver(true)
-    }
-
-    const handleDragLeave = () => setDragOver(false)
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) handleFiles(e.target.files)
@@ -251,36 +238,15 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
 
                 <div className="flex-1 overflow-y-auto p-8 pt-6">
                     {policies.length === 0 ? (
-                        <div
-                            onDrop={handleDrop}
-                            onDragOver={handleDragOver}
-                            onDragLeave={handleDragLeave}
-                            onClick={() => fileInputRef.current?.click()}
-                            className={`
-                                border-2 border-dashed rounded-[32px] p-12 text-center cursor-pointer transition-all
-                                ${dragOver
-                                    ? "border-primary bg-primary-tint dark:bg-primary/15"
-                                    : "border-slate-200 dark:border-slate-700 hover:border-primary hover:bg-slate-50 dark:hover:bg-slate-800/50"
-                                }
-                            `}
-                        >
-                            <input
-                                ref={fileInputRef}
-                                type="file"
-                                multiple
-                                accept=".pdf,image/*"
-                                data-testid="batch-upload-file-input"
-                                className="hidden"
-                                onChange={handleFileSelect}
-                            />
-                            <div className="w-16 h-16 bg-stone-100 dark:bg-stone-800 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <svg className="w-8 h-8 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-black text-stone-900 dark:text-white mb-2">{copy.dropTitle}</h3>
-                            <p className="text-sm text-stone-400">{copy.dropSubtitle}</p>
-                        </div>
+                        <UploadDropzone
+                            onFiles={handleFiles}
+                            accept=".pdf,image/*"
+                            inputId="batch-upload-file-input"
+                            inputTestId="batch-upload-file-input"
+                            title={copy.dropTitle}
+                            hint={copy.dropSubtitle}
+                            className="p-12"
+                        />
                     ) : (
                         <div className="space-y-4">
                             <div className="flex items-center gap-4 mb-6">
@@ -395,6 +361,14 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                                 ))}
                             </div>
 
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                multiple
+                                accept=".pdf,image/*"
+                                className="hidden"
+                                onChange={handleFileSelect}
+                            />
                             <button
                                 onClick={() => fileInputRef.current?.click()}
                                 disabled={isProcessing}
