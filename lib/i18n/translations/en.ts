@@ -651,6 +651,8 @@ export const en: TranslationKeys = {
             confidenceMedium: 'Check this field',
             confidenceLow: 'Low confidence',
             notFound: 'Not found in document',
+            sourceFromDocument: 'From the document',
+            sourcePageAbbrev: 'p.',
             overallConfidence: 'Extraction confidence',
             actionRequired: 'Action required',
             fieldValueMissing: 'Not filled in',

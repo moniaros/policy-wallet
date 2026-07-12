@@ -22,6 +22,7 @@ import type {
     RiskProfileInput,
 } from './ai-service.interface'
 import { enrichExtractionPayload } from './extraction-enrichment'
+import { extractionCitationsEnabled } from './extraction-citations'
 import { daysFromNow, DEFAULT_POLICY_DURATION_DAYS } from '@/lib/constants/time'
 
 export class MockAIService implements IAIService {
@@ -118,6 +119,17 @@ export class MockAIService implements IAIService {
                     renewalDate: 42,
                 }
             },
+            // Sample citations so the review UI shows source snippets in dev
+            // when the flag is on (mirrors real-provider behavior).
+            ...(extractionCitationsEnabled()
+                ? {
+                    extractionSources: {
+                        insurerName: { page: 1, snippet: 'Mock Insurance Co. — Ασφαλιστήριο Συμβόλαιο' },
+                        endDate: { page: 2, snippet: 'Λήξη ασφάλισης: όπως ορίζεται στον πίνακα καλύψεων' },
+                        premiumAmount: { page: 2, snippet: 'Ετήσια ολικά ασφάλιστρα: €500,00' },
+                    },
+                }
+                : {}),
             acordData: {
                 policy: {
                     insurerName: 'Mock Insurance Co.',

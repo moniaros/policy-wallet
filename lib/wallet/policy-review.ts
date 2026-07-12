@@ -63,6 +63,8 @@ export interface PolicyReviewData {
     finePrintClauses: ReviewFinePrint[]
     overallConfidence: number | null
     fieldConfidence: Record<string, number>
+    /** Per-field document citations (flag-gated feature; empty when absent). */
+    fieldSources: Record<string, { page?: number; snippet?: string }>
     missingCriticalFields: string[]
     requiresReview: boolean
     reviewState: ReviewState | null
@@ -195,6 +197,10 @@ export function buildPolicyReviewData(policy: PolicyRowForReview): PolicyReviewD
         fieldConfidence:
             extraction?.confidence?.fields && typeof extraction.confidence.fields === 'object'
                 ? (extraction.confidence.fields as Record<string, number>)
+                : {},
+        fieldSources:
+            extraction?.sources && typeof extraction.sources === 'object'
+                ? (extraction.sources as Record<string, { page?: number; snippet?: string }>)
                 : {},
         missingCriticalFields: asArray<unknown>(extraction?.missingCriticalFields)
             .map((f) => (typeof f === 'string' ? f : ''))

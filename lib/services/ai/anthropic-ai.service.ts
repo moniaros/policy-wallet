@@ -29,6 +29,7 @@ import type {
 } from "./ai-service.interface"
 import { AcordDataSchema } from "@/lib/schemas/acord-data"
 import { enrichExtractionPayload } from "./extraction-enrichment"
+import { extractionCitationsEnabled, ExtractionSourcesSchema, CITATIONS_PROMPT_SECTION } from "./extraction-citations"
 import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from "./shared-utils"
 import { wrapGapResultsBilingual, wrapClarityResultsBilingual } from "../translation/greek-to-bilingual"
 import { daysFromNow, DEFAULT_POLICY_DURATION_DAYS } from "@/lib/constants/time"
@@ -142,6 +143,7 @@ export class AnthropicAIService implements IAIService {
                 requiresReview: z.boolean(),
                 fields: z.record(z.string(), z.number()).describe("Per-field confidence 0-100 for: insurerName, policyNumber, lineOfBusiness, startDate, endDate, premiumAmount, issueDate, premiumFrequency, renewalDate"),
             }).optional(),
+            ...(extractionCitationsEnabled() ? { extractionSources: ExtractionSourcesSchema } : {}),
             acordData: AcordDataSchema.optional().describe("Type-specific structured data matching the detected lineOfBusiness"),
         })
 
@@ -190,7 +192,9 @@ Return ONLY valid JSON in this structure:
   "perksAndBenefits": [...],
   "notableConditions": [...]
 }
-Do not include Citations, text should be in Greek (Primary and language of source) and English in different tags. This includes all text such as names,`
+${extractionCitationsEnabled()
+    ? `Text should be in Greek (Primary and language of source) and English in different tags. This includes all text such as names,\n${CITATIONS_PROMPT_SECTION}`
+    : 'Do not include Citations, text should be in Greek (Primary and language of source) and English in different tags. This includes all text such as names,'}`
 
         const result = await withTimeoutAndRetry(
             () =>

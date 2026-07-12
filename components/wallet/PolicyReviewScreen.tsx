@@ -19,6 +19,7 @@ import {
 import { useLanguage } from "@/contexts/LanguageContext"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import { ConfidenceBadge } from "@/components/ui/ConfidenceBadge"
+import { SourceSnippetBox } from "@/components/ui/SourceSnippetBox"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { confirmPolicyReview, flagPolicyExtraction } from "@/app/(protected)/wallet/actions"
 import {
@@ -235,6 +236,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: P
         const isDirty = edits[field] !== undefined
         const score = data.fieldConfidence?.[field]
         const missing = !value || data.missingCriticalFields.includes(field)
+        const source = data.fieldSources?.[field]
 
         return (
             <div key={field} className="flex items-start gap-3 py-3.5">
@@ -272,6 +274,14 @@ export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: P
                         <p className={`mt-0.5 text-sm font-medium ${value ? "text-slate-900 dark:text-white" : "text-slate-400 italic"}`}>
                             {value || reviewCopy.fieldValueMissing}
                         </p>
+                    )}
+                    {source && !isEditing && (
+                        <SourceSnippetBox
+                            snippet={source.snippet}
+                            page={source.page}
+                            labels={{ fromDocument: reviewCopy.sourceFromDocument, pageAbbrev: reviewCopy.sourcePageAbbrev }}
+                            className="mt-2"
+                        />
                     )}
                 </div>
                 {!isEditing && (

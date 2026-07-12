@@ -648,6 +648,8 @@ export const el = {
             confidenceMedium: 'Χρειάζεται έλεγχο',
             confidenceLow: 'Χαμηλή βεβαιότητα',
             notFound: 'Δεν βρέθηκε στο έγγραφο',
+            sourceFromDocument: 'Από το έγγραφο',
+            sourcePageAbbrev: 'σελ.',
             overallConfidence: 'Βεβαιότητα εξαγωγής',
             actionRequired: 'Απαιτείται ενέργεια',
             fieldValueMissing: 'Δεν έχει συμπληρωθεί',
