@@ -54,12 +54,11 @@ export interface AppShellProps {
 // Bottom navigation items based on role
 const getBottomNavItems = (role: UserRole['role'], t: any) => {
     if (role === 'policyholder') {
-        const isGreek = (t.common?.locale || '').startsWith('el')
         return [
-            { href: '/dashboard', icon: LayoutDashboard, label: isGreek ? 'Αρχική' : 'Home', id: 'home' },
+            { href: '/dashboard', icon: LayoutDashboard, label: t.nav.home, id: 'home' },
             { href: '/wallet', icon: Wallet, label: t.nav.wallet, id: 'wallet' },
-            { href: '/coverage-insights', icon: Shield, label: isGreek ? 'AI Insights' : 'AI Insights', id: 'analysis' },
-            { href: '/agent', icon: Users, label: isGreek ? 'Σύμβουλος' : 'My Agent', id: 'agent' },
+            { href: '/coverage-insights', icon: Shield, label: t.nav.insightsShort, id: 'analysis' },
+            { href: '/agent', icon: Users, label: t.nav.agentShort, id: 'agent' },
             { href: '/account', icon: Settings, label: t.userMenu.settings, id: 'settings' }
         ]
     } else if (role === 'agent') {
