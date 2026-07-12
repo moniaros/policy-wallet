@@ -28,6 +28,7 @@ import type {
 } from './ai-service.interface'
 import { trackTokenUsage } from '@/lib/token-tracking'
 import { enrichExtractionPayload } from './extraction-enrichment'
+import { extractionCitationsEnabled, ExtractionSourcesSchema, CITATIONS_PROMPT_SECTION } from './extraction-citations'
 import { AcordDataSchema } from '../../schemas/acord-data'
 import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from './shared-utils'
 import { wrapGapResultsBilingual, wrapClarityResultsBilingual } from '../translation/greek-to-bilingual'
@@ -184,7 +185,9 @@ FINAL OUTPUT:
   "perksAndBenefits": [...],
   "notableConditions": [...]
 }
-Do not include Citations, text should be in Greek (Primary and language of source) and English in different tags. This includes all text such as names, descriptions, types, usage limits etc.`
+${extractionCitationsEnabled()
+    ? `Text should be in Greek (Primary and language of source) and English in different tags. This includes all text such as names, descriptions, types, usage limits etc.\n${CITATIONS_PROMPT_SECTION}`
+    : 'Do not include Citations, text should be in Greek (Primary and language of source) and English in different tags. This includes all text such as names, descriptions, types, usage limits etc.'}`
 
       logger('info', 'Starting Gemini 2.0 Flash extraction with UI Zod Schema', {
         fileName: document.fileName,
@@ -214,6 +217,7 @@ Do not include Citations, text should be in Greek (Primary and language of sourc
           requiresReview: z.boolean().describe("True if overall < 80 or critical fields missing"),
           fields: z.record(z.string(), z.number()).describe("Per-field confidence scores 0-100 for: insurerName, policyNumber, lineOfBusiness, startDate, endDate, premiumAmount, issueDate, premiumFrequency, renewalDate")
         }).optional(),
+        ...(extractionCitationsEnabled() ? { extractionSources: ExtractionSourcesSchema } : {}),
         acordData: AcordDataSchema.optional().describe("Type-specific structured data matching the detected lineOfBusiness")
       })
 

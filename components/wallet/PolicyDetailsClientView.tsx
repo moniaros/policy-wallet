@@ -418,6 +418,14 @@ export function PolicyDetailsClient({
                                     locale={locale}
                                     onRequestQuote={isOwner ? handleRequestQuote : undefined}
                                     isRequestingQuote={isRequestingQuote}
+                                    dateSources={{
+                                        endDate: policy.acordData?.extraction?.sources?.endDate,
+                                        renewalDate: policy.acordData?.extraction?.sources?.renewalDate,
+                                    }}
+                                    sourceLabels={{
+                                        fromDocument: t.wallet.review.sourceFromDocument,
+                                        pageAbbrev: t.wallet.review.sourcePageAbbrev,
+                                    }}
                                     copy={{
                                         keyDatesTitle: detailsCopy.keyDatesTitle,
                                         startedOn: detailsCopy.startedOn,

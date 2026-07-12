@@ -3,6 +3,7 @@
 import { Calendar, RefreshCw } from "lucide-react"
 
 import { RenewalRemindersList } from "@/components/wallet/policy-detail/RenewalRemindersList"
+import { SourceSnippetBox } from "@/components/ui/SourceSnippetBox"
 import {
     formatPolicyDate,
     parsePolicyDate,
@@ -25,6 +26,12 @@ interface KeyDatesCardProps {
     /** When provided, renders a "request renewal quote" CTA (owner only). */
     onRequestQuote?: () => void
     isRequestingQuote?: boolean
+    /** Document citations for the extracted dates (flag-gated feature). */
+    dateSources?: {
+        endDate?: { page?: number; snippet?: string }
+        renewalDate?: { page?: number; snippet?: string }
+    }
+    sourceLabels?: { fromDocument: string; pageAbbrev: string }
     copy: {
         keyDatesTitle: string
         startedOn: string
@@ -66,8 +73,11 @@ export function KeyDatesCard({
     locale,
     onRequestQuote,
     isRequestingQuote = false,
+    dateSources,
+    sourceLabels,
     copy,
 }: KeyDatesCardProps) {
+    const citedSource = dateSources?.renewalDate ?? dateSources?.endDate
     const start = parsePolicyDate(startDate)
     const end = parsePolicyDate(endDate)
     const isExpired = daysLeft < 0
@@ -171,6 +181,15 @@ export function KeyDatesCard({
                     </ul>
                 )}
             </div>
+
+            {citedSource && sourceLabels && (
+                <SourceSnippetBox
+                    snippet={citedSource.snippet}
+                    page={citedSource.page}
+                    labels={sourceLabels}
+                    className="mt-4"
+                />
+            )}
 
             <RenewalRemindersList renewals={renewals} locale={locale} copy={copy.reminders} />
 

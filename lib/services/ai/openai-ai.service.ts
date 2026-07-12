@@ -27,6 +27,7 @@ import type {
 } from "./ai-service.interface"
 import { AcordDataSchema } from "@/lib/schemas/acord-data"
 import { enrichExtractionPayload } from "./extraction-enrichment"
+import { extractionCitationsEnabled, ExtractionSourcesSchema, CITATIONS_PROMPT_SECTION } from "./extraction-citations"
 import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from "./shared-utils"
 import { wrapGapResultsBilingual, wrapClarityResultsBilingual } from "../translation/greek-to-bilingual"
 import { daysFromNow, DEFAULT_POLICY_DURATION_DAYS } from "@/lib/constants/time"
@@ -132,6 +133,7 @@ export class OpenAIAIService implements IAIService {
                 requiresReview: z.boolean(),
                 fields: z.record(z.string(), z.number()).describe("Per-field confidence 0-100 for: insurerName, policyNumber, lineOfBusiness, startDate, endDate, premiumAmount, issueDate, premiumFrequency, renewalDate"),
             }).optional(),
+            ...(extractionCitationsEnabled() ? { extractionSources: ExtractionSourcesSchema } : {}),
             acordData: AcordDataSchema.optional(),
         })
 
@@ -147,7 +149,10 @@ export class OpenAIAIService implements IAIService {
                                 {
                                     type: "text",
                                     text:
-                                        "SYSTEM:You are an expert insurance policy analyst and ACORD schema mapper.You extract structured data from insurance documents with zero hallucinations.USER:Extract ALL insurance policy data from this document.STRICT REQUIREMENTS:- Output MUST be valid JSON only.- Follow ACORD schema.- Populate ONLY the relevant section based on detected lineOfBusiness.- If a field is not explicitly found → return null.NORMALIZATION:- Dates: DD-MM-YYYY- Amounts: numeric only- Percentages: numeric- Language: preserve original (Greek or English)FULL DOCUMENT ANALYSIS:You MUST analyze:- Policy schedule- General Terms (Γενικοί Όροι)- Special Conditions (Ειδικοί Όροι)- Appendices / EndorsementsADVANCED EXTRACTION:1. finePrintClauses:Extract clauses limiting or conditioning coverage.Return:[text, category, severity(info|warning|critical), reason]2. perksAndBenefits:Extract all benefits (assistance, telemedicine, legal, discounts)Return:[name, description, phone, usageLimit, reminderRecommended]3. notableConditions:Extract key contractual conditions.Return:[condition, type, userActionRequired, deadline]ANTI-HALLUCINATION:- Do NOT infer- Do NOT assume- If unsure → null OUTPUT:{ \"lineOfBusiness\": \"...\",  \"acord\": {...},  \"finePrintClauses\": [...],  \"perksAndBenefits\": [...],  \"notableConditions\": [...]} Do not include Citations, text should be in Greek (Primary and language of source) and English in different tags. This includes all text such as names,",
+                                        "SYSTEM:You are an expert insurance policy analyst and ACORD schema mapper.You extract structured data from insurance documents with zero hallucinations.USER:Extract ALL insurance policy data from this document.STRICT REQUIREMENTS:- Output MUST be valid JSON only.- Follow ACORD schema.- Populate ONLY the relevant section based on detected lineOfBusiness.- If a field is not explicitly found → return null.NORMALIZATION:- Dates: DD-MM-YYYY- Amounts: numeric only- Percentages: numeric- Language: preserve original (Greek or English)FULL DOCUMENT ANALYSIS:You MUST analyze:- Policy schedule- General Terms (Γενικοί Όροι)- Special Conditions (Ειδικοί Όροι)- Appendices / EndorsementsADVANCED EXTRACTION:1. finePrintClauses:Extract clauses limiting or conditioning coverage.Return:[text, category, severity(info|warning|critical), reason]2. perksAndBenefits:Extract all benefits (assistance, telemedicine, legal, discounts)Return:[name, description, phone, usageLimit, reminderRecommended]3. notableConditions:Extract key contractual conditions.Return:[condition, type, userActionRequired, deadline]ANTI-HALLUCINATION:- Do NOT infer- Do NOT assume- If unsure → null OUTPUT:{ \"lineOfBusiness\": \"...\",  \"acord\": {...},  \"finePrintClauses\": [...],  \"perksAndBenefits\": [...],  \"notableConditions\": [...]} " +
+                                        (extractionCitationsEnabled()
+                                            ? "Text should be in Greek (Primary and language of source) and English in different tags. This includes all text such as names," + CITATIONS_PROMPT_SECTION
+                                            : "Do not include Citations, text should be in Greek (Primary and language of source) and English in different tags. This includes all text such as names,"),
                                 },
                                 {
                                     type: "file",

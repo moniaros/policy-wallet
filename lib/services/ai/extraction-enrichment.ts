@@ -1,4 +1,5 @@
 import type { PremiumFrequency } from './ai-service.interface'
+import { sanitizeExtractionSources } from './extraction-citations'
 
 type RawExtractionPayload = {
     insurerName?: unknown
@@ -15,6 +16,8 @@ type RawExtractionPayload = {
     customerEmail?: unknown
     exclusions?: unknown
     extractionConfidence?: unknown
+    /** Per-field source citations (flag-gated; see extraction-citations.ts) */
+    extractionSources?: unknown
     acordData?: any
 }
 
@@ -142,6 +145,8 @@ export function enrichExtractionPayload(
     const customerFullName = [customerFirst, customerLast].filter(Boolean).join(' ').trim()
     const customerEmail = asText(payload.customerEmail)
 
+    const extractionSources = sanitizeExtractionSources(payload.extractionSources)
+
     const acordData = {
         ...baseAcord,
         exclusions,
@@ -153,6 +158,13 @@ export function enrichExtractionPayload(
                 overall: Math.round(overallConfidence),
                 fields: fieldConfidence,
             },
+            // Per-field document citations — a fresh extraction replaces the
+            // previous set; re-analysis without citations keeps the old ones.
+            ...(extractionSources
+                ? { sources: extractionSources }
+                : baseAcord?.extraction?.sources
+                    ? { sources: baseAcord.extraction.sources }
+                    : {}),
             missingCriticalFields,
             requiresReview,
             reviewState: (baseAcord?.extraction?.reviewState as string) || 'unconfirmed',
