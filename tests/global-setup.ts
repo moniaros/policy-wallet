@@ -130,28 +130,52 @@ async function provisionUser(
  * fixture policy on the E2E policyholder.
  */
 async function provisionFixturePolicy(db: any, ownerUserId: string) {
-    const existing = await db.policy.findFirst({
+    let policy = await db.policy.findFirst({
         where: { ownerUserId, policyNumber: 'E2E-MOT-001' },
         select: { id: true },
     })
-    if (existing) return
 
-    const now = new Date()
-    await db.policy.create({
-        data: {
-            ownerUserId,
-            createdByUserId: ownerUserId,
-            policyNumber: 'E2E-MOT-001',
-            insurerName: 'E2E Insurance Co.',
-            lineOfBusiness: 'motor',
-            status: 'active',
-            startDate: new Date(now.getFullYear(), now.getMonth() - 1, 1),
-            endDate: new Date(now.getFullYear() + 1, now.getMonth() - 1, 1),
-            premiumAmount: 420,
-            premiumCurrency: 'EUR',
-        },
+    if (!policy) {
+        const now = new Date()
+        policy = await db.policy.create({
+            data: {
+                ownerUserId,
+                createdByUserId: ownerUserId,
+                policyNumber: 'E2E-MOT-001',
+                insurerName: 'E2E Insurance Co.',
+                lineOfBusiness: 'motor',
+                status: 'active',
+                startDate: new Date(now.getFullYear(), now.getMonth() - 1, 1),
+                endDate: new Date(now.getFullYear() + 1, now.getMonth() - 1, 1),
+                premiumAmount: 420,
+                premiumCurrency: 'EUR',
+            },
+            select: { id: true },
+        })
+        console.log('✅ E2E fixture policy provisioned (E2E-MOT-001)')
+    }
+
+    // A PDF document row so the free-tier PDF-preview lock (and its upgrade
+    // click-through) is exercisable. The file itself never has to exist —
+    // the locked state renders before any fetch.
+    const doc = await db.policyDocument.findFirst({
+        where: { policyId: policy.id, fileName: 'e2e-contract.pdf' },
+        select: { id: true },
     })
-    console.log('✅ E2E fixture policy provisioned (E2E-MOT-001)')
+    if (!doc) {
+        await db.policyDocument.create({
+            data: {
+                policyId: policy.id,
+                fileUrl: '/e2e-fixtures/e2e-contract.pdf',
+                fileName: 'e2e-contract.pdf',
+                fileSize: 24576,
+                source: 'policyholder',
+                processingStatus: 'completed',
+                uploadedByUserId: ownerUserId,
+            },
+        })
+        console.log('✅ E2E fixture document provisioned (e2e-contract.pdf)')
+    }
 }
 
 export default async function globalSetup() {

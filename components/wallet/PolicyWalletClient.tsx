@@ -230,6 +230,7 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
                 policies={policies}
                 user={user as any}
                 agent={agent}
+                tier={tier}
             />
         )
     }

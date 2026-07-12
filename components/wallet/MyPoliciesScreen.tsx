@@ -9,14 +9,16 @@ import { getDocumentPolicySummary } from '@/lib/wallet/document-insights'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
 import { Wallet, Car } from 'lucide-react'
 import { EmptyState as SharedEmptyState, PolicyPreviewRow } from '@/components/ui/EmptyState'
+import { UpgradeTriggerCard } from '@/components/monetization/UpgradeTriggerCard'
 
 interface MyPoliciesScreenProps {
     policies: Policy[]
+    tier?: 'free' | 'plus' | 'pro'
     onViewPolicy?: (id: string) => void
     onAddPolicy?: () => void
 }
 
-export function MyPoliciesScreen({ policies, onViewPolicy, onAddPolicy }: MyPoliciesScreenProps) {
+export function MyPoliciesScreen({ policies, tier = 'free', onViewPolicy, onAddPolicy }: MyPoliciesScreenProps) {
     const { language, t } = useLanguage()
     const roleCopy = getRoleCopy(language)
     const totalPremium = calculatePremiumFootprint(policies)
@@ -94,6 +96,18 @@ export function MyPoliciesScreen({ policies, onViewPolicy, onAddPolicy }: MyPoli
                         </p>
                     </div>
                 </div>
+
+                {/* Mobile upgrade surface — the desktop wallet has its own triggers,
+                    this is the only one a phone user sees on the wallet tab. */}
+                {tier === 'free' && policies.length > 0 && (
+                    <div className="mt-3">
+                        <UpgradeTriggerCard
+                            featureKey="full_ai_policy_analysis"
+                            triggerSource="mobile_wallet_tile"
+                            returnTo="/wallet"
+                        />
+                    </div>
+                )}
             </div>
 
             <div className="px-5 space-y-3">
