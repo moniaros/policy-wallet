@@ -9,6 +9,7 @@ import { createPolicy, getPolicyReviewData, retryPolicyAnalysis } from "@/app/(p
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
+import { UploadDropzone } from "@/components/ui/UploadDropzone"
 import { LimitReachedModal } from "@/components/account/LimitReachedModal"
 import { PolicyReviewScreen } from "@/components/wallet/PolicyReviewScreen"
 import type { PolicyReviewData } from "@/lib/wallet/policy-review"
@@ -51,7 +52,6 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
     const [selectedFiles, setSelectedFiles] = useState<File[]>([])
-    const [dragActive, setDragActive] = useState(false)
     const formCopy = t.wallet.addPolicyForm
 
     // AI-processing consent (GDPR): analysis starts in the background right after
@@ -68,29 +68,6 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
     const [createdPolicyId, setCreatedPolicyId] = useState<string | null>(null)
     const [reviewData, setReviewData] = useState<PolicyReviewData | null>(null)
     const pollingStartRef = useRef<number>(0)
-
-    // File Handling
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            setSelectedFiles(prev => [...prev, ...Array.from(e.target.files || [])])
-        }
-    }
-
-    const handleDrag = (e: React.DragEvent) => {
-        e.preventDefault()
-        e.stopPropagation()
-        if (e.type === "dragenter" || e.type === "dragover") setDragActive(true)
-        else if (e.type === "dragleave") setDragActive(false)
-    }
-
-    const handleDrop = (e: React.DragEvent) => {
-        e.preventDefault()
-        e.stopPropagation()
-        setDragActive(false)
-        if (e.dataTransfer.files) {
-            setSelectedFiles(prev => [...prev, ...Array.from(e.dataTransfer.files)])
-        }
-    }
 
     const removeFile = (index: number) => {
         setSelectedFiles(files => files.filter((_, i) => i !== index))
@@ -440,40 +417,14 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                 </h2>
                             </div>
 
-                            <div
-                                className={`
-                                    border-2 border-dashed rounded-2xl p-8 text-center transition-all cursor-pointer
-                                    ${dragActive
-                                        ? 'border-primary bg-primary-tint dark:bg-primary/15'
-                                        : 'border-slate-200 dark:border-slate-700 hover:border-primary hover:bg-slate-50 dark:hover:bg-slate-800'
-                                    }
-                                `}
-                                onDragEnter={handleDrag}
-                                onDragLeave={handleDrag}
-                                onDragOver={handleDrag}
-                                onDrop={handleDrop}
-                            >
-                                <input
-                                    type="file"
-                                    name="files"
-                                    multiple
-                                    accept=".pdf,.png,.jpg,.jpeg"
-                                    className="hidden"
-                                    id="file-upload"
-                                    onChange={handleFileChange}
-                                />
-                                <label htmlFor="file-upload" className="cursor-pointer block">
-                                    <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-full shadow-lg flex items-center justify-center mx-auto mb-4 text-primary dark:text-mint">
-                                        <FileText className="w-8 h-8" />
-                                    </div>
-                                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
-                                        {t.wallet.tapToUpload}
-                                    </h3>
-                                    <p className="text-slate-500 text-sm">
-                                        {t.wallet.dragDrop}
-                                    </p>
-                                </label>
-                            </div>
+                            <UploadDropzone
+                                onFiles={(files) => setSelectedFiles(prev => [...prev, ...files])}
+                                accept=".pdf,.png,.jpg,.jpeg"
+                                inputId="file-upload"
+                                inputName="files"
+                                title={t.wallet.tapToUpload}
+                                hint={t.wallet.dragDrop}
+                            />
 
                             {selectedFiles.length > 0 && (
                                 <div className="mt-4 space-y-2">

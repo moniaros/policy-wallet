@@ -9,6 +9,7 @@ import type { LandingLocale } from "@/types/landing-content"
 import { SolutionsDropdown, SolutionsMobileGroup } from "@/components/landing/SolutionsDropdown"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
 import { TrustBadges } from "@/components/landing/TrustBadges"
+import { TrustStrip } from "@/components/ui/TrustStrip"
 import { PolicyWalletWidget } from "@/components/landing/PolicyWalletWidget"
 import { ServicesGrid } from "@/components/landing/ServicesGrid"
 import { AudienceTabs } from "@/components/landing/AudienceTabs"
@@ -292,21 +293,13 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
                             )}
                         </p>
                         <TrustBadges />
-                        <div className="flex flex-wrap items-center justify-center gap-3">
-                            {[
-                                { icon: "🔒", label: "AES-256" },
-                                { icon: "🇪🇺", label: t("Servers ΕΕ", "EU Servers") },
-                                { icon: "✓", label: "GDPR" },
-                            ].map((pill) => (
-                                <div
-                                    key={pill.label}
-                                    className="flex items-center gap-1.5 rounded-full border border-[#E2E8F0] bg-white px-3.5 py-1.5 text-[12px] font-medium text-[#475569]"
-                                >
-                                    <span>{pill.icon}</span>
-                                    {pill.label}
-                                </div>
-                            ))}
-                        </div>
+                        <TrustStrip
+                            items={[
+                                { kind: "encryption", label: "AES-256" },
+                                { kind: "eu", label: t("Servers ΕΕ", "EU Servers") },
+                                { kind: "gdpr", label: "GDPR" },
+                            ]}
+                        />
                     </div>
                 </div>
 

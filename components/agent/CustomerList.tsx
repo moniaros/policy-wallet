@@ -7,6 +7,7 @@ import { Customer, CustomerListProps } from "./types"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { EmptyState, CustomerPreviewRow } from "@/components/ui/EmptyState"
+import { ConsentStatusBadge, type ConsentStatus } from "@/components/ui/ConsentStatusBadge"
 
 export function CustomerList({
     customers,
@@ -106,11 +107,8 @@ export function CustomerList({
         attested: roleCopy.customerList.consentAttested,
         none: roleCopy.customerList.consentNone,
     }
-    const CONSENT_TONES: Record<string, string> = {
-        granted: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
-        attested: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-        none: "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400",
-    }
+    const consentStatusOf = (raw: string | null | undefined): ConsentStatus =>
+        raw === 'granted' || raw === 'attested' ? raw : 'none'
 
     const healthTone = (score: number | null | undefined) => {
         if (score === null || score === undefined) return "bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500"
@@ -296,9 +294,10 @@ export function CustomerList({
                                             )}
                                         </td>
                                         <td className="px-4 py-3.5">
-                                            <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${CONSENT_TONES[intel?.consentStatus || "none"]}`}>
-                                                {CONSENT_LABELS[intel?.consentStatus || "none"]}
-                                            </span>
+                                            <ConsentStatusBadge
+                                                status={consentStatusOf(intel?.consentStatus)}
+                                                label={CONSENT_LABELS[consentStatusOf(intel?.consentStatus)]}
+                                            />
                                         </td>
                                         <td className="px-4 py-3.5 text-right text-[12px] text-slate-400 whitespace-nowrap">{formatLastContact(customer.lastInteractionDate)}</td>
                                         <td className="px-4 py-3.5">

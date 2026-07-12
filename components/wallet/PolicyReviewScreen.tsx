@@ -18,6 +18,7 @@ import {
 } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
+import { ConfidenceBadge } from "@/components/ui/ConfidenceBadge"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { confirmPolicyReview, flagPolicyExtraction } from "@/app/(protected)/wallet/actions"
 import {
@@ -59,44 +60,6 @@ const CHIP_FIELDS: EditableField[] = [
     "renewalDate",
 ]
 
-function ConfidenceChip({
-    score,
-    missing,
-    labels,
-}: {
-    score: number | undefined
-    missing: boolean
-    labels: { high: string; medium: string; low: string; notFound: string }
-}) {
-    const level = confidenceLevel(score)
-
-    if (level === "unknown") {
-        if (!missing) return null
-        return (
-            <span className="inline-flex flex-shrink-0 items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                {labels.notFound}
-            </span>
-        )
-    }
-
-    const styles =
-        level === "high"
-            ? "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint"
-            : level === "medium"
-                ? "bg-[#FEF3C7] text-[#B45309] dark:bg-amber-900/30 dark:text-amber-400"
-                : "bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400"
-    const label = level === "high" ? labels.high : level === "medium" ? labels.medium : labels.low
-
-    return (
-        <span
-            className={`inline-flex flex-shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${styles}`}
-            title={`${Math.round(score as number)}%`}
-            aria-label={`${label} (${Math.round(score as number)}%)`}
-        >
-            {label} · {Math.round(score as number)}%
-        </span>
-    )
-}
 
 export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: PolicyReviewScreenProps) {
     const { t, language } = useLanguage()
@@ -281,7 +244,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: P
                             {label}
                         </p>
                         {CHIP_FIELDS.includes(field) && !isDirty && (
-                            <ConfidenceChip score={score} missing={missing} labels={chipLabels} />
+                            <ConfidenceBadge score={score} missing={missing} labels={chipLabels} />
                         )}
                         {isDirty && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-[10px] font-semibold text-[#166534] dark:bg-primary/15 dark:text-mint">
