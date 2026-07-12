@@ -11,6 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { AlertCircle, FileUp, Grid3X3, List, PenSquare, Sparkles, Search } from 'lucide-react'
 import { calculatePremiumFootprint } from '@/lib/wallet/premium-footprint'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
+import { INSURANCE_BRANCHES, normalizeBranch } from '@/lib/insurance/taxonomy'
 
 export function PolicyWallet({
     policies,
@@ -34,7 +35,7 @@ export function PolicyWallet({
     const roleCopy = getRoleCopy(language)
     const [showAddMenu, setShowAddMenu] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
-    const [activeFilter, setActiveFilter] = useState<'all' | 'motor' | 'health' | 'home' | 'life' | 'travel'>('all')
+    const [activeFilter, setActiveFilter] = useState<string>('all')
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
     const addMenuRef = useRef<HTMLDivElement | null>(null)
 
@@ -71,7 +72,7 @@ export function PolicyWallet({
                 policy.insurerName?.toLowerCase().includes(query) ||
                 policy.lineOfBusiness?.toLowerCase().includes(query)
 
-            const byFilter = activeFilter === 'all' || policy.lineOfBusiness === activeFilter
+            const byFilter = activeFilter === 'all' || normalizeBranch(policy.lineOfBusiness).id === activeFilter
             return byQuery && byFilter
         })
     }, [policies, searchQuery, activeFilter])
@@ -82,7 +83,14 @@ export function PolicyWallet({
     const actionNeededCount = policies.filter((p) => p.status === 'action_needed').length
     const totalPremium = calculatePremiumFootprint(policies)
 
-    const filters: Array<'all' | 'motor' | 'health' | 'home' | 'life' | 'travel'> = ['all', 'motor', 'health', 'home', 'life', 'travel']
+    // Filter chips follow the branches actually present in this portfolio,
+    // in canonical taxonomy order — a pet-only wallet gets a pet chip, not
+    // a fixed motor/health/home row it can't use.
+    const presentBranchIds = useMemo(() => {
+        const present = new Set(policies.map((policy) => normalizeBranch(policy.lineOfBusiness).id))
+        return INSURANCE_BRANCHES.filter((branch) => present.has(branch.id)).map((branch) => branch.id)
+    }, [policies])
+    const filters: string[] = ['all', ...presentBranchIds]
 
     if (isLoading) {
         return (
@@ -205,11 +213,11 @@ export function PolicyWallet({
                 actionNeededCount={actionNeededCount}
                 totalPremium={totalPremium}
                 policyBreakdown={{
-                    health: policies.filter((p) => p.lineOfBusiness === 'health').length,
-                    auto: policies.filter((p) => p.lineOfBusiness === 'motor').length,
-                    home: policies.filter((p) => p.lineOfBusiness === 'home').length,
-                    life: policies.filter((p) => p.lineOfBusiness === 'life').length,
-                    travel: policies.filter((p) => p.lineOfBusiness === 'travel').length,
+                    health: policies.filter((p) => normalizeBranch(p.lineOfBusiness).id === 'health').length,
+                    auto: policies.filter((p) => normalizeBranch(p.lineOfBusiness).id === 'motor').length,
+                    home: policies.filter((p) => normalizeBranch(p.lineOfBusiness).id === 'home').length,
+                    life: policies.filter((p) => normalizeBranch(p.lineOfBusiness).id === 'life').length,
+                    travel: policies.filter((p) => normalizeBranch(p.lineOfBusiness).id === 'travel').length,
                 }}
                 expiringPolicies={policies
                     .filter((p) => p.status === 'expiring_soon')

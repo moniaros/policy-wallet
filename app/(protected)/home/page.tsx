@@ -10,20 +10,15 @@ import { getProtectionScore } from "@/lib/services/gap-engine"
 import {
     ArrowRight,
     CalendarClock,
-    Car,
     CircleHelp,
     FileText,
     HeartPulse,
-    House,
-    Landmark,
-    PawPrint,
-    Shield,
-    Ship,
     Sparkles,
-    Stethoscope,
     Upload,
     Wallet,
 } from "lucide-react"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
+import { getBranchIcon } from "@/lib/insurance/branch-icons"
 import { GettingStartedWrapper } from "@/components/dashboard/GettingStartedWrapper"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { FREE_POLICY_LIMIT } from "@/lib/monetization/feature-gates"
@@ -46,18 +41,9 @@ function formatCurrencyValue(amount: unknown, currency: string = "EUR") {
     }).format(numericAmount)
 }
 
-function getLineOfBusinessMeta(lineOfBusiness: string) {
-    const key = (lineOfBusiness || "").toLowerCase()
-
-    if (key.includes("motor") || key.includes("auto")) return { icon: Car, label: "Motor" }
-    if (key.includes("health")) return { icon: HeartPulse, label: "Health" }
-    if (key.includes("home") || key.includes("property")) return { icon: House, label: "Home" }
-    if (key.includes("life") || key.includes("investment")) return { icon: Landmark, label: "Life" }
-    if (key.includes("pet")) return { icon: PawPrint, label: "Pet" }
-    if (key.includes("doctor") || key.includes("liability")) return { icon: Stethoscope, label: "Doctor Liability" }
-    if (key.includes("marine") || key.includes("yacht")) return { icon: Ship, label: "Marine" }
-
-    return { icon: Shield, label: "Other" }
+function getLineOfBusinessMeta(lineOfBusiness: string, isGreek: boolean) {
+    const branch = normalizeBranch(lineOfBusiness)
+    return { icon: getBranchIcon(branch.id), label: isGreek ? branch.label.el : branch.label.en }
 }
 
 export default async function PolicyholderHomePage({ preloadedDbUser }: { preloadedDbUser?: User } = {}) {
@@ -313,7 +299,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                         .filter(([, amount]) => amount > 0)
                                         .sort(([, a], [, b]) => b - a)
                                         .map(([lob, amount]) => {
-                                            const meta = getLineOfBusinessMeta(lob)
+                                            const meta = getLineOfBusinessMeta(lob, isGreek)
                                             const LobIcon = meta.icon
                                             return (
                                                 <div key={lob} className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 dark:border-white/15 dark:bg-white/5">
@@ -389,7 +375,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                             ) : (
                                 <div className="space-y-2">
                                     {upcomingRenewals.slice(0, 6).map((policy) => {
-                                        const { icon: PolicyIcon, label } = getLineOfBusinessMeta(policy.lineOfBusiness)
+                                        const { icon: PolicyIcon, label } = getLineOfBusinessMeta(policy.lineOfBusiness, isGreek)
                                         const premiumLabel = formatCurrencyValue(policy.premiumAmount, policy.premiumCurrency || "EUR")
                                         const days = daysUntil(policy.endDate)
                                         const urgencyColor = days <= 30 ? "bg-rose-500" : days <= 89 ? "bg-amber-500" : "bg-primary"

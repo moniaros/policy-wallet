@@ -6,18 +6,11 @@
 
 import { z } from 'zod'
 
-// Valid lines of business
-export const lineOfBusinessEnum = z.enum([
-    'motor',
-    'health',
-    'home',
-    'life',
-    'business',
-    'travel',
-    'pet',
-    'liability',
-    'other'
-])
+import { WRITE_BRANCH_IDS } from '@/lib/insurance/taxonomy'
+
+// Valid lines of business — vocabulary owned by the canonical taxonomy
+// (tests assert it stays a superset of the pre-taxonomy 9-value enum)
+export const lineOfBusinessEnum = z.enum(WRITE_BRANCH_IDS)
 
 // Policy status enum
 export const policyStatusEnum = z.enum([
