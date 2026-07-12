@@ -68,7 +68,7 @@ export default function CyberProductPage() {
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
                             <div>
                                 <h3 className="text-[14px] font-bold text-[#1A1A1A] uppercase tracking-wider">Cyber Enterprise</h3>
-                                <p className="text-[13px] text-emerald-600 font-medium mt-1">Active</p>
+                                <p className="text-[13px] text-[#166534] font-medium mt-1">Active</p>
                             </div>
                             <div className="text-right">
                                 <div className="text-[20px] font-medium text-[#1A1A1A]">€2.5M</div>
