@@ -7,6 +7,7 @@ import { redirect } from "next/navigation"
 import { logger } from "@/lib/logger"
 import { stripe } from "@/lib/stripe"
 import { createCheckoutSession } from "@/lib/billing"
+import { recordConversionEvent } from "@/lib/journey/conversion-events"
 import { env } from "@/lib/env"
 import { syncRevenueCatSubscription } from "@/lib/services/revenuecat.service"
 import { daysFromNow, TRIAL_PERIOD_DAYS } from "@/lib/constants/time"
@@ -313,6 +314,13 @@ export async function upgradeSubscription(
             billingPeriod,
             returnTo
         )
+        // Server-action checkouts (upgrade page, account, agent pricing)
+        // bypass /api/v1/billing/checkout — mirror the funnel event here too.
+        await recordConversionEvent(authResult.dbUser.id, "checkout_started", {
+            plan: planId,
+            billingPeriod,
+            source: "upgrade_action",
+        })
         return { url: checkout.url }
     } catch (error) {
         logger('error', 'Stripe checkout creation failed', { error })
