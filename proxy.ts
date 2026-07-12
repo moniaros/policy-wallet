@@ -99,6 +99,11 @@ export async function proxy(request: NextRequest) {
         "/landing",
         "/api/contact",
         "/api/v1/contact",
+        // Stripe webhooks: anonymous POSTs from Stripe's servers — a signin
+        // redirect here silently kills event delivery. The routes verify the
+        // Stripe-Signature header themselves (defense in depth).
+        "/api/v1/billing/webhook",
+        "/api/stripe/webhook",
         // Crawl infrastructure + link previews: redirecting these to the
         // sign-in page hides the whole site from search and AI crawlers
         // (SEO audit, critical finding #1).
