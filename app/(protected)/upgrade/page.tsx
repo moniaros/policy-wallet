@@ -28,7 +28,7 @@ const pick = (pair: { el: string; en: string }, language: string) =>
 export default function PricingPage() {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const { language } = useLanguage()
+    const { t, language } = useLanguage()
     const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null)
 
     // Real current plan (was hardcoded 'ph-free' — paid users saw themselves
@@ -82,6 +82,9 @@ export default function PricingPage() {
     const headingTitle = getSubscriptionCopy('headings.pricing.title', language)
     const headingSubtitle = getSubscriptionCopy('headings.pricing.subtitle', language)
     const secureText = getSubscriptionCopy('trust.secure', language)
+    const badgeText = getSubscriptionCopy('headings.pricing.badge', language)
+    const cancelAnytimeText = getSubscriptionCopy('trust.cancelAnytime', language)
+    const noHiddenFeesText = getSubscriptionCopy('trust.noHiddenFees', language)
 
     return (
         <div className="min-h-screen bg-white dark:bg-stone-950 pb-20 relative overflow-hidden">
@@ -108,7 +111,7 @@ export default function PricingPage() {
                         className="flex items-center gap-2 text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white transition-colors"
                     >
                         <ChevronLeft className="w-5 h-5" />
-                        <span className="font-bold text-sm">Back</span>
+                        <span className="font-bold text-sm">{t.common.back}</span>
                     </button>
                     <div className="flex items-center gap-2 text-stone-400 text-xs font-bold uppercase tracking-widest">
                         <ShieldCheck className="w-4 h-4 text-primary dark:text-mint" />
@@ -126,7 +129,7 @@ export default function PricingPage() {
                 >
                     <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-soft dark:bg-primary/15 border border-primary/20 dark:border-primary/30 text-primary dark:text-mint text-xs font-black uppercase tracking-widest mb-8">
                         <Zap className="w-3.5 h-3.5" />
-                        Unleash Full Potential
+                        {badgeText}
                     </div>
                     <h1 className="text-5xl md:text-7xl font-black text-stone-900 dark:text-white mb-8 tracking-tighter leading-none">
                         {headingTitle}
@@ -146,19 +149,19 @@ export default function PricingPage() {
                 />
             </div>
 
-            {/* Trust Signals / Logos */}
+            {/* Honest trust signals (the fake insurer-logo wall is gone) */}
             <div className="mt-20 border-t border-stone-100 dark:border-stone-800 pt-16 relative z-10">
-                <div className="max-w-7xl mx-auto px-4 text-center">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-stone-400 mb-10">
-                        Trusted by industry leaders worldwide
-                    </p>
-                    <div className="flex flex-wrap justify-center items-center gap-12 opacity-30 grayscale hover:grayscale-0 transition-all duration-700">
-                        {/* Mock Logos or SVG Patterns */}
-                        <div className="text-xl font-black italic tracking-tighter">ALLIANZ</div>
-                        <div className="text-xl font-black italic tracking-tighter text-primary dark:text-mint">AXA</div>
-                        <div className="text-xl font-black italic tracking-tighter">METLIFE</div>
-                        <div className="text-xl font-black italic tracking-tighter text-primary dark:text-mint">PWC</div>
-                        <div className="text-xl font-black italic tracking-tighter">SWISS RE</div>
+                <div className="max-w-7xl mx-auto px-4">
+                    <div className="flex flex-wrap justify-center items-center gap-3">
+                        {[secureText, cancelAnytimeText, noHiddenFeesText].map((text) => (
+                            <span
+                                key={text}
+                                className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white px-4 py-2 text-xs font-bold text-stone-500 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-400"
+                            >
+                                <ShieldCheck className="h-3.5 w-3.5 text-primary dark:text-mint" />
+                                {text}
+                            </span>
+                        ))}
                     </div>
                 </div>
             </div>

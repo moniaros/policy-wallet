@@ -130,6 +130,10 @@ export const subscriptionCopy = {
     // Page Headings
     headings: {
         pricing: {
+            badge: {
+                el: 'Αναβάθμιση λογαριασμού',
+                en: 'Account upgrade'
+            },
             title: {
                 el: 'Επιλέξτε το Πλάνο που σας Ταιριάζει',
                 en: 'Choose the Plan That Fits You'
