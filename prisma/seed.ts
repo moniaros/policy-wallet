@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
+import { INSURANCE_BRANCHES } from '../lib/insurance/taxonomy'
 const prisma = new PrismaClient()
 
 async function main() {
@@ -32,14 +33,14 @@ async function main() {
         create: { name: 'Ergo' }
     })
 
-    const types = [
-        { name: 'Motor (Αυτοκίνητο)', slug: 'motor' },
-        { name: 'Health (Υγεία)', slug: 'health' },
-        { name: 'Home (Κατοικία)', slug: 'home' },
-        { name: 'Life (Ζωή)', slug: 'life' },
-        { name: 'Travel (Ταξιδιωτική)', slug: 'travel' },
-        { name: 'Liability (Αστική Ευθύνη)', slug: 'liability' },
-    ]
+    // One InsuranceType row per write-enabled taxonomy branch — this table
+    // feeds the add-policy type dropdown, so it mirrors WRITE_BRANCH_IDS.
+    const types = INSURANCE_BRANCHES
+        .filter((branch) => branch.writeEnabled)
+        .map((branch) => ({
+            name: `${branch.label.en} (${branch.label.el})`,
+            slug: branch.id,
+        }))
 
     for (const type of types) {
         await prisma.insuranceType.upsert({
@@ -144,6 +145,54 @@ async function main() {
             premiumAmount: 450.00,
         }
     })
+
+    // 2b. Demo policies across major branches (dev only, clearly marked:
+    // "Demo Insurer" + DEMO-* numbers). Idempotent — find-or-create on the
+    // policy number, unlike the legacy creates above.
+    const demoPolicies = [
+        {
+            policyNumber: 'DEMO-PEN-001',
+            lineOfBusiness: 'pension',
+            insurerName: 'Demo Insurer',
+            startDate: new Date('2024-03-01'),
+            endDate: new Date('2039-03-01'),
+            status: 'active',
+            premiumAmount: 1200.0,
+        },
+        {
+            policyNumber: 'DEMO-CYB-001',
+            lineOfBusiness: 'cyber',
+            insurerName: 'Demo Insurer',
+            startDate: new Date('2026-02-01'),
+            endDate: new Date('2027-02-01'),
+            status: 'active',
+            premiumAmount: 85.0,
+        },
+        {
+            policyNumber: 'DEMO-TRV-001',
+            lineOfBusiness: 'travel',
+            insurerName: 'Demo Insurer',
+            startDate: new Date('2026-08-01'),
+            endDate: new Date('2026-08-20'),
+            status: 'active',
+            premiumAmount: 45.0,
+        },
+    ]
+    for (const demo of demoPolicies) {
+        const existing = await prisma.policy.findFirst({
+            where: { ownerUserId: ph1.id, policyNumber: demo.policyNumber },
+            select: { id: true },
+        })
+        if (!existing) {
+            await prisma.policy.create({
+                data: {
+                    ownerUserId: ph1.id,
+                    createdByUserId: ph1.id,
+                    ...demo,
+                },
+            })
+        }
+    }
 
     // Gap Definitions are handled in section 5
 
@@ -680,6 +729,150 @@ async function main() {
             urgencyForProfiles: 'high',
             greekMarketPopularity: 20,
             sortOrder: 9,
+        },
+        {
+            lineOfBusiness: 'cyber',
+            name: { en: 'Cyber Protection', el: 'Cyber Προστασία' },
+            description: { en: 'Cover for online fraud, identity theft and unauthorised card transactions, with legal and technical support.', el: 'Κάλυψη για online απάτη, κλοπή ταυτότητας και μη εξουσιοδοτημένες συναλλαγές, με νομική και τεχνική υποστήριξη.' },
+            category: 'individual',
+            estimatedAnnualPremium: 90,
+            premiumRangeLow: 40,
+            premiumRangeHigh: 250,
+            keyBenefits: [
+                { en: 'Online fraud reimbursement', el: 'Αποζημίωση online απάτης' },
+                { en: 'Identity theft support', el: 'Υποστήριξη σε κλοπή ταυτότητας' },
+                { en: 'Legal & technical assistance', el: 'Νομική & τεχνική βοήθεια' },
+            ],
+            idealProfileTags: [],
+            urgencyForProfiles: 'low',
+            greekMarketPopularity: 15,
+            sortOrder: 10,
+        },
+        {
+            lineOfBusiness: 'pension',
+            name: { en: 'Pension & Savings Plan', el: 'Συνταξιοδοτικό & Αποταμιευτικό Πρόγραμμα' },
+            description: { en: 'Long-term savings or pension programme with defined contributions, maturity options and surrender terms.', el: 'Μακροπρόθεσμο αποταμιευτικό ή συνταξιοδοτικό πρόγραμμα με καθορισμένες εισφορές, επιλογές ωρίμανσης και όρους εξαγοράς.' },
+            category: 'individual',
+            estimatedAnnualPremium: 1200,
+            premiumRangeLow: 400,
+            premiumRangeHigh: 6000,
+            keyBenefits: [
+                { en: 'Defined contribution savings', el: 'Αποταμίευση με καθορισμένες εισφορές' },
+                { en: 'Maturity options (lump sum / annuity)', el: 'Επιλογές ωρίμανσης (εφάπαξ / σύνταξη)' },
+                { en: 'Optional guaranteed component', el: 'Προαιρετικό εγγυημένο σκέλος' },
+            ],
+            idealProfileTags: ['employed', 'self_employed'],
+            urgencyForProfiles: 'medium',
+            greekMarketPopularity: 35,
+            sortOrder: 11,
+        },
+        {
+            lineOfBusiness: 'personal_accident',
+            name: { en: 'Personal Accident', el: 'Προσωπικό Ατύχημα' },
+            description: { en: 'Fixed benefits for accidental injury, disability or death, complementing health and life cover.', el: 'Σταθερές παροχές για τραυματισμό, ανικανότητα ή απώλεια ζωής από ατύχημα, συμπληρωματικά στην υγεία και τη ζωή.' },
+            category: 'individual',
+            estimatedAnnualPremium: 120,
+            premiumRangeLow: 50,
+            premiumRangeHigh: 400,
+            keyBenefits: [
+                { en: 'Accidental disability benefit', el: 'Παροχή ανικανότητας από ατύχημα' },
+                { en: 'Hospital cash allowance', el: 'Νοσοκομειακό επίδομα' },
+                { en: 'Family payout on accidental death', el: 'Παροχή στην οικογένεια σε απώλεια ζωής από ατύχημα' },
+            ],
+            idealProfileTags: ['self_employed'],
+            urgencyForProfiles: 'low',
+            greekMarketPopularity: 25,
+            sortOrder: 12,
+        },
+        {
+            lineOfBusiness: 'boat',
+            name: { en: 'Boat Insurance', el: 'Ασφάλεια Σκάφους' },
+            description: { en: 'Liability and hull cover for leisure boats — mandatory liability applies to Greek waters.', el: 'Αστική ευθύνη και κάλυψη σκάφους αναψυχής — η αστική ευθύνη είναι υποχρεωτική στα ελληνικά ύδατα.' },
+            category: 'individual',
+            estimatedAnnualPremium: 350,
+            premiumRangeLow: 150,
+            premiumRangeHigh: 2000,
+            keyBenefits: [
+                { en: 'Mandatory third-party liability', el: 'Υποχρεωτική αστική ευθύνη' },
+                { en: 'Hull & machinery damage', el: 'Ζημιές σκάφους & μηχανής' },
+                { en: 'Salvage & wreck removal', el: 'Επιθαλάσσια αρωγή & ανέλκυση' },
+            ],
+            idealProfileTags: [],
+            urgencyForProfiles: 'low',
+            greekMarketPopularity: 10,
+            sortOrder: 13,
+        },
+        {
+            lineOfBusiness: 'roadside',
+            name: { en: 'Roadside Assistance', el: 'Οδική Βοήθεια' },
+            description: { en: 'Standalone breakdown assistance: on-the-spot repair, towing and onward travel.', el: 'Αυτόνομη οδική βοήθεια: επιτόπου επισκευή, μεταφορά οχήματος και συνέχιση ταξιδιού.' },
+            category: 'individual',
+            estimatedAnnualPremium: 60,
+            premiumRangeLow: 30,
+            premiumRangeHigh: 150,
+            keyBenefits: [
+                { en: '24/7 breakdown response', el: '24/7 ανταπόκριση σε βλάβη' },
+                { en: 'Towing to a garage', el: 'Μεταφορά σε συνεργείο' },
+                { en: 'Onward travel / replacement', el: 'Συνέχιση ταξιδιού / αντικατάσταση' },
+            ],
+            idealProfileTags: ['has_vehicles'],
+            urgencyForProfiles: 'low',
+            greekMarketPopularity: 55,
+            sortOrder: 14,
+        },
+        {
+            lineOfBusiness: 'business',
+            name: { en: 'Business Insurance', el: 'Ασφάλεια Επιχείρησης' },
+            description: { en: 'Premises, equipment, stock, business interruption and liability cover for small businesses.', el: 'Κάλυψη στέγης, εξοπλισμού, εμπορευμάτων, διακοπής εργασιών και αστικής ευθύνης για μικρές επιχειρήσεις.' },
+            category: 'business',
+            estimatedAnnualPremium: 800,
+            premiumRangeLow: 300,
+            premiumRangeHigh: 5000,
+            keyBenefits: [
+                { en: 'Premises & equipment cover', el: 'Κάλυψη στέγης & εξοπλισμού' },
+                { en: 'Business interruption', el: 'Διακοπή εργασιών' },
+                { en: 'General & employer liability', el: 'Γενική & εργοδοτική ευθύνη' },
+            ],
+            idealProfileTags: ['self_employed'],
+            urgencyForProfiles: 'medium',
+            greekMarketPopularity: 40,
+            sortOrder: 15,
+        },
+        {
+            lineOfBusiness: 'group_health',
+            name: { en: 'Group Health', el: 'Ομαδική Υγεία' },
+            description: { en: 'Employee health cover for businesses: hospital care, outpatient benefits and check-ups.', el: 'Κάλυψη υγείας προσωπικού για επιχειρήσεις: νοσοκομειακή περίθαλψη, εξωνοσοκομειακές παροχές και check-up.' },
+            category: 'business',
+            estimatedAnnualPremium: 350,
+            premiumRangeLow: 150,
+            premiumRangeHigh: 1200,
+            keyBenefits: [
+                { en: 'Hospital cover per employee', el: 'Νοσοκομειακή κάλυψη ανά εργαζόμενο' },
+                { en: 'Outpatient & diagnostics', el: 'Εξωνοσοκομειακά & διαγνωστικές' },
+                { en: 'Annual check-up', el: 'Ετήσιο check-up' },
+            ],
+            idealProfileTags: [],
+            urgencyForProfiles: 'low',
+            greekMarketPopularity: 30,
+            sortOrder: 16,
+        },
+        {
+            lineOfBusiness: 'group_pension',
+            name: { en: 'Group Pension', el: 'Ομαδική Σύνταξη' },
+            description: { en: 'Employer-sponsored pension savings for staff, with defined contributions per employee.', el: 'Συνταξιοδοτική αποταμίευση προσωπικού με εισφορές εργοδότη ανά εργαζόμενο.' },
+            category: 'business',
+            estimatedAnnualPremium: 600,
+            premiumRangeLow: 200,
+            premiumRangeHigh: 3000,
+            keyBenefits: [
+                { en: 'Employer contributions', el: 'Εισφορές εργοδότη' },
+                { en: 'Per-employee accounts', el: 'Ατομικοί λογαριασμοί εργαζομένων' },
+                { en: 'Vesting & maturity options', el: 'Όροι ωρίμανσης & κατοχύρωσης' },
+            ],
+            idealProfileTags: [],
+            urgencyForProfiles: 'low',
+            greekMarketPopularity: 20,
+            sortOrder: 17,
         },
     ]
 

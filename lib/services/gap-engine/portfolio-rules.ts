@@ -303,6 +303,85 @@ function noAgentRule(
 
 // ── Entry point ──────────────────────────────────────────────────────
 
+/**
+ * Analyzed home policy whose extraction explicitly shows no earthquake
+ * cover. Requires the property section to exist (analysis ran) so the rule
+ * never fires on un-analyzed documents.
+ */
+function homeNoEarthquakeRule(policies: PortfolioPolicyFacts[]): PortfolioGap | null {
+    const candidate = policies.find(
+        (p) =>
+            isActive(p) &&
+            normalizeBranch(p.lineOfBusiness).id === "home" &&
+            p.acordData?.property &&
+            p.acordData.property.earthquakeCoverageIncluded === false
+    )
+    if (!candidate) return null
+
+    const ref = policyRef(candidate)
+    return {
+        ruleId: "home_no_earthquake",
+        lineOfBusiness: candidate.lineOfBusiness,
+        severity: "medium",
+        name: {
+            en: "Home policy appears to lack earthquake cover",
+            el: "Η κατοικία φαίνεται χωρίς κάλυψη σεισμού",
+        },
+        reason: {
+            en: "Earthquake cover is usually an optional add-on in Greek home policies — many basic packages leave it out.",
+            el: "Η κάλυψη σεισμού είναι συνήθως προαιρετική προσθήκη στα ελληνικά συμβόλαια κατοικίας — πολλά βασικά πακέτα δεν την περιλαμβάνουν.",
+        },
+        evidence: {
+            en: `The analysis of your policy ${ref} did not find earthquake coverage in the extracted terms.`,
+            el: `Η ανάλυση του συμβολαίου σας ${ref} δεν εντόπισε κάλυψη σεισμού στους όρους που εξήχθησαν.`,
+        },
+        nextAction: {
+            en: "Ask your insurer or advisor to confirm whether earthquake cover is included, and what adding it would cost.",
+            el: "Ζητήστε από τον ασφαλιστή ή τον σύμβουλό σας να επιβεβαιώσει αν περιλαμβάνεται κάλυψη σεισμού και τι θα κόστιζε η προσθήκη της.",
+        },
+        reviewHref: `/wallet/${candidate.id}`,
+    }
+}
+
+/**
+ * Analyzed motor policy whose extraction explicitly shows no roadside
+ * assistance. Same analysis-ran guard as the earthquake rule.
+ */
+function motorNoRoadsideRule(policies: PortfolioPolicyFacts[]): PortfolioGap | null {
+    const candidate = policies.find(
+        (p) =>
+            isActive(p) &&
+            normalizeBranch(p.lineOfBusiness).id === "motor" &&
+            p.acordData?.vehicle &&
+            p.acordData.vehicle.hasRoadsideAssistance === false
+    )
+    if (!candidate) return null
+
+    const ref = policyRef(candidate)
+    return {
+        ruleId: "motor_no_roadside",
+        lineOfBusiness: candidate.lineOfBusiness,
+        severity: "medium",
+        name: {
+            en: "Motor policy appears to lack roadside assistance",
+            el: "Το αυτοκίνητο φαίνεται χωρίς οδική βοήθεια",
+        },
+        reason: {
+            en: "A breakdown without roadside assistance means paying for towing out of pocket — often more than the cover itself costs.",
+            el: "Μια βλάβη χωρίς οδική βοήθεια σημαίνει μεταφορά με δικά σας έξοδα — συχνά ακριβότερη από το ίδιο το κόστος της κάλυψης.",
+        },
+        evidence: {
+            en: `The analysis of your policy ${ref} did not find roadside assistance in the extracted coverages.`,
+            el: `Η ανάλυση του συμβολαίου σας ${ref} δεν εντόπισε οδική βοήθεια στις καλύψεις που εξήχθησαν.`,
+        },
+        nextAction: {
+            en: "Check whether roadside assistance exists as a separate contract, or ask your insurer about adding it.",
+            el: "Ελέγξτε αν έχετε οδική βοήθεια ως ξεχωριστό συμβόλαιο ή ρωτήστε τον ασφαλιστή σας για την προσθήκη της.",
+        },
+        reviewHref: `/wallet/${candidate.id}`,
+    }
+}
+
 export function evaluatePortfolioRules(
     policies: PortfolioPolicyFacts[],
     context: PortfolioContext
@@ -315,6 +394,12 @@ export function evaluatePortfolioRules(
 
     const lowHealth = lowHealthCoverageRule(policies)
     if (lowHealth) gaps.push(lowHealth)
+
+    const noEarthquake = homeNoEarthquakeRule(policies)
+    if (noEarthquake) gaps.push(noEarthquake)
+
+    const noRoadside = motorNoRoadsideRule(policies)
+    if (noRoadside) gaps.push(noRoadside)
 
     gaps.push(...duplicateCoverageRules(policies))
 

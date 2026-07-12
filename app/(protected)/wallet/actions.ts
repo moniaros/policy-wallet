@@ -389,6 +389,86 @@ export async function flagPolicyExtraction(policyId: string, reason?: string) {
     return { success: true }
 }
 
+/**
+ * Owner asks for a renewal quote on a policy: records the request
+ * (notification + activity trail) and notifies the connected agent when a
+ * relationship exists. No quote is generated — this hands the request to
+ * a human, it does not promise terms.
+ */
+export async function requestRenewalQuote(policyId: string) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+    const dbUser = authResult.dbUser
+
+    const policy = await db.policy.findFirst({
+        where: { id: policyId, ownerUserId: dbUser.id },
+    })
+    if (!policy) return { error: "Not found" }
+
+    const relationship = await db.customerRelationship.findFirst({
+        where: { policyholderUserId: dbUser.id, status: "active" },
+        select: { agentUserId: true },
+    })
+
+    const policyRef = policy.policyNumber || policy.insurerName || policyId
+
+    try {
+        const writes: any[] = [
+            db.notificationEvent.create({
+                data: {
+                    userId: dbUser.id,
+                    eventType: "renewal_quote_requested",
+                    channel: "in_app",
+                    title: "Renewal quote requested",
+                    message: `Policy ${policyRef}: renewal quote requested`,
+                    relatedObjectType: "policy",
+                    relatedObjectId: policyId,
+                    status: "sent",
+                    sentAt: new Date(),
+                },
+            }),
+            (db as any).activityLog.create({
+                data: {
+                    adminUserId: dbUser.id,
+                    adminEmail: dbUser.email || "unknown",
+                    actionType: "RENEWAL_QUOTE_REQUESTED",
+                    description: `Requested renewal quote for policy ${policyRef}`,
+                    metadata: {
+                        policyId,
+                        lineOfBusiness: policy.lineOfBusiness,
+                        endDate: policy.endDate?.toISOString() ?? null,
+                        agentNotified: Boolean(relationship),
+                    },
+                },
+            }),
+        ]
+        if (relationship) {
+            writes.push(
+                db.notificationEvent.create({
+                    data: {
+                        userId: relationship.agentUserId,
+                        eventType: "renewal_quote_requested",
+                        channel: "in_app",
+                        title: "Client requested a renewal quote",
+                        message: `${dbUser.name || dbUser.email || "A client"} requested a renewal quote for policy ${policyRef}`,
+                        relatedObjectType: "policy",
+                        relatedObjectId: policyId,
+                        status: "sent",
+                        sentAt: new Date(),
+                    },
+                })
+            )
+        }
+        await db.$transaction(writes)
+    } catch (e: any) {
+        logger('error', 'Renewal quote request failed', { policyId, error: e.message })
+        return { error: "Request failed" }
+    }
+
+    revalidatePath(`/wallet/${policyId}`)
+    return { success: true, agentNotified: Boolean(relationship) }
+}
+
 export async function retryPolicyAnalysis(policyId: string) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()

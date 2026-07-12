@@ -22,6 +22,9 @@ interface KeyDatesCardProps {
     renewalHistory: RenewalHistoryEntry[]
     renewals: PolicyRenewalEntry[]
     locale: string
+    /** When provided, renders a "request renewal quote" CTA (owner only). */
+    onRequestQuote?: () => void
+    isRequestingQuote?: boolean
     copy: {
         keyDatesTitle: string
         startedOn: string
@@ -35,6 +38,8 @@ interface KeyDatesCardProps {
         noRenewalHistory: string
         expiresIn: string
         days: string
+        requestQuote: string
+        requestingQuote: string
         reminders: {
             title: string
             periodEnding: string
@@ -59,6 +64,8 @@ export function KeyDatesCard({
     renewalHistory,
     renewals,
     locale,
+    onRequestQuote,
+    isRequestingQuote = false,
     copy,
 }: KeyDatesCardProps) {
     const start = parsePolicyDate(startDate)
@@ -166,6 +173,19 @@ export function KeyDatesCard({
             </div>
 
             <RenewalRemindersList renewals={renewals} locale={locale} copy={copy.reminders} />
+
+            {onRequestQuote && (
+                <div className="mt-5 border-t border-black/10 pt-4 dark:border-white/10">
+                    <button
+                        onClick={onRequestQuote}
+                        disabled={isRequestingQuote}
+                        className="inline-flex items-center gap-2 rounded-full border border-primary/35 bg-primary/10 px-4 py-2 text-xs font-bold text-primary transition-colors hover:bg-primary/15 disabled:opacity-60 dark:border-mint/35 dark:bg-mint/10 dark:text-mint dark:hover:bg-mint/15 cursor-pointer disabled:cursor-default"
+                    >
+                        <RefreshCw className={`h-3.5 w-3.5 ${isRequestingQuote ? "animate-spin" : ""}`} aria-hidden />
+                        {isRequestingQuote ? copy.requestingQuote : copy.requestQuote}
+                    </button>
+                </div>
+            )}
         </div>
     )
 }

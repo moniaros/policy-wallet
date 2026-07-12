@@ -203,6 +203,72 @@ describe('evidence hygiene', () => {
     })
 })
 
+describe('home_no_earthquake', () => {
+    it('fires when the analyzed property section shows no earthquake cover', () => {
+        const gaps = evaluatePortfolioRules(
+            [policy({ lineOfBusiness: 'home', acordData: { property: { earthquakeCoverageIncluded: false } } })],
+            ctx()
+        )
+        const gap = gaps.find((g) => g.ruleId === 'home_no_earthquake')
+        expect(gap).toBeDefined()
+        expect(gap!.severity).toBe('medium')
+        expect(gap!.evidence.el).toContain('δεν εντόπισε κάλυψη σεισμού')
+        expect(gap!.reviewHref).toBe('/wallet/pol-1')
+    })
+
+    it('does not fire when earthquake is covered, un-analyzed, or non-home', () => {
+        const covered = evaluatePortfolioRules(
+            [policy({ lineOfBusiness: 'home', acordData: { property: { earthquakeCoverageIncluded: true } } })],
+            ctx()
+        )
+        const unanalyzed = evaluatePortfolioRules([policy({ lineOfBusiness: 'home', acordData: null })], ctx())
+        const motor = evaluatePortfolioRules(
+            [policy({ lineOfBusiness: 'motor', acordData: { property: { earthquakeCoverageIncluded: false } } })],
+            ctx()
+        )
+        expect(ruleIds(covered)).not.toContain('home_no_earthquake')
+        expect(ruleIds(unanalyzed)).not.toContain('home_no_earthquake')
+        expect(ruleIds(motor)).not.toContain('home_no_earthquake')
+    })
+
+    it('normalizes legacy property lines to home', () => {
+        const gaps = evaluatePortfolioRules(
+            [policy({ lineOfBusiness: 'property', acordData: { property: { earthquakeCoverageIncluded: false } } })],
+            ctx()
+        )
+        expect(ruleIds(gaps)).toContain('home_no_earthquake')
+    })
+})
+
+describe('motor_no_roadside', () => {
+    it('fires when the analyzed vehicle section shows no roadside assistance', () => {
+        const gaps = evaluatePortfolioRules(
+            [policy({ acordData: { vehicle: { hasRoadsideAssistance: false } } })],
+            ctx()
+        )
+        const gap = gaps.find((g) => g.ruleId === 'motor_no_roadside')
+        expect(gap).toBeDefined()
+        expect(gap!.severity).toBe('medium')
+        expect(gap!.evidence.el).toContain('δεν εντόπισε οδική βοήθεια')
+        expect(gap!.reviewHref).toBe('/wallet/pol-1')
+    })
+
+    it('does not fire when roadside exists, un-analyzed, or inactive', () => {
+        const covered = evaluatePortfolioRules(
+            [policy({ acordData: { vehicle: { hasRoadsideAssistance: true } } })],
+            ctx()
+        )
+        const unanalyzed = evaluatePortfolioRules([policy({ acordData: null })], ctx())
+        const cancelled = evaluatePortfolioRules(
+            [policy({ status: 'cancelled', acordData: { vehicle: { hasRoadsideAssistance: false } } })],
+            ctx()
+        )
+        expect(ruleIds(covered)).not.toContain('motor_no_roadside')
+        expect(ruleIds(unanalyzed)).not.toContain('motor_no_roadside')
+        expect(ruleIds(cancelled)).not.toContain('motor_no_roadside')
+    })
+})
+
 describe('buildProfileGapEvidence', () => {
     it('cites the profile fact for known rules', () => {
         const content = buildProfileGapEvidence('homeowner_no_home', 'home', 3)

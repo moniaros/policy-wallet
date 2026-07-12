@@ -263,6 +263,122 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
     }
 }
 
+// ── Read-only snapshot ───────────────────────────────────────────────
+
+export type GapEngineSnapshot = Omit<GapEngineResult, "syncStats" | "aiInsights">
+
+/**
+ * Read-only counterpart of runGapEngine for page renders: identical
+ * computation minus every write — no gap-instance creation, no
+ * recommendation sync, no score caching. The score, profile gaps and
+ * smart-card evidence are computed live from current data (pure
+ * functions); the recommendation list is the persisted set from the
+ * last engine run, so dismissals stay respected. To actually refresh
+ * the persisted state, call runGapEngine (upload pipeline, cron, or
+ * the explicit refresh action).
+ */
+export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSnapshot> {
+    const [profileRecord, policies, openGapInstances, activeRelationships] = await Promise.all([
+        db.policyholderProfile.findUnique({
+            where: { userId },
+        }),
+        db.policy.findMany({
+            where: { ownerUserId: userId },
+            select: {
+                id: true,
+                lineOfBusiness: true,
+                status: true,
+                insurerName: true,
+                premiumAmount: true,
+                policyNumber: true,
+                startDate: true,
+                endDate: true,
+                coverageSummary: true,
+                acordData: true,
+            },
+        }),
+        db.gapInstance.count({
+            where: {
+                OR: [
+                    { policy: { ownerUserId: userId } },
+                    { userId },
+                ],
+                status: { in: ["open", "detected", "acknowledged"] },
+            },
+        }),
+        db.customerRelationship.count({
+            where: { policyholderUserId: userId, status: "active" },
+        }),
+    ])
+    const hasAgent = activeRelationships > 0
+
+    const profile = toProfileFields(profileRecord)
+    const policyFields: PolicyFields[] = policies.map((p) => ({
+        lineOfBusiness: p.lineOfBusiness,
+        status: p.status,
+    }))
+    const activeLobs = [
+        ...new Set(
+            policies
+                .filter((p) => p.status === "active")
+                .map((p) => p.lineOfBusiness.toLowerCase())
+        ),
+    ]
+
+    const profileGaps = detectProfileGaps(profile, policyFields)
+    const protectionScore = calculateProtectionScore(
+        profile,
+        activeLobs,
+        profileGaps,
+        openGapInstances
+    )
+    const scoreTier = getScoreTier(protectionScore.overallScore)
+
+    const portfolioGaps = evaluatePortfolioRules(
+        policies.map((p) => ({
+            id: p.id,
+            lineOfBusiness: p.lineOfBusiness,
+            status: p.status,
+            insurerName: p.insurerName,
+            policyNumber: p.policyNumber,
+            startDate: p.startDate,
+            endDate: p.endDate,
+            acordData: p.acordData,
+        })),
+        { hasAgent }
+    )
+
+    const activePolicyCount = policies.filter((p) => p.status === "active").length
+    const smartContent: Record<string, SmartCardContent> = {}
+    for (const gap of portfolioGaps) {
+        smartContent[gap.ruleId] = {
+            evidence: gap.evidence,
+            nextAction: gap.nextAction,
+            reviewHref: gap.reviewHref,
+        }
+    }
+    for (const gap of profileGaps) {
+        smartContent[gap.ruleId] = buildProfileGapEvidence(
+            gap.ruleId,
+            gap.lineOfBusiness,
+            activePolicyCount
+        )
+    }
+
+    const recommendations = await getActiveRecommendations(userId)
+    const profileCompleteness = calculateProfileCompleteness(profile)
+
+    return {
+        protectionScore,
+        scoreTier,
+        profileGaps,
+        recommendations,
+        profileCompleteness,
+        smartContent,
+        hasAgent,
+    }
+}
+
 // ── Cached score access ──────────────────────────────────────────────
 
 /**

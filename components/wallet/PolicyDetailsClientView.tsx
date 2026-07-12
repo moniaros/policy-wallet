@@ -100,6 +100,25 @@ export function PolicyDetailsClient({
 
     const pathname = usePathname()
     const [exportUpgradeOpen, setExportUpgradeOpen] = useState(false)
+    const [isRequestingQuote, setIsRequestingQuote] = useState(false)
+
+    const handleRequestQuote = async () => {
+        if (isRequestingQuote) return
+        setIsRequestingQuote(true)
+        try {
+            const { requestRenewalQuote } = await import("@/app/(protected)/wallet/actions")
+            const result = await requestRenewalQuote(policy.id)
+            if (result.error) {
+                toast.error(detailsCopy.quoteRequestFailed)
+            } else {
+                toast.success(result.agentNotified ? detailsCopy.quoteRequestedAgent : detailsCopy.quoteRequested)
+            }
+        } catch {
+            toast.error(detailsCopy.quoteRequestFailed)
+        } finally {
+            setIsRequestingQuote(false)
+        }
+    }
 
     const canUseCollaboration = tierLimits?.agentCollaboration !== false
     const canShowCollaborationPanel = (isOwner || (serializedShares?.length ?? 0) > 0) && canUseCollaboration
@@ -397,6 +416,8 @@ export function PolicyDetailsClient({
                                     renewalHistory={renewalHistory}
                                     renewals={renewals}
                                     locale={locale}
+                                    onRequestQuote={isOwner ? handleRequestQuote : undefined}
+                                    isRequestingQuote={isRequestingQuote}
                                     copy={{
                                         keyDatesTitle: detailsCopy.keyDatesTitle,
                                         startedOn: detailsCopy.startedOn,
@@ -410,6 +431,8 @@ export function PolicyDetailsClient({
                                         noRenewalHistory: detailsCopy.noRenewalHistory,
                                         expiresIn: t.wallet.expiresIn,
                                         days: t.wallet.days,
+                                        requestQuote: detailsCopy.requestQuote,
+                                        requestingQuote: detailsCopy.requestingQuote,
                                         reminders: detailsCopy.renewalReminders,
                                     }}
                                 />

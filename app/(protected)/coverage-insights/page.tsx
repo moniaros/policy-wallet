@@ -2,40 +2,28 @@ export const runtime = 'nodejs'
 
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
-import { detectGapsForUser, createGapInstances } from "@/lib/gap-detection"
 import { CoverageInsightsClient } from "@/components/coverage/CoverageInsightsClient"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { ProtectionScoreCard } from "@/components/coverage/ProtectionScoreCard"
 import { RecommendationCards } from "@/components/coverage/RecommendationCards"
 import { RiskProfileWizard } from "@/components/coverage/RiskProfileWizard"
-import { runGapEngine } from "@/lib/services/gap-engine"
+import { RefreshAnalysisButton } from "@/components/coverage/RefreshAnalysisButton"
+import { getGapEngineSnapshot, type GapEngineSnapshot } from "@/lib/services/gap-engine"
+import { getTranslations } from "@/lib/i18n"
 
 export default async function CoverageInsightsPage() {
     const { dbUser } = await getAuthenticatedUser()
     const entitlements = await resolveUserEntitlements(dbUser.id)
 
-    // 1. Legacy gap detection — only run if no policy was analyzed in the last hour
-    // to avoid write-heavy N+1 detection on every page render.
-    const recentlyAnalyzed = await db.policy.findFirst({
-        where: {
-            ownerUserId: dbUser.id,
-            lastAnalyzedAt: { gte: new Date(Date.now() - 60 * 60 * 1000) },
-        },
-        select: { id: true },
-    })
-    if (!recentlyAnalyzed) {
-        const detectedGaps = await detectGapsForUser(dbUser.id)
-        if (detectedGaps.length > 0) {
-            await createGapInstances(detectedGaps)
-        }
-    }
-
-    // 2. Run gap engine (reads fresh gap instances, computes protection score + recommendations)
-    let engineResult: Awaited<ReturnType<typeof runGapEngine>> | null = null
+    // Read-only snapshot: live score + smart-card evidence (pure functions
+    // over current data) + the persisted recommendation set. The WRITE path
+    // (gap detection + engine sync) used to run on every render — it now
+    // lives behind the explicit refresh action, the upload pipeline and cron.
+    let engineResult: GapEngineSnapshot | null = null
     try {
-        engineResult = await runGapEngine(dbUser.id)
+        engineResult = await getGapEngineSnapshot(dbUser.id)
     } catch (err) {
-        console.error("Gap engine failed, falling back to legacy:", err)
+        console.error("Gap engine snapshot failed, falling back to legacy:", err)
     }
 
     // 2b. Load user profile for the risk profile wizard
@@ -99,6 +87,7 @@ export default async function CoverageInsightsPage() {
         ))
 
     const userLanguage = (dbUser.preferredLanguage || 'en') as 'en' | 'el'
+    const t = getTranslations(userLanguage)
 
     return (
         <>
@@ -106,6 +95,15 @@ export default async function CoverageInsightsPage() {
             {engineResult && (
                 <div className="pw-page-shell">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-7 lg:pt-10 space-y-6">
+                        <div className="flex justify-end">
+                            <RefreshAnalysisButton
+                                labels={{
+                                    refresh: t.insights.refreshAnalysis,
+                                    refreshing: t.insights.refreshingAnalysis,
+                                    failed: t.insights.refreshFailed,
+                                }}
+                            />
+                        </div>
                         <ProtectionScoreCard
                             overallScore={engineResult.protectionScore.overallScore}
                             tier={engineResult.scoreTier}
