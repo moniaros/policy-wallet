@@ -250,8 +250,12 @@ export function isSubscriptionLive(subscription: {
 }
 
 export async function resolveUserEntitlements(userId: string): Promise<UserEntitlements> {
+    // Scoped to non-agent plans + active rows: a user can hold BOTH a
+    // policyholder and an agent subscription — the raw latest row let each
+    // type clobber the other's tier (an agent-starter purchase read as
+    // policyholder "free"; a ph-plus purchase downgraded the agent tier).
     const subscription = await prisma.subscription.findFirst({
-        where: { userId },
+        where: { userId, status: "active", plan: { planType: { not: "agent" } } },
         include: { plan: true },
         orderBy: { createdAt: "desc" },
     })
@@ -267,8 +271,9 @@ export async function resolveUserEntitlements(userId: string): Promise<UserEntit
 }
 
 export async function resolveAgentEntitlements(userId: string): Promise<AgentEntitlements> {
+    // Same plan-type scoping as resolveUserEntitlements, agent side.
     const subscription = await prisma.subscription.findFirst({
-        where: { userId },
+        where: { userId, status: "active", plan: { planType: "agent" } },
         include: { plan: true },
         orderBy: { createdAt: "desc" },
     })
