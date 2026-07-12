@@ -23,9 +23,10 @@ interface MobileAppShellProps {
         photoUrl?: string
         isOnline?: boolean
     }
+    tier?: 'free' | 'plus' | 'pro'
 }
 
-export function MobileAppShell({ policies, user }: MobileAppShellProps) {
+export function MobileAppShell({ policies, user, tier = 'free' }: MobileAppShellProps) {
     const router = useRouter()
     const pathname = usePathname()
     const { t } = useLanguage()
@@ -47,6 +48,7 @@ export function MobileAppShell({ policies, user }: MobileAppShellProps) {
                 {activeTab === 'home' && (
                     <MyPoliciesScreen
                         policies={policies}
+                        tier={tier}
                         onViewPolicy={(id) => router.push(`/wallet/${id}`)}
                         onAddPolicy={() => router.push('/wallet/add')}
                     />

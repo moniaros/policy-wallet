@@ -7,7 +7,7 @@ import typescriptPlugin from "@typescript-eslint/eslint-plugin";
 
 export default [
     {
-        ignores: [".next/**/*", "node_modules/**/*", "public/**/*", ".ds-sync/**/*", "ds-bundle/**/*", ".design-sync/.cache/**/*"],
+        ignores: [".next/**/*", "node_modules/**/*", "public/**/*", ".ds-sync/**/*", "ds-bundle/**/*", ".design-sync/.cache/**/*", "playwright-report/**/*", "test-results/**/*", "playwright/.auth/**/*"],
     },
     js.configs.recommended,
     {
