@@ -15,11 +15,15 @@ import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { FREE_POLICY_LIMIT } from "@/lib/monetization/feature-gates"
 import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 import { CarriedPlanCard } from "@/components/monetization/CarriedPlanCard"
+import { buildBranchOverview } from "@/lib/insurance/branch-page"
+import { BranchCoverageMap } from "@/components/branches/BranchCoverageMap"
 import { StatTiles } from "@/components/dashboard/home/StatTiles"
 import { PortfolioSummaryCard } from "@/components/dashboard/home/PortfolioSummaryCard"
 import { RenewalsTimelineCard } from "@/components/dashboard/home/RenewalsTimelineCard"
 import { QuickActionsRow } from "@/components/dashboard/home/QuickActionsRow"
 import { StatusRow } from "@/components/dashboard/home/StatusRow"
+import { CoverageGapsWidget } from "@/components/dashboard/home/CoverageGapsWidget"
+import { RecommendedActionsWidget } from "@/components/dashboard/home/RecommendedActionsWidget"
 
 function daysUntil(date: Date) {
     return Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
@@ -208,6 +212,44 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             ? home.overlapOne
             : home.overlapMany.replace('{count}', String(overlapBranchCount))
 
+    // Branch coverage map: tile states from policies + the cached score's
+    // expected lines (already fetched above — no extra engine work)
+    const policyTypeLabels = t.policyTypes as Record<string, string>
+    const stateLabels = {
+        covered: t.branches.statusCovered,
+        attention: t.branches.statusAttention,
+        gap: t.branches.statusGap,
+        neutral: t.branches.statusNeutral,
+    } as const
+    const coverageMapEntries = buildBranchOverview(policies, cachedScore?.expectedLines ?? []).map((entry) => ({
+        id: entry.branch.id,
+        icon: getBranchIcon(entry.branch.id),
+        label: policyTypeLabels[entry.branch.id] || entry.branch.label[lang],
+        state: entry.state,
+        stateLabel: stateLabels[entry.state],
+    }))
+
+    const gapSeverityCounts = {
+        critical: openGaps.filter((gap) => gap.severity === "critical").length,
+        high: openGaps.filter((gap) => gap.severity === "high").length,
+        medium: openGaps.filter((gap) => gap.severity === "medium").length,
+        low: openGaps.filter((gap) => gap.severity === "low").length,
+    }
+
+    // Top persisted recommendations — read-only, never re-runs the engine
+    let recommendedActions: Array<{ id: string; title: string; urgency: "critical" | "high" | "medium" | "low" }> = []
+    try {
+        const { getActiveRecommendations } = await import("@/lib/services/gap-engine")
+        const recommendations = await getActiveRecommendations(dbUser.id)
+        recommendedActions = recommendations.slice(0, 3).map((rec) => ({
+            id: rec.id,
+            title: rec.title[lang] || rec.title.en,
+            urgency: rec.urgency,
+        }))
+    } catch (error) {
+        console.error("Failed to load home recommendations:", error)
+    }
+
     return (
         <div className="pw-page-shell">
             <div className="mx-auto max-w-4xl px-4 py-6 pb-28 sm:px-6 lg:pb-6">
@@ -278,6 +320,13 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         />
                     )}
 
+                    {/* Branch coverage map — every branch with its covered/gap state */}
+                    <BranchCoverageMap
+                        entries={coverageMapEntries}
+                        labels={{ kicker: home.coverageMapKicker, viewAll: home.viewAllBranches }}
+                        className="lg:col-span-3"
+                    />
+
                     {/* Trigger G: multi-insurer portfolio insight for free tier */}
                     {isFreeTier && insurerCount >= 2 && (
                         <UpgradeTriggerCard
@@ -321,6 +370,32 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         noDocuments: home.noDocuments,
                     }}
                 />
+
+                {/* Detected gaps + top recommended actions (persisted engine output) */}
+                <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
+                    <RecommendedActionsWidget
+                        items={recommendedActions}
+                        language={lang}
+                        labels={{
+                            kicker: home.actionsKicker,
+                            noActions: home.noActions,
+                            viewAll: home.viewAllActions,
+                        }}
+                    />
+                    <CoverageGapsWidget
+                        counts={gapSeverityCounts}
+                        labels={{
+                            kicker: home.gapsKicker,
+                            noGaps: home.noGaps,
+                            severity: {
+                                critical: home.severityCritical,
+                                high: home.severityHigh,
+                                medium: home.severityMedium,
+                                low: home.severityLow,
+                            },
+                        }}
+                    />
+                </div>
 
                 <StatusRow
                     agentConnected={Boolean(customerRelationship)}

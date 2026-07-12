@@ -1,0 +1,57 @@
+import Link from "next/link"
+import { ShieldAlert } from "lucide-react"
+
+export interface GapSeverityCounts {
+    critical: number
+    high: number
+    medium: number
+    low: number
+}
+
+const SEVERITY_DOTS: Array<{ key: keyof GapSeverityCounts; dot: string }> = [
+    { key: "critical", dot: "bg-rose-500" },
+    { key: "high", dot: "bg-amber-500" },
+    { key: "medium", dot: "bg-sky-500" },
+    { key: "low", dot: "bg-black/30 dark:bg-white/30" },
+]
+
+/** Open coverage gaps by severity — links into coverage insights. */
+export function CoverageGapsWidget({
+    counts,
+    labels,
+}: {
+    counts: GapSeverityCounts
+    labels: {
+        kicker: string
+        noGaps: string
+        severity: Record<keyof GapSeverityCounts, string>
+    }
+}) {
+    const total = counts.critical + counts.high + counts.medium + counts.low
+
+    return (
+        <Link href="/coverage-insights" className="pw-card p-5">
+            <div className="flex items-center justify-between">
+                <p className="pw-kicker">{labels.kicker}</p>
+                <ShieldAlert className="h-4 w-4 text-black/40 dark:text-white/45" aria-hidden />
+            </div>
+            <div className="mt-3">
+                {total === 0 ? (
+                    <p className="text-sm text-black/55 dark:text-white/65">{labels.noGaps}</p>
+                ) : (
+                    <div className="flex flex-wrap gap-2">
+                        {SEVERITY_DOTS.filter(({ key }) => counts[key] > 0).map(({ key, dot }) => (
+                            <span
+                                key={key}
+                                className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 text-xs font-bold text-black/70 dark:border-white/15 dark:bg-white/5 dark:text-white/75"
+                            >
+                                <span className={`h-1.5 w-1.5 rounded-full ${dot}`} aria-hidden />
+                                {counts[key]} {labels.severity[key]}
+                            </span>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </Link>
+    )
+}
