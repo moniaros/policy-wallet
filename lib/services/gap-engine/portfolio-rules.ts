@@ -13,6 +13,7 @@
  */
 
 import type { GapSeverity } from "./profile-gap-rules"
+import { normalizeBranch } from "@/lib/insurance/taxonomy"
 
 export interface SmartCardContent {
     /** What we saw in the user's own data — always cites concrete facts. */
@@ -49,19 +50,12 @@ export interface PortfolioContext {
 
 const DAY_MS = 24 * 60 * 60 * 1000
 
-const LOB_LABELS: Record<string, { en: string; el: string }> = {
-    motor: { en: "motor", el: "αυτοκινήτου" },
-    motorbike: { en: "motorbike", el: "μοτοσυκλέτας" },
-    home: { en: "home", el: "κατοικίας" },
-    health: { en: "health", el: "υγείας" },
-    life: { en: "life", el: "ζωής" },
-    travel: { en: "travel", el: "ταξιδιού" },
-    pet: { en: "pet", el: "κατοικιδίου" },
-    liability: { en: "liability", el: "αστικής ευθύνης" },
-}
-
 function lobLabel(lob: string): { en: string; el: string } {
-    return LOB_LABELS[lob.toLowerCase()] || { en: lob, el: lob }
+    const branch = normalizeBranch(lob)
+    // Unrecognized lines keep the raw value so evidence never claims a
+    // branch we didn't actually detect.
+    if (branch.id === "other") return { en: lob, el: lob }
+    return { en: branch.label.en.toLowerCase(), el: branch.genitiveEl }
 }
 
 function clean(value: string | null | undefined): string | null {
