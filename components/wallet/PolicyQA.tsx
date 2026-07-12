@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { askPolicyQuestion } from "@/app/(protected)/wallet/actions"
 import { toast } from "sonner"
 import { MessageCircle, Send, Sparkles, Loader2, Minus, Plus } from "lucide-react"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
+import { getBranchQuestions } from "@/lib/insurance/content"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
@@ -18,9 +19,18 @@ interface Message {
     timestamp: Date
 }
 
-export function PolicyQA({ policyId, tier }: { policyId: string; tier?: 'free' | 'plus' | 'pro' }) {
-    const { t } = useLanguage()
+export function PolicyQA({
+    policyId,
+    tier,
+    lineOfBusiness,
+}: {
+    policyId: string
+    tier?: 'free' | 'plus' | 'pro'
+    lineOfBusiness?: string | null
+}) {
+    const { t, language } = useLanguage()
     const pathname = usePathname()
+    const searchParams = useSearchParams()
     const isFreeTier = tier === 'free'
     const [question, setQuestion] = useState("")
     const [messages, setMessages] = useState<Message[]>([])
@@ -28,6 +38,15 @@ export function PolicyQA({ policyId, tier }: { policyId: string; tier?: 'free' |
     const [showChat, setShowChat] = useState(false)
     const [limitReached, setLimitReached] = useState(false)
     const [limitReason, setLimitReason] = useState<"daily_limit" | "feature_locked">("daily_limit")
+
+    // Branch pages deep-link here with ?q=<question>#policy-qa
+    useEffect(() => {
+        const prefill = searchParams?.get('q')
+        if (prefill) {
+            setQuestion(prefill)
+            setShowChat(true)
+        }
+    }, [searchParams])
 
     const handleAsk = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -64,7 +83,11 @@ export function PolicyQA({ policyId, tier }: { policyId: string; tier?: 'free' |
         }
     }
 
-    const suggestedQuestions = Array.isArray(t.wallet.suggestedQuestions) ? t.wallet.suggestedQuestions : []
+    // Branch-specific questions when the policy's line is known; the content
+    // registry falls back to a generic set for unknown lines.
+    const suggestedQuestions = lineOfBusiness
+        ? getBranchQuestions(lineOfBusiness, language === 'el' ? 'el' : 'en')
+        : Array.isArray(t.wallet.suggestedQuestions) ? t.wallet.suggestedQuestions : []
     const toggleLabel = showChat ? t.wallet.closeChat : t.wallet.openChat
 
     return (

@@ -520,7 +520,7 @@ export function PolicyDetailsClient({
 
                         {/* 8 ── Ask AI about this policy ──────────────────── */}
                         <section id="policy-qa" className="scroll-mt-24">
-                            <PolicyQA policyId={policy.id} tier={tier} />
+                            <PolicyQA policyId={policy.id} tier={tier} lineOfBusiness={coverageType} />
                         </section>
 
                         {/* 9 ── Claims guidance ───────────────────────────── */}
