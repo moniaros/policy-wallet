@@ -68,7 +68,7 @@ export default function GroupPensionProductPage() {
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
                             <div>
                                 <h3 className="text-[14px] font-bold text-[#1A1A1A] uppercase tracking-wider">Growth Fund Acct</h3>
-                                <p className="text-[13px] text-emerald-600 font-medium mt-1">Matched 50%</p>
+                                <p className="text-[13px] text-[#166534] font-medium mt-1">Matched 50%</p>
                             </div>
                             <div className="text-right">
                                 <div className="text-[20px] font-medium text-[#1A1A1A]">€64,210</div>
@@ -76,9 +76,9 @@ export default function GroupPensionProductPage() {
                             </div>
                         </div>
                         <div className="space-y-6">
-                            <div className="p-4 bg-emerald-50 rounded-lg flex justify-between items-center border border-emerald-100">
-                                <div className="font-medium text-emerald-900 text-sm">YTD Growth: +12.4%</div>
-                                <TrendingUp className="w-5 h-5 text-emerald-600" />
+                            <div className="p-4 bg-[#F0FDF4] rounded-lg flex justify-between items-center border border-[#29685B]/20">
+                                <div className="font-medium text-[#166534] text-sm">YTD Growth: +12.4%</div>
+                                <TrendingUp className="w-5 h-5 text-[#29685B]" />
                             </div>
                             <div className="p-4 bg-slate-50 text-slate-800 rounded-lg text-sm border border-slate-200">
                                 <p className="font-bold flex items-center gap-2 mb-2"><PieChart className="w-4 h-4" /> Tax Deductible (2025)</p>

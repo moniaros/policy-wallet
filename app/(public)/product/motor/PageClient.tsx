@@ -72,7 +72,7 @@ export default function MotorProductPage() {
                             </div>
                             <div className="text-right">
                                 <div className="text-[20px] font-medium text-[#1A1A1A]">€35,000</div>
-                                <p className="text-[13px] text-emerald-600 font-medium">Fully Covered</p>
+                                <p className="text-[13px] text-[#166534] font-medium">Fully Covered</p>
                             </div>
                         </div>
                         <div className="space-y-4">
@@ -85,7 +85,7 @@ export default function MotorProductPage() {
                                     <div className="bg-[#29685B] w-[98%] h-2 rounded-full" />
                                 </div>
                             </div>
-                            <div className="mt-6 flex items-center justify-between bg-emerald-50 text-emerald-800 p-4 rounded-lg border border-emerald-100">
+                            <div className="mt-6 flex items-center justify-between bg-[#F0FDF4] text-[#166534] p-4 rounded-lg border border-[#29685B]/20">
                                 <span className="font-semibold text-sm flex items-center gap-2">
                                     <Car className="w-4 h-4" /> Roadside Assistance Included
                                 </span>

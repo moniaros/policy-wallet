@@ -2,9 +2,10 @@
 
 import React from "react"
 import { Check, X } from "lucide-react"
-import type {
-    PublicPricingComparisonRow,
-    PublicPricingPlan,
+import {
+    FEATURE_COLUMN_HEADER,
+    type PublicPricingComparisonRow,
+    type PublicPricingPlan,
 } from "@/lib/pricing/public-pricing-content"
 
 export interface FeatureComparisonProps {
@@ -21,7 +22,7 @@ export function FeatureComparison({ language, plans, rows, className = "" }: Fea
                 <thead>
                     <tr className="border-b-2 border-slate-200 dark:border-slate-700">
                         <th className="px-6 py-4 text-left font-bold text-slate-900 dark:text-white">
-                            {language === "el" ? "Χαρακτηριστικό" : "Feature"}
+                            {FEATURE_COLUMN_HEADER[language]}
                         </th>
                         {plans.map((plan) => (
                             <th
@@ -92,8 +93,8 @@ function renderCell(value: boolean | string | undefined) {
     if (typeof value === "boolean") {
         return value ? (
             <div className="flex items-center justify-center">
-                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/40">
-                    <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/20">
+                    <Check className="h-4 w-4 text-primary dark:text-mint" />
                 </span>
             </div>
         ) : (

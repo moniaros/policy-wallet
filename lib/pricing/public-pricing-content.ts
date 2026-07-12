@@ -55,6 +55,9 @@ export interface PublicPricingAudienceContent {
     faqItems: PublicPricingFaqItem[]
 }
 
+/** Header of the feature column in the comparison table. */
+export const FEATURE_COLUMN_HEADER: LocalizedText = { el: "Χαρακτηριστικό", en: "Feature" }
+
 /**
  * Every plan key or checkoutPlanId that the pricing page can send to signup.
  * Used by the RegisterSchema to reject unknown values.

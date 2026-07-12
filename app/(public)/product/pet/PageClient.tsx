@@ -47,9 +47,9 @@ export default function PetProductPage() {
                             </div>
                         </div>
                         <div className="space-y-4">
-                            <div className="p-4 bg-emerald-50 rounded-lg flex justify-between items-center border border-emerald-100">
-                                <div className="font-medium text-emerald-900 text-sm">Leishmania Covered</div>
-                                <Heart className="w-5 h-5 text-emerald-600" />
+                            <div className="p-4 bg-[#F0FDF4] rounded-lg flex justify-between items-center border border-[#29685B]/20">
+                                <div className="font-medium text-[#166534] text-sm">Leishmania Covered</div>
+                                <Heart className="w-5 h-5 text-[#29685B]" />
                             </div>
                             <div className="p-4 bg-rose-50 rounded-lg flex justify-between border border-rose-100">
                                 <div>
