@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
+import { parseDocumentDate } from "@/lib/dates/document-date"
 
 interface PolicyForComparison {
     id: string
@@ -91,11 +92,13 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
     }
 
     const formatDate = (dateString: string | null) => {
-        if (!dateString) return '—'
-        return new Date(dateString).toLocaleDateString('en-GB', {
+        const parsed = parseDocumentDate(dateString)
+        if (!parsed) return '—'
+        return parsed.toLocaleDateString('en-GB', {
             day: 'numeric',
             month: 'short',
-            year: 'numeric'
+            year: 'numeric',
+            timeZone: 'UTC'
         })
     }
 

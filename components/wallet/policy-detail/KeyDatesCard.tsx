@@ -16,7 +16,8 @@ interface KeyDatesCardProps {
     endDate: string | null
     /** Extracted renewal date from acordData.policy — often differs from the end date. */
     renewalDate: string | null
-    daysLeft: number
+    /** null = no trustworthy end date — the countdown tile is hidden entirely. */
+    daysLeft: number | null
     statusLabel: string
     statusColor: { bg: string; text: string; border: string }
     hasAutoRenewal: boolean
@@ -80,8 +81,9 @@ export function KeyDatesCard({
     const citedSource = dateSources?.renewalDate ?? dateSources?.endDate
     const start = parsePolicyDate(startDate)
     const end = parsePolicyDate(endDate)
-    const isExpired = daysLeft < 0
-    const isExpiringSoon = daysLeft >= 0 && daysLeft <= 30
+    const hasCountdown = daysLeft !== null && end !== null
+    const isExpired = hasCountdown && (daysLeft as number) < 0
+    const isExpiringSoon = hasCountdown && (daysLeft as number) >= 0 && (daysLeft as number) <= 30
 
     const elapsedPct = (() => {
         if (!start || !end || end.getTime() <= start.getTime()) return null
@@ -112,7 +114,9 @@ export function KeyDatesCard({
                     </p>
                     <p className="text-sm font-bold text-black dark:text-white">{formatPolicyDate(endDate, locale)}</p>
                 </div>
-                {!isExpired && (
+                {/* Countdown only with a REAL future end date — no end date,
+                    no fabricated "365 days" next to a "-" expiry tile. */}
+                {hasCountdown && !isExpired && (
                     <div
                         className={`rounded-2xl border px-4 py-3 ${
                             isExpiringSoon
@@ -195,10 +199,16 @@ export function KeyDatesCard({
 
             {onRequestQuote && (
                 <div className="mt-5 border-t border-black/10 pt-4 dark:border-white/10">
+                    {/* Expired policy: requesting a renewal quote IS the next
+                        step — promote to the primary action. */}
                     <button
                         onClick={onRequestQuote}
                         disabled={isRequestingQuote}
-                        className="inline-flex items-center gap-2 rounded-full border border-primary/35 bg-primary/10 px-4 py-2 text-xs font-bold text-primary transition-colors hover:bg-primary/15 disabled:opacity-60 dark:border-mint/35 dark:bg-mint/10 dark:text-mint dark:hover:bg-mint/15 cursor-pointer disabled:cursor-default"
+                        className={
+                            isExpired
+                                ? "inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-bold text-white transition-colors hover:bg-primary-hover disabled:opacity-60 dark:text-[#1A2420] cursor-pointer disabled:cursor-default sm:w-auto"
+                                : "inline-flex items-center gap-2 rounded-full border border-primary/35 bg-primary/10 px-4 py-2 text-xs font-bold text-primary transition-colors hover:bg-primary/15 disabled:opacity-60 dark:border-mint/35 dark:bg-mint/10 dark:text-mint dark:hover:bg-mint/15 cursor-pointer disabled:cursor-default"
+                        }
                     >
                         <RefreshCw className={`h-3.5 w-3.5 ${isRequestingQuote ? "animate-spin" : ""}`} aria-hidden />
                         {isRequestingQuote ? copy.requestingQuote : copy.requestQuote}

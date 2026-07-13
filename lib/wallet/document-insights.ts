@@ -1,4 +1,5 @@
 import type { Policy } from "@/components/wallet/types"
+import { parseDocumentDate } from "@/lib/dates/document-date"
 
 type Lang = "el" | "en"
 
@@ -12,11 +13,13 @@ export type DocumentStatus = {
 export type DocumentPolicySummary = {
     assetTitle: string
     assetSubtitle: string
+    /** Row title: "{Τύπος} • {Ασφαλιστής}" — the insurer appears exactly once. */
     insurerLine: string
     policyNumber: string
     coverageTypeLabel: string
     premiumDisplay: string
-    expiryDisplay: string
+    /** null when no trustworthy end date exists — hide, don't render "-". */
+    expiryDisplay: string | null
     status: DocumentStatus
     verificationLabel: string
     verificationTone: "warning" | "active" | "inactive"
@@ -70,12 +73,15 @@ export function getDocumentPolicySummary(
         maximumFractionDigits: 2,
     }).format(premiumAmount)
 
-    const endDateRaw = compactText(acordPolicy?.expirationDate) || policy.endDate || null
-    const endDate = endDateRaw ? new Date(endDateRaw) : null
+    // The extracted envelope date wins; an envelope value that EXISTS but
+    // cannot be parsed means unknown — never fall back to the DB column,
+    // which may hold the historical upload-day placeholder (+365d).
+    const envelopeEndRaw = compactText(acordPolicy?.expirationDate)
+    const endDate = envelopeEndRaw
+        ? parseDocumentDate(envelopeEndRaw)
+        : parseDocumentDate(policy.endDate || null)
     const daysUntilExpiry = endDate ? Math.floor((endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : null
-    const expiryDisplay = endDate
-        ? new Date(endDate).toLocaleDateString(locale)
-        : "-"
+    const expiryDisplay = endDate ? endDate.toLocaleDateString(locale, { timeZone: "UTC" }) : null
 
     const status: DocumentStatus = (() => {
         const s = String(policy.status || "").toLowerCase()
@@ -96,13 +102,14 @@ export function getDocumentPolicySummary(
             }
         }
         if (daysUntilExpiry !== null && daysUntilExpiry < 0) {
+            // A fact of the calendar, not an alarm — amber, never green.
             return {
-                label: language === "el" ? "ΛΗΞΕ" : "EXPIRED",
-                tone: "critical",
+                label: language === "el" ? "ΛΗΓΜΕΝΟ" : "EXPIRED",
+                tone: "warning",
                 message:
                     language === "el"
-                        ? `Έχει λήξει πριν ${Math.abs(daysUntilExpiry)} ημέρες.`
-                        : `Expired ${Math.abs(daysUntilExpiry)} days ago.`,
+                        ? `Έληξε στις ${expiryDisplay}.`
+                        : `Expired on ${expiryDisplay}.`,
                 daysUntilExpiry,
             }
         }
@@ -114,6 +121,18 @@ export function getDocumentPolicySummary(
                     language === "el"
                         ? `Λήγει σε ${daysUntilExpiry} ημέρες.`
                         : `Expires in ${daysUntilExpiry} days.`,
+                daysUntilExpiry,
+            }
+        }
+        if (daysUntilExpiry === null) {
+            // No trustworthy end date: no ΕΝΕΡΓΟ badge, no fabricated countdown.
+            return {
+                label: language === "el" ? "ΑΓΝΩΣΤΗ ΔΙΑΡΚΕΙΑ" : "UNKNOWN DURATION",
+                tone: "warning",
+                message:
+                    language === "el"
+                        ? "Δεν εντοπίστηκε ημερομηνία λήξης — συμπληρώστε την."
+                        : "No expiry date detected — please fill it in.",
                 daysUntilExpiry,
             }
         }
@@ -131,10 +150,7 @@ export function getDocumentPolicySummary(
         return {
             label: language === "el" ? "ΕΝΕΡΓΟ" : "ACTIVE",
             tone: "active",
-            message:
-                endDate
-                    ? (language === "el" ? `Ενεργό έως ${expiryDisplay}.` : `Active until ${expiryDisplay}.`)
-                    : (language === "el" ? "Ενεργό συμβόλαιο." : "Active policy."),
+            message: language === "el" ? `Ενεργό έως ${expiryDisplay}.` : `Active until ${expiryDisplay}.`,
             daysUntilExpiry,
         }
     })()
@@ -182,7 +198,7 @@ export function getDocumentPolicySummary(
     return {
         assetTitle: insuredTitle,
         assetSubtitle: insuredSubtitle,
-        insurerLine: `${policy.insurerName} • ${coverageTypeRaw || policyTypeLabel}`,
+        insurerLine: `${policyTypeLabel || coverageTypeRaw} • ${policy.insurerName}`,
         policyNumber: policy.policyNumber,
         coverageTypeLabel: coverageTypeRaw || policyTypeLabel,
         premiumDisplay,

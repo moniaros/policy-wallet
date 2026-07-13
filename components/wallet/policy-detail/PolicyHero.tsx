@@ -16,7 +16,9 @@ interface PolicyHeroProps {
     premiumFrequency: PremiumFrequency | null
     statusLabel: string
     statusColor: { bg: string; text: string; border: string }
-    daysLeft: number
+    daysLeft: number | null
+    /** Renders the amber expired banner under the status chips. */
+    expiredNotice?: string | null
     isAnalyzing: boolean
     isPendingInsurer: boolean
     locale: string
@@ -62,6 +64,7 @@ export function PolicyHero({
     statusLabel,
     statusColor,
     daysLeft,
+    expiredNotice,
     isAnalyzing,
     isPendingInsurer,
     locale,
@@ -81,7 +84,7 @@ export function PolicyHero({
                     <span className={`inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest ${statusColor.bg} ${statusColor.text} ${statusColor.border}`}>
                         {statusLabel}
                     </span>
-                    {daysLeft >= 0 && daysLeft <= 30 && (
+                    {daysLeft !== null && daysLeft >= 0 && daysLeft <= 30 && (
                         <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-300/60 bg-amber-100/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-amber-200">
                             <Calendar className="h-3.5 w-3.5" />
                             {copy.expiresIn} {daysLeft} {copy.days}
@@ -89,6 +92,13 @@ export function PolicyHero({
                     )}
                     {headerMenu && <div className="ml-auto">{headerMenu}</div>}
                 </div>
+
+                {expiredNotice && (
+                    <div className="flex items-start gap-2.5 rounded-2xl border border-amber-300/50 bg-amber-100/10 px-4 py-3">
+                        <Calendar className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
+                        <p className="text-sm font-semibold text-amber-100">{expiredNotice}</p>
+                    </div>
+                )}
 
                 <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">
                     <div className="min-w-0">

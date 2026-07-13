@@ -96,7 +96,6 @@ export function PolicyTable({
         unverified: t.policyStatus.unverified,
         noIssues: t.policyStatus.noIssues,
         understandPolicy: t.dashboard.runAnalysis,
-        expiresOn: t.wallet.expiresDate,
         premium: t.wallet.premium,
     }
 
@@ -157,7 +156,7 @@ export function PolicyTable({
                     <thead>
                         <tr className="bg-black/5 dark:bg-black border-b border-black/10 dark:border-white/15">
                             <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 dark:text-white/70">{t.dashboard.insuredItem}</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 dark:text-white/70">{t.dashboard.insurer}</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 dark:text-white/70">{t.wallet.policyNumber}</th>
                             <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 dark:text-white/70">{t.dashboard.status}</th>
                             <th className="px-6 py-4 text-right text-sm font-semibold text-black/80 dark:text-white/70">{t.dashboard.actions}</th>
                         </tr>
@@ -180,20 +179,18 @@ export function PolicyTable({
                                                 <Icon className={`w-6 h-6 ${visual.iconColor}`} />
                                             </div>
                                             <div className="min-w-0">
-                                                <div className="font-bold text-black dark:text-white text-sm truncate">{summary.assetTitle}</div>
+                                                {/* Insurer appears exactly once, in the row title. */}
+                                                <div className="font-bold text-black dark:text-white text-sm truncate">{summary.insurerLine}</div>
+                                                {summary.assetTitle && summary.assetTitle !== policy.insurerName ? (
+                                                    <div className="text-xs text-black/60 dark:text-white/60 mt-0.5 truncate">{summary.assetTitle}</div>
+                                                ) : null}
                                                 {summary.assetSubtitle ? <div className="text-xs text-black/60 dark:text-white/60 font-mono mt-0.5 truncate">{summary.assetSubtitle}</div> : null}
-                                                <div className="text-xs text-black/60 dark:text-white/60 mt-0.5 truncate">
-                                                    {summary.insurerLine}
-                                                </div>
                                             </div>
                                         </div>
                                     </td>
 
                                     <td className="px-6 py-4">
-                                        <div>
-                                            <div className="font-semibold text-black dark:text-white text-sm">{policy.insurerName}</div>
-                                            <div className="text-xs text-black/60 dark:text-white/60 font-mono mt-0.5">{policy.policyNumber}</div>
-                                        </div>
+                                        <div className="text-xs text-black/60 dark:text-white/60 font-mono">{policy.policyNumber}</div>
                                     </td>
 
                                     <td className="px-6 py-4">
@@ -202,9 +199,8 @@ export function PolicyTable({
                                                 {statusBadge.icon}
                                                 {statusBadge.text}
                                             </span>
-                                            <div className="text-xs text-black/70 dark:text-white/60">
-                                                {label.expiresOn}: <span className="font-semibold">{summary.expiryDisplay}</span>
-                                            </div>
+                                            {/* One expiry statement only — the status message carries
+                                                «Ενεργό έως …» / «Έληξε στις …» from the lifecycle util. */}
                                             <div className="text-xs text-black/70 dark:text-white/60">
                                                 {label.premium}: <span className="font-semibold">{summary.premiumDisplay}</span>
                                             </div>

@@ -21,9 +21,12 @@ import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import { ConfidenceBadge } from "@/components/ui/ConfidenceBadge"
 import { SourceSnippetBox } from "@/components/ui/SourceSnippetBox"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
+import { formatDocumentDate, parseDocumentDate, toIsoDateString } from "@/lib/dates/document-date"
+import { formatExtractedAmount } from "@/lib/i18n/amount-format"
 import { confirmPolicyReview, flagPolicyExtraction } from "@/app/(protected)/wallet/actions"
 import {
     confidenceLevel,
+    sumInsuredLabel,
     type PolicyReviewData,
 } from "@/lib/wallet/policy-review"
 
@@ -72,6 +75,9 @@ export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: P
     const [flagReason, setFlagReason] = useState("")
     const [flagged, setFlagged] = useState(data.reviewState === "flagged")
     const [openSections, setOpenSections] = useState<Record<string, boolean>>({ coverages: true })
+    // Fields whose parse/cross-check failed that the user explicitly skipped.
+    const [skippedFields, setSkippedFields] = useState<Partial<Record<EditableField, boolean>>>({})
+    const [confirmAttempted, setConfirmAttempted] = useState(false)
 
     const locale = language === "el" ? "el-GR" : "en-US"
     const pick = (obj: { en: string; el: string } | undefined) =>
@@ -100,12 +106,17 @@ export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: P
         notFound: reviewCopy.notFound,
     }
 
-    const formatDate = (iso: string | null) =>
-        iso ? new Date(iso).toLocaleDateString(locale) : null
+    // parseDocumentDate handles ISO, DD-MM-YYYY and Greek month phrases;
+    // anything unparseable renders as null (never the literal "Invalid Date").
+    const formatDate = (iso: string | null) => formatDocumentDate(iso, locale)
     const formatMoney = (amount: number | null) =>
         amount !== null
             ? new Intl.NumberFormat(locale, { style: "currency", currency: data.premiumCurrency || "EUR" }).format(amount)
             : null
+
+    // Date edit inputs are type="date" — they need yyyy-MM-dd or nothing.
+    const isoDateInput = (value: string | null | undefined): string =>
+        toIsoDateString(parseDocumentDate(value)) || ""
 
     // Effective (post-edit) value for display; raw values feed the inputs.
     const rawValue = (field: EditableField): string => {
@@ -114,10 +125,10 @@ export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: P
             case "insurerName": return data.insurerName || ""
             case "policyNumber": return data.policyNumber || ""
             case "lineOfBusiness": return data.lineOfBusiness || ""
-            case "issueDate": return data.issueDate?.slice(0, 10) || ""
-            case "startDate": return data.startDate?.slice(0, 10) || ""
-            case "endDate": return data.endDate?.slice(0, 10) || ""
-            case "renewalDate": return data.renewalDate?.slice(0, 10) || ""
+            case "issueDate": return isoDateInput(data.issueDate)
+            case "startDate": return isoDateInput(data.startDate)
+            case "endDate": return isoDateInput(data.endDate)
+            case "renewalDate": return isoDateInput(data.renewalDate)
             case "premiumAmount": return data.premiumAmount !== null ? String(data.premiumAmount) : ""
             case "premiumFrequency": return data.premiumFrequency || ""
             case "sumInsured": return data.sumInsured ? String(data.sumInsured.value) : ""
@@ -143,7 +154,27 @@ export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: P
     const setEdit = (field: EditableField, value: string) =>
         setEdits((prev) => ({ ...prev, [field]: value }))
 
+    // Deterministically flagged date fields: parse failed or the value
+    // disagrees with the cited snippet. Confidence is invalidated for them
+    // and confirm requires a fill or an explicit skip.
+    const isFieldFlagged = (field: EditableField): boolean => {
+        const flags = data.fieldFlags?.[field]
+        return Boolean(flags && (flags.parseFailed || flags.sourceMismatch))
+    }
+    const blockedFields = (["issueDate", "startDate", "endDate", "renewalDate"] as EditableField[])
+        .filter((field) => isFieldFlagged(field) && edits[field] === undefined && !skippedFields[field])
+
     const handleConfirm = () => {
+        // No silent confirmation of parse-failed fields: highlight and scroll
+        // to the first one; the user fills it or explicitly skips it.
+        if (blockedFields.length > 0) {
+            setConfirmAttempted(true)
+            toast.error(reviewCopy.confirmBlockedNotice)
+            document
+                .getElementById(`review-field-${blockedFields[0]}`)
+                ?.scrollIntoView({ behavior: "smooth", block: "center" })
+            return
+        }
         startTransition(async () => {
             const payload: Record<string, unknown> = {}
             for (const [field, value] of Object.entries(edits)) {
@@ -237,21 +268,44 @@ export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: P
         const score = data.fieldConfidence?.[field]
         const missing = !value || data.missingCriticalFields.includes(field)
         const source = data.fieldSources?.[field]
+        // Failed parse / snippet mismatch invalidates the AI confidence —
+        // the badge must never say "Υψηλή βεβαιότητα" over a broken value.
+        const fieldFlagged = isFieldFlagged(field) && !isDirty
+        const isSkipped = Boolean(skippedFields[field])
+        const isBlocking = confirmAttempted && fieldFlagged && !isSkipped
 
         return (
-            <div key={field} className="flex items-start gap-3 py-3.5">
+            <div
+                key={field}
+                id={`review-field-${field}`}
+                className={`flex items-start gap-3 py-3.5 ${
+                    isBlocking ? "rounded-xl px-3 ring-2 ring-amber-400/70 dark:ring-amber-500/60" : ""
+                }`}
+            >
                 <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                         <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
                             {label}
                         </p>
                         {CHIP_FIELDS.includes(field) && !isDirty && (
-                            <ConfidenceBadge score={score} missing={missing} labels={chipLabels} />
+                            fieldFlagged ? (
+                                <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-[#B45309] dark:bg-amber-900/30 dark:text-amber-300">
+                                    <AlertTriangle className="h-3 w-3" />
+                                    {reviewCopy.confidenceInvalidated}
+                                </span>
+                            ) : (
+                                <ConfidenceBadge score={score} missing={missing} labels={chipLabels} />
+                            )
                         )}
                         {isDirty && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-primary-soft px-2 py-0.5 text-[10px] font-semibold text-[#166534] dark:bg-primary/15 dark:text-mint">
                                 <Check className="h-3 w-3" />
                                 {reviewCopy.edit}
+                            </span>
+                        )}
+                        {fieldFlagged && isSkipped && !isDirty && (
+                            <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                                {reviewCopy.skippedChip}
                             </span>
                         )}
                     </div>
@@ -271,9 +325,18 @@ export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: P
                             </button>
                         </div>
                     ) : (
-                        <p className={`mt-0.5 text-sm font-medium ${value ? "text-slate-900 dark:text-white" : "text-slate-400 italic"}`}>
-                            {value || reviewCopy.fieldValueMissing}
+                        <p className={`mt-0.5 text-sm font-medium ${value && !fieldFlagged ? "text-slate-900 dark:text-white" : "text-slate-400 italic"}`}>
+                            {fieldFlagged ? reviewCopy.fieldValueFillIn : value || reviewCopy.fieldValueMissing}
                         </p>
+                    )}
+                    {fieldFlagged && !isSkipped && !isEditing && (
+                        <button
+                            type="button"
+                            onClick={() => setSkippedFields((prev) => ({ ...prev, [field]: true }))}
+                            className="mt-1.5 text-[11px] font-semibold text-slate-400 underline-offset-2 hover:underline dark:text-slate-500"
+                        >
+                            {reviewCopy.skipField}
+                        </button>
                     )}
                     {source && !isEditing && (
                         <SourceSnippetBox
@@ -289,7 +352,11 @@ export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: P
                         type="button"
                         onClick={() => setEditingField(field)}
                         aria-label={`${reviewCopy.editField}: ${label}`}
-                        className="flex-shrink-0 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
+                        className={`flex-shrink-0 rounded-lg p-1.5 transition-colors ${
+                            fieldFlagged
+                                ? "bg-amber-100 text-[#B45309] hover:bg-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:hover:bg-amber-900/50"
+                                : "text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
+                        }`}
                     >
                         <Pencil className="h-3.5 w-3.5" />
                     </button>
@@ -389,7 +456,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: P
                 {renderFieldRow("startDate", reviewCopy.startDate)}
                 {renderFieldRow("endDate", reviewCopy.endDate)}
                 {renderFieldRow("renewalDate", reviewCopy.renewalDate)}
-                {renderFieldRow("sumInsured", reviewCopy.sumInsured, data.sumInsured?.label)}
+                {renderFieldRow("sumInsured", reviewCopy.sumInsured, sumInsuredLabel(data.sumInsured?.label, language === "el" ? "el" : "en") || undefined)}
                 {renderFieldRow("premiumAmount", reviewCopy.premium)}
                 {renderFieldRow("premiumFrequency", reviewCopy.premiumFrequency)}
             </div>
@@ -418,7 +485,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: P
                                 </p>
                                 {coverage.limit && (
                                     <span className="flex-shrink-0 text-xs font-bold text-primary dark:text-mint">
-                                        {coverage.limit}
+                                        {formatExtractedAmount(coverage.limit, language === "el" ? "el" : "en")}
                                     </span>
                                 )}
                             </div>
@@ -450,7 +517,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: P
                                 </p>
                                 {perk.usageLimit && (
                                     <span className="flex-shrink-0 text-[10px] font-semibold text-slate-400">
-                                        {perk.usageLimit}
+                                        {formatExtractedAmount(perk.usageLimit, language === "el" ? "el" : "en")}
                                     </span>
                                 )}
                             </div>
@@ -468,7 +535,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: P
                                 <p className="text-sm text-slate-700 dark:text-slate-300">{pick(condition.summary)}</p>
                                 {condition.value && (
                                     <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                                        {condition.value}
+                                        {formatExtractedAmount(condition.value, language === "el" ? "el" : "en")}
                                     </span>
                                 )}
                                 {condition.userActionRequired && (

@@ -8,6 +8,7 @@ import { logger } from "@/lib/logger"
 import { canUserUseTokens, reserveTokens, releaseTokenReservation } from "@/lib/token-tracking"
 import { getAIService, type AIServiceType } from "@/lib/services/ai"
 import { enrichExtractionPayload } from "@/lib/services/ai/extraction-enrichment"
+import { parseDocumentDate } from "@/lib/dates/document-date"
 import { downloadPolicyDocument } from "@/lib/supabase/storage-download"
 import type {
     AIDocument,
@@ -176,11 +177,20 @@ function normalizeLineOfBusiness(value: string | null | undefined): string {
     return lob
 }
 
+// Extracted dates arrive as DD-MM-YYYY (prompt normalization), Greek month
+// phrases, or ISO — parseDocumentDate handles all three. When nothing parses
+// the existing column value stays (it may be the upload placeholder, which
+// the extraction.dateParse flags mark as unusable for display/status).
 function parseDateMaybe(input: string | undefined, fallback: Date): Date {
-    if (!input) return fallback
-    const parsed = new Date(input)
-    if (Number.isNaN(parsed.getTime())) return fallback
-    return parsed
+    return parseDocumentDate(input) ?? fallback
+}
+
+type DateParseState = "ok" | "failed" | "missing"
+
+function dateParseState(input: string | undefined | null): DateParseState {
+    const raw = String(input ?? "").trim()
+    if (!raw) return "missing"
+    return parseDocumentDate(raw) ? "ok" : "failed"
 }
 
 function sleep(ms: number): Promise<void> {
@@ -2253,6 +2263,14 @@ export class PolicyAnalysisOrchestratorService {
                 reviewState: "unconfirmed",
                 confirmedAt: null,
                 flaggedAt: null,
+                // Deterministic parse state per date field: 'failed'/'missing'
+                // dates must never display as today's date or count as ΕΝΕΡΓΟ.
+                dateParse: {
+                    startDate: dateParseState(extraction.startDate),
+                    endDate: dateParseState(extraction.endDate),
+                    issueDate: dateParseState(extraction.issueDate),
+                    renewalDate: dateParseState(extraction.renewalDate),
+                },
             },
             analysis: {
                 ...((enriched.acordData as any)?.analysis || {}),

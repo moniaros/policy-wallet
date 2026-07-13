@@ -32,7 +32,6 @@ import { enrichExtractionPayload } from "./extraction-enrichment"
 import { extractionCitationsEnabled, ExtractionSourcesSchema, CITATIONS_PROMPT_SECTION } from "./extraction-citations"
 import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from "./shared-utils"
 import { wrapGapResultsBilingual, wrapClarityResultsBilingual } from "../translation/greek-to-bilingual"
-import { daysFromNow, DEFAULT_POLICY_DURATION_DAYS } from "@/lib/constants/time"
 
 const ANTHROPIC_SUPPORTED_MIME_TYPES = [
     "application/pdf",
@@ -245,8 +244,9 @@ ${extractionCitationsEnabled()
             insurerName: extracted.insurerName || "Unknown Insurer",
             policyNumber: extracted.policyNumber || `PENDING-${Date.now()}`,
             lineOfBusiness: extracted.lineOfBusiness || "other",
-            startDate: extracted.startDate || new Date().toISOString().split("T")[0],
-            endDate: extracted.endDate || daysFromNow(DEFAULT_POLICY_DURATION_DAYS).toISOString().split("T")[0],
+            // Missing dates stay empty — no fabricated 'today' (data integrity).
+            startDate: extracted.startDate || '',
+            endDate: extracted.endDate || '',
             premiumAmount: extracted.premiumAmount || 0,
             coverageSummary: extracted.coverageSummary || "Extracted from document",
             issueDate: extracted.issueDate,

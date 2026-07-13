@@ -7,7 +7,20 @@
  * lib/services/ai/extraction-enrichment.ts.
  */
 
+import * as Sentry from '@sentry/nextjs'
+
+import { isSameDocumentDate, parseDocumentDate } from '@/lib/dates/document-date'
+import { resolveInsurerDisplay } from '@/lib/wallet/insurer-registry'
+
 export type ReviewState = 'unconfirmed' | 'confirmed' | 'flagged'
+
+/** Deterministic validation state for an extracted date field. */
+export interface ReviewFieldFlags {
+    /** A raw value exists but no date could be parsed from it. */
+    parseFailed: boolean
+    /** The value parses, but disagrees with the date in the cited snippet. */
+    sourceMismatch: boolean
+}
 
 export interface ReviewCoverage {
     name: string
@@ -65,6 +78,8 @@ export interface PolicyReviewData {
     fieldConfidence: Record<string, number>
     /** Per-field document citations (flag-gated feature; empty when absent). */
     fieldSources: Record<string, { page?: number; snippet?: string }>
+    /** Deterministic parse/cross-check state for the date fields. */
+    fieldFlags: Record<string, ReviewFieldFlags>
     missingCriticalFields: string[]
     requiresReview: boolean
     reviewState: ReviewState | null
@@ -145,6 +160,41 @@ export function deriveSumInsured(
     return null
 }
 
+/** Human labels for the acord paths deriveSumInsured can surface. */
+const SUM_INSURED_PATH_LABELS: Record<string, { el: string; en: string }> = {
+    'health.annualLimit': { el: 'Ετήσιο όριο κάλυψης υγείας', en: 'Annual health coverage limit' },
+    'property.insuredValue': { el: 'Ασφαλισμένη αξία κατοικίας', en: 'Insured property value' },
+    'property.replacementValue': { el: 'Αξία αντικατάστασης κατοικίας', en: 'Property replacement value' },
+    'home.insuredValue': { el: 'Ασφαλισμένη αξία κατοικίας', en: 'Insured home value' },
+    'home.replacementValue': { el: 'Αξία αντικατάστασης κατοικίας', en: 'Home replacement value' },
+    'lifeAndInvestment.deathBenefit': { el: 'Κεφάλαιο θανάτου', en: 'Death benefit' },
+    'vehicle.estimatedMarketValue': { el: 'Εκτιμώμενη αξία οχήματος', en: 'Estimated vehicle value' },
+    'pet.annualLimit': { el: 'Ετήσιο όριο κάλυψης κατοικιδίου', en: 'Annual pet coverage limit' },
+    'pet.annualLimitTotal': { el: 'Ετήσιο όριο κάλυψης κατοικιδίου', en: 'Annual pet coverage limit' },
+    'policy.sumInsured': { el: 'Ασφαλισμένο κεφάλαιο', en: 'Sum insured' },
+}
+
+const reportedSumInsuredPaths = new Set<string>()
+
+/**
+ * Localized sublabel for the sum-insured source path. Raw acord paths like
+ * "health.annualLimit" must never render — unknown paths are reported to
+ * Sentry once per process and the sublabel is simply hidden.
+ */
+export function sumInsuredLabel(path: string | undefined, lang: 'el' | 'en'): string | null {
+    if (!path) return null
+    const entry = SUM_INSURED_PATH_LABELS[path]
+    if (entry) return entry[lang]
+    if (!reportedSumInsuredPaths.has(path)) {
+        reportedSumInsuredPaths.add(path)
+        Sentry.captureMessage('policy-review: unknown sum-insured path', {
+            level: 'warning',
+            tags: { path },
+        })
+    }
+    return null
+}
+
 export type ConfidenceLevel = 'high' | 'medium' | 'low' | 'unknown'
 
 /** 80 matches the pipeline's requiresReview cutoff (extraction-enrichment). */
@@ -167,16 +217,46 @@ export function buildPolicyReviewData(policy: PolicyRowForReview): PolicyReviewD
             ? extraction.reviewState
             : null
 
+    // Envelope (extracted) dates win over the DB columns: the columns can
+    // hold the historical upload-day placeholder when a raw extracted string
+    // failed to parse, and the review must show what the document says.
+    const envDate = (key: string): string | null => {
+        const raw = typeof envelope?.[key] === 'string' ? envelope[key].trim() : ''
+        return raw || null
+    }
+    const issueDate = sanitize(envDate('issueDate'))
+    const startDate = envDate('effectiveDate') ?? (policy.startDate ? new Date(policy.startDate).toISOString() : null)
+    const endDate = envDate('expirationDate') ?? (policy.endDate ? new Date(policy.endDate).toISOString() : null)
+    const renewalDate = sanitize(envDate('renewalDate'))
+
+    const sources: Record<string, { page?: number; snippet?: string }> =
+        extraction?.sources && typeof extraction.sources === 'object'
+            ? (extraction.sources as Record<string, { page?: number; snippet?: string }>)
+            : {}
+
+    const dateFlags = (value: string | null, field: string): ReviewFieldFlags => {
+        const parsed = value ? parseDocumentDate(value) : null
+        const snippet = sources[field]?.snippet
+        return {
+            parseFailed: Boolean(value && !parsed),
+            sourceMismatch: Boolean(
+                parsed && snippet && parseDocumentDate(snippet) && !isSameDocumentDate(value, snippet)
+            ),
+        }
+    }
+
+    const rawInsurer = sanitize(policy.insurerName)
+
     return {
         id: policy.id,
         status: policy.status,
-        insurerName: sanitize(policy.insurerName),
+        insurerName: rawInsurer ? resolveInsurerDisplay(rawInsurer).displayName : null,
         lineOfBusiness: policy.lineOfBusiness,
         policyNumber: sanitize(policy.policyNumber, 'PENDING-'),
-        issueDate: sanitize(typeof envelope?.issueDate === 'string' ? envelope.issueDate : null),
-        startDate: policy.startDate ? new Date(policy.startDate).toISOString() : null,
-        endDate: policy.endDate ? new Date(policy.endDate).toISOString() : null,
-        renewalDate: sanitize(typeof envelope?.renewalDate === 'string' ? envelope.renewalDate : null),
+        issueDate,
+        startDate,
+        endDate,
+        renewalDate,
         premiumAmount: asNumber(policy.premiumAmount),
         premiumCurrency: policy.premiumCurrency || 'EUR',
         premiumFrequency: typeof envelope?.premiumFrequency === 'string' ? envelope.premiumFrequency : null,
@@ -198,10 +278,13 @@ export function buildPolicyReviewData(policy: PolicyRowForReview): PolicyReviewD
             extraction?.confidence?.fields && typeof extraction.confidence.fields === 'object'
                 ? (extraction.confidence.fields as Record<string, number>)
                 : {},
-        fieldSources:
-            extraction?.sources && typeof extraction.sources === 'object'
-                ? (extraction.sources as Record<string, { page?: number; snippet?: string }>)
-                : {},
+        fieldSources: sources,
+        fieldFlags: {
+            issueDate: dateFlags(issueDate, 'issueDate'),
+            startDate: dateFlags(startDate, 'startDate'),
+            endDate: dateFlags(endDate, 'endDate'),
+            renewalDate: dateFlags(renewalDate, 'renewalDate'),
+        },
         missingCriticalFields: asArray<unknown>(extraction?.missingCriticalFields)
             .map((f) => (typeof f === 'string' ? f : ''))
             .filter(Boolean),

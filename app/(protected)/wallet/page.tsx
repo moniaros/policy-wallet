@@ -6,6 +6,7 @@ import { PolicyWalletClient } from "@/components/wallet/PolicyWalletClient"
 import type { Policy } from "@/components/wallet/types"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
+import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
 
 export default async function WalletPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -114,7 +115,9 @@ export default async function WalletPage() {
         return {
             id: p.id,
             policyNumber: p.policyNumber,
-            insurerName: p.insurerName,
+            // Canonical Greek-market display name (raw extracted strings like
+        // "ΕΘΝΙΚΗ Η ΠΡΩΤΗ ΑΣΦΑΛΙΣΤΙΚΗ" normalize to "Εθνική Ασφαλιστική").
+        insurerName: resolveInsurerDisplay(p.insurerName).displayName || p.insurerName,
             insurerLogo: null, // Placeholder
             lineOfBusiness: p.lineOfBusiness as any,
             status: mapStatus(p.status, p.endDate),

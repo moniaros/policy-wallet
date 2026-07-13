@@ -160,9 +160,11 @@ export function MyPoliciesScreen({ policies, tier = 'free', onViewPolicy, onAddP
                                     <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusClass(summary.status.tone)}`}>
                                         {summary.status.label}
                                     </span>
-                                    <span className="text-[11px] text-black/55 dark:text-white/65">
-                                        {copy.expires} {summary.expiryDisplay}
-                                    </span>
+                                    {summary.expiryDisplay && (
+                                        <span className="text-[11px] text-black/55 dark:text-white/65">
+                                            {copy.expires} {summary.expiryDisplay}
+                                        </span>
+                                    )}
                                     <span className="text-[11px] text-black/55 dark:text-white/65 font-semibold">
                                         {summary.premiumDisplay}
                                     </span>

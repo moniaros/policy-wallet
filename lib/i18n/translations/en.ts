@@ -356,6 +356,7 @@ export const en: TranslationKeys = {
             showAllExclusions: 'Show all',
             showFewerExclusions: 'Show fewer',
             moreActions: 'More actions',
+            expiredBanner: 'This policy appears to have expired. Request a renewal quote to continue your coverage.',
             conditionTypes: {
                 waiting_period: 'Waiting period',
                 auto_renewal: 'Auto-renewal',
@@ -662,6 +663,11 @@ export const en: TranslationKeys = {
             overallConfidence: 'Extraction confidence',
             actionRequired: 'Action required',
             fieldValueMissing: 'Not filled in',
+            fieldValueFillIn: 'Not detected — fill it in',
+            confidenceInvalidated: 'Needs confirmation',
+            skipField: 'Skip for now',
+            skippedChip: 'Skipped',
+            confirmBlockedNotice: 'Some fields need to be filled in or confirmed before saving.',
             editField: 'Edit field',
         },
         card: {
@@ -853,6 +859,7 @@ export const en: TranslationKeys = {
         active: 'Active',
         expiringSoon: 'Expiring Soon',
         expired: 'Expired',
+        unknownDuration: 'Unknown Duration',
         actionNeeded: 'Action Needed',
         cancelled: 'Cancelled',
         incomplete: 'Incomplete',

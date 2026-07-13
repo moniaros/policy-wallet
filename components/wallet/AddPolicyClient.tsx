@@ -13,6 +13,7 @@ import { UploadDropzone } from "@/components/ui/UploadDropzone"
 import { LimitReachedModal } from "@/components/account/LimitReachedModal"
 import { PolicyReviewScreen } from "@/components/wallet/PolicyReviewScreen"
 import type { PolicyReviewData } from "@/lib/wallet/policy-review"
+import { formatDocumentDate } from "@/lib/dates/document-date"
 import {
     UploadCloud,
     FileText,
@@ -94,6 +95,9 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
         if (!formData.get("policyNumber")) {
             formData.set("policyNumber", `PENDING-${Date.now()}`)
         }
+        // Creation placeholders for the NOT NULL date columns until extraction
+        // fills them — the lifecycle/display layers read the extracted envelope
+        // first and never trust these as real dates (see lib/policy-status).
         if (!formData.get("startDate")) {
             formData.set("startDate", new Date().toISOString().split('T')[0])
         }
@@ -207,8 +211,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
     const formatCurrency = (amount: number, currency: string) =>
         new Intl.NumberFormat(locale, { style: 'currency', currency }).format(amount)
 
-    const formatDate = (iso: string) =>
-        new Date(iso).toLocaleDateString(locale)
+    const formatDate = (iso: string) => formatDocumentDate(iso, locale) || '-'
 
     // ────────────────────────────── REVIEW SCREEN ──────────────────────────────
     if (phase === 'reviewing') {

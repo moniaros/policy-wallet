@@ -8,6 +8,8 @@
  * because legacy policies predate several of these sections.
  */
 
+import { parseDocumentDate } from "@/lib/dates/document-date"
+
 export type Bilingual = { en: string; el: string }
 
 export interface NotableCondition {
@@ -63,6 +65,11 @@ function asArray<T>(value: unknown): T[] {
 
 export function parsePolicyDate(value: unknown): Date | null {
     if (!value) return null
+    // Document formats first (ISO, DD-MM-YYYY, Greek month phrases) — the
+    // acord envelope stores extracted strings verbatim; native Date parsing
+    // covers full ISO timestamps as the fallback.
+    const documentParsed = parseDocumentDate(value)
+    if (documentParsed) return documentParsed
     const parsed = new Date(String(value))
     return Number.isNaN(parsed.getTime()) ? null : parsed
 }

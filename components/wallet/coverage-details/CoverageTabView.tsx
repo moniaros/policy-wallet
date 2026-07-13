@@ -5,6 +5,7 @@ import { ShieldCheck, ShieldOff, CheckCircle2, XCircle, AlertTriangle } from "lu
 import type { AcordData } from "@/types/domain"
 import type { LineOfBusiness } from "@/types/enums"
 import { getTranslations } from "@/lib/i18n"
+import { formatExtractedAmount } from "@/lib/i18n/amount-format"
 import { HealthCoverageDetails } from "./HealthCoverageDetails"
 import { MotorCoverageDetails } from "./MotorCoverageDetails"
 import { HomeCoverageDetails } from "./HomeCoverageDetails"
@@ -110,12 +111,12 @@ export function CoverageTabView({ acordData, lineOfBusiness, language }: Coverag
                         <div className="flex flex-wrap gap-2 mt-1.5">
                           {coverage.limit && (
                             <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#EFF6FF] dark:bg-blue-900/30 text-[#1E40AF] dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60">
-                              {copy.limit}: {coverage.limit}
+                              {copy.limit}: {formatExtractedAmount(coverage.limit, language)}
                             </span>
                           )}
                           {coverage.deductible && (
                             <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#FEF3C7]/60 dark:bg-amber-900/30 text-[#B45309] dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/60">
-                              {copy.deductible}: {coverage.deductible}
+                              {copy.deductible}: {formatExtractedAmount(coverage.deductible, language)}
                             </span>
                           )}
                         </div>
