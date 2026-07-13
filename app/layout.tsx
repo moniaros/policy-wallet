@@ -16,7 +16,7 @@ import { OfflineProvider } from "@/components/providers/OfflineProvider";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { GoogleAnalyticsWebVitals } from "@/components/analytics/GoogleAnalyticsWebVitals";
 import { CookieConsentBanner } from "@/components/compliance/CookieConsentBanner";
-import { getSiteUrl, OG_IMAGES, siteConfig, TWITTER_IMAGES } from "@/lib/seo/site";
+import { getSiteUrl, isIndexableDeployment, OG_IMAGES, siteConfig, TWITTER_IMAGES } from "@/lib/seo/site";
 
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
@@ -40,6 +40,10 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     images: TWITTER_IMAGES,
   },
+  // Preview/branch deploys must never compete with production in search.
+  ...(isIndexableDeployment()
+    ? {}
+    : { robots: { index: false, follow: false } }),
 };
 
 export const viewport: Viewport = {

@@ -13,6 +13,45 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
+/**
+ * Fixed-language provider for locale-specific routes (/en/*): every
+ * useLanguage() consumer beneath it renders the given language on the server
+ * too, so crawlers get honest English HTML instead of the Greek default that
+ * the client toggle would only swap after hydration. Switching language
+ * navigates to the counterpart route instead of toggling in place.
+ */
+export function StaticLanguageProvider({
+    language,
+    counterpartPath,
+    children,
+}: {
+    language: Language
+    /** Route to navigate to when the visitor picks the other language. */
+    counterpartPath: string
+    children: React.ReactNode
+}) {
+    const router = useRouter()
+
+    useEffect(() => {
+        const html = document.documentElement
+        html.setAttribute('lang', language === 'el' ? 'el' : 'en')
+        html.setAttribute('data-locale', language === 'el' ? 'el-GR' : 'en-US')
+    }, [language])
+
+    const value = React.useMemo(
+        () => ({
+            language,
+            setLanguage: (lang: Language) => {
+                if (lang !== language) router.push(counterpartPath)
+            },
+            t: getTranslations(language),
+        }),
+        [language, counterpartPath, router]
+    )
+
+    return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>
+}
+
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
     const [language, setLanguageState] = useState<Language>('el')
     const [translations, setTranslations] = useState(getTranslations('el'))

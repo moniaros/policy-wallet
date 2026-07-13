@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 import { rateLimit } from "@/lib/rate-limit"
 import { getPostLoginRedirectByRole, getPrimaryRole } from "@/lib/auth/role-routing"
+import { isIndexableDeployment } from "@/lib/seo/site"
 
 export async function proxy(request: NextRequest) {
     const { nextUrl } = request
@@ -84,6 +85,8 @@ export async function proxy(request: NextRequest) {
         "/guides",
         "/auth",
         "/api/auth",
+        // English marketing-page variants (/en/product, /en/pricing, …)
+        "/en/",
         // PWA service-worker chunks (workbox-<hash>.js at the root)
         "/workbox-",
     ]
@@ -185,6 +188,12 @@ export async function proxy(request: NextRequest) {
             const redirectTarget = userRole === "agent" ? "/dashboard/agent" : "/dashboard"
             return NextResponse.redirect(new URL(redirectTarget, nextUrl))
         }
+    }
+
+    // Preview/branch deploys must never be indexed — belt (this header) and
+    // braces (the robots meta tag from app/layout.tsx + robots.txt disallow).
+    if (!isIndexableDeployment()) {
+        response.headers.set("X-Robots-Tag", "noindex, nofollow")
     }
 
     return response

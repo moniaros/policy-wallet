@@ -9,6 +9,7 @@ import {
     articleJsonLd,
     breadcrumbTrailJsonLd,
     faqPageJsonLd,
+    howToJsonLd,
 } from "@/lib/seo/jsonld"
 
 type GuidePageProps = {
@@ -30,6 +31,8 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
         description: guide.metaDescription,
         alternates: {
             canonical: path,
+            // Guides are Greek-only URLs; no en pair until real /en routes exist.
+            languages: { el: path, "x-default": path },
         },
         openGraph: {
             type: "article",
@@ -69,7 +72,25 @@ export default async function GuidePage({ params }: GuidePageProps) {
                         description: guide.metaDescription,
                         datePublished: guide.datePublished,
                         dateModified: guide.dateModified,
+                        ...(guide.author
+                            ? {
+                                  author: {
+                                      name: guide.author.name,
+                                      jobTitle: guide.author.role.el,
+                                      profileUrl: guide.author.profileUrl,
+                                  },
+                              }
+                            : {}),
                     }),
+                    ...(guide.howToSteps
+                        ? [
+                              howToJsonLd({
+                                  name: guide.title.el,
+                                  description: guide.metaDescription,
+                                  steps: guide.howToSteps,
+                              }),
+                          ]
+                        : []),
                     faqPageJsonLd(
                         guide.faq.map((item) => ({
                             question: item.question.el,

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next"
-import { getSiteOrigin } from "@/lib/seo/site"
+import { getSiteOrigin, isIndexableDeployment } from "@/lib/seo/site"
 
 /**
  * Crawl policy for search engines AND AI answer engines.
@@ -44,6 +44,15 @@ const AI_CRAWLERS = [
 
 export default function robots(): MetadataRoute.Robots {
     const origin = getSiteOrigin()
+
+    // Preview/branch deploys are never crawlable — the vercel.app copy must
+    // not compete with the production domain (see also X-Robots-Tag in
+    // proxy.ts and the robots meta in app/layout.tsx).
+    if (!isIndexableDeployment()) {
+        return {
+            rules: [{ userAgent: "*", disallow: "/" }],
+        }
+    }
 
     return {
         rules: [

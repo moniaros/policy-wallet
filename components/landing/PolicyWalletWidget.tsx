@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Car, Home, Heart, AlertTriangle, Clock, Shield } from "lucide-react"
+import { PRODUCT_DISPLAY_HOST } from "@/lib/seo/site"
 
 interface PolicyWalletWidgetProps {
     isGreek: boolean
@@ -56,7 +57,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                         <span className="h-3 w-3 rounded-full bg-[#28CA41]" />
                     </div>
                     <div className="ml-3 flex-1 rounded-md border border-[#E2E8F0] bg-white px-3 py-1 font-mono text-[11px] text-[#94A3B8]">
-                        app.policywallet.gr/wallet
+                        {`${PRODUCT_DISPLAY_HOST}/wallet`}
                     </div>
                 </div>
 
