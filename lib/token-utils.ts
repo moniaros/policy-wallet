@@ -14,6 +14,14 @@ export const TOKEN_COSTS = {
         input: 0.00007,
         output: 0.00028,
     },
+    'gemini-2.5-flash': {
+        input: 0.0003,
+        output: 0.0025,
+    },
+    'gemini-2.5-pro': {
+        input: 0.00125,
+        output: 0.01,
+    },
     'gemini-3-flash-preview': {
         input: 0.00007,
         output: 0.00028,
@@ -41,6 +49,26 @@ export const TOKEN_COSTS = {
 } as const
 
 export type AIModel = keyof typeof TOKEN_COSTS
+
+// Model names reach tracking as arbitrary env-configured strings
+// (GEMINI_MODEL_* etc.), so an exact TOKEN_COSTS hit is never guaranteed.
+// Missing entries used to crash trackTokenUsage mid-analysis
+// ("Cannot read properties of undefined (reading 'input')").
+const UNKNOWN_MODEL_COSTS = { input: 0.00125, output: 0.01 } // priced as gemini-2.5-pro (conservative)
+
+export function resolveTokenCosts(model: string): { input: number; output: number } {
+    const exact = TOKEN_COSTS[model as AIModel]
+    if (exact) return exact
+
+    // Family fallback: longest known key sharing a prefix with the model
+    // (e.g. 'gemini-2.5-flash-lite' → 'gemini-2.5-flash').
+    const family = (Object.keys(TOKEN_COSTS) as AIModel[])
+        .filter((key) => model.startsWith(key) || key.startsWith(model))
+        .sort((a, b) => b.length - a.length)[0]
+    if (family) return TOKEN_COSTS[family]
+
+    return UNKNOWN_MODEL_COSTS
+}
 
 export type OperationType =
     | 'policy_analysis'

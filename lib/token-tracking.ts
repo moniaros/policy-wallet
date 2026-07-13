@@ -8,6 +8,7 @@ import { getUserSubscription } from '@/lib/subscription-limits'
 import { Decimal } from '@prisma/client/runtime/library'
 import {
     TOKEN_COSTS,
+    resolveTokenCosts,
     type AIModel,
     type OperationType,
     formatTokens,
@@ -82,100 +83,112 @@ export async function trackTokenUsage(params: {
     outputTokens: number
     model: AIModel
 }): Promise<void> {
-    const costs = TOKEN_COSTS[params.model]
-    const totalTokens = params.inputTokens + params.outputTokens
+    // Metering must never fail the analysis that produced the tokens:
+    // resolveTokenCosts always returns a price (unknown models get a
+    // conservative fallback), and any DB error is logged instead of thrown.
+    try {
+        const costs = resolveTokenCosts(params.model)
+        const totalTokens = params.inputTokens + params.outputTokens
 
-    // Calculate costs
-    const inputCost = (params.inputTokens / 1_000_000) * costs.input
-    const outputCost = (params.outputTokens / 1_000_000) * costs.output
-    const totalCost = inputCost + outputCost
+        // Calculate costs
+        const inputCost = (params.inputTokens / 1_000_000) * costs.input
+        const outputCost = (params.outputTokens / 1_000_000) * costs.output
+        const totalCost = inputCost + outputCost
 
-    const { tier, limit: budgetLimit } = await resolveTokenBudget(params.userId)
-    const now = new Date()
-    const month = new Date(now.getFullYear(), now.getMonth(), 1)
+        const { tier, limit: budgetLimit } = await resolveTokenBudget(params.userId)
+        const now = new Date()
+        const month = new Date(now.getFullYear(), now.getMonth(), 1)
 
-    await prisma.$transaction(async (tx) => {
-        const existingMonthly = await tx.monthlyTokenUsage.findUnique({
-            where: {
-                userId_month: {
-                    userId: params.userId,
-                    month,
-                },
-            },
-        })
-
-        const monthlyUsedBefore = existingMonthly ? Number(existingMonthly.totalTokens) : 0
-        const subscriptionLimit = budgetLimit
-        const subscriptionRemaining = subscriptionLimit === null
-            ? totalTokens
-            : Math.max(subscriptionLimit - monthlyUsedBefore, 0)
-        const subscriptionConsumed = subscriptionLimit === null
-            ? totalTokens
-            : Math.min(subscriptionRemaining, totalTokens)
-        const purchasedConsumed = Math.max(totalTokens - subscriptionConsumed, 0)
-
-        await tx.tokenUsage.create({
-            data: {
-                userId: params.userId,
-                operationType: params.operationType,
-                policyId: params.policyId,
-                inputTokens: params.inputTokens,
-                outputTokens: params.outputTokens,
-                totalTokens,
-                costEur: new Decimal(totalCost),
-                model: params.model,
-            },
-        })
-
-        await tx.monthlyTokenUsage.upsert({
-            where: {
-                userId_month: {
-                    userId: params.userId,
-                    month,
-                },
-            },
-            create: {
-                userId: params.userId,
-                month,
-                tier,
-                totalTokens: BigInt(totalTokens),
-                totalCostEur: new Decimal(totalCost),
-                subscriptionTokens: BigInt(subscriptionConsumed),
-                purchasedTokensUsed: BigInt(purchasedConsumed),
-            },
-            update: {
-                totalTokens: {
-                    increment: BigInt(totalTokens),
-                },
-                totalCostEur: {
-                    increment: new Decimal(totalCost),
-                },
-                subscriptionTokens: {
-                    increment: BigInt(subscriptionConsumed),
-                },
-                purchasedTokensUsed: {
-                    increment: BigInt(purchasedConsumed),
-                },
-                tier,
-            },
-        })
-
-        if (purchasedConsumed > 0) {
-            await tx.tokenBalance.upsert({
-                where: { userId: params.userId },
-                create: {
-                    userId: params.userId,
-                    purchasedTokens: BigInt(0),
-                    usedTokens: BigInt(purchasedConsumed),
-                },
-                update: {
-                    usedTokens: {
-                        increment: BigInt(purchasedConsumed),
+        await prisma.$transaction(async (tx) => {
+            const existingMonthly = await tx.monthlyTokenUsage.findUnique({
+                where: {
+                    userId_month: {
+                        userId: params.userId,
+                        month,
                     },
                 },
             })
-        }
-    })
+
+            const monthlyUsedBefore = existingMonthly ? Number(existingMonthly.totalTokens) : 0
+            const subscriptionLimit = budgetLimit
+            const subscriptionRemaining = subscriptionLimit === null
+                ? totalTokens
+                : Math.max(subscriptionLimit - monthlyUsedBefore, 0)
+            const subscriptionConsumed = subscriptionLimit === null
+                ? totalTokens
+                : Math.min(subscriptionRemaining, totalTokens)
+            const purchasedConsumed = Math.max(totalTokens - subscriptionConsumed, 0)
+
+            await tx.tokenUsage.create({
+                data: {
+                    userId: params.userId,
+                    operationType: params.operationType,
+                    policyId: params.policyId,
+                    inputTokens: params.inputTokens,
+                    outputTokens: params.outputTokens,
+                    totalTokens,
+                    costEur: new Decimal(totalCost),
+                    model: params.model,
+                },
+            })
+
+            await tx.monthlyTokenUsage.upsert({
+                where: {
+                    userId_month: {
+                        userId: params.userId,
+                        month,
+                    },
+                },
+                create: {
+                    userId: params.userId,
+                    month,
+                    tier,
+                    totalTokens: BigInt(totalTokens),
+                    totalCostEur: new Decimal(totalCost),
+                    subscriptionTokens: BigInt(subscriptionConsumed),
+                    purchasedTokensUsed: BigInt(purchasedConsumed),
+                },
+                update: {
+                    totalTokens: {
+                        increment: BigInt(totalTokens),
+                    },
+                    totalCostEur: {
+                        increment: new Decimal(totalCost),
+                    },
+                    subscriptionTokens: {
+                        increment: BigInt(subscriptionConsumed),
+                    },
+                    purchasedTokensUsed: {
+                        increment: BigInt(purchasedConsumed),
+                    },
+                    tier,
+                },
+            })
+
+            if (purchasedConsumed > 0) {
+                await tx.tokenBalance.upsert({
+                    where: { userId: params.userId },
+                    create: {
+                        userId: params.userId,
+                        purchasedTokens: BigInt(0),
+                        usedTokens: BigInt(purchasedConsumed),
+                    },
+                    update: {
+                        usedTokens: {
+                            increment: BigInt(purchasedConsumed),
+                        },
+                    },
+                })
+            }
+        })
+    } catch (error) {
+        console.error('[token-tracking] trackTokenUsage failed (usage not recorded)', {
+            userId: params.userId,
+            model: params.model,
+            operationType: params.operationType,
+            error: error instanceof Error ? error.message : String(error),
+        })
+    }
 }
 
 /**
