@@ -663,6 +663,11 @@ export const en: TranslationKeys = {
             overallConfidence: 'Extraction confidence',
             actionRequired: 'Action required',
             fieldValueMissing: 'Not filled in',
+            fieldValueFillIn: 'Not detected — fill it in',
+            confidenceInvalidated: 'Needs confirmation',
+            skipField: 'Skip for now',
+            skippedChip: 'Skipped',
+            confirmBlockedNotice: 'Some fields need to be filled in or confirmed before saving.',
             editField: 'Edit field',
         },
         card: {

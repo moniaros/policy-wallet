@@ -95,6 +95,9 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
         if (!formData.get("policyNumber")) {
             formData.set("policyNumber", `PENDING-${Date.now()}`)
         }
+        // Creation placeholders for the NOT NULL date columns until extraction
+        // fills them — the lifecycle/display layers read the extracted envelope
+        // first and never trust these as real dates (see lib/policy-status).
         if (!formData.get("startDate")) {
             formData.set("startDate", new Date().toISOString().split('T')[0])
         }

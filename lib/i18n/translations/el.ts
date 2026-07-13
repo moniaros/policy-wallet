@@ -660,6 +660,11 @@ export const el = {
             overallConfidence: 'Βεβαιότητα εξαγωγής',
             actionRequired: 'Απαιτείται ενέργεια',
             fieldValueMissing: 'Δεν έχει συμπληρωθεί',
+            fieldValueFillIn: 'Δεν εντοπίστηκε — συμπληρώστε',
+            confidenceInvalidated: 'Απαιτεί επιβεβαίωση',
+            skipField: 'Παράλειψη προς το παρόν',
+            skippedChip: 'Παραλείφθηκε',
+            confirmBlockedNotice: 'Κάποια πεδία χρειάζονται συμπλήρωση ή επιβεβαίωση πριν την αποθήκευση.',
             editField: 'Επεξεργασία πεδίου',
         },
         card: {
