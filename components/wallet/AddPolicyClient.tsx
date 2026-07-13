@@ -13,6 +13,7 @@ import { UploadDropzone } from "@/components/ui/UploadDropzone"
 import { LimitReachedModal } from "@/components/account/LimitReachedModal"
 import { PolicyReviewScreen } from "@/components/wallet/PolicyReviewScreen"
 import type { PolicyReviewData } from "@/lib/wallet/policy-review"
+import { formatDocumentDate } from "@/lib/dates/document-date"
 import {
     UploadCloud,
     FileText,
@@ -207,8 +208,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
     const formatCurrency = (amount: number, currency: string) =>
         new Intl.NumberFormat(locale, { style: 'currency', currency }).format(amount)
 
-    const formatDate = (iso: string) =>
-        new Date(iso).toLocaleDateString(locale)
+    const formatDate = (iso: string) => formatDocumentDate(iso, locale) || '-'
 
     // ────────────────────────────── REVIEW SCREEN ──────────────────────────────
     if (phase === 'reviewing') {

@@ -1,5 +1,6 @@
 import type { PremiumFrequency } from './ai-service.interface'
 import { sanitizeExtractionSources } from './extraction-citations'
+import { parseDocumentDate, toIsoDateString } from '@/lib/dates/document-date'
 
 type RawExtractionPayload = {
     insurerName?: unknown
@@ -53,6 +54,13 @@ const CONFIDENCE_FIELDS = [...CRITICAL_FIELDS, ...EXTENDED_FIELDS]
 
 function asText(value: unknown): string {
     return String(value ?? '').trim()
+}
+
+/** Date field: ISO when parseable, otherwise the raw text (review flags it). */
+function asDateText(value: unknown): string {
+    const raw = asText(value)
+    if (!raw) return ''
+    return toIsoDateString(parseDocumentDate(raw)) || raw
 }
 
 function normalizeConfidenceValue(value: unknown): number | null {
@@ -174,10 +182,13 @@ export function enrichExtractionPayload(
             insurerName: asText(payload.insurerName) || baseAcord?.policy?.insurerName || null,
             policyNumber: asText(payload.policyNumber) || baseAcord?.policy?.policyNumber || null,
             lineOfBusiness: asText(payload.lineOfBusiness) || baseAcord?.policy?.lineOfBusiness || null,
-            effectiveDate: asText(payload.startDate) || baseAcord?.policy?.effectiveDate || null,
-            expirationDate: asText(payload.endDate) || baseAcord?.policy?.expirationDate || null,
-            issueDate: asText(payload.issueDate) || baseAcord?.policy?.issueDate || null,
-            renewalDate: asText(payload.renewalDate) || baseAcord?.policy?.renewalDate || null,
+            // Dates normalize to ISO when parseable (prompts emit DD-MM-YYYY,
+            // documents write Greek month names); an unparseable raw string is
+            // kept verbatim so the review screen can show and flag it.
+            effectiveDate: asDateText(payload.startDate) || baseAcord?.policy?.effectiveDate || null,
+            expirationDate: asDateText(payload.endDate) || baseAcord?.policy?.expirationDate || null,
+            issueDate: asDateText(payload.issueDate) || baseAcord?.policy?.issueDate || null,
+            renewalDate: asDateText(payload.renewalDate) || baseAcord?.policy?.renewalDate || null,
             premiumFrequency: normalizePremiumFrequency(payload.premiumFrequency)
                 || baseAcord?.policy?.premiumFrequency || null,
             premium: {

@@ -21,6 +21,7 @@ import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import { ConfidenceBadge } from "@/components/ui/ConfidenceBadge"
 import { SourceSnippetBox } from "@/components/ui/SourceSnippetBox"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
+import { formatDocumentDate, parseDocumentDate, toIsoDateString } from "@/lib/dates/document-date"
 import { confirmPolicyReview, flagPolicyExtraction } from "@/app/(protected)/wallet/actions"
 import {
     confidenceLevel,
@@ -100,12 +101,17 @@ export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: P
         notFound: reviewCopy.notFound,
     }
 
-    const formatDate = (iso: string | null) =>
-        iso ? new Date(iso).toLocaleDateString(locale) : null
+    // parseDocumentDate handles ISO, DD-MM-YYYY and Greek month phrases;
+    // anything unparseable renders as null (never the literal "Invalid Date").
+    const formatDate = (iso: string | null) => formatDocumentDate(iso, locale)
     const formatMoney = (amount: number | null) =>
         amount !== null
             ? new Intl.NumberFormat(locale, { style: "currency", currency: data.premiumCurrency || "EUR" }).format(amount)
             : null
+
+    // Date edit inputs are type="date" — they need yyyy-MM-dd or nothing.
+    const isoDateInput = (value: string | null | undefined): string =>
+        toIsoDateString(parseDocumentDate(value)) || ""
 
     // Effective (post-edit) value for display; raw values feed the inputs.
     const rawValue = (field: EditableField): string => {
@@ -114,10 +120,10 @@ export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: P
             case "insurerName": return data.insurerName || ""
             case "policyNumber": return data.policyNumber || ""
             case "lineOfBusiness": return data.lineOfBusiness || ""
-            case "issueDate": return data.issueDate?.slice(0, 10) || ""
-            case "startDate": return data.startDate?.slice(0, 10) || ""
-            case "endDate": return data.endDate?.slice(0, 10) || ""
-            case "renewalDate": return data.renewalDate?.slice(0, 10) || ""
+            case "issueDate": return isoDateInput(data.issueDate)
+            case "startDate": return isoDateInput(data.startDate)
+            case "endDate": return isoDateInput(data.endDate)
+            case "renewalDate": return isoDateInput(data.renewalDate)
             case "premiumAmount": return data.premiumAmount !== null ? String(data.premiumAmount) : ""
             case "premiumFrequency": return data.premiumFrequency || ""
             case "sumInsured": return data.sumInsured ? String(data.sumInsured.value) : ""
