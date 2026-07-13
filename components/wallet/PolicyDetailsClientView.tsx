@@ -36,7 +36,7 @@ import { AlertTriangle, Crown, FileDown, Lock, RefreshCw, ShieldCheck, Trash2, U
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
-import type { GapReportItem } from "@/lib/wallet/gap-report"
+import { FREE_GAP_PREVIEW_COUNT, type GapReportItem } from "@/lib/wallet/gap-report"
 
 // Trigger J: savings-report export (Pro). Bilingual copy kept as a pair map
 // so the changed-file i18n lint stays clean.
@@ -745,7 +745,15 @@ export function PolicyDetailsClient({
                             />
                         )}
 
-                        <AIUsageWidget count={aiUsageStats.count} limit={aiUsageStats.limit} t={t} />
+                        <AIUsageWidget
+                            count={aiUsageStats.count}
+                            limit={aiUsageStats.limit}
+                            t={t}
+                            reportUnlock={{
+                                locked: !reportUnlocked,
+                                lockedCount: Math.max(gapReportItems.length - FREE_GAP_PREVIEW_COUNT, 0),
+                            }}
+                        />
 
                         {canShowCollaborationPanel && (
                             <CollaborationPanel

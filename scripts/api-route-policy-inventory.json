@@ -1119,6 +1119,25 @@
       }
     },
     {
+      "route": "v1/policies/[id]/report-unlock/route.ts",
+      "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
       "route": "v1/policies/[id]/review/route.ts",
       "methods": [
         "POST"

@@ -220,6 +220,9 @@ export const el = {
         newAsset: "Νέο Περιουσιακό Στοιχείο",
         // Usage Widget
         aiPlanUsage: 'Χρήση Πλάνου AI',
+        reportUnlockWidgetTitle: 'Η πλήρης εικόνα του συμβολαίου σας',
+        reportUnlockWidgetBody: 'Κάποια κενά κάλυψης εμφανίζονται μόνο ως τίτλοι. Δείτε την πλήρη εξήγηση και τις προτάσεις με ένα εφάπαξ ξεκλείδωμα.',
+        reportUnlockWidgetCta: 'Προβολή κενών κάλυψης',
         analyses: 'αναλύσεις',
         unlimited: 'Απεριόριστες',
         analysesRemaining: 'αναλύσεις απομένουν αυτόν τον μήνα',

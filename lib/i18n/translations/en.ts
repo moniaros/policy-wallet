@@ -223,6 +223,9 @@ export const en: TranslationKeys = {
         newAsset: "New Asset",
         // Usage Widget
         aiPlanUsage: 'AI Plan Usage',
+        reportUnlockWidgetTitle: 'The full picture of your policy',
+        reportUnlockWidgetBody: 'Some coverage gaps show as titles only. See the full explanation and recommendations with a one-off unlock.',
+        reportUnlockWidgetCta: 'View coverage gaps',
         analyses: 'analyses',
         unlimited: 'Unlimited',
         analysesRemaining: 'analyses remaining this month',

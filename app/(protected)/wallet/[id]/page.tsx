@@ -11,6 +11,7 @@ import { PolicyDetailsClient } from "./PolicyDetailsClient"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { normalizeRemindersSent } from "@/lib/wallet/policy-detail"
 import {
+    computeReportUnlocked,
     dedupeGaps,
     normalizeGapSlug,
     resolveGapContent,
@@ -92,6 +93,14 @@ export default async function PolicyDetailPage({
     }))
     const reportSlugSet = new Set(gapReportItems.map((item) => item.slug))
 
+    // Free-tier owners see the first gaps only until the €3 unlock or an
+    // upgrade; agents/viewers always get the full report (unchanged).
+    const reportUnlocked = computeReportUnlocked({
+        isOwner,
+        tier: entitlements.tier,
+        reportUnlockedAt: policy.reportUnlockedAt,
+    })
+
     // Related recommendations (owner only): reuse the persisted gap-engine
     // output, preferring same-line-of-business suggestions. Read-only — the
     // engine itself is not re-run here. Policy-derived recommendations that
@@ -159,6 +168,7 @@ export default async function PolicyDetailPage({
         createdAt: policy.createdAt.toISOString(),
         updatedAt: policy.updatedAt.toISOString(),
         lastAnalyzedAt: policy.lastAnalyzedAt?.toISOString() || null,
+        reportUnlockedAt: policy.reportUnlockedAt?.toISOString() || null,
         premiumAmount: policy.premiumAmount ? Number(policy.premiumAmount) : null,
         verified: (() => {
             const ext = (policy.acordData as any)?.extraction
@@ -206,7 +216,7 @@ export default async function PolicyDetailPage({
             relatedRecommendations={relatedRecommendations}
             renewals={serializedRenewals}
             gapReportItems={gapReportItems}
-            reportUnlocked={true}
+            reportUnlocked={reportUnlocked}
         />
     )
 }

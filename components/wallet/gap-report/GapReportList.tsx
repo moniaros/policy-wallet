@@ -65,8 +65,15 @@ export function GapReportList({
     const groups = groupGapsByCoverageArea(items)
     const lockedCount = reportUnlocked ? 0 : Math.max(items.length - FREE_GAP_PREVIEW_COUNT, 0)
 
-    let flatIndex = -1
-    let ctaRendered = false
+    // Flat display order across groups drives the lock boundary; derived
+    // up front (render must stay mutation-free for the React compiler).
+    const flatOrder = new Map(
+        groups.flatMap((group) => group.items).map((item, index) => [item.id, index])
+    )
+    const firstLockedId =
+        lockedCount > 0
+            ? groups.flatMap((group) => group.items)[FREE_GAP_PREVIEW_COUNT]?.id ?? null
+            : null
 
     return (
         <div className="space-y-5">
@@ -75,10 +82,9 @@ export function GapReportList({
             {groups.map((group) => (
                 <GapGroupSection key={group.area} area={group.area} count={group.items.length} copy={copy}>
                     {group.items.map((item) => {
-                        flatIndex += 1
+                        const flatIndex = flatOrder.get(item.id) ?? 0
                         const locked = lockedCount > 0 && flatIndex >= FREE_GAP_PREVIEW_COUNT
-                        const showCta = locked && !ctaRendered
-                        if (showCta) ctaRendered = true
+                        const showCta = locked && item.id === firstLockedId
 
                         return (
                             <div key={item.id} className="space-y-2.5">

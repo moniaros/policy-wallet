@@ -1,6 +1,6 @@
 import { stripe } from "@/lib/stripe";
 import { env } from "@/lib/env";
-import { fulfillTokenPurchaseSession, handleSubscriptionSuccess } from "@/lib/billing";
+import { fulfillReportUnlockSession, fulfillTokenPurchaseSession, handleSubscriptionSuccess } from "@/lib/billing";
 import { createApiResponse, createApiError } from "@/lib/api-utils";
 import { withApiGuard } from "@/lib/api-guard";
 import { hasProcessedWebhookEvent, markWebhookEventProcessed } from "@/lib/services/billing/webhook-idempotency";
@@ -50,8 +50,11 @@ export const POST = withApiGuard(
 
         const session = event.data.object as any
         if (event.type === "checkout.session.completed") {
-            const { userId, planId, tokensPurchased } = session.metadata || {}
-            if (tokensPurchased) {
+            const { userId, planId, tokensPurchased, type, policyId } = session.metadata || {}
+            if (type === "report_unlock" && userId && policyId) {
+                // One-off €3 gap-report unlock (mode: payment)
+                await fulfillReportUnlockSession(session.id, userId, policyId)
+            } else if (tokensPurchased) {
                 // One-off token-pack checkout (mode: payment)
                 await fulfillTokenPurchaseSession(session.id, userId, parseInt(tokensPurchased, 10))
             } else if (userId && planId) {

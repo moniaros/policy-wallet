@@ -229,6 +229,103 @@ export async function fulfillTokenPurchaseSession(sessionId: string, userId: str
 }
 
 /**
+ * One-off €3 unlock of a single policy's full gap report (mode: "payment",
+ * inline price_data — no pre-created Stripe product). Free tier is the
+ * intended buyer; the price is flat and VAT-inclusive like token packs.
+ */
+export const REPORT_UNLOCK_PRICE_EUR = 3
+
+export async function createReportUnlockCheckoutSession(
+    userId: string,
+    policyId: string,
+    returnTo?: string | null
+) {
+    const user = await db.user.findUnique({ where: { id: userId }, select: { email: true } })
+    if (!user) throw new Error("User not found")
+
+    const base = process.env.NEXTAUTH_URL || "http://localhost:3000"
+    const safeReturn = sanitizeReturnPath(returnTo) || `/wallet/${policyId}`
+    const successUrl =
+        `${base}/upgrade/success?session_id={CHECKOUT_SESSION_ID}` +
+        `&return=${encodeURIComponent(safeReturn)}`
+    const cancelUrl = `${base}${safeReturn}`
+
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        mode: "payment",
+        line_items: [
+            {
+                price_data: {
+                    currency: "eur",
+                    product_data: {
+                        name: "PolicyWallet — Πλήρης αναφορά κενών κάλυψης",
+                    },
+                    unit_amount: REPORT_UNLOCK_PRICE_EUR * 100,
+                },
+                quantity: 1,
+            },
+        ],
+        success_url: successUrl,
+        cancel_url: cancelUrl,
+        customer_email: user.email!,
+        metadata: {
+            userId,
+            policyId,
+            type: "report_unlock",
+        },
+    })
+
+    await db.reportUnlockPurchase.create({
+        data: {
+            userId,
+            policyId,
+            amountEur: REPORT_UNLOCK_PRICE_EUR,
+            stripeSessionId: session.id,
+            status: "pending",
+        },
+    })
+
+    return { id: session.id, url: session.url!, amountEur: REPORT_UNLOCK_PRICE_EUR }
+}
+
+/**
+ * Complete a report unlock: flip the pending purchase row and stamp the
+ * policy. Idempotent — the webhooks and the success page all race here;
+ * only a still-pending row fulfills, and only the owner's policy is stamped.
+ */
+export async function fulfillReportUnlockSession(
+    sessionId: string,
+    userId: string,
+    policyId: string
+): Promise<boolean> {
+    if (!sessionId || !userId || !policyId) return false
+
+    let unlocked = false
+    await db.$transaction(async (tx) => {
+        const updated = await tx.reportUnlockPurchase.updateMany({
+            where: { userId, policyId, stripeSessionId: sessionId, status: "pending" },
+            data: { status: "completed" },
+        })
+        if (updated.count === 0) return
+
+        await tx.policy.updateMany({
+            where: { id: policyId, ownerUserId: userId, reportUnlockedAt: null },
+            data: { reportUnlockedAt: new Date() },
+        })
+        unlocked = true
+    })
+
+    if (unlocked) {
+        await recordConversionEvent(userId, "checkout_completed", {
+            source: "report_unlock",
+            policyId,
+        })
+    }
+
+    return unlocked
+}
+
+/**
  * Handle Webhook logic
  */
 export async function handleSubscriptionSuccess(userId: string, planId: string, stripeSubscriptionId: string) {

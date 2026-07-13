@@ -22,6 +22,8 @@ export interface ConversionEventDetails {
     /** For limit_hit: which limit, e.g. "policy", "ai_question". */
     kind?: string
     tokens?: number
+    /** For report_unlock: which policy's report was purchased. */
+    policyId?: string
 }
 
 export async function recordConversionEvent(
