@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { FormEvent, useMemo, useState } from "react"
-import { ArrowRight, Mail, ShieldCheck } from "lucide-react"
+import { ArrowRight, Facebook, Instagram, Linkedin, Mail, ShieldCheck, Twitter, type LucideIcon } from "lucide-react"
 import { productCategories } from "@/lib/product/catalog"
 import { getSocialProfiles } from "@/lib/seo/site"
 
@@ -11,6 +11,14 @@ interface PublicMegaFooterProps {
 }
 
 type NewsletterStatus = "idle" | "loading" | "success" | "error"
+
+/** Brand icons for the env-gated social links (labels from getSocialProfiles). */
+const SOCIAL_ICONS: Record<string, LucideIcon> = {
+    LinkedIn: Linkedin,
+    Facebook: Facebook,
+    Instagram: Instagram,
+    X: Twitter,
+}
 
 function getDeviceType() {
     if (typeof window === "undefined") return "desktop"
@@ -277,17 +285,22 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                         {t("Με επιφύλαξη παντός δικαιώματος.", "All rights reserved.")}
                     </p>
                     <div className="flex flex-wrap items-center gap-4">
-                        {socialProfiles.map((profile) => (
-                            <a
-                                key={profile.url}
-                                href={profile.url}
-                                target="_blank"
-                                rel="noreferrer noopener"
-                                className="transition-colors hover:text-[#0F172A]"
-                            >
-                                {profile.label}
-                            </a>
-                        ))}
+                        {socialProfiles.map((profile) => {
+                            const Icon = SOCIAL_ICONS[profile.label]
+                            return (
+                                <a
+                                    key={profile.url}
+                                    href={profile.url}
+                                    target="_blank"
+                                    rel="noreferrer noopener"
+                                    aria-label={profile.label}
+                                    className="inline-flex items-center gap-1.5 transition-colors hover:text-[#0F172A]"
+                                >
+                                    {Icon ? <Icon className="h-4 w-4" aria-hidden /> : null}
+                                    {profile.label}
+                                </a>
+                            )
+                        })}
                         <Link href="/privacy" className="transition-colors hover:text-[#0F172A]">
                             {t("Privacy", "Privacy")}
                         </Link>

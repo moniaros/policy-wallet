@@ -5,7 +5,8 @@ import {
     hasCompleteAddress,
     siteConfig,
 } from "@/lib/seo/site"
-import { marketingPages, type MarketingPageKey } from "@/lib/seo/marketing-pages"
+import { enPathFor, marketingPages, type MarketingPageKey } from "@/lib/seo/marketing-pages"
+import { getFounders, teamMembers, type TeamMember } from "@/lib/seo/team"
 
 /**
  * Server-rendered JSON-LD.
@@ -69,7 +70,39 @@ export function organizationJsonLd() {
             ...siteConfig.address,
         }
     }
+    const founders = getFounders()
+    if (founders.length > 0) {
+        organization.founder = founders.map((member) => ({
+            "@id": personId(member),
+        }))
+    }
     return organization
+}
+
+function personId(member: TeamMember): string {
+    return `${getSiteOrigin()}/company#${member.slug}`
+}
+
+/** Person entity for a published team member (E-E-A-T). */
+export function personJsonLd(member: TeamMember) {
+    const person: Record<string, unknown> = {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "@id": personId(member),
+        name: member.name,
+        jobTitle: member.role.el,
+        description: member.bio.el,
+        worksFor: { "@id": `${getSiteOrigin()}/#organization` },
+    }
+    if (member.profileUrl) {
+        person.sameAs = [member.profileUrl]
+    }
+    return person
+}
+
+/** Person entities for everyone in the team registry (empty → []). */
+export function teamJsonLd() {
+    return teamMembers.map(personJsonLd)
 }
 
 export function webSiteJsonLd() {
@@ -101,9 +134,12 @@ export function faqPageJsonLd(items: { question: string; answer: string }[]) {
 }
 
 /** Breadcrumb trail from arbitrary name/path pairs (home is prepended). */
-export function breadcrumbTrailJsonLd(trail: { name: string; path: string }[]) {
+export function breadcrumbTrailJsonLd(
+    trail: { name: string; path: string }[],
+    home: { name: string; path: string } = { name: "Αρχική", path: "/" }
+) {
     const origin = getSiteOrigin()
-    const items = [{ name: "Αρχική", path: "/" }, ...trail]
+    const items = [home, ...trail]
     return {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
@@ -123,6 +159,20 @@ export function breadcrumbJsonLd(keys: MarketingPageKey[]) {
             name: marketingPages[key].breadcrumb,
             path: marketingPages[key].path,
         }))
+    )
+}
+
+/** English breadcrumb trail for /en/* marketing-page variants. */
+export function breadcrumbEnJsonLd(keys: MarketingPageKey[]) {
+    return breadcrumbTrailJsonLd(
+        keys.map((key) => {
+            const page = marketingPages[key]
+            return {
+                name: page.en?.breadcrumb ?? page.breadcrumb,
+                path: enPathFor(page.path),
+            }
+        }),
+        { name: "Home", path: "/en" }
     )
 }
 
@@ -180,8 +230,19 @@ export function articleJsonLd(input: {
     datePublished: string
     dateModified?: string
     inLanguage?: string
+    /** Named author (Person) — falls back to the Organization when absent. */
+    author?: { name: string; jobTitle?: string; profileUrl?: string }
 }) {
     const origin = getSiteOrigin()
+    const author = input.author
+        ? {
+              "@type": "Person",
+              name: input.author.name,
+              ...(input.author.jobTitle ? { jobTitle: input.author.jobTitle } : {}),
+              ...(input.author.profileUrl ? { sameAs: [input.author.profileUrl] } : {}),
+              worksFor: { "@id": `${origin}/#organization` },
+          }
+        : { "@id": `${origin}/#organization` }
     return {
         "@context": "https://schema.org",
         "@type": "Article",
@@ -191,7 +252,7 @@ export function articleJsonLd(input: {
         datePublished: input.datePublished,
         dateModified: input.dateModified ?? input.datePublished,
         inLanguage: input.inLanguage ?? "el",
-        author: { "@id": `${origin}/#organization` },
+        author,
         publisher: { "@id": `${origin}/#organization` },
         mainEntityOfPage: `${origin}${input.path}`,
     }

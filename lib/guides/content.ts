@@ -28,6 +28,14 @@ export type GuideSource = {
     url: string
 }
 
+export type GuideAuthor = {
+    /** Real, publishable person only — never a pen name (E-E-A-T). */
+    name: string
+    role: LocalizedString
+    bio: LocalizedString
+    profileUrl?: string
+}
+
 export type Guide = {
     slug: string
     title: LocalizedString
@@ -39,9 +47,22 @@ export type Guide = {
     datePublished: string
     dateModified: string
     readingMinutes: number
+    /**
+     * Named author for the byline + Article JSON-LD author: Person. When
+     * absent the byline shows the PolicyWallet editorial team and the
+     * schema author stays the Organization — honest either way.
+     */
+    author?: GuideAuthor
     sections: GuideSection[]
     faq: GuideFaqItem[]
     sources: GuideSource[]
+    /**
+     * Step-by-step guides can expose their steps for HowTo structured data
+     * (e.g. the renewal checklist). Greek-only: matches the served language.
+     */
+    howToSteps?: { name: string; text: string }[]
+    /** Internal cross-links (related guides + the matching /product page). */
+    related?: { label: LocalizedString; href: string }[]
 }
 
 export const guides: Guide[] = [
@@ -51,16 +72,35 @@ export const guides: Guide[] = [
             el: "Πώς παίρνετε έκπτωση ΕΝΦΙΑ με ασφάλιση κατοικίας;",
             en: "How do you get the ENFIA tax discount with home insurance?",
         },
-        metaTitle: "Έκπτωση ΕΝΦΙΑ με ασφάλιση κατοικίας: πλήρης οδηγός",
+        metaTitle: "Έκπτωση ΕΝΦΙΑ με ασφάλιση κατοικίας: οδηγός",
         metaDescription:
-            "Ποιες προϋποθέσεις χρειάζεται η ασφάλεια κατοικίας για έκπτωση στον ΕΝΦΙΑ: κάλυψη σεισμού, πυρκαγιάς και πλημμύρας, ελάχιστη διάρκεια και πώς δηλώνεται στην ΑΑΔΕ.",
+            "Τι προϋποθέσεις θέλει η ασφάλεια κατοικίας για έκπτωση στον ΕΝΦΙΑ: κάλυψη σεισμού, πυρκαγιάς και πλημμύρας, ελάχιστη διάρκεια και πώς δηλώνεται στην ΑΑΔΕ.",
         summary: {
             el: "Αν η κατοικία σας είναι ασφαλισμένη και για τους τρεις κινδύνους — σεισμό, πυρκαγιά και πλημμύρα — δικαιούστε έκπτωση στον ΕΝΦΙΑ. Η έκπτωση ξεκίνησε στο 10% το 2022 και έχει αυξηθεί για κατοικίες με χαμηλότερη φορολογητέα αξία. Απαιτείται ελάχιστη διάρκεια ασφάλισης και επαρκές ασφαλιζόμενο κεφάλαιο· η ασφαλιστική σας εταιρεία διαβιβάζει τα στοιχεία στην ΑΑΔΕ.",
             en: "If your home is insured against all three risks — earthquake, fire, and flood — you are entitled to an ENFIA property-tax discount. The discount started at 10% in 2022 and has since been increased for homes with lower taxable value. A minimum policy duration and adequate insured sum are required; your insurer reports the data to the Greek tax authority (AADE).",
         },
         datePublished: "2026-07-07",
+        // TODO(quarterly-review): ENFIA discount rates/thresholds change with
+        // tax legislation — re-verify against aade.gr every quarter (next due
+        // 2026-10-01) and bump dateModified ONLY when actually reviewed.
         dateModified: "2026-07-07",
         readingMinutes: 6,
+        related: [
+            {
+                label: {
+                    el: "Πόσο κοστίζει η ασφάλιση σεισμού;",
+                    en: "How much does earthquake insurance cost?",
+                },
+                href: "/guides/poso-kostizei-i-asfalisi-seismou",
+            },
+            {
+                label: {
+                    el: "Ασφάλεια κατοικίας στο PolicyWallet",
+                    en: "Home insurance in PolicyWallet",
+                },
+                href: "/product/property",
+            },
+        ],
         sections: [
             {
                 heading: {
@@ -305,7 +345,7 @@ export const guides: Guide[] = [
             el: "Τι ελέγχετε πριν από την ανανέωση ασφαλιστηρίου;",
             en: "What should you check before renewing an insurance policy?",
         },
-        metaTitle: "Ανανέωση ασφαλιστηρίου: λίστα ελέγχου 7 βημάτων",
+        metaTitle: "Ανανέωση ασφαλιστηρίου: λίστα 7 βημάτων",
         metaDescription:
             "Μην ανανεώνετε στα τυφλά: 7 βήματα πριν από κάθε ανανέωση ασφαλιστηρίου — αξίες, απαλλαγές, εξαιρέσεις, σύγκριση αγοράς και συνέχεια κάλυψης χωρίς κενά ημερών.",
         summary: {
@@ -315,6 +355,54 @@ export const guides: Guide[] = [
         datePublished: "2026-07-07",
         dateModified: "2026-07-07",
         readingMinutes: 5,
+        // HowTo structured data for the 7-step checklist (rendered by the
+        // guide route when howToSteps is present).
+        howToSteps: [
+            {
+                name: "Καταγράψτε τι άλλαξε",
+                text: "Μετακόμιση, ανακαίνιση, νέο όχημα, οικογενειακές αλλαγές, νέος εξοπλισμός — κάθε αλλαγή επηρεάζει την κάλυψη που χρειάζεστε.",
+            },
+            {
+                name: "Επικαιροποιήστε τα κεφάλαια",
+                text: "Κόστος ανακατασκευής κατοικίας, εμπορική αξία οχήματος, αξία περιεχομένου — τα κεφάλαια πρέπει να αντιστοιχούν στις σημερινές αξίες.",
+            },
+            {
+                name: "Ελέγξτε την απαλλαγή",
+                text: "Μεγαλύτερη απαλλαγή σημαίνει μικρότερο ασφάλιστρο — και αντίστροφα. Βεβαιωθείτε ότι ταιριάζει ακόμη στα οικονομικά σας.",
+            },
+            {
+                name: "Ξαναδιαβάστε τις εξαιρέσεις",
+                text: "Οι όροι αλλάζουν στις ανανεώσεις, συχνά χωρίς να το προσέξετε.",
+            },
+            {
+                name: "Συγκρίνετε την αύξηση",
+                text: "Αν το ασφάλιστρο ανέβηκε, ζητήστε αιτιολόγηση και ελέγξτε τι δίνει η αγορά.",
+            },
+            {
+                name: "Πάρτε εναλλακτική προσφορά",
+                text: "Τουλάχιστον μία προσφορά με ίδιες καλύψεις — αλλιώς η σύγκριση τιμής είναι παραπλανητική.",
+            },
+            {
+                name: "Εξασφαλίστε συνέχεια",
+                text: "Η νέα κάλυψη πρέπει να ξεκινά την ημέρα που λήγει η παλιά. Ένα κενό ημερών μπορεί να κοστίσει και την έκπτωση ΕΝΦΙΑ.",
+            },
+        ],
+        related: [
+            {
+                label: {
+                    el: "Κενά κάλυψης: τι είναι και πώς τα βρίσκετε;",
+                    en: "Coverage gaps: what they are and how to find them",
+                },
+                href: "/guides/kena-kalypsis-ti-einai-pos-ta-vriskete",
+            },
+            {
+                label: {
+                    el: "Πρόστιμο ανασφάλιστου οχήματος: ποσά και διαδικασία",
+                    en: "Uninsured vehicle fine: amounts and process",
+                },
+                href: "/guides/prostimo-anasfalistou-oximatos",
+            },
+        ],
         sections: [
             {
                 heading: {
@@ -392,6 +480,16 @@ export const guides: Guide[] = [
                     en: "You are uncovered for any loss in that window, an uninsured vehicle risks a fine, and for a home you may lose part of the year's ENFIA discount proration.",
                 },
             },
+            {
+                question: {
+                    el: "Μπορώ να αλλάξω εταιρεία κατά την ανανέωση;",
+                    en: "Can I switch insurers at renewal?",
+                },
+                answer: {
+                    el: "Ναι — η λήξη είναι η φυσική στιγμή αλλαγής χωρίς κόστος. Προσοχή σε όρους αυτόματης ανανέωσης: αν το συμβόλαιο ανανεώνεται σιωπηρά, στείλτε έγκαιρα έγγραφη ειδοποίηση μη ανανέωσης με βάση την προθεσμία των όρων.",
+                    en: "Yes — expiry is the natural moment to switch at no cost. Watch auto-renewal clauses: if the policy renews tacitly, send timely written non-renewal notice per the deadline in the terms.",
+                },
+            },
         ],
         sources: [
             {
@@ -400,6 +498,957 @@ export const guides: Guide[] = [
                     en: "Bank of Greece — Consumer guidance on private insurance",
                 },
                 url: "https://www.bankofgreece.gr",
+            },
+            {
+                label: {
+                    el: "ΕΑΕΕ — Ενημέρωση ασφαλισμένων",
+                    en: "HAIC (EAEE) — Policyholder information",
+                },
+                url: "https://www.eaee.gr",
+            },
+        ],
+    },
+    {
+        slug: "ti-kalyptei-i-asfaleia-aytokinitou",
+        title: {
+            el: "Τι καλύπτει η ασφάλεια αυτοκινήτου;",
+            en: "What does car insurance cover?",
+        },
+        metaTitle: "Τι καλύπτει η ασφάλεια αυτοκινήτου; Οδηγός",
+        metaDescription:
+            "Αστική ευθύνη, βασική ή μικτή: τι καλύπτει κάθε πακέτο ασφάλειας αυτοκινήτου, ποιες είναι οι κρυφές εξαιρέσεις και πώς επιλέγετε το σωστό για το όχημά σας.",
+        summary: {
+            el: "Η υποχρεωτική ασφάλεια αυτοκινήτου καλύπτει μόνο τις ζημιές που προκαλείτε σε τρίτους — όχι το δικό σας όχημα. Η βασική προσθέτει συνήθως θραύση κρυστάλλων και οδική βοήθεια, ενώ η μικτή καλύπτει και τις ίδιες ζημιές με απαλλαγή. Κρίσιμες εξαιρέσεις: οδήγηση υπό μέθη, χωρίς δίπλωμα ή από μη δηλωμένο οδηγό.",
+            en: "Mandatory car insurance covers only the damage you cause to others — not your own vehicle. Basic packages typically add glass breakage and roadside assistance, while comprehensive (mikti) also covers own damage subject to a deductible. Critical exclusions: driving under the influence, without a licence, or by an undeclared driver.",
+        },
+        datePublished: "2026-07-13",
+        dateModified: "2026-07-13",
+        readingMinutes: 6,
+        related: [
+            {
+                label: {
+                    el: "Πρόστιμο ανασφάλιστου οχήματος: ποσά και διαδικασία",
+                    en: "Uninsured vehicle fine: amounts and process",
+                },
+                href: "/guides/prostimo-anasfalistou-oximatos",
+            },
+            {
+                label: {
+                    el: "Τι ελέγχετε πριν από την ανανέωση ασφαλιστηρίου;",
+                    en: "What should you check before renewing a policy?",
+                },
+                href: "/guides/checklist-ananeosis-asfalistiriou",
+            },
+            {
+                label: {
+                    el: "Ασφάλεια αυτοκινήτου στο PolicyWallet",
+                    en: "Motor insurance in PolicyWallet",
+                },
+                href: "/product/motor",
+            },
+        ],
+        sections: [
+            {
+                heading: {
+                    el: "Τι καλύπτει υποχρεωτικά η αστική ευθύνη;",
+                    en: "What does mandatory third-party liability cover?",
+                },
+                paragraphs: [
+                    {
+                        el: "Κάθε όχημα που κυκλοφορεί στην Ελλάδα πρέπει να έχει ασφάλιση αστικής ευθύνης. Αυτή αποζημιώνει τους τρίτους για σωματικές βλάβες και υλικές ζημιές που προκαλεί το όχημά σας — δεν πληρώνει ποτέ για το δικό σας αυτοκίνητο ή τα δικά σας τραύματα ως υπαίτιου οδηγού.",
+                        en: "Every vehicle on Greek roads must carry third-party liability insurance. It compensates third parties for bodily injury and property damage your vehicle causes — it never pays for your own car or your own injuries as the at-fault driver.",
+                    },
+                    {
+                        el: "Τα ελάχιστα όρια κάλυψης ορίζονται από τη νομοθεσία και αναπροσαρμόζονται περιοδικά· είναι της τάξης εκατομμυρίων ευρώ ανά ατύχημα για σωματικές βλάβες και υλικές ζημιές. Τα ακριβή ισχύοντα ποσά δημοσιεύονται από την Ένωση Ασφαλιστικών Εταιριών Ελλάδος (ΕΑΕΕ).",
+                        en: "Minimum coverage limits are set by law and adjusted periodically; they are in the range of millions of euros per accident for bodily injury and property damage. The exact current amounts are published by the Hellenic Association of Insurance Companies (HAIC/EAEE).",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Τι προσθέτει η βασική και τι η μικτή ασφάλεια;",
+                    en: "What do basic and comprehensive packages add?",
+                },
+                paragraphs: [
+                    {
+                        el: "Τα περισσότερα «βασικά» πακέτα της αγοράς συνδυάζουν την αστική ευθύνη με καλύψεις όπως θραύση κρυστάλλων, οδική βοήθεια ή φροντίδα ατυχήματος και νομική προστασία. Ενδιάμεσα πακέτα προσθέτουν πυρκαγιά, ολική κλοπή και φυσικά φαινόμενα.",
+                        en: "Most \"basic\" packages on the market combine liability with covers such as glass breakage, roadside assistance or accident care, and legal protection. Mid-tier packages add fire, total theft, and natural phenomena.",
+                    },
+                    {
+                        el: "Η μικτή (πλήρης) ασφάλεια καλύπτει επιπλέον τις ίδιες ζημιές: επισκευή του δικού σας οχήματος ακόμη και αν ευθύνεστε εσείς. Σχεδόν πάντα προβλέπει απαλλαγή — ένα ποσό, συνήθως από 300 έως 1.000 ευρώ ανά ζημιά, που επιβαρύνει εσάς πριν πληρώσει η εταιρεία.",
+                        en: "Comprehensive (mikti) insurance additionally covers own damage: repairing your own vehicle even when you are at fault. It almost always carries a deductible — an amount, typically €300 to €1,000 per claim, that you bear before the insurer pays.",
+                    },
+                ],
+                bullets: [
+                    {
+                        el: "Αστική ευθύνη: υποχρεωτική — ζημιές τρίτων μόνο.",
+                        en: "Third-party liability: mandatory — third-party damage only.",
+                    },
+                    {
+                        el: "Βασικό πακέτο: + θραύση κρυστάλλων, οδική βοήθεια, νομική προστασία (διαφέρει ανά εταιρεία).",
+                        en: "Basic package: + glass breakage, roadside assistance, legal protection (varies by insurer).",
+                    },
+                    {
+                        el: "Πυρός/κλοπής: + πυρκαγιά, ολική/μερική κλοπή, συχνά φυσικά φαινόμενα και χαλάζι.",
+                        en: "Fire/theft: + fire, total/partial theft, often natural phenomena and hail.",
+                    },
+                    {
+                        el: "Μικτή: + ίδιες ζημιές με απαλλαγή — έχει νόημα κυρίως για νεότερα ή χρηματοδοτούμενα οχήματα.",
+                        en: "Comprehensive: + own damage with a deductible — mainly worthwhile for newer or financed vehicles.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Ποιες είναι οι συνηθέστερες εξαιρέσεις;",
+                    en: "What are the most common exclusions?",
+                },
+                paragraphs: [
+                    {
+                        el: "Οι εξαιρέσεις είναι το σημείο όπου οι περισσότεροι οδηγοί εκπλήσσονται τη στιγμή της ζημιάς. Οι πιο συνηθισμένες: οδήγηση υπό την επήρεια αλκοόλ ή ουσιών, οδηγός χωρίς ισχύουσα άδεια ή εκτός των δηλωμένων οδηγών, συμμετοχή σε αγώνες, χρήση του οχήματος για σκοπό διαφορετικό από τον δηλωμένο (π.χ. επαγγελματική διανομή με συμβόλαιο ιδιωτικής χρήσης) και φυσιολογική φθορά ή μηχανικές βλάβες.",
+                        en: "Exclusions are where most drivers get surprised at claim time. The most common: driving under the influence of alcohol or drugs, a driver without a valid licence or outside the declared drivers, participation in racing, using the vehicle for a purpose other than declared (e.g. commercial delivery on a private-use policy), and normal wear or mechanical failure.",
+                    },
+                    {
+                        el: "Στην αστική ευθύνη, η εταιρεία μπορεί να αποζημιώσει τον τρίτο και στη συνέχεια να στραφεί αναγωγικά εναντίον σας αν συνέτρεχε λόγος εξαίρεσης — π.χ. μέθη. Διαβάστε τους γενικούς και ειδικούς όρους: εκεί ορίζεται τι ακριβώς εξαιρείται στο δικό σας συμβόλαιο.",
+                        en: "Under liability cover, the insurer may compensate the third party and then seek recovery from you if an exclusion applied — e.g. drunk driving. Read the general and special terms: that is where your own policy's exact exclusions are defined.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Πώς επιλέγετε ανάμεσα σε βασική και μικτή;",
+                    en: "How do you choose between basic and comprehensive?",
+                },
+                paragraphs: [
+                    {
+                        el: "Ο πρακτικός κανόνας συγκρίνει την εμπορική αξία του οχήματος με τη διαφορά ασφαλίστρου. Για ένα όχημα αξίας 3.000 ευρώ, η μικτή σπάνια συμφέρει: με απαλλαγή 500 ευρώ, η πραγματική προστασία είναι μικρή σε σχέση με το επιπλέον κόστος. Για νεότερα οχήματα ή οχήματα με δάνειο/leasing, η μικτή είναι συχνά απαραίτητη — και μπορεί να απαιτείται από τον χρηματοδότη.",
+                        en: "The practical rule compares the vehicle's market value with the premium difference. For a €3,000 car, comprehensive rarely pays off: with a €500 deductible, the real protection is small relative to the extra cost. For newer or financed/leased vehicles, comprehensive is often essential — and may be required by the lender.",
+                    },
+                    {
+                        el: "Σε κάθε ανανέωση, επανεκτιμήστε: η εμπορική αξία πέφτει κάθε χρόνο, άρα η ίδια μικτή κάλυψη προστατεύει όλο και μικρότερο κεφάλαιο για παρόμοιο ασφάλιστρο.",
+                        en: "Reassess at every renewal: market value drops each year, so the same comprehensive cover protects an ever-smaller sum for a similar premium.",
+                    },
+                ],
+            },
+        ],
+        faq: [
+            {
+                question: {
+                    el: "Είναι υποχρεωτική η ασφάλεια αυτοκινήτου στην Ελλάδα;",
+                    en: "Is car insurance mandatory in Greece?",
+                },
+                answer: {
+                    el: "Ναι — κάθε όχημα με άδεια κυκλοφορίας πρέπει να είναι ασφαλισμένο για αστική ευθύνη, ακόμη και αν δεν κυκλοφορεί, εκτός αν έχει κατατεθεί η άδεια και οι πινακίδες (ακινησία).",
+                    en: "Yes — every registered vehicle must carry liability insurance, even if it is not being driven, unless its plates and registration have been deposited (declared immobility).",
+                },
+            },
+            {
+                question: {
+                    el: "Τι είναι η απαλλαγή στη μικτή ασφάλεια;",
+                    en: "What is the deductible in comprehensive insurance?",
+                },
+                answer: {
+                    el: "Το ποσό κάθε ζημιάς που επιβαρύνει εσάς. Αν η απαλλαγή είναι 500 ευρώ και η ζημιά 2.000, η εταιρεία πληρώνει 1.500. Μεγαλύτερη απαλλαγή σημαίνει χαμηλότερο ασφάλιστρο.",
+                    en: "The part of each claim you bear yourself. With a €500 deductible and €2,000 of damage, the insurer pays €1,500. A higher deductible means a lower premium.",
+                },
+            },
+            {
+                question: {
+                    el: "Καλύπτομαι αν οδηγήσει το αυτοκίνητό μου άλλος;",
+                    en: "Am I covered if someone else drives my car?",
+                },
+                answer: {
+                    el: "Εξαρτάται από τους όρους: κάποια συμβόλαια καλύπτουν οποιονδήποτε νόμιμο οδηγό, άλλα μόνο δηλωμένους. Οδηγοί κάτω των 23-25 ετών ή με νέο δίπλωμα συχνά απαιτούν επασφάλιστρο ή δήλωση.",
+                    en: "It depends on the terms: some policies cover any lawful driver, others only declared ones. Drivers under 23-25 or newly licensed often require an extra premium or explicit declaration.",
+                },
+            },
+            {
+                question: {
+                    el: "Ισχύει η ασφάλειά μου στο εξωτερικό;",
+                    en: "Does my insurance apply abroad?",
+                },
+                answer: {
+                    el: "Η αστική ευθύνη ισχύει σε όλο τον Ενιαίο Οικονομικό Χώρο. Για χώρες εκτός συστήματος χρειάζεστε Πράσινη Κάρτα από την εταιρεία σας — συνήθως εκδίδεται δωρεάν ή με μικρό κόστος.",
+                    en: "Liability cover applies across the European Economic Area. For countries outside the system you need a Green Card from your insurer — usually issued free or at small cost.",
+                },
+            },
+        ],
+        sources: [
+            {
+                label: {
+                    el: "ΕΑΕΕ — Ένωση Ασφαλιστικών Εταιριών Ελλάδος",
+                    en: "HAIC (EAEE) — Hellenic Association of Insurance Companies",
+                },
+                url: "https://www.eaee.gr",
+            },
+            {
+                label: {
+                    el: "gov.gr — Οχήματα και ασφάλιση",
+                    en: "gov.gr — Vehicles and insurance",
+                },
+                url: "https://www.gov.gr",
+            },
+            {
+                label: {
+                    el: "Τράπεζα της Ελλάδος — Εποπτεία ιδιωτικής ασφάλισης",
+                    en: "Bank of Greece — Private insurance supervision",
+                },
+                url: "https://www.bankofgreece.gr",
+            },
+        ],
+    },
+    {
+        slug: "apallagi-asfaleia-ygeias-pos-leitourgei",
+        title: {
+            el: "Απαλλαγή στην ασφάλεια υγείας: πώς λειτουργεί;",
+            en: "Health insurance deductibles: how do they work?",
+        },
+        metaTitle: "Απαλλαγή στην ασφάλεια υγείας: πώς λειτουργεί",
+        metaDescription:
+            "Πώς λειτουργεί η απαλλαγή στην ασφάλεια υγείας: ετήσια ή ανά περιστατικό, πώς συνδυάζεται με ΕΟΠΥΥ και ομαδικό συμβόλαιο και πόσο μειώνει το ασφάλιστρο.",
+        summary: {
+            el: "Η απαλλαγή είναι το ποσό των εξόδων νοσηλείας που πληρώνετε εσείς πριν ενεργοποιηθεί το συμβόλαιο υγείας. Ορίζεται ετησίως ή ανά περιστατικό — συνήθως από 300 έως 5.000 ευρώ — και όσο υψηλότερη είναι, τόσο χαμηλότερο το ασφάλιστρο. Συχνά μπορεί να καλυφθεί από τον ΕΟΠΥΥ ή από ομαδικό συμβόλαιο εργασίας, ώστε να μην πληρώσετε τίποτα.",
+            en: "A deductible is the portion of hospital costs you pay before your health policy kicks in. It is defined annually or per incident — typically €300 to €5,000 — and the higher it is, the lower your premium. It can often be absorbed by the public fund (EOPYY) or an employer group policy, so you may end up paying nothing.",
+        },
+        datePublished: "2026-07-13",
+        dateModified: "2026-07-13",
+        readingMinutes: 6,
+        related: [
+            {
+                label: {
+                    el: "Ομαδικό συμβόλαιο εργασίας: τι παρέχει και τι συμπληρώνετε ατομικά",
+                    en: "Employer group policies: what they provide and what to add",
+                },
+                href: "/guides/omadiko-symvolaio-ergasias",
+            },
+            {
+                label: {
+                    el: "Ασφάλεια υγείας στο PolicyWallet",
+                    en: "Health insurance in PolicyWallet",
+                },
+                href: "/product/health",
+            },
+        ],
+        sections: [
+            {
+                heading: {
+                    el: "Τι ακριβώς είναι η απαλλαγή;",
+                    en: "What exactly is a deductible?",
+                },
+                paragraphs: [
+                    {
+                        el: "Στην ασφάλεια υγείας, απαλλαγή (ή «εκπιπτόμενο ποσό») είναι το τμήμα των αναγνωρισμένων εξόδων που αναλαμβάνετε εσείς. Αν το συμβόλαιό σας έχει απαλλαγή 1.500 ευρώ και η νοσηλεία κοστίσει 6.000, η εταιρεία καλύπτει τα 4.500 — εφόσον τα έξοδα είναι εντός των όρων και των ανώτατων ορίων.",
+                        en: "In health insurance, the deductible is the portion of recognized expenses you bear yourself. If your policy has a €1,500 deductible and a hospitalization costs €6,000, the insurer covers €4,500 — provided the expenses fall within the terms and the policy limits.",
+                    },
+                    {
+                        el: "Η απαλλαγή δεν είναι «κρυφή χρέωση» — είναι εργαλείο τιμολόγησης. Προγράμματα με μηδενική απαλλαγή υπάρχουν, αλλά κοστίζουν αισθητά περισσότερο, ιδίως μετά τα 40-45 έτη.",
+                        en: "A deductible is not a \"hidden fee\" — it is a pricing tool. Zero-deductible plans exist, but cost noticeably more, especially past age 40-45.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Ετήσια ή ανά περιστατικό — ποια η διαφορά;",
+                    en: "Annual or per incident — what is the difference?",
+                },
+                paragraphs: [
+                    {
+                        el: "Η ετήσια απαλλαγή εφαρμόζεται μία φορά ανά ασφαλιστικό έτος: αν την «εξαντλήσετε» σε μία νοσηλεία, οι επόμενες μέσα στο ίδιο έτος καλύπτονται χωρίς νέα επιβάρυνση. Η απαλλαγή ανά περιστατικό εφαρμόζεται σε κάθε νοσηλεία ξεχωριστά — δύο νοσηλείες σημαίνουν δύο φορές το ποσό.",
+                        en: "An annual deductible applies once per policy year: exhaust it on one hospitalization and subsequent ones within the same year are covered with no further charge. A per-incident deductible applies to each hospitalization separately — two stays mean paying it twice.",
+                    },
+                    {
+                        el: "Στους όρους θα δείτε επίσης «κλιμακωτές» εκδοχές: π.χ. η απαλλαγή μειώνεται ή μηδενίζεται όταν χρησιμοποιηθεί δημόσιος φορέας ή άλλο συμβόλαιο. Αυτή η λεπτομέρεια αλλάζει δραστικά το πραγματικό κόστος.",
+                        en: "The terms may also include tiered versions: e.g. the deductible shrinks or drops to zero when a public fund or another policy is used. This detail dramatically changes the real cost.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Πώς συνδυάζεται με ΕΟΠΥΥ ή ομαδικό συμβόλαιο;",
+                    en: "How does it combine with EOPYY or a group policy?",
+                },
+                paragraphs: [
+                    {
+                        el: "Τα περισσότερα σύγχρονα προγράμματα προβλέπουν ότι, αν μέρος των εξόδων καλυφθεί από τον ΕΟΠΥΥ ή από ομαδικό συμβόλαιο εργοδότη, το ποσό αυτό «μετρά» έναντι της απαλλαγής. Έτσι, ένα ομαδικό που καλύπτει π.χ. 1.500 ευρώ μπορεί να μηδενίσει πλήρως τη δική σας επιβάρυνση σε ατομικό πρόγραμμα με ίση απαλλαγή.",
+                        en: "Most modern plans provide that when part of the costs is covered by EOPYY or an employer group policy, that amount counts toward the deductible. A group policy covering, say, €1,500 can fully offset your out-of-pocket share on an individual plan with an equal deductible.",
+                    },
+                    {
+                        el: "Αυτός ο συνδυασμός — ομαδικό ως πρώτο επίπεδο, ατομικό με απαλλαγή ως δεύτερο — είναι συχνά η πιο οικονομική στρατηγική για εργαζομένους. Προσοχή όμως: το ομαδικό λήγει με την αποχώρηση από την εταιρεία.",
+                        en: "This combination — group policy as the first layer, an individual deductible plan as the second — is often the most economical strategy for employees. Beware though: group cover ends when you leave the company.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Πόσο μειώνει το ασφάλιστρο μια υψηλότερη απαλλαγή;",
+                    en: "How much does a higher deductible cut the premium?",
+                },
+                paragraphs: [
+                    {
+                        el: "Η ακριβής σχέση διαφέρει ανά εταιρεία και ηλικία, αλλά η τάξη μεγέθους είναι σημαντική: η μετάβαση από μηδενική απαλλαγή σε 1.500 ευρώ συχνά μειώνει το ασφάλιστρο κατά 30-50%. Ζητήστε από τον ασφαλιστή σας προσφορές για 2-3 επίπεδα απαλλαγής πριν αποφασίσετε — η σύγκριση αποκαλύπτει πού βρίσκεται το δικό σας σημείο ισορροπίας.",
+                        en: "The exact relationship varies by insurer and age, but the magnitude matters: moving from zero deductible to €1,500 often cuts the premium by 30-50%. Ask your agent to quote 2-3 deductible levels before deciding — the comparison reveals where your own balance point lies.",
+                    },
+                    {
+                        el: "Κανόνας ασφαλείας: η απαλλαγή που επιλέγετε πρέπει να είναι ποσό που μπορείτε να διαθέσετε άμεσα σε μια έκτακτη νοσηλεία χωρίς δανεισμό.",
+                        en: "Safety rule: the deductible you choose should be an amount you could pay immediately in an emergency hospitalization without borrowing.",
+                    },
+                ],
+            },
+        ],
+        faq: [
+            {
+                question: {
+                    el: "Ισχύει η απαλλαγή και στα εξωνοσοκομειακά;",
+                    en: "Does the deductible apply to outpatient care too?",
+                },
+                answer: {
+                    el: "Συνήθως όχι — η απαλλαγή αφορά κατά κανόνα τη νοσοκομειακή περίθαλψη. Τα εξωνοσοκομειακά (ιατροί, διαγνωστικές) έχουν δικούς τους όρους, συμμετοχές ή πλαφόν ανά έτος.",
+                    en: "Usually not — deductibles typically apply to in-hospital care. Outpatient benefits (doctors, diagnostics) carry their own terms, co-pays, or annual caps.",
+                },
+            },
+            {
+                question: {
+                    el: "Μπορώ να αλλάξω το ύψος της απαλλαγής αργότερα;",
+                    en: "Can I change the deductible level later?",
+                },
+                answer: {
+                    el: "Η μείωση απαλλαγής αντιμετωπίζεται συχνά ως αναβάθμιση και μπορεί να απαιτεί νέο έλεγχο ασφαλισιμότητας. Η αύξηση είναι ευκολότερη. Ρωτήστε πριν υπογράψετε — οι κανόνες διαφέρουν ανά εταιρεία.",
+                    en: "Lowering a deductible is often treated as an upgrade and may require new underwriting. Raising it is easier. Ask before you sign — rules differ by insurer.",
+                },
+            },
+            {
+                question: {
+                    el: "Τι σημαίνει «κάλυψη απαλλαγής» από ομαδικό;",
+                    en: "What does \"deductible coverage\" via a group policy mean?",
+                },
+                answer: {
+                    el: "Ότι το ποσό που πλήρωσε το ομαδικό σας συμβόλαιο συνυπολογίζεται στην απαλλαγή του ατομικού. Ελέγξτε ότι το ατομικό σας το προβλέπει ρητά στους όρους — δεν το κάνουν όλα τα προγράμματα.",
+                    en: "That whatever your group policy paid counts toward your individual policy's deductible. Check that your individual terms say so explicitly — not all plans do.",
+                },
+            },
+        ],
+        sources: [
+            {
+                label: {
+                    el: "Τράπεζα της Ελλάδος — Εποπτεία ιδιωτικής ασφάλισης",
+                    en: "Bank of Greece — Private insurance supervision",
+                },
+                url: "https://www.bankofgreece.gr",
+            },
+            {
+                label: {
+                    el: "ΕΑΕΕ — Κλάδος ασφαλίσεων υγείας",
+                    en: "HAIC (EAEE) — Health insurance sector",
+                },
+                url: "https://www.eaee.gr",
+            },
+            {
+                label: {
+                    el: "gov.gr — Υγεία και πρόνοια",
+                    en: "gov.gr — Health and welfare",
+                },
+                url: "https://www.gov.gr",
+            },
+        ],
+    },
+    {
+        slug: "poso-kostizei-i-asfalisi-seismou",
+        title: {
+            el: "Πόσο κοστίζει η ασφάλιση σεισμού;",
+            en: "How much does earthquake insurance cost?",
+        },
+        metaTitle: "Πόσο κοστίζει η ασφάλιση σεισμού;",
+        metaDescription:
+            "Από τι εξαρτάται το κόστος της ασφάλισης σεισμού: κεφάλαιο, έτος κατασκευής, απαλλαγή. Ενδεικτικά κόστη και η σχέση με την έκπτωση ΕΝΦΙΑ για την κατοικία σας.",
+        summary: {
+            el: "Η κάλυψη σεισμού τιμολογείται ως ποσοστό επί του ασφαλιζόμενου κεφαλαίου — ενδεικτικά λίγα ευρώ ανά 1.000 ευρώ κεφαλαίου ετησίως, ανάλογα με το έτος κατασκευής και την περιοχή. Για κατοικία με κεφάλαιο 150.000 ευρώ, το επιπλέον κόστος κινείται συνήθως σε μερικές δεκάδες έως λίγες εκατοντάδες ευρώ τον χρόνο, με απαλλαγή περίπου 2% του κεφαλαίου. Η τριπλή κάλυψη σεισμού-πυρκαγιάς-πλημμύρας ξεκλειδώνει και την έκπτωση ΕΝΦΙΑ.",
+            en: "Earthquake cover is priced as a rate on the insured sum — indicatively a few euros per €1,000 of capital per year, depending on construction year and location. For a home insured for €150,000, the extra cost typically runs from tens to a few hundred euros annually, with a deductible around 2% of the sum insured. Combined earthquake-fire-flood cover also unlocks the ENFIA tax discount.",
+        },
+        datePublished: "2026-07-13",
+        dateModified: "2026-07-13",
+        readingMinutes: 5,
+        related: [
+            {
+                label: {
+                    el: "Πώς παίρνετε έκπτωση ΕΝΦΙΑ με ασφάλιση κατοικίας;",
+                    en: "How do you get the ENFIA discount with home insurance?",
+                },
+                href: "/guides/ekptosi-enfia-asfalisi-katoikias",
+            },
+            {
+                label: {
+                    el: "Ασφάλεια κατοικίας στο PolicyWallet",
+                    en: "Home insurance in PolicyWallet",
+                },
+                href: "/product/property",
+            },
+        ],
+        sections: [
+            {
+                heading: {
+                    el: "Από τι εξαρτάται το κόστος της κάλυψης σεισμού;",
+                    en: "What drives the cost of earthquake cover?",
+                },
+                paragraphs: [
+                    {
+                        el: "Τρεις παράγοντες καθορίζουν το ασφάλιστρο: το ασφαλιζόμενο κεφάλαιο (κόστος ανακατασκευής, όχι εμπορική αξία), το έτος κατασκευής σε σχέση με τους αντισεισμικούς κανονισμούς και η σεισμικότητα της περιοχής. Κτίρια χτισμένα μετά τον κανονισμό του 1985 — και ακόμη περισσότερο μετά τον ΕΑΚ 2000 — τιμολογούνται ευνοϊκότερα.",
+                        en: "Three factors set the premium: the insured sum (reconstruction cost, not market value), the construction year relative to Greek seismic codes, and the seismicity of the area. Buildings erected after the 1985 code — and even more so after the 2000 EAK code — are priced more favorably.",
+                    },
+                    {
+                        el: "Η τιμολόγηση εκφράζεται συνήθως σε τοις χιλίοις (‰) επί του κεφαλαίου. Οι δείκτες της αγοράς κινούνται ενδεικτικά κάτω από το ένα έως λίγα τοις χιλίοις ετησίως — για ακριβή εικόνα ζητήστε προσφορές, καθώς οι συντελεστές αναθεωρούνται.",
+                        en: "Pricing is usually expressed per mille (‰) of the insured sum. Market rates run indicatively from below one to a few per mille annually — get quotes for an exact picture, as coefficients are revised over time.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Τι σημαίνει η απαλλαγή 2% στον σεισμό;",
+                    en: "What does the 2% earthquake deductible mean?",
+                },
+                paragraphs: [
+                    {
+                        el: "Στην κάλυψη σεισμού η απαλλαγή ορίζεται σχεδόν πάντα ως ποσοστό του ασφαλιζόμενου κεφαλαίου — τυπικά 2% — και όχι ως σταθερό ποσό. Σε κατοικία ασφαλισμένη για 150.000 ευρώ, αυτό σημαίνει ότι τα πρώτα 3.000 ευρώ κάθε σεισμικής ζημιάς σας επιβαρύνουν. Ορισμένα προγράμματα προσφέρουν χαμηλότερη απαλλαγή με αντίστοιχα υψηλότερο ασφάλιστρο.",
+                        en: "In earthquake cover the deductible is almost always defined as a percentage of the insured sum — typically 2% — rather than a fixed amount. On a home insured for €150,000, the first €3,000 of any earthquake damage is yours. Some plans offer a lower deductible for a correspondingly higher premium.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Πώς συνδέεται με την έκπτωση ΕΝΦΙΑ;",
+                    en: "How does it connect to the ENFIA discount?",
+                },
+                paragraphs: [
+                    {
+                        el: "Η κάλυψη σεισμού είναι ο ένας από τους τρεις κινδύνους — μαζί με πυρκαγιά και πλημμύρα — που απαιτούνται για την έκπτωση στον ΕΝΦΙΑ. Για πολλές κατοικίες, το φορολογικό όφελος καλύπτει σημαντικό μέρος του κόστους της κάλυψης, αλλάζοντας ουσιαστικά τη σχέση κόστους-οφέλους. Δείτε τον αναλυτικό οδηγό μας για τις προϋποθέσεις και τη διαδικασία δήλωσης.",
+                        en: "Earthquake is one of the three risks — together with fire and flood — required for the ENFIA property-tax discount. For many homes the tax benefit offsets a meaningful share of the cover's cost, materially changing the cost-benefit math. See our detailed guide for the conditions and the declaration process.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Το λάθος που ακυρώνει την προστασία: υπασφάλιση",
+                    en: "The mistake that voids protection: underinsurance",
+                },
+                paragraphs: [
+                    {
+                        el: "Αν δηλώσετε κεφάλαιο χαμηλότερο από το πραγματικό κόστος ανακατασκευής για να μειώσετε το ασφάλιστρο, σε ζημιά θα αποζημιωθείτε αναλογικά (όρος «pro-rata»): κατοικία που κοστίζει 200.000 να ξαναχτιστεί, ασφαλισμένη για 100.000, εισπράττει το 50% κάθε ζημιάς — και μετά την απαλλαγή. Ενημερώνετε το κεφάλαιο σε κάθε ανανέωση, ειδικά όταν το κατασκευαστικό κόστος αυξάνεται.",
+                        en: "If you declare a sum lower than the true reconstruction cost to cut the premium, claims are paid proportionally (the pro-rata rule): a home costing €200,000 to rebuild but insured for €100,000 collects 50% of any damage — after the deductible. Update the sum at every renewal, especially when construction costs rise.",
+                    },
+                ],
+            },
+        ],
+        faq: [
+            {
+                question: {
+                    el: "Αξίζει η ασφάλιση σεισμού σε νεόδμητο κτίριο;",
+                    en: "Is earthquake insurance worth it in a new building?",
+                },
+                answer: {
+                    el: "Τα σύγχρονα κτίρια αντέχουν καλύτερα, αλλά «αντισεισμικό» δεν σημαίνει άτρωτο — σημαίνει σχεδιασμένο να μην καταρρεύσει. Ζημιές επισκευάσιμες αλλά δαπανηρές παραμένουν πιθανές, και το ασφάλιστρο για νέα κτίρια είναι αντίστοιχα χαμηλότερο.",
+                    en: "Modern buildings fare better, but \"seismic-code\" does not mean invulnerable — it means designed not to collapse. Repairable yet costly damage remains possible, and premiums for new buildings are correspondingly lower.",
+                },
+            },
+            {
+                question: {
+                    el: "Καλύπτεται το περιεχόμενο από τον σεισμό;",
+                    en: "Are contents covered against earthquake?",
+                },
+                answer: {
+                    el: "Μόνο αν έχει ασφαλιστεί ρητά και το περιεχόμενο με κάλυψη σεισμού — η κάλυψη κτιρίου δεν το περιλαμβάνει αυτόματα. Ελέγξτε τον πίνακα καλύψεων του συμβολαίου σας.",
+                    en: "Only if contents are explicitly insured with earthquake cover — building cover does not include them automatically. Check your policy's coverage schedule.",
+                },
+            },
+            {
+                question: {
+                    el: "Ισχύει η κάλυψη αμέσως μετά την αγορά;",
+                    en: "Does the cover apply immediately after purchase?",
+                },
+                answer: {
+                    el: "Κατά κανόνα ναι, από την έναρξη του συμβολαίου — αλλά ορισμένα προγράμματα προβλέπουν σύντομη περίοδο αναμονής για τον κίνδυνο σεισμού. Επιβεβαιώστε το στους όρους πριν βασιστείτε στην κάλυψη.",
+                    en: "Generally yes, from the policy start date — but some plans apply a short waiting period to the earthquake peril. Confirm it in the terms before relying on the cover.",
+                },
+            },
+        ],
+        sources: [
+            {
+                label: {
+                    el: "ΕΑΕΕ — Ασφάλιση καταστροφικών κινδύνων",
+                    en: "HAIC (EAEE) — Catastrophic risk insurance",
+                },
+                url: "https://www.eaee.gr",
+            },
+            {
+                label: {
+                    el: "ΑΑΔΕ — ΕΝΦΙΑ και ασφαλισμένες κατοικίες",
+                    en: "AADE — ENFIA and insured homes",
+                },
+                url: "https://www.aade.gr",
+            },
+            {
+                label: {
+                    el: "Τράπεζα της Ελλάδος — Εποπτεία ιδιωτικής ασφάλισης",
+                    en: "Bank of Greece — Private insurance supervision",
+                },
+                url: "https://www.bankofgreece.gr",
+            },
+        ],
+    },
+    {
+        slug: "asfaleia-katoikidiou-ti-exaireitai",
+        title: {
+            el: "Ασφάλεια κατοικιδίου: τι εξαιρείται;",
+            en: "Pet insurance: what is excluded?",
+        },
+        metaTitle: "Ασφάλεια κατοικιδίου: τι εξαιρείται",
+        metaDescription:
+            "Προϋπάρχουσες παθήσεις, περίοδοι αναμονής, όρια ηλικίας και εξαιρέσεις φυλών: τι δεν καλύπτει συνήθως η ασφάλεια κατοικιδίου και τι να προσέξετε στους όρους.",
+        summary: {
+            el: "Η ασφάλεια κατοικιδίου δεν καλύπτει σχεδόν ποτέ προϋπάρχουσες παθήσεις, ενώ οι περισσότερες καλύψεις ενεργοποιούνται μετά από περίοδο αναμονής ημερών έως μηνών. Συχνές είναι επίσης οι εξαιρέσεις ή επιβαρύνσεις για συγκεκριμένες φυλές, τα όρια ηλικίας εισόδου και η μη κάλυψη πρόληψης — εμβόλια και αποπαρασίτωση μένουν συνήθως εκτός βασικού προγράμματος.",
+            en: "Pet insurance almost never covers pre-existing conditions, and most benefits activate only after waiting periods of days to months. Breed-specific exclusions or surcharges, entry age limits, and no preventive care are also common — vaccinations and antiparasitics usually sit outside the basic plan.",
+        },
+        datePublished: "2026-07-13",
+        dateModified: "2026-07-13",
+        readingMinutes: 5,
+        related: [
+            {
+                label: {
+                    el: "Τι ελέγχετε πριν από την ανανέωση ασφαλιστηρίου;",
+                    en: "What should you check before renewing a policy?",
+                },
+                href: "/guides/checklist-ananeosis-asfalistiriou",
+            },
+            {
+                label: {
+                    el: "Ασφάλεια κατοικιδίων στο PolicyWallet",
+                    en: "Pet insurance in PolicyWallet",
+                },
+                href: "/product/pet",
+            },
+        ],
+        sections: [
+            {
+                heading: {
+                    el: "Γιατί δεν καλύπτονται οι προϋπάρχουσες παθήσεις;",
+                    en: "Why are pre-existing conditions not covered?",
+                },
+                paragraphs: [
+                    {
+                        el: "Προϋπάρχουσα θεωρείται κάθε πάθηση που εκδηλώθηκε — ή έδωσε συμπτώματα — πριν από την έναρξη του συμβολαίου ή μέσα στην περίοδο αναμονής. Οι εταιρείες την εξαιρούν για να μην ασφαλίζεται ζημιά που έχει ήδη συμβεί. Στην πράξη αυτό σημαίνει ότι όσο νωρίτερα ασφαλίσετε το ζώο, τόσο περισσότερα καλύπτονται στη διάρκεια της ζωής του.",
+                        en: "Pre-existing means any condition that appeared — or showed symptoms — before the policy started or within the waiting period. Insurers exclude it so that already-occurred loss cannot be insured. In practice this means the earlier you insure the animal, the more of its lifetime is coverable.",
+                    },
+                    {
+                        el: "Ορισμένα προγράμματα διαχωρίζουν τις «ιάσιμες» προϋπάρχουσες (π.χ. μια ωτίτιδα που θεραπεύτηκε πλήρως) από τις χρόνιες· οι πρώτες μπορεί να επανακαλυφθούν μετά από διάστημα χωρίς συμπτώματα. Ρωτήστε ρητά — η διαφορά είναι σημαντική.",
+                        en: "Some plans distinguish \"curable\" pre-existing conditions (e.g. a fully healed ear infection) from chronic ones; the former may become coverable again after a symptom-free interval. Ask explicitly — the difference matters.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Πώς λειτουργούν οι περίοδοι αναμονής;",
+                    en: "How do waiting periods work?",
+                },
+                paragraphs: [
+                    {
+                        el: "Μετά την έναρξη του συμβολαίου, κάθε ομάδα καλύψεων ενεργοποιείται με διαφορετική καθυστέρηση: τα ατυχήματα συνήθως άμεσα ή μέσα σε λίγες ημέρες, οι ασθένειες σε 14-30 ημέρες, ενώ χειρουργεία συγκεκριμένων κατηγοριών (π.χ. ορθοπεδικά) μπορεί να απαιτούν αρκετούς μήνες. Ό,τι εκδηλωθεί μέσα στην αναμονή αντιμετωπίζεται ως προϋπάρχον.",
+                        en: "After the policy starts, each benefit group activates with a different delay: accidents usually immediately or within days, illnesses in 14-30 days, while certain surgery categories (e.g. orthopedic) may require several months. Anything arising during the wait is treated as pre-existing.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Τι ισχύει με φυλές και όρια ηλικίας;",
+                    en: "What about breeds and age limits?",
+                },
+                paragraphs: [
+                    {
+                        el: "Οι όροι πολλών προγραμμάτων εξαιρούν ή επιβαρύνουν φυλές με αυξημένο στατιστικό κίνδυνο — συχνά βραχυκέφαλες φυλές (μπουλντόγκ, παγκ) λόγω αναπνευστικών προβλημάτων, ή φυλές που κατατάσσονται ως «υψηλού κινδύνου» για αστική ευθύνη. Υπάρχουν επίσης όρια ηλικίας εισόδου (συνήθως έως 6-8 ετών) και, σε ορισμένα προγράμματα, μειούμενες παροχές σε μεγάλες ηλικίες.",
+                        en: "Many plans' terms exclude or surcharge breeds with elevated statistical risk — often brachycephalic breeds (bulldogs, pugs) due to respiratory issues, or breeds classified as high-risk for liability. Entry age limits also apply (typically up to 6-8 years), and some plans reduce benefits at older ages.",
+                    },
+                    {
+                        el: "Η λεϊσμανίαση (καλαζάρ), ενδημική στην Ελλάδα, αντιμετωπίζεται διαφορετικά ανά πρόγραμμα: άλλα την καλύπτουν με προϋποθέσεις προληπτικών μέτρων, άλλα την εξαιρούν ρητά. Για σκύλο στην Ελλάδα, αυτός ο όρος αξίζει ειδικό έλεγχο πριν από την υπογραφή.",
+                        en: "Leishmaniasis (kala-azar), endemic in Greece, is treated differently across plans: some cover it conditional on preventive measures, others exclude it outright. For a dog in Greece, this clause deserves specific scrutiny before signing.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Τι άλλο μένει συνήθως εκτός κάλυψης;",
+                    en: "What else usually stays outside cover?",
+                },
+                paragraphs: [
+                    {
+                        el: "Η πρόληψη — εμβολιασμοί, αποπαρασίτωση, ετήσιος έλεγχος — καλύπτεται μόνο από προγράμματα με πρόσθετο «πακέτο ευεξίας». Εκτός μένουν επίσης συνήθως η κύηση και ο τοκετός, οι αισθητικές επεμβάσεις, οι ειδικές δίαιτες και η εκπαίδευση συμπεριφοράς.",
+                        en: "Prevention — vaccinations, antiparasitics, the annual check-up — is covered only by plans with an add-on wellness package. Also typically outside: pregnancy and birth, cosmetic procedures, special diets, and behavioral training.",
+                    },
+                ],
+                bullets: [
+                    {
+                        el: "Ελέγξτε: κάλυψη λεϊσμανίασης και προϋποθέσεις πρόληψης.",
+                        en: "Check: leishmaniasis cover and its prevention conditions.",
+                    },
+                    {
+                        el: "Ελέγξτε: όρια ανά περιστατικό και ετήσιο ανώτατο όριο.",
+                        en: "Check: per-incident limits and the annual cap.",
+                    },
+                    {
+                        el: "Ελέγξτε: αν το συμβόλαιο απαιτεί ηλεκτρονική σήμανση (τσιπ) — που είναι ούτως ή άλλως υποχρεωτική από τον νόμο.",
+                        en: "Check: whether the policy requires microchipping — which Greek law mandates anyway.",
+                    },
+                ],
+            },
+        ],
+        faq: [
+            {
+                question: {
+                    el: "Καλύπτεται η αστική ευθύνη αν ο σκύλος μου προκαλέσει ζημιά;",
+                    en: "Is liability covered if my dog causes damage?",
+                },
+                answer: {
+                    el: "Πολλά προγράμματα κατοικιδίων περιλαμβάνουν ή προσφέρουν προαιρετικά αστική ευθύνη για ζημιές σε τρίτους. Αν έχετε ασφάλεια κατοικίας, ελέγξτε πρώτα μήπως ήδη σας καλύπτει — οι επικαλύψεις κοστίζουν.",
+                    en: "Many pet plans include or optionally offer third-party liability. If you have home insurance, first check whether it already covers this — overlaps cost money.",
+                },
+            },
+            {
+                question: {
+                    el: "Αξίζει η ασφάλεια για γάτα εσωτερικού χώρου;",
+                    en: "Is insurance worth it for an indoor cat?",
+                },
+                answer: {
+                    el: "Ο κίνδυνος ατυχήματος είναι μικρότερος, αλλά οι σοβαρές ασθένειες — νεφρική ανεπάρκεια, διαβήτης, καρκίνος — δεν εξαρτώνται από τον τρόπο ζωής. Συγκρίνετε το ετήσιο ασφάλιστρο με το κόστος μιας μεγάλης κτηνιατρικής θεραπείας.",
+                    en: "Accident risk is lower, but serious illnesses — kidney failure, diabetes, cancer — do not depend on lifestyle. Compare the annual premium against the cost of one major veterinary treatment.",
+                },
+            },
+            {
+                question: {
+                    el: "Τι γίνεται αν η φυλή μου εξαιρείται;",
+                    en: "What if my breed is excluded?",
+                },
+                answer: {
+                    el: "Οι λίστες φυλών διαφέρουν σημαντικά ανά εταιρεία — μια φυλή που εξαιρείται σε ένα πρόγραμμα μπορεί να γίνεται δεκτή αλλού με επασφάλιστρο. Ζητήστε προσφορές από περισσότερες εταιρείες πριν συμπεράνετε ότι δεν ασφαλίζεται.",
+                    en: "Breed lists differ significantly by insurer — a breed excluded in one plan may be accepted elsewhere with a surcharge. Get quotes from multiple insurers before concluding it cannot be insured.",
+                },
+            },
+        ],
+        sources: [
+            {
+                label: {
+                    el: "gov.gr — Δήλωση και σήμανση ζώων συντροφιάς",
+                    en: "gov.gr — Companion animal registration and microchipping",
+                },
+                url: "https://www.gov.gr",
+            },
+            {
+                label: {
+                    el: "ΕΑΕΕ — Ένωση Ασφαλιστικών Εταιριών Ελλάδος",
+                    en: "HAIC (EAEE) — Hellenic Association of Insurance Companies",
+                },
+                url: "https://www.eaee.gr",
+            },
+        ],
+    },
+    {
+        slug: "omadiko-symvolaio-ergasias",
+        title: {
+            el: "Ομαδικό συμβόλαιο εργασίας: τι παρέχει και τι να συμπληρώσετε ατομικά;",
+            en: "Employer group policies: what they provide and what to add individually",
+        },
+        metaTitle: "Ομαδικό συμβόλαιο: τι καλύπτει, τι λείπει",
+        metaDescription:
+            "Τι καλύπτει συνήθως το ομαδικό συμβόλαιο εργασίας, πού σταματά — λήξη με την αποχώρηση, χαμηλά όρια — και ποιες καλύψεις αξίζει να συμπληρώσετε ατομικά.",
+        summary: {
+            el: "Το ομαδικό συμβόλαιο εργασίας προσφέρει συνήθως νοσοκομειακή και εξωνοσοκομειακή κάλυψη, ασφάλεια ζωής και μόνιμης ανικανότητας — χωρίς έλεγχο ασφαλισιμότητας και με κόστος που επιβαρύνει κυρίως τον εργοδότη. Τα όριά του: παύει με την αποχώρηση, τα κεφάλαια είναι συχνά χαμηλά και δεν το προσαρμόζετε εσείς. Γι' αυτό λειτουργεί καλύτερα ως βάση που συμπληρώνεται ατομικά.",
+            en: "An employer group policy typically provides in-hospital and outpatient cover, life insurance, and permanent disability benefits — with no medical underwriting and costs borne mostly by the employer. Its limits: it ends when you leave, sums are often low, and you cannot customize it. That is why it works best as a base layer topped up individually.",
+        },
+        datePublished: "2026-07-13",
+        dateModified: "2026-07-13",
+        readingMinutes: 6,
+        related: [
+            {
+                label: {
+                    el: "Απαλλαγή στην ασφάλεια υγείας: πώς λειτουργεί;",
+                    en: "Health insurance deductibles: how they work",
+                },
+                href: "/guides/apallagi-asfaleia-ygeias-pos-leitourgei",
+            },
+            {
+                label: {
+                    el: "Ομαδική ασφάλιση υγείας στο PolicyWallet",
+                    en: "Group health insurance in PolicyWallet",
+                },
+                href: "/product/group-health",
+            },
+        ],
+        sections: [
+            {
+                heading: {
+                    el: "Τι καλύπτει συνήθως ένα ομαδικό συμβόλαιο;",
+                    en: "What does a group policy usually cover?",
+                },
+                paragraphs: [
+                    {
+                        el: "Το τυπικό ομαδικό πρόγραμμα ελληνικής επιχείρησης περιλαμβάνει: νοσοκομειακή περίθαλψη (με όριο ανά έτος ή περιστατικό), εξωνοσοκομειακές παροχές με πλαφόν, ασφάλεια ζωής ως πολλαπλάσιο του μισθού και κάλυψη μόνιμης ολικής ή μερικής ανικανότητας. Μεγαλύτερα προγράμματα προσθέτουν επίδομα μητρότητας, οδοντιατρικά ή check-up.",
+                        en: "A typical Greek company plan includes: hospital care (with an annual or per-incident limit), capped outpatient benefits, life insurance as a salary multiple, and permanent total or partial disability cover. Larger schemes add maternity allowances, dental, or check-ups.",
+                    },
+                    {
+                        el: "Το μεγάλο πλεονέκτημα: εντάσσεστε χωρίς ερωτηματολόγιο υγείας. Παθήσεις που θα εξαιρούνταν σε ατομικό συμβόλαιο καλύπτονται στο ομαδικό — όσο παραμένετε στην εταιρεία.",
+                        en: "The big advantage: you join without medical underwriting. Conditions that an individual policy would exclude are covered under the group scheme — for as long as you stay with the company.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Πού σταματά η προστασία του ομαδικού;",
+                    en: "Where does group protection stop?",
+                },
+                paragraphs: [
+                    {
+                        el: "Τρία δομικά όρια: πρώτον, η κάλυψη λήγει όταν αποχωρήσετε — παραίτηση, απόλυση ή συνταξιοδότηση σημαίνει απώλεια της προστασίας τη στιγμή ίσως που τη χρειάζεστε περισσότερο, και σε ηλικία που το ατομικό συμβόλαιο κοστίζει ακριβότερα ή απαιτεί νέο έλεγχο υγείας. Δεύτερον, τα κεφάλαια είναι συχνά χαμηλά σε σχέση με το πραγματικό κόστος μιας σοβαρής νοσηλείας σε ιδιωτικό θεραπευτήριο. Τρίτον, τους όρους τους διαπραγματεύεται ο εργοδότης — δεν προσαρμόζονται στις δικές σας ανάγκες.",
+                        en: "Three structural limits: first, cover ends when you leave — resignation, dismissal, or retirement means losing protection possibly when you need it most, at an age when an individual policy costs more or requires fresh underwriting. Second, sums are often low relative to the real cost of a serious private-hospital stay. Third, the employer negotiates the terms — they are not tailored to your needs.",
+                    },
+                    {
+                        el: "Ορισμένα ομαδικά προβλέπουν δικαίωμα μετατροπής σε ατομικό κατά την αποχώρηση, χωρίς νέο έλεγχο ασφαλισιμότητας και μέσα σε συγκεκριμένη προθεσμία. Αν υπάρχει, είναι πολύτιμο — μάθετε αν το δικό σας το προσφέρει πριν το χρειαστείτε.",
+                        en: "Some group schemes include a conversion right to an individual policy upon leaving, without new underwriting and within a set deadline. Where it exists it is valuable — find out whether yours offers it before you need it.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Ποιες καλύψεις αξίζει να συμπληρώσετε ατομικά;",
+                    en: "Which covers are worth adding individually?",
+                },
+                paragraphs: [
+                    {
+                        el: "Η πιο αποδοτική στρατηγική για εργαζόμενο με ομαδικό: ατομικό νοσοκομειακό πρόγραμμα με υψηλή απαλλαγή. Το ομαδικό απορροφά την απαλλαγή στις μικρομεσαίες νοσηλείες, ενώ το ατομικό εξασφαλίζει υψηλά κεφάλαια, συνέχεια μετά την αποχώρηση και ελεύθερη επιλογή θεραπευτηρίου στις σοβαρές. Αντίστοιχα, η ασφάλεια ζωής του ομαδικού (συνήθως 1-2 ετήσιοι μισθοί) σπάνια αρκεί για οικογένεια με στεγαστικό δάνειο.",
+                        en: "The most efficient strategy for an employee with group cover: an individual hospital plan with a high deductible. The group scheme absorbs the deductible on small and mid-size stays, while the individual plan secures high limits, continuity after leaving, and free hospital choice for serious cases. Likewise, group life cover (usually 1-2 annual salaries) is rarely enough for a family with a mortgage.",
+                    },
+                ],
+                bullets: [
+                    {
+                        el: "Ατομικό νοσοκομειακό με υψηλή απαλλαγή: συνέχεια + υψηλά κεφάλαια με λογικό κόστος.",
+                        en: "Individual hospital plan with a high deductible: continuity + high limits at reasonable cost.",
+                    },
+                    {
+                        el: "Ατομική ασφάλεια ζωής: αν έχετε εξαρτώμενα μέλη ή δάνειο, το ομαδικό κεφάλαιο σπάνια αρκεί.",
+                        en: "Individual life cover: with dependents or a loan, the group sum is rarely sufficient.",
+                    },
+                    {
+                        el: "Απώλεια εισοδήματος: σχεδόν ποτέ δεν περιλαμβάνεται στα ομαδικά — αφορά ιδίως ελεύθερους συνεργάτες.",
+                        en: "Income protection: almost never in group schemes — especially relevant for contractors.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Πώς δηλώνετε σωστά τον συνδυασμό στις αποζημιώσεις;",
+                    en: "How do you coordinate benefits correctly at claim time?",
+                },
+                paragraphs: [
+                    {
+                        el: "Όταν έχετε δύο πηγές κάλυψης, η σειρά έχει σημασία: συνήθως εξαντλείτε πρώτα το ομαδικό και το ατομικό καλύπτει τη διαφορά — με το ποσό του ομαδικού να μετρά έναντι της απαλλαγής, αν το προβλέπουν οι όροι. Ενημερώστε και τις δύο εταιρείες για την ύπαρξη της άλλης κάλυψης· η απόκρυψη διπλής ασφάλισης μπορεί να θεωρηθεί παράβαση όρων.",
+                        en: "With two sources of cover, order matters: you usually exhaust the group scheme first and the individual policy covers the difference — with the group payout counting toward the deductible where the terms allow. Inform both insurers that the other cover exists; concealing dual insurance can constitute a breach of terms.",
+                    },
+                ],
+            },
+        ],
+        faq: [
+            {
+                question: {
+                    el: "Καλύπτεται η οικογένειά μου από το ομαδικό;",
+                    en: "Does the group policy cover my family?",
+                },
+                answer: {
+                    el: "Πολλά ομαδικά επιτρέπουν την ένταξη συζύγου και παιδιών, άλλοτε με κόστος εργοδότη και άλλοτε με δική σας συμμετοχή. Ρωτήστε το HR — και ελέγξτε τι από αυτά χάνεται αν αποχωρήσετε.",
+                    en: "Many schemes allow adding a spouse and children, sometimes at employer cost, sometimes with your contribution. Ask HR — and check what is lost if you leave.",
+                },
+            },
+            {
+                question: {
+                    el: "Φορολογείται το ομαδικό συμβόλαιο ως παροχή;",
+                    en: "Is a group policy taxed as a benefit?",
+                },
+                answer: {
+                    el: "Η φορολογική αντιμετώπιση των εργοδοτικών εισφορών σε ομαδικά προγράμματα ορίζεται από την εκάστοτε νομοθεσία και έχει όρια απαλλαγής. Για τα ισχύοντα ποσά συμβουλευτείτε την ΑΑΔΕ ή λογιστή.",
+                    en: "Tax treatment of employer contributions to group schemes is set by current legislation with exemption thresholds. Consult AADE or an accountant for the amounts in force.",
+                },
+            },
+            {
+                question: {
+                    el: "Μπορώ να αρνηθώ το ομαδικό και να πάρω τα χρήματα;",
+                    en: "Can I opt out of the group scheme and take the cash?",
+                },
+                answer: {
+                    el: "Κατά κανόνα όχι — η παροχή είναι συλλογική και δεν ανταλλάσσεται με μισθό. Ακόμη κι αν έχετε ήδη ατομική κάλυψη, το ομαδικό αξίζει ως πρώτο επίπεδο που απορροφά απαλλαγές και μικροέξοδα.",
+                    en: "Generally no — the benefit is collective and not exchangeable for salary. Even with existing individual cover, the group scheme is worth keeping as a first layer that absorbs deductibles and small costs.",
+                },
+            },
+        ],
+        sources: [
+            {
+                label: {
+                    el: "ΕΑΕΕ — Ομαδικές ασφαλίσεις",
+                    en: "HAIC (EAEE) — Group insurance",
+                },
+                url: "https://www.eaee.gr",
+            },
+            {
+                label: {
+                    el: "ΑΑΔΕ — Φορολογική μεταχείριση ασφαλίστρων",
+                    en: "AADE — Tax treatment of premiums",
+                },
+                url: "https://www.aade.gr",
+            },
+            {
+                label: {
+                    el: "Τράπεζα της Ελλάδος — Εποπτεία ιδιωτικής ασφάλισης",
+                    en: "Bank of Greece — Private insurance supervision",
+                },
+                url: "https://www.bankofgreece.gr",
+            },
+        ],
+    },
+    {
+        slug: "prostimo-anasfalistou-oximatos",
+        title: {
+            el: "Πρόστιμο ανασφάλιστου οχήματος: ποσά και διαδικασία",
+            en: "Uninsured vehicle fines in Greece: amounts and process",
+        },
+        metaTitle: "Πρόστιμο ανασφάλιστου: ποσά και διαδικασία",
+        metaDescription:
+            "Πώς εντοπίζονται τα ανασφάλιστα οχήματα, ποια πρόστιμα προβλέπονται ανά κατηγορία, τι ισχύει σε ατύχημα και πώς τακτοποιείτε άμεσα την εκκρεμότητα.",
+        summary: {
+            el: "Τα ανασφάλιστα οχήματα εντοπίζονται με ηλεκτρονικές διασταυρώσεις της ΑΑΔΕ και ελέγχους της Τροχαίας. Η διασταύρωση επιφέρει διοικητικό παράβολο κλιμακούμενο ανά κατηγορία οχήματος — ενδεικτικά από 100 έως 250 ευρώ — ενώ ο έλεγχος στον δρόμο προσθέτει πρόστιμο και αφαίρεση στοιχείων κυκλοφορίας. Σε ατύχημα, το Επικουρικό Κεφάλαιο αποζημιώνει τον τρίτο και αναζητά το σύνολο από τον ιδιοκτήτη.",
+            en: "Uninsured vehicles are detected through AADE electronic cross-checks and traffic police stops. A cross-check triggers an administrative fee scaled by vehicle category — indicatively €100 to €250 — while a roadside stop adds a fine and confiscation of plates. In an accident, the Auxiliary Fund compensates the third party and then recovers the full amount from the owner.",
+        },
+        datePublished: "2026-07-13",
+        dateModified: "2026-07-13",
+        readingMinutes: 5,
+        related: [
+            {
+                label: {
+                    el: "Τι καλύπτει η ασφάλεια αυτοκινήτου;",
+                    en: "What does car insurance cover?",
+                },
+                href: "/guides/ti-kalyptei-i-asfaleia-aytokinitou",
+            },
+            {
+                label: {
+                    el: "Ασφάλεια αυτοκινήτου στο PolicyWallet",
+                    en: "Motor insurance in PolicyWallet",
+                },
+                href: "/product/motor",
+            },
+        ],
+        sections: [
+            {
+                heading: {
+                    el: "Πώς εντοπίζονται τα ανασφάλιστα οχήματα;",
+                    en: "How are uninsured vehicles detected?",
+                },
+                paragraphs: [
+                    {
+                        el: "Δύο μηχανισμοί λειτουργούν παράλληλα. Ο πρώτος είναι ηλεκτρονικός: η ΑΑΔΕ διασταυρώνει περιοδικά το μητρώο οχημάτων με το Κέντρο Πληροφοριών ασφαλισμένων οχημάτων· όποιο όχημα με ενεργή άδεια κυκλοφορίας δεν εμφανίζεται ασφαλισμένο, εντοπίζεται χωρίς να χρειαστεί έλεγχος στον δρόμο. Ο δεύτερος είναι ο κλασικός έλεγχος από την Τροχαία.",
+                        en: "Two mechanisms run in parallel. The first is electronic: AADE periodically cross-references the vehicle registry with the insured-vehicle Information Center; any vehicle with active registration that does not appear insured is flagged without a roadside stop. The second is the classic traffic police check.",
+                    },
+                    {
+                        el: "Η ακινησία δεν τεκμαίρεται: αν δεν κυκλοφορείτε το όχημα, πρέπει να έχετε καταθέσει πινακίδες ή να έχετε δηλώσει ψηφιακή ακινησία — αλλιώς η υποχρέωση ασφάλισης παραμένει.",
+                        en: "Non-use is not presumed: if you do not drive the vehicle, you must have deposited the plates or declared digital immobility — otherwise the insurance obligation stands.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Ποια πρόστιμα και κυρώσεις προβλέπονται;",
+                    en: "What fines and penalties apply?",
+                },
+                paragraphs: [
+                    {
+                        el: "Από την ηλεκτρονική διασταύρωση επιβάλλεται διοικητικό παράβολο κλιμακούμενο με τον κυβισμό — ενδεικτικά 100 ευρώ για δίκυκλα, 150 ευρώ για επιβατικά μικρότερου κυβισμού και 250 ευρώ για μεγαλύτερα. Τα ακριβή κλιμάκια ορίζονται από την κείμενη νομοθεσία και δημοσιεύονται από την ΑΑΔΕ. Η πληρωμή του παραβόλου δεν «νομιμοποιεί»: πρέπει και να ασφαλίσετε το όχημα εντός της ταχθείσας προθεσμίας, αλλιώς ακολουθούν αυστηρότερες κυρώσεις.",
+                        en: "The electronic cross-check triggers an administrative fee scaled by engine size — indicatively €100 for motorcycles, €150 for smaller-displacement cars, and €250 for larger ones. The exact brackets are set by current legislation and published by AADE. Paying the fee does not legalize you: the vehicle must also be insured within the set deadline, or stricter penalties follow.",
+                    },
+                    {
+                        el: "Σε έλεγχο της Τροχαίας, οι κυρώσεις είναι βαρύτερες και άμεσες: χρηματικό πρόστιμο, αφαίρεση πινακίδων, άδειας κυκλοφορίας και διπλώματος, ενώ η οδήγηση ανασφάλιστου οχήματος συνιστά και ποινικό αδίκημα.",
+                        en: "At a police stop, penalties are heavier and immediate: a monetary fine, confiscation of plates, registration, and licence — and driving uninsured is also a criminal offence.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Τι γίνεται αν ανασφάλιστο όχημα προκαλέσει ατύχημα;",
+                    en: "What happens when an uninsured vehicle causes an accident?",
+                },
+                paragraphs: [
+                    {
+                        el: "Ο ζημιωθείς τρίτος δεν μένει απροστάτευτος: αποζημιώνεται από το Επικουρικό Κεφάλαιο Ασφάλισης Ευθύνης από Ατυχήματα Αυτοκινήτων. Το Κεφάλαιο όμως στη συνέχεια στρέφεται αναγωγικά κατά του ιδιοκτήτη και του οδηγού του ανασφάλιστου, διεκδικώντας το σύνολο των ποσών — αποζημιώσεις που σε σωματικές βλάβες φτάνουν σε εξαψήφια νούμερα. Αυτός είναι ο πραγματικός κίνδυνος του ανασφάλιστου: όχι το παράβολο, αλλά μια οφειλή ζωής.",
+                        en: "The injured third party is not left unprotected: the Auxiliary Fund for motor liability compensates them. The Fund then pursues the uninsured vehicle's owner and driver for the full amounts — compensation that in bodily-injury cases reaches six figures. That is the real risk of driving uninsured: not the fee, but a lifelong debt.",
+                    },
+                ],
+            },
+            {
+                heading: {
+                    el: "Πώς τακτοποιείτε άμεσα την εκκρεμότητα;",
+                    en: "How do you resolve the issue quickly?",
+                },
+                paragraphs: [
+                    {
+                        el: "Αν λάβετε ειδοποίηση: ασφαλίστε το όχημα άμεσα — η κάλυψη ενεργοποιείται από την έκδοση του συμβολαίου — και πληρώστε το παράβολο μέσα στην προθεσμία που αναγράφεται. Αν το όχημα δεν κυκλοφορεί, δηλώστε ακινησία ώστε να μην εμφανίζεται ξανά στις επόμενες διασταυρώσεις. Αν θεωρείτε την ειδοποίηση εσφαλμένη (π.χ. ήσασταν ασφαλισμένοι), η ένσταση υποβάλλεται με τη διαδικασία που περιγράφει η ΑΑΔΕ, με αποδεικτικό ασφάλισης για την επίμαχη περίοδο.",
+                        en: "If you receive a notice: insure the vehicle immediately — cover activates upon policy issuance — and pay the fee within the stated deadline. If the vehicle is off the road, declare immobility so it stops appearing in future cross-checks. If you believe the notice is wrong (e.g. you were insured), file an objection through AADE's published process with proof of insurance for the disputed period.",
+                    },
+                ],
+            },
+        ],
+        faq: [
+            {
+                question: {
+                    el: "Το όχημα είναι στην αυλή μου και δεν κυκλοφορεί — χρειάζεται ασφάλεια;",
+                    en: "My vehicle sits in my yard unused — does it need insurance?",
+                },
+                answer: {
+                    el: "Ναι, εκτός αν έχει δηλωθεί ακινησία με κατάθεση πινακίδων ή ψηφιακά. Όσο η άδεια κυκλοφορίας είναι ενεργή, η υποχρέωση ασφάλισης ισχύει και οι διασταυρώσεις το εντοπίζουν.",
+                    en: "Yes, unless immobility has been declared by depositing the plates or digitally. While the registration is active, the insurance obligation applies and cross-checks will flag it.",
+                },
+            },
+            {
+                question: {
+                    el: "Πλήρωσα το παράβολο — τελείωσε η υπόθεση;",
+                    en: "I paid the fee — is the matter closed?",
+                },
+                answer: {
+                    el: "Όχι. Το παράβολο είναι κύρωση, όχι άδεια. Αν το όχημα δεν ασφαλιστεί (ή δεν δηλωθεί ακινησία) εντός της προθεσμίας, προβλέπονται αυστηρότερες συνέπειες στις επόμενες διασταυρώσεις.",
+                    en: "No. The fee is a penalty, not a permit. If the vehicle is not insured (or immobility declared) within the deadline, stricter consequences follow at the next cross-checks.",
+                },
+            },
+            {
+                question: {
+                    el: "Πώς ελέγχω αν το όχημά μου εμφανίζεται ασφαλισμένο;",
+                    en: "How do I check whether my vehicle shows as insured?",
+                },
+                answer: {
+                    el: "Μέσω της υπηρεσίας ελέγχου ασφάλισης οχήματος στο Κέντρο Πληροφοριών (μέσω gov.gr) με τον αριθμό κυκλοφορίας. Αξίζει έλεγχο μετά από κάθε αλλαγή εταιρείας — καθυστερημένη ενημέρωση του μητρώου έχει προκαλέσει εσφαλμένες ειδοποιήσεις.",
+                    en: "Via the vehicle insurance check service of the Information Center (through gov.gr) using the plate number. Worth checking after every insurer switch — delayed registry updates have caused erroneous notices.",
+                },
+            },
+        ],
+        sources: [
+            {
+                label: {
+                    el: "ΑΑΔΕ — Διασταυρώσεις ανασφάλιστων οχημάτων",
+                    en: "AADE — Uninsured vehicle cross-checks",
+                },
+                url: "https://www.aade.gr",
+            },
+            {
+                label: {
+                    el: "gov.gr — Έλεγχος ασφάλισης οχήματος",
+                    en: "gov.gr — Vehicle insurance check",
+                },
+                url: "https://www.gov.gr",
+            },
+            {
+                label: {
+                    el: "Επικουρικό Κεφάλαιο Ασφάλισης Ευθύνης από Ατυχήματα Αυτοκινήτων",
+                    en: "Auxiliary Fund for Motor Liability Insurance",
+                },
+                url: "https://www.epikef.gr",
             },
         ],
     },

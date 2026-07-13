@@ -5,6 +5,7 @@ import { CheckCircle2, Globe, Shield, Users } from "lucide-react"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { siteConfig } from "@/lib/seo/site"
+import { teamMembers } from "@/lib/seo/team"
 
 export default function CompanyPage() {
     const { language } = useLanguage()
@@ -133,6 +134,48 @@ export default function CompanyPage() {
                         </p>
                     </div>
                 </section>
+
+                {/* Founders / team — renders only when real people are published
+                    in lib/seo/team.ts (paired with Person JSON-LD on the page). */}
+                {teamMembers.length > 0 && (
+                    <section className="mx-auto mb-24 max-w-4xl px-6 lg:px-12">
+                        <h2 className="mb-6 text-[32px] font-medium tracking-tight text-[#0F172A] md:text-[40px]">
+                            {t("Η ομάδα", "The team")}
+                        </h2>
+                        <div className="grid gap-6 sm:grid-cols-2">
+                            {teamMembers.map((member) => (
+                                <article
+                                    key={member.slug}
+                                    id={member.slug}
+                                    className="rounded-2xl border border-[#E2E8F0] bg-white p-6"
+                                >
+                                    <h3 className="text-[20px] font-semibold text-[#0F172A]">{member.name}</h3>
+                                    <p className="mt-1 text-[14px] font-medium uppercase tracking-wider text-[#64748B]">
+                                        {isGreek ? member.role.el : member.role.en}
+                                    </p>
+                                    <p className="mt-3 text-[15px] leading-relaxed text-[#334155]">
+                                        {isGreek ? member.bio.el : member.bio.en}
+                                    </p>
+                                    {member.credentials && (
+                                        <p className="mt-2 text-[13px] text-[#64748B]">
+                                            {isGreek ? member.credentials.el : member.credentials.en}
+                                        </p>
+                                    )}
+                                    {member.profileUrl && (
+                                        <a
+                                            href={member.profileUrl}
+                                            target="_blank"
+                                            rel="noreferrer noopener"
+                                            className="mt-3 inline-block text-[14px] font-semibold text-[#0F172A] underline underline-offset-4"
+                                        >
+                                            LinkedIn
+                                        </a>
+                                    )}
+                                </article>
+                            ))}
+                        </div>
+                    </section>
+                )}
 
                 <section className="mx-auto max-w-[1400px] px-6 lg:px-12">
                     <div className="relative overflow-hidden rounded-[32px] bg-[#1A1C1D] py-24 text-white">

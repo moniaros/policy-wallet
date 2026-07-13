@@ -35,6 +35,17 @@ type MarketingPageEntry = {
     keywords?: string[]
     /** Breadcrumb label (Greek) used in BreadcrumbList JSON-LD. */
     breadcrumb: string
+    /**
+     * English variant served at /en{path}. Only pages that actually have an
+     * English route declare this — hreflang must never point at a URL that
+     * serves the wrong language, so the en pair is emitted only when set.
+     */
+    en?: { title: string; description: string; breadcrumb: string }
+}
+
+/** English variant path for a marketing page ("/product" → "/en/product"). */
+export function enPathFor(path: string): string {
+    return `/en${path}`
 }
 
 export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
@@ -50,21 +61,39 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             "ψηφιακό ασφαλιστικό πορτοφόλι",
         ],
         breadcrumb: "Προϊόν",
+        en: {
+            title: "Digital insurance wallet with AI analysis",
+            description:
+                "Upload your insurance policies as PDFs and AI analyzes them in under 30 seconds: coverages, gaps and renewal reminders. Free for up to 3 policies.",
+            breadcrumb: "Product",
+        },
     },
     pricing: {
         path: "/pricing",
-        title: "Τιμές: Δωρεάν, Plus 2,99€ ή Pro 9,99€ τον μήνα",
+        title: "Τιμές: Δωρεάν, Plus 2,99€ ή Pro 9,99€/μήνα",
         description:
             "Διαφανής τιμολόγηση PolicyWallet: δωρεάν πλάνο έως 3 συμβόλαια, Plus 2,99€/μήνα, Pro 9,99€/μήνα με περισσότερες AI αναλύσεις. Ακύρωση οποιαδήποτε στιγμή.",
         keywords: ["τιμές PolicyWallet", "συνδρομή διαχείρισης ασφαλιστηρίων"],
         breadcrumb: "Τιμολόγηση",
+        en: {
+            title: "Pricing: Free, Plus €2.99, Pro €9.99/month",
+            description:
+                "Transparent PolicyWallet pricing: a free plan for up to 3 policies, Plus at €2.99/month and Pro at €9.99/month with more AI analyses. Cancel anytime.",
+            breadcrumb: "Pricing",
+        },
     },
     company: {
         path: "/company",
         title: "Η αποστολή μας: διαφάνεια στην ασφάλιση",
         description:
-            "Το PolicyWallet είναι το ουδέτερο ψηφιακό πορτοφόλι ασφαλίσεων: οργανώνει τα συμβόλαιά σας και εντοπίζει κενά κάλυψης με AI. Γνωρίστε τις αξίες και την ομάδα μας.",
+            "Το PolicyWallet είναι το ουδέτερο ψηφιακό πορτοφόλι ασφαλίσεων: οργανώνει τα συμβόλαιά σας και εντοπίζει κενά κάλυψης με AI. Δείτε τις αξίες μας.",
         breadcrumb: "Εταιρεία",
+        en: {
+            title: "Our mission: transparency in insurance",
+            description:
+                "PolicyWallet is the neutral digital insurance wallet: it organizes your policies and detects coverage gaps with AI. Meet the values and team behind it.",
+            breadcrumb: "Company",
+        },
     },
     contact: {
         path: "/contact",
@@ -80,6 +109,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             "Χαρτοφυλάκιο πελατών, ανάλυση κενών με AI, υπενθυμίσεις ανανεώσεων και branded αναφορές για πράκτορες και πρακτορεία. Δείτε πώς λειτουργεί το PolicyWallet.",
         keywords: ["λογισμικό ασφαλιστικού πράκτορα", "CRM ασφαλιστών"],
         breadcrumb: "Για Πράκτορες",
+        en: {
+            title: "AI software for insurance agents",
+            description:
+                "Client portfolio oversight, AI coverage-gap analysis, renewal reminders and branded reports for insurance agents and agencies. See how PolicyWallet works.",
+            breadcrumb: "For Agents",
+        },
     },
     "for-agents": {
         path: "/for-agents",
@@ -146,7 +181,7 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
     },
     guides: {
         path: "/guides",
-        title: "Οδηγοί ασφάλισης: ΕΝΦΙΑ, κενά κάλυψης, ανανεώσεις",
+        title: "Οδηγοί ασφάλισης: ΕΝΦΙΑ, κενά, ανανεώσεις",
         description:
             "Πρακτικοί οδηγοί για την ελληνική ασφαλιστική αγορά: πώς παίρνετε έκπτωση ΕΝΦΙΑ, πώς εντοπίζετε κενά κάλυψης και τι ελέγχετε πριν από κάθε ανανέωση.",
         keywords: ["οδηγοί ασφάλισης", "έκπτωση ΕΝΦΙΑ", "κενά κάλυψης"],
@@ -163,38 +198,50 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/terms",
         title: "Όροι Χρήσης",
         description:
-            "Οι όροι χρήσης της πλατφόρμας PolicyWallet: λογαριασμοί, συνδρομές, δικαιώματα και υποχρεώσεις για ιδιώτες, πράκτορες και πρακτορεία.",
+            "Οι όροι χρήσης της πλατφόρμας PolicyWallet: λογαριασμοί, συνδρομές, δικαιώματα και υποχρεώσεις για ιδιώτες, ασφαλιστικούς πράκτορες και πρακτορεία.",
         breadcrumb: "Όροι Χρήσης",
     },
 }
 
 export function buildMarketingMetadata(
     key: MarketingPageKey,
-    overrides?: Partial<Metadata>
+    locale: "el" | "en" = "el"
 ): Metadata {
     const page = marketingPages[key]
+    const isEnglish = locale === "en"
+    const copy = isEnglish && page.en ? page.en : page
+    const canonical = isEnglish ? enPathFor(page.path) : page.path
+
+    // Greek is always self-referenced; the en pair only exists for pages
+    // with a real English route; x-default → the Greek page (primary market).
+    const languages: Record<string, string> = { el: page.path }
+    if (page.en) {
+        languages.en = enPathFor(page.path)
+    }
+    languages["x-default"] = page.path
+
     return {
-        title: page.title,
-        description: page.description,
-        keywords: page.keywords,
+        title: copy.title,
+        description: copy.description,
+        ...(isEnglish ? {} : { keywords: page.keywords }),
         alternates: {
-            canonical: page.path,
+            canonical,
+            languages,
         },
         openGraph: {
             type: "website",
-            locale: "el_GR",
-            url: page.path,
+            locale: isEnglish ? "en_US" : "el_GR",
+            url: canonical,
             siteName: "PolicyWallet",
-            title: page.title,
-            description: page.description,
+            title: copy.title,
+            description: copy.description,
             images: OG_IMAGES,
         },
         twitter: {
             card: "summary_large_image",
-            title: page.title,
-            description: page.description,
+            title: copy.title,
+            description: copy.description,
             images: TWITTER_IMAGES,
         },
-        ...overrides,
     }
 }

@@ -37,6 +37,12 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                         {guide.title[lang]}
                     </h1>
                     <div className="flex flex-wrap items-center gap-4 border-b border-[#E5E7EB] pb-6 text-[14px] text-[#64748B]">
+                        {/* Byline: named author when one is published, editorial team otherwise. */}
+                        <span className="inline-flex items-center gap-1.5 font-medium text-[#334155]">
+                            {guide.author
+                                ? `${guide.author.name} — ${guide.author.role[lang]}`
+                                : t("Συντακτική ομάδα PolicyWallet", "PolicyWallet editorial team")}
+                        </span>
                         <span className="inline-flex items-center gap-1.5">
                             <CalendarDays className="h-4 w-4 text-[#29685B]" />
                             {t("Ενημερώθηκε", "Updated")}: {formatDate(guide.dateModified, language)}
@@ -46,6 +52,11 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                             {guide.readingMinutes} {t("λεπτά ανάγνωσης", "min read")}
                         </span>
                     </div>
+                    {guide.author && (
+                        <p className="mt-3 text-[13px] leading-relaxed text-[#64748B]">
+                            {guide.author.bio[lang]}
+                        </p>
+                    )}
                 </header>
 
                 {/* Direct-answer opening paragraph (featured-snippet shape). */}
@@ -120,6 +131,27 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                         ))}
                     </ul>
                 </section>
+
+                {guide.related && guide.related.length > 0 && (
+                    <section className="mb-14">
+                        <h2 className="mb-4 text-[18px] font-semibold text-[#0F172A]">
+                            {t("Σχετικοί οδηγοί και σελίδες", "Related guides and pages")}
+                        </h2>
+                        <ul className="space-y-2">
+                            {guide.related.map((item) => (
+                                <li key={item.href}>
+                                    <Link
+                                        href={item.href}
+                                        className="inline-flex items-center gap-1.5 text-[15px] text-[#29685B] underline-offset-4 transition-colors duration-150 hover:text-[#1C4E44] hover:underline"
+                                    >
+                                        {item.label[lang]}
+                                        <ArrowRight className="h-3.5 w-3.5" />
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </section>
+                )}
 
                 <aside className="rounded-[20px] bg-[#1A2420] p-8 text-white md:p-10">
                     <h2 className="mb-3 text-[24px] font-medium tracking-tight">

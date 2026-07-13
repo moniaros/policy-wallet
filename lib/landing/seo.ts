@@ -7,10 +7,9 @@ import { organizationJsonLd, webSiteJsonLd } from "@/lib/seo/jsonld"
 export function buildLandingMetadata(locale: LandingLocale): Metadata {
     const meta = landingContent.seo[locale]
     const canonical = meta.path
-    const languages =
-        locale === "el"
-            ? { el: "/", en: "/en" }
-            : { en: "/en", el: "/" }
+    // x-default → the Greek homepage: Greece is the primary market and the
+    // Greek page is what an unmatched-language visitor should get.
+    const languages = { el: "/", en: "/en", "x-default": "/" }
 
     return {
         metadataBase: getSiteUrl(),
@@ -76,5 +75,18 @@ export function buildLandingJsonLd(locale: LandingLocale) {
         })),
     }
 
-    return [softwareApplication, organizationJsonLd(), webSiteJsonLd(), faqPage]
+    // "How it works" steps as HowTo — answer engines quote step lists.
+    const howTo = {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        name: landingContent.howItWorks.title[locale],
+        step: landingContent.howItWorks.steps.map((step, index) => ({
+            "@type": "HowToStep",
+            position: index + 1,
+            name: step.title[locale],
+            text: step.description[locale],
+        })),
+    }
+
+    return [softwareApplication, organizationJsonLd(), webSiteJsonLd(), faqPage, howTo]
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { Shield, AlertTriangle, Clock, Send, CheckCircle2, FileText } from "lucide-react"
+import { PRODUCT_DISPLAY_HOST } from "@/lib/seo/site"
 
 // ── Shared: browser-chrome wrapper ───────────────────────────────────
 
@@ -48,7 +49,7 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
     ]
 
     return (
-        <BrowserChrome url="app.policywallet.gr/agent/clients">
+        <BrowserChrome url={`${PRODUCT_DISPLAY_HOST}/agent/clients`}>
             <div className="p-5">
                 <div className="mb-4 flex items-center justify-between">
                     <div>
@@ -195,7 +196,7 @@ export function GapAnalysisWidget({ isGreek }: { isGreek: boolean }) {
     ]
 
     return (
-        <BrowserChrome url="app.policywallet.gr/agent/gap-scan">
+        <BrowserChrome url={`${PRODUCT_DISPLAY_HOST}/agent/gap-scan`}>
             <div className="p-5">
                 <div className="mb-4 flex items-center justify-between">
                     <div>
@@ -298,7 +299,7 @@ export function RenewalReminderWidget({ isGreek }: { isGreek: boolean }) {
     }
 
     return (
-        <BrowserChrome url="app.policywallet.gr/agent/renewals">
+        <BrowserChrome url={`${PRODUCT_DISPLAY_HOST}/agent/renewals`}>
             <div className="p-5">
                 <div className="mb-4 flex items-center justify-between">
                     <div>
@@ -379,7 +380,7 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
     ]
 
     return (
-        <BrowserChrome url="app.policywallet.gr/agent/reports">
+        <BrowserChrome url={`${PRODUCT_DISPLAY_HOST}/agent/reports`}>
             <div className="p-5">
                 {/* Report mock */}
                 <div

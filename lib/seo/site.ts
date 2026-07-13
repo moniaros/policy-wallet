@@ -22,6 +22,29 @@ export function getSiteOrigin(): string {
     return getSiteUrl().toString().replace(/\/$/, "")
 }
 
+/** Absolute URL for a site path — the single place paths become full URLs. */
+export function absoluteUrl(path: string): string {
+    return `${getSiteOrigin()}${path.startsWith("/") ? path : `/${path}`}`
+}
+
+/**
+ * Only the production deployment may be indexed. Vercel sets VERCEL_ENV to
+ * "production" | "preview" | "development"; preview/branch deploys (and the
+ * retired vercel.app alias serving them) must never compete with the
+ * production domain in search. Outside Vercel (local dev, self-hosted) we
+ * stay indexable so `next start` smoke tests see production behavior.
+ */
+export function isIndexableDeployment(): boolean {
+    const vercelEnv = process.env.VERCEL_ENV
+    return vercelEnv ? vercelEnv === "production" : true
+}
+
+/**
+ * Host shown inside decorative product-mock browser bars on the landing
+ * pages. Display-only branding — never used to build real links.
+ */
+export const PRODUCT_DISPLAY_HOST = "app.policywallet.gr"
+
 function envOrUndefined(value: string | undefined): string | undefined {
     const trimmed = value?.trim()
     return trimmed ? trimmed : undefined
