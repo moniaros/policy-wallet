@@ -3,11 +3,13 @@
 import { z } from "zod"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
+import { after } from "next/server"
 import { createClient as createSupabaseAdminClient } from "@supabase/supabase-js"
 import { createClient } from "@/lib/supabase/server"
 import { db } from "@/lib/db"
 import { rateLimit } from "@/lib/rate-limit"
 import { sendEmail } from "@/lib/email/email-service"
+import { sendAdminSignupNotificationEmail } from "@/lib/email/admin-emails"
 import {
     consumePasswordResetToken,
     generatePasswordResetToken,
@@ -291,6 +293,21 @@ export async function registerUser(formData: FormData) {
             })
             userId = newUser.id
         }
+
+        // Internal ops alert for every completed registration. Scheduled
+        // with after() and error-swallowed so it can never delay or fail
+        // the signup itself.
+        const isInvitedActivation = Boolean(existingUser)
+        after(async () => {
+            await sendAdminSignupNotificationEmail({
+                name: displayName,
+                email: authEmail,
+                phoneNumber: normalizedPhone,
+                role,
+                language,
+                isInvitedActivation,
+            }).catch(() => null)
+        })
 
         if (role === "agent") {
             await db.agentProfile.upsert({
