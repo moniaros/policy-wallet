@@ -41,6 +41,8 @@ interface PolicyHeroProps {
     onShare: () => void
     onDownload: () => void
     onCallInsurer: () => void
+    /** Overflow (kebab) menu rendered top-right — e.g. delete policy. */
+    headerMenu?: React.ReactNode
 }
 
 /**
@@ -67,6 +69,7 @@ export function PolicyHero({
     onShare,
     onDownload,
     onCallInsurer,
+    headerMenu,
 }: PolicyHeroProps) {
     return (
         <section className="relative overflow-hidden rounded-[28px] border border-white/10 bg-[#111111] p-6 text-white shadow-2xl sm:p-8 lg:p-10">
@@ -84,6 +87,7 @@ export function PolicyHero({
                             {copy.expiresIn} {daysLeft} {copy.days}
                         </span>
                     )}
+                    {headerMenu && <div className="ml-auto">{headerMenu}</div>}
                 </div>
 
                 <div className="flex flex-col gap-6 xl:flex-row xl:items-start xl:justify-between">

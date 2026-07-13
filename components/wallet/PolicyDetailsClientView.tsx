@@ -5,7 +5,8 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { CollaborationPanel } from "@/components/wallet/CollaborationPanel"
-import { DeletePolicy } from "@/components/wallet/DeletePolicy"
+import { DeletePolicyDialog } from "@/components/wallet/DeletePolicy"
+import { PolicyHeaderMenu } from "@/components/wallet/policy-detail/PolicyHeaderMenu"
 import { PolicyAnalysisTabs } from "@/app/(protected)/wallet/[id]/PolicyAnalysisTabs"
 import { PolicyQA } from "@/components/wallet/PolicyQA"
 import { AIUsageWidget } from "@/app/(protected)/wallet/[id]/AIUsageWidget"
@@ -31,7 +32,7 @@ import {
     parsePolicyDate,
     type PolicyRenewalEntry,
 } from "@/lib/wallet/policy-detail"
-import { AlertTriangle, Crown, FileDown, Lock, RefreshCw, ShieldCheck, Users } from "lucide-react"
+import { AlertTriangle, Crown, FileDown, Lock, RefreshCw, ShieldCheck, Trash2, Users } from "lucide-react"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
@@ -107,6 +108,7 @@ export function PolicyDetailsClient({
     const pathname = usePathname()
     const [exportUpgradeOpen, setExportUpgradeOpen] = useState(false)
     const [isRequestingQuote, setIsRequestingQuote] = useState(false)
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
     const handleRequestQuote = async () => {
         if (isRequestingQuote) return
@@ -379,6 +381,22 @@ export function PolicyDetailsClient({
                     onShare={handleShare}
                     onDownload={handleDownloadPrimaryDoc}
                     onCallInsurer={handleCallInsurer}
+                    headerMenu={
+                        isOwner ? (
+                            <PolicyHeaderMenu
+                                ariaLabel={detailsCopy.moreActions}
+                                items={[
+                                    {
+                                        id: "delete-policy",
+                                        label: t.wallet.deletePolicyModal.deletePolicy,
+                                        icon: Trash2,
+                                        destructive: true,
+                                        onSelect: () => setDeleteDialogOpen(true),
+                                    },
+                                ]}
+                            />
+                        ) : undefined
+                    }
                 />
 
                 {/* ── Section navigation ─────────────────────────────────── */}
@@ -738,7 +756,6 @@ export function PolicyDetailsClient({
                             />
                         )}
 
-                        {isOwner && <DeletePolicy policyId={policy.id} />}
                     </aside>
                 </div>
             </div>
@@ -750,6 +767,14 @@ export function PolicyDetailsClient({
                 triggerSource="savings_report_export"
                 returnTo={pathname || undefined}
             />
+
+            {isOwner && (
+                <DeletePolicyDialog
+                    policyId={policy.id}
+                    open={deleteDialogOpen}
+                    onOpenChange={setDeleteDialogOpen}
+                />
+            )}
         </div>
     )
 }
