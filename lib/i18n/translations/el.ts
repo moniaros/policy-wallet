@@ -201,6 +201,8 @@ export const el = {
         tryAsking: 'Δοκιμάστε να ρωτήσετε:',
         askAiPlaceholder: 'Ρωτήστε οτιδήποτε για το ασφαλιστήριο...',
         aiFootnote: 'Οι απαντήσεις του AI βασίζονται στο έγγραφο του ασφαλιστηρίου σας και ενδέχεται να μην είναι 100% ακριβείς',
+        qaFreeRemainingOne: 'δωρεάν ερώτηση διαθέσιμη',
+        qaFreeRemainingMany: 'δωρεάν ερωτήσεις διαθέσιμες',
         thinking: 'Σκέφτομαι...',
         failedAnswer: 'Αποτυχία λήψης απάντησης',
         suggestedQuestions: [

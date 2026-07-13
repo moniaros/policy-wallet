@@ -10,6 +10,7 @@ import { getAIUsageStats } from "../actions"
 import { PolicyDetailsClient } from "./PolicyDetailsClient"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { normalizeRemindersSent } from "@/lib/wallet/policy-detail"
+import { FREE_LIFETIME_QUESTIONS } from "@/lib/monetization/feature-gates"
 import {
     computeReportUnlocked,
     dedupeGaps,
@@ -73,16 +74,23 @@ export default async function PolicyDetailPage({
     const shares = sharesResult || []
 
     // Free-tier owners get exactly one complimentary deep analysis
-    // (User.trialAnalysisUsedAt, claimed atomically by the orchestrator).
-    // Surface its availability so the UI can advertise it before use and
-    // nudge the upgrade after it is consumed.
+    // (User.trialAnalysisUsedAt, claimed atomically by the orchestrator) and
+    // FREE_LIFETIME_QUESTIONS complimentary AI questions. Surface both so the
+    // UI can advertise them before use and nudge the upgrade after.
     let trialAnalysisAvailable: boolean | null = null
+    let freeQuestionsRemaining: number | null = null
     if (isOwner && entitlements.tier === "free") {
-        const owner = await db.user.findUnique({
-            where: { id: dbUser.id },
-            select: { trialAnalysisUsedAt: true },
-        })
+        const [owner, questionsAsked] = await Promise.all([
+            db.user.findUnique({
+                where: { id: dbUser.id },
+                select: { trialAnalysisUsedAt: true },
+            }),
+            db.activityLog.count({
+                where: { adminUserId: dbUser.id, actionType: "POLICY_QUESTION_ASKED" },
+            }),
+        ])
         trialAnalysisAvailable = owner ? owner.trialAnalysisUsedAt === null : null
+        freeQuestionsRemaining = Math.max(FREE_LIFETIME_QUESTIONS - questionsAsked, 0)
     }
 
     // Lifecycle from the REAL (extracted) end date — never the DB column's
@@ -233,6 +241,7 @@ export default async function PolicyDetailPage({
             relatedRecommendations={relatedRecommendations}
             renewals={serializedRenewals}
             trialAnalysisAvailable={trialAnalysisAvailable}
+            freeQuestionsRemaining={freeQuestionsRemaining}
             gapReportItems={gapReportItems}
             reportUnlocked={reportUnlocked}
         />

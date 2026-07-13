@@ -110,6 +110,8 @@ export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
 
 export const FREE_POLICY_LIMIT = 3
 export const PLUS_POLICY_LIMIT = 10
+/** Complimentary lifetime AI questions for free-tier users (floor decision, 2026-07). */
+export const FREE_LIFETIME_QUESTIONS = 3
 
 export interface PlanPricing {
     planId: string

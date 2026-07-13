@@ -1,9 +1,14 @@
 import { db } from "../db"
 import { sendNotification } from "../notifications"
 import { logger } from "../logger"
+import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 
 // Milestone days before policy expiry when reminders are sent
 const RENEWAL_MILESTONES = [90, 60, 30, 15, 7] as const
+// Free plan floor (owner-approved, conversion audit 2026-07): one basic
+// reminder at 30 days; the full milestone ladder is a paid feature
+// (advanced_renewal_reminders / notifications entitlement).
+const BASIC_MILESTONES = [30] as const
 type Milestone = (typeof RENEWAL_MILESTONES)[number]
 
 export type RenewalRunSummary = {
@@ -59,6 +64,7 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
         })
 
         summary.policiesScanned = expiringPolicies.length
+        const entitlementCache = new Map<string, boolean>()
 
         for (const policy of expiringPolicies) {
             try {
@@ -119,9 +125,20 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
                     continue
                 }
 
-                // 3. Check which milestones have already been sent
+                // 3. Check which milestones have already been sent.
+                // Paid owners get the full ladder; free owners the basic
+                // 30-day reminder only (entitlement cached per owner per run).
+                let ownerHasFullReminders = entitlementCache.get(policy.ownerUserId)
+                if (ownerHasFullReminders === undefined) {
+                    const entitlements = await resolveUserEntitlements(policy.ownerUserId)
+                    ownerHasFullReminders = entitlements.limits.notifications === true
+                    entitlementCache.set(policy.ownerUserId, ownerHasFullReminders)
+                }
+                const allowedMilestones: readonly number[] = ownerHasFullReminders
+                    ? RENEWAL_MILESTONES
+                    : BASIC_MILESTONES
                 const sentMilestones = parseSentMilestones(renewalRecord?.remindersSent)
-                const milestonesToSend = RENEWAL_MILESTONES.filter(
+                const milestonesToSend = allowedMilestones.filter(
                     m => daysUntilExpiry <= m && !sentMilestones.has(m)
                 )
 

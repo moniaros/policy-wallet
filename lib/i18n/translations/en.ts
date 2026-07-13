@@ -204,6 +204,8 @@ export const en: TranslationKeys = {
         tryAsking: "Try asking:",
         askAiPlaceholder: "Ask anything about your policy...",
         aiFootnote: "AI responses are based on your policy document and may not be 100% accurate",
+        qaFreeRemainingOne: "free question available",
+        qaFreeRemainingMany: "free questions available",
         thinking: "Thinking...",
         failedAnswer: "Failed to get answer",
         suggestedQuestions: [

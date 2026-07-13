@@ -83,6 +83,8 @@ interface PolicyDetailsClientProps {
     renewals?: PolicyRenewalEntry[]
     /** Free-tier owners: is the complimentary deep analysis still unused? (null = n/a) */
     trialAnalysisAvailable?: boolean | null
+    /** Free-tier owners: complimentary lifetime AI questions left (null = n/a). */
+    freeQuestionsRemaining?: number | null
     gapReportItems?: GapReportItem[]
     reportUnlocked?: boolean
 }
@@ -102,6 +104,7 @@ export function PolicyDetailsClient({
     relatedRecommendations = [],
     renewals = [],
     trialAnalysisAvailable = null,
+    freeQuestionsRemaining = null,
     gapReportItems = [],
     reportUnlocked = true,
 }: PolicyDetailsClientProps) {
@@ -604,7 +607,12 @@ export function PolicyDetailsClient({
 
                         {/* 8 ── Ask AI about this policy ──────────────────── */}
                         <section id="policy-qa" className="scroll-mt-24">
-                            <PolicyQA policyId={policy.id} tier={tier} lineOfBusiness={coverageType} />
+                            <PolicyQA
+                                policyId={policy.id}
+                                tier={tier}
+                                lineOfBusiness={coverageType}
+                                freeQuestionsRemaining={freeQuestionsRemaining}
+                            />
                         </section>
 
                         {/* 9 ── Claims guidance ───────────────────────────── */}
