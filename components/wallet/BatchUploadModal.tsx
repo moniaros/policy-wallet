@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { UploadDropzone } from "@/components/ui/UploadDropzone"
+import { UpgradeModal } from "@/components/monetization/UpgradeModal"
 
 interface ExtractedPolicy {
     id: string
@@ -43,6 +44,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
     const [policies, setPolicies] = useState<ExtractedPolicy[]>([])
     const [isProcessing, setIsProcessing] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
+    const [limitModalOpen, setLimitModalOpen] = useState(false)
 
     if (!isOpen) return null
 
@@ -184,6 +186,11 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                 router.refresh()
                 onSuccess?.()
                 handleClose()
+            } else if (result.error === "POLICY_LIMIT_REACHED") {
+                // Highest-intent conversion moment: the user is holding more
+                // documents than the free plan allows — offer the upgrade in
+                // place instead of dead-ending in an error toast.
+                setLimitModalOpen(true)
             } else if ((result.failedCount || 0) > 0) {
                 toast.error(withVars(copy.saveNoneFailedValidation, { failed: result.failedCount }))
             } else {
@@ -400,6 +407,14 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                     )}
                 </div>
             </div>
+
+            <UpgradeModal
+                isOpen={limitModalOpen}
+                onClose={() => setLimitModalOpen(false)}
+                featureKey="policy_upload_limit"
+                triggerSource="batch_upload_limit"
+                returnTo="/wallet/add"
+            />
         </div>
     )
 }

@@ -5,7 +5,8 @@ import { requestAiConsent } from "@/app/(protected)/agent/actions"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { Sparkles, AlertTriangle, Lightbulb, EyeOff, MessageSquare, Loader2, RefreshCw, HelpCircle } from "lucide-react"
-import { LimitReachedModal } from "@/components/account/LimitReachedModal"
+import { UpgradeModal } from "@/components/monetization/UpgradeModal"
+import type { FeatureKey } from "@/lib/monetization/feature-gates"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
 
@@ -25,6 +26,13 @@ interface Gap {
         title: string
         severity: string
     }
+}
+
+/** Which feature gate each blocked-analysis reason maps to. */
+const LIMIT_REASON_TO_FEATURE: Record<"gap_limit" | "token_limit" | "feature_locked", FeatureKey> = {
+    gap_limit: "advanced_gap_detection",
+    token_limit: "token_topup",
+    feature_locked: "full_ai_policy_analysis",
 }
 
 interface AnalysisCardProps {
@@ -768,11 +776,14 @@ export function AnalysisCard({
                 )}
                 {!report && uniqueGaps.length > 0 && <AiDisclaimer />}
             </div>
-            <LimitReachedModal
+            {/* Standard context-aware checkout (billing toggle + trial line;
+                returnTo falls back to the current pathname) — replaced the
+                legacy LimitReachedModal at this blocked-analysis moment. */}
+            <UpgradeModal
                 isOpen={gapLimitReached}
-                reason={limitReason}
-                language={language as 'el' | 'en'}
-                onDismiss={() => setGapLimitReached(false)}
+                onClose={() => setGapLimitReached(false)}
+                featureKey={LIMIT_REASON_TO_FEATURE[limitReason]}
+                triggerSource={`analysis_${limitReason}`}
             />
             <AiConsentModal
                 isOpen={consentModalOpen}
