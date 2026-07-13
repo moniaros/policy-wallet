@@ -3,6 +3,7 @@
 import React, { useState } from 'react'
 import { AnalysisCard } from './AnalysisCard'
 import { localizeCoverageName, toGreekUppercaseNoAccents } from '@/lib/i18n/text-format'
+import type { GapReportItem } from '@/lib/wallet/gap-report'
 
 interface PolicyAnalysisTabsProps {
     acordData: any
@@ -19,6 +20,10 @@ interface PolicyAnalysisTabsProps {
         lastFailureCode?: string | null
         lastFailureAt?: string | null
     } | null
+    report?: {
+        items: GapReportItem[]
+        reportUnlocked: boolean
+    }
 }
 
 export function PolicyAnalysisTabs({
@@ -30,8 +35,11 @@ export function PolicyAnalysisTabs({
     policyStatus,
     processingError,
     analysisPipeline,
+    report,
 }: PolicyAnalysisTabsProps) {
     const [activeTab, setActiveTab] = useState<'insights' | 'gaps'>('gaps')
+    // Deduped count when the report view is active, else the raw gap count.
+    const gapBadgeCount = report ? report.items.length : gaps.length
 
     const hasAcordData = acordData && typeof acordData === 'object' && Object.keys(acordData).length > 0
     const locale = t.common?.locale || 'el-GR'
@@ -57,9 +65,9 @@ export function PolicyAnalysisTabs({
                         }`}
                 >
                     {t.wallet.aiAnalysis}
-                    {gaps.length > 0 && (
+                    {gapBadgeCount > 0 && (
                         <span className="ml-2 px-2 py-0.5 text-[10px] bg-red-100 text-red-700 rounded-full">
-                            {gaps.length}
+                            {gapBadgeCount}
                         </span>
                     )}
                 </button>
@@ -84,6 +92,7 @@ export function PolicyAnalysisTabs({
                             policyStatus={policyStatus}
                             processingError={processingError}
                             analysisPipeline={analysisPipeline}
+                            report={report}
                         />
                     </div>
                 )}

@@ -12,6 +12,8 @@ import { AiConsentModal } from "@/components/ui/AiConsentModal"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { toGreekUppercaseNoAccents } from "@/lib/i18n/text-format"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
+import { GapReportList } from "@/components/wallet/gap-report/GapReportList"
+import type { GapReportItem } from "@/lib/wallet/gap-report"
 
 interface Gap {
     id: string
@@ -39,6 +41,14 @@ interface AnalysisCardProps {
         lastFailureCode?: string | null
         lastFailureAt?: string | null
     } | null
+    /**
+     * Deduped, Greek-titled report items (owner wallet view). When absent
+     * (agent customers page) the legacy card list renders unchanged.
+     */
+    report?: {
+        items: GapReportItem[]
+        reportUnlocked: boolean
+    }
 }
 
 export function AnalysisCard({
@@ -48,6 +58,7 @@ export function AnalysisCard({
     policyStatus,
     processingError,
     analysisPipeline,
+    report,
 }: AnalysisCardProps) {
     const [analyzing, setAnalyzing] = useState(false)
     const [runId, setRunId] = useState<string | null>(null)
@@ -453,6 +464,26 @@ export function AnalysisCard({
         }
     }
 
+    // Report items may carry duplicateIds (DB-level twins under slug-spelling
+    // variants) — hide the whole set or the twin resurfaces on refresh.
+    const handleIgnoreMany = async (gapIds: string[]) => {
+        if (gapIds.length === 0) return
+        setIgnoring(gapIds[0])
+        let error: string | null = null
+        for (const gapId of gapIds) {
+            const res = await ignoreGap(gapId)
+            if (res.error) error = res.error
+        }
+        setIgnoring(null)
+
+        if (error) {
+            toast.error(mapWalletErrorToMessage(error, t, "analysis"))
+        } else {
+            toast.success(actionCopy.hidden)
+            router.refresh()
+        }
+    }
+
     const handleNotify = async (gapId: string) => {
         setNotifying(gapId)
         const res = await notifyAgentAboutGap(gapId, policyId)
@@ -617,7 +648,28 @@ export function AnalysisCard({
                 </div>
             )}
             <div className="p-6">
-                {uniqueGaps.length === 0 ? (
+                {report && report.items.length > 0 ? (
+                    <>
+                        <GapReportList
+                            items={report.items}
+                            policyId={policyId}
+                            reportUnlocked={report.reportUnlocked}
+                            lang={language === "el" ? "el" : "en"}
+                            copy={{
+                                ...t.analysis.report,
+                                recommendation: t.analysis.recommendation,
+                                hide: actionCopy.hide,
+                                sending: actionCopy.sending,
+                                notifyAgent: actionCopy.viewMoreDetails,
+                            }}
+                            onIgnore={handleIgnoreMany}
+                            onNotify={handleNotify}
+                            ignoringId={ignoring}
+                            notifyingId={notifying}
+                        />
+                        <AiDisclaimer />
+                    </>
+                ) : uniqueGaps.length === 0 || report ? (
                     missingArtifacts.includes("gap_results") ? (
                         <div className="text-center py-8">
                             <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
@@ -714,7 +766,7 @@ export function AnalysisCard({
                         })}
                     </div>
                 )}
-                {uniqueGaps.length > 0 && <AiDisclaimer />}
+                {!report && uniqueGaps.length > 0 && <AiDisclaimer />}
             </div>
             <LimitReachedModal
                 isOpen={gapLimitReached}

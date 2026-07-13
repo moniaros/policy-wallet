@@ -10,6 +10,12 @@ import { getAIUsageStats } from "../actions"
 import { PolicyDetailsClient } from "./PolicyDetailsClient"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { normalizeRemindersSent } from "@/lib/wallet/policy-detail"
+import {
+    dedupeGaps,
+    normalizeGapSlug,
+    resolveGapContent,
+    type GapReportItem,
+} from "@/lib/wallet/gap-report"
 
 export default async function PolicyDetailPage({
     params
@@ -70,14 +76,36 @@ export default async function PolicyDetailPage({
     const statusLabel = getStatusLabel(status)
     const daysLeft = getDaysUntilExpiry(policy.endDate)
 
+    // Gap report items: dedupe DB-level slug twins and resolve Greek/English
+    // titles + grouping dimensions server-side (unknown slugs are Sentry-
+    // reported here, ad-blocker-proof). The pipeline's raw English titles
+    // never reach the client.
+    const gapReportItems: GapReportItem[] = dedupeGaps(policy.gapInstances).map((gap) => ({
+        id: gap.id,
+        slug: gap.normalizedSlug,
+        duplicateIds: gap.duplicateIds,
+        content: resolveGapContent(gap.definition?.slug || ""),
+        aiExplanation: gap.aiExplanation || null,
+        aiExplanationEl: gap.aiExplanationEl || null,
+        aiSuggestion: gap.aiSuggestion || null,
+        aiSuggestionEl: gap.aiSuggestionEl || null,
+    }))
+    const reportSlugSet = new Set(gapReportItems.map((item) => item.slug))
+
     // Related recommendations (owner only): reuse the persisted gap-engine
     // output, preferring same-line-of-business suggestions. Read-only — the
-    // engine itself is not re-run here.
+    // engine itself is not re-run here. Policy-derived recommendations that
+    // already render as gap cards above are dropped — the same finding must
+    // not appear twice on this page (profile/portfolio recs stay).
     let relatedRecommendations: Array<Record<string, unknown>> = []
     if (isOwner) {
         try {
             const { getActiveRecommendations } = await import("@/lib/services/gap-engine")
-            const recommendations = await getActiveRecommendations(dbUser.id)
+            const recommendations = (await getActiveRecommendations(dbUser.id)).filter((r) => {
+                const ruleId = String(r.ruleId || "")
+                if (!ruleId.startsWith("policy_gap:")) return true
+                return !reportSlugSet.has(normalizeGapSlug(ruleId.slice("policy_gap:".length)))
+            })
             const sameLob = recommendations.filter(r => r.lineOfBusiness === policy.lineOfBusiness)
             relatedRecommendations = (sameLob.length > 0 ? sameLob : recommendations)
                 .slice(0, 4)
@@ -177,6 +205,8 @@ export default async function PolicyDetailPage({
             tierLimits={entitlements.limits}
             relatedRecommendations={relatedRecommendations}
             renewals={serializedRenewals}
+            gapReportItems={gapReportItems}
+            reportUnlocked={true}
         />
     )
 }
