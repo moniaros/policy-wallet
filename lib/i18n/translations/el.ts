@@ -353,6 +353,7 @@ export const el = {
             showAllExclusions: 'Προβολή όλων',
             showFewerExclusions: 'Εμφάνιση λιγότερων',
             moreActions: 'Περισσότερες ενέργειες',
+            expiredBanner: 'Το συμβόλαιο φαίνεται να έχει λήξει. Ζητήστε προσφορά ανανέωσης για να συνεχίσετε την κάλυψη.',
             conditionTypes: {
                 waiting_period: 'Περίοδος αναμονής',
                 auto_renewal: 'Αυτόματη ανανέωση',
@@ -849,7 +850,8 @@ export const el = {
     policyStatus: {
         active: 'ΕΝΕΡΓΗ',
         expiringSoon: 'ΛΗΓΕΙ ΣΥΝΤΟΜΑ',
-        expired: 'ΕΧΕΙ ΛΗΞΕΙ',
+        expired: 'ΛΗΓΜΕΝΟ',
+        unknownDuration: 'ΑΓΝΩΣΤΗ ΔΙΑΡΚΕΙΑ',
         actionNeeded: 'ΑΠΑΙΤΕΙΤΑΙ ΕΝΕΡΓΕΙΑ',
         cancelled: 'ΑΚΥΡΩΜΕΝΗ',
         incomplete: 'ΕΛΛΙΠΕΣ',

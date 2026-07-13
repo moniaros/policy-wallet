@@ -2,6 +2,7 @@
 
 import type { Policy } from './types'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { resolvePolicyLifecycle, type PolicyLifecycle } from '@/lib/policy-status'
 import { AlertTriangle, BadgeCheck, Sparkles } from 'lucide-react'
 import { CarIcon, HeartIcon, HomeIcon, ShieldIcon, PlaneIcon, DocumentIcon } from '@/components/icons/PolicyIcons'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -34,34 +35,51 @@ function LobIcon({ lob, className }: { lob: string; className?: string }) {
     return <Icon className={className} />
 }
 
-function formatRelativeExpiry(endDate: string | null, locale: 'el' | 'en'): string {
-    if (!endDate) return '-'
-    const days = Math.ceil((new Date(endDate).getTime() - Date.now()) / 86400000)
-    if (days <= 0) return locale === 'el' ? 'Έληξε' : 'Expired'
+function formatRelativeExpiry(lifecycle: PolicyLifecycle, locale: 'el' | 'en'): string {
+    const { endDate, daysUntilExpiry: days } = lifecycle
+    if (!endDate || days === null) return ''
+    const dateDisplay = endDate.toLocaleDateString(locale === 'el' ? 'el-GR' : 'en-US', { timeZone: 'UTC' })
+    if (days < 0) return locale === 'el' ? `Έληξε στις ${dateDisplay}` : `Expired on ${dateDisplay}`
     if (days <= 60) return locale === 'el' ? `σε ${days} ημέρες` : `in ${days} days`
-    return new Date(endDate).toLocaleDateString(locale === 'el' ? 'el-GR' : 'en-US')
+    return dateDisplay
+}
+
+// Lifecycle status → i18n key (t.policyStatus uses camelCase keys)
+const STATUS_I18N_KEY: Record<string, string> = {
+    active: 'active',
+    expiring_soon: 'expiringSoon',
+    expired: 'expired',
+    unknown_duration: 'unknownDuration',
+    action_needed: 'actionNeeded',
+    cancelled: 'cancelled',
+    analyzing: 'analyzing',
 }
 
 function getStatusBadge(status: string, t: any) {
-    const label = t.policyStatus?.[status as keyof typeof t.policyStatus] || status
+    const label = t.policyStatus?.[STATUS_I18N_KEY[status] || status] || status
     // Aligned to widget HEX palette for visual consistency
     const styles: Record<string, string> = {
-        active:        'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint',
-        expiring_soon: 'bg-[#FEF3C7] text-[#B45309] dark:bg-amber-900/30 dark:text-amber-300',
-        action_needed: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-        analyzing:     'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 animate-pulse',
-        cancelled:     'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
-        incomplete:    'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
+        active:           'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint',
+        expiring_soon:    'bg-[#FEF3C7] text-[#B45309] dark:bg-amber-900/30 dark:text-amber-300',
+        // Expired: calendar fact, amber — never green, never red-alarm.
+        expired:          'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
+        unknown_duration: 'bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300',
+        action_needed:    'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
+        analyzing:        'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 animate-pulse',
+        cancelled:        'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
+        incomplete:       'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400',
     }
     return { label, className: styles[status] || styles.incomplete }
 }
 
 // Status-semantic icon + coverage config
 const STATUS_ICON_CONFIG: Record<string, { icon: string; bg: string; bar: string }> = {
-    active:        { icon: 'text-primary dark:text-mint', bg: 'bg-primary-soft dark:bg-primary/15',  bar: 'bg-primary'  },
-    expiring_soon: { icon: 'text-[#D97706] dark:text-amber-400',   bg: 'bg-[#FEF3C7] dark:bg-amber-900/30',   bar: 'bg-[#F59E0B]'  },
-    action_needed: { icon: 'text-red-600 dark:text-red-400',        bg: 'bg-red-50 dark:bg-red-900/30',         bar: 'bg-red-500'    },
-    cancelled:     { icon: 'text-slate-400',                        bg: 'bg-slate-100 dark:bg-slate-800',       bar: 'bg-slate-300'  },
+    active:           { icon: 'text-primary dark:text-mint', bg: 'bg-primary-soft dark:bg-primary/15',  bar: 'bg-primary'  },
+    expiring_soon:    { icon: 'text-[#D97706] dark:text-amber-400',   bg: 'bg-[#FEF3C7] dark:bg-amber-900/30',   bar: 'bg-[#F59E0B]'  },
+    expired:          { icon: 'text-amber-700 dark:text-amber-400',   bg: 'bg-amber-100 dark:bg-amber-900/30',   bar: 'bg-amber-400'  },
+    unknown_duration: { icon: 'text-stone-500 dark:text-stone-400',   bg: 'bg-stone-100 dark:bg-stone-800',      bar: 'bg-stone-300'  },
+    action_needed:    { icon: 'text-red-600 dark:text-red-400',        bg: 'bg-red-50 dark:bg-red-900/30',         bar: 'bg-red-500'    },
+    cancelled:        { icon: 'text-slate-400',                        bg: 'bg-slate-100 dark:bg-slate-800',       bar: 'bg-slate-300'  },
 }
 function getStatusIconConfig(status: string) {
     return STATUS_ICON_CONFIG[status] ?? STATUS_ICON_CONFIG.active
@@ -87,9 +105,14 @@ export function PolicyCard({ policy, onView, id }: PolicyCardProps) {
     const isPendingInsurer = !policy.insurerName || policy.insurerName === '__PENDING_EXTRACTION__' || policy.insurerName === 'Unknown Insurer' || policy.insurerName === 'Άγνωστος ασφαλιστής'
     const localizedLob = t.policyTypes?.[policy.lineOfBusiness as keyof typeof t.policyTypes] || policy.lineOfBusiness
     const displayInsurer = isPendingInsurer ? localizedLob : policy.insurerName
-    const status = getStatusBadge(policy.status, t)
-    const iconCfg = getStatusIconConfig(isAnalyzing ? 'active' : policy.status)
-    const { cls: coverageCls, pct: coveragePct } = statusCoverage(policy.status)
+    // Lifecycle from the real (extracted) end date — the stored status string
+    // is never recomputed as time passes, so it cannot be trusted for expiry.
+    const lifecycle = resolvePolicyLifecycle(policy)
+    const displayStatus = isAnalyzing ? 'analyzing' : lifecycle.status
+    const status = getStatusBadge(displayStatus, t)
+    const iconCfg = getStatusIconConfig(isAnalyzing ? 'active' : displayStatus)
+    const { cls: coverageCls, pct: coveragePct } = statusCoverage(displayStatus)
+    const expiryInline = isAnalyzing ? '' : formatRelativeExpiry(lifecycle, locale)
 
     return (
         <button
@@ -129,9 +152,7 @@ export function PolicyCard({ policy, onView, id }: PolicyCardProps) {
                     {/* Row 2: LOB type + expiry inline */}
                     <p className="mb-1.5 text-[11px] text-[#94A3B8]">
                         {localizedLob}
-                        {!isAnalyzing && policy.endDate && (
-                            <> · {formatRelativeExpiry(policy.endDate, locale)}</>
-                        )}
+                        {expiryInline && <> · {expiryInline}</>}
                     </p>
 
                     {/* Needs-review chip — only for explicitly unconfirmed/flagged extractions */}

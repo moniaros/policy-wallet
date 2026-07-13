@@ -3,7 +3,7 @@ export const runtime = 'nodejs'
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { notFound } from "next/navigation"
-import { calculatePolicyStatus, getStatusColor, getStatusLabel, getDaysUntilExpiry } from "@/lib/policy-status"
+import { getStatusColor, getStatusLabel, resolvePolicyLifecycle } from "@/lib/policy-status"
 import { getPolicyShares } from "../actions"
 import { getTranslations } from "@/lib/i18n"
 import { getAIUsageStats } from "../actions"
@@ -72,10 +72,14 @@ export default async function PolicyDetailPage({
 
     const shares = sharesResult || []
 
-    const status = calculatePolicyStatus(policy)
+    // Lifecycle from the REAL (extracted) end date — never the DB column's
+    // historical upload placeholder. daysUntilExpiry is null when no
+    // trustworthy end date exists (no fabricated countdown).
+    const lifecycle = resolvePolicyLifecycle(policy)
+    const status = lifecycle.status
     const statusColor = getStatusColor(status)
-    const statusLabel = getStatusLabel(status)
-    const daysLeft = getDaysUntilExpiry(policy.endDate)
+    const statusLabel = getStatusLabel(status, language)
+    const daysLeft = lifecycle.daysUntilExpiry
 
     // Gap report items: dedupe DB-level slug twins and resolve Greek/English
     // titles + grouping dimensions server-side (unknown slugs are Sentry-

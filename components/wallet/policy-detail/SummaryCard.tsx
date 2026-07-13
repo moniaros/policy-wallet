@@ -12,7 +12,7 @@ interface SummaryCardProps {
     exclusionCount: number
     conditionsCount: number
     perkCount: number
-    daysLeft: number
+    daysLeft: number | null
     copy: {
         summaryTitle: string
         summaryAiChip: string
@@ -87,7 +87,7 @@ export function SummaryCard({
                       "border-primary/25 bg-primary-soft/60 text-primary dark:border-mint/25 dark:bg-primary/15 dark:text-mint",
               }
             : null,
-        daysLeft >= 0
+        daysLeft !== null && daysLeft >= 0
             ? {
                   id: "key-dates",
                   icon: Calendar,

@@ -1,44 +1,77 @@
 import type { Policy } from '@prisma/client'
+import { parseDocumentDate } from '@/lib/dates/document-date'
 
-export type PolicyStatus = 'active' | 'expiring_soon' | 'expired' | 'action_needed' | 'cancelled'
+export type PolicyStatus =
+    | 'active'
+    | 'expiring_soon'
+    | 'expired'
+    | 'unknown_duration'
+    | 'action_needed'
+    | 'cancelled'
 
 export interface PolicyWithStatus extends Policy {
     calculatedStatus: PolicyStatus
     daysUntilExpiry: number
 }
 
+export interface PolicyLifecycle {
+    status: PolicyStatus
+    /** Resolved from the extracted document envelope first, DB column second. */
+    endDate: Date | null
+    /** null when no trustworthy end date exists — never a fabricated countdown. */
+    daysUntilExpiry: number | null
+}
+
+/**
+ * The single source of truth for a policy's lifecycle state, computed from
+ * the REAL end date. The extracted envelope value wins over the DB column:
+ * the column may hold the upload-day placeholder when the extracted string
+ * failed to parse historically, so an envelope value that exists but cannot
+ * be parsed means "unknown duration" — it must never fall back to a
+ * placeholder and show as ΕΝΕΡΓΟ with a fabricated countdown.
+ */
+export function resolvePolicyLifecycle(policy: {
+    status?: string | null
+    policyNumber?: string | null
+    insurerName?: string | null
+    endDate?: Date | string | null
+    acordData?: unknown
+}): PolicyLifecycle {
+    const envelope = ((policy.acordData as Record<string, unknown>)?.policy ?? {}) as Record<string, unknown>
+    const envelopeRaw = String(envelope.expirationDate ?? '').trim()
+
+    // Renewal re-uploads supersede the originally extracted expiration.
+    const history = (policy.acordData as Record<string, unknown>)?.renewalHistory
+    const latestRenewalEnd = Array.isArray(history)
+        ? history
+            .map((entry) => parseDocumentDate((entry as Record<string, unknown>)?.endDate))
+            .filter((d): d is Date => Boolean(d))
+            .sort((a, b) => b.getTime() - a.getTime())[0] ?? null
+        : null
+
+    const endDate =
+        latestRenewalEnd ??
+        (envelopeRaw ? parseDocumentDate(envelopeRaw) : parseDocumentDate(policy.endDate ?? null))
+
+    const daysUntilExpiry = endDate
+        ? Math.ceil((endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+        : null
+
+    const stored = String(policy.status || '').toLowerCase()
+    if (stored === 'cancelled') return { status: 'cancelled', endDate, daysUntilExpiry }
+
+    if (daysUntilExpiry === null) return { status: 'unknown_duration', endDate: null, daysUntilExpiry: null }
+    if (daysUntilExpiry < 0) return { status: 'expired', endDate, daysUntilExpiry }
+    if (daysUntilExpiry <= 30) return { status: 'expiring_soon', endDate, daysUntilExpiry }
+    if (!policy.policyNumber || !policy.insurerName) return { status: 'action_needed', endDate, daysUntilExpiry }
+    return { status: 'active', endDate, daysUntilExpiry }
+}
+
 /**
  * Calculate the status of a policy based on its dates and current status
  */
 export function calculatePolicyStatus(policy: Policy): PolicyStatus {
-    // If manually marked as cancelled, return that
-    if (policy.status === 'cancelled') {
-        return 'cancelled'
-    }
-
-    const today = new Date()
-    // If endDate is null, return action_needed
-    if (!policy.endDate) return 'action_needed'
-    const endDate = new Date(policy.endDate)
-    const daysUntilExpiry = Math.ceil((endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-
-    // Expired
-    if (daysUntilExpiry < 0) {
-        return 'expired'
-    }
-
-    // Expiring soon (within 30 days)
-    if (daysUntilExpiry <= 30) {
-        return 'expiring_soon'
-    }
-
-    // Action needed if missing critical information
-    if (!policy.policyNumber || !policy.insurerName) {
-        return 'action_needed'
-    }
-
-    // Active
-    return 'active'
+    return resolvePolicyLifecycle(policy).status
 }
 
 /**
@@ -59,7 +92,8 @@ export function getStatusLabel(status: PolicyStatus, language: 'el' | 'en' = 'el
         el: {
             active: 'Ενεργή',
             expiring_soon: 'Λήγει Σύντομα',
-            expired: 'Έχει Λήξει',
+            expired: 'Ληγμένο',
+            unknown_duration: 'Άγνωστη διάρκεια',
             action_needed: 'Απαιτείται Ενέργεια',
             cancelled: 'Ακυρωμένη',
         },
@@ -67,6 +101,7 @@ export function getStatusLabel(status: PolicyStatus, language: 'el' | 'en' = 'el
             active: 'Active',
             expiring_soon: 'Expiring Soon',
             expired: 'Expired',
+            unknown_duration: 'Unknown duration',
             action_needed: 'Action Needed',
             cancelled: 'Cancelled',
         },
@@ -94,10 +129,17 @@ export function getStatusColor(status: PolicyStatus): {
             text: 'text-amber-700 dark:text-amber-400',
             border: 'border-amber-200 dark:border-amber-800',
         },
+        // Expired is a fact of the calendar, not an alarm: amber, not red,
+        // and clearly distinct from the green active badge.
         expired: {
-            bg: 'bg-red-50 dark:bg-red-900/20',
-            text: 'text-red-700 dark:text-red-400',
-            border: 'border-red-200 dark:border-red-800',
+            bg: 'bg-amber-100 dark:bg-amber-900/30',
+            text: 'text-amber-800 dark:text-amber-300',
+            border: 'border-amber-300 dark:border-amber-700',
+        },
+        unknown_duration: {
+            bg: 'bg-stone-100 dark:bg-stone-800/40',
+            text: 'text-stone-700 dark:text-stone-300',
+            border: 'border-stone-300 dark:border-stone-600',
         },
         action_needed: {
             bg: 'bg-orange-50 dark:bg-orange-900/20',
@@ -147,8 +189,7 @@ export function calculatePortfolioSummary(policies: Policy[]): PortfolioSummary 
     }
 
     policies.forEach((policy) => {
-        const status = calculatePolicyStatus(policy)
-        const daysUntilExpiry = getDaysUntilExpiry(policy.endDate)
+        const { status, daysUntilExpiry } = resolvePolicyLifecycle(policy)
 
         // Count by status
         switch (status) {
@@ -162,12 +203,13 @@ export function calculatePortfolioSummary(policies: Policy[]): PortfolioSummary 
                     policyNumber: policy.policyNumber,
                     insurerName: policy.insurerName,
                     lineOfBusiness: policy.lineOfBusiness,
-                    daysUntilExpiry,
+                    daysUntilExpiry: daysUntilExpiry ?? 0,
                 })
                 break
             case 'expired':
                 summary.expiredCount++
                 break
+            case 'unknown_duration':
             case 'action_needed':
                 summary.actionNeededCount++
                 break

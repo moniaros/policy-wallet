@@ -65,7 +65,7 @@ interface PolicyDetailsClientProps {
     }
     statusLabel: string
     statusColor: any
-    daysLeft: number
+    daysLeft: number | null
     isOwner: boolean
     relationshipId?: string | null
     t: any
@@ -157,11 +157,14 @@ export function PolicyDetailsClient({
         return policy.acordData?.policy?.expirationDate || policy.endDate
     }
 
-    const computedDaysLeft = (() => {
+    // null when no trustworthy end date exists — never the server's DB-column
+    // days (the column can hold the historical upload placeholder).
+    const computedDaysLeft: number | null = (() => {
         const end = parsePolicyDate(getEndDate())
-        if (!end) return daysLeft
+        if (!end) return daysLeft ?? null
         return Math.floor((end.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     })()
+    const isExpiredPolicy = computedDaysLeft !== null && computedDaysLeft < 0
 
     const insuredNames = useMemo(
         () =>
@@ -357,6 +360,7 @@ export function PolicyDetailsClient({
                     statusLabel={statusLabel}
                     statusColor={statusColor}
                     daysLeft={computedDaysLeft}
+                    expiredNotice={isExpiredPolicy && !isAnalyzing ? detailsCopy.expiredBanner : null}
                     isAnalyzing={isAnalyzing}
                     isPendingInsurer={isPendingInsurer}
                     locale={locale}

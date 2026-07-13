@@ -10,6 +10,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AlertCircle, FileUp, Grid3X3, List, PenSquare, Sparkles, Search } from 'lucide-react'
 import { calculatePremiumFootprint } from '@/lib/wallet/premium-footprint'
+import { resolvePolicyLifecycle } from '@/lib/policy-status'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
 import { INSURANCE_BRANCHES, normalizeBranch } from '@/lib/insurance/taxonomy'
 
@@ -77,10 +78,16 @@ export function PolicyWallet({
         })
     }, [policies, searchQuery, activeFilter])
 
-    const attentionCount = policies.filter((p) => p.status === 'action_needed' || p.status === 'expiring_soon').length
-    const activeCount = policies.filter((p) => p.status === 'active').length
-    const expiringCount = policies.filter((p) => p.status === 'expiring_soon').length
-    const actionNeededCount = policies.filter((p) => p.status === 'action_needed').length
+    // KPI counts come from the computed lifecycle (real end dates), not the
+    // stored status string — nothing ever recomputes the stored value, so an
+    // expired policy would count as active forever.
+    const lifecycles = useMemo(() => policies.map((p) => resolvePolicyLifecycle(p)), [policies])
+    const attentionCount = lifecycles.filter((l) =>
+        l.status === 'action_needed' || l.status === 'expiring_soon' || l.status === 'expired' || l.status === 'unknown_duration'
+    ).length
+    const activeCount = lifecycles.filter((l) => l.status === 'active').length
+    const expiringCount = lifecycles.filter((l) => l.status === 'expiring_soon').length
+    const actionNeededCount = lifecycles.filter((l) => l.status === 'action_needed' || l.status === 'unknown_duration').length
     const totalPremium = calculatePremiumFootprint(policies)
 
     // Filter chips follow the branches actually present in this portfolio,
@@ -220,17 +227,21 @@ export function PolicyWallet({
                     travel: policies.filter((p) => normalizeBranch(p.lineOfBusiness).id === 'travel').length,
                 }}
                 expiringPolicies={policies
-                    .filter((p) => p.status === 'expiring_soon')
-                    .map((p) => ({
-                        name: `${t.policyTypes[p.lineOfBusiness as keyof typeof t.policyTypes] || p.lineOfBusiness}`,
-                        expiryDate: p.endDate
-                            ? new Date(p.endDate).toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric',
-                            })
-                            : '-',
-                    }))}
+                    .filter((_, index) => lifecycles[index]?.status === 'expiring_soon')
+                    .map((p, _, __) => {
+                        const end = resolvePolicyLifecycle(p).endDate
+                        return {
+                            name: `${t.policyTypes[p.lineOfBusiness as keyof typeof t.policyTypes] || p.lineOfBusiness}`,
+                            expiryDate: end
+                                ? end.toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    year: 'numeric',
+                                    timeZone: 'UTC',
+                                })
+                                : '-',
+                        }
+                    })}
                 premiumTrend={[]}
             />
 
