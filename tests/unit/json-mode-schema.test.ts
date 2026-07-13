@@ -68,3 +68,34 @@ describe('json-mode-schema — schemaPromptBlock', () => {
         expect(block).toContain('do not output null')
     })
 })
+
+describe('normalizeClarityShape', () => {
+    it('fills missing coverageSnapshot arrays — the prod coverage_mapping crash', async () => {
+        const { normalizeClarityShape } = await import('@/lib/services/ai/json-mode-schema')
+        const normalized = normalizeClarityShape({
+            plainLanguageSummary: 'Σύνοψη',
+            coverageSnapshot: { covered: ['Νοσηλεία'] }, // model omitted the rest
+        } as any)
+        expect(normalized.coverageSnapshot).toEqual({
+            covered: ['Νοσηλεία'],
+            notCovered: [],
+            limits: [],
+            deductibles: [],
+            exclusions: [],
+        })
+        expect(normalized.savingsOpportunities).toEqual([])
+        expect(normalized.coverageGaps).toEqual([])
+        expect(normalized.checklistScores).toEqual([])
+        expect(normalized.priorityActions).toEqual([])
+    })
+
+    it('handles a completely missing snapshot and preserves present sections', async () => {
+        const { normalizeClarityShape } = await import('@/lib/services/ai/json-mode-schema')
+        const normalized = normalizeClarityShape({
+            coverageGaps: [{ slug: 'x' }],
+        } as any)
+        expect(normalized.coverageSnapshot.covered).toEqual([])
+        expect(normalized.coverageGaps).toEqual([{ slug: 'x' }])
+        expect(normalized.plainLanguageSummary).toBe('')
+    })
+})
