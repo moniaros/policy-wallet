@@ -8,6 +8,7 @@ import { logger } from "@/lib/logger"
 import { canUserUseTokens, reserveTokens, releaseTokenReservation } from "@/lib/token-tracking"
 import { getAIService, type AIServiceType } from "@/lib/services/ai"
 import { enrichExtractionPayload } from "@/lib/services/ai/extraction-enrichment"
+import { downloadPolicyDocument } from "@/lib/supabase/storage-download"
 import type {
     AIDocument,
     AICapabilityOperation,
@@ -2037,14 +2038,9 @@ export class PolicyAnalysisOrchestratorService {
         for (let attempt = 1; attempt <= 2; attempt++) {
             try {
                 if (document.fileUrl.startsWith("http")) {
-                    const response = await fetch(document.fileUrl)
-                    if (!response.ok) {
-                        throw new Error(
-                            `Failed to fetch document: ${response.status} ${response.statusText}`
-                        )
-                    }
-                    const arrayBuffer = await response.arrayBuffer()
-                    buffer = Buffer.from(arrayBuffer)
+                    // Service-role download for Supabase storage URLs — the
+                    // 'policies' bucket is private, raw fetch returns 400.
+                    buffer = await downloadPolicyDocument(document.fileUrl)
                 } else {
                     const relativePath = document.fileUrl.startsWith("/")
                         ? document.fileUrl.slice(1)
