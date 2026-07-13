@@ -917,6 +917,7 @@ export const en: TranslationKeys = {
     analysis: {
         title: 'GAP ANALYSIS',
         runAnalysis: 'Understand this policy',
+        freeTrialAvailable: 'Your first full analysis is free — try it on this policy.',
         analyzing: 'Analyzing...',
         noGaps: 'No gaps detected yet. Run analysis to check coverage.',
         gapCheckIncomplete: 'Gap check did not complete',

@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { Sparkles, AlertTriangle, Lightbulb, EyeOff, MessageSquare, Loader2, RefreshCw, HelpCircle } from "lucide-react"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
+import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 import type { FeatureKey } from "@/lib/monetization/feature-gates"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
@@ -57,6 +58,9 @@ interface AnalysisCardProps {
         items: GapReportItem[]
         reportUnlocked: boolean
     }
+    tier?: "free" | "plus" | "pro"
+    /** Free-tier owners: complimentary deep analysis still unused? (null = n/a) */
+    trialAnalysisAvailable?: boolean | null
 }
 
 export function AnalysisCard({
@@ -67,6 +71,8 @@ export function AnalysisCard({
     processingError,
     analysisPipeline,
     report,
+    tier,
+    trialAnalysisAvailable = null,
 }: AnalysisCardProps) {
     const [analyzing, setAnalyzing] = useState(false)
     const [runId, setRunId] = useState<string | null>(null)
@@ -524,6 +530,27 @@ export function AnalysisCard({
                     {analysisInProgress ? statusCopy.inProgress : t.analysis.runAnalysis}
                 </button>
             </div>
+            {/* The complimentary deep analysis exists server-side but was never
+                advertised — say it before use, nudge the upgrade after. */}
+            {tier === "free" && trialAnalysisAvailable === true && !analysisInProgress && (
+                <div className="px-6 pt-5">
+                    <div className="flex items-start gap-2.5 rounded-xl border border-primary/25 bg-primary-tint px-4 py-3 dark:border-primary/35 dark:bg-primary/15">
+                        <Sparkles className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary dark:text-mint" />
+                        <p className="text-sm font-medium text-black/75 dark:text-white/80">
+                            {t.analysis.freeTrialAvailable}
+                        </p>
+                    </div>
+                </div>
+            )}
+            {tier === "free" && trialAnalysisAvailable === false && !analysisInProgress && (
+                <div className="px-6 pt-5">
+                    <UpgradeTriggerCard
+                        featureKey="full_ai_policy_analysis"
+                        triggerSource="post_trial_analysis"
+                        variant="inline"
+                    />
+                </div>
+            )}
             {analysisInProgress && (
                 <div className="px-6 pt-5">
                     <div className="rounded-xl border border-primary/25 bg-primary-tint p-4 dark:border-primary/35 dark:bg-primary/15">

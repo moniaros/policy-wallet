@@ -72,6 +72,19 @@ export default async function PolicyDetailPage({
 
     const shares = sharesResult || []
 
+    // Free-tier owners get exactly one complimentary deep analysis
+    // (User.trialAnalysisUsedAt, claimed atomically by the orchestrator).
+    // Surface its availability so the UI can advertise it before use and
+    // nudge the upgrade after it is consumed.
+    let trialAnalysisAvailable: boolean | null = null
+    if (isOwner && entitlements.tier === "free") {
+        const owner = await db.user.findUnique({
+            where: { id: dbUser.id },
+            select: { trialAnalysisUsedAt: true },
+        })
+        trialAnalysisAvailable = owner ? owner.trialAnalysisUsedAt === null : null
+    }
+
     // Lifecycle from the REAL (extracted) end date — never the DB column's
     // historical upload placeholder. daysUntilExpiry is null when no
     // trustworthy end date exists (no fabricated countdown).
@@ -219,6 +232,7 @@ export default async function PolicyDetailPage({
             tierLimits={entitlements.limits}
             relatedRecommendations={relatedRecommendations}
             renewals={serializedRenewals}
+            trialAnalysisAvailable={trialAnalysisAvailable}
             gapReportItems={gapReportItems}
             reportUnlocked={reportUnlocked}
         />

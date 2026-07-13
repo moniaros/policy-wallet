@@ -34,6 +34,7 @@ import {
 } from "@/lib/wallet/policy-detail"
 import { AlertTriangle, Crown, FileDown, Lock, RefreshCw, ShieldCheck, Trash2, Users } from "lucide-react"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
+import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
 import { FREE_GAP_PREVIEW_COUNT, type GapReportItem } from "@/lib/wallet/gap-report"
@@ -80,6 +81,8 @@ interface PolicyDetailsClientProps {
     }
     relatedRecommendations?: any[]
     renewals?: PolicyRenewalEntry[]
+    /** Free-tier owners: is the complimentary deep analysis still unused? (null = n/a) */
+    trialAnalysisAvailable?: boolean | null
     gapReportItems?: GapReportItem[]
     reportUnlocked?: boolean
 }
@@ -98,6 +101,7 @@ export function PolicyDetailsClient({
     tierLimits,
     relatedRecommendations = [],
     renewals = [],
+    trialAnalysisAvailable = null,
     gapReportItems = [],
     reportUnlocked = true,
 }: PolicyDetailsClientProps) {
@@ -476,6 +480,18 @@ export function PolicyDetailsClient({
                                         reminders: detailsCopy.renewalReminders,
                                     }}
                                 />
+                                {/* Trigger D on the dedicated renewal surface:
+                                    smart multi-milestone reminders are paid. */}
+                                {isOwner && isFreeTier && (
+                                    <div className="mt-3">
+                                        <UpgradeTriggerCard
+                                            featureKey="advanced_renewal_reminders"
+                                            triggerSource="policy_key_dates"
+                                            returnTo={pathname || undefined}
+                                            variant="inline"
+                                        />
+                                    </div>
+                                )}
                             </section>
                         )}
 
@@ -570,6 +586,8 @@ export function PolicyDetailsClient({
                                 processingError={policy.acordData?.processingError || null}
                                 analysisPipeline={policy.acordData?.analysis?.pipeline || null}
                                 report={{ items: gapReportItems, reportUnlocked }}
+                                tier={tier}
+                                trialAnalysisAvailable={trialAnalysisAvailable}
                             />
                         </section>
 
@@ -765,6 +783,16 @@ export function PolicyDetailsClient({
                                 policyNumber={policyNumber}
                                 initialShares={serializedShares || []}
                                 isOwner={isOwner}
+                            />
+                        )}
+
+                        {/* Free owners hit an invisible wall here (the panel is
+                            simply absent) — surface the upgrade path instead. */}
+                        {isOwner && !canUseCollaboration && (
+                            <UpgradeTriggerCard
+                                featureKey="agent_collaboration"
+                                triggerSource="policy_collaboration"
+                                returnTo={pathname || undefined}
                             />
                         )}
 
