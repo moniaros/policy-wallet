@@ -1162,7 +1162,19 @@ export class PolicyAnalysisOrchestratorService {
                     preferredProvider: primaryProvider,
                     includesDocumentContext: false,
                     execute: async () => {
-                        const snapshot = clarityResult.coverageSnapshot
+                        // Defensive: JSON-mode clarity output can omit arrays
+                        // the old response_schema guaranteed (normalized at the
+                        // service too — this is the belt to that suspender).
+                        const raw = (clarityResult.coverageSnapshot ?? {}) as Partial<
+                            typeof clarityResult.coverageSnapshot
+                        >
+                        const snapshot = {
+                            covered: Array.isArray(raw.covered) ? raw.covered : [],
+                            notCovered: Array.isArray(raw.notCovered) ? raw.notCovered : [],
+                            limits: Array.isArray(raw.limits) ? raw.limits : [],
+                            deductibles: Array.isArray(raw.deductibles) ? raw.deductibles : [],
+                            exclusions: Array.isArray(raw.exclusions) ? raw.exclusions : [],
+                        }
                         const checks = [
                             snapshot.covered.length > 0,
                             snapshot.limits.length > 0 || snapshot.deductibles.length > 0,
