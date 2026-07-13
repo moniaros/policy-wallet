@@ -12,11 +12,11 @@ import {
     Coins,
     Globe,
     Info,
+    MinusCircle,
     RefreshCw,
     Scale,
     ShieldOff,
     UserRound,
-    XCircle,
 } from "lucide-react"
 
 import { pickLang, type FinePrintClause, type NotableCondition } from "@/lib/wallet/policy-detail"
@@ -37,6 +37,8 @@ interface ExclusionsCardProps {
         exclusionsReanalyzeHint: string
         showMoreFinePrint: string
         showLessFinePrint: string
+        showAllExclusions: string
+        showFewerExclusions: string
         conditionTypes: Record<string, string>
         riskLevels: Record<string, string>
     }
@@ -78,6 +80,7 @@ const RISK_STYLES: Record<string, { border: string; bg: string; badge: string; t
 }
 
 const FINE_PRINT_PREVIEW_COUNT = 3
+const EXCLUSIONS_PREVIEW_COUNT = 8
 
 /**
  * Everything the policy does NOT do: exclusions, notable conditions
@@ -86,8 +89,10 @@ const FINE_PRINT_PREVIEW_COUNT = 3
  */
 export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, disclaimer }: ExclusionsCardProps) {
     const [showAllFinePrint, setShowAllFinePrint] = useState(false)
+    const [showAllExclusions, setShowAllExclusions] = useState(false)
 
     const hasAnyContent = exclusions.length > 0 || conditions.length > 0 || finePrint.length > 0
+    const visibleExclusions = showAllExclusions ? exclusions : exclusions.slice(0, EXCLUSIONS_PREVIEW_COUNT)
     const sortedFinePrint = [...finePrint].sort((a, b) => {
         const order: Record<string, number> = { critical: 0, warning: 1, info: 2 }
         return (order[a.riskLevel] ?? 3) - (order[b.riskLevel] ?? 3)
@@ -97,7 +102,7 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
     return (
         <div className="pw-card p-6 sm:p-7">
             <div className="mb-1 flex items-center gap-2">
-                <ShieldOff className="h-4 w-4 text-[#B91C1C] dark:text-red-400" />
+                <ShieldOff className="h-4 w-4 text-black/45 dark:text-white/50" />
                 <h2 className="text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">{copy.exclusionsTitle}</h2>
             </div>
             <p className="mb-5 text-xs text-black/55 dark:text-white/60">{copy.exclusionsSubtitle}</p>
@@ -114,17 +119,29 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
                             <h3 className="mb-2.5 text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">
                                 {copy.exclusionsListTitle} ({exclusions.length})
                             </h3>
+                            {/* Standard exclusions are facts of the contract, not alarms —
+                                neutral styling matching the conditions list below. */}
                             <ul className="space-y-2">
-                                {exclusions.map((exclusion, i) => (
+                                {visibleExclusions.map((exclusion, i) => (
                                     <li
                                         key={i}
-                                        className="flex items-start gap-2.5 rounded-xl border border-red-200/60 bg-[#FEF2F2]/70 px-3 py-2.5 dark:border-red-900/40 dark:bg-red-950/15"
+                                        className="flex items-start gap-2.5 rounded-xl border border-black/10 bg-black/[0.03] px-3 py-2.5 dark:border-white/15 dark:bg-white/5"
                                     >
-                                        <XCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-500 dark:text-red-400" />
+                                        <MinusCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-black/40 dark:text-white/45" />
                                         <p className="text-sm font-medium text-black/80 dark:text-white/85">{exclusion}</p>
                                     </li>
                                 ))}
                             </ul>
+                            {exclusions.length > EXCLUSIONS_PREVIEW_COUNT && (
+                                <button
+                                    type="button"
+                                    onClick={() => setShowAllExclusions(!showAllExclusions)}
+                                    className="mt-3 flex w-full items-center justify-center gap-1 text-xs font-semibold text-primary hover:underline dark:text-mint cursor-pointer"
+                                >
+                                    {showAllExclusions ? copy.showFewerExclusions : `${copy.showAllExclusions} (${exclusions.length})`}
+                                    {showAllExclusions ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                                </button>
+                            )}
                         </div>
                     )}
 

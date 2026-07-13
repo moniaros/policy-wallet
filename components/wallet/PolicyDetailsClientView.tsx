@@ -5,7 +5,8 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { CollaborationPanel } from "@/components/wallet/CollaborationPanel"
-import { DeletePolicy } from "@/components/wallet/DeletePolicy"
+import { DeletePolicyDialog } from "@/components/wallet/DeletePolicy"
+import { PolicyHeaderMenu } from "@/components/wallet/policy-detail/PolicyHeaderMenu"
 import { PolicyAnalysisTabs } from "@/app/(protected)/wallet/[id]/PolicyAnalysisTabs"
 import { PolicyQA } from "@/components/wallet/PolicyQA"
 import { AIUsageWidget } from "@/app/(protected)/wallet/[id]/AIUsageWidget"
@@ -31,9 +32,11 @@ import {
     parsePolicyDate,
     type PolicyRenewalEntry,
 } from "@/lib/wallet/policy-detail"
-import { AlertTriangle, Crown, FileDown, Lock, RefreshCw, ShieldCheck, Users } from "lucide-react"
+import { AlertTriangle, Crown, FileDown, Lock, RefreshCw, ShieldCheck, Trash2, Users } from "lucide-react"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
+import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
+import { FREE_GAP_PREVIEW_COUNT, type GapReportItem } from "@/lib/wallet/gap-report"
 
 // Trigger J: savings-report export (Pro). Bilingual copy kept as a pair map
 // so the changed-file i18n lint stays clean.
@@ -77,6 +80,8 @@ interface PolicyDetailsClientProps {
     }
     relatedRecommendations?: any[]
     renewals?: PolicyRenewalEntry[]
+    gapReportItems?: GapReportItem[]
+    reportUnlocked?: boolean
 }
 
 export function PolicyDetailsClient({
@@ -93,6 +98,8 @@ export function PolicyDetailsClient({
     tierLimits,
     relatedRecommendations = [],
     renewals = [],
+    gapReportItems = [],
+    reportUnlocked = true,
 }: PolicyDetailsClientProps) {
     const locale = t.common?.locale || "en-US"
     const lang: "el" | "en" = locale.startsWith("el") ? "el" : "en"
@@ -101,6 +108,7 @@ export function PolicyDetailsClient({
     const pathname = usePathname()
     const [exportUpgradeOpen, setExportUpgradeOpen] = useState(false)
     const [isRequestingQuote, setIsRequestingQuote] = useState(false)
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
     const handleRequestQuote = async () => {
         if (isRequestingQuote) return
@@ -125,6 +133,8 @@ export function PolicyDetailsClient({
     const isFreeTier = tier === 'free'
     const canShowCollaborationTimeline = Boolean(relationshipId) && canUseCollaboration && !isFreeTier
 
+    // Raw extracted value — pending-placeholder checks run against THIS;
+    // display goes through the insurer registry (canonical Greek-market name).
     const getInsurerName = () => policy.acordData?.policy?.insurerName || policy.insurerName
     const getPolicyNumber = () => policy.acordData?.policy?.policyNumber || policy.policyNumber
     const getCoverageType = () => policy.acordData?.policy?.lineOfBusiness || policy.lineOfBusiness
@@ -191,8 +201,9 @@ export function PolicyDetailsClient({
     const coverageCount = Array.isArray(policy.acordData?.coverages) ? policy.acordData.coverages.length : 0
     const conditionsCount = notableConditions.length + finePrint.length
 
+    // Deduped count — must agree with the summary band and the tab badge.
     const health = calculatePolicyHealthScore({
-        gapCount: (policy.gapInstances || []).length,
+        gapCount: gapReportItems.length,
         exclusionCount: exclusions.length,
         verified: Boolean(policy.verified),
     })
@@ -280,7 +291,8 @@ export function PolicyDetailsClient({
     const isAnalyzing = policy.status === 'analyzing'
     const isPendingInsurer = !getInsurerName() || getInsurerName() === '__PENDING_EXTRACTION__' || getInsurerName() === 'Unknown Insurer' || getInsurerName() === 'Άγνωστος ασφαλιστής'
     const isPendingPolicyNumber = !policyNumber || policyNumber.startsWith('PENDING-')
-    const displayInsurer = isPendingInsurer ? localizedType : getInsurerName()
+    const insurerDisplay = resolveInsurerDisplay(getInsurerName())
+    const displayInsurer = isPendingInsurer ? localizedType : insurerDisplay.displayName
     const displayPolicyNumber = isPendingPolicyNumber ? null : policyNumber
 
     const showRecommendations = isOwner && relatedRecommendations.length > 0
@@ -369,6 +381,22 @@ export function PolicyDetailsClient({
                     onShare={handleShare}
                     onDownload={handleDownloadPrimaryDoc}
                     onCallInsurer={handleCallInsurer}
+                    headerMenu={
+                        isOwner ? (
+                            <PolicyHeaderMenu
+                                ariaLabel={detailsCopy.moreActions}
+                                items={[
+                                    {
+                                        id: "delete-policy",
+                                        label: t.wallet.deletePolicyModal.deletePolicy,
+                                        icon: Trash2,
+                                        destructive: true,
+                                        onSelect: () => setDeleteDialogOpen(true),
+                                    },
+                                ]}
+                            />
+                        ) : undefined
+                    }
                 />
 
                 {/* ── Section navigation ─────────────────────────────────── */}
@@ -495,6 +523,8 @@ export function PolicyDetailsClient({
                                         exclusionsReanalyzeHint: detailsCopy.exclusionsReanalyzeHint,
                                         showMoreFinePrint: detailsCopy.showMoreFinePrint,
                                         showLessFinePrint: detailsCopy.showLessFinePrint,
+                                        showAllExclusions: detailsCopy.showAllExclusions,
+                                        showFewerExclusions: detailsCopy.showFewerExclusions,
                                         conditionTypes: detailsCopy.conditionTypes,
                                         riskLevels: detailsCopy.riskLevels,
                                     }}
@@ -535,6 +565,7 @@ export function PolicyDetailsClient({
                                 policyStatus={policy.status}
                                 processingError={policy.acordData?.processingError || null}
                                 analysisPipeline={policy.acordData?.analysis?.pipeline || null}
+                                report={{ items: gapReportItems, reportUnlocked }}
                             />
                         </section>
 
@@ -714,7 +745,15 @@ export function PolicyDetailsClient({
                             />
                         )}
 
-                        <AIUsageWidget count={aiUsageStats.count} limit={aiUsageStats.limit} t={t} />
+                        <AIUsageWidget
+                            count={aiUsageStats.count}
+                            limit={aiUsageStats.limit}
+                            t={t}
+                            reportUnlock={{
+                                locked: !reportUnlocked,
+                                lockedCount: Math.max(gapReportItems.length - FREE_GAP_PREVIEW_COUNT, 0),
+                            }}
+                        />
 
                         {canShowCollaborationPanel && (
                             <CollaborationPanel
@@ -725,7 +764,6 @@ export function PolicyDetailsClient({
                             />
                         )}
 
-                        {isOwner && <DeletePolicy policyId={policy.id} />}
                     </aside>
                 </div>
             </div>
@@ -737,6 +775,14 @@ export function PolicyDetailsClient({
                 triggerSource="savings_report_export"
                 returnTo={pathname || undefined}
             />
+
+            {isOwner && (
+                <DeletePolicyDialog
+                    policyId={policy.id}
+                    open={deleteDialogOpen}
+                    onOpenChange={setDeleteDialogOpen}
+                />
+            )}
         </div>
     )
 }

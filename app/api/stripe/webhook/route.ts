@@ -126,6 +126,13 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         return
     }
 
+    // One-off €3 gap-report unlock (mode: payment) — no subscription follows.
+    if (session.metadata?.type === 'report_unlock' && session.metadata?.policyId) {
+        const { fulfillReportUnlockSession } = await import('@/lib/billing')
+        await fulfillReportUnlockSession(session.id, userId, session.metadata.policyId)
+        return
+    }
+
     const stripeCustomerId = session.customer as string
     const stripeSubscriptionId = session.subscription as string
 

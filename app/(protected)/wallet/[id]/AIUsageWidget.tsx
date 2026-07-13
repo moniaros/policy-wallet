@@ -1,18 +1,50 @@
 "use client"
 
 import React from 'react'
+import { Sparkles } from 'lucide-react'
 
 interface AIUsageWidgetProps {
     count: number
     limit: number | null
     t: any
+    /**
+     * When the gap report is partially locked, the dark card switches to
+     * value-first copy and deep-links to the SINGLE unlock CTA in the report
+     * (#gap-unlock) — it never carries its own checkout button.
+     */
+    reportUnlock?: { locked: boolean; lockedCount: number }
 }
 
-export function AIUsageWidget({ count, limit, t }: AIUsageWidgetProps) {
+export function AIUsageWidget({ count, limit, t, reportUnlock }: AIUsageWidgetProps) {
     const isUnlimited = limit === null
     const safeLimit = limit ?? count
     const percentage = isUnlimited ? 0 : Math.min((count / Math.max(safeLimit, 1)) * 100, 100)
     const remaining = isUnlimited ? null : Math.max(safeLimit - count, 0)
+    const showReportUnlock = Boolean(reportUnlock?.locked && (reportUnlock?.lockedCount || 0) > 0)
+
+    if (showReportUnlock) {
+        return (
+            <div className="bg-gradient-to-br from-black to-[#111111] dark:from-[#111111] dark:to-black rounded-3xl p-6 text-white shadow-lg relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Sparkles className="w-24 h-24" />
+                </div>
+
+                <h3 className="text-sm font-bold opacity-80 uppercase tracking-widest mb-3">
+                    {t.wallet.reportUnlockWidgetTitle}
+                </h3>
+                <p className="text-xs leading-relaxed opacity-80 mb-5">
+                    {t.wallet.reportUnlockWidgetBody}
+                </p>
+                <a
+                    href="#gap-unlock"
+                    className="w-full py-3 bg-white text-black rounded-xl font-bold hover:bg-black/5 transition-colors flex items-center justify-center gap-2 text-sm"
+                >
+                    <Sparkles className="w-4 h-4 text-primary" />
+                    {t.wallet.reportUnlockWidgetCta}
+                </a>
+            </div>
+        )
+    }
 
     return (
         <div className="bg-gradient-to-br from-black to-[#111111] dark:from-[#111111] dark:to-black rounded-3xl p-6 text-white shadow-lg relative overflow-hidden group">

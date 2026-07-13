@@ -4,7 +4,7 @@ import Link from "next/link"
 import { CheckCircle2, ShieldCheck } from "lucide-react"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { stripe } from "@/lib/stripe"
-import { fulfillTokenPurchaseSession, handleSubscriptionSuccess, sanitizeReturnPath } from "@/lib/billing"
+import { fulfillReportUnlockSession, fulfillTokenPurchaseSession, handleSubscriptionSuccess, sanitizeReturnPath } from "@/lib/billing"
 import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
 
@@ -38,6 +38,11 @@ const COPY = {
         el: "Τα επιπλέον tokens προστέθηκαν στον λογαριασμό σας και είναι άμεσα διαθέσιμα.",
         en: "Your extra tokens were added to your account and are available immediately.",
     },
+    reportTitle: { el: "Η αναφορά ξεκλειδώθηκε", en: "Report unlocked" },
+    reportBody: {
+        el: "Όλα τα κενά κάλυψης του συμβολαίου σας είναι πλέον ορατά, μαζί με τις πλήρεις εξηγήσεις και προτάσεις.",
+        en: "All coverage gaps of your policy are now visible, with full explanations and recommendations.",
+    },
 } as const
 
 const pick = (pair: { el: string; en: string }, language: string) =>
@@ -55,6 +60,7 @@ export default async function UpgradeSuccessPage({
 
     let activated = false
     let tokenPurchase = false
+    let reportUnlock = false
     if (sessionId) {
         try {
             const session = await stripe.checkout.sessions.retrieve(sessionId)
@@ -63,7 +69,12 @@ export default async function UpgradeSuccessPage({
                 session.payment_status === "no_payment_required" // trials
             const belongsToUser = session.metadata?.userId === dbUser.id
 
-            if (paid && belongsToUser && session.metadata?.tokensPurchased) {
+            if (paid && belongsToUser && session.metadata?.type === "report_unlock" && session.metadata?.policyId) {
+                // One-off €3 gap-report unlock (mode: payment)
+                await fulfillReportUnlockSession(session.id, dbUser.id, session.metadata.policyId)
+                activated = true
+                reportUnlock = true
+            } else if (paid && belongsToUser && session.metadata?.tokensPurchased) {
                 // One-off token-pack checkout (mode: payment)
                 await fulfillTokenPurchaseSession(
                     session.id,
@@ -94,7 +105,7 @@ export default async function UpgradeSuccessPage({
     }
 
     // Fall back to checking the DB directly (webhook may have beaten us)
-    if (!activated && !tokenPurchase) {
+    if (!activated && !tokenPurchase && !reportUnlock) {
         const sub = await db.subscription.findFirst({
             where: { userId: dbUser.id, status: "active", plan: { price: { gt: 0 } } },
             orderBy: { createdAt: "desc" },
@@ -110,18 +121,22 @@ export default async function UpgradeSuccessPage({
                     <CheckCircle2 className={`h-8 w-8 ${activated ? "text-primary dark:text-mint" : "text-amber-600 dark:text-amber-400"}`} />
                 </div>
                 <h1 className="mt-5 text-2xl font-black text-black dark:text-white">
-                    {tokenPurchase
-                        ? pick(COPY.tokensTitle, language)
-                        : activated
-                            ? pick(COPY.title, language)
-                            : pick(COPY.pendingTitle, language)}
+                    {reportUnlock
+                        ? pick(COPY.reportTitle, language)
+                        : tokenPurchase
+                            ? pick(COPY.tokensTitle, language)
+                            : activated
+                                ? pick(COPY.title, language)
+                                : pick(COPY.pendingTitle, language)}
                 </h1>
                 <p className="mt-2 text-sm leading-relaxed text-black/60 dark:text-white/65">
-                    {tokenPurchase
-                        ? pick(COPY.tokensBody, language)
-                        : activated
-                            ? pick(COPY.body, language)
-                            : pick(COPY.pendingBody, language)}
+                    {reportUnlock
+                        ? pick(COPY.reportBody, language)
+                        : tokenPurchase
+                            ? pick(COPY.tokensBody, language)
+                            : activated
+                                ? pick(COPY.body, language)
+                                : pick(COPY.pendingBody, language)}
                 </p>
                 <Link
                     href={returnPath}
