@@ -6,6 +6,8 @@ import { generateObject, generateText } from 'ai'
 vi.mock('ai', () => ({
   generateObject: vi.fn(),
   generateText: vi.fn(),
+  // json-mode-schema embeds the JSON schema in the prompt via zodSchema()
+  zodSchema: () => ({ jsonSchema: { type: 'object', mocked: true } }),
 }))
 
 vi.mock('@google/generative-ai', () => ({
@@ -145,6 +147,16 @@ describe('GeminiAIService message payload shape', () => {
       expect(filePart.filename).toBe(doc.fileName)
       expect(filePart.mimeType).toBeUndefined()
       expect(String(filePart.data)).not.toContain('data:application/pdf')
+
+      // Gemini rejects AcordDataSchema-sized response_schemas ("too many
+      // states") — these calls must use JSON mode with the schema in the
+      // prompt and local validation instead.
+      expect(payload.output).toBe('no-schema')
+      expect(payload.schema).toBeUndefined()
+      const schemaTextPart = userMessage.content.find(
+        (part: any) => part.type === 'text' && String(part.text).includes('JSON SCHEMA:')
+      )
+      expect(schemaTextPart).toBeDefined()
     }
   })
 
