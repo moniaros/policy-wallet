@@ -29,6 +29,8 @@ import type {
 import { trackTokenUsage } from '@/lib/token-tracking'
 import { enrichExtractionPayload } from './extraction-enrichment'
 import { extractionCitationsEnabled, ExtractionSourcesSchema, CITATIONS_PROMPT_SECTION } from './extraction-citations'
+import { schemaPromptBlock, validateJsonModeObject, coercedGreekString } from './json-mode-schema'
+import { WRITE_BRANCH_IDS } from '@/lib/insurance/taxonomy'
 import { AcordDataSchema } from '../../schemas/acord-data'
 import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from './shared-utils'
 import { wrapGapResultsBilingual, wrapClarityResultsBilingual } from '../translation/greek-to-bilingual'
@@ -221,15 +223,23 @@ ${extractionCitationsEnabled()
         acordData: AcordDataSchema.optional().describe("Type-specific structured data matching the detected lineOfBusiness")
       })
 
+      // JSON mode: the schema travels in the prompt and validation happens
+      // locally — Gemini rejects AcordDataSchema-sized response_schemas with
+      // "too many states for serving" (see json-mode-schema.ts).
+      const extractionGuidance = `
+lineOfBusiness MUST be exactly one of: ${WRITE_BRANCH_IDS.join(', ')}.
+extractionConfidence.fields MUST include a 0-100 score for every extracted field among: insurerName, policyNumber, lineOfBusiness, startDate, endDate, premiumAmount, issueDate, premiumFrequency, renewalDate.
+${schemaPromptBlock(ExtractionSchema)}`
+
       const result = await withTimeoutAndRetry(
         () => generateObject({
           model: this.aiProvider!(modelName as string),
-          schema: ExtractionSchema,
+          output: 'no-schema',
           messages: [
             {
               role: 'user',
               content: [
-                { type: 'text', text: prompt },
+                { type: 'text', text: `${prompt}\n${extractionGuidance}` },
                 {
                   type: 'file',
                   data: document.data,
@@ -244,7 +254,7 @@ ${extractionCitationsEnabled()
         'Gemini extraction generateObject'
       )
 
-      const extracted = result.object
+      const extracted = validateJsonModeObject(ExtractionSchema, result.object, 'gemini extraction')
       const enriched = enrichExtractionPayload(extracted, undefined, 'gemini')
       const parsedUsage = parseUsage(result.usage, modelName)
 
@@ -388,23 +398,27 @@ ${gapDefinitions.map(g => `- ${g.slug}: ${g.checkCriteria}`).join('\n')}`
         gapResults: z.array(z.object({
           slug: z.string(),
           isDetected: z.boolean(),
-          explanation: z.string().describe("Gap explanation in Greek"),
-          suggestion: z.string().describe("Remediation suggestion in Greek")
+          explanation: coercedGreekString.describe("Gap explanation in Greek — a plain string, NOT an object"),
+          suggestion: coercedGreekString.describe("Remediation suggestion in Greek — a plain string, NOT an object")
         })),
         acordData: AcordDataSchema.optional()
       })
 
+      // JSON mode — GapAnalysisSchema embeds AcordDataSchema, which exceeds
+      // Gemini's response_schema state budget (see json-mode-schema.ts).
+      parts.push({ type: 'text', text: schemaPromptBlock(GapAnalysisSchema) })
+
       const result = await withTimeoutAndRetry(
         () => generateObject({
           model: this.aiProvider!(modelName as string),
-          schema: GapAnalysisSchema,
+          output: 'no-schema',
           messages: [{ role: 'user', content: parts }],
           temperature: 0.2
         }),
         'Gemini Zod gap analysis'
       )
 
-      const analysisRaw = result.object
+      const analysisRaw = validateJsonModeObject(GapAnalysisSchema, result.object, 'gemini gap analysis')
       const parsedUsage = parseUsage(result.usage, modelName)
 
       if (options?.userId) {
@@ -590,10 +604,14 @@ ${checklistPrompt}`
       })
     }
 
+    // JSON mode — ClaritySchema embeds AcordDataSchema, which exceeds
+    // Gemini's response_schema state budget (see json-mode-schema.ts).
+    parts.push({ type: 'text', text: schemaPromptBlock(ClaritySchema) })
+
     const result = await withTimeoutAndRetry(
       () => generateObject({
         model: this.aiProvider!(modelName as string),
-        schema: ClaritySchema,
+        output: 'no-schema',
         messages: [{ role: 'user', content: parts }],
         temperature: 0.2,
       }),
@@ -601,7 +619,7 @@ ${checklistPrompt}`
     )
 
     const parsedUsage = parseUsage(result.usage, modelName)
-    const object = result.object
+    const object = validateJsonModeObject(ClaritySchema, result.object, 'gemini clarity analysis')
 
     if (options?.userId && result.usage) {
       const usage = parseUsage(result.usage, modelName)
