@@ -97,11 +97,15 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
 
     // Polling with backoff: 2s for first 30s, 5s until 2min, 10s after
     const pollingStartRef = useRef<number>(0)
+    // The effect below re-runs on every poll (router.refresh() yields a new
+    // `policies` reference), so the notify prompt needs a once-per-run guard.
+    const notifyPromptShownRef = useRef(false)
 
     React.useEffect(() => {
         const hasAnalyzing = policies.some((p) => p.status === 'analyzing')
         if (!hasAnalyzing) {
             pollingStartRef.current = 0
+            notifyPromptShownRef.current = false
             return
         }
 
@@ -121,8 +125,10 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
         }
         timeout = setTimeout(poll, getInterval())
 
-        if ('Notification' in window && Notification.permission === 'default') {
+        if ('Notification' in window && Notification.permission === 'default' && !notifyPromptShownRef.current) {
+            notifyPromptShownRef.current = true
             toast(copy.inProgress, {
+                id: 'analysis-notify-prompt',
                 description: copy.notifyPrompt,
                 action: {
                     label: copy.notifyMe,
