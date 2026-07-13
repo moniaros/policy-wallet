@@ -54,6 +54,7 @@ const envSchema = z.object({
     SENDER_EMAIL: z.string().email().optional(),
     BREVO_LIST_ID_USERS: z.string().optional(),
     BREVO_LIST_ID_AGENTS: z.string().optional(),
+    ADMIN_NOTIFICATION_EMAIL: z.string().email().optional(),
 
     // CRM / HubSpot (Optional)
     HUBSPOT_ACCESS_TOKEN: z.string().min(1).optional(),
