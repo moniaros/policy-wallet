@@ -185,6 +185,7 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                             currentSubscription={initialData.currentSubscription}
                             currentPlan={initialData.currentPlan}
                             usageMetrics={initialData.usageMetrics}
+                            conversionUsage={initialData.conversionUsage}
                             creditBalance={initialData.creditBalance}
                             onUpgrade={handleUpgrade}
                             onSwitchRole={handleSwitchRole}

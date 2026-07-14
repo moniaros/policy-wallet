@@ -11,6 +11,8 @@ import { recordConversionEvent } from "@/lib/journey/conversion-events"
 import { env } from "@/lib/env"
 import { syncRevenueCatSubscription } from "@/lib/services/revenuecat.service"
 import { daysFromNow, TRIAL_PERIOD_DAYS } from "@/lib/constants/time"
+import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
+import { FREE_LIFETIME_QUESTIONS } from "@/lib/monetization/feature-gates"
 
 export async function getAccountData() {
     const authResult = await getAuthenticatedUserOrNull()
@@ -209,10 +211,41 @@ export async function getAccountData() {
         enabled: p.enabled
     }))
 
+    // Conversion meters: what the user has actually consumed of the free
+    // floor (1 trial analysis, FREE_LIFETIME_QUESTIONS questions) and of a
+    // paid plan's monthly analysis allowance. entitlementUsage rows don't
+    // cover these, so they're computed here.
+    const startOfMonth = new Date()
+    startOfMonth.setDate(1)
+    startOfMonth.setHours(0, 0, 0, 0)
+    const [entitlements, questionsAsked, analysesThisMonth] = await Promise.all([
+        resolveUserEntitlements(userId),
+        db.activityLog.count({
+            where: { adminUserId: userId, actionType: "POLICY_QUESTION_ASKED" },
+        }),
+        db.activityLog.count({
+            where: {
+                adminUserId: userId,
+                actionType: "POLICY_ANALYZED",
+                timestamp: { gte: startOfMonth },
+            },
+        }),
+    ])
+
+    const conversionUsage = {
+        tier: entitlements.tier,
+        trialAnalysisAvailable: user.trialAnalysisUsedAt === null,
+        freeQuestionsUsed: Math.min(questionsAsked, FREE_LIFETIME_QUESTIONS),
+        freeQuestionsLimit: FREE_LIFETIME_QUESTIONS,
+        analysesUsedThisMonth: analysesThisMonth,
+        analysesLimitPerMonth: entitlements.limits.aiAnalysisPerMonth,
+    }
+
     return {
         user: uiUser,
         currentSubscription: finalSubscription,
         currentPlan: finalPlan,
+        conversionUsage,
         availablePlans: availablePlans.map(p => ({
             plan_id: p.id,
             plan_type: p.planType as any,

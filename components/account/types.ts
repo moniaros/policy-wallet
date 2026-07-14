@@ -147,6 +147,16 @@ export interface SecurityEvent {
 // Component Props
 // =============================================================================
 
+/** What the user has consumed of the free floor / their plan's allowance. */
+export interface ConversionUsage {
+    tier: 'free' | 'plus' | 'pro'
+    trialAnalysisAvailable: boolean
+    freeQuestionsUsed: number
+    freeQuestionsLimit: number
+    analysesUsedThisMonth: number
+    analysesLimitPerMonth: number | null
+}
+
 export interface AccountOverviewProps {
     /** The current user */
     currentUser: User
@@ -158,6 +168,8 @@ export interface AccountOverviewProps {
     currentPlan: Plan
     /** Usage metrics for current subscription */
     usageMetrics: EntitlementUsage[]
+    /** Free-floor + plan-allowance meters (computed in getAccountData). */
+    conversionUsage?: ConversionUsage
     /** Current referral credit balance */
     creditBalance: number
     /** Called when user wants to view plan details */
