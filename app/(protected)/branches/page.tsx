@@ -7,6 +7,7 @@ import { buildBranchOverview } from "@/lib/insurance/branch-page"
 import { getBranchContent } from "@/lib/insurance/content"
 import { getBranchIcon } from "@/lib/insurance/branch-icons"
 import { ProductBranchCard } from "@/components/branches/ProductBranchCard"
+import { effectivePolicyStatus } from "@/lib/policy-status"
 
 /**
  * Branch coverage overview — every insurance branch as a tile with its
@@ -21,12 +22,23 @@ export default async function BranchesPage() {
     const [policies, score] = await Promise.all([
         db.policy.findMany({
             where: { ownerUserId: dbUser.id },
-            select: { id: true, lineOfBusiness: true, status: true, endDate: true },
+            // acordData carries the extracted expiry the lifecycle trusts.
+            select: { id: true, lineOfBusiness: true, status: true, endDate: true, acordData: true },
         }),
         db.protectionScore.findUnique({ where: { userId: dbUser.id } }),
     ])
 
-    const overview = buildBranchOverview(policies, (score?.expectedLines as string[] | null) ?? [])
+    // Tile states must reflect the REAL lifecycle: an expired policy is not
+    // "covered" (green) — it renders as attention, never as protection.
+    const overview = buildBranchOverview(
+        policies.map((policy) => ({
+            id: policy.id,
+            lineOfBusiness: policy.lineOfBusiness,
+            status: effectivePolicyStatus(policy),
+            endDate: policy.endDate,
+        })),
+        (score?.expectedLines as string[] | null) ?? []
+    )
 
     const stateLabels = {
         covered: t.branches.statusCovered,
