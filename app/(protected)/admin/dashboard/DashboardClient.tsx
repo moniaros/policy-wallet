@@ -63,13 +63,21 @@ export default function DashboardClient({ metrics, activityLogs, pendingAgentsCo
     return (
         <div className="max-w-7xl mx-auto px-4 py-8">
             {/* Header */}
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100">
-                    Admin Dashboard
-                </h1>
-                <p className="text-stone-600 dark:text-stone-400 mt-2">
-                    Platform overview and system metrics
-                </p>
+            <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold text-stone-900 dark:text-stone-100">
+                        Admin Dashboard
+                    </h1>
+                    <p className="text-stone-600 dark:text-stone-400 mt-2">
+                        Platform overview and system metrics
+                    </p>
+                </div>
+                <a
+                    href="/admin/submissions"
+                    className="rounded-lg border border-stone-200 dark:border-stone-700 px-4 py-2 text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800"
+                >
+                    Form submissions →
+                </a>
             </div>
 
             {/* Pending Agents Alert */}
