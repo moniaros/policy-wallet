@@ -27,12 +27,19 @@ const localCache = new Map<string, { count: number; expires: number }>()
 
 /**
  * Distributed Rate Limiter
+ *
+ * `bucket` namespaces the counter. Without it every caller keys on the bare IP,
+ * which means proxy.ts's global /api limit and a route's own limit drain the SAME
+ * counter — a visitor who merely browses the site can get 429'd out of submitting
+ * a form. Pass a bucket (e.g. `contact:${ip}`) to get an independent allowance.
  */
-export async function rateLimit(ip: string, limit: number = 10, durationMs: number = 60000) {
+export async function rateLimit(ip: string, limit: number = 10, durationMs: number = 60000, bucket?: string) {
+    const key = bucket || ip
+
     if (ratelimit) {
         try {
             // Use Global Redis Ratelimiter
-            const { success, limit: totalLimit, remaining, reset } = await ratelimit.limit(ip)
+            const { success, limit: totalLimit, remaining, reset } = await ratelimit.limit(key)
 
             if (!success) {
                 return {
@@ -74,10 +81,10 @@ export async function rateLimit(ip: string, limit: number = 10, durationMs: numb
 
     // Fallback Code (In-Memory for Dev)
     const now = Date.now()
-    const record = localCache.get(ip)
+    const record = localCache.get(key)
 
     if (!record || now > record.expires) {
-        localCache.set(ip, { count: 1, expires: now + durationMs })
+        localCache.set(key, { count: 1, expires: now + durationMs })
         return { success: true, count: 1, limit }
     }
 

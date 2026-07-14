@@ -52,8 +52,11 @@ const envSchema = z.object({
     // Email / Brevo
     BREVO_API_KEY: z.string().optional(),
     SENDER_EMAIL: z.string().email().optional(),
+    SENDER_NAME: z.string().optional(),
     BREVO_LIST_ID_USERS: z.string().optional(),
     BREVO_LIST_ID_AGENTS: z.string().optional(),
+    // Footer-newsletter subscribers are added to this Brevo list.
+    BREVO_LIST_ID_NEWSLETTER: z.string().optional(),
     ADMIN_NOTIFICATION_EMAIL: z.string().email().optional(),
 
     // CRM / HubSpot (Optional)

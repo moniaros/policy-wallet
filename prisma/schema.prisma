@@ -1288,3 +1288,26 @@ model InsuranceProduct {
   @@index([isActive, sortOrder])
   @@map("insurance_products")
 }
+
+/// Public-form captures (contact page, footer newsletter). Deliberately NOT
+/// NotificationEvent: that model requires a userId FK and these submitters are
+/// anonymous. Rows are written before any Brevo call, so a mail failure degrades
+/// to emailSent=false rather than losing the submission.
+model FormSubmission {
+  id        String   @id @default(cuid()) @map("submission_id")
+  formType  String   @map("form_type") // "contact" | "newsletter"
+  email     String
+  name      String?
+  phone     String?
+  subject   String?
+  message   String?
+  locale    String   @default("el")
+  source    String? // e.g. "footer_newsletter", "contact_page"
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  emailSent Boolean  @default(false) @map("email_sent")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([formType, createdAt])
+  @@map("form_submissions")
+}

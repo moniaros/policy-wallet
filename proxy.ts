@@ -106,10 +106,11 @@ export async function proxy(request: NextRequest) {
         "/landing",
         "/api/contact",
         "/api/v1/contact",
-        // Anonymous newsletter/waitlist capture from the public footer — the
-        // route is declared public in the API inventory; without this entry
-        // the proxy 307s the POST to signin and every lead is dropped.
-        "/api/v1/landing/waitlist",
+        // Anonymous newsletter capture from the public footer — without this entry
+        // the proxy 307s the POST to signin and every lead is dropped. (Replaces the
+        // old /api/v1/landing/waitlist HubSpot route, which is gone.) The route
+        // rate-limits + zod-validates itself.
+        "/api/v1/newsletter/subscribe",
         // Stripe webhooks: anonymous POSTs from Stripe's servers — a signin
         // redirect here silently kills event delivery. The routes verify the
         // Stripe-Signature header themselves (defense in depth).
