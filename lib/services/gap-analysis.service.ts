@@ -118,31 +118,24 @@ export class GapAnalysisService extends BaseService {
             throw AppError.notFound('Policy', policyId)
         }
 
-        // Check authorization: Owner OR Authorized Agent
-        const isOwner = policy.ownerUserId === userId
-        if (!isOwner) {
-            const hasAccess = await this.db.accessGrant.findFirst({
-                where: {
-                    granterUserId: policy.ownerUserId,
-                    granteeUserId: userId,
-                    status: 'active'
-                }
-            })
-
-            const hasRelationship = !hasAccess ? await this.db.customerRelationship.findFirst({
-                where: {
-                    agentUserId: userId,
-                    policyholderUserId: policy.ownerUserId
-                }
-            }) : null
-
-            if (!hasAccess && !hasRelationship) {
-                throw AppError.forbidden(
-                    language === 'el'
-                        ? 'Δεν έχετε πρόσβαση σε αυτήν την πολιτική'
-                        : 'You do not have access to this policy'
-                )
-            }
+        // Authorization goes through the ONE central rule (lib/policy-access):
+        // this used to accept a grant of ANY scope and a relationship of ANY
+        // status, which was strictly weaker than every other read path.
+        const { getPolicyAccess } = await import('@/lib/policy-access')
+        const viewer = await this.db.user.findUnique({
+            where: { id: userId },
+            select: { id: true, roles: true },
+        })
+        const access = await getPolicyAccess(policyId, {
+            id: userId,
+            roles: viewer?.roles ?? null,
+        })
+        if (!access.canAnalyze) {
+            throw AppError.forbidden(
+                language === 'el'
+                    ? 'Δεν έχετε πρόσβαση σε αυτήν την πολιτική'
+                    : 'You do not have access to this policy'
+            )
         }
 
         // GDPR Art. 9 gate: the policy OWNER (the data subject) must have granted

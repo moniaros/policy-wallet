@@ -124,8 +124,23 @@ export function computePolicyAccess(input: PolicyAccessInput): PolicyAccess {
     const hasAgentRelationship =
         !isOwner && isAgent && relationship != null && relationship.status !== "inactive"
 
+    // PRIVACY: a customer relationship is NOT consent to read the customer's
+    // documents. It is created unilaterally by the agent (an invite that was
+    // never accepted, or "add customer" by email), so a blanket read arm here
+    // let an agent open every policy a policyholder had ever uploaded — with
+    // no consent, no notification, no per-policy grant. An agent may read a
+    // policy only when:
+    //   • they uploaded it themselves for that customer (createdByUserId), or
+    //   • the owner granted access to THIS policy (AccessGrant scope
+    //     policy:<id> — minted by the owner's own share action, or auto-minted
+    //     for the policy the agent uploaded, revocable at any time).
+    // The relationship still gates whether the agent may act at all, but it
+    // never widens what they can see.
+    const isManagingAgent =
+        hasAgentRelationship && policy.createdByUserId === viewer.id
+
     const canWrite = isOwner || LEVEL_ORDER[grantLevel] >= LEVEL_ORDER.write
-    const canRead = isOwner || grantLevel !== "none" || hasAgentRelationship
+    const canRead = isOwner || grantLevel !== "none" || isManagingAgent
 
     return {
         exists: true,
@@ -135,10 +150,9 @@ export function computePolicyAccess(input: PolicyAccessInput): PolicyAccess {
         canRead,
         canWrite,
         canManageDocuments: canWrite,
-        // Analysis: owner, write/manage grants, or a relationship-connected
-        // agent (preserves the existing agent-portfolio behavior). Pure READ
-        // grants (shared viewers) may not spend analysis resources.
-        canAnalyze: isOwner || LEVEL_ORDER[grantLevel] >= LEVEL_ORDER.write || hasAgentRelationship,
+        // Analysis spends the agent's tokens on the owner's data — only on
+        // policies the agent manages, or with a write/manage grant.
+        canAnalyze: isOwner || LEVEL_ORDER[grantLevel] >= LEVEL_ORDER.write || isManagingAgent,
         // Delete: owner, or a managing agent — the owner can end this at any
         // time by revoking the manage grant.
         canDelete: isOwner || grantLevel === "manage",

@@ -2,6 +2,7 @@
 
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { getAgentPolicyVisibilityWhere } from "@/lib/agent-visibility"
 
 export interface InsightsData {
     portfolioHealth: {
@@ -86,8 +87,13 @@ export async function getInsightsData(): Promise<InsightsData | null> {
 
     // 2. Policy breakdown
     const customerIds = relationships.map(r => r.policyholderUserId)
+    // Book insights cover the agent's OWN book — policies they uploaded or
+    // were granted. A relationship alone never exposes a customer's portfolio.
     const policies = await db.policy.findMany({
-        where: { ownerUserId: { in: customerIds } },
+        where: {
+            ownerUserId: { in: customerIds },
+            ...(await getAgentPolicyVisibilityWhere(agentId)),
+        },
         select: {
             id: true,
             policyNumber: true,
@@ -97,6 +103,7 @@ export async function getInsightsData(): Promise<InsightsData | null> {
             endDate: true,
             ownerUserId: true,
             status: true,
+            acordData: true,
         }
     })
 

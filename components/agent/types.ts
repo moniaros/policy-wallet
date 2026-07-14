@@ -24,7 +24,7 @@ export interface Policy {
     carPlate?: string
     startDate: string
     endDate: string
-    status: 'active' | 'expiring_soon' | 'expired' | 'incomplete'
+    status: 'active' | 'expiring_soon' | 'expired' | 'unknown_duration' | 'action_needed' | 'cancelled' | 'analyzing' | 'incomplete'
     /** True when the viewing agent created (manages) this policy. */
     managedByAgent?: boolean
 }

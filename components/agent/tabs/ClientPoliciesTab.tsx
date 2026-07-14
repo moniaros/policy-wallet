@@ -40,8 +40,25 @@ const TAB_COPY = {
 const STATUS_STYLES: Record<string, string> = {
     active: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
     expiring_soon: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-    expired: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+    // Expired is a calendar fact, not an alarm — same amber language as the
+    // policyholder surfaces (never green, never a red siren).
+    expired: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
+    unknown_duration: "bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300",
+    action_needed: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+    cancelled: "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400",
+    analyzing: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
     incomplete: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+}
+
+const STATUS_LABELS: Record<string, { el: string; en: string }> = {
+    active: { el: "Ενεργό", en: "Active" },
+    expiring_soon: { el: "Λήγει σύντομα", en: "Expiring soon" },
+    expired: { el: "Ληγμένο", en: "Expired" },
+    unknown_duration: { el: "Άγνωστη διάρκεια", en: "Unknown duration" },
+    action_needed: { el: "Απαιτείται ενέργεια", en: "Action needed" },
+    cancelled: { el: "Ακυρωμένο", en: "Cancelled" },
+    analyzing: { el: "Ανάλυση…", en: "Analyzing…" },
+    incomplete: { el: "Ελλιπές", en: "Incomplete" },
 }
 
 export function ClientPoliciesTab({
@@ -111,7 +128,9 @@ export function ClientPoliciesTab({
                     >
                         <option value="">{TAB_COPY.allStatuses[language]}</option>
                         {uniqueStatuses.map((status) => (
-                            <option key={status} value={status}>{status}</option>
+                            <option key={status} value={status}>
+                                {(STATUS_LABELS[status] || STATUS_LABELS.incomplete)[language]}
+                            </option>
                         ))}
                     </select>
                 </div>
@@ -159,8 +178,8 @@ export function ClientPoliciesTab({
                                         <p className="text-sm font-semibold text-slate-900 dark:text-white">
                                             {LOB_LABELS[policy.lineOfBusiness]?.[language] || policy.lineOfBusiness}
                                         </p>
-                                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_STYLES[policy.status] || STATUS_STYLES.active}`}>
-                                            {policy.status}
+                                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_STYLES[policy.status] || STATUS_STYLES.incomplete}`}>
+                                            {(STATUS_LABELS[policy.status] || STATUS_LABELS.incomplete)[language]}
                                         </span>
                                         {policy.managedByAgent && (
                                             <span className="rounded-full px-2 py-0.5 text-[10px] font-medium bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint">

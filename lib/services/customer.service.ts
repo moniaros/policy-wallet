@@ -1,4 +1,6 @@
 import { BaseService } from "./base.service";
+import { agentPolicyVisibilityWhere, getGrantedPolicyIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility";
+import { effectivePolicyStatus, isPolicyCoverageActive } from "@/lib/policy-status";
 import { Prisma } from "@prisma/client";
 import { AppError } from "@/lib/errors";
 
@@ -25,6 +27,12 @@ export class CustomerService extends BaseService {
         const { search, status, page = 1, limit = 10 } = filters;
         const skip = (page - 1) * limit;
 
+        // Policies the agent may see: their own uploads + owner-granted ones.
+        const visibilityWhere = agentPolicyVisibilityWhere(
+            agentUserId,
+            await getGrantedPolicyIds(agentUserId)
+        );
+
         const where: Prisma.CustomerRelationshipWhereInput = {
             agentUserId,
             ...(status && { status }),
@@ -49,8 +57,11 @@ export class CustomerService extends BaseService {
                             image: true,
                             phoneNumber: true,
                             createdAt: true,
+                            // Only what the agent may see: policies they
+                            // uploaded, or ones the owner explicitly granted.
                             policiesOwned: {
-                                select: { id: true, status: true }
+                                where: visibilityWhere,
+                                select: { id: true, status: true, endDate: true, acordData: true }
                             },
                         }
                     },
@@ -76,7 +87,7 @@ export class CustomerService extends BaseService {
                 status: rel.status,
                 joinedAt: rel.customer.createdAt,
                 policyCount: rel.customer.policiesOwned.length,
-                activePolicyCount: rel.customer.policiesOwned.filter(p => p.status === 'active').length,
+                activePolicyCount: rel.customer.policiesOwned.filter(p => isPolicyCoverageActive(p)).length,
                 openOpportunities: rel.opportunities.length,
                 lastInteraction: rel.lastInteractionAt,
             })),
@@ -93,6 +104,11 @@ export class CustomerService extends BaseService {
      * Get detailed customer profile
      */
     async getCustomerProfile(agentUserId: string, customerId: string) {
+        const visibilityWhere = agentPolicyVisibilityWhere(
+            agentUserId,
+            await getGrantedPolicyIds(agentUserId)
+        );
+
         const relationship = await this.db.customerRelationship.findFirst({
             where: {
                 agentUserId,
@@ -102,6 +118,7 @@ export class CustomerService extends BaseService {
                 customer: {
                     include: {
                         policiesOwned: {
+                            where: visibilityWhere,
                             orderBy: { startDate: 'desc' },
                             include: {
                                 gapInstances: {
@@ -148,7 +165,8 @@ export class CustomerService extends BaseService {
                 number: p.policyNumber,
                 insurer: p.insurerName,
                 type: p.lineOfBusiness,
-                status: p.status,
+                // Lifecycle truth — the stored column is never recomputed.
+                status: effectivePolicyStatus(p),
                 premium: p.premiumAmount,
                 startDate: p.startDate,
                 expiresAt: p.endDate,
@@ -242,16 +260,18 @@ export class CustomerService extends BaseService {
                 where: { agentUserId }
             }),
 
-            // Active Policies (rough estimate via relationship)
-            this.db.policy.count({
+            // Policies the agent actually manages or was granted — never the
+            // customer's whole portfolio.
+            this.db.policy.findMany({
                 where: {
                     owner: {
                         customerRelationshipsAsCustomer: {
                             some: { agentUserId }
                         }
                     },
-                    status: 'active'
-                }
+                    ...agentPolicyVisibilityWhere(agentUserId, await getGrantedPolicyIds(agentUserId))
+                },
+                select: { id: true, status: true, endDate: true, acordData: true }
             }),
 
             // Open Opportunities
@@ -278,7 +298,8 @@ export class CustomerService extends BaseService {
         return {
             overview: {
                 totalCustomers,
-                activePolicies,
+                // Coverage liveness from the real end date, not the stale column.
+                activePolicies: activePolicies.filter((p) => isPolicyCoverageActive(p)).length,
                 pendingOpportunities,
                 conversionRate: 0 // Placeholder
             },
