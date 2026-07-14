@@ -357,6 +357,13 @@ export const en: TranslationKeys = {
             showLessFinePrint: 'Show fewer clauses',
             showAllExclusions: 'Show all',
             showFewerExclusions: 'Show fewer',
+            mergeRequestTitle: 'The same policy was uploaded twice',
+            mergeRequestBody: 'This policy also exists as a separate record. Merging them needs your consent — decline and both records simply stay.',
+            mergeApprove: 'Merge into one policy',
+            mergeReject: 'Keep them separate',
+            mergeApproved: 'The policies were merged',
+            mergeRejected: 'The records stay separate',
+            mergeFailed: 'That did not work. Please try again.',
             moreActions: 'More actions',
             expiredBanner: 'This policy appears to have expired. Request a renewal quote to continue your coverage.',
             conditionTypes: {

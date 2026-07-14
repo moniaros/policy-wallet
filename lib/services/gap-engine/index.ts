@@ -48,6 +48,7 @@ import {
     type SmartCardContent,
 } from "./portfolio-rules"
 import type { AIRiskProfileAnalysisResponse } from "@/lib/services/ai/ai-service.interface"
+import { coverageEngineStatus, isPolicyCoverageActive } from "@/lib/policy-status"
 
 // ── Public types ─────────────────────────────────────────────────────
 
@@ -138,19 +139,31 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
     ])
     const hasAgent = activeRelationships > 0
 
-    // 2. Convert to engine types
+    // 2. Convert to engine types.
+    // CRITICAL: every rule below asks "does the user have coverage for X?".
+    // Policy.status is written once at creation and never recomputed, so an
+    // expired policy still reads 'active' — that is how a health policy that
+    // lapsed in May 2025 kept telling the user they were insured. Coverage
+    // liveness is derived from the REAL end date (lib/policy-status).
     const profile = toProfileFields(profileRecord)
+    const coverageActive = new Map(policies.map((p) => [p.id, isPolicyCoverageActive(p)]))
     const policyFields: PolicyFields[] = policies.map((p) => ({
         lineOfBusiness: p.lineOfBusiness,
-        status: p.status,
+        status: coverageEngineStatus(p),
     }))
     const activeLobs = [
         ...new Set(
             policies
-                .filter((p) => p.status === "active")
+                .filter((p) => coverageActive.get(p.id))
                 .map((p) => p.lineOfBusiness.toLowerCase())
         ),
     ]
+    // Gaps found inside a policy that no longer covers anything are not the
+    // user's current risk — they must not generate recommendations or drag
+    // the protection score. (They stay visible on that policy's own page.)
+    const liveGapInstances = openGapInstances.filter(
+        (gap) => !gap.policyId || coverageActive.get(gap.policyId)
+    )
 
     // 3. Detect profile-level gaps
     const profileGaps = detectProfileGaps(profile, policyFields)
@@ -160,7 +173,7 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
         profile,
         activeLobs,
         profileGaps,
-        openGapInstances.length
+        liveGapInstances.length
     )
     const scoreTier = getScoreTier(protectionScore.overallScore)
 
@@ -170,7 +183,7 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
         policies.map((p) => ({
             id: p.id,
             lineOfBusiness: p.lineOfBusiness,
-            status: p.status,
+            status: coverageEngineStatus(p),
             insurerName: p.insurerName,
             policyNumber: p.policyNumber,
             startDate: p.startDate,
@@ -182,7 +195,7 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
 
     // 5. Generate recommendations from both profile gaps and policy gaps
     const profileRecs = profileGapsToRecommendations(userId, profileGaps)
-    const policyRecs = policyGapsToRecommendations(userId, openGapInstances)
+    const policyRecs = policyGapsToRecommendations(userId, liveGapInstances)
 
     // 5b. Match recommendations to insurance products from catalog.
     // Portfolio recs are deliberately excluded — suggesting a product on a
@@ -209,7 +222,8 @@ export async function runGapEngine(userId: string, opts?: RunGapEngineOptions): 
 
     // 6b. Smart-card content (evidence / next action / review target),
     // recomputed from live data every run so it never goes stale.
-    const activePolicyCount = policies.filter((p) => p.status === "active").length
+    // "We checked your N active policies" must not count expired ones.
+    const activePolicyCount = policies.filter((p) => isPolicyCoverageActive(p)).length
     const smartContent: Record<string, SmartCardContent> = {}
     for (const gap of portfolioGaps) {
         smartContent[gap.ruleId] = {
@@ -297,7 +311,9 @@ export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSna
                 acordData: true,
             },
         }),
-        db.gapInstance.count({
+        // Selected (not counted) so gaps belonging to lapsed policies can be
+        // dropped — see the coverage-liveness note in runGapEngine.
+        db.gapInstance.findMany({
             where: {
                 OR: [
                     { policy: { ownerUserId: userId } },
@@ -305,6 +321,7 @@ export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSna
                 ],
                 status: { in: ["open", "detected", "acknowledged"] },
             },
+            select: { id: true, policyId: true },
         }),
         db.customerRelationship.count({
             where: { policyholderUserId: userId, status: "active" },
@@ -313,24 +330,28 @@ export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSna
     const hasAgent = activeRelationships > 0
 
     const profile = toProfileFields(profileRecord)
+    const coverageActive = new Map(policies.map((p) => [p.id, isPolicyCoverageActive(p)]))
     const policyFields: PolicyFields[] = policies.map((p) => ({
         lineOfBusiness: p.lineOfBusiness,
-        status: p.status,
+        status: coverageEngineStatus(p),
     }))
     const activeLobs = [
         ...new Set(
             policies
-                .filter((p) => p.status === "active")
+                .filter((p) => coverageActive.get(p.id))
                 .map((p) => p.lineOfBusiness.toLowerCase())
         ),
     ]
+    const liveGapCount = openGapInstances.filter(
+        (gap) => !gap.policyId || coverageActive.get(gap.policyId)
+    ).length
 
     const profileGaps = detectProfileGaps(profile, policyFields)
     const protectionScore = calculateProtectionScore(
         profile,
         activeLobs,
         profileGaps,
-        openGapInstances
+        liveGapCount
     )
     const scoreTier = getScoreTier(protectionScore.overallScore)
 
@@ -338,7 +359,7 @@ export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSna
         policies.map((p) => ({
             id: p.id,
             lineOfBusiness: p.lineOfBusiness,
-            status: p.status,
+            status: coverageEngineStatus(p),
             insurerName: p.insurerName,
             policyNumber: p.policyNumber,
             startDate: p.startDate,
@@ -348,7 +369,8 @@ export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSna
         { hasAgent }
     )
 
-    const activePolicyCount = policies.filter((p) => p.status === "active").length
+    // "We checked your N active policies" must not count expired ones.
+    const activePolicyCount = policies.filter((p) => isPolicyCoverageActive(p)).length
     const smartContent: Record<string, SmartCardContent> = {}
     for (const gap of portfolioGaps) {
         smartContent[gap.ruleId] = {

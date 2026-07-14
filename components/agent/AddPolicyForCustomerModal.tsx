@@ -40,8 +40,12 @@ const COPY = {
         en: "Policy added",
     },
     analysisStartedNotice: {
-        el: "Η ανάλυση AI ξεκίνησε για αυτό το ασφαλιστήριο.",
-        en: "AI analysis has started for this policy.",
+        el: "Η ανάλυση PolicyWallet AI τρέχει στο παρασκήνιο — μπορείτε να κλείσετε το παράθυρο και να συνεχίσετε. Θα δείτε τα αποτελέσματα στο συμβόλαιο μόλις ολοκληρωθεί.",
+        en: "PolicyWallet AI is analyzing in the background — you can close this and keep working. The results will appear on the policy when it finishes.",
+    },
+    viewPolicyCta: {
+        el: "Προβολή συμβολαίου",
+        en: "View policy",
     },
     consentRequiredNotice: {
         el: "Το έγγραφο αποθηκεύτηκε, αλλά απαιτείται συγκατάθεση του πελάτη πριν την ανάλυση AI.",

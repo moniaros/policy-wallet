@@ -1,14 +1,25 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@sentry/nextjs', () => ({ captureMessage: vi.fn() }))
+
+// syncRecommendations does all its writing inside one transaction, on the tx
+// client — so the mock has to be the tx client too.
+const tx = {
+    recommendationInstance: {
+        findMany: vi.fn(),
+        create: vi.fn(),
+        update: vi.fn(),
+        updateMany: vi.fn(),
+    },
+}
+
 vi.mock('@/lib/db', () => ({
     db: {
         recommendationInstance: {
             findMany: vi.fn(),
-            create: vi.fn(),
-            updateMany: vi.fn(),
         },
         insuranceProduct: { findMany: vi.fn() },
+        $transaction: vi.fn(async (fn: (client: unknown) => Promise<void>) => fn(tx)),
     },
 }))
 
@@ -23,9 +34,11 @@ import {
     type RecommendationInput,
 } from '@/lib/services/gap-engine/recommendation-generator'
 
-const findMany = db.recommendationInstance.findMany as any
-const create = db.recommendationInstance.create as any
-const updateMany = db.recommendationInstance.updateMany as any
+const readFindMany = db.recommendationInstance.findMany as any
+const findMany = tx.recommendationInstance.findMany as any
+const create = tx.recommendationInstance.create as any
+const update = tx.recommendationInstance.update as any
+const updateMany = tx.recommendationInstance.updateMany as any
 
 function gapInstance(overrides: Record<string, any> = {}) {
     return {
@@ -61,8 +74,11 @@ function rec(overrides: Partial<RecommendationInput> = {}): RecommendationInput 
 
 beforeEach(() => {
     vi.clearAllMocks()
+    ;(db.$transaction as any).mockImplementation(async (fn: (client: unknown) => Promise<void>) => fn(tx))
     findMany.mockResolvedValue([])
+    readFindMany.mockResolvedValue([])
     create.mockResolvedValue({})
+    update.mockResolvedValue({})
     updateMany.mockResolvedValue({ count: 1 })
 })
 
@@ -181,28 +197,47 @@ describe('syncRecommendations', () => {
             },
         ])
 
-        await syncRecommendations('u1', [rec({ ruleId: 'policy_gap:motor:theft' })])
-        expect(create).toHaveBeenCalledTimes(1)
+        const stats = await syncRecommendations('u1', [rec({ ruleId: 'policy_gap:motor:theft' })])
+
+        // The row is revived in place — the engine's own «auto:» dismissals are
+        // ours to reverse; only the user's are final.
+        expect(update).toHaveBeenCalledWith(
+            expect.objectContaining({
+                where: { id: 'r1' },
+                data: expect.objectContaining({ status: 'active', dismissReason: null }),
+            })
+        )
+        expect(stats.created).toBe(1)
     })
 
-    it('collapses duplicate active rows left behind by earlier runs', async () => {
+    it('retires rows written under a legacy rule id and keeps the canonical one', async () => {
+        // The (userId, ruleId) unique constraint cannot see that these two ids
+        // are one finding. The sync can: the legacy row is no longer produced,
+        // so it falls out as stale and the table heals itself.
         findMany.mockResolvedValue([
-            { id: 'new', ruleId: 'policy_gap:motor:theft', lineOfBusiness: 'motor', status: 'active', dismissReason: null },
-            { id: 'old', ruleId: 'policy_gap:motor:theft', lineOfBusiness: 'motor', status: 'active', dismissReason: null },
-            { id: 'legacy', ruleId: 'policy_gap:motor_theft', lineOfBusiness: 'motor', status: 'active', dismissReason: null },
+            { id: 'legacy', ruleId: 'policy_gap:own_vehicle_damage', lineOfBusiness: 'motor', status: 'active', dismissReason: null },
+        ])
+
+        await syncRecommendations('u1', [rec({ ruleId: 'policy_gap:motor:own-damage' })])
+
+        expect(create).toHaveBeenCalledTimes(1)
+        expect(updateMany).toHaveBeenCalledWith(
+            expect.objectContaining({
+                where: expect.objectContaining({ id: { in: ['legacy'] } }),
+                data: expect.objectContaining({ dismissReason: 'auto:gap_resolved' }),
+            })
+        )
+    })
+
+    it('refreshes an existing active row in place instead of adding another', async () => {
+        findMany.mockResolvedValue([
+            { id: 'r1', ruleId: 'policy_gap:motor:theft', lineOfBusiness: 'motor', status: 'active', dismissReason: null },
         ])
 
         await syncRecommendations('u1', [rec({ ruleId: 'policy_gap:motor:theft' })])
 
-        // findMany is ordered newest-first, so 'new' is kept and its copies —
-        // including the row written under the legacy rule id — are retired.
         expect(create).not.toHaveBeenCalled()
-        expect(updateMany).toHaveBeenCalledWith(
-            expect.objectContaining({
-                where: expect.objectContaining({ id: { in: ['old', 'legacy'] } }),
-                data: expect.objectContaining({ dismissReason: 'auto:duplicate' }),
-            })
-        )
+        expect(update).toHaveBeenCalledTimes(1)
     })
 
     it('retires a finding that no longer applies', async () => {
@@ -221,18 +256,32 @@ describe('syncRecommendations', () => {
     })
 
     it('survives a concurrent run winning the insert race', async () => {
+        // Both runs pass the existence check, both insert, the unique
+        // constraint aborts one transaction with P2002. Retry: the loser now
+        // sees the winner's row and updates it instead of exploding — five of
+        // the engine's call sites are unawaited background promises, so this
+        // race is not hypothetical.
         create.mockRejectedValueOnce(Object.assign(new Error('unique'), { code: 'P2002' }))
+        findMany
+            .mockResolvedValueOnce([]) // first attempt: nothing there yet
+            .mockResolvedValueOnce([   // retry: the winner's row exists
+                { id: 'winner', ruleId: 'policy_gap:motor:theft', lineOfBusiness: 'motor', status: 'active', dismissReason: null },
+            ])
 
         const stats = await syncRecommendations('u1', [rec({ ruleId: 'policy_gap:motor:theft' })])
 
-        expect(stats.created).toBe(0) // the other run's row stands
+        expect(db.$transaction).toHaveBeenCalledTimes(2)
+        expect(update).toHaveBeenCalledTimes(1) // updated the winner's row
+        expect(stats.created).toBe(0)           // the other run's row stands
     })
 })
 
 describe('getActiveRecommendations', () => {
     it('hides duplicate rows that are already in the database', async () => {
         // Rows written before rule ids carried a concept: three rows, one finding.
-        findMany.mockResolvedValue([
+        // The unique constraint permits all three — they are three distinct rule
+        // ids as far as the database can tell.
+        readFindMany.mockResolvedValue([
             {
                 id: 'r1', ruleId: 'policy_gap:own_vehicle_damage', lineOfBusiness: 'motor',
                 title: { en: 'Own-Vehicle-Damage', el: 'Own-Vehicle-Damage' },
@@ -260,7 +309,7 @@ describe('getActiveRecommendations', () => {
     })
 
     it('keeps the same finding on two different branches', async () => {
-        findMany.mockResolvedValue([
+        readFindMany.mockResolvedValue([
             {
                 id: 'r1', ruleId: 'policy_gap:motor:theft', lineOfBusiness: 'motor',
                 title: { en: 'Theft', el: 'Κλοπή' }, description: {}, urgency: 'high',

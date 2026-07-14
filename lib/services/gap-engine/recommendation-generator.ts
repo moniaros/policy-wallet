@@ -17,11 +17,14 @@ export const POLICY_GAP_RULE_PREFIX = "policy_gap:"
 /**
  * Rule id for an AI-detected policy gap: `policy_gap:<lob>:<concept>`.
  *
- * Keyed by CONCEPT, not by the raw slug, so one finding is one recommendation
- * however the producer spelled it (`theft` from the AI, `motor-theft` from the
- * seeded rules, `own-damage` / `own-vehicle-damage`). Keyed by line of business
- * too, because a missing theft cover on the car and on the house are different
- * findings that happen to share a word.
+ * The (userId, ruleId) uniqueness below stops the same rule being written
+ * twice — but only if one finding has one rule id. It doesn't: the pipeline
+ * mints rule ids from UNCONSTRAINED AI slugs, so one finding arrives spelled
+ * several ways (`theft` from the AI, `motor-theft` from the seeded rules,
+ * `own-damage` / `own-vehicle-damage`) and each spelling claims its own row.
+ * Keying on the CONCEPT is what makes the uniqueness mean anything. The line
+ * of business rides along because a missing theft cover on the car and on the
+ * house are different findings that happen to share a word.
  */
 export function policyGapRuleId(lineOfBusiness: string, rawSlug: string): string {
     const lob = String(lineOfBusiness || "other").trim().toLowerCase()
@@ -31,8 +34,8 @@ export function policyGapRuleId(lineOfBusiness: string, rawSlug: string): string
 /**
  * The gap concept behind a rule id, or null for profile/portfolio rules.
  * Accepts the legacy two-segment form (`policy_gap:<raw-slug>`, written before
- * rule ids carried a concept) so old rows collapse onto their new twins instead
- * of rendering beside them.
+ * rule ids carried a concept) so old rows collapse onto their new twins
+ * instead of rendering beside them.
  */
 export function policyGapConcept(ruleId: string | null | undefined): string | null {
     const id = String(ruleId || "")
@@ -44,9 +47,9 @@ export function policyGapConcept(ruleId: string | null | undefined): string | nu
 }
 
 /**
- * One key per distinct finding — the identity every dedupe in this module uses.
- * Policy-gap rules collapse onto `<lob>:<concept>`; profile and portfolio rules
- * already have stable ids and pass through.
+ * One key per distinct finding — the identity every dedupe here uses.
+ * Policy-gap rules collapse onto `<lob>:<concept>`; profile and portfolio
+ * rules already have stable ids and pass through.
  */
 export function recommendationDedupeKey(rec: {
     ruleId: string | null
@@ -341,69 +344,105 @@ export function deriveProfileTags(profile: {
 
 // ── Persistence ──────────────────────────────────────────────────────
 
+/** A user dismissal we must respect; auto:* dismissals are ours to reverse. */
+function isUserDismissal(dismissReason: string | null): boolean {
+    return Boolean(dismissReason && !dismissReason.startsWith("auto:"))
+}
+
 /**
- * Sync recommendations to the database.
- * - Creates one recommendation per detected finding (never a second copy)
- * - Leaves recommendations the user dismissed as dismissed
- * - Retires stale recommendations (the gap no longer applies) and collapses
- *   duplicate rows left behind by earlier runs
+ * Sync recommendations to the database — exactly ONE row per (user, rule).
+ *
+ * The old read-then-write ("SELECT active → loop INSERT") had no transaction
+ * and the table had no uniqueness, so the ten call sites — five of them
+ * unawaited background promises — raced each other: a profile save plus a
+ * home render plus a finished analysis produced THREE identical active rows
+ * for the same rule, and «18 προτάσεις» counted them all. It also never
+ * updated its in-loop seen-set (so duplicate ruleIds inside one batch each
+ * inserted a row) and only looked at active rows (so a user's dismissal was
+ * resurrected on the next run).
+ *
+ * Now: dedupe the batch by ruleId, upsert on the (userId, ruleId) unique key,
+ * respect user dismissals, and run it all in one transaction.
  */
 export async function syncRecommendations(
     userId: string,
     newRecs: RecommendationInput[]
 ): Promise<{ created: number; dismissed: number }> {
-    // Newest first — when several rows describe one finding, the newest wins.
-    const existing = await db.recommendationInstance.findMany({
-        where: {
-            userId,
-            status: { in: ["active", "dismissed"] },
-        },
-        select: {
-            id: true,
-            ruleId: true,
-            lineOfBusiness: true,
-            status: true,
-            dismissReason: true,
-        },
-        orderBy: { createdAt: "desc" },
-    })
-
-    const activeIdsByKey = new Map<string, string[]>()
-    const userDismissed = new Set<string>()
-
-    for (const row of existing) {
-        const key = recommendationDedupeKey(row)
-        if (!key) continue
-        if (row.status === "active") {
-            activeIdsByKey.set(key, [...(activeIdsByKey.get(key) ?? []), row.id])
-        } else if (!row.dismissReason?.startsWith("auto:")) {
-            // "Not relevant for me" is an answer, not a pause — the engine used
-            // to resurrect the card on its very next run.
-            userDismissed.add(key)
+    // One entry per FINDING, not per spelling of it. dedupeRecommendationInputs
+    // rewrites each rule id to its canonical `policy_gap:<lob>:<concept>` form
+    // and keeps the most urgent of a colliding set — without it the (userId,
+    // ruleId) uniqueness below is toothless, because one gap arriving under two
+    // AI spellings is two rule ids, and two rule ids claim two rows.
+    const byRuleId = new Map<string, RecommendationInput>()
+    const unkeyed: RecommendationInput[] = []
+    for (const rec of dedupeRecommendationInputs(newRecs)) {
+        if (!rec.ruleId) {
+            unkeyed.push(rec)
+            continue
         }
+        byRuleId.set(rec.ruleId, rec)
     }
-
-    const deduped = dedupeRecommendationInputs(newRecs)
-    const detectedKeys = new Set(
-        deduped
-            .map((rec) => recommendationDedupeKey(rec))
-            .filter((key): key is string => key !== null)
-    )
 
     let created = 0
     let dismissed = 0
 
-    for (const rec of deduped) {
-        const key = recommendationDedupeKey(rec)
-        if (key && (activeIdsByKey.has(key) || userDismissed.has(key))) continue
+    const applySync = async () => {
+        created = 0
+        dismissed = 0
+        await db.$transaction(async (tx) => {
+        const existing = await tx.recommendationInstance.findMany({
+            where: { userId },
+            select: { id: true, ruleId: true, status: true, dismissReason: true },
+        })
+        const existingByRuleId = new Map(
+            existing.filter((row) => row.ruleId).map((row) => [row.ruleId as string, row])
+        )
 
-        try {
-            await db.recommendationInstance.create({
+        for (const [ruleId, rec] of byRuleId) {
+            const data = {
+                gapInstanceId: rec.gapInstanceId,
+                lineOfBusiness: rec.lineOfBusiness,
+                title: rec.title as any,
+                description: rec.description as any,
+                urgency: rec.urgency,
+                estimatedCostEur: rec.estimatedCostEur,
+                personalReason: rec.personalReason as any,
+                productId: rec.matchedProductId ?? null,
+            }
+
+            const current = existingByRuleId.get(ruleId)
+            if (!current) {
+                await tx.recommendationInstance.create({
+                    data: { userId, ruleId, status: "active", ...data },
+                })
+                created++
+                continue
+            }
+
+            // The user said "not relevant" — do not resurrect it.
+            if (current.status === "dismissed" && isUserDismissal(current.dismissReason)) {
+                continue
+            }
+
+            await tx.recommendationInstance.update({
+                where: { id: current.id },
                 data: {
-                    userId: rec.userId,
+                    ...data,
+                    ...(current.status === "active"
+                        ? {}
+                        : { status: "active", dismissReason: null }),
+                },
+            })
+            if (current.status !== "active") created++
+        }
+
+        for (const rec of unkeyed) {
+            await tx.recommendationInstance.create({
+                data: {
+                    userId,
                     gapInstanceId: rec.gapInstanceId,
                     lineOfBusiness: rec.lineOfBusiness,
-                    ruleId: rec.ruleId,
+                    ruleId: null,
                     title: rec.title as any,
                     description: rec.description as any,
                     urgency: rec.urgency,
@@ -414,29 +453,35 @@ export async function syncRecommendations(
                 },
             })
             created++
-        } catch (err: any) {
-            // Unique index on (user_id, rule_id) where status='active': a
-            // concurrent engine run created this one first, which is the
-            // outcome we wanted anyway.
-            if (err?.code !== "P2002") throw err
         }
+
+        // Rules that no longer fire: auto-dismiss (user dismissals stay put).
+        // Rows written under a legacy rule id — before ids carried a concept —
+        // land here too, which is how the table heals itself.
+        const stale = existing.filter(
+            (row) => row.status === "active" && row.ruleId && !byRuleId.has(row.ruleId)
+        )
+        if (stale.length > 0) {
+            await tx.recommendationInstance.updateMany({
+                where: { id: { in: stale.map((row) => row.id) } },
+                data: { status: "dismissed", dismissReason: "auto:gap_resolved" },
+            })
+            dismissed = stale.length
+        }
+        })
     }
 
-    // Retire what no longer applies, and collapse the duplicate rows that
-    // earlier runs of this function left behind.
-    for (const [key, ids] of activeIdsByKey) {
-        const stale = !detectedKeys.has(key)
-        const doomed = stale ? ids : ids.slice(1) // ids are newest-first
-        if (doomed.length === 0) continue
-
-        const result = await db.recommendationInstance.updateMany({
-            where: { id: { in: doomed }, userId, status: "active" },
-            data: {
-                status: "dismissed",
-                dismissReason: stale ? "auto:gap_resolved" : "auto:duplicate",
-            },
-        })
-        dismissed += result.count
+    try {
+        await applySync()
+    } catch (err: any) {
+        // Two engine runs can pass the same existence check and race to the
+        // insert — five of the ten call sites are unawaited background
+        // promises. The unique constraint stops the duplicate row, but it does
+        // so by aborting one transaction (P2002), and a poisoned transaction
+        // cannot be caught from the inside. Run it again: the loser now SEES
+        // the winner's row and updates it instead.
+        if (err?.code !== "P2002") throw err
+        await applySync()
     }
 
     return { created, dismissed }
@@ -520,11 +565,13 @@ export async function getActiveRecommendations(
         return Number(b.estimatedCostEur ?? 0) - Number(a.estimatedCostEur ?? 0)
     })
 
-    // Collapse duplicate rows at read time as well as at write time: rows
-    // written before rule ids carried a concept, and rows the pre-dedupe sync
-    // duplicated, are already in the database. This hides them on the next page
-    // load; the next engine run retires them for good. Most urgent survives
-    // (the list is already sorted by urgency).
+    // Belt to the unique constraint's suspender: never render the same FINDING
+    // twice, whatever legacy rows survive in the table. The constraint only
+    // guards the rule id it is given, so rows written before rule ids carried a
+    // concept (`policy_gap:own_vehicle_damage` beside `policy_gap:motor:own-damage`)
+    // are distinct to the database and identical to the reader — they collapse
+    // here on the next page load, and the next engine run retires them for good.
+    // Most urgent survives: the list is already sorted by urgency.
     const seen = new Set<string>()
     const unique = sorted.filter((r) => {
         const key =

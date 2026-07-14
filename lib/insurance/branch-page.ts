@@ -19,7 +19,10 @@ export interface BranchPolicyFacts {
 
 export type BranchTileState = 'covered' | 'attention' | 'gap' | 'neutral'
 
-const ATTENTION_STATUSES = new Set(['expiring_soon', 'action_needed'])
+// Callers pass the LIFECYCLE status (effectivePolicyStatus), never the stale
+// stored string: a lapsed policy is 'expired' here, so the tile shows amber
+// attention — "you had this, it ran out" — and never green 'covered'.
+const ATTENTION_STATUSES = new Set(['expiring_soon', 'action_needed', 'expired', 'unknown_duration'])
 
 /** Walk parentId links up to the top-level branch (business_interruption → business). */
 export function toTopLevelBranch(branch: InsuranceBranch): InsuranceBranch {

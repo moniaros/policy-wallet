@@ -1368,3 +1368,24 @@ export async function notifyAgentAboutGap(gapId: string, policyId: string) {
     revalidatePath("/wallet")
     return { success: true, message: "Agent notified." }
 }
+
+/**
+ * Same policy uploaded by both the policyholder and their agent: merging the
+ * two records needs the other party's consent (lib/services/policy-merge).
+ */
+export async function decideMergeRequest(
+    requestId: string,
+    decision: "approved" | "rejected"
+) {
+    const auth = await getAuthenticatedUserOrNull()
+    if (!auth) return { error: "UNAUTHORIZED" }
+    const dbUser = auth.dbUser
+    const { decidePolicyMerge } = await import("@/lib/services/policy-merge.service")
+
+    const result = await decidePolicyMerge(requestId, dbUser.id, decision)
+    if (!result.ok) return { error: result.error || "MERGE_FAILED" }
+
+    revalidatePath("/wallet")
+    if (result.mergedIntoPolicyId) revalidatePath(`/wallet/${result.mergedIntoPolicyId}`)
+    return { success: true, mergedIntoPolicyId: result.mergedIntoPolicyId ?? null }
+}

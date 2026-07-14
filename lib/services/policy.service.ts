@@ -400,20 +400,42 @@ export class PolicyService extends BaseService {
             })
 
             if (currentPolicy && currentPolicy.policyNumber && !currentPolicy.policyNumber.startsWith('PENDING-')) {
+                // Duplicate = same policyholder + same insurer + same policy
+                // number. NOTE: this used to filter on `ownerUserId: userId`,
+                // the *caller* — for an agent upload that is the AGENT's id, so
+                // the check never matched and the merge was dead code there.
                 const existingPolicy = await this.db.policy.findFirst({
                     where: {
-                        ownerUserId: userId,
+                        ownerUserId: currentPolicy.ownerUserId,
                         policyNumber: {
                             equals: currentPolicy.policyNumber.trim(),
                             mode: 'insensitive'
                         },
-                        lineOfBusiness: currentPolicy.lineOfBusiness,
+                        insurerName: {
+                            equals: (currentPolicy.insurerName || '').trim(),
+                            mode: 'insensitive'
+                        },
                         id: { not: policyId },
-                        status: 'active'
+                        NOT: { status: 'cancelled' }
                     }
                 })
 
-                if (existingPolicy) {
+                // Two parties uploading the same policy (the agent and the
+                // policyholder) is ALLOWED — but merging their records is not
+                // ours to decide. Raise a merge request the other side must
+                // approve; only a same-uploader duplicate merges silently.
+                if (existingPolicy && existingPolicy.createdByUserId !== currentPolicy.createdByUserId) {
+                    const { requestPolicyMerge } = await import("@/lib/services/policy-merge.service")
+                    await requestPolicyMerge({
+                        existingPolicyId: existingPolicy.id,
+                        incomingPolicyId: currentPolicy.id,
+                        requestedByUserId: currentPolicy.createdByUserId,
+                    })
+                    logger('info', 'Duplicate policy from a different uploader — merge request raised', {
+                        existingPolicyId: existingPolicy.id,
+                        incomingPolicyId: currentPolicy.id,
+                    })
+                } else if (existingPolicy) {
                     logger('info', 'Duplicate policy detected, merging documents', {
                         userId,
                         existingPolicyId: existingPolicy.id,

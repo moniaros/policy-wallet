@@ -74,6 +74,50 @@ export function calculatePolicyStatus(policy: Policy): PolicyStatus {
     return resolvePolicyLifecycle(policy).status
 }
 
+type CoverageInput = Parameters<typeof resolvePolicyLifecycle>[0]
+
+/**
+ * Does this policy provide coverage RIGHT NOW?
+ *
+ * The one question every coverage inference must ask before treating a policy
+ * as protection (gap detection, protection score, branch tiles, premium
+ * footprint). An EXPIRED policy is not coverage — reading the stale stored
+ * `status` string (which nothing recomputes as time passes) told a user with
+ * a health policy that lapsed in May 2025 that they were insured.
+ *
+ * A policy still being analyzed, or cancelled, is not coverage either. A
+ * policy whose end date could not be parsed IS counted (it exists and was
+ * bought; the «Άγνωστη διάρκεια» state is surfaced loudly elsewhere and the
+ * review screen demands the date) — we refuse to invent an expiry we cannot
+ * read, in either direction.
+ */
+export function isPolicyCoverageActive(policy: CoverageInput): boolean {
+    const stored = String(policy.status || '').toLowerCase()
+    if (stored === 'analyzing' || stored === 'cancelled') return false
+
+    const { status } = resolvePolicyLifecycle(policy)
+    return status !== 'expired' && status !== 'cancelled'
+}
+
+/**
+ * Lifecycle-derived status for display/grouping. Preserves the transient
+ * 'analyzing' state; everything else comes from the real end date.
+ */
+export function effectivePolicyStatus(policy: CoverageInput): string {
+    const stored = String(policy.status || '').toLowerCase()
+    if (stored === 'analyzing') return 'analyzing'
+    return resolvePolicyLifecycle(policy).status
+}
+
+/**
+ * Status as the gap engine's rules expect it: 'active' means "counts as
+ * coverage" (an expiring-soon policy still protects you today), anything
+ * else is the honest lifecycle state.
+ */
+export function coverageEngineStatus(policy: CoverageInput): string {
+    return isPolicyCoverageActive(policy) ? 'active' : effectivePolicyStatus(policy)
+}
+
 /**
  * Calculate days until expiry
  */
