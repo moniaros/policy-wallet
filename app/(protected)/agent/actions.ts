@@ -178,7 +178,10 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
                 lineOfBusiness: p.type as any,
                 startDate: p.startDate ? new Date(p.startDate).toISOString() : new Date().toISOString(),
                 endDate: new Date(p.expiresAt).toISOString(),
-                status: 'active',
+                // The service already returns the lifecycle status; this used
+                // to hardcode 'active', so an expired policy showed as active
+                // in the agent's client view.
+                status: p.status as any,
                 managedByAgent: p.createdByUserId === authResult.dbUser.id
             })),
             opportunities: await Promise.all(profile.opportunities.map(async (o) => {
@@ -445,6 +448,7 @@ export async function addPolicyForCustomer(data: {
     if (!authResult) return { success: false, error: "Unauthorized" }
 
     const agentId = authResult.dbUser.id
+    const agentUser = authResult.dbUser as { name?: string | null; email?: string | null }
     const language = ((authResult.dbUser as any).preferredLanguage as 'en' | 'el') || 'en'
 
     try {
@@ -568,14 +572,18 @@ export async function addPolicyForCustomer(data: {
             data: { lastInteractionAt: new Date() }
         })
 
-        // 7. Notify the customer
+        // 7. Notify the customer — and say plainly what the agent can now see.
+        // The agent's access is limited to THIS policy (the auto-minted, owner-
+        // revocable grant above); it never extends to policies the customer
+        // uploaded themselves.
+        const agentLabel = agentUser?.name || agentUser?.email || 'Your agent'
         await db.notificationEvent.create({
             data: {
                 userId: data.customerId,
                 eventType: 'policy_added',
                 channel: 'in_app',
                 title: 'New Policy Added',
-                message: `Your agent has added a new ${data.policy.lineOfBusiness} policy from ${data.policy.insurerName} to your wallet.`,
+                message: `${agentLabel} added a ${data.policy.lineOfBusiness} policy from ${data.policy.insurerName} to your wallet and can view and manage that policy. You can revoke this access at any time from My Agent.`,
                 relatedObjectType: 'policy',
                 relatedObjectId: policy.id
             }
@@ -657,7 +665,7 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
 
     const apiKey = process.env.GEMINI_API_KEY
     if (!apiKey || typeof apiKey !== 'string' || apiKey.trim().length === 0 || apiKey === 'undefined') {
-        return { error: "Gemini API Key not configured" }
+        return { error: "PolicyWallet AI is not configured" }
     }
 
     try {

@@ -9,6 +9,8 @@
 
 import { db } from "@/lib/db"
 import { isAgentAttestedConsent } from "@/lib/ai-consent"
+import { agentPolicyVisibilityWhere, getGrantedPolicyIds } from "@/lib/agent-visibility"
+import { isPolicyCoverageActive } from "@/lib/policy-status"
 
 const DAY_MS = 24 * 60 * 60 * 1000
 const EXPIRING_WINDOW_DAYS = 30
@@ -124,6 +126,11 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
     const expiryHorizon = new Date(now.getTime() + EXPIRING_WINDOW_DAYS * DAY_MS)
 
+    const visibilityWhere = agentPolicyVisibilityWhere(
+        agentUserId,
+        await getGrantedPolicyIds(agentUserId)
+    )
+
     const [relationships, pendingInvites, policiesThisMonth, openOpportunities] =
         await Promise.all([
             db.customerRelationship.findMany({
@@ -137,8 +144,10 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
                         select: {
                             id: true,
                             aiProcessingConsentVersion: true,
+                            // Only the agent's own uploads + owner-granted policies.
                             policiesOwned: {
-                                select: { id: true, status: true, endDate: true },
+                                where: visibilityWhere,
+                                select: { id: true, status: true, endDate: true, acordData: true },
                             },
                         },
                     },
@@ -177,10 +186,12 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
             ? db.gapInstance.findMany({
                   where: {
                       status: { in: ["open", "detected", "acknowledged"] },
-                      OR: [
-                          { userId: { in: clientIds } },
-                          { policy: { ownerUserId: { in: clientIds } } },
-                      ],
+                      // Gaps only from policies the agent may see — a gap count
+                      // over a policy they were never given leaks its existence.
+                      policy: {
+                          ownerUserId: { in: clientIds },
+                          ...visibilityWhere,
+                      },
                   },
                   select: {
                       userId: true,
@@ -210,7 +221,7 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
 
     for (const rel of relationships) {
         const clientId = rel.customer.id
-        const activePolicies = rel.customer.policiesOwned.filter((p) => p.status === "active")
+        const activePolicies = rel.customer.policiesOwned.filter((p) => isPolicyCoverageActive(p))
         const upcomingRenewals = activePolicies
             .map((p) => p.endDate)
             .filter((d): d is Date => Boolean(d && d.getTime() > now.getTime()))

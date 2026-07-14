@@ -157,7 +157,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                     </div>
                                     <h3 className="text-lg font-black text-stone-900 dark:text-white tracking-tight mb-2">Smart PDF Upload</h3>
-                                    <p className="text-xs text-stone-400 font-medium leading-relaxed">Upload a policy PDF and let Gemini extract all details automatically.</p>
+                                    <p className="text-xs text-stone-400 font-medium leading-relaxed">Upload a policy PDF and let PolicyWallet AI extract all details automatically.</p>
                                     <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="application/pdf" className="hidden" />
                                 </button>
                             </div>
@@ -179,7 +179,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     <svg className="w-8 h-8 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.989-2.386l-.548-.547z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                 </div>
                             </div>
-                            <h2 className="text-2xl font-black text-stone-900 dark:text-white tracking-tighter mb-2">Gemini is Thinking...</h2>
+                            <h2 className="text-2xl font-black text-stone-900 dark:text-white tracking-tighter mb-2">PolicyWallet AI is analyzing…</h2>
                             <p className="text-stone-400 font-medium">Extracting customer and policy data from your document.</p>
                         </div>
                     )}

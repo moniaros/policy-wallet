@@ -1256,6 +1256,10 @@ model RecommendationInstance {
   productId        String?      @map("product_id")
   product          InsuranceProduct? @relation(fields: [productId], references: [id], onDelete: SetNull)
 
+  // Exactly one row per (user, rule): the engine has ten call sites, five of
+  // them unawaited background promises, and the old read-then-write sync
+  // raced itself into three identical active rows for the same rule.
+  @@unique([userId, ruleId])
   @@index([userId, status])
   @@index([urgency])
   @@map("recommendation_instances")

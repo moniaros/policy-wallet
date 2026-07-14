@@ -119,7 +119,8 @@ describe("computePolicyAccess — matrix", () => {
         expect(a.grantLevel).toBe("write")
     })
 
-    it("agent with active relationship, no grant → read + analyze, no write/delete", () => {
+    it("agent reads a policy THEY uploaded for the customer (no grant needed)", () => {
+        // POLICY.createdByUserId === agent_1 — the agent's own upload.
         const a = access({ viewer: agent, relationship: { status: "active" } })
         expect(a.hasAgentRelationship).toBe(true)
         expect(a.canRead).toBe(true)
@@ -128,9 +129,42 @@ describe("computePolicyAccess — matrix", () => {
         expect(a.canDelete).toBe(false)
     })
 
-    it("agent with pending_activation relationship still reads (managed prospect)", () => {
-        const a = access({ viewer: agent, relationship: { status: "pending_activation" } })
+    // THE PRIVACY BUG: a relationship is created unilaterally by the agent (an
+    // invite that was never accepted, or "add customer" by email). It must not
+    // expose a single document the policyholder uploaded themselves.
+    it("agent CANNOT read a policy the policyholder uploaded themselves", () => {
+        const selfUploaded = { ...POLICY, createdByUserId: "customer_1" }
+        const a = access({
+            policy: selfUploaded,
+            viewer: agent,
+            relationship: { status: "active" },
+        })
+        expect(a.hasAgentRelationship).toBe(true)
+        expect(a.canRead).toBe(false)
+        expect(a.canAnalyze).toBe(false)
+        expect(a.canWrite).toBe(false)
+        expect(a.canDelete).toBe(false)
+    })
+
+    it("…unless the owner explicitly granted THAT policy", () => {
+        const selfUploaded = { ...POLICY, createdByUserId: "customer_1" }
+        const a = access({
+            policy: selfUploaded,
+            viewer: agent,
+            relationship: { status: "active" },
+            grants: [grant("read")],
+        })
         expect(a.canRead).toBe(true)
+        expect(a.canWrite).toBe(false)
+    })
+
+    it("a pending_activation relationship never widens what an agent sees", () => {
+        const selfUploaded = { ...POLICY, createdByUserId: "customer_1" }
+        expect(
+            access({ policy: selfUploaded, viewer: agent, relationship: { status: "pending_activation" } }).canRead
+        ).toBe(false)
+        // Their own upload is still theirs to manage.
+        expect(access({ viewer: agent, relationship: { status: "pending_activation" } }).canRead).toBe(true)
     })
 
     it("inactive relationship confers nothing", () => {

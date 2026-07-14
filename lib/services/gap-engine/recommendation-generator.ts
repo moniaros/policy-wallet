@@ -242,72 +242,122 @@ export function deriveProfileTags(profile: {
 
 // ── Persistence ──────────────────────────────────────────────────────
 
+/** A user dismissal we must respect; auto:* dismissals are ours to reverse. */
+function isUserDismissal(dismissReason: string | null): boolean {
+    return Boolean(dismissReason && !dismissReason.startsWith("auto:"))
+}
+
 /**
- * Sync recommendations to the database.
- * - Creates new recommendations for newly detected gaps
- * - Does NOT duplicate existing active recommendations for the same rule
- * - Marks stale recommendations as dismissed (gap no longer applies)
+ * Sync recommendations to the database — exactly ONE row per (user, rule).
+ *
+ * The old read-then-write ("SELECT active → loop INSERT") had no transaction
+ * and the table had no uniqueness, so the ten call sites — five of them
+ * unawaited background promises — raced each other: a profile save plus a
+ * home render plus a finished analysis produced THREE identical active rows
+ * for the same rule, and «18 προτάσεις» counted them all. It also never
+ * updated its in-loop seen-set (so duplicate ruleIds inside one batch each
+ * inserted a row) and only looked at active rows (so a user's dismissal was
+ * resurrected on the next run).
+ *
+ * Now: dedupe the batch by ruleId, upsert on the (userId, ruleId) unique key,
+ * respect user dismissals, and run it all in one transaction.
  */
 export async function syncRecommendations(
     userId: string,
     newRecs: RecommendationInput[]
 ): Promise<{ created: number; dismissed: number }> {
-    // Fetch existing active recommendations for this user
-    const existing = await db.recommendationInstance.findMany({
-        where: {
-            userId,
-            status: "active",
-        },
-        select: {
-            id: true,
-            ruleId: true,
-            lineOfBusiness: true,
-        },
-    })
-
-    const existingRuleIds = new Set(existing.map((e) => e.ruleId).filter(Boolean))
-    const newRuleIds = new Set(newRecs.map((r) => r.ruleId).filter(Boolean))
+    // First occurrence of a ruleId wins (inputs are already prioritized).
+    const byRuleId = new Map<string, RecommendationInput>()
+    const unkeyed: RecommendationInput[] = []
+    for (const rec of newRecs) {
+        if (!rec.ruleId) {
+            unkeyed.push(rec)
+            continue
+        }
+        if (!byRuleId.has(rec.ruleId)) byRuleId.set(rec.ruleId, rec)
+    }
 
     let created = 0
     let dismissed = 0
 
-    // Create new recommendations that don't already exist
-    for (const rec of newRecs) {
-        if (rec.ruleId && existingRuleIds.has(rec.ruleId)) {
-            continue // already exists
-        }
+    await db.$transaction(async (tx) => {
+        const existing = await tx.recommendationInstance.findMany({
+            where: { userId },
+            select: { id: true, ruleId: true, status: true, dismissReason: true },
+        })
+        const existingByRuleId = new Map(
+            existing.filter((row) => row.ruleId).map((row) => [row.ruleId as string, row])
+        )
 
-        await db.recommendationInstance.create({
-            data: {
-                userId: rec.userId,
+        for (const [ruleId, rec] of byRuleId) {
+            const data = {
                 gapInstanceId: rec.gapInstanceId,
                 lineOfBusiness: rec.lineOfBusiness,
-                ruleId: rec.ruleId,
                 title: rec.title as any,
                 description: rec.description as any,
                 urgency: rec.urgency,
                 estimatedCostEur: rec.estimatedCostEur,
                 personalReason: rec.personalReason as any,
-                status: "active",
                 productId: rec.matchedProductId ?? null,
-            },
-        })
-        created++
-    }
+            }
 
-    // Dismiss stale recommendations (gap no longer applies)
-    for (const ex of existing) {
-        if (ex.ruleId && !newRuleIds.has(ex.ruleId)) {
-            await db.recommendationInstance.update({
-                where: { id: ex.id },
+            const current = existingByRuleId.get(ruleId)
+            if (!current) {
+                await tx.recommendationInstance.create({
+                    data: { userId, ruleId, status: "active", ...data },
+                })
+                created++
+                continue
+            }
+
+            // The user said "not relevant" — do not resurrect it.
+            if (current.status === "dismissed" && isUserDismissal(current.dismissReason)) {
+                continue
+            }
+
+            await tx.recommendationInstance.update({
+                where: { id: current.id },
                 data: {
-                    status: "dismissed",
-                    dismissReason: "auto:gap_resolved",
+                    ...data,
+                    ...(current.status === "active"
+                        ? {}
+                        : { status: "active", dismissReason: null }),
                 },
             })
-            dismissed++
+            if (current.status !== "active") created++
         }
-    }
+
+        for (const rec of unkeyed) {
+            await tx.recommendationInstance.create({
+                data: {
+                    userId,
+                    gapInstanceId: rec.gapInstanceId,
+                    lineOfBusiness: rec.lineOfBusiness,
+                    ruleId: null,
+                    title: rec.title as any,
+                    description: rec.description as any,
+                    urgency: rec.urgency,
+                    estimatedCostEur: rec.estimatedCostEur,
+                    personalReason: rec.personalReason as any,
+                    status: "active",
+                    productId: rec.matchedProductId ?? null,
+                },
+            })
+            created++
+        }
+
+        // Rules that no longer fire: auto-dismiss (user dismissals stay put).
+        const stale = existing.filter(
+            (row) => row.status === "active" && row.ruleId && !byRuleId.has(row.ruleId)
+        )
+        if (stale.length > 0) {
+            await tx.recommendationInstance.updateMany({
+                where: { id: { in: stale.map((row) => row.id) } },
+                data: { status: "dismissed", dismissReason: "auto:gap_resolved" },
+            })
+            dismissed = stale.length
+        }
+    })
 
     return { created, dismissed }
 }
@@ -390,7 +440,17 @@ export async function getActiveRecommendations(
         return Number(b.estimatedCostEur ?? 0) - Number(a.estimatedCostEur ?? 0)
     })
 
-    return sorted.map((r) => ({
+    // Belt to the unique constraint's suspender: never render the same rule
+    // twice, whatever legacy rows survive in the table.
+    const seenRuleIds = new Set<string>()
+    const unique = sorted.filter((r) => {
+        if (!r.ruleId) return true
+        if (seenRuleIds.has(r.ruleId)) return false
+        seenRuleIds.add(r.ruleId)
+        return true
+    })
+
+    return unique.map((r) => ({
         id: r.id,
         lineOfBusiness: r.lineOfBusiness,
         ruleId: r.ruleId,

@@ -1,5 +1,7 @@
 import { db } from "../db"
 import { logger } from "../logger"
+import { getAgentPolicyVisibilityWhere } from "@/lib/agent-visibility"
+import { isPolicyCoverageActive } from "@/lib/policy-status"
 
 /**
  * Greek insurance coverage matrix.
@@ -101,20 +103,31 @@ export async function runCrossSellForCustomer(
         select: { id: true, name: true, email: true },
     })
 
-    // Fetch all active policies for this customer
+    // Only policies this agent may see, and only ones actually in force —
+    // an expired policy is not coverage, and a policy the agent was never
+    // given is none of their business.
     const policies = await db.policy.findMany({
         where: {
             ownerUserId: policyholderUserId,
-            status: "active",
+            ...(await getAgentPolicyVisibilityWhere(agentUserId)),
         },
         select: {
             id: true,
             lineOfBusiness: true,
             premiumAmount: true,
+            status: true,
+            endDate: true,
+            acordData: true,
         },
     })
 
-    const existingLines = [...new Set(policies.map((p) => p.lineOfBusiness.toLowerCase()))]
+    const existingLines = [
+        ...new Set(
+            policies
+                .filter((p) => isPolicyCoverageActive(p))
+                .map((p) => p.lineOfBusiness.toLowerCase())
+        ),
+    ]
     const missingLines = analyzePortfolioGaps(existingLines)
     const coverageScore = calculateCoverageScore(existingLines)
 
