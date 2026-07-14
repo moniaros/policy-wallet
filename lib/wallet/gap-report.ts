@@ -25,12 +25,31 @@ export type GapCoverageArea =
     | "general"
 
 export interface GapContent {
+    /**
+     * Canonical concept id — the dedupe key across the whole app.
+     * It collapses BOTH spelling variants (mental_health_exclusion /
+     * mental-health-exclusion) and vocabulary aliases for one finding:
+     * the AI's `theft` and the seeded rule's `motor-theft` are one concept,
+     * as are `own-damage` and `own-vehicle-damage`.
+     */
+    concept: string
     titleEl: string
     titleEn: string
     mechanic: GapMechanic
     coverageArea: GapCoverageArea
     /** false ⇒ resolved via heuristics/generic fallback (unmapped slug) */
     known: boolean
+}
+
+/** Extra context that sharpens resolution — all optional. */
+export interface GapContentContext {
+    /** The policy's line of business. Outside health, the coverage area IS the
+     *  branch: a motor policy must never render a "Property" group. */
+    lineOfBusiness?: string | null
+    /** The AI's own words for this gap. Used to title unmapped vocabulary in
+     *  Greek instead of stamping every unknown gap with one generic heading. */
+    aiExplanationEl?: string | null
+    aiExplanation?: string | null
 }
 
 export interface GapReportItem {
@@ -54,10 +73,16 @@ export function normalizeGapSlug(raw: string): string {
         .replace(/^-|-$/g, "")
 }
 
-// Every slug observed in prod (dumped 2026-07-13) + the seeded definitions +
-// likely health-vocabulary variants. Titles are hedged (πιθανή/περιορισμός) —
-// the engine's detections are observational, not underwriter-validated.
-export const GAP_CONTENT_MAP: Record<string, Omit<GapContent, "known">> = {
+type GapContentEntry = Omit<GapContent, "known" | "concept"> & {
+    /** Defaults to the map key. Set it when several slugs are ONE finding. */
+    concept?: string
+}
+
+// Every slug observed in prod (health dump 2026-07-13, motor dump 2026-07-14)
+// + the seeded definitions + likely vocabulary variants. Titles are hedged
+// (πιθανή/περιορισμός) — the engine's detections are observational, not
+// underwriter-validated.
+export const GAP_CONTENT_MAP: Record<string, GapContentEntry> = {
     // ── Prod-observed AI slugs ──────────────────────────────────────────
     "high-deductible": {
         titleEl: "Υψηλή απαλλαγή (εκπιπτόμενο ποσό)",
@@ -78,12 +103,14 @@ export const GAP_CONTENT_MAP: Record<string, Omit<GapContent, "known">> = {
         coverageArea: "maternity_mental",
     },
     "pregnancy-childbirth-exclusion": {
+        concept: "maternity-exclusion",
         titleEl: "Εξαίρεση κύησης και τοκετού",
         titleEn: "Pregnancy and childbirth exclusion",
         mechanic: "exclusion",
         coverageArea: "maternity_mental",
     },
     "low-outpatient-limit": {
+        concept: "outpatient-limit",
         titleEl: "Χαμηλό όριο εξωνοσοκομειακών δαπανών",
         titleEn: "Low outpatient expenses limit",
         mechanic: "limit",
@@ -125,26 +152,160 @@ export const GAP_CONTENT_MAP: Record<string, Omit<GapContent, "known">> = {
         mechanic: "limit",
         coverageArea: "hospital",
     },
+    // ── Motor & property vocabulary (prod-observed 2026-07-14) ──────────
+    // The AI names a missing motor cover after the cover itself ("theft"),
+    // while the seeded rules prefix the branch ("motor-theft"). Same finding —
+    // one concept, or the policy renders both.
+    theft: {
+        concept: "theft",
+        titleEl: "Πιθανή έλλειψη κάλυψης κλοπής",
+        titleEn: "Possible missing theft coverage",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+    fire: {
+        concept: "fire",
+        titleEl: "Πιθανή έλλειψη κάλυψης πυρκαγιάς",
+        titleEn: "Possible missing fire coverage",
+        mechanic: "exclusion",
+        coverageArea: "property",
+    },
+    "glass-breakage": {
+        concept: "glass-breakage",
+        titleEl: "Πιθανή έλλειψη κάλυψης θραύσης κρυστάλλων",
+        titleEn: "Possible missing glass breakage coverage",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+    windscreen: {
+        concept: "glass-breakage",
+        titleEl: "Πιθανή έλλειψη κάλυψης θραύσης κρυστάλλων",
+        titleEn: "Possible missing windscreen coverage",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+    "own-damage": {
+        concept: "own-damage",
+        titleEl: "Πιθανή έλλειψη κάλυψης ιδίων ζημιών (μικτή)",
+        titleEn: "Possible missing own-damage coverage",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+    "own-vehicle-damage": {
+        concept: "own-damage",
+        titleEl: "Πιθανή έλλειψη κάλυψης ιδίων ζημιών (μικτή)",
+        titleEn: "Possible missing own-damage coverage",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+    "malicious-acts-terrorism": {
+        concept: "malicious-acts",
+        titleEl: "Πιθανή έλλειψη κάλυψης κακόβουλων/τρομοκρατικών ενεργειών",
+        titleEn: "Possible missing malicious acts / terrorism coverage",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+    "malicious-acts": {
+        concept: "malicious-acts",
+        titleEl: "Πιθανή έλλειψη κάλυψης κακόβουλων ενεργειών",
+        titleEn: "Possible missing malicious acts coverage",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+    "natural-disasters": {
+        concept: "natural-disasters",
+        titleEl: "Πιθανή έλλειψη κάλυψης φυσικών φαινομένων",
+        titleEn: "Possible missing natural disasters coverage",
+        mechanic: "exclusion",
+        coverageArea: "property",
+    },
+    flood: {
+        concept: "flood",
+        titleEl: "Πιθανή έλλειψη κάλυψης πλημμύρας",
+        titleEn: "Possible missing flood coverage",
+        mechanic: "exclusion",
+        coverageArea: "property",
+    },
+    hail: {
+        concept: "hail",
+        titleEl: "Πιθανή έλλειψη κάλυψης χαλαζόπτωσης",
+        titleEn: "Possible missing hail coverage",
+        mechanic: "exclusion",
+        coverageArea: "property",
+    },
+    "riot-strike": {
+        concept: "riot-strike",
+        titleEl: "Πιθανή έλλειψη κάλυψης στάσεων, απεργιών και οχλαγωγιών",
+        titleEn: "Possible missing riot & strike coverage",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+    "roadside-assistance": {
+        concept: "roadside-assistance",
+        titleEl: "Πιθανή έλλειψη οδικής βοήθειας",
+        titleEn: "Possible missing roadside assistance",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+    "personal-accident-driver": {
+        concept: "personal-accident-driver",
+        titleEl: "Πιθανή έλλειψη προσωπικού ατυχήματος οδηγού",
+        titleEn: "Possible missing driver personal accident coverage",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+    "uninsured-vehicle": {
+        concept: "uninsured-vehicle",
+        titleEl: "Πιθανή έλλειψη κάλυψης από ανασφάλιστο όχημα",
+        titleEn: "Possible missing uninsured-vehicle coverage",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+    "replacement-vehicle": {
+        concept: "replacement-vehicle",
+        titleEl: "Πιθανή έλλειψη οχήματος αντικατάστασης",
+        titleEn: "Possible missing replacement vehicle",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
     // ── Seeded GapDefinitions (prisma/seed.ts) ──────────────────────────
     "motor-theft": {
+        concept: "theft",
         titleEl: "Πιθανή έλλειψη κάλυψης κλοπής",
         titleEn: "Possible missing theft coverage",
         mechanic: "exclusion",
         coverageArea: "vehicle",
     },
     "motor-legal": {
+        concept: "legal-protection",
+        titleEl: "Πιθανή έλλειψη νομικής προστασίας",
+        titleEn: "Possible missing legal protection",
+        mechanic: "exclusion",
+        coverageArea: "vehicle",
+    },
+    "legal-protection": {
+        concept: "legal-protection",
         titleEl: "Πιθανή έλλειψη νομικής προστασίας",
         titleEn: "Possible missing legal protection",
         mechanic: "exclusion",
         coverageArea: "vehicle",
     },
     "health-outpatient": {
+        concept: "outpatient-limit",
         titleEl: "Περιορισμένη εξωνοσοκομειακή κάλυψη",
         titleEn: "Limited outpatient coverage",
         mechanic: "limit",
         coverageArea: "outpatient",
     },
     "home-earthquake": {
+        concept: "earthquake",
+        titleEl: "Πιθανή έλλειψη κάλυψης σεισμού",
+        titleEn: "Possible missing earthquake coverage",
+        mechanic: "exclusion",
+        coverageArea: "property",
+    },
+    earthquake: {
+        concept: "earthquake",
         titleEl: "Πιθανή έλλειψη κάλυψης σεισμού",
         titleEn: "Possible missing earthquake coverage",
         mechanic: "exclusion",
@@ -182,6 +343,7 @@ export const GAP_CONTENT_MAP: Record<string, Omit<GapContent, "known">> = {
     },
     // ── Likely AI vocabulary (health) ───────────────────────────────────
     "psychiatric-exclusion": {
+        concept: "mental-health-exclusion",
         titleEl: "Εξαίρεση ψυχιατρικής περίθαλψης",
         titleEn: "Psychiatric care exclusion",
         mechanic: "exclusion",
@@ -194,6 +356,7 @@ export const GAP_CONTENT_MAP: Record<string, Omit<GapContent, "known">> = {
         coverageArea: "maternity_mental",
     },
     "pregnancy-exclusion": {
+        concept: "maternity-exclusion",
         titleEl: "Εξαίρεση/περιορισμός παροχών μητρότητας",
         titleEn: "Maternity benefits exclusion",
         mechanic: "exclusion",
@@ -329,17 +492,65 @@ function reportUnknownGapSlug(slug: string) {
     })
 }
 
-export function resolveGapContent(rawSlug: string): GapContent {
+/**
+ * Outside health, the coverage area IS the branch — a motor policy has no
+ * "property" gaps, whatever the slug's words suggest (`fire` on a car is a
+ * vehicle cover). Health keeps the fine-grained hospital/outpatient/… areas,
+ * which is where the grouping earns its keep.
+ */
+function areaForLineOfBusiness(lob: string | null | undefined): GapCoverageArea | null {
+    const key = String(lob || "").trim().toLowerCase()
+    if (/motor|vehicle|auto|car/.test(key)) return "vehicle"
+    if (/home|property|contents|building/.test(key)) return "property"
+    if (/pet/.test(key)) return "pet"
+    if (/travel/.test(key)) return "abroad"
+    return null
+}
+
+/** The dedupe key for a raw slug — mapped concept, else the normalized slug. */
+export function resolveGapConcept(rawSlug: string): string {
+    const slug = normalizeGapSlug(rawSlug)
+    return GAP_CONTENT_MAP[slug]?.concept ?? slug
+}
+
+export function resolveGapContent(
+    rawSlug: string,
+    context: GapContentContext = {}
+): GapContent {
     const slug = normalizeGapSlug(rawSlug)
     const exact = GAP_CONTENT_MAP[slug]
-    if (exact) return { ...exact, known: true }
+    const lobArea = areaForLineOfBusiness(context.lineOfBusiness)
+
+    if (exact) {
+        return {
+            ...exact,
+            concept: exact.concept ?? slug,
+            coverageArea: lobArea ?? exact.coverageArea,
+            known: true,
+        }
+    }
 
     reportUnknownGapSlug(slug)
 
     const mechanic = heuristicMechanic(slug)
-    const coverageArea = heuristicArea(slug)
-    const title = GENERIC_TITLES[mechanic]
-    return { titleEl: title.el, titleEn: title.en, mechanic, coverageArea, known: false }
+    const generic = GENERIC_TITLES[mechanic]
+
+    // Unmapped vocabulary (the AI's own words, e.g. a branch the map has not
+    // learned yet). The generic heading is the same for every slug of a given
+    // mechanic, so N unknown gaps used to render as N identical cards. Title
+    // them with the AI's first Greek sentence instead: distinct, in Greek, and
+    // still the model's own finding — never the raw English slug.
+    const titleEl = firstSentence(context.aiExplanationEl, 80) || generic.el
+    const titleEn = firstSentence(context.aiExplanation, 80) || generic.en
+
+    return {
+        concept: slug,
+        titleEl,
+        titleEn,
+        mechanic,
+        coverageArea: lobArea ?? heuristicArea(slug),
+        known: false,
+    }
 }
 
 interface DedupableGap {
@@ -349,33 +560,41 @@ interface DedupableGap {
 }
 
 /**
- * Collapse DB-level duplicates (same concept persisted under slug-spelling
- * variants). Winner is the instance that carries a Greek explanation; the
- * losers' ids ride along so "hide" actions cover the whole set.
+ * Collapse duplicates of one finding. The key is the CONCEPT, so this catches
+ * both slug-spelling variants (mental_health_exclusion / mental-health-exclusion)
+ * and vocabulary aliases from different producers (the AI's `theft` vs the
+ * seeded rule's `motor-theft`, `own-damage` vs `own-vehicle-damage`).
+ * Winner is the instance that carries a Greek explanation; the losers' ids ride
+ * along so "hide" actions cover the whole set.
  */
 export function dedupeGaps<T extends DedupableGap>(
     gaps: T[]
-): Array<T & { normalizedSlug: string; duplicateIds: string[] }> {
-    const byslug = new Map<string, T & { normalizedSlug: string; duplicateIds: string[] }>()
+): Array<T & { normalizedSlug: string; concept: string; duplicateIds: string[] }> {
+    const byConcept = new Map<
+        string,
+        T & { normalizedSlug: string; concept: string; duplicateIds: string[] }
+    >()
     for (const gap of gaps) {
         const normalizedSlug = normalizeGapSlug(gap.definition?.slug || gap.id)
-        const existing = byslug.get(normalizedSlug)
+        const concept = resolveGapConcept(normalizedSlug)
+        const existing = byConcept.get(concept)
         if (!existing) {
-            byslug.set(normalizedSlug, { ...gap, normalizedSlug, duplicateIds: [] })
+            byConcept.set(concept, { ...gap, normalizedSlug, concept, duplicateIds: [] })
             continue
         }
         if (!existing.aiExplanationEl && gap.aiExplanationEl) {
             // The newcomer has the Greek explanation — it becomes the winner.
-            byslug.set(normalizedSlug, {
+            byConcept.set(concept, {
                 ...gap,
                 normalizedSlug,
+                concept,
                 duplicateIds: [existing.id, ...existing.duplicateIds],
             })
         } else {
             existing.duplicateIds.push(gap.id)
         }
     }
-    return Array.from(byslug.values())
+    return Array.from(byConcept.values())
 }
 
 export const COVERAGE_AREA_ORDER: GapCoverageArea[] = [
