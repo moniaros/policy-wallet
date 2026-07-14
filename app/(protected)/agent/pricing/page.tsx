@@ -81,9 +81,7 @@ const AGENT_PLANS = [
                 "Full pipeline + commission tracking",
                 "Renewal automation",
                 "Unlimited questionnaires",
-                "Branded portal",
                 "Team (3 agents)",
-                "API access",
                 "Cross-sell intelligence",
                 "Priority analysis queue",
             ],
@@ -93,9 +91,7 @@ const AGENT_PLANS = [
                 "Πλήρες pipeline + παρακολούθηση προμήθειας",
                 "Αυτοματοποίηση ανανεώσεων",
                 "Απεριόριστα ερωτηματολόγια",
-                "Επώνυμο portal",
                 "Ομάδα (3 πράκτορες)",
-                "Πρόσβαση API",
                 "Cross-sell ευφυΐα",
                 "Προτεραιότητα στην ανάλυση",
             ],
@@ -110,16 +106,16 @@ const AGENT_PLANS = [
             en: [
                 "Unlimited customers & agents",
                 "Unlimited AI analyses",
-                "White-label branding",
-                "Custom integrations",
+                "Unlimited bulk import",
+                "Largest AI budget (25M tokens/month)",
                 "Dedicated support",
                 "All Pro features included",
             ],
             el: [
                 "Απεριόριστοι πελάτες & πράκτορες",
                 "Απεριόριστες AI αναλύσεις",
-                "White-label branding",
-                "Προσαρμοσμένες ενσωματώσεις",
+                "Απεριόριστη μαζική εισαγωγή",
+                "Μέγιστος προϋπολογισμός AI (25M tokens/μήνα)",
                 "Αποκλειστική υποστήριξη",
                 "Όλα τα Pro χαρακτηριστικά",
             ],
@@ -163,6 +159,12 @@ export default function AgentPricingPage() {
     const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null)
 
     const handleUpgrade = async (planId: string) => {
+        // Agency is a contact plan: the button says "Contact Sales" and must
+        // do exactly that — this used to fire a real €99.99 Stripe checkout.
+        if (planId === "agent-agency") {
+            router.push("/contact")
+            return
+        }
         setLoadingPlanId(planId)
         try {
             const result = await upgradeSubscription(planId)
