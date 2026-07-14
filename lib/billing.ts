@@ -64,7 +64,9 @@ export async function createCheckoutSession(
     userId: string,
     planId: string,
     billingPeriod: "monthly" | "annual" = "monthly",
-    returnTo?: string | null
+    returnTo?: string | null,
+    /** Feature gate the upgrade started from (per-feature success message). */
+    featureKey?: string | null
 ) {
     const user = await db.user.findUnique({ where: { id: userId }, select: { email: true } })
     const plan = await db.plan.findUnique({ where: { id: planId } })
@@ -113,6 +115,7 @@ export async function createCheckoutSession(
             userId,
             planId,
             billingPeriod,
+            ...(featureKey ? { featureKey } : {}),
         },
     })
 

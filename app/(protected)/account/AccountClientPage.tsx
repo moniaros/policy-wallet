@@ -23,6 +23,7 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useIsMobile } from "@/hooks/useResponsive"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { trackJourneyEvent } from "@/lib/journey/funnel"
 import type { Policy } from "@/components/wallet/types"
 import { PageHeader } from '@/components/ui/PageHeader'
 import { User, CreditCard, Gift, Settings as SettingsIcon, LogOut } from 'lucide-react'
@@ -61,6 +62,11 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
     }
 
     const handleUpgrade = async (planId: string) => {
+        trackJourneyEvent('plan_selected', {
+            plan: planId,
+            billing_period: 'monthly',
+            screen: 'account_overview',
+        })
         const result = await upgradeSubscription(planId, 'monthly', '/account')
         if (result.url) {
             window.location.href = result.url
@@ -87,6 +93,11 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
         // Same plan, annual cadence — Stripe checkout replaces the monthly sub
         const planId = initialData.currentPlan?.plan_id
         if (!planId) return
+        trackJourneyEvent('billing_period_selected', {
+            plan: planId,
+            billing_period: 'annual',
+            screen: 'account_billing',
+        })
         const result = await upgradeSubscription(planId, 'annual', '/account')
         if (result.url) {
             window.location.href = result.url
