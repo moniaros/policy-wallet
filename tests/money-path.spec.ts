@@ -226,3 +226,83 @@ test.describe('Mobile trigger surfaces', () => {
         await expectUpgradeModalOpen(page)
     })
 })
+
+test.describe('Billing management (cancel honesty)', () => {
+    // A grandfathered (non-Stripe) paid subscription: the in-app cancel must
+    // flip autoRenew locally. The Stripe-side cancel path is unit-tested
+    // (tests/unit/billing-integrity.test.ts) — no Stripe in E2E by design.
+    test.describe.configure({ mode: 'serial' })
+
+    async function ownerId(db: Awaited<ReturnType<typeof prismaClient>>) {
+        const owner = await db.user.findUnique({
+            where: { email: E2E_POLICYHOLDER.email },
+            select: { id: true },
+        })
+        if (!owner) throw new Error('E2E policyholder missing — global setup did not run?')
+        return owner.id
+    }
+
+    test.beforeAll(async () => {
+        const db = await prismaClient()
+        try {
+            const userId = await ownerId(db)
+            await db.subscription.deleteMany({ where: { userId, planId: 'ph-plus' } })
+            await db.subscription.create({
+                data: {
+                    userId,
+                    planId: 'ph-plus',
+                    status: 'active',
+                    autoRenew: true,
+                    currentPeriodStart: new Date(),
+                    currentPeriodEnd: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000),
+                },
+            })
+        } finally {
+            await db.$disconnect()
+        }
+    })
+
+    test.afterAll(async () => {
+        const db = await prismaClient()
+        try {
+            const userId = await ownerId(db)
+            await db.subscription.deleteMany({ where: { userId, planId: 'ph-plus' } })
+        } finally {
+            await db.$disconnect()
+        }
+    })
+
+    test('cancel from the Billing tab stops auto-renewal in the DB', async ({ page }) => {
+        // handleCancel confirms via a blocking alert() — auto-accept it.
+        page.on('dialog', (dialog) => dialog.accept().catch(() => {}))
+
+        await page.goto('/account')
+        await dismissCookieBanner(page)
+
+        await page.getByRole('button', { name: /Χρέωση|Billing/i }).first().click()
+        await page
+            .getByRole('button', { name: /Τερματισμός Κύκλου|Terminate Cycle/i })
+            .first()
+            .click()
+
+        // The observable contract is the DB flip, not UI copy.
+        await expect
+            .poll(
+                async () => {
+                    const db = await prismaClient()
+                    try {
+                        const userId = await ownerId(db)
+                        const sub = await db.subscription.findFirst({
+                            where: { userId, planId: 'ph-plus', status: 'active' },
+                            select: { autoRenew: true },
+                        })
+                        return sub?.autoRenew
+                    } finally {
+                        await db.$disconnect()
+                    }
+                },
+                { timeout: 15000 }
+            )
+            .toBe(false)
+    })
+})

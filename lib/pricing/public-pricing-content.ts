@@ -278,7 +278,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     { label: { el: "Portfolio dashboard", en: "Portfolio dashboard" }, included: true, highlight: true },
                     { label: { el: "Renewal pipeline", en: "Renewal pipeline" }, included: true },
                     { label: { el: "Bulk import έως 100 γραμμές", en: "Bulk import up to 100 rows" }, included: true },
-                    { label: { el: "Branded αναφορές", en: "Branded reports" }, included: true },
+                    { label: { el: "Ερωτηματολόγια πελατών (7 πρότυπα)", en: "Client questionnaires (7 templates)" }, included: true },
                 ],
             },
             {
@@ -302,7 +302,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     { label: { el: "Team έως 3 πράκτορες", en: "Team up to 3 agents" }, included: true },
                     { label: { el: "Cross-sell intelligence", en: "Cross-sell intelligence" }, included: true },
                     { label: { el: "Priority queue", en: "Priority queue" }, included: true },
-                    { label: { el: "API access", en: "API access" }, included: true },
+                    { label: { el: "Παρακολούθηση προμηθειών", en: "Commission tracking" }, included: true },
                 ],
             },
             {
@@ -325,8 +325,8 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 features: [
                     { label: { el: "Απεριόριστοι πελάτες", en: "Unlimited customers" }, included: true, highlight: true },
                     { label: { el: "Απεριόριστη ομάδα", en: "Unlimited team members" }, included: true },
-                    { label: { el: "White-label reporting", en: "White-label reporting" }, included: true },
-                    { label: { el: "Προσαρμοσμένες ενσωματώσεις", en: "Custom integrations" }, included: true },
+                    { label: { el: "Απεριόριστη μαζική εισαγωγή", en: "Unlimited bulk import" }, included: true },
+                    { label: { el: "Μέγιστος προϋπολογισμός AI (25M tokens/μήνα)", en: "Largest AI budget (25M tokens/month)" }, included: true },
                     { label: { el: "Dedicated support", en: "Dedicated support" }, included: true },
                 ],
             },
@@ -375,7 +375,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                 },
             },
             {
-                name: { el: "Branded client reports", en: "Branded client reports" },
+                name: { el: "Ερωτηματολόγια πελατών", en: "Client questionnaires" },
                 values: {
                     "agent-free": false,
                     "agent-starter": true,
@@ -385,21 +385,12 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
             },
             {
                 category: { el: "Ομάδα & επεκτασιμότητα", en: "Team & scale" },
-                name: { el: "Role-based access", en: "Role-based access" },
+                name: { el: "Μέλη ομάδας", en: "Team members" },
                 values: {
-                    "agent-free": false,
-                    "agent-starter": false,
-                    "agent-pro": true,
-                    "agent-agency": true,
-                },
-            },
-            {
-                name: { el: "API πρόσβαση", en: "API access" },
-                values: {
-                    "agent-free": false,
-                    "agent-starter": false,
-                    "agent-pro": true,
-                    "agent-agency": true,
+                    "agent-free": "1",
+                    "agent-starter": "1",
+                    "agent-pro": "3",
+                    "agent-agency": "Unlimited",
                 },
             },
         ],

@@ -87,6 +87,10 @@ export async function proxy(request: NextRequest) {
         "/api/auth",
         // English marketing-page variants (/en/product, /en/pricing, …)
         "/en/",
+        // Invite redemption: anonymous recipients must reach the token page,
+        // which itself redirects them to signup with the invite pre-filled.
+        // Blocking this here bounced every agent→client invite to signin.
+        "/invite/",
         // PWA service-worker chunks (workbox-<hash>.js at the root)
         "/workbox-",
     ]
@@ -102,6 +106,10 @@ export async function proxy(request: NextRequest) {
         "/landing",
         "/api/contact",
         "/api/v1/contact",
+        // Anonymous newsletter/waitlist capture from the public footer — the
+        // route is declared public in the API inventory; without this entry
+        // the proxy 307s the POST to signin and every lead is dropped.
+        "/api/v1/landing/waitlist",
         // Stripe webhooks: anonymous POSTs from Stripe's servers — a signin
         // redirect here silently kills event delivery. The routes verify the
         // Stripe-Signature header themselves (defense in depth).

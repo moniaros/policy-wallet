@@ -259,21 +259,19 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
                                 </Link>
                             </div>
 
-                            {/* Social proof */}
+                            {/* Product facts — verifiable claims only, no fabricated social proof */}
                             <div className="flex items-center gap-3">
-                                <div className="flex -space-x-2">
-                                    {["ΓΚ", "ΜΠ", "ΑΔ", "ΝΣ"].map((initials) => (
-                                        <div
-                                            key={initials}
-                                            className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-[#29685B] text-[10px] font-bold text-white"
-                                        >
-                                            {initials}
-                                        </div>
-                                    ))}
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-[#29685B] text-[10px] font-bold text-white">
+                                    20
                                 </div>
                                 <p className="text-[13px] text-[#64748B]">
-                                    <span className="font-semibold text-[#0F172A]">500+</span>{" "}
-                                    {t("ασφαλισμένοι μας εμπιστεύονται", "policyholders trust us")}
+                                    <span className="font-semibold text-[#0F172A]">
+                                        {t("ασφαλιστικοί κλάδοι", "insurance branches")}
+                                    </span>{" "}
+                                    {t(
+                                        "— δωρεάν έως 3 συμβόλαια, χωρίς κάρτα",
+                                        "— free for up to 3 policies, no card required"
+                                    )}
                                 </p>
                             </div>
                         </div>
@@ -353,14 +351,14 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
                     <div className="mx-auto grid max-w-[1240px] grid-cols-2 gap-8 text-center lg:grid-cols-4">
                         {[
                             {
-                                value: "10.000+",
-                                labelEl: "Συμβόλαια αναλύθηκαν",
-                                labelEn: "Policies analyzed",
+                                value: "20",
+                                labelEl: "Ασφαλιστικοί κλάδοι",
+                                labelEn: "Insurance branches",
                             },
                             {
-                                value: "98%",
-                                labelEl: "Ακρίβεια εξαγωγής",
-                                labelEn: "Extraction accuracy",
+                                value: "3+1",
+                                labelEl: "Δωρεάν συμβόλαια + 1 AI ανάλυση",
+                                labelEn: "Free policies + 1 AI analysis",
                             },
                             {
                                 value: "<30s",
