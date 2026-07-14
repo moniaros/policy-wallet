@@ -5,6 +5,7 @@ import { handleStripeLifecycleEvent, isStripeLifecycleEvent } from "@/lib/servic
 import { createApiResponse, createApiError } from "@/lib/api-utils";
 import { withApiGuard } from "@/lib/api-guard";
 import { hasProcessedWebhookEvent, markWebhookEventProcessed } from "@/lib/services/billing/webhook-idempotency";
+import { recordConversionEvent } from "@/lib/journey/conversion-events";
 
 // PUBLIC_ENDPOINT_AUTH_STRATEGY: stripe_signature_verification + secret_key_validation
 
@@ -64,6 +65,19 @@ export const POST = withApiGuard(
             } else if (userId && planId) {
                 const subscriptionId = session.subscription as string
                 await handleSubscriptionSuccess(userId, planId, subscriptionId, customerId)
+            }
+        } else if (event.type === "checkout.session.expired") {
+            // Stripe expires abandoned sessions (~24h). This is the only
+            // server-side signal that a started checkout never converted —
+            // it closes the funnel's drop-off step.
+            const { userId, planId, billingPeriod, featureKey } = session.metadata || {}
+            if (userId) {
+                await recordConversionEvent(userId, "checkout_cancelled", {
+                    plan: planId,
+                    billingPeriod,
+                    feature: featureKey,
+                    source: "stripe_session_expired",
+                })
             }
         } else if (isStripeLifecycleEvent(event.type)) {
             // Dunning, cancellations and plan changes made on Stripe's side

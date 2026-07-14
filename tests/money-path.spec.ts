@@ -95,6 +95,10 @@ test.describe('Checkout return (revenue integrity)', () => {
 })
 
 test.describe('Feature gates on the policy page (free tier)', () => {
+    // The Q&A tests read and spend the same lifetime free-question counter —
+    // running them in parallel would have them see each other's rows.
+    test.describe.configure({ mode: 'serial' })
+
     let policyId: string
 
     test.beforeAll(async () => {
@@ -131,7 +135,7 @@ test.describe('Feature gates on the policy page (free tier)', () => {
         await closeUpgradeModal(page)
     })
 
-    test('AI Q&A pre-empts free users with an upgrade nudge once opened', async ({ page }) => {
+    test('AI Q&A gives free users their complimentary questions with a live meter', async ({ page }) => {
         await page.goto(`/wallet/${policyId}`)
         await dismissCookieBanner(page)
 
@@ -140,10 +144,83 @@ test.describe('Feature gates on the policy page (free tier)', () => {
         // The section header's only initial button toggles the chat open.
         await qaSection.getByRole('button').first().click()
 
-        // Inline trigger variant renders body + CTA (no headline).
+        // The free floor: the input is live and the meter states what is left.
+        await expect(qaSection.getByRole('textbox')).toBeEnabled({ timeout: 15000 })
         await expect(
-            qaSection.getByText(/απεριόριστες ερωτήσεις|unlimited questions/i).first()
-        ).toBeVisible({ timeout: 15000 })
+            qaSection.getByText(/δωρεάν ερωτήσεις|free questions/i).first()
+        ).toBeVisible()
+        // No pre-empt card while questions remain.
+        await expect(
+            qaSection.getByText(/απεριόριστες ερωτήσεις|unlimited questions/i)
+        ).toHaveCount(0)
+    })
+
+    test('AI Q&A pre-empts with an upgrade nudge once the free questions are used up', async ({ page }) => {
+        const db = await prismaClient()
+        try {
+            const owner = await db.user.findUniqueOrThrow({
+                where: { email: E2E_POLICYHOLDER.email },
+                select: { id: true },
+            })
+            // Spend the lifetime free questions the way askPolicyQuestion counts them.
+            await db.activityLog.createMany({
+                data: Array.from({ length: 3 }, () => ({
+                    adminUserId: owner.id,
+                    adminEmail: E2E_POLICYHOLDER.email,
+                    actionType: 'POLICY_QUESTION_ASKED',
+                    description: `money-path fixture question for policy ${policyId}`,
+                })),
+            })
+
+            await page.goto(`/wallet/${policyId}`)
+            await dismissCookieBanner(page)
+
+            const qaSection = page.locator('#policy-qa')
+            await qaSection.scrollIntoViewIfNeeded()
+            await qaSection.getByRole('button').first().click()
+
+            // Inline trigger variant renders body + CTA (no headline); input is gone.
+            await expect(
+                qaSection.getByText(/απεριόριστες ερωτήσεις|unlimited questions/i).first()
+            ).toBeVisible({ timeout: 15000 })
+            await expect(qaSection.getByRole('textbox')).toHaveCount(0)
+        } finally {
+            await db.activityLog.deleteMany({
+                where: {
+                    actionType: 'POLICY_QUESTION_ASKED',
+                    adminEmail: E2E_POLICYHOLDER.email,
+                },
+            })
+            await db.$disconnect()
+        }
+    })
+
+    test('the modal\'s annual toggle is what checkout actually charges', async ({ page }) => {
+        let checkoutBody: any = null
+        // Stop at the boundary: capture the payload, never call Stripe.
+        await page.route('**/api/v1/billing/checkout', async (route) => {
+            checkoutBody = route.request().postDataJSON()
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ data: { checkout_url: '/upgrade/success' } }),
+            })
+        })
+
+        await page.goto(`/wallet/${policyId}`)
+        await dismissCookieBanner(page)
+
+        const unlockCta = page.getByRole('button', { name: /Ξεκλείδωμα|Unlock report/i })
+        await expect(unlockCta).toBeVisible({ timeout: 20000 })
+        await unlockCta.click()
+        await expectUpgradeModalOpen(page)
+
+        await page.getByRole('radio', { name: /Ετήσια|Annual|Yearly/i }).click()
+        await page.getByRole('button', { name: /Συνέχεια στην πληρωμή|Continue to payment/i }).click()
+
+        await expect.poll(() => checkoutBody?.billingPeriod, { timeout: 15000 }).toBe('annual')
+        // The gate that triggered the upgrade rides along for the success page.
+        expect(checkoutBody.featureKey).toBeTruthy()
     })
 })
 

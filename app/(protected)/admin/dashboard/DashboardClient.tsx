@@ -40,6 +40,7 @@ interface DashboardMetrics {
         limitHits: number
         checkoutStarted: number
         checkoutCompleted: number
+        checkoutAbandoned: number
         paidActive: number
         triggerSources: Record<string, number>
     }
@@ -167,7 +168,7 @@ export default function DashboardClient({ metrics, activityLogs, pendingAgentsCo
                         </h3>
                         <TrendingUp className="w-4 h-4 text-stone-400" />
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
                         {[
                             { label: "Signups", value: metrics.funnel.signups },
                             { label: "Activated (≥1 policy)", value: metrics.funnel.activated },
@@ -175,6 +176,7 @@ export default function DashboardClient({ metrics, activityLogs, pendingAgentsCo
                             { label: "Limit hits", value: metrics.funnel.limitHits },
                             { label: "Checkouts started", value: metrics.funnel.checkoutStarted },
                             { label: "Checkouts completed", value: metrics.funnel.checkoutCompleted },
+                            { label: "Checkouts abandoned", value: metrics.funnel.checkoutAbandoned },
                         ].map((step) => (
                             <div key={step.label} className="text-center p-3 rounded-lg bg-stone-50 dark:bg-stone-900/40">
                                 <p className="text-2xl font-bold text-stone-900 dark:text-stone-100">{step.value}</p>

@@ -10,7 +10,7 @@ import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { Skeleton } from "@/components/ui/skeleton"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
 import { UploadDropzone } from "@/components/ui/UploadDropzone"
-import { LimitReachedModal } from "@/components/account/LimitReachedModal"
+import { UpgradeModal } from "@/components/monetization/UpgradeModal"
 import { PolicyReviewScreen } from "@/components/wallet/PolicyReviewScreen"
 import type { PolicyReviewData } from "@/lib/wallet/policy-review"
 import { formatDocumentDate } from "@/lib/dates/document-date"
@@ -396,12 +396,12 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                     source="wallet_add_policy"
                 />
 
-                <LimitReachedModal
+                <UpgradeModal
                     isOpen={limitModalOpen}
-                    reason="policy_limit"
-                    language={language}
+                    onClose={() => setLimitModalOpen(false)}
+                    featureKey="policy_upload_limit"
+                    triggerSource="add_policy_limit"
                     returnTo="/wallet/add"
-                    onDismiss={() => setLimitModalOpen(false)}
                 />
 
                 <form onSubmit={handleSubmit} className="space-y-8">

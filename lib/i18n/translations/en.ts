@@ -204,6 +204,8 @@ export const en: TranslationKeys = {
         tryAsking: "Try asking:",
         askAiPlaceholder: "Ask anything about your policy...",
         aiFootnote: "AI responses are based on your policy document and may not be 100% accurate",
+        qaFreeRemainingOne: "free question available",
+        qaFreeRemainingMany: "free questions available",
         thinking: "Thinking...",
         failedAnswer: "Failed to get answer",
         suggestedQuestions: [
@@ -917,6 +919,7 @@ export const en: TranslationKeys = {
     analysis: {
         title: 'GAP ANALYSIS',
         runAnalysis: 'Understand this policy',
+        freeTrialAvailable: 'Your first full analysis is free — try it on this policy.',
         analyzing: 'Analyzing...',
         noGaps: 'No gaps detected yet. Run analysis to check coverage.',
         gapCheckIncomplete: 'Gap check did not complete',
@@ -1071,6 +1074,11 @@ export const en: TranslationKeys = {
         walletCredits: 'Wallet Credits',
         creditsDesc: 'Apply these credits during checkout for AI analysis upgrades or subscription maintenance.',
         cycleMetrics: 'Cycle Metrics',
+        freeQuestionsMeter: 'Free AI questions',
+        trialAnalysisMeter: 'Free full analysis',
+        trialAnalysisAvailableHint: 'You have one free full analysis available.',
+        trialAnalysisUsedHint: 'Your free analysis has been used. Full analyses are included in Plus.',
+        monthlyAnalysesMeter: 'Analyses this month',
         aiUsage: 'AI Insight usage',
         activeRelationships: 'Active relationships',
         networkGrowth: 'Network growth',

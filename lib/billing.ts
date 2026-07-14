@@ -3,6 +3,7 @@ import { stripe } from "./stripe"
 import { daysFromNow, SUBSCRIPTION_PERIOD_DAYS } from "@/lib/constants/time"
 import { TOKEN_PACKAGES, type TokenPackageKey } from "@/lib/billing/token-packages"
 import { recordConversionEvent } from "@/lib/journey/conversion-events"
+import { PLAN_PRICING } from "@/lib/monetization/feature-gates"
 import { logger } from "@/lib/logger"
 
 export interface VATInfo {
@@ -29,10 +30,12 @@ export function calculateVAT(netAmount: number, countryCode: string = 'GR'): VAT
  * These must match the prices shown on the public pricing page so that the
  * amount charged equals what the visitor was offered.  If a plan has no
  * explicit annual price, fall back to 12 × monthly (no discount).
+ * The policyholder plans read straight from PLAN_PRICING — the same object
+ * the paywalls quote — so a price change can't drift between them.
  */
-const ANNUAL_PRICE_BY_PLAN: Record<string, number> = {
-    "ph-plus": 29,        // UI: €29/yr  (monthly €2.99 × 12 = €35.88)
-    "ph-pro": 99,         // UI: €99/yr  (monthly €9.99 × 12 = €119.88)
+export const ANNUAL_PRICE_BY_PLAN: Record<string, number> = {
+    [PLAN_PRICING.plus.planId]: PLAN_PRICING.plus.annualEur,
+    [PLAN_PRICING.pro.planId]: PLAN_PRICING.pro.annualEur,
     "agent-starter": 199, // UI: €199/yr (monthly €19.99 × 12 = €239.88)
     "agent-pro": 499,     // UI: €499/yr (monthly €49.99 × 12 = €599.88)
     "agent-agency": 999,  // UI: €999/yr (monthly €99.99 × 12 = €1199.88)
@@ -64,7 +67,9 @@ export async function createCheckoutSession(
     userId: string,
     planId: string,
     billingPeriod: "monthly" | "annual" = "monthly",
-    returnTo?: string | null
+    returnTo?: string | null,
+    /** Feature gate the upgrade started from (per-feature success message). */
+    featureKey?: string | null
 ) {
     const user = await db.user.findUnique({ where: { id: userId }, select: { email: true } })
     const plan = await db.plan.findUnique({ where: { id: planId } })
@@ -113,6 +118,7 @@ export async function createCheckoutSession(
             userId,
             planId,
             billingPeriod,
+            ...(featureKey ? { featureKey } : {}),
         },
     })
 

@@ -201,6 +201,8 @@ export const el = {
         tryAsking: 'Δοκιμάστε να ρωτήσετε:',
         askAiPlaceholder: 'Ρωτήστε οτιδήποτε για το ασφαλιστήριο...',
         aiFootnote: 'Οι απαντήσεις του AI βασίζονται στο έγγραφο του ασφαλιστηρίου σας και ενδέχεται να μην είναι 100% ακριβείς',
+        qaFreeRemainingOne: 'δωρεάν ερώτηση διαθέσιμη',
+        qaFreeRemainingMany: 'δωρεάν ερωτήσεις διαθέσιμες',
         thinking: 'Σκέφτομαι...',
         failedAnswer: 'Αποτυχία λήψης απάντησης',
         suggestedQuestions: [
@@ -914,6 +916,7 @@ export const el = {
     analysis: {
         title: 'ΑΝΑΛΥΣΗ ΑΣΦΑΛΙΣΤΙΚΩΝ ΚΕΝΩΝ',
         runAnalysis: 'Κατανόηση συμβολαίου',
+        freeTrialAvailable: 'Η πρώτη πλήρης ανάλυση είναι δωρεάν — δοκιμάστε την σε αυτό το συμβόλαιο.',
         analyzing: 'Ανάλυση...',
         noGaps: 'Δεν εντοπίστηκαν ασφαλιστικά κενά. Εκτελέστε ανάλυση για έλεγχο κάλυψης.',
         gapCheckIncomplete: 'Ο έλεγχος κενών δεν ολοκληρώθηκε',
@@ -1068,6 +1071,11 @@ export const el = {
         walletCredits: 'Μονάδες Πορτοφολιού',
         creditsDesc: 'Χρησιμοποιήστε αυτές τις μονάδες κατά την πληρωμή για αναβαθμίσεις ανάλυσης AI ή συντήρηση συνδρομής.',
         cycleMetrics: 'Μετρήσεις Κύκλου',
+        freeQuestionsMeter: 'Δωρεάν ερωτήσεις AI',
+        trialAnalysisMeter: 'Δωρεάν πλήρης ανάλυση',
+        trialAnalysisAvailableHint: 'Έχετε μία δωρεάν πλήρη ανάλυση διαθέσιμη.',
+        trialAnalysisUsedHint: 'Η δωρεάν ανάλυση χρησιμοποιήθηκε. Οι πλήρεις αναλύσεις περιλαμβάνονται στο Plus.',
+        monthlyAnalysesMeter: 'Αναλύσεις αυτόν τον μήνα',
         aiUsage: 'Χρήση AI Πληροφοριών',
         activeRelationships: 'Ενεργές Σχέσεις',
         networkGrowth: 'Ανάπτυξη Δικτύου',

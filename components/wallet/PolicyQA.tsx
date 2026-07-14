@@ -23,10 +23,13 @@ export function PolicyQA({
     policyId,
     tier,
     lineOfBusiness,
+    freeQuestionsRemaining = null,
 }: {
     policyId: string
     tier?: 'free' | 'plus' | 'pro'
     lineOfBusiness?: string | null
+    /** Free tier: complimentary lifetime questions left (null = unknown/n-a). */
+    freeQuestionsRemaining?: number | null
 }) {
     const { t, language } = useLanguage()
     const pathname = usePathname()
@@ -38,6 +41,13 @@ export function PolicyQA({
     const [showChat, setShowChat] = useState(false)
     const [limitReached, setLimitReached] = useState(false)
     const [limitReason, setLimitReason] = useState<"daily_limit" | "feature_locked">("daily_limit")
+    // Questions asked in this session, so the free meter counts down live.
+    const [askedThisSession, setAskedThisSession] = useState(0)
+    const freeRemaining = isFreeTier
+        ? Math.max((freeQuestionsRemaining ?? 0) - askedThisSession, 0)
+        : null
+    const canAskAsFree = isFreeTier && freeRemaining !== null && freeRemaining > 0
+    const inputEnabled = !isFreeTier || canAskAsFree
 
     // Branch pages deep-link here with ?q=<question>#policy-qa
     useEffect(() => {
@@ -71,6 +81,7 @@ export function PolicyQA({
                 const assistantMessage: Message = { role: 'assistant', content: result.answer, timestamp: new Date() }
                 const hasAssistantReply = messages.some((msg) => msg.role === "assistant")
                 setMessages((prev) => [...prev, assistantMessage])
+                setAskedThisSession((prev) => prev + 1)
                 if (!hasAssistantReply) {
                     trackJourneyEvent("first_ai_answer_received", { policy_id: policyId })
                 }
@@ -146,7 +157,7 @@ export function PolicyQA({
                                     <button
                                         key={idx}
                                         onClick={() => setQuestion(q)}
-                                        disabled={isFreeTier}
+                                        disabled={!inputEnabled}
                                         className="w-full text-left px-4 py-3 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/15 rounded-xl text-sm text-black/75 dark:text-white/75 transition-colors border border-black/10 dark:border-white/15 hover:border-primary/35 dark:hover:border-mint/35 cursor-pointer disabled:cursor-default disabled:opacity-60 disabled:hover:bg-black/5 dark:disabled:hover:bg-white/10"
                                     >
                                         <MessageCircle className="w-4 h-4 inline mr-2 text-primary dark:text-mint" />
@@ -159,8 +170,9 @@ export function PolicyQA({
                 </div>
             )}
 
-            {/* Free tier gets 0 AI questions — pre-empt instead of failing after typing */}
-            {showChat && isFreeTier && (
+            {/* Free tier: pre-empt only once the complimentary questions are
+                exhausted — the first taste of Q&A is part of the free floor. */}
+            {showChat && isFreeTier && !canAskAsFree && (
                 <div className="p-4 pt-0">
                     <UpgradeTriggerCard
                         featureKey="unlimited_ai_questions"
@@ -172,7 +184,7 @@ export function PolicyQA({
                 </div>
             )}
 
-            {showChat && !isFreeTier && (
+            {showChat && inputEnabled && (
                 <div className="p-4 pt-0">
                     <form onSubmit={handleAsk} className="relative">
                         <input
@@ -192,6 +204,13 @@ export function PolicyQA({
                         </button>
                     </form>
 
+                    {canAskAsFree && freeRemaining !== null && (
+                        <p className="mt-3 text-center text-xs font-semibold text-primary dark:text-mint">
+                            {freeRemaining === 1
+                                ? `1 ${t.wallet.qaFreeRemainingOne}`
+                                : `${freeRemaining} ${t.wallet.qaFreeRemainingMany}`}
+                        </p>
+                    )}
                     <p className="text-xs text-black/50 dark:text-white/60 mt-3 text-center">{t.wallet.aiFootnote}</p>
                     <AiDisclaimer variant="inline" className="mt-2 justify-center text-center" />
                 </div>

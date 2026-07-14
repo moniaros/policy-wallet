@@ -138,6 +138,7 @@ export async function getDashboardMetrics() {
             limitHitsLast30Days,
             checkoutStartedEvents,
             checkoutCompletedLast30Days,
+            checkoutAbandonedLast30Days,
         ] = await Promise.all([
             db.user.count({
                 where: { createdAt: { gte: thirtyDaysAgo }, policiesOwned: { some: {} } },
@@ -152,6 +153,10 @@ export async function getDashboardMetrics() {
             }),
             db.notificationEvent.count({
                 where: { eventType: "conv_checkout_completed", createdAt: { gte: thirtyDaysAgo } },
+            }),
+            // Stripe expires abandoned sessions (~24h) — the drop-off step.
+            db.notificationEvent.count({
+                where: { eventType: "conv_checkout_cancelled", createdAt: { gte: thirtyDaysAgo } },
             }),
         ])
 
@@ -203,6 +208,7 @@ export async function getDashboardMetrics() {
                 limitHits: limitHitsLast30Days,
                 checkoutStarted: checkoutStartedEvents.length,
                 checkoutCompleted: checkoutCompletedLast30Days,
+                checkoutAbandoned: checkoutAbandonedLast30Days,
                 paidActive: paidActiveSubscriptions,
                 triggerSources: triggerSourceBreakdown,
             }

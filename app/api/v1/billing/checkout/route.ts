@@ -13,6 +13,9 @@ const checkoutRequestSchema = z.object({
     returnTo: z.string().max(500).optional(),
     // Analytics label of the trigger surface that opened checkout.
     triggerSource: z.string().max(100).optional(),
+    // Feature gate the user upgraded from — the success page uses it to show
+    // the per-feature "you unlocked X" message.
+    featureKey: z.string().max(60).optional(),
 })
 
 export const POST = withApiGuard(
@@ -29,13 +32,14 @@ export const POST = withApiGuard(
         const language = (auth!.dbUser.preferredLanguage as "el" | "en") || "el"
 
         try {
-            const { planId, billingPeriod, returnTo, triggerSource } = body!
-            const checkout = await createCheckoutSession(auth!.dbUser.id, planId, billingPeriod, returnTo)
+            const { planId, billingPeriod, returnTo, triggerSource, featureKey } = body!
+            const checkout = await createCheckoutSession(auth!.dbUser.id, planId, billingPeriod, returnTo, featureKey)
 
             await recordConversionEvent(auth!.dbUser.id, "checkout_started", {
                 plan: planId,
                 billingPeriod,
                 source: triggerSource,
+                feature: featureKey,
             })
 
             return createApiResponse(

@@ -2,6 +2,7 @@
 
 import type { AccountOverviewProps } from './types'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { UsageMeter } from '@/components/monetization/UsageMeter'
 
 export function AccountOverview({
     currentUser,
@@ -9,6 +10,7 @@ export function AccountOverview({
     currentSubscription,
     currentPlan,
     usageMetrics,
+    conversionUsage,
     creditBalance,
     onViewPlan,
     onUpgrade,
@@ -256,6 +258,35 @@ export function AccountOverview({
                                     </div>
                                 )
                             })}
+
+                            {/* Free floor / plan allowance — what's actually left,
+                                stated plainly rather than only at the moment of a wall. */}
+                            {conversionUsage && conversionUsage.tier === 'free' && (
+                                <>
+                                    <UsageMeter
+                                        label={t.account.freeQuestionsMeter}
+                                        used={conversionUsage.freeQuestionsUsed}
+                                        limit={conversionUsage.freeQuestionsLimit}
+                                    />
+                                    <UsageMeter
+                                        label={t.account.trialAnalysisMeter}
+                                        used={conversionUsage.trialAnalysisAvailable ? 0 : 1}
+                                        limit={1}
+                                        hint={
+                                            conversionUsage.trialAnalysisAvailable
+                                                ? t.account.trialAnalysisAvailableHint
+                                                : t.account.trialAnalysisUsedHint
+                                        }
+                                    />
+                                </>
+                            )}
+                            {conversionUsage && conversionUsage.tier !== 'free' && (
+                                <UsageMeter
+                                    label={t.account.monthlyAnalysesMeter}
+                                    used={conversionUsage.analysesUsedThisMonth}
+                                    limit={conversionUsage.analysesLimitPerMonth}
+                                />
+                            )}
                         </div>
                     </div>
                 </div>
