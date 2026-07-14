@@ -40,10 +40,13 @@ async function fixturePolicyId(): Promise<string> {
     }
 }
 
-/** UpgradeModal has no dialog role — its billing toggle + pay CTA are the stable handles. */
+/**
+ * UpgradeModal has no dialog role. Post Paid-Aha-Loop it is a dual-CTA modal:
+ * the Plus primary CTA + the monthly billing toggle are the stable handles.
+ */
 async function expectUpgradeModalOpen(page: Page) {
     await expect(
-        page.getByRole('button', { name: /Συνέχεια στην πληρωμή|Continue to payment/i })
+        page.getByRole('button', { name: /Συνέχεια με Plus|Continue with Plus/i })
     ).toBeVisible({ timeout: 15000 })
     await expect(page.getByRole('radio', { name: /Μηνιαία|Monthly/i })).toBeVisible()
 }
@@ -89,8 +92,8 @@ test.describe('Checkout return (revenue integrity)', () => {
         await dismissCookieBanner(page)
 
         await expect(page.getByText(/Plus/).first()).toBeVisible({ timeout: 20000 })
-        await expect(page.getByText(/Pro/).first()).toBeVisible()
-        await expect(page.getByText(/€/).first()).toBeVisible()
+        await expect(page.getByText(/Starter/).first()).toBeVisible()
+        await expect(page.getByText(/€7\.99|€2\.99/).first()).toBeVisible()
     })
 })
 
@@ -147,6 +150,46 @@ test.describe('Feature gates on the policy page (free tier)', () => {
     })
 })
 
+test.describe('Paid Aha Loop — locked cards + dual-CTA modal (free tier)', () => {
+    let policyId: string
+
+    test.beforeAll(async () => {
+        policyId = await fixturePolicyId()
+    })
+
+    test('policy detail shows the locked premium insight cards to a free user', async ({ page }) => {
+        await page.goto(`/wallet/${policyId}`)
+        await dismissCookieBanner(page)
+
+        const grid = page.locator('#premium-insights')
+        await expect(grid).toBeVisible({ timeout: 20000 })
+        await expect(grid.getByText(/Διαθέσιμα με το Plus|Available with Plus/i)).toBeVisible()
+        // A couple of the six required locked-card titles.
+        await expect(grid.getByText(/Πλήρης AI ανάλυση|Full AI analysis/i)).toBeVisible()
+        await expect(grid.getByText(/Ερωτήσεις στο AI|Ask the AI/i)).toBeVisible()
+    })
+
+    test('clicking a locked card opens the dual-CTA modal (Plus recommended, Starter cheaper)', async ({ page }) => {
+        await page.goto(`/wallet/${policyId}`)
+        await dismissCookieBanner(page)
+
+        const grid = page.locator('#premium-insights')
+        await expect(grid).toBeVisible({ timeout: 20000 })
+        await grid.getByRole('button', { name: /Πλήρης AI ανάλυση|Full AI analysis/i }).click()
+
+        // Primary Plus €7.99 + secondary Starter €2.99 + tertiary "Όχι τώρα".
+        await expectUpgradeModalOpen(page)
+        await expect(page.getByRole('button', { name: /Ξεκίνα με Starter|Start with Starter/i })).toBeVisible()
+        await expect(page.getByRole('button', { name: /Όχι τώρα|Not now/i })).toBeVisible()
+        await expect(page.getByText(/€7\.99/).first()).toBeVisible()
+        await expect(page.getByText(/€2\.99/).first()).toBeVisible()
+        // Plus is the recommended tier.
+        await expect(page.getByText(/Προτείνεται|Recommended/i).first()).toBeVisible()
+
+        await closeUpgradeModal(page)
+    })
+})
+
 test.describe('Home upgrade triggers with a two-policy portfolio', () => {
     test.describe.configure({ mode: 'serial' })
 
@@ -198,9 +241,9 @@ test.describe('Home upgrade triggers with a two-policy portfolio', () => {
         await page.goto('/home')
         await dismissCookieBanner(page)
 
-        // Usage banner: 2 of 3 free-plan policies used.
+        // Usage banner: 2 stored policies against the free plan's 1-policy cap.
         await expect(page.getByText(/δωρεάν πλάνο|free plan/i).first()).toBeVisible({ timeout: 20000 })
-        await expect(page.getByText('2 / 3').first()).toBeVisible()
+        await expect(page.getByText('2 / 1').first()).toBeVisible()
 
         // Multi-insurer insights trigger (two distinct insurers on the book).
         await expect(
