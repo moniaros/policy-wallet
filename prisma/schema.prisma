@@ -108,6 +108,8 @@ model User {
   tokenBalance                    TokenBalance?              @relation("TokenBalance")
   tokenPurchases                  TokenPurchase[]            @relation("TokenPurchases")
   reportUnlockPurchases           ReportUnlockPurchase[]     @relation("ReportUnlockPurchases")
+  mergeRequestsRaised             PolicyMergeRequest[]      @relation("MergeRequester")
+  mergeRequestsToApprove          PolicyMergeRequest[]      @relation("MergeApprover")
   monthlyTokenUsage               MonthlyTokenUsage[]        @relation("MonthlyTokenUsage")
   policyAnalysisRuns              PolicyAnalysisRun[]
   collaborationThreadsCreated     CollaborationThread[]      @relation("CollaborationThreadCreatedBy")
@@ -323,6 +325,8 @@ model Policy {
   collaborationThreads CollaborationThread[]
   renewals             PolicyRenewal[]
   reportUnlocks        ReportUnlockPurchase[]
+  mergeRequestsAsExisting PolicyMergeRequest[] @relation("MergeExisting")
+  mergeRequestsAsIncoming PolicyMergeRequest[] @relation("MergeIncoming")
 
   @@index([ownerUserId])
   @@index([createdByUserId])
@@ -815,6 +819,30 @@ model TokenPurchase {
 
 // One-off €3 unlock of a single policy's full gap report (audit +
 // idempotent-fulfillment anchor; the fast-path read is Policy.reportUnlockedAt).
+// Two parties (an agent and the policyholder) uploaded the same policy
+// (same owner + insurer + policy number). Merging their records requires the
+// consent of the side that did not ask for it — never a silent overwrite.
+model PolicyMergeRequest {
+  id                String    @id @default(cuid()) @map("merge_request_id")
+  existingPolicyId  String    @map("existing_policy_id")
+  incomingPolicyId  String    @map("incoming_policy_id")
+  requestedByUserId String    @map("requested_by_user_id")
+  /// The user whose approval is required (the other uploader).
+  approverUserId    String    @map("approver_user_id")
+  status            String    @default("pending") // 'pending' | 'approved' | 'rejected' | 'cancelled'
+  decidedAt         DateTime? @map("decided_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  existingPolicy Policy @relation("MergeExisting", fields: [existingPolicyId], references: [id], onDelete: Cascade)
+  incomingPolicy Policy @relation("MergeIncoming", fields: [incomingPolicyId], references: [id], onDelete: Cascade)
+  requestedBy    User   @relation("MergeRequester", fields: [requestedByUserId], references: [id], onDelete: Cascade)
+  approver       User   @relation("MergeApprover", fields: [approverUserId], references: [id], onDelete: Cascade)
+
+  @@unique([existingPolicyId, incomingPolicyId])
+  @@index([approverUserId, status])
+  @@map("policy_merge_requests")
+}
+
 model ReportUnlockPurchase {
   id              String   @id @default(cuid()) @map("purchase_id")
   userId          String   @map("user_id")

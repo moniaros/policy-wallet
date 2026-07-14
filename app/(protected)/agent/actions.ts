@@ -3,6 +3,7 @@
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
+import { after } from "next/server"
 import { redirect } from "next/navigation"
 import {
     ActivationStatus,
@@ -623,14 +624,21 @@ export async function addPolicyForCustomer(data: {
                         where: { id: policy.id },
                         data: { status: 'analyzing' }
                     })
-                    const { PolicyService } = await import("@/lib/services/policy.service")
-                    const policyService = new PolicyService()
-                    try {
-                        await policyService.runBackgroundAnalysis(policy.id, agentId, language)
-                        analysisState = 'started'
-                    } catch (e) {
-                        console.error("Failed to trigger background analysis", e)
-                    }
+                    // Defer with after(): the analysis takes ~90s and the agent
+                    // must be able to close the dialog and keep working while it
+                    // runs — the action used to await it, so the "Adding…"
+                    // spinner blocked for the whole run and closing the modal
+                    // lost the result.
+                    analysisState = 'started'
+                    after(async () => {
+                        try {
+                            const { PolicyService } = await import("@/lib/services/policy.service")
+                            const policyService = new PolicyService()
+                            await policyService.runBackgroundAnalysis(policy.id, agentId, language)
+                        } catch (e) {
+                            console.error("Failed to run background analysis", e)
+                        }
+                    })
                 }
             }
         }
