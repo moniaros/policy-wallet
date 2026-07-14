@@ -15,6 +15,7 @@ import { extractPolicySections, pickLang } from "@/lib/wallet/policy-detail"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { RecommendationCards } from "@/components/coverage/RecommendationCards"
 import { BranchEmptyState } from "@/components/branches/BranchEmptyState"
+import { effectivePolicyStatus } from "@/lib/policy-status"
 
 function daysUntil(date: Date): number {
     return Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
@@ -54,6 +55,18 @@ function BulletList({ items }: { items: string[] }) {
         </ul>
     )
 }
+
+// Lifecycle status → t.policyStatus key (camelCase).
+const STATUS_I18N_KEY: Record<string, string> = {
+    active: "active",
+    expiring_soon: "expiringSoon",
+    expired: "expired",
+    unknown_duration: "unknownDuration",
+    action_needed: "actionNeeded",
+    cancelled: "cancelled",
+    analyzing: "analyzing",
+}
+
 
 export default async function BranchPage({ params }: { params: Promise<{ branch: string }> }) {
     const { branch: branchParam } = await params
@@ -152,7 +165,9 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
                     <SectionCard icon={Search} title={t.branches.policiesInBranch}>
                         <div className="space-y-2">
                             {branchPolicies.map((policy) => {
-                                const statusKey = policy.status as keyof typeof t.policyStatus
+                                // Lifecycle status, not the stale stored string —
+                                // an expired policy must never badge "Ενεργή".
+                                const statusKey = STATUS_I18N_KEY[effectivePolicyStatus(policy)] || policy.status
                                 const statusLabel = (t.policyStatus as Record<string, string>)[statusKey] || policy.status
                                 return (
                                     <Link

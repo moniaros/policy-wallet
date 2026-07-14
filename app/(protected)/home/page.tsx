@@ -24,6 +24,7 @@ import { QuickActionsRow } from "@/components/dashboard/home/QuickActionsRow"
 import { StatusRow } from "@/components/dashboard/home/StatusRow"
 import { CoverageGapsWidget } from "@/components/dashboard/home/CoverageGapsWidget"
 import { RecommendedActionsWidget } from "@/components/dashboard/home/RecommendedActionsWidget"
+import { effectivePolicyStatus, isPolicyCoverageActive } from "@/lib/policy-status"
 
 function daysUntil(date: Date) {
     return Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
@@ -91,7 +92,9 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     }
 
     const now = new Date()
-    const activePolicies = policies.filter((policy) => policy.status === "active")
+    // Coverage liveness from the REAL end date — the stored status string is
+    // never recomputed, so an expired policy would count as protection.
+    const activePolicies = policies.filter((policy) => isPolicyCoverageActive(policy))
     const insurerCount = new Set(
         activePolicies.map((policy) => policy.insurerName).filter(Boolean)
     ).size
@@ -113,7 +116,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         .sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime())
         .slice(0, 5)
 
-    const hasHealthPolicy = policies.some((policy) => normalizeBranch(policy.lineOfBusiness).id === "health")
+    const hasHealthPolicy = activePolicies.some((policy) => normalizeBranch(policy.lineOfBusiness).id === "health")
 
     // Branches where the user holds more than one active policy — surfaced
     // as an honest "worth checking for overlaps" note (the old tile invented
@@ -221,7 +224,15 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         gap: t.branches.statusGap,
         neutral: t.branches.statusNeutral,
     } as const
-    const coverageMapEntries = buildBranchOverview(policies, cachedScore?.expectedLines ?? []).map((entry) => ({
+    const coverageMapEntries = buildBranchOverview(
+        policies.map((policy) => ({
+            id: policy.id,
+            lineOfBusiness: policy.lineOfBusiness,
+            status: effectivePolicyStatus(policy),
+            endDate: policy.endDate,
+        })),
+        cachedScore?.expectedLines ?? []
+    ).map((entry) => ({
         id: entry.branch.id,
         icon: getBranchIcon(entry.branch.id),
         label: policyTypeLabels[entry.branch.id] || entry.branch.label[lang],

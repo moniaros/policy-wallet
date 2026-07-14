@@ -31,6 +31,8 @@ interface CoverageInsightsClientProps {
         totalPolicies: number
         totalCoverage: number
     }
+    /** Lapsed policies deliberately left out of the coverage picture. */
+    excludedExpired?: Array<{ id: string; label: string }>
     userLanguage: string
     tier: PlanTier
     isPaid: boolean
@@ -43,6 +45,7 @@ interface CoverageInsightsClientProps {
 }
 
 export function CoverageInsightsClient({
+    excludedExpired = [],
     gaps,
     stats,
     userLanguage,
@@ -76,7 +79,13 @@ export function CoverageInsightsClient({
             ? 'Το PolicyWallet παραμένει ανεξάρτητη πλατφόρμα που υποστηρίζει καλύτερες αποφάσεις κάλυψης.'
             : 'PolicyWallet remains an independent platform designed to support better coverage decisions.',
         policiesWithPoints: lang === 'el' ? 'Συμβόλαια με σημεία ελέγχου' : 'Policies with points',
-        totalPolicies: lang === 'el' ? 'Σύνολο συμβολαίων' : 'Total policies',
+        totalPolicies: lang === 'el' ? 'Ενεργά συμβόλαια' : 'Active policies',
+        expiredExcludedTitle: lang === 'el'
+            ? 'Ληγμένα συμβόλαια δεν προσμετρώνται στην κάλυψη'
+            : 'Expired policies are not counted as coverage',
+        expiredExcludedBody: lang === 'el'
+            ? 'Η εικόνα κάλυψης αφορά μόνο όσα ισχύουν σήμερα. Εκτός:'
+            : 'This coverage picture reflects only what is in force today. Excluded:',
         dismissSuccess: lang === 'el' ? 'Η σύσταση αποκρύφτηκε' : 'Insight dismissed',
         dismissFail: lang === 'el' ? 'Αποτυχία ενημέρωσης' : 'Failed to update',
         noLinkedPolicy: lang === 'el' ? 'Δεν βρέθηκε συνδεδεμένο συμβόλαιο' : 'No linked policy found',
@@ -201,6 +210,20 @@ export function CoverageInsightsClient({
                     <h1 className="pw-kicker mb-2">{copy.summaryTitle}</h1>
                     <p className="text-xl sm:text-2xl font-semibold text-black dark:text-white leading-tight">{summaryText}</p>
                 </div>
+
+                {excludedExpired.length > 0 && (
+                    <div className="mb-6 flex items-start gap-3 rounded-2xl border border-amber-300/60 bg-amber-50 p-4 dark:border-amber-800/60 dark:bg-amber-950/20">
+                        <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-700 dark:text-amber-400" />
+                        <div className="min-w-0">
+                            <p className="text-sm font-semibold text-amber-900 dark:text-amber-200">
+                                {copy.expiredExcludedTitle}
+                            </p>
+                            <p className="mt-0.5 text-xs leading-relaxed text-amber-800/90 dark:text-amber-300/90">
+                                {copy.expiredExcludedBody} {excludedExpired.map((policy) => policy.label).join(' · ')}
+                            </p>
+                        </div>
+                    </div>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
                     <div className={`rounded-2xl p-4 ${confidence.bg}`}>

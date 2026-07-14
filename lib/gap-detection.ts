@@ -1,5 +1,6 @@
 import type { Policy, GapDefinition } from '@prisma/client'
 import { db } from '@/lib/db'
+import { isPolicyCoverageActive } from '@/lib/policy-status'
 
 export type GapSeverity = 'critical' | 'high' | 'medium' | 'low'
 export type GapStatus = 'detected' | 'acknowledged' | 'resolved' | 'dismissed'
@@ -49,11 +50,15 @@ export async function detectGapsForPolicy(policy: Policy): Promise<DetectedGap[]
  * Detect gaps for all user policies
  */
 export async function detectGapsForUser(userId: string): Promise<DetectedGap[]> {
-    const policies = await db.policy.findMany({
+    const allPolicies = await db.policy.findMany({
         where: {
             ownerUserId: userId,
         },
     })
+
+    // Lapsed policies carry no current risk — detecting gaps "inside" a
+    // policy that no longer covers anything just manufactures false findings.
+    const policies = allPolicies.filter((policy) => isPolicyCoverageActive(policy))
 
     const allGaps: DetectedGap[] = []
 
@@ -319,7 +324,7 @@ export function detectGaps(policies: any[]): SimpleGap[] {
     // 1. Check for Missing Health Insurance (Portfolio Level)
     const hasHealth = policies.some(p =>
         p.lineOfBusiness?.toLowerCase() === 'health' &&
-        p.status === 'active'
+        isPolicyCoverageActive(p)
     )
     if (!hasHealth && policies.length > 0) {
         gaps.push({

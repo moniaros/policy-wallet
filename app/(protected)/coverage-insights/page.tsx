@@ -10,6 +10,8 @@ import { RiskProfileWizard } from "@/components/coverage/RiskProfileWizard"
 import { RefreshAnalysisButton } from "@/components/coverage/RefreshAnalysisButton"
 import { getGapEngineSnapshot, type GapEngineSnapshot } from "@/lib/services/gap-engine"
 import { getTranslations } from "@/lib/i18n"
+import { effectivePolicyStatus, isPolicyCoverageActive } from "@/lib/policy-status"
+import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
 
 export default async function CoverageInsightsPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -32,7 +34,7 @@ export default async function CoverageInsightsPage() {
     })
 
     // 3. Fetch all current gap instances for this user's policies
-    const gapInstances = await db.gapInstance.findMany({
+    const allGapInstances = await db.gapInstance.findMany({
         where: {
             policy: {
                 ownerUserId: dbUser.id
@@ -49,7 +51,9 @@ export default async function CoverageInsightsPage() {
                     policyNumber: true,
                     acordData: true,
                     lineOfBusiness: true,
-                    insurerName: true
+                    insurerName: true,
+                    status: true,
+                    endDate: true
                 }
             }
         },
@@ -59,7 +63,7 @@ export default async function CoverageInsightsPage() {
     })
 
     // 4. Get user's policies
-    const policies = await db.policy.findMany({
+    const allPolicies = await db.policy.findMany({
         where: {
             ownerUserId: dbUser.id
         },
@@ -69,9 +73,20 @@ export default async function CoverageInsightsPage() {
             acordData: true,
             createdAt: true,
             insurerName: true,
-            lineOfBusiness: true
+            lineOfBusiness: true,
+            status: true,
+            endDate: true
         }
     })
+
+    // CRITICAL: coverage insights describe the protection you have TODAY.
+    // A lapsed policy is not protection — its findings must not be presented
+    // as your current coverage picture (they stay on that policy's own page).
+    const policies = allPolicies.filter((policy) => isPolicyCoverageActive(policy))
+    const expiredPolicies = allPolicies.filter((policy) => !isPolicyCoverageActive(policy)
+        && effectivePolicyStatus(policy) === 'expired')
+    const livePolicyIds = new Set(policies.map((policy) => policy.id))
+    const gapInstances = allGapInstances.filter((gap) => !gap.policyId || livePolicyIds.has(gap.policyId))
 
     // 5. Calculate statistics
     const criticalGaps = gapInstances.filter(g => g.severity === 'critical').length
@@ -166,6 +181,10 @@ export default async function CoverageInsightsPage() {
                         totalPolicies: policies.length,
                         totalCoverage: 0
                     }}
+                    excludedExpired={expiredPolicies.map((policy) => ({
+                        id: policy.id,
+                        label: resolveInsurerDisplay(policy.insurerName).displayName || policy.policyNumber || '',
+                    }))}
                     userLanguage={userLanguage}
                     tier={entitlements.tier}
                     isPaid={entitlements.isPaid}
