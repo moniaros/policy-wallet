@@ -14,7 +14,6 @@ import { FREE_LIFETIME_QUESTIONS } from "@/lib/monetization/feature-gates"
 import {
     computeReportUnlocked,
     dedupeGaps,
-    normalizeGapSlug,
     resolveGapContent,
     type GapReportItem,
 } from "@/lib/wallet/gap-report"
@@ -110,13 +109,17 @@ export default async function PolicyDetailPage({
         id: gap.id,
         slug: gap.normalizedSlug,
         duplicateIds: gap.duplicateIds,
-        content: resolveGapContent(gap.definition?.slug || ""),
+        content: resolveGapContent(gap.definition?.slug || "", {
+            lineOfBusiness: policy.lineOfBusiness,
+            aiExplanationEl: gap.aiExplanationEl,
+            aiExplanation: gap.aiExplanation,
+        }),
         aiExplanation: gap.aiExplanation || null,
         aiExplanationEl: gap.aiExplanationEl || null,
         aiSuggestion: gap.aiSuggestion || null,
         aiSuggestionEl: gap.aiSuggestionEl || null,
     }))
-    const reportSlugSet = new Set(gapReportItems.map((item) => item.slug))
+    const reportConcepts = new Set(gapReportItems.map((item) => item.content.concept))
 
     // Free-tier owners see the first gaps only until the €3 unlock or an
     // upgrade; agents/viewers always get the full report (unchanged).
@@ -160,11 +163,11 @@ export default async function PolicyDetailPage({
     let relatedRecommendations: Array<Record<string, unknown>> = []
     if (isOwner) {
         try {
-            const { getActiveRecommendations } = await import("@/lib/services/gap-engine")
+            const { getActiveRecommendations, policyGapConcept } = await import("@/lib/services/gap-engine")
             const recommendations = (await getActiveRecommendations(dbUser.id)).filter((r) => {
-                const ruleId = String(r.ruleId || "")
-                if (!ruleId.startsWith("policy_gap:")) return true
-                return !reportSlugSet.has(normalizeGapSlug(ruleId.slice("policy_gap:".length)))
+                const concept = policyGapConcept(r.ruleId)
+                if (concept === null) return true // profile/portfolio rule — always shown
+                return !reportConcepts.has(concept)
             })
             const sameLob = recommendations.filter(r => r.lineOfBusiness === policy.lineOfBusiness)
             relatedRecommendations = (sameLob.length > 0 ? sameLob : recommendations)

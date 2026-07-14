@@ -7,7 +7,67 @@
  */
 
 import { db } from "@/lib/db"
+import { resolveGapConcept, resolveGapContent } from "@/lib/wallet/gap-report"
 import type { ProfileGap, GapSeverity } from "./profile-gap-rules"
+
+// ── Rule identity ────────────────────────────────────────────────────
+
+export const POLICY_GAP_RULE_PREFIX = "policy_gap:"
+
+/**
+ * Rule id for an AI-detected policy gap: `policy_gap:<lob>:<concept>`.
+ *
+ * The (userId, ruleId) uniqueness below stops the same rule being written
+ * twice — but only if one finding has one rule id. It doesn't: the pipeline
+ * mints rule ids from UNCONSTRAINED AI slugs, so one finding arrives spelled
+ * several ways (`theft` from the AI, `motor-theft` from the seeded rules,
+ * `own-damage` / `own-vehicle-damage`) and each spelling claims its own row.
+ * Keying on the CONCEPT is what makes the uniqueness mean anything. The line
+ * of business rides along because a missing theft cover on the car and on the
+ * house are different findings that happen to share a word.
+ */
+export function policyGapRuleId(lineOfBusiness: string, rawSlug: string): string {
+    const lob = String(lineOfBusiness || "other").trim().toLowerCase()
+    return `${POLICY_GAP_RULE_PREFIX}${lob}:${resolveGapConcept(rawSlug)}`
+}
+
+/**
+ * The gap concept behind a rule id, or null for profile/portfolio rules.
+ * Accepts the legacy two-segment form (`policy_gap:<raw-slug>`, written before
+ * rule ids carried a concept) so old rows collapse onto their new twins
+ * instead of rendering beside them.
+ */
+export function policyGapConcept(ruleId: string | null | undefined): string | null {
+    const id = String(ruleId || "")
+    if (!id.startsWith(POLICY_GAP_RULE_PREFIX)) return null
+    const rest = id.slice(POLICY_GAP_RULE_PREFIX.length)
+    const parts = rest.split(":")
+    const slug = parts.length > 1 ? parts.slice(1).join(":") : rest
+    return resolveGapConcept(slug)
+}
+
+/**
+ * One key per distinct finding — the identity every dedupe here uses.
+ * Policy-gap rules collapse onto `<lob>:<concept>`; profile and portfolio
+ * rules already have stable ids and pass through.
+ */
+export function recommendationDedupeKey(rec: {
+    ruleId: string | null
+    lineOfBusiness: string
+}): string | null {
+    const ruleId = String(rec.ruleId || "").trim()
+    if (!ruleId) return null
+    const concept = policyGapConcept(ruleId)
+    if (!concept) return ruleId
+    return policyGapRuleId(rec.lineOfBusiness, concept)
+}
+
+/** Fallback identity for rows that carry no rule id: two cards that READ the
+ *  same are the same card, whatever the database thinks. */
+function readableTitleKey(title: unknown): string {
+    const value = (title ?? {}) as { el?: string; en?: string }
+    return String(value.el || value.en || "").trim().toLowerCase()
+}
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -112,28 +172,70 @@ export function policyGapsToRecommendations(
         }
     }>
 ): RecommendationInput[] {
-    return gapInstances.map((gi) => ({
-        userId,
-        lineOfBusiness: gi.policy?.lineOfBusiness ?? "other",
-        ruleId: `policy_gap:${gi.definition.slug}`,
-        gapInstanceId: gi.id,
-        title: {
-            en: gi.definition.name,
-            el: gi.definition.name, // fallback; AI may provide el version
-        },
-        description: {
-            en: gi.aiExplanation || gi.definition.description || "",
-            el: gi.aiExplanationEl || gi.definition.description || "",
-        },
-        urgency: (gi.severity as GapSeverity) || "medium",
-        estimatedCostEur: getEstimatedPremium(
-            gi.policy?.lineOfBusiness ?? "other"
-        ),
-        personalReason: {
-            en: gi.aiSuggestion || `Review your ${gi.policy?.insurerName ?? ""} policy for this coverage gap.`,
-            el: gi.aiSuggestionEl || `Ελέγξτε το ασφαλιστήριο ${gi.policy?.insurerName ?? ""} για αυτό το κενό κάλυψης.`,
-        },
-    }))
+    const recs = gapInstances.map((gi) => {
+        const lob = gi.policy?.lineOfBusiness ?? "other"
+        // Same resolver as the gap report, so a finding reads identically
+        // wherever it surfaces — and the pipeline's raw English slug titles
+        // ("Own-Vehicle-Damage") never reach the card.
+        const content = resolveGapContent(gi.definition.slug, {
+            lineOfBusiness: lob,
+            aiExplanationEl: gi.aiExplanationEl,
+            aiExplanation: gi.aiExplanation,
+        })
+
+        return {
+            userId,
+            lineOfBusiness: lob,
+            ruleId: policyGapRuleId(lob, gi.definition.slug),
+            gapInstanceId: gi.id,
+            title: {
+                en: content.titleEn,
+                el: content.titleEl,
+            },
+            description: {
+                en: gi.aiExplanation || gi.definition.description || content.titleEn,
+                el: gi.aiExplanationEl || gi.definition.description || content.titleEl,
+            },
+            urgency: (gi.severity as GapSeverity) || "medium",
+            estimatedCostEur: getEstimatedPremium(lob),
+            personalReason: {
+                en: gi.aiSuggestion || `Review your ${gi.policy?.insurerName ?? ""} policy for this coverage gap.`,
+                el: gi.aiSuggestionEl || `Ελέγξτε το ασφαλιστήριο ${gi.policy?.insurerName ?? ""} για αυτό το κενό κάλυψης.`,
+            },
+        }
+    })
+
+    // Two policies can carry the same gap, and one policy can carry the same
+    // finding under two slugs — either way the user wants to read it once.
+    return dedupeRecommendationInputs(recs)
+}
+
+/**
+ * One recommendation per finding, keeping the most urgent of a colliding set.
+ * Order-independent: the winner is chosen by severity, not by arrival.
+ */
+export function dedupeRecommendationInputs(
+    recs: RecommendationInput[]
+): RecommendationInput[] {
+    const byKey = new Map<string, RecommendationInput>()
+    const keyless: RecommendationInput[] = []
+
+    for (const rec of recs) {
+        const key = recommendationDedupeKey(rec)
+        if (!key) {
+            keyless.push(rec)
+            continue
+        }
+        const existing = byKey.get(key)
+        const isMoreUrgent =
+            existing != null &&
+            (SEVERITY_ORDER[rec.urgency] ?? 3) < (SEVERITY_ORDER[existing.urgency] ?? 3)
+        if (!existing || isMoreUrgent) {
+            byKey.set(key, { ...rec, ruleId: key })
+        }
+    }
+
+    return [...byKey.values(), ...keyless]
 }
 
 // ── Prioritization ───────────────────────────────────────────────────
@@ -266,21 +368,28 @@ export async function syncRecommendations(
     userId: string,
     newRecs: RecommendationInput[]
 ): Promise<{ created: number; dismissed: number }> {
-    // First occurrence of a ruleId wins (inputs are already prioritized).
+    // One entry per FINDING, not per spelling of it. dedupeRecommendationInputs
+    // rewrites each rule id to its canonical `policy_gap:<lob>:<concept>` form
+    // and keeps the most urgent of a colliding set — without it the (userId,
+    // ruleId) uniqueness below is toothless, because one gap arriving under two
+    // AI spellings is two rule ids, and two rule ids claim two rows.
     const byRuleId = new Map<string, RecommendationInput>()
     const unkeyed: RecommendationInput[] = []
-    for (const rec of newRecs) {
+    for (const rec of dedupeRecommendationInputs(newRecs)) {
         if (!rec.ruleId) {
             unkeyed.push(rec)
             continue
         }
-        if (!byRuleId.has(rec.ruleId)) byRuleId.set(rec.ruleId, rec)
+        byRuleId.set(rec.ruleId, rec)
     }
 
     let created = 0
     let dismissed = 0
 
-    await db.$transaction(async (tx) => {
+    const applySync = async () => {
+        created = 0
+        dismissed = 0
+        await db.$transaction(async (tx) => {
         const existing = await tx.recommendationInstance.findMany({
             where: { userId },
             select: { id: true, ruleId: true, status: true, dismissReason: true },
@@ -347,6 +456,8 @@ export async function syncRecommendations(
         }
 
         // Rules that no longer fire: auto-dismiss (user dismissals stay put).
+        // Rows written under a legacy rule id — before ids carried a concept —
+        // land here too, which is how the table heals itself.
         const stale = existing.filter(
             (row) => row.status === "active" && row.ruleId && !byRuleId.has(row.ruleId)
         )
@@ -357,7 +468,21 @@ export async function syncRecommendations(
             })
             dismissed = stale.length
         }
-    })
+        })
+    }
+
+    try {
+        await applySync()
+    } catch (err: any) {
+        // Two engine runs can pass the same existence check and race to the
+        // insert — five of the ten call sites are unawaited background
+        // promises. The unique constraint stops the duplicate row, but it does
+        // so by aborting one transaction (P2002), and a poisoned transaction
+        // cannot be caught from the inside. Run it again: the loser now SEES
+        // the winner's row and updates it instead.
+        if (err?.code !== "P2002") throw err
+        await applySync()
+    }
 
     return { created, dismissed }
 }
@@ -440,13 +565,20 @@ export async function getActiveRecommendations(
         return Number(b.estimatedCostEur ?? 0) - Number(a.estimatedCostEur ?? 0)
     })
 
-    // Belt to the unique constraint's suspender: never render the same rule
-    // twice, whatever legacy rows survive in the table.
-    const seenRuleIds = new Set<string>()
+    // Belt to the unique constraint's suspender: never render the same FINDING
+    // twice, whatever legacy rows survive in the table. The constraint only
+    // guards the rule id it is given, so rows written before rule ids carried a
+    // concept (`policy_gap:own_vehicle_damage` beside `policy_gap:motor:own-damage`)
+    // are distinct to the database and identical to the reader — they collapse
+    // here on the next page load, and the next engine run retires them for good.
+    // Most urgent survives: the list is already sorted by urgency.
+    const seen = new Set<string>()
     const unique = sorted.filter((r) => {
-        if (!r.ruleId) return true
-        if (seenRuleIds.has(r.ruleId)) return false
-        seenRuleIds.add(r.ruleId)
+        const key =
+            recommendationDedupeKey({ ruleId: r.ruleId, lineOfBusiness: r.lineOfBusiness }) ??
+            `${r.lineOfBusiness}:${readableTitleKey(r.title)}`
+        if (seen.has(key)) return false
+        seen.add(key)
         return true
     })
 

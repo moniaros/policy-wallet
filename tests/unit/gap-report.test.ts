@@ -144,6 +144,106 @@ describe('resolveGapContent', () => {
             coverageArea: 'general',
         })
     })
+
+    it('titles unknown vocabulary with the AI\'s own Greek sentence, so two unknown gaps never read alike', () => {
+        // Before: every unmapped slug of the same mechanic got ONE generic
+        // heading, so a report full of unknown gaps was a wall of identical cards.
+        const a = resolveGapContent('brand-new-ai-vocabulary-a', {
+            aiExplanationEl: 'Το συμβόλαιο δεν καλύπτει ζημιές από παγετό. Δείτε τον όρο 7.',
+        })
+        const b = resolveGapContent('brand-new-ai-vocabulary-b', {
+            aiExplanationEl: 'Δεν προβλέπεται κάλυψη ρυμούλκησης εκτός Αττικής.',
+        })
+
+        expect(a.known).toBe(false)
+        expect(b.known).toBe(false)
+        expect(a.titleEl).toMatch(GREEK_TEXT)
+        expect(a.titleEl).not.toBe(b.titleEl)
+        expect(a.titleEl).toBe('Το συμβόλαιο δεν καλύπτει ζημιές από παγετό.')
+        // Still never the raw English slug.
+        expect(a.titleEl).not.toMatch(/vocabulary/i)
+    })
+
+    it('groups gaps by the policy branch, not by the words in the slug', () => {
+        // `fire` on a car is a vehicle cover — a motor policy has no "property" gaps.
+        expect(resolveGapContent('fire', { lineOfBusiness: 'motor' }).coverageArea).toBe('vehicle')
+        expect(resolveGapContent('fire', { lineOfBusiness: 'home' }).coverageArea).toBe('property')
+        // Health keeps the fine-grained areas that make the grouping useful.
+        expect(resolveGapContent('high-deductible', { lineOfBusiness: 'health' }).coverageArea).toBe('hospital')
+    })
+})
+
+// The report that triggered this fix: a real motor policy on 2026-07-14 whose
+// six AI gap slugs were ALL unmapped, so all six rendered under the single
+// generic heading «Σημείο προσοχής στην κάλυψη» — six cards, one sentence.
+describe('prod motor report (Sentry POLICYWALLET-7)', () => {
+    const PROD_MOTOR_SLUGS = [
+        'theft',
+        'fire',
+        'glass-breakage',
+        'own-damage',
+        'own-vehicle-damage',
+        'malicious-acts-terrorism',
+    ]
+
+    it('maps every slug the motor policy produced', () => {
+        for (const slug of PROD_MOTOR_SLUGS) {
+            const content = resolveGapContent(slug, { lineOfBusiness: 'motor' })
+            expect(content.known, slug).toBe(true)
+            expect(content.titleEl, slug).toMatch(GREEK_TEXT)
+            expect(content.coverageArea, slug).toBe('vehicle')
+        }
+        expect(captureMessage).not.toHaveBeenCalled()
+    })
+
+    it('renders five distinct findings — no two cards say the same thing', () => {
+        const items = dedupeGaps(
+            PROD_MOTOR_SLUGS.map((slug) => ({
+                id: slug,
+                aiExplanationEl: `Ελληνική εξήγηση για ${slug}`,
+                definition: { slug },
+            }))
+        )
+
+        // own-damage ≡ own-vehicle-damage: one finding, two AI spellings.
+        expect(items).toHaveLength(5)
+
+        const titles = items.map(
+            (item) => resolveGapContent(item.normalizedSlug, { lineOfBusiness: 'motor' }).titleEl
+        )
+        expect(new Set(titles).size).toBe(titles.length)
+    })
+})
+
+describe('concept dedupe', () => {
+    it('collapses vocabulary aliases from different producers', () => {
+        // The AI names the missing cover; the seeded rule prefixes the branch.
+        const motorTheft = dedupeGaps([
+            { id: 'ai', aiExplanationEl: 'Δεν καλύπτεται η κλοπή.', definition: { slug: 'theft' } },
+            { id: 'rule', aiExplanationEl: null, definition: { slug: 'motor-theft' } },
+        ])
+        expect(motorTheft).toHaveLength(1)
+        expect(motorTheft[0].id).toBe('ai') // the one with Greek text wins
+        expect(motorTheft[0].duplicateIds).toEqual(['rule'])
+        expect(motorTheft[0].concept).toBe('theft')
+
+        // Two slugs that already rendered under one identical Greek title.
+        const maternity = dedupeGaps([
+            { id: 'a', aiExplanationEl: 'x', definition: { slug: 'maternity-exclusion' } },
+            { id: 'b', aiExplanationEl: null, definition: { slug: 'pregnancy-exclusion' } },
+        ])
+        expect(maternity).toHaveLength(1)
+        expect(maternity[0].concept).toBe('maternity-exclusion')
+    })
+
+    it('still keeps genuinely different findings apart', () => {
+        const deduped = dedupeGaps([
+            { id: 'a', aiExplanationEl: 'x', definition: { slug: 'theft' } },
+            { id: 'b', aiExplanationEl: 'y', definition: { slug: 'fire' } },
+            { id: 'c', aiExplanationEl: 'z', definition: { slug: 'glass-breakage' } },
+        ])
+        expect(deduped).toHaveLength(3)
+    })
 })
 
 describe('groupGapsByCoverageArea / summarizeGaps', () => {
