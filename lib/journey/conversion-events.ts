@@ -13,17 +13,23 @@ export type ConversionEventType =
     | "checkout_started"
     | "checkout_completed"
     | "limit_hit"
+    // Paid Aha Loop v1 — server-side AI-call funnel (client can't see these).
+    | "free_ai_call_blocked"
+    | "paid_ai_call_started"
+    | "paid_ai_call_completed"
 
 export interface ConversionEventDetails {
     /** Trigger surface, e.g. "upgrade_modal", "carried_plan", "token_topup". */
     source?: string
     plan?: string
     billingPeriod?: string
-    /** For limit_hit: which limit, e.g. "policy", "ai_question". */
+    /** For limit_hit / *_ai_call_*: which operation, e.g. "gap_analysis", "ai_question". */
     kind?: string
     tokens?: number
     /** For report_unlock: which policy's report was purchased. */
     policyId?: string
+    /** For *_ai_call_* events: the feature the user attempted. */
+    feature?: string
 }
 
 export async function recordConversionEvent(

@@ -7,6 +7,8 @@ import { stripe } from "@/lib/stripe"
 import { extractStripeCustomerId, fulfillReportUnlockSession, fulfillTokenPurchaseSession, handleSubscriptionSuccess, persistStripeCustomerId, sanitizeReturnPath } from "@/lib/billing"
 import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
+import { FEATURE_GATES, getUpgradeCopy, type FeatureKey } from "@/lib/monetization"
+import { UpgradeSuccessTracker } from "@/components/monetization/UpgradeSuccessTracker"
 
 /**
  * Post-checkout landing. Verifies the Stripe session server-side and
@@ -51,16 +53,22 @@ const pick = (pair: { el: string; en: string }, language: string) =>
 export default async function UpgradeSuccessPage({
     searchParams,
 }: {
-    searchParams: Promise<{ session_id?: string; return?: string }>
+    searchParams: Promise<{ session_id?: string; return?: string; feature?: string }>
 }) {
-    const { session_id: sessionId, return: returnParam } = await searchParams
+    const { session_id: sessionId, return: returnParam, feature } = await searchParams
     const { dbUser } = await getAuthenticatedUser()
     const language = dbUser.preferredLanguage === "en" ? "en" : "el"
     const returnPath = sanitizeReturnPath(returnParam) || "/wallet"
 
+    // Per-feature success copy (already authored per gate) when the upgrade was
+    // triggered by a specific locked feature; falls back to the generic message.
+    const featureKey = feature && feature in FEATURE_GATES ? (feature as FeatureKey) : null
+    const featureCopy = featureKey ? getUpgradeCopy(featureKey, language) : null
+
     let activated = false
     let tokenPurchase = false
     let reportUnlock = false
+    let activatedPlanId: string | undefined
     if (sessionId) {
         try {
             const session = await stripe.checkout.sessions.retrieve(sessionId)
@@ -94,6 +102,7 @@ export default async function UpgradeSuccessPage({
                     customerId
                 )
                 activated = true
+                activatedPlanId = session.metadata.planId
             } else if (paid && !belongsToUser) {
                 logger("warn", "Upgrade success page: session user mismatch", {
                     sessionId,
@@ -139,15 +148,20 @@ export default async function UpgradeSuccessPage({
                         : tokenPurchase
                             ? pick(COPY.tokensBody, language)
                             : activated
-                                ? pick(COPY.body, language)
+                                ? (featureCopy?.successMessage ?? pick(COPY.body, language))
                                 : pick(COPY.pendingBody, language)}
                 </p>
                 <Link
                     href={returnPath}
                     className="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-primary py-3.5 text-sm font-bold uppercase tracking-widest text-white shadow-xl shadow-primary/25 transition-all hover:bg-primary-hover dark:text-[#1A2420]"
                 >
-                    {returnPath === "/wallet" ? pick(COPY.ctaHome, language) : pick(COPY.cta, language)}
+                    {activated && !tokenPurchase && !reportUnlock && featureCopy
+                        ? featureCopy.successCta
+                        : returnPath === "/wallet" ? pick(COPY.ctaHome, language) : pick(COPY.cta, language)}
                 </Link>
+                {activated && !tokenPurchase && !reportUnlock && (
+                    <UpgradeSuccessTracker feature={featureKey ?? undefined} plan={activatedPlanId} />
+                )}
                 <p className="mt-4 inline-flex items-center gap-1.5 text-xs text-black/45 dark:text-white/50">
                     <ShieldCheck className="h-3.5 w-3.5 text-primary dark:text-mint" />
                     {pick(COPY.trust, language)}

@@ -31,8 +31,8 @@ export function calculateVAT(netAmount: number, countryCode: string = 'GR'): VAT
  * explicit annual price, fall back to 12 × monthly (no discount).
  */
 const ANNUAL_PRICE_BY_PLAN: Record<string, number> = {
-    "ph-plus": 29,        // UI: €29/yr  (monthly €2.99 × 12 = €35.88)
-    "ph-pro": 99,         // UI: €99/yr  (monthly €9.99 × 12 = €119.88)
+    "ph-plus": 29,        // Starter — UI: €29/yr  (monthly €2.99 × 12 = €35.88)
+    "ph-pro": 79,         // Plus    — UI: €79/yr  (monthly €7.99 × 12 = €95.88)
     "agent-starter": 199, // UI: €199/yr (monthly €19.99 × 12 = €239.88)
     "agent-pro": 499,     // UI: €499/yr (monthly €49.99 × 12 = €599.88)
     "agent-agency": 999,  // UI: €999/yr (monthly €99.99 × 12 = €1199.88)
@@ -64,7 +64,9 @@ export async function createCheckoutSession(
     userId: string,
     planId: string,
     billingPeriod: "monthly" | "annual" = "monthly",
-    returnTo?: string | null
+    returnTo?: string | null,
+    /** Feature the user upgraded from — makes the success page copy specific. */
+    feature?: string | null
 ) {
     const user = await db.user.findUnique({ where: { id: userId }, select: { email: true } })
     const plan = await db.plan.findUnique({ where: { id: planId } })
@@ -82,7 +84,8 @@ export async function createCheckoutSession(
     const safeReturn = sanitizeReturnPath(returnTo)
     const successUrl =
         `${base}/upgrade/success?session_id={CHECKOUT_SESSION_ID}` +
-        (safeReturn ? `&return=${encodeURIComponent(safeReturn)}` : "")
+        (safeReturn ? `&return=${encodeURIComponent(safeReturn)}` : "") +
+        (feature ? `&feature=${encodeURIComponent(feature)}` : "")
     const cancelUrl = `${base}${safeReturn || "/account"}`
     const trialDays = TRIAL_DAYS_BY_PLAN[planId]
 
@@ -113,6 +116,7 @@ export async function createCheckoutSession(
             userId,
             planId,
             billingPeriod,
+            ...(feature ? { feature } : {}),
         },
     })
 

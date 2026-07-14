@@ -98,8 +98,10 @@ describe('AI-processing consent gate — orchestrator createRun (GDPR Art. 9)', 
         expect(mockTokenGate).not.toHaveBeenCalled()
     })
 
-    it('proceeds to a queued run (token gate consulted) when the owner has consented', async () => {
+    it('proceeds to a queued run (token gate consulted) when a Plus owner has consented', async () => {
         mockUserFind.mockResolvedValue({ aiProcessingConsentVersion: '2026-07' } as any)
+        // Deep analysis is Plus-only (code tier `pro`).
+        mockEntitlements.mockResolvedValue({ tier: 'pro', limits: {} } as any)
 
         const orchestrator = new PolicyAnalysisOrchestratorService()
         const run = await orchestrator.createRun('pol-1', OWNER_ID)
@@ -168,31 +170,31 @@ describe('AI-processing consent gate — legacy GapAnalysisService.analyzePolicy
     })
 })
 
-describe('AI paywall — free tier gets exactly one trial analysis (orchestrator createRun)', () => {
+describe('AI paywall — deep analysis is Plus-only (orchestrator createRun)', () => {
     const CONSENTED_OWNER = { aiProcessingConsentVersion: '2026-07' }
 
-    it('runs the one-time trial for a free policyholder and skips the token gate', async () => {
+    it('blocks a free policyholder — deep AI requires Plus, no trial run', async () => {
         mockEntitlements.mockResolvedValue({ tier: 'free', limits: {} } as any)
-        // 1st user lookup: owner consent; 2nd: initiator roles/trial state
+        // 1st user lookup: owner consent; 2nd: initiator roles
         mockUserFind
             .mockResolvedValueOnce(CONSENTED_OWNER as any)
-            .mockResolvedValueOnce({ roles: 'policyholder', trialAnalysisUsedAt: null } as any)
+            .mockResolvedValueOnce({ roles: 'policyholder' } as any)
 
         const orchestrator = new PolicyAnalysisOrchestratorService()
         const run = await orchestrator.createRun('pol-1', OWNER_ID)
 
-        expect(run.status).toBe('queued')
-        expect(mockUserUpdateMany).toHaveBeenCalledWith(
-            expect.objectContaining({ where: { id: OWNER_ID, trialAnalysisUsedAt: null } })
-        )
+        expect(run.status).toBe('blocked')
+        expect(run.failureCode).toBe('UPGRADE_REQUIRED')
+        expect(run.blockedReason).toBe('free_tier_ai_locked')
         expect(mockTokenGate).not.toHaveBeenCalled()
+        expect(mockUserUpdateMany).not.toHaveBeenCalled()
     })
 
-    it('blocks with UPGRADE_REQUIRED once the trial is used', async () => {
-        mockEntitlements.mockResolvedValue({ tier: 'free', limits: {} } as any)
+    it('blocks a Starter (code `plus`) policyholder too — Starter has no deep AI', async () => {
+        mockEntitlements.mockResolvedValue({ tier: 'plus', limits: {} } as any)
         mockUserFind
             .mockResolvedValueOnce(CONSENTED_OWNER as any)
-            .mockResolvedValueOnce({ roles: 'policyholder', trialAnalysisUsedAt: new Date() } as any)
+            .mockResolvedValueOnce({ roles: 'policyholder' } as any)
 
         const orchestrator = new PolicyAnalysisOrchestratorService()
         const run = await orchestrator.createRun('pol-1', OWNER_ID)
@@ -200,21 +202,19 @@ describe('AI paywall — free tier gets exactly one trial analysis (orchestrator
         expect(run.status).toBe('blocked')
         expect(run.failureCode).toBe('UPGRADE_REQUIRED')
         expect(mockPolicyUpdate).not.toHaveBeenCalled()
-        expect(mockUserUpdateMany).not.toHaveBeenCalled()
     })
 
-    it('blocks when a concurrent request loses the atomic trial claim', async () => {
-        mockEntitlements.mockResolvedValue({ tier: 'free', limits: {} } as any)
+    it('queues for a Plus (code `pro`) policyholder and applies the token gate', async () => {
+        mockEntitlements.mockResolvedValue({ tier: 'pro', limits: {} } as any)
         mockUserFind
             .mockResolvedValueOnce(CONSENTED_OWNER as any)
-            .mockResolvedValueOnce({ roles: 'policyholder', trialAnalysisUsedAt: null } as any)
-        mockUserUpdateMany.mockResolvedValue({ count: 0 } as any)
+            .mockResolvedValueOnce({ roles: 'policyholder' } as any)
 
         const orchestrator = new PolicyAnalysisOrchestratorService()
         const run = await orchestrator.createRun('pol-1', OWNER_ID)
 
-        expect(run.status).toBe('blocked')
-        expect(run.failureCode).toBe('UPGRADE_REQUIRED')
+        expect(run.status).toBe('queued')
+        expect(mockTokenGate).toHaveBeenCalledTimes(1)
     })
 
     it('never applies the policyholder paywall to agent initiators (agent budgets meter them)', async () => {

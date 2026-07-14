@@ -286,6 +286,72 @@ function createFallbackGapAnalysis(metadata: PolicyMetadata): AIGapAnalysisRespo
 }
 
 export class PolicyAnalysisOrchestratorService {
+    /**
+     * Free/Starter "parse": run ONLY the extraction step and persist the basic
+     * summary (insurer, policy number, line of business, dates, premium,
+     * coverage summary). No clarity / gaps / translation — those are the Plus
+     * (deep) pipeline. This is the single paid-AI operation free/Starter may
+     * run and is not token-gated (the policy-count cap bounds it). Returns a
+     * lightweight status; never creates a PolicyAnalysisRun.
+     */
+    async extractBasicSummary(
+        policyId: string,
+        userId: string
+    ): Promise<{ status: "completed" | "blocked" | "failed"; reason?: string }> {
+        const policy = await this.loadAuthorizedPolicy(policyId, userId)
+
+        // GDPR Art. 9 consent gate — same as the deep pipeline: no document
+        // bytes reach the LLM without the owner's AI-processing consent.
+        const owner = await db.user.findUnique({
+            where: { id: policy.ownerUserId },
+            select: { aiProcessingConsentVersion: true },
+        })
+        if (!owner?.aiProcessingConsentVersion) {
+            return { status: "blocked", reason: "ai_consent_missing" }
+        }
+
+        if (!policy.documents?.length) {
+            return { status: "failed", reason: "no_document" }
+        }
+
+        try {
+            const prepared = await this.prepareDocument(policyId)
+            const service = getAIService()
+            const extraction = await service.extractPolicyData(prepared.document)
+            const metadata = this.buildMetadata(policy, extraction)
+
+            await db.policy.update({
+                where: { id: policyId },
+                data: {
+                    insurerName: metadata.insurerName,
+                    policyNumber: metadata.policyNumber,
+                    lineOfBusiness: metadata.lineOfBusiness,
+                    ...(metadata.startDate ? { startDate: metadata.startDate } : {}),
+                    ...(metadata.endDate ? { endDate: metadata.endDate } : {}),
+                    ...(metadata.premiumAmount != null ? { premiumAmount: metadata.premiumAmount } : {}),
+                    ...(metadata.coverageSummary ? { coverageSummary: metadata.coverageSummary } : {}),
+                    status: "active",
+                },
+            })
+            await db.policyDocument.updateMany({
+                where: { policyId },
+                data: { processingStatus: "completed" },
+            })
+            return { status: "completed" }
+        } catch (error) {
+            logger("error", "extractBasicSummary failed", {
+                policyId,
+                userId,
+                error: error instanceof Error ? error.message : String(error),
+            })
+            await db.policyDocument.updateMany({
+                where: { policyId },
+                data: { processingStatus: "failed" },
+            })
+            return { status: "failed", reason: "extraction_failed" }
+        }
+    }
+
     async createRun(policyId: string, userId: string) {
         const policy = await this.loadAuthorizedPolicy(policyId, userId)
 
@@ -313,58 +379,35 @@ export class PolicyAnalysisOrchestratorService {
             })
         }
 
-        // Paywall: AI analysis is paid-only for policyholders, except for one
-        // complimentary trial run (User.trialAnalysisUsedAt). Agents are metered
-        // by their own agent-plan budgets (canAgentRunAnalysis at the action
-        // layer + token gate below), so the trial branch never applies to them.
+        // Paywall: DEEP AI analysis (clarity + gaps + translation) is a Plus
+        // feature (code key "pro"). Free and Starter get the basic parsed
+        // summary only — extraction runs at upload (policies/extract, policy-cap
+        // gated) and never reaches this deep pipeline. Agents are metered by
+        // their own agent-plan budget (canAgentRunAnalysis at the action layer +
+        // the token gate below), so the tier block never applies to them.
         const initiator = await db.user.findUnique({
             where: { id: userId },
-            select: { roles: true, trialAnalysisUsedAt: true },
+            select: { roles: true },
         })
         const isAgentInitiator = Boolean(initiator?.roles?.includes("agent"))
 
         // Resolve tier for priority queue: pro=2, plus=1, free=0
         const userEntitlements = await resolveUserEntitlements(userId)
 
-        let isTrialRun = false
-        if (!isAgentInitiator && userEntitlements.tier === "free") {
-            if (initiator?.trialAnalysisUsedAt) {
-                return db.policyAnalysisRun.create({
-                    data: {
-                        policyId,
-                        userId,
-                        provider: "gemini",
-                        model: env.GEMINI_MODEL_CLARITY_ANALYSIS,
-                        status: "blocked",
-                        blockedReason: "free_tier_ai_locked",
-                        failureCode: "UPGRADE_REQUIRED",
-                        failureMessage: "AI analysis requires a paid plan; the free trial analysis has been used",
-                        finishedAt: new Date(),
-                    },
-                })
-            }
-            // Consume the one-time trial atomically; a concurrent second run
-            // loses the updateMany race and falls through to blocked next time.
-            const claimed = await db.user.updateMany({
-                where: { id: userId, trialAnalysisUsedAt: null },
-                data: { trialAnalysisUsedAt: new Date() },
+        if (!isAgentInitiator && userEntitlements.tier !== "pro") {
+            return db.policyAnalysisRun.create({
+                data: {
+                    policyId,
+                    userId,
+                    provider: "gemini",
+                    model: env.GEMINI_MODEL_CLARITY_ANALYSIS,
+                    status: "blocked",
+                    blockedReason: "free_tier_ai_locked",
+                    failureCode: "UPGRADE_REQUIRED",
+                    failureMessage: "Full AI analysis is a Plus feature; free and Starter plans get the basic summary only",
+                    finishedAt: new Date(),
+                },
             })
-            if (claimed.count === 0) {
-                return db.policyAnalysisRun.create({
-                    data: {
-                        policyId,
-                        userId,
-                        provider: "gemini",
-                        model: env.GEMINI_MODEL_CLARITY_ANALYSIS,
-                        status: "blocked",
-                        blockedReason: "free_tier_ai_locked",
-                        failureCode: "UPGRADE_REQUIRED",
-                        failureMessage: "AI analysis requires a paid plan; the free trial analysis has been used",
-                        finishedAt: new Date(),
-                    },
-                })
-            }
-            isTrialRun = true
         }
 
         const gapDefinitionsCount = await db.gapDefinition.count({
@@ -407,11 +450,9 @@ export class PolicyAnalysisOrchestratorService {
             data: { processingStatus: "processing" },
         })
 
-        // Trial runs bypass the token budget: free tier has a 0 budget by design
-        // and the trial's cost envelope is bounded by the single-run claim above.
-        const gate = isTrialRun
-            ? { allowed: true as const }
-            : await canUserUseTokens(userId, estimation.totalEstimatedTokens)
+        // Only pro (Plus) policyholders and agents reach here; the token budget
+        // is the meter (pro = 3M, agent = plan budget).
+        const gate = await canUserUseTokens(userId, estimation.totalEstimatedTokens)
         if (!gate.allowed) {
             const blockedRun = await db.policyAnalysisRun.update({
                 where: { id: run.id },

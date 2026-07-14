@@ -21,7 +21,6 @@ import { canUserUseTokens } from "@/lib/token-tracking"
 import { canUserAddPolicy, canUserUseFeature, getUserSubscription, SUBSCRIPTION_LIMITS } from "@/lib/subscription-limits"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { recordConversionEvent } from "@/lib/journey/conversion-events"
-import { GoogleGenerativeAI } from "@google/generative-ai"
 import { after } from 'next/server'
 import { collaborationService } from "@/lib/services/collaboration.service"
 import { sendPolicyInviteEmail, sendPolicySharedAccessEmail } from "@/lib/email/invite-emails"
@@ -847,11 +846,17 @@ export async function analyzeGaps(policyId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
-    // AI gap analysis is paid-only for policyholders (agents are metered by
-    // their agent-plan budgets, admins bypass).
+    // AI gap analysis is a Plus feature (code key "pro"); free and Starter are
+    // both blocked (agents are metered by their agent-plan budgets, admins
+    // bypass).
     const { tier } = await getUserSubscription(authResult.dbUser.id)
     const callerRoles = authResult.dbUser.roles || ""
-    if (tier === "free" && !callerRoles.includes("agent") && !callerRoles.includes("admin")) {
+    if (tier !== "pro" && !callerRoles.includes("agent") && !callerRoles.includes("admin")) {
+        await recordConversionEvent(authResult.dbUser.id, "free_ai_call_blocked", {
+            kind: "gap_analysis",
+            source: "analyze_gaps",
+            feature: "advanced_gap_detection",
+        })
         return { error: "UPGRADE_REQUIRED" }
     }
 
@@ -1053,6 +1058,11 @@ export async function askPolicyQuestion(policyId: string, question: string) {
     const isAllowed = await canUserUseFeature(authResult.dbUser.id, 'interactiveQA')
     if (!isAllowed && !authResult.dbUser.roles.includes('admin') && !authResult.dbUser.roles.includes('agent')) {
         await recordConversionEvent(authResult.dbUser.id, "limit_hit", { kind: "ai_question", source: "policy_qa" })
+        await recordConversionEvent(authResult.dbUser.id, "free_ai_call_blocked", {
+            kind: "ai_question",
+            source: "policy_qa",
+            feature: "unlimited_ai_questions",
+        })
         return { error: "UPGRADE_REQUIRED" }
     }
 

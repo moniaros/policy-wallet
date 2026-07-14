@@ -7,7 +7,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { fixMojibakeText } from "@/lib/i18n/fix-mojibake"
 import { completeOnboardingStep, uploadOnboardingPolicy, redeemInviteCode, triggerOnboardingAnalysis } from "./actions"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
-import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
+import { PremiumInsightCards } from "@/components/monetization/PremiumInsightCards"
 
 type GoalType = "save_money" | "health_family" | "my_car" | "organize_policies" | "review_policy" | "investments_reminders"
 
@@ -402,9 +402,8 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                             </div>
 
                             {uploadedPolicyId && !simulatingAi && (
-                                <UpgradeTriggerCard
-                                    featureKey="full_ai_policy_analysis"
-                                    triggerSource="onboarding_trial"
+                                <PremiumInsightCards
+                                    triggerSource="onboarding_post_parse"
                                     returnTo={`/wallet/${uploadedPolicyId}`}
                                 />
                             )}

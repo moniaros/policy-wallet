@@ -59,13 +59,13 @@ export function MainNav({ navigation, onNavigate }: MainNavProps) {
                                     {/* Badges */}
                                     {item.variant === 'pro' && !item.isLocked && (
                                         <span className="px-1.5 py-0.5 rounded-md bg-black text-white text-[10px] font-bold uppercase tracking-widest shadow-sm">
-                                            Pro
+                                            Plus
                                         </span>
                                     )}
 
                                     {item.variant === 'plus' && !item.isLocked && (
                                         <span className="px-1.5 py-0.5 rounded-md bg-primary/15 text-primary dark:text-mint text-[10px] font-bold uppercase tracking-widest border border-primary/30">
-                                            Plus
+                                            Starter
                                         </span>
                                     )}
 
@@ -74,7 +74,7 @@ export function MainNav({ navigation, onNavigate }: MainNavProps) {
                                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                             </svg>
-                                            {item.variant === 'pro' ? 'Pro' : 'Lock'}
+                                            {item.variant === 'pro' ? 'Plus' : 'Lock'}
                                         </span>
                                     )}
 

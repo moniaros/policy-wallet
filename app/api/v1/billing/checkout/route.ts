@@ -13,6 +13,9 @@ const checkoutRequestSchema = z.object({
     returnTo: z.string().max(500).optional(),
     // Analytics label of the trigger surface that opened checkout.
     triggerSource: z.string().max(100).optional(),
+    // Feature the user upgraded from — threaded to /upgrade/success for
+    // feature-specific success copy + the feature_unlocked event.
+    feature: z.string().max(60).optional(),
 })
 
 export const POST = withApiGuard(
@@ -29,8 +32,8 @@ export const POST = withApiGuard(
         const language = (auth!.dbUser.preferredLanguage as "el" | "en") || "el"
 
         try {
-            const { planId, billingPeriod, returnTo, triggerSource } = body!
-            const checkout = await createCheckoutSession(auth!.dbUser.id, planId, billingPeriod, returnTo)
+            const { planId, billingPeriod, returnTo, triggerSource, feature } = body!
+            const checkout = await createCheckoutSession(auth!.dbUser.id, planId, billingPeriod, returnTo, feature)
 
             await recordConversionEvent(auth!.dbUser.id, "checkout_started", {
                 plan: planId,

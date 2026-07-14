@@ -1,18 +1,44 @@
-import { NextRequest, NextResponse } from "next/server"
-import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
+import { NextResponse } from "next/server"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { env } from "@/lib/env"
 import { enrichExtractionPayload } from "@/lib/services/ai/extraction-enrichment"
 import { ALLOWED_UPLOAD_MIME_TYPES, MAX_UPLOAD_SIZE_BYTES } from "@/lib/constants/time"
+import { withApiGuard } from "@/lib/api-guard"
+import { canUserAddPolicy } from "@/lib/subscription-limits"
+import { recordConversionEvent } from "@/lib/journey/conversion-events"
 
-export async function POST(request: NextRequest) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-    }
+// Policy PDF extraction (the "parse"). This is the single paid-AI operation a
+// free/Starter user may run — the source of their basic summary — so it is
+// gated by the policy allowance (free = 1) rather than blocked outright, plus
+// rate-limited. Deep AI analysis is gated separately at the orchestrator.
+export const POST = withApiGuard(
+    {
+        auth: { mode: "user" },
+        rateLimit: {
+            limit: 6,
+            windowMs: 60 * 1000,
+            key: ({ auth }) => `policy:extract:${auth?.dbUser.id || "anonymous"}`,
+        },
+    },
+    async ({ req, auth }) => {
+        const authResult = auth!
+
+        // Cap the AI parse to what the user can actually save: once they are at
+        // their policy limit, block the (paid) extraction and surface upgrade.
+        const canAdd = await canUserAddPolicy(authResult.dbUser.id)
+        if (!canAdd.allowed) {
+            await recordConversionEvent(authResult.dbUser.id, "free_ai_call_blocked", {
+                kind: "policy_parse",
+                source: "policy_extract",
+            })
+            return NextResponse.json(
+                { error: "POLICY_LIMIT_REACHED", code: "POLICY_LIMIT_REACHED" },
+                { status: 403 }
+            )
+        }
 
     try {
-        const formData = await request.formData()
+        const formData = await req.formData()
         const file = formData.get('file') as File
 
         if (!file) {
@@ -123,4 +149,5 @@ export async function POST(request: NextRequest) {
             error: error instanceof Error ? error.message : "Failed to extract policy data"
         }, { status: 500 })
     }
-}
+    }
+)

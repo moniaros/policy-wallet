@@ -34,6 +34,7 @@ import {
 } from "@/lib/wallet/policy-detail"
 import { AlertTriangle, Crown, FileDown, Lock, RefreshCw, ShieldCheck, Trash2, Users } from "lucide-react"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
+import { PremiumInsightCards } from "@/components/monetization/PremiumInsightCards"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
 import { FREE_GAP_PREVIEW_COUNT, type GapReportItem } from "@/lib/wallet/gap-report"
@@ -572,6 +573,17 @@ export function PolicyDetailsClient({
                                 report={{ items: gapReportItems, reportUnlocked }}
                             />
                         </section>
+
+                        {/* 6b ── Locked premium insights (free/Starter) ────── */}
+                        {tier !== 'pro' && (
+                            <section id="premium-insights" className="scroll-mt-24">
+                                <PremiumInsightCards
+                                    triggerSource="policy_detail_locked_cards"
+                                    returnTo={`/wallet/${policy.id}#analysis`}
+                                    className="rounded-3xl border border-black/10 dark:border-white/15 bg-white/60 dark:bg-white/5 p-6 sm:p-8"
+                                />
+                            </section>
+                        )}
 
                         {/* 7 ── Related recommendations ───────────────────── */}
                         {showRecommendations && (

@@ -38,6 +38,17 @@ export type JourneyEventName =
     | "upload_limit_reached"
     | "ai_question_limit_reached"
     | "feature_locked_viewed"
+    // Paid Aha Loop v1 (2026-07): first-policy → locked cards → dual-CTA modal
+    | "free_policy_uploaded"
+    | "free_policy_parsed"
+    | "post_parse_upgrade_prompt_viewed"
+    | "locked_feature_clicked"
+    | "plus_recommended_seen"
+    | "starter_selected"
+    | "plus_selected"
+    | "free_ai_call_blocked"
+    | "paid_ai_call_started"
+    | "paid_ai_call_completed"
 
 /**
  * Standard payload for conversion-funnel events. All fields optional —
@@ -194,4 +205,14 @@ export interface JourneyEventPayloadMap {
     upload_limit_reached: ConversionPayload
     ai_question_limit_reached: ConversionPayload
     feature_locked_viewed: ConversionPayload
+    free_policy_uploaded: ConversionPayload
+    free_policy_parsed: ConversionPayload
+    post_parse_upgrade_prompt_viewed: ConversionPayload
+    locked_feature_clicked: ConversionPayload
+    plus_recommended_seen: ConversionPayload
+    starter_selected: ConversionPayload
+    plus_selected: ConversionPayload
+    free_ai_call_blocked: ConversionPayload
+    paid_ai_call_started: ConversionPayload
+    paid_ai_call_completed: ConversionPayload
 }
