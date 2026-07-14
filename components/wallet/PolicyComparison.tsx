@@ -3,6 +3,9 @@
 import { useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { parseDocumentDate } from "@/lib/dates/document-date"
+import { useLanguage } from "@/contexts/LanguageContext"
+import { getPolicyStatusView } from "@/lib/wallet/policy-status-view"
+import { StatusPill } from "@/components/ui/StatusPill"
 
 interface PolicyForComparison {
     id: string
@@ -38,6 +41,7 @@ interface PolicyComparisonProps {
 
 export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds = [] }: PolicyComparisonProps) {
     const router = useRouter()
+    const { t } = useLanguage()
     const [selectedIds, setSelectedIds] = useState<string[]>(selectedPolicyIds)
 
     // Filter to only show comparable policies (same line of business)
@@ -68,14 +72,6 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
             }
 
             setSelectedIds(prev => [...prev, id])
-        }
-    }
-
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'active': return 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint'
-            case 'expiring_soon': return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-            default: return 'bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400'
         }
     }
 
@@ -217,9 +213,10 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                                         {policy.policyNumber}
                                                     </p>
                                                     <div className="flex items-center gap-2 mt-2">
-                                                        <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${getStatusColor(policy.status)}`}>
-                                                            {policy.status.replace('_', ' ')}
-                                                        </span>
+                                                        {(() => {
+                                                            const view = getPolicyStatusView(policy, t)
+                                                            return <StatusPill tone={view.tone} label={view.label} icon={false} />
+                                                        })()}
                                                         {policy.premiumAmount && (
                                                             <span className="text-xs text-stone-500">
                                                                 {formatCurrency(policy.premiumAmount)}/yr
@@ -283,9 +280,10 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                                 return (
                                                     <td key={policy.id} className={`py-4 px-6 text-center ${isLowest ? 'bg-primary-tint dark:bg-primary/15' : ''}`}>
                                                         {row.isStatus ? (
-                                                            <span className={`px-3 py-1 rounded-full text-xs font-bold ${getStatusColor(value as string)}`}>
-                                                                {(value as string).replace('_', ' ')}
-                                                            </span>
+                                                            (() => {
+                                                                const view = getPolicyStatusView(policy, t)
+                                                                return <StatusPill tone={view.tone} label={view.label} icon={false} />
+                                                            })()
                                                         ) : (
                                                             <span className={`text-sm ${isLowest ? 'text-primary dark:text-mint font-bold' : 'text-slate-700 dark:text-slate-300'}`}>
                                                                 {value}

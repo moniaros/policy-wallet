@@ -1,4 +1,5 @@
 import { resolvePolicyLifecycle, type PolicyStatus } from '@/lib/policy-status'
+import { IN_FORCE_KEYS } from '@/lib/wallet/policy-status-view'
 
 export type PremiumPolicyLike = {
     id?: string
@@ -11,15 +12,13 @@ export type PremiumPolicyLike = {
 }
 
 /**
- * Lifecycle states that represent live economic exposure. `action_needed` is
- * in force too — it only means the record is missing an insurer name or policy
- * number, not that the cover has lapsed.
+ * Live economic exposure IS cover that is in force — one definition, imported
+ * from the status module rather than restated here, so a premium total and the
+ * rest of the wallet can never disagree about what "in force" means.
  */
-const PREMIUM_BEARING_STATUSES: ReadonlySet<PolicyStatus> = new Set<PolicyStatus>([
-    'active',
-    'expiring_soon',
-    'action_needed',
-])
+const PREMIUM_BEARING_STATUSES: ReadonlySet<PolicyStatus> = new Set(
+    IN_FORCE_KEYS.filter((key): key is PolicyStatus => key !== 'analyzing')
+)
 
 /**
  * Stored workflow states that are not a real policy yet (still extracting) or

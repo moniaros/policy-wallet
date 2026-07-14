@@ -137,3 +137,17 @@ export const ATTENTION_KEYS: readonly PolicyStatusKey[] = [
 export function isAttentionKey(key: PolicyStatusKey): boolean {
     return ATTENTION_KEYS.includes(key)
 }
+
+/**
+ * Cover that is actually in force today: a real, future end date. `action_needed`
+ * belongs here — it only means the record is missing an insurer or policy number,
+ * not that the cover lapsed.
+ *
+ * The one definition of "in force". Premium totals and comparison eligibility
+ * both derive from it, so they can never drift apart.
+ */
+export const IN_FORCE_KEYS: readonly PolicyStatusKey[] = ['active', 'expiring_soon', 'action_needed']
+
+export function isInForceKey(key: PolicyStatusKey): boolean {
+    return IN_FORCE_KEYS.includes(key)
+}
