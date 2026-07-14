@@ -601,6 +601,11 @@ export {
     getEstimatedPremium,
     matchProductsToRecommendations,
     deriveProfileTags,
+    dedupeRecommendationInputs,
+    recommendationDedupeKey,
+    policyGapRuleId,
+    policyGapConcept,
+    POLICY_GAP_RULE_PREFIX,
 } from "./recommendation-generator"
 export { generatePlaybook, generateAgentPlaybooks } from "./agent-playbook"
 export { evaluatePortfolioRules, buildProfileGapEvidence } from "./portfolio-rules"
