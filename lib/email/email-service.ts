@@ -6,6 +6,8 @@ export interface EmailOptions {
     html: string
     text?: string
     from?: string
+    /** Where replies go. Lets an admin alert reply straight to the form submitter. */
+    replyTo?: string
 }
 
 export interface EmailResult {
@@ -68,6 +70,7 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
         subject: options.subject,
         htmlContent: options.html,
         textContent: options.text || stripHtml(options.html),
+        ...(options.replyTo ? { replyTo: { email: options.replyTo } } : {}),
     }
 
     try {

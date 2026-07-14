@@ -214,6 +214,9 @@ function normalizeTier(raw?: string | null): PlanTier {
     const tierRaw = (raw || "free").toLowerCase()
     if (tierRaw === "essential") return "plus"
     if (tierRaw === "professional") return "pro"
+    // Legacy "Premium" plan rows (ph-premium, €24.99) predate the Plus/Pro
+    // scheme; treating them as free would strip a paying subscriber's access.
+    if (tierRaw.includes("premium")) return "pro"
     if (tierRaw === "plus" || tierRaw === "pro" || tierRaw === "free") return tierRaw
     return "free"
 }

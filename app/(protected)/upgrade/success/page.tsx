@@ -4,7 +4,7 @@ import Link from "next/link"
 import { CheckCircle2, ShieldCheck } from "lucide-react"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { stripe } from "@/lib/stripe"
-import { fulfillReportUnlockSession, fulfillTokenPurchaseSession, handleSubscriptionSuccess, sanitizeReturnPath } from "@/lib/billing"
+import { extractStripeCustomerId, fulfillReportUnlockSession, fulfillTokenPurchaseSession, handleSubscriptionSuccess, persistStripeCustomerId, sanitizeReturnPath } from "@/lib/billing"
 import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
 import { FEATURE_GATES, getUpgradeCopy, type FeatureKey } from "@/lib/monetization"
@@ -76,9 +76,11 @@ export default async function UpgradeSuccessPage({
                 session.payment_status === "no_payment_required" // trials
             const belongsToUser = session.metadata?.userId === dbUser.id
 
+            const customerId = extractStripeCustomerId(session.customer)
             if (paid && belongsToUser && session.metadata?.type === "report_unlock" && session.metadata?.policyId) {
                 // One-off €3 gap-report unlock (mode: payment)
                 await fulfillReportUnlockSession(session.id, dbUser.id, session.metadata.policyId)
+                await persistStripeCustomerId(dbUser.id, customerId)
                 activated = true
                 reportUnlock = true
             } else if (paid && belongsToUser && session.metadata?.tokensPurchased) {
@@ -88,13 +90,15 @@ export default async function UpgradeSuccessPage({
                     dbUser.id,
                     parseInt(session.metadata.tokensPurchased, 10)
                 )
+                await persistStripeCustomerId(dbUser.id, customerId)
                 activated = true
                 tokenPurchase = true
             } else if (paid && belongsToUser && session.metadata?.planId) {
                 await handleSubscriptionSuccess(
                     dbUser.id,
                     session.metadata.planId,
-                    (session.subscription as string) || ""
+                    (session.subscription as string) || "",
+                    customerId
                 )
                 activated = true
                 purchasedPlan = session.metadata.planId

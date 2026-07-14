@@ -8,8 +8,16 @@
   },
   "crons": [
     {
+      "path": "/api/v1/jobs/renewal-check",
+      "schedule": "0 5 * * *"
+    },
+    {
       "path": "/api/v1/jobs/synthetic-launch-check",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/v1/jobs/protection-score-refresh",
+      "schedule": "0 7 * * *"
     },
     {
       "path": "/api/v1/jobs/collaboration-reminders",

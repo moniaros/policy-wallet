@@ -81,3 +81,30 @@ export function validateJsonModeObject<S extends z.ZodTypeAny>(
     })
     return cleansed as z.infer<S>
 }
+
+/**
+ * Guarantee the clarity result's array shapes. Schema-constrained mode used
+ * to guarantee these server-side; in JSON mode (with the lenient fallback
+ * above) the model can omit coverageSnapshot arrays or whole sections, and
+ * downstream steps read them with .length/.map — the coverage_mapping step
+ * died on exactly this in prod.
+ */
+export function normalizeClarityShape<T extends Record<string, unknown>>(object: T): T {
+    const asArray = (value: unknown): unknown[] => (Array.isArray(value) ? value : [])
+    const snapshot = (object.coverageSnapshot ?? {}) as Record<string, unknown>
+    return {
+        ...object,
+        plainLanguageSummary: typeof object.plainLanguageSummary === 'string' ? object.plainLanguageSummary : '',
+        coverageSnapshot: {
+            covered: asArray(snapshot.covered),
+            notCovered: asArray(snapshot.notCovered),
+            limits: asArray(snapshot.limits),
+            deductibles: asArray(snapshot.deductibles),
+            exclusions: asArray(snapshot.exclusions),
+        },
+        savingsOpportunities: asArray(object.savingsOpportunities),
+        coverageGaps: asArray(object.coverageGaps),
+        checklistScores: asArray(object.checklistScores),
+        priorityActions: asArray(object.priorityActions),
+    }
+}

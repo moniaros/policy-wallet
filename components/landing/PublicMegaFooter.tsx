@@ -4,7 +4,7 @@ import Link from "next/link"
 import { FormEvent, useMemo, useState } from "react"
 import { ArrowRight, Facebook, Instagram, Linkedin, Mail, ShieldCheck, Twitter, type LucideIcon } from "lucide-react"
 import { productCategories } from "@/lib/product/catalog"
-import { getSocialProfiles } from "@/lib/seo/site"
+import { getSocialProfiles, siteConfig } from "@/lib/seo/site"
 
 interface PublicMegaFooterProps {
     locale: "el" | "en"
@@ -20,13 +20,6 @@ const SOCIAL_ICONS: Record<string, LucideIcon> = {
     X: Twitter,
 }
 
-function getDeviceType() {
-    if (typeof window === "undefined") return "desktop"
-    if (window.innerWidth < 768) return "mobile"
-    if (window.innerWidth < 1024) return "tablet"
-    return "desktop"
-}
-
 export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
     const isGreek = locale === "el"
     const t = (el: string, en: string) => (isGreek ? el : en)
@@ -34,6 +27,8 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
     const [email, setEmail] = useState("")
     const [status, setStatus] = useState<NewsletterStatus>("idle")
     const [statusMessage, setStatusMessage] = useState("")
+    // Honeypot — hidden from humans, irresistible to bots. Filled = silently dropped server-side.
+    const [honeypot, setHoneypot] = useState("")
 
     const productLinks = useMemo(
         () =>
@@ -81,23 +76,25 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
         setStatusMessage("")
 
         try {
-            const response = await fetch("/api/v1/landing/waitlist", {
+            const response = await fetch("/api/v1/newsletter/subscribe", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     email: normalizedEmail,
-                    profile_type: "individual",
-                    waitlist_intent: "organize_policies",
-                    source_context: "footer_newsletter",
-                    referrer_source: "direct",
-                    device_type: getDeviceType(),
-                    time_on_page: Math.max(0, Math.floor(performance.now() / 1000)),
-                    primary_cta_interacted: true,
                     locale,
+                    source: "footer_newsletter",
+                    company: honeypot,
                 }),
             })
 
-            if (!response.ok) {
+            // Checking response.ok alone is not enough: a proxy redirect to the
+            // sign-in page also answers 200, which is how this form used to report
+            // "subscribed" while nothing was stored. Require the success envelope.
+            const payload = (await response.json().catch(() => null)) as
+                | { data?: { subscribed?: boolean } | null }
+                | null
+
+            if (!response.ok || !payload?.data?.subscribed) {
                 throw new Error("newsletter_submit_failed")
             }
 
@@ -113,8 +110,8 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
             setStatus("error")
             setStatusMessage(
                 t(
-                    "Η εγγραφή δεν ολοκληρώθηκε. Δοκιμάστε ξανά ή επικοινωνήστε στο hello@policywallet.com.",
-                    "Subscription failed. Try again or contact hello@policywallet.com."
+                    `Η εγγραφή δεν ολοκληρώθηκε. Δοκιμάστε ξανά ή επικοινωνήστε στο ${siteConfig.contactEmail}.`,
+                    `Subscription failed. Try again or contact ${siteConfig.contactEmail}.`
                 )
             )
         }
@@ -244,6 +241,16 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                             <label htmlFor="footer-newsletter-email" className="sr-only">
                                 {t("Email για newsletter", "Newsletter email")}
                             </label>
+                            <input
+                                type="text"
+                                name="company"
+                                value={honeypot}
+                                onChange={(event) => setHoneypot(event.target.value)}
+                                tabIndex={-1}
+                                autoComplete="off"
+                                aria-hidden="true"
+                                className="absolute left-[-9999px] h-0 w-0 opacity-0"
+                            />
                             <div className="flex flex-col gap-2 sm:flex-row">
                                 <input
                                     id="footer-newsletter-email"

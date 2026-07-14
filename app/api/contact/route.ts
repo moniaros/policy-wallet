@@ -1,7 +1,11 @@
-import nodemailer from "nodemailer"
 import { z } from "zod"
 import { NextResponse } from "next/server"
+import * as Sentry from "@sentry/nextjs"
+import { db } from "@/lib/db"
 import { rateLimit } from "@/lib/rate-limit"
+import { sendContactConfirmation, sendFormAdminAlert } from "@/lib/email/form-emails"
+
+// PUBLIC_ENDPOINT_AUTH_STRATEGY: rate_limit + zod_payload_validation + honeypot + db_persist + brevo_alert
 
 export const runtime = "nodejs"
 
@@ -26,19 +30,12 @@ const contactSchema = z.object({
         }),
     subject: z.enum(SUBJECT_OPTIONS),
     message: z.string().trim().min(20).max(4000),
+    // Honeypot: real users never see this field, so a filled value means a bot.
+    company: z.string().max(200).optional().default(""),
 })
 
 type ContactPayload = z.infer<typeof contactSchema>
 type ContactErrors = Partial<Record<keyof ContactPayload, string>>
-
-function escapeHtml(input: string): string {
-    return input
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;")
-}
 
 function mapValidationErrors(payload: unknown): ContactErrors {
     const parsed = contactSchema.safeParse(payload)
@@ -64,72 +61,9 @@ function mapValidationErrors(payload: unknown): ContactErrors {
     return errors
 }
 
-function createTransporter() {
-    const host = process.env.SMTP_HOST
-    const portValue = process.env.SMTP_PORT
-    const port = portValue ? Number(portValue) : 587
-    const user = process.env.SMTP_USER
-    const pass = process.env.SMTP_PASSWORD || process.env.SMTP_PASS
-
-    if (!host || !user || !pass || Number.isNaN(port)) {
-        return null
-    }
-
-    return nodemailer.createTransport({
-        host,
-        port,
-        secure: port === 465,
-        auth: { user, pass },
-    })
-}
-
-function resolveRecipients() {
-    return {
-        from: process.env.SMTP_FROM || process.env.SENDER_EMAIL || "noreply@policywallet.com",
-        to: process.env.CONTACT_FORM_TO || "hello@policywallet.com",
-        replyToFallback: process.env.SMTP_FROM || process.env.SENDER_EMAIL || "noreply@policywallet.com",
-    }
-}
-
-function buildHtml(payload: ContactPayload) {
-    const safeName = escapeHtml(payload.name)
-    const safeEmail = escapeHtml(payload.email)
-    const safePhone = payload.phone ? escapeHtml(payload.phone) : "-"
-    const safeSubject = escapeHtml(payload.subject)
-    const safeMessage = escapeHtml(payload.message).replaceAll("\n", "<br/>")
-
-    return `
-      <div style="font-family: Arial, sans-serif; max-width: 680px; line-height: 1.6;">
-        <h2 style="margin: 0 0 12px; color: #0f172a;">Νέα επικοινωνία από φόρμα PolicyWallet</h2>
-        <p style="margin: 0 0 20px; color: #334155;">Λήφθηκε νέο αίτημα επικοινωνίας από τη δημόσια σελίδα.</p>
-        <table style="border-collapse: collapse; width: 100%;">
-          <tr><td style="padding: 8px; border: 1px solid #e2e8f0; font-weight: 600;">Ονοματεπώνυμο</td><td style="padding: 8px; border: 1px solid #e2e8f0;">${safeName}</td></tr>
-          <tr><td style="padding: 8px; border: 1px solid #e2e8f0; font-weight: 600;">Email</td><td style="padding: 8px; border: 1px solid #e2e8f0;">${safeEmail}</td></tr>
-          <tr><td style="padding: 8px; border: 1px solid #e2e8f0; font-weight: 600;">Τηλέφωνο</td><td style="padding: 8px; border: 1px solid #e2e8f0;">${safePhone}</td></tr>
-          <tr><td style="padding: 8px; border: 1px solid #e2e8f0; font-weight: 600;">Θέμα</td><td style="padding: 8px; border: 1px solid #e2e8f0;">${safeSubject}</td></tr>
-          <tr><td style="padding: 8px; border: 1px solid #e2e8f0; font-weight: 600; vertical-align: top;">Μήνυμα</td><td style="padding: 8px; border: 1px solid #e2e8f0;">${safeMessage}</td></tr>
-        </table>
-      </div>
-    `
-}
-
-function buildText(payload: ContactPayload) {
-    return [
-        "Νέα επικοινωνία από φόρμα PolicyWallet",
-        "",
-        `Ονοματεπώνυμο: ${payload.name}`,
-        `Email: ${payload.email}`,
-        `Τηλέφωνο: ${payload.phone || "-"}`,
-        `Θέμα: ${payload.subject}`,
-        "",
-        "Μήνυμα:",
-        payload.message,
-    ].join("\n")
-}
-
 export async function POST(req: Request) {
     const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "anonymous"
-    const limitCheck = await rateLimit(String(ip), 8, 10 * 60 * 1000)
+    const limitCheck = await rateLimit(String(ip), 8, 10 * 60 * 1000, `contact:${ip}`)
     if (!limitCheck.success) return limitCheck.error!
 
     let requestBody: unknown
@@ -157,46 +91,44 @@ export async function POST(req: Request) {
         )
     }
 
-    const payload = parsed.data
-    const transporter = createTransporter()
-    const recipients = resolveRecipients()
+    const payload: ContactPayload = parsed.data
 
-    if (!transporter) {
-        if (process.env.NODE_ENV !== "production") {
-            console.log("[contact:dev] SMTP config missing, logging payload instead of sending email")
-            console.log(buildText(payload))
-            return NextResponse.json({
-                success: true,
-                message: "Το μήνυμά σας καταχωρήθηκε επιτυχώς.",
-                provider: "dev_log",
-            })
-        }
-
-        return NextResponse.json(
-            {
-                success: false,
-                message: "Η υπηρεσία επικοινωνίας δεν είναι διαθέσιμη αυτή τη στιγμή.",
-            },
-            { status: 503 }
-        )
-    }
-
-    try {
-        await transporter.sendMail({
-            from: recipients.from,
-            to: recipients.to,
-            replyTo: payload.email || recipients.replyToFallback,
-            subject: `PolicyWallet Contact: ${payload.subject}`,
-            html: buildHtml(payload),
-            text: buildText(payload),
-        })
-
+    // Bot: answer exactly like a success so it learns nothing, but persist and send nothing.
+    if (payload.company.trim().length > 0) {
         return NextResponse.json({
             success: true,
             message: "Το μήνυμά σας στάλθηκε με επιτυχία.",
         })
+    }
+
+    const submission = {
+        name: payload.name,
+        email: payload.email,
+        phone: payload.phone,
+        subject: payload.subject,
+        message: payload.message,
+    }
+
+    // Persist BEFORE any network call: a Brevo outage must never lose the message.
+    let submissionId: string
+    try {
+        const row = await db.formSubmission.create({
+            data: {
+                formType: "contact",
+                email: submission.email,
+                name: submission.name,
+                phone: submission.phone || null,
+                subject: submission.subject,
+                message: submission.message,
+                locale: "el",
+                source: "contact_page",
+                ipAddress: String(ip),
+                userAgent: req.headers.get("user-agent"),
+            },
+        })
+        submissionId = row.id
     } catch (error) {
-        console.error("Contact form delivery failed:", error)
+        Sentry.captureException(error, { tags: { context: "contact_form_persist" } })
         return NextResponse.json(
             {
                 success: false,
@@ -205,4 +137,33 @@ export async function POST(req: Request) {
             { status: 500 }
         )
     }
+
+    const alert = await sendFormAdminAlert({ formType: "contact", submission })
+
+    if (alert.success) {
+        await db.formSubmission
+            .update({ where: { id: submissionId }, data: { emailSent: true } })
+            .catch((error) => Sentry.captureException(error, { tags: { context: "contact_form_mark_sent" } }))
+    } else {
+        // The message is safely in form_submissions and visible in /admin/submissions,
+        // so the user is still told it went through — but page the owner about the send.
+        Sentry.captureMessage(`Contact form admin alert failed: ${alert.error}`, {
+            level: "error",
+            tags: { context: "contact_form_alert", submission_id: submissionId },
+        })
+    }
+
+    // Best-effort courtesy email; never let it fail the submission.
+    const confirmation = await sendContactConfirmation({ to: submission.email, name: submission.name, language: "el" })
+    if (!confirmation.success) {
+        Sentry.captureMessage(`Contact form confirmation failed: ${confirmation.error}`, {
+            level: "warning",
+            tags: { context: "contact_form_confirmation", submission_id: submissionId },
+        })
+    }
+
+    return NextResponse.json({
+        success: true,
+        message: "Το μήνυμά σας στάλθηκε με επιτυχία.",
+    })
 }

@@ -259,60 +259,64 @@ async function main() {
                 full_history: true
             }
         },
+        // Agent Plans — MUST mirror prisma/migrations/20260321160000_agent_plan_seed
+        // (ids, names, prices). The old ag-free/ag-starter/ag-pro rows here used
+        // different ids and prices (€49/€199), creating orphan mis-priced plans
+        // on fresh seeds; normalizeAgentTier only recognizes the names below.
+        // NOTE: no stripePriceId here — prod carries real price ids that a
+        // seed upsert must never clobber.
         {
-            id: 'ph-premium',
-            planType: 'policyholder',
-            name: 'Premium',
-            displayName: 'PolicyWallet Premium',
-            price: 24.99,
-            billingPeriod: 'monthly',
-            entitlements: {
-                policy_storage: 'unlimited',
-                ai_analyses_per_month: 'unlimited',
-                notifications: 'advanced',
-                priority_processing: true,
-                full_history: true,
-                priority_support: true
-            }
-        },
-        // Agent Plans
-        {
-            id: 'ag-free',
+            id: 'agent-free',
             planType: 'agent',
-            name: 'Free',
-            displayName: 'Agency Free',
+            name: 'agent_free',
+            displayName: 'Agent Free',
             price: 0,
             billingPeriod: 'monthly',
             entitlements: {
-                customer_limit: 5,
+                customer_limit: 10,
                 ai_analyses_per_month: 5,
                 crm_features: 'basic'
             }
         },
         {
-            id: 'ag-starter',
+            id: 'agent-starter',
             planType: 'agent',
-            name: 'Starter',
-            displayName: 'Agency Starter',
-            price: 49.00,
+            name: 'agent_starter',
+            displayName: 'Agent Starter',
+            price: 19.99,
             billingPeriod: 'monthly',
             entitlements: {
-                customer_limit: 50,
-                ai_analyses_per_month: 100,
+                customer_limit: 100,
+                ai_analyses_per_month: 50,
                 crm_features: 'advanced',
                 opportunity_tracking: true
             }
         },
         {
-            id: 'ag-pro',
+            id: 'agent-pro',
             planType: 'agent',
-            name: 'Pro',
-            displayName: 'Agency Pro',
-            price: 199.00,
+            name: 'agent_pro',
+            displayName: 'Agent Pro',
+            price: 49.99,
             billingPeriod: 'monthly',
             entitlements: {
                 customer_limit: 500,
-                ai_analyses_per_month: 1000,
+                ai_analyses_per_month: 200,
+                crm_features: 'advanced',
+                opportunity_tracking: true,
+                analytics: true
+            }
+        },
+        {
+            id: 'agent-agency',
+            planType: 'agent',
+            name: 'agency',
+            displayName: 'Agency',
+            price: 99.99,
+            billingPeriod: 'monthly',
+            entitlements: {
+                customer_limit: 'unlimited',
+                ai_analyses_per_month: 'unlimited',
                 crm_features: 'advanced',
                 opportunity_tracking: true,
                 analytics: true
@@ -343,7 +347,7 @@ async function main() {
     await prisma.subscription.create({
         data: {
             userId: ag1.id,
-            planId: 'ag-starter',
+            planId: 'agent-starter',
             status: 'active',
             currentPeriodStart: new Date(),
             currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),

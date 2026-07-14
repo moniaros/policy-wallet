@@ -332,9 +332,67 @@ export async function fulfillReportUnlockSession(
 }
 
 /**
+ * Billing-period bounds tolerant of Stripe API-version drift: on our pinned
+ * 2024-12-18.acacia they are top-level subscription fields; from API version
+ * 2025-03-31 (SDK v18+ types) they live on the subscription items instead.
+ */
+export function extractSubscriptionPeriod(sub: unknown): { start: Date | null; end: Date | null } {
+    const s = sub as {
+        current_period_start?: number
+        current_period_end?: number
+        items?: { data?: Array<{ current_period_start?: number; current_period_end?: number }> }
+    }
+    const start = s.current_period_start ?? s.items?.data?.[0]?.current_period_start
+    const end = s.current_period_end ?? s.items?.data?.[0]?.current_period_end
+    return {
+        start: typeof start === "number" ? new Date(start * 1000) : null,
+        end: typeof end === "number" ? new Date(end * 1000) : null,
+    }
+}
+
+/** Stripe returns `customer` as an id, an expanded object, or null. */
+export function extractStripeCustomerId(customer: unknown): string | null {
+    if (typeof customer === "string") return customer || null
+    if (customer && typeof customer === "object" && "id" in customer) {
+        const id = (customer as { id?: unknown }).id
+        return typeof id === "string" ? id : null
+    }
+    return null
+}
+
+/**
+ * Persist the Stripe customer id on the user when first seen (or changed).
+ * The active checkout flow never stored it, so the billing portal had no
+ * customer to open for any v1-flow subscriber. Bookkeeping must never break
+ * fulfillment, so failures are logged and swallowed.
+ */
+export async function persistStripeCustomerId(
+    userId: string,
+    stripeCustomerId: string | null | undefined
+) {
+    if (!userId || !stripeCustomerId) return
+    try {
+        await db.user.updateMany({
+            where: { id: userId, NOT: { stripeCustomerId } },
+            data: { stripeCustomerId },
+        })
+    } catch (error) {
+        logger("warn", "Failed to persist stripeCustomerId", {
+            userId,
+            error: error instanceof Error ? error.message : String(error),
+        })
+    }
+}
+
+/**
  * Handle Webhook logic
  */
-export async function handleSubscriptionSuccess(userId: string, planId: string, stripeSubscriptionId: string) {
+export async function handleSubscriptionSuccess(
+    userId: string,
+    planId: string,
+    stripeSubscriptionId: string,
+    stripeCustomerId?: string | null
+) {
     const plan = await db.plan.findUnique({ where: { id: planId } })
     if (!plan) return
 
@@ -347,6 +405,33 @@ export async function handleSubscriptionSuccess(userId: string, planId: string, 
         })
         if (existing) return
     }
+
+    // Mirror Stripe's real billing period. The old hardcoded +30 days gave
+    // annual buyers a 30-day local period and diverged from Pro trials; the
+    // fallback below only applies when Stripe can't be reached (or the sub
+    // has no Stripe id at all, e.g. grandfathered rows).
+    let currentPeriodStart = new Date()
+    let currentPeriodEnd = daysFromNow(SUBSCRIPTION_PERIOD_DAYS)
+    let autoRenew = true
+    if (stripeSubscriptionId) {
+        try {
+            const stripeSub = await stripe.subscriptions.retrieve(stripeSubscriptionId)
+            const period = extractSubscriptionPeriod(stripeSub)
+            if (period.start) currentPeriodStart = period.start
+            if (period.end) currentPeriodEnd = period.end
+            autoRenew = !stripeSub.cancel_at_period_end
+            if (!stripeCustomerId) {
+                stripeCustomerId = extractStripeCustomerId(stripeSub.customer)
+            }
+        } catch (error) {
+            logger("warn", "Stripe subscription retrieve failed; using 30-day fallback period", {
+                stripeSubscriptionId,
+                error: error instanceof Error ? error.message : String(error),
+            })
+        }
+    }
+
+    await persistStripeCustomerId(userId, stripeCustomerId)
 
     // Replace, don't stack: a new plan of the same type supersedes any prior
     // active subscription of that type. Without this, a monthly→annual switch
@@ -384,8 +469,9 @@ export async function handleSubscriptionSuccess(userId: string, planId: string, 
             planId,
             status: 'active',
             stripeSubscriptionId: stripeSubscriptionId || null,
-            currentPeriodStart: new Date(),
-            currentPeriodEnd: daysFromNow(SUBSCRIPTION_PERIOD_DAYS), // +30 days
+            currentPeriodStart,
+            currentPeriodEnd,
+            autoRenew,
         }
     })
 

@@ -29,7 +29,7 @@ import type {
 import { trackTokenUsage } from '@/lib/token-tracking'
 import { enrichExtractionPayload } from './extraction-enrichment'
 import { extractionCitationsEnabled, ExtractionSourcesSchema, CITATIONS_PROMPT_SECTION } from './extraction-citations'
-import { schemaPromptBlock, validateJsonModeObject, coercedGreekString } from './json-mode-schema'
+import { schemaPromptBlock, validateJsonModeObject, coercedGreekString, normalizeClarityShape } from './json-mode-schema'
 import { WRITE_BRANCH_IDS } from '@/lib/insurance/taxonomy'
 import { AcordDataSchema } from '../../schemas/acord-data'
 import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from './shared-utils'
@@ -449,7 +449,11 @@ ${gapDefinitions.map(g => `- ${g.slug}: ${g.checkCriteria}`).join('\n')}`
 
       const response: AIGapAnalysisResponse = {
         verifiedMetadata: analysisRaw.verifiedMetadata as any,
-        gapResults: wrapGapResultsBilingual(analysisRaw.gapResults),
+        // JSON mode has no server-side shape guarantee — a missing gapResults
+        // array must degrade to "no gaps checked", not a crash.
+        gapResults: wrapGapResultsBilingual(
+          Array.isArray(analysisRaw.gapResults) ? analysisRaw.gapResults : []
+        ),
         acordData: enriched.acordData,
         usage: parsedUsage
       }
@@ -619,7 +623,11 @@ ${checklistPrompt}`
     )
 
     const parsedUsage = parseUsage(result.usage, modelName)
-    const object = validateJsonModeObject(ClaritySchema, result.object, 'gemini clarity analysis')
+    // normalizeClarityShape: JSON mode has no server-side shape guarantee —
+    // missing snapshot arrays killed the coverage_mapping step in prod.
+    const object = normalizeClarityShape(
+        validateJsonModeObject(ClaritySchema, result.object, 'gemini clarity analysis')
+    )
 
     if (options?.userId && result.usage) {
       const usage = parseUsage(result.usage, modelName)

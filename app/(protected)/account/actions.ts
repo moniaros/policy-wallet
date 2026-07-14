@@ -386,6 +386,37 @@ export async function cancelSubscription() {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
+    const activeSubs = await db.subscription.findMany({
+        where: { userId: authResult.dbUser.id, status: 'active' },
+        select: { id: true, stripeSubscriptionId: true },
+    })
+
+    // Cancel at Stripe FIRST (cancel_at_period_end keeps access until the
+    // paid period lapses, matching the pricing FAQ). The old version only
+    // flipped the local autoRenew flag — Stripe kept billing the customer.
+    for (const sub of activeSubs) {
+        if (!sub.stripeSubscriptionId) continue // grandfathered / RevenueCat rows
+        try {
+            await stripe.subscriptions.update(sub.stripeSubscriptionId, {
+                cancel_at_period_end: true,
+            })
+        } catch (error) {
+            const code = (error as { code?: string })?.code
+            if (code === "resource_missing") {
+                // Already gone on Stripe's side — safe to stop renewals locally.
+                continue
+            }
+            logger('error', 'Stripe cancel_at_period_end failed', {
+                stripeSubscriptionId: sub.stripeSubscriptionId,
+                error: error instanceof Error ? error.message : String(error),
+            })
+            // Do NOT flip local state when Stripe still considers the
+            // subscription renewing — a silent local-only "cancel" is the
+            // exact dishonesty this replaces.
+            return { error: "Failed to cancel the subscription with Stripe. Please try again or use the billing portal." }
+        }
+    }
+
     await db.subscription.updateMany({
         where: { userId: authResult.dbUser.id, status: 'active' },
         data: { autoRenew: false }

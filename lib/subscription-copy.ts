@@ -257,8 +257,8 @@ export const subscriptionCopy = {
                 en: 'Is there a discount for annual subscription?'
             },
             answer: {
-                el: 'Η ετήσια χρέωση θα είναι σύντομα διαθέσιμη με έκπτωση 20%!',
-                en: 'Annual billing will be available soon with a 20% discount!'
+                el: 'Ναι — το Plus κοστίζει €29/έτος (2 μήνες δωρεάν) και το Pro €99/έτος (εξοικονόμηση €20 έναντι της μηνιαίας χρέωσης).',
+                en: 'Yes — Plus is €29/year (2 months free) and Pro is €99/year (€20 less than paying monthly).'
             },
         },
         {
