@@ -9,6 +9,8 @@ import type { User } from "@prisma/client"
 import { getProtectionScore } from "@/lib/services/gap-engine"
 import { CircleHelp, Upload } from "lucide-react"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
+import { resolvePolicyLifecycle } from "@/lib/policy-status"
+import { selectPremiumBearingPolicies } from "@/lib/wallet/premium-footprint"
 import { getBranchIcon } from "@/lib/insurance/branch-icons"
 import { GettingStartedWrapper } from "@/components/dashboard/GettingStartedWrapper"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
@@ -91,13 +93,22 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     }
 
     const now = new Date()
-    const activePolicies = policies.filter((policy) => policy.status === "active")
+    // The stored status is an ingestion state nothing ever recomputes — no code
+    // path writes 'expired' onto a policy — so `status === "active"` matched every
+    // policy ever uploaded and inflated the premium total. Resolve the real
+    // lifecycle from the extracted end date instead. Everything below (count,
+    // insurers, premium, per-branch chips) derives from this one list so the
+    // tiles cannot contradict each other.
+    const { policies: activePolicies, unknownDurationCount } = selectPremiumBearingPolicies(policies, now)
     const insurerCount = new Set(
         activePolicies.map((policy) => policy.insurerName).filter(Boolean)
     ).size
     const sixMonthsOut = new Date(now.getTime() + 180 * 24 * 60 * 60 * 1000)
     const upcomingRenewals = policies
-        .filter((policy) => policy.endDate > now && policy.endDate <= sixMonthsOut)
+        .map((policy) => ({ policy, endDate: resolvePolicyLifecycle(policy, now).endDate }))
+        .filter((entry): entry is { policy: typeof entry.policy; endDate: Date } =>
+            entry.endDate !== null && entry.endDate > now && entry.endDate <= sixMonthsOut
+        )
         .sort((a, b) => a.endDate.getTime() - b.endDate.getTime())
 
     const recentDocuments = policies
@@ -125,9 +136,8 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     }
     const overlapBranchCount = [...branchPolicyCounts.values()].filter((count) => count > 1).length
 
-    // Portfolio summary: total premium + LOB breakdown
+    // Portfolio summary: total premium + LOB breakdown, both off the in-force list.
     const totalAnnualPremium = activePolicies
-        .filter(p => p.premiumAmount != null)
         .reduce((sum, p) => sum + Number(p.premiumAmount ?? 0), 0)
     const lobBreakdown = activePolicies.reduce((acc, p) => {
         const lob = p.lineOfBusiness || 'other'
@@ -183,15 +193,15 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             }
         })
 
-    const renewalItems = upcomingRenewals.slice(0, 6).map((policy) => {
+    const renewalItems = upcomingRenewals.slice(0, 6).map(({ policy, endDate }) => {
         const branch = normalizeBranch(policy.lineOfBusiness)
         return {
             id: policy.id,
             insurerName: policy.insurerName,
             icon: getBranchIcon(branch.id),
             typeLabel: branch.label[lang],
-            endDateLabel: policy.endDate.toLocaleDateString(isGreek ? "el-GR" : "en-GB"),
-            days: daysUntil(policy.endDate),
+            endDateLabel: endDate.toLocaleDateString(isGreek ? "el-GR" : "en-GB"),
+            days: daysUntil(endDate),
             premiumLabel: formatCurrencyValue(policy.premiumAmount, policy.premiumCurrency || "EUR"),
         }
     })
@@ -263,7 +273,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                 {/* Getting Started Checklist */}
                 <div className="mb-4">
                     <GettingStartedWrapper
-                        policyCount={activePolicies.length}
+                        policyCount={policies.length}
                         hasAnalysis={Boolean(hasAnalysisRun)}
                         gapCount={openGapCount}
                         hasAgent={Boolean(customerRelationship)}
@@ -278,8 +288,11 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                     </div>
                 )}
 
-                {/* Free-tier usage banner (Trigger A surface: approaching the policy cap) */}
-                {isFreeTier && activePolicies.length >= 2 && (
+                {/* Free-tier usage banner (Trigger A surface: approaching the policy cap).
+                    The meter counts every stored policy — that is what checkPolicyLimit
+                    blocks on. Metering only the in-force ones would promise headroom the
+                    next upload does not actually have. */}
+                {isFreeTier && policies.length >= 2 && (
                     <div className="mb-4">
                         <UpgradeTriggerCard
                             featureKey="policy_upload_limit"
@@ -288,7 +301,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                             dismissible
                             meter={{
                                 label: home.freePlanPolicies,
-                                used: activePolicies.length,
+                                used: policies.length,
                                 limit: FREE_POLICY_LIMIT,
                                 hint: home.freePlanHint,
                             }}
@@ -317,6 +330,14 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 kicker: home.portfolioKicker,
                                 totalAnnualPremium: home.totalAnnualPremium,
                             }}
+                            excludedNote={
+                                unknownDurationCount > 0
+                                    ? (unknownDurationCount === 1
+                                        ? t.status.premiumExcludesUnknown
+                                        : t.status.premiumExcludesUnknownPlural
+                                    ).replace('{count}', String(unknownDurationCount))
+                                    : undefined
+                            }
                         />
                     )}
 

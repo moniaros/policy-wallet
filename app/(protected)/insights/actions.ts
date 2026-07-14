@@ -2,6 +2,8 @@
 
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { resolvePolicyLifecycle } from "@/lib/policy-status"
+import { isPremiumBearing } from "@/lib/wallet/premium-footprint"
 
 export interface InsightsData {
     portfolioHealth: {
@@ -86,7 +88,7 @@ export async function getInsightsData(): Promise<InsightsData | null> {
 
     // 2. Policy breakdown
     const customerIds = relationships.map(r => r.policyholderUserId)
-    const policies = await db.policy.findMany({
+    const allPolicies = await db.policy.findMany({
         where: { ownerUserId: { in: customerIds } },
         select: {
             id: true,
@@ -97,8 +99,15 @@ export async function getInsightsData(): Promise<InsightsData | null> {
             endDate: true,
             ownerUserId: true,
             status: true,
+            // Needed by resolvePolicyLifecycle: the real end date lives in the
+            // extracted envelope, not the (placeholder-prone) endDate column.
+            acordData: true,
         }
     })
+
+    // Premium figures may only count policies actually in force — the stored
+    // status is never updated to 'expired', so it cannot be trusted as a filter.
+    const policies = allPolicies.filter((p) => isPremiumBearing(p))
 
     // Group by line of business
     const lobMap = new Map<string, { count: number; totalPremium: number }>()
@@ -125,16 +134,19 @@ export async function getInsightsData(): Promise<InsightsData | null> {
     const customerMap = new Map(relationships.map(r => [r.policyholderUserId, r.customer?.name || 'Unknown']))
 
     const renewalTimeline = policies
-        .filter(p => p.endDate >= now && p.endDate <= ninetyDaysOut)
-        .map(p => ({
+        .map(p => ({ p, endDate: resolvePolicyLifecycle(p, now).endDate }))
+        .filter((entry): entry is { p: typeof entry.p; endDate: Date } =>
+            entry.endDate !== null && entry.endDate >= now && entry.endDate <= ninetyDaysOut
+        )
+        .map(({ p, endDate }) => ({
             policyId: p.id,
             policyNumber: p.policyNumber || 'N/A',
             insurerName: p.insurerName || 'Unknown',
             customerName: customerMap.get(p.ownerUserId) || 'Unknown',
             customerId: p.ownerUserId,
             lineOfBusiness: p.lineOfBusiness || 'other',
-            endDate: p.endDate.toISOString(),
-            daysUntilExpiry: Math.ceil((p.endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),
+            endDate: endDate.toISOString(),
+            daysUntilExpiry: Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),
             premiumAmount: Number(p.premiumAmount ?? 0),
         }))
         .sort((a, b) => a.daysUntilExpiry - b.daysUntilExpiry)
