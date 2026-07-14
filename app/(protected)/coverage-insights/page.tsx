@@ -106,7 +106,9 @@ export default async function CoverageInsightsPage() {
 
     return (
         <>
-            {/* Protection Score Card (rendered above existing insights) */}
+            {/* Ordering: what to DO comes before how you SCORE — the
+                recommendations and the reviewed findings lead, the passive
+                score and the profile wizard follow. */}
             {engineResult && (
                 <div className="pw-page-shell">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-7 lg:pt-10 space-y-6">
@@ -119,40 +121,6 @@ export default async function CoverageInsightsPage() {
                                 }}
                             />
                         </div>
-                        <ProtectionScoreCard
-                            overallScore={engineResult.protectionScore.overallScore}
-                            tier={engineResult.scoreTier}
-                            categoryScores={engineResult.protectionScore.categoryScores as any}
-                            gapCount={engineResult.protectionScore.gapCount}
-                            expectedLines={engineResult.protectionScore.expectedLines}
-                            actualLines={engineResult.protectionScore.actualLines}
-                            profileCompleteness={engineResult.profileCompleteness}
-                            language={userLanguage}
-                        />
-
-                        {engineResult.profileCompleteness < 80 && (
-                            <div id="risk-profile-wizard">
-                                <RiskProfileWizard
-                                    initialData={profileRecord ? {
-                                        maritalStatus: profileRecord.maritalStatus,
-                                        dependentsCount: profileRecord.dependentsCount,
-                                        employmentStatus: profileRecord.employmentStatus,
-                                        ownsHome: profileRecord.ownsHome,
-                                        mortgageAmount: profileRecord.mortgageAmount ? Number(profileRecord.mortgageAmount) : null,
-                                        hasPets: profileRecord.hasPets,
-                                        vehiclesCount: profileRecord.vehiclesCount,
-                                        annualIncome: profileRecord.annualIncome ? Number(profileRecord.annualIncome) : null,
-                                        occupation: profileRecord.occupation,
-                                        travelsFrequently: profileRecord.travelsFrequently,
-                                        hasLoans: profileRecord.hasLoans,
-                                        loanAmount: profileRecord.loanAmount ? Number(profileRecord.loanAmount) : null,
-                                        smokingStatus: profileRecord.smokingStatus,
-                                        lifeEvents: Array.isArray(profileRecord.lifeEvents) ? profileRecord.lifeEvents as Array<{ type: string; date: string }> : undefined,
-                                    } : undefined}
-                                    language={userLanguage}
-                                />
-                            </div>
-                        )}
 
                         <RecommendationCards
                             recommendations={engineResult.recommendations.map((r) => ({
@@ -168,7 +136,7 @@ export default async function CoverageInsightsPage() {
                 </div>
             )}
 
-            {/* Existing coverage insights (has its own pw-page-shell wrapper) */}
+            {/* Reviewed findings (has its own pw-page-shell wrapper) */}
             <CoverageInsightsClient
                     gaps={gapInstances}
                     stats={{
@@ -198,6 +166,48 @@ export default async function CoverageInsightsPage() {
                         }
                     }))}
                 />
+
+            {/* Profile wizard (improves the analysis), then the passive score */}
+            {engineResult && (
+                <div className="pw-page-shell">
+                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 space-y-6">
+                        {engineResult.profileCompleteness < 80 && (
+                            <div id="risk-profile-wizard">
+                                <RiskProfileWizard
+                                    initialData={profileRecord ? {
+                                        maritalStatus: profileRecord.maritalStatus,
+                                        dependentsCount: profileRecord.dependentsCount,
+                                        employmentStatus: profileRecord.employmentStatus,
+                                        ownsHome: profileRecord.ownsHome,
+                                        mortgageAmount: profileRecord.mortgageAmount ? Number(profileRecord.mortgageAmount) : null,
+                                        hasPets: profileRecord.hasPets,
+                                        vehiclesCount: profileRecord.vehiclesCount,
+                                        annualIncome: profileRecord.annualIncome ? Number(profileRecord.annualIncome) : null,
+                                        occupation: profileRecord.occupation,
+                                        travelsFrequently: profileRecord.travelsFrequently,
+                                        hasLoans: profileRecord.hasLoans,
+                                        loanAmount: profileRecord.loanAmount ? Number(profileRecord.loanAmount) : null,
+                                        smokingStatus: profileRecord.smokingStatus,
+                                        lifeEvents: Array.isArray(profileRecord.lifeEvents) ? profileRecord.lifeEvents as Array<{ type: string; date: string }> : undefined,
+                                    } : undefined}
+                                    language={userLanguage}
+                                />
+                            </div>
+                        )}
+
+                        <ProtectionScoreCard
+                            overallScore={engineResult.protectionScore.overallScore}
+                            tier={engineResult.scoreTier}
+                            categoryScores={engineResult.protectionScore.categoryScores as any}
+                            gapCount={engineResult.protectionScore.gapCount}
+                            expectedLines={engineResult.protectionScore.expectedLines}
+                            actualLines={engineResult.protectionScore.actualLines}
+                            profileCompleteness={engineResult.profileCompleteness}
+                            language={userLanguage}
+                        />
+                    </div>
+                </div>
+            )}
         </>
     )
 }
