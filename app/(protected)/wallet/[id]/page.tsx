@@ -126,6 +126,32 @@ export default async function PolicyDetailPage({
         reportUnlockedAt: policy.reportUnlockedAt,
     })
 
+    // A duplicate of this policy was uploaded by the other party (agent vs
+    // policyholder). Merging needs this viewer's consent — never silent.
+    let mergeRequest: {
+        id: string
+        requestedByLabel: string
+        policyLabel: string
+    } | null = null
+    try {
+        const { getPendingMergeRequests } = await import("@/lib/services/policy-merge.service")
+        const pending = await getPendingMergeRequests(dbUser.id)
+        const forThisPolicy = pending.find(
+            (request) =>
+                request.existingPolicy.id === policyId || request.incomingPolicy.id === policyId
+        )
+        if (forThisPolicy) {
+            mergeRequest = {
+                id: forThisPolicy.id,
+                requestedByLabel:
+                    forThisPolicy.requestedBy.name || forThisPolicy.requestedBy.email || "",
+                policyLabel: `${forThisPolicy.existingPolicy.insurerName} · ${forThisPolicy.existingPolicy.policyNumber}`,
+            }
+        }
+    } catch (error) {
+        console.error("Failed to load merge requests:", error)
+    }
+
     // Related recommendations (owner only): reuse the persisted gap-engine
     // output, preferring same-line-of-business suggestions. Read-only — the
     // engine itself is not re-run here. Policy-derived recommendations that
@@ -244,6 +270,7 @@ export default async function PolicyDetailPage({
             freeQuestionsRemaining={freeQuestionsRemaining}
             gapReportItems={gapReportItems}
             reportUnlocked={reportUnlocked}
+            mergeRequest={mergeRequest}
         />
     )
 }

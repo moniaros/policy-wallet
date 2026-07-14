@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { CollaborationPanel } from "@/components/wallet/CollaborationPanel"
 import { DeletePolicyDialog } from "@/components/wallet/DeletePolicy"
+import { MergeRequestBanner } from "@/components/wallet/MergeRequestBanner"
 import { PolicyHeaderMenu } from "@/components/wallet/policy-detail/PolicyHeaderMenu"
 import { PolicyAnalysisTabs } from "@/app/(protected)/wallet/[id]/PolicyAnalysisTabs"
 import { PolicyQA } from "@/components/wallet/PolicyQA"
@@ -87,6 +88,8 @@ interface PolicyDetailsClientProps {
     freeQuestionsRemaining?: number | null
     gapReportItems?: GapReportItem[]
     reportUnlocked?: boolean
+    /** Pending "same policy uploaded twice" merge awaiting this viewer's consent. */
+    mergeRequest?: { id: string; requestedByLabel: string; policyLabel: string } | null
 }
 
 export function PolicyDetailsClient({
@@ -107,6 +110,7 @@ export function PolicyDetailsClient({
     freeQuestionsRemaining = null,
     gapReportItems = [],
     reportUnlocked = true,
+    mergeRequest = null,
 }: PolicyDetailsClientProps) {
     const locale = t.common?.locale || "en-US"
     const lang: "el" | "en" = locale.startsWith("el") ? "el" : "en"
@@ -351,6 +355,23 @@ export function PolicyDetailsClient({
                             {t.wallet.review.reviewNow}
                         </Link>
                     </div>
+                )}
+
+                {mergeRequest && (
+                    <MergeRequestBanner
+                        requestId={mergeRequest.id}
+                        requestedByLabel={mergeRequest.requestedByLabel}
+                        policyLabel={mergeRequest.policyLabel}
+                        copy={{
+                            title: detailsCopy.mergeRequestTitle,
+                            body: detailsCopy.mergeRequestBody,
+                            approve: detailsCopy.mergeApprove,
+                            reject: detailsCopy.mergeReject,
+                            approved: detailsCopy.mergeApproved,
+                            rejected: detailsCopy.mergeRejected,
+                            failed: detailsCopy.mergeFailed,
+                        }}
+                    />
                 )}
 
                 {/* ── Policy overview (hero) ─────────────────────────────── */}
