@@ -24,6 +24,9 @@ interface PolicyAnalysisTabsProps {
         items: GapReportItem[]
         reportUnlocked: boolean
     }
+    tier?: "free" | "plus" | "pro"
+    /** Free-tier owners: complimentary deep analysis still unused? (null = n/a) */
+    trialAnalysisAvailable?: boolean | null
 }
 
 export function PolicyAnalysisTabs({
@@ -36,6 +39,8 @@ export function PolicyAnalysisTabs({
     processingError,
     analysisPipeline,
     report,
+    tier,
+    trialAnalysisAvailable = null,
 }: PolicyAnalysisTabsProps) {
     const [activeTab, setActiveTab] = useState<'insights' | 'gaps'>('gaps')
     // Deduped count when the report view is active, else the raw gap count.
@@ -93,6 +98,8 @@ export function PolicyAnalysisTabs({
                             processingError={processingError}
                             analysisPipeline={analysisPipeline}
                             report={report}
+                            tier={tier}
+                            trialAnalysisAvailable={trialAnalysisAvailable}
                         />
                     </div>
                 )}

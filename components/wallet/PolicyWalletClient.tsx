@@ -16,6 +16,7 @@ import { BatchUploadModal } from "@/components/wallet/BatchUploadModal"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { PolicyComparison } from "@/components/wallet/PolicyComparison"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
+import { UpgradeModal } from "@/components/monetization/UpgradeModal"
 
 interface PolicyWalletClientProps {
     policies: Policy[]
@@ -49,6 +50,7 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
     const [isCompareOpen, setIsCompareOpen] = React.useState(false)
     // AI-processing consent: policy awaiting analysis while the consent modal is open
     const [consentPendingPolicyId, setConsentPendingPolicyId] = React.useState<string | null>(null)
+    const [analysisUpgradeOpen, setAnalysisUpgradeOpen] = React.useState(false)
 
     const runAnalysis = async (policyId: string) => {
         const toastId = toast.loading(t.toast.analysisStarting)
@@ -60,8 +62,10 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
                 return
             }
             if (result.error === "UPGRADE_REQUIRED") {
+                // In-place upgrade modal instead of the generic pricing-page
+                // detour — keeps the user in context and offers annual+trial.
                 toast.dismiss(toastId)
-                router.push("/upgrade?reason=ai_analysis")
+                setAnalysisUpgradeOpen(true)
                 return
             }
             const friendlyError = mapWalletErrorToMessage(result.error, t, "analysis")
@@ -319,6 +323,14 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
             )}
 
             {showTour && <DashboardTour onComplete={() => dismissTour()} />}
+
+            <UpgradeModal
+                isOpen={analysisUpgradeOpen}
+                onClose={() => setAnalysisUpgradeOpen(false)}
+                featureKey="full_ai_policy_analysis"
+                triggerSource="wallet_run_analysis"
+                returnTo="/wallet"
+            />
         </div>
     )
 }

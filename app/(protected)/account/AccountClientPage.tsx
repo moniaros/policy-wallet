@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import {
     AccountOverview,
     Billing,
-    Referrals,
     Settings
 } from "@/components/account"
 import {
@@ -23,9 +22,10 @@ import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useIsMobile } from "@/hooks/useResponsive"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { trackJourneyEvent } from "@/lib/journey/funnel"
 import type { Policy } from "@/components/wallet/types"
 import { PageHeader } from '@/components/ui/PageHeader'
-import { User, CreditCard, Gift, Settings as SettingsIcon, LogOut } from 'lucide-react'
+import { User, CreditCard, Settings as SettingsIcon, LogOut } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 interface Props {
@@ -53,7 +53,10 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
     const isMobile = useIsMobile()
     const router = useRouter()
     const { t } = useLanguage()
-    const [activeTab, setActiveTab] = useState<'overview' | 'billing' | 'referrals' | 'settings'>('overview')
+    // NOTE: the Referrals tab is intentionally not rendered — the referral
+    // program has no earn/redeem loop yet (credits could never be paid out).
+    // Re-add the tab when the loop is real (see PXA audit §8.2 / B18).
+    const [activeTab, setActiveTab] = useState<'overview' | 'billing' | 'settings'>('overview')
 
     const handleSwitchRole = (role: 'policyholder' | 'agent') => {
         // In a real dual-role system, this might update a session cookie or redirect
@@ -61,6 +64,11 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
     }
 
     const handleUpgrade = async (planId: string) => {
+        trackJourneyEvent('plan_selected', {
+            plan: planId,
+            billing_period: 'monthly',
+            screen: 'account_overview',
+        })
         const result = await upgradeSubscription(planId, 'monthly', '/account')
         if (result.url) {
             window.location.href = result.url
@@ -69,6 +77,11 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
 
     const handleCancel = async () => {
         const result = await cancelSubscription()
+        if ('error' in result && result.error) {
+            // Stripe refused the cancellation — never pretend it worked.
+            toast.error(result.error)
+            return
+        }
         if (result.success) {
             alert('Auto-renewal disabled.')
         }
@@ -87,6 +100,11 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
         // Same plan, annual cadence — Stripe checkout replaces the monthly sub
         const planId = initialData.currentPlan?.plan_id
         if (!planId) return
+        trackJourneyEvent('billing_period_selected', {
+            plan: planId,
+            billing_period: 'annual',
+            screen: 'account_billing',
+        })
         const result = await upgradeSubscription(planId, 'annual', '/account')
         if (result.url) {
             window.location.href = result.url
@@ -134,7 +152,6 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                         {[
                             { id: 'overview', label: t.account.overview, icon: User },
                             { id: 'billing', label: t.account.billing, icon: CreditCard },
-                            { id: 'referrals', label: t.account.referrals, icon: Gift },
                             { id: 'settings', label: t.account.settings, icon: SettingsIcon },
                         ].map((tab) => (
                             <button
@@ -174,6 +191,7 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                             currentSubscription={initialData.currentSubscription}
                             currentPlan={initialData.currentPlan}
                             usageMetrics={initialData.usageMetrics}
+                            conversionUsage={initialData.conversionUsage}
                             creditBalance={initialData.creditBalance}
                             onUpgrade={handleUpgrade}
                             onSwitchRole={handleSwitchRole}
@@ -190,18 +208,6 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                             onDowngrade={() => router.push('/upgrade')}
                             onOpenPortal={handleOpenPortal}
                             onSwitchToAnnual={handleSwitchToAnnual}
-                        />
-                    )}
-                    {activeTab === 'referrals' && (
-                        <Referrals
-                            currentUser={initialData.user}
-                            referralLink={`${typeof window !== 'undefined' ? window.location.origin : ''}/?ref=${initialData.user.user_id}`}
-                            referrals={initialData.referrals}
-                            creditTransactions={initialData.creditTransactions}
-                            creditBalance={initialData.creditBalance}
-                            onCopyLink={() => {
-                                navigator.clipboard.writeText(`${window.location.origin}/?ref=${initialData.user.user_id}`)
-                            }}
                         />
                     )}
                     {activeTab === 'settings' && (

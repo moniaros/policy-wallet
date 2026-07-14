@@ -5,10 +5,12 @@ import { motion } from 'framer-motion'
 import { Check, X, Star, Shield, Zap } from 'lucide-react'
 import { subscriptionCopy } from '@/lib/subscription-copy'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { trackJourneyEvent } from '@/lib/journey/funnel'
 
 interface PricingComparisonProps {
     currentPlanId?: string
-    onSelectPlan: (planId: string) => void
+    /** The selected billing period is authoritative — checkout must honour it. */
+    onSelectPlan: (planId: string, billingPeriod: 'monthly' | 'annual') => void
     loadingPlanId?: string | null
 }
 
@@ -33,6 +35,23 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
     const { language } = useLanguage()
     const copy = subscriptionCopy
     const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly')
+
+    const selectBillingPeriod = (period: 'monthly' | 'annual') => {
+        setBillingPeriod(period)
+        trackJourneyEvent('billing_period_selected', {
+            billing_period: period,
+            screen: 'pricing_comparison',
+        })
+    }
+
+    const selectPlan = (planId: string) => {
+        trackJourneyEvent('plan_selected', {
+            plan: planId,
+            billing_period: billingPeriod,
+            screen: 'pricing_comparison',
+        })
+        onSelectPlan(planId, billingPeriod)
+    }
 
     const tiers: PlanTier[] = [
         {
@@ -89,11 +108,11 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
     return (
         <div className="w-full max-w-7xl mx-auto px-4">
 
-            {/* Billing Toggle (Visual Only for now as per copy) */}
+            {/* Billing toggle — drives the checkout's billingPeriod, not just the price label. */}
             <div className="flex justify-center mb-12">
                 <div className="bg-stone-100 dark:bg-stone-800 p-1 rounded-2xl flex items-center relative">
                     <button
-                        onClick={() => setBillingPeriod('monthly')}
+                        onClick={() => selectBillingPeriod('monthly')}
                         className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all relative z-10 ${billingPeriod === 'monthly'
                             ? 'text-stone-900 dark:text-white shadow-sm bg-white dark:bg-stone-700'
                             : 'text-stone-500 dark:text-stone-400 hover:text-stone-700'
@@ -102,7 +121,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                         {language === 'el' ? 'Μηνιαία' : 'Monthly'}
                     </button>
                     <button
-                        onClick={() => setBillingPeriod('annual')}
+                        onClick={() => selectBillingPeriod('annual')}
                         className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all relative z-10 ${billingPeriod === 'annual'
                             ? 'text-stone-900 dark:text-white shadow-sm bg-white dark:bg-stone-700'
                             : 'text-stone-500 dark:text-stone-400 hover:text-stone-700'
@@ -203,7 +222,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                             </div>
 
                             <button
-                                onClick={() => onSelectPlan(tier.id)}
+                                onClick={() => selectPlan(tier.id)}
                                 disabled={isCurrent || !!loadingPlanId}
                                 className={`w-full py-4 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer ${isCurrent
                                     ? 'bg-stone-100 dark:bg-stone-800 text-stone-400 cursor-default'

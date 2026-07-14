@@ -70,6 +70,8 @@ function validateContactForm(form: ContactFormState): ContactErrors {
 export default function ContactPage() {
     const [form, setForm] = useState<ContactFormState>(INITIAL_FORM)
     const [errors, setErrors] = useState<ContactErrors>({})
+    // Honeypot — hidden from humans, irresistible to bots. Filled = silently dropped server-side.
+    const [honeypot, setHoneypot] = useState("")
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [successMessage, setSuccessMessage] = useState<string | null>(null)
     const [submitError, setSubmitError] = useState<string | null>(null)
@@ -103,6 +105,7 @@ export default function ContactPage() {
                     phone: form.phone.trim(),
                     subject: form.subject,
                     message: form.message.trim(),
+                    company: honeypot,
                 }),
             })
 
@@ -146,6 +149,17 @@ export default function ContactPage() {
 
                     <div className="grid gap-8 lg:grid-cols-[1.6fr_1fr]">
                         <form onSubmit={onSubmit} className="rounded-[14px] border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
+                            <input
+                                type="text"
+                                name="company"
+                                value={honeypot}
+                                onChange={(event) => setHoneypot(event.target.value)}
+                                tabIndex={-1}
+                                autoComplete="off"
+                                aria-hidden="true"
+                                className="absolute left-[-9999px] h-0 w-0 opacity-0"
+                            />
+
                             <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <label className="block">
                                     <span className="mb-2 block text-sm font-medium text-[#0F172A]">Ονοματεπώνυμο</span>

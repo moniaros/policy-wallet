@@ -21,6 +21,7 @@ import { canUserUseTokens } from "@/lib/token-tracking"
 import { canUserAddPolicy, canUserUseFeature, getUserSubscription, SUBSCRIPTION_LIMITS } from "@/lib/subscription-limits"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { recordConversionEvent } from "@/lib/journey/conversion-events"
+import { FREE_LIFETIME_QUESTIONS } from "@/lib/monetization/feature-gates"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { after } from 'next/server'
 import { collaborationService } from "@/lib/services/collaboration.service"
@@ -1050,10 +1051,22 @@ export async function askPolicyQuestion(policyId: string, question: string) {
 
     // Check feature access — interactiveQA is paid-only for policyholders;
     // agents on granted policies are metered by their agent-plan budgets.
+    // Free tier gets FREE_LIFETIME_QUESTIONS complimentary questions so the
+    // Q&A aha moment is tasteable before the paywall (owner-approved floor,
+    // conversion audit 2026-07). Counted from the same activityLog rows the
+    // daily limiter uses; a concurrent-request overrun of one is acceptable.
     const isAllowed = await canUserUseFeature(authResult.dbUser.id, 'interactiveQA')
     if (!isAllowed && !authResult.dbUser.roles.includes('admin') && !authResult.dbUser.roles.includes('agent')) {
-        await recordConversionEvent(authResult.dbUser.id, "limit_hit", { kind: "ai_question", source: "policy_qa" })
-        return { error: "UPGRADE_REQUIRED" }
+        const lifetimeCount = await (db as any).activityLog.count({
+            where: {
+                adminUserId: authResult.dbUser.id,
+                actionType: "POLICY_QUESTION_ASKED",
+            },
+        })
+        if (lifetimeCount >= FREE_LIFETIME_QUESTIONS) {
+            await recordConversionEvent(authResult.dbUser.id, "limit_hit", { kind: "ai_question", source: "policy_qa" })
+            return { error: "UPGRADE_REQUIRED" }
+        }
     }
 
     // Check Daily Limit

@@ -12,6 +12,7 @@ import { logger } from "@/lib/logger"
 export type ConversionEventType =
     | "checkout_started"
     | "checkout_completed"
+    | "checkout_cancelled"
     | "limit_hit"
 
 export interface ConversionEventDetails {
@@ -21,6 +22,8 @@ export interface ConversionEventDetails {
     billingPeriod?: string
     /** For limit_hit: which limit, e.g. "policy", "ai_question". */
     kind?: string
+    /** Feature gate the checkout was started from (FEATURE_GATES key). */
+    feature?: string
     tokens?: number
     /** For report_unlock: which policy's report was purchased. */
     policyId?: string

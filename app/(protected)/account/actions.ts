@@ -11,6 +11,8 @@ import { recordConversionEvent } from "@/lib/journey/conversion-events"
 import { env } from "@/lib/env"
 import { syncRevenueCatSubscription } from "@/lib/services/revenuecat.service"
 import { daysFromNow, TRIAL_PERIOD_DAYS } from "@/lib/constants/time"
+import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
+import { FREE_LIFETIME_QUESTIONS } from "@/lib/monetization/feature-gates"
 
 export async function getAccountData() {
     const authResult = await getAuthenticatedUserOrNull()
@@ -209,10 +211,41 @@ export async function getAccountData() {
         enabled: p.enabled
     }))
 
+    // Conversion meters: what the user has actually consumed of the free
+    // floor (1 trial analysis, FREE_LIFETIME_QUESTIONS questions) and of a
+    // paid plan's monthly analysis allowance. entitlementUsage rows don't
+    // cover these, so they're computed here.
+    const startOfMonth = new Date()
+    startOfMonth.setDate(1)
+    startOfMonth.setHours(0, 0, 0, 0)
+    const [entitlements, questionsAsked, analysesThisMonth] = await Promise.all([
+        resolveUserEntitlements(userId),
+        db.activityLog.count({
+            where: { adminUserId: userId, actionType: "POLICY_QUESTION_ASKED" },
+        }),
+        db.activityLog.count({
+            where: {
+                adminUserId: userId,
+                actionType: "POLICY_ANALYZED",
+                timestamp: { gte: startOfMonth },
+            },
+        }),
+    ])
+
+    const conversionUsage = {
+        tier: entitlements.tier,
+        trialAnalysisAvailable: user.trialAnalysisUsedAt === null,
+        freeQuestionsUsed: Math.min(questionsAsked, FREE_LIFETIME_QUESTIONS),
+        freeQuestionsLimit: FREE_LIFETIME_QUESTIONS,
+        analysesUsedThisMonth: analysesThisMonth,
+        analysesLimitPerMonth: entitlements.limits.aiAnalysisPerMonth,
+    }
+
     return {
         user: uiUser,
         currentSubscription: finalSubscription,
         currentPlan: finalPlan,
+        conversionUsage,
         availablePlans: availablePlans.map(p => ({
             plan_id: p.id,
             plan_type: p.planType as any,
@@ -352,6 +385,37 @@ export async function createBillingPortalSession() {
 export async function cancelSubscription() {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
+
+    const activeSubs = await db.subscription.findMany({
+        where: { userId: authResult.dbUser.id, status: 'active' },
+        select: { id: true, stripeSubscriptionId: true },
+    })
+
+    // Cancel at Stripe FIRST (cancel_at_period_end keeps access until the
+    // paid period lapses, matching the pricing FAQ). The old version only
+    // flipped the local autoRenew flag — Stripe kept billing the customer.
+    for (const sub of activeSubs) {
+        if (!sub.stripeSubscriptionId) continue // grandfathered / RevenueCat rows
+        try {
+            await stripe.subscriptions.update(sub.stripeSubscriptionId, {
+                cancel_at_period_end: true,
+            })
+        } catch (error) {
+            const code = (error as { code?: string })?.code
+            if (code === "resource_missing") {
+                // Already gone on Stripe's side — safe to stop renewals locally.
+                continue
+            }
+            logger('error', 'Stripe cancel_at_period_end failed', {
+                stripeSubscriptionId: sub.stripeSubscriptionId,
+                error: error instanceof Error ? error.message : String(error),
+            })
+            // Do NOT flip local state when Stripe still considers the
+            // subscription renewing — a silent local-only "cancel" is the
+            // exact dishonesty this replaces.
+            return { error: "Failed to cancel the subscription with Stripe. Please try again or use the billing portal." }
+        }
+    }
 
     await db.subscription.updateMany({
         where: { userId: authResult.dbUser.id, status: 'active' },

@@ -70,7 +70,9 @@ export const POST = withApiGuard(
         let planId = 'ph-free';
         if (productIdentifier.includes('pro')) planId = 'ph-pro';
         else if (productIdentifier.includes('plus')) planId = 'ph-plus';
-        else if (productIdentifier.includes('premium')) planId = 'ph-premium';
+        // "premium" used to map to the orphan ph-premium plan, which has no
+        // entitlement mapping and resolved paying subscribers to FREE.
+        else if (productIdentifier.includes('premium')) planId = 'ph-pro';
 
         switch (type) {
             case 'INITIAL_PURCHASE':

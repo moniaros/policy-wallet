@@ -49,12 +49,19 @@ export default function PricingPage() {
     const returnTo = searchParams.get('return') || undefined
     const triggerReason = searchParams.get('reason') || 'direct'
 
-    const handleSubscribe = async (planId: string) => {
+    useEffect(() => {
+        trackJourneyEvent('pricing_viewed', {
+            screen: 'protected_upgrade_page',
+            trigger_source: triggerReason,
+        })
+    }, [triggerReason])
+
+    const handleSubscribe = async (planId: string, billingPeriod: 'monthly' | 'annual') => {
         if (planId === currentPlanId) return
 
         setLoadingPlanId(planId)
         try {
-            const result = await upgradeSubscription(planId, 'monthly', returnTo)
+            const result = await upgradeSubscription(planId, billingPeriod, returnTo)
 
             if (result.error) {
                 toast.error(result.error)
@@ -63,7 +70,7 @@ export default function PricingPage() {
 
             if (result.url) {
                 trackJourneyEvent('upgrade_started', {
-                    source: `protected_upgrade_page:${triggerReason}`,
+                    source: `protected_upgrade_page:${triggerReason}:${billingPeriod}`,
                     tier: planId,
                 })
                 toast.success(pick(UPGRADE_COPY.redirecting, language))

@@ -775,7 +775,7 @@
       }
     },
     {
-      "route": "v1/landing/waitlist/route.ts",
+      "route": "v1/newsletter/subscribe/route.ts",
       "methods": [
         "POST"
       ],
@@ -784,12 +784,12 @@
           "mode": "public"
         },
         "rateLimit": {
-          "required": false,
-          "profile": "none"
+          "required": true,
+          "profile": "public-newsletter"
         },
         "validation": {
-          "required": false,
-          "profile": "optional"
+          "required": true,
+          "profile": "zod-or-guard"
         }
       }
     },

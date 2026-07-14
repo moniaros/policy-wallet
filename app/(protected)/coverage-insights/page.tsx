@@ -8,6 +8,7 @@ import { ProtectionScoreCard } from "@/components/coverage/ProtectionScoreCard"
 import { RecommendationCards } from "@/components/coverage/RecommendationCards"
 import { RiskProfileWizard } from "@/components/coverage/RiskProfileWizard"
 import { RefreshAnalysisButton } from "@/components/coverage/RefreshAnalysisButton"
+import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
 import { getGapEngineSnapshot, type GapEngineSnapshot } from "@/lib/services/gap-engine"
 import { getTranslations } from "@/lib/i18n"
 import { effectivePolicyStatus, isPolicyCoverageActive } from "@/lib/policy-status"
@@ -193,6 +194,18 @@ export default async function CoverageInsightsPage() {
                                     language={userLanguage}
                                 />
                             </div>
+                        )}
+
+                        {/* Free tier with at least one finding: the page has shown
+                            real value (recommendations + gaps) — now name what the
+                            full gap analysis adds. Below the value, never above it. */}
+                        {entitlements.tier === "free" && engineResult.recommendations.length > 0 && (
+                            <UpgradeTriggerCard
+                                featureKey="advanced_gap_detection"
+                                triggerSource="coverage_insights_page"
+                                returnTo="/coverage-insights"
+                                dismissible
+                            />
                         )}
 
                         <ProtectionScoreCard

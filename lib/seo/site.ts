@@ -61,8 +61,10 @@ export const siteConfig = {
         el: "Ψηφιακό ασφαλιστικό πορτοφόλι με ανάλυση AI: οργάνωση συμβολαίων, εντοπισμός κενών κάλυψης και υπενθυμίσεις ανανέωσης, στα ελληνικά και στα αγγλικά.",
         en: "Digital insurance wallet with AI analysis: policy organization, coverage-gap detection, and renewal reminders, in Greek and English.",
     },
-    contactEmail: "hello@policywallet.com",
-    careersEmail: "careers@policywallet.com",
+    // The product domain is policywallet.gr — a .com address here is rendered
+    // publicly on /contact and in JSON-LD, and is not a mailbox we control.
+    contactEmail: "info@policywallet.gr",
+    careersEmail: "careers@policywallet.gr",
     /** Real values only — placeholders are never rendered. */
     contactPhone: envOrUndefined(process.env.NEXT_PUBLIC_CONTACT_PHONE),
     address: {
