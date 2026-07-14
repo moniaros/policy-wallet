@@ -872,7 +872,8 @@ export const el = {
 
     // Policy Status
     policyStatus: {
-        active: 'ΕΝΕΡΓΗ',
+        // Neuter — the subject is «το ασφαλιστήριο», like ΛΗΓΜΕΝΟ / ΕΛΛΙΠΕΣ below.
+        active: 'ΕΝΕΡΓΟ',
         expiringSoon: 'ΛΗΓΕΙ ΣΥΝΤΟΜΑ',
         expired: 'ΛΗΓΜΕΝΟ',
         unknownDuration: 'ΑΓΝΩΣΤΗ ΔΙΑΡΚΕΙΑ',

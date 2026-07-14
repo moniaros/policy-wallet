@@ -6,7 +6,7 @@ const NOW = new Date('2026-07-14T12:00:00Z')
 // Minimal stand-in for the translation bundle; only t.policyStatus is read.
 const t = {
     policyStatus: {
-        active: 'Ενεργή',
+        active: 'Ενεργό',
         expiringSoon: 'Λήγει Σύντομα',
         expired: 'Ληγμένο',
         unknownDuration: 'Άγνωστη διάρκεια',

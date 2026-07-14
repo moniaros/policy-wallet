@@ -220,7 +220,18 @@ export function PolicyWallet({
                 </div>
             </div>
 
-            <div>
+            {/* The policy list needs an accessible name. The old table carried this
+                heading inside itself; the rewrite dropped it, which left the whole
+                list unnamed to a screen reader (the only heading on the page was the
+                "welcome back" greeting). It lives here now so grid and list share it. */}
+            <section aria-labelledby="wallet-policy-list-heading">
+                <h2
+                    id="wallet-policy-list-heading"
+                    className="mb-2 text-sm font-semibold text-black/70 dark:text-white/70"
+                >
+                    {t.dashboard.myPolicies}
+                </h2>
+
                 {viewMode === 'list' ? (
                     <PolicyTable
                         policies={filteredPolicies}
@@ -249,7 +260,7 @@ export function PolicyWallet({
                         ))}
                     </div>
                 )}
-            </div>
+            </section>
 
             {filteredPolicies.length === 0 && policies.length > 0 && (
                 <div className="py-20 text-center">
