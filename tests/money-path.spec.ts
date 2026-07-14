@@ -108,7 +108,9 @@ test.describe('Feature gates on the policy page (free tier)', () => {
         await page.goto(`/wallet/${policyId}`)
         await dismissCookieBanner(page)
 
-        const unlockCta = page.getByRole('button', { name: /Ξεκλείδωμα|Unlock report/i })
+        // Specific to the savings-report CTA — the post-parse locked-cards grid
+        // also renders "Ξεκλείδωμα πλήρους ανάλυσης", so a bare /Ξεκλείδωμα/ is ambiguous.
+        const unlockCta = page.getByRole('button', { name: /Ξεκλείδωμα εξαγωγής|Unlock report/i })
         await expect(unlockCta).toBeVisible({ timeout: 20000 })
         // The direct export link is Pro-only and must be absent for free users.
         await expect(page.locator(`a[href*="/savings-report"]`)).toHaveCount(0)
