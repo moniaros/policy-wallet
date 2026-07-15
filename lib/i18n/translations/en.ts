@@ -1073,6 +1073,7 @@ export const en: TranslationKeys = {
     // Errors
     errors: {
         somethingWentWrong: 'Something went wrong',
+        errorBoundaryBody: 'An unexpected error occurred on this page. Try again or head back home.',
         tryAgain: 'Try again',
         notFound: 'Not found',
         unauthorized: 'Unauthorized',
@@ -1380,6 +1381,8 @@ export const en: TranslationKeys = {
         deleteAccountConfirm: 'Are you sure you want to delete your account? This action cannot be undone.',
         deleteFailed: 'Failed to delete account',
         autoRenewalDisabled: 'Auto-renewal disabled.',
+        updateSuccess: 'Your details were updated',
+        updateFailed: 'Update failed. Please try again.',
         successfulLogin: 'Successful Login',
         loginFailed: 'Login Attempt Failed',
         systemSignOut: 'System Sign-out',
