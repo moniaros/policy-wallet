@@ -125,6 +125,7 @@ export const subscriptionCopy = {
     trial: {
         badge: { el: '14 ΗΜΕΡΕΣ ΔΩΡΕΑΝ', en: '14-DAY FREE TRIAL' },
         cta: { el: 'ΔΩΡΕΑΝ ΔΟΚΙΜΗ 14 ΗΜΕΡΩΝ', en: 'START 14-DAY FREE TRIAL' },
+        startCta: { el: 'Ξεκινήστε δωρεάν δοκιμή 14 ημερών', en: 'Start 14-Day Free Trial' },
     },
 
     // Call-to-Action Buttons

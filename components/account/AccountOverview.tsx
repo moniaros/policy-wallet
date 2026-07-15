@@ -2,6 +2,7 @@
 
 import type { AccountOverviewProps } from './types'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { subscriptionCopy } from '@/lib/subscription-copy'
 import { UsageMeter } from '@/components/monetization/UsageMeter'
 
 export function AccountOverview({
@@ -74,7 +75,7 @@ export function AccountOverview({
     return (
         <div className="max-w-7xl mx-auto py-6">
             {/* Profile Header */}
-            <div className="flex flex-col md:flex-row items-center gap-6 mb-10 p-6 bg-white dark:bg-black rounded-[32px] border border-black/10 dark:border-white/15 shadow-sm relative overflow-hidden group">
+            <div className="flex flex-col md:flex-row items-center gap-6 mb-10 p-6 pw-card relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[80px] rounded-full -mr-32 -mt-32 transition-colors group-hover:bg-primary/10" />
 
                 <div className="relative">
@@ -163,7 +164,7 @@ export function AccountOverview({
                 {/* Current Plan Card */}
                 <div className="lg:col-span-2 relative group">
                     <div className="absolute -inset-0.5 bg-primary/20 rounded-[40px] blur opacity-50 group-hover:opacity-100 transition duration-1000"></div>
-                    <div className="relative bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[32px] overflow-hidden shadow-2xl h-full">
+                    <div className="relative pw-card overflow-hidden h-full">
                         <div className="p-8 border-b border-black/10 dark:border-white/15 bg-black/5 dark:bg-black">
                             <div className="flex items-start justify-between mb-8">
                                 <div>
@@ -221,7 +222,7 @@ export function AccountOverview({
                     </div>
 
                     {/* Metrics Card */}
-                    <div className="bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[32px] p-8 shadow-sm">
+                    <div className="pw-card p-8">
                         <h3 className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] mb-8">
                             {t.account.cycleMetrics}
                         </h3>
@@ -315,11 +316,11 @@ export function AccountOverview({
                                 return (
                                     <div
                                         key={plan.plan_id}
-                                        className={`bg-white dark:bg-black border ${isPro ? 'border-primary shadow-primary/15' : 'border-black/10 dark:border-white/15'} rounded-[32px] p-8 shadow-sm hover:shadow-2xl hover:scale-[1.02] transition-all group relative overflow-hidden`}
+                                        className={`pw-card ${isPro ? 'border-primary' : ''} p-8 hover:scale-[1.02] transition-all group relative overflow-hidden`}
                                     >
                                         {isPro && (
                                             <div className="absolute top-5 right-5 bg-primary text-white dark:text-[#1A2420] text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">
-                                                {language === 'el' ? '14 ΗΜΕΡΕΣ ΔΩΡΕΑΝ' : '14-DAY FREE TRIAL'}
+                                                {subscriptionCopy.trial.badge[language]}
                                             </div>
                                         )}
                                         <div className="mb-10">
@@ -348,7 +349,7 @@ export function AccountOverview({
                                             className="w-full py-4 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-2xl text-[10px] font-black uppercase tracking-wider shadow-xl shadow-primary/20 transition-all active:scale-95"
                                         >
                                             {isPro
-                                                ? (language === 'el' ? 'Ξεκινήστε δωρεάν δοκιμή 14 ημερών' : 'Start 14-Day Free Trial')
+                                                ? subscriptionCopy.trial.startCta[language]
                                                 : t.account.selectPlan}
                                         </button>
                                     </div>

@@ -171,7 +171,7 @@ export function Settings({
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[28px] p-6 shadow-sm"
+                        className="pw-card p-6"
                     >
                         <div className="flex items-center gap-3 mb-6">
                             <span className="w-1.5 h-1.5 rounded-full bg-primary" />
@@ -258,7 +258,7 @@ export function Settings({
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
-                        className="bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[28px] p-6 shadow-sm"
+                        className="pw-card p-6"
                     >
                         <div className="flex items-center gap-3 mb-6">
                             <span className="w-1.5 h-1.5 rounded-full bg-primary" />
@@ -284,7 +284,7 @@ export function Settings({
                                     >
                                         <motion.span
                                             animate={{ x: isPreferenceEnabled(pref.id, 'email') ? 22 : 2 }}
-                                            className="absolute top-1 left-0 w-4 h-4 bg-white rounded-full shadow-sm"
+                                            className="absolute top-1 left-0 w-4 h-4 bg-white rounded-full"
                                         />
                                     </button>
                                 </div>
@@ -360,7 +360,7 @@ export function Settings({
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[28px] shadow-sm overflow-hidden"
+                        className="pw-card overflow-hidden"
                     >
                         <div className="px-6 py-5 border-b border-black/10 dark:border-white/15 flex items-center justify-between bg-black/5 dark:bg-black/50">
                             <div className="flex items-center gap-3">
@@ -383,7 +383,7 @@ export function Settings({
                                                     {session.device_name}
                                                 </span>
                                                 {session.is_current && (
-                                                    <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-primary text-white dark:text-[#1A2420] rounded-full shadow-sm">
+                                                    <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-primary text-white dark:text-[#1A2420] rounded-full">
                                                         {t.settings.activeNow}
                                                     </span>
                                                 )}
@@ -417,7 +417,7 @@ export function Settings({
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
-                        className="bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[28px] shadow-sm overflow-hidden"
+                        className="pw-card overflow-hidden"
                     >
                         <div className="px-6 py-5 border-b border-black/10 dark:border-white/15 flex items-center justify-between">
                             <div className="flex items-center gap-3">
@@ -433,7 +433,7 @@ export function Settings({
                                 return (
                                     <div key={event.event_id} className="px-6 py-4 hover:bg-black/5 dark:hover:bg-black/80 transition-all border-l-4 border-l-transparent hover:border-l-primary">
                                         <div className="flex items-center gap-6">
-                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${config.color} shadow-sm`}>
+                                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${config.color}`}>
                                                 <config.Icon className="w-4 h-4" />
                                             </div>
                                             <div className="flex-1">

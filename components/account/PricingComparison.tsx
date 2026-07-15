@@ -161,7 +161,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
-                            className={`relative rounded-[32px] p-6 border hover:shadow-2xl transition-all duration-300 group flex flex-col ${isPopular
+                            className={`relative rounded-2xl p-6 border hover:shadow-2xl transition-all duration-300 group flex flex-col ${isPopular
                                 ? 'bg-white dark:bg-slate-900 border-primary dark:border-primary shadow-xl shadow-primary/10 scale-105 z-10'
                                 : 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 hover:border-primary/40 dark:hover:border-primary/40'
                                 }`}
@@ -257,7 +257,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                     </h2>
                 </div>
 
-                <div className="overflow-x-auto rounded-[32px] border border-slate-100 dark:border-slate-800">
+                <div className="overflow-x-auto rounded-2xl border border-slate-100 dark:border-slate-800">
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-slate-50 dark:bg-slate-900/50">
@@ -305,7 +305,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                 </div>
             </div>
 
-            <div className="mt-16 bg-slate-50 dark:bg-slate-900/50 rounded-[32px] p-8 md:p-12 text-center relative overflow-hidden">
+            <div className="mt-16 bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-8 md:p-12 text-center relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full -mr-32 -mt-32"></div>
                 <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-8 relative z-10">
                     {copy.headings.faq.title[language]}
