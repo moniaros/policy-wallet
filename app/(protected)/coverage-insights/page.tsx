@@ -106,12 +106,15 @@ export default async function CoverageInsightsPage() {
     const t = getTranslations(userLanguage)
 
     return (
-        <>
+        // One page shell for the whole route — the three sections used to each
+        // wrap in `.pw-page-shell` (min-h-screen), stacking to ~3 viewports tall
+        // with large empty gaps between them.
+        <div className="pw-page-shell">
             {/* Ordering: what to DO comes before how you SCORE — the
                 recommendations and the reviewed findings lead, the passive
                 score and the profile wizard follow. */}
             {engineResult && (
-                <div className="pw-page-shell">
+                <div>
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-7 lg:pt-10 space-y-6">
                         <div className="flex justify-end">
                             <RefreshAnalysisButton
@@ -170,7 +173,7 @@ export default async function CoverageInsightsPage() {
 
             {/* Profile wizard (improves the analysis), then the passive score */}
             {engineResult && (
-                <div className="pw-page-shell">
+                <div>
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 space-y-6">
                         {engineResult.profileCompleteness < 80 && (
                             <div id="risk-profile-wizard">
@@ -221,6 +224,6 @@ export default async function CoverageInsightsPage() {
                     </div>
                 </div>
             )}
-        </>
+        </div>
     )
 }

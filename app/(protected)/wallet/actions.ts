@@ -1031,17 +1031,19 @@ export async function askPolicyQuestion(policyId: string, question: string) {
 
     if (!policy) return { error: "Policy not found" }
 
-    // Check authorization
-    const isOwner = policy.ownerUserId === authResult.dbUser.id
-    const hasAccess = isOwner || await db.accessGrant.findFirst({
-        where: {
-            granterUserId: policy.ownerUserId,
-            granteeUserId: authResult.dbUser.id,
-            status: 'active'
-        }
+    // Check authorization through the central rule. The previous inline check
+    // accepted ANY active grant from the owner — so one shared policy opened Q&A
+    // (which ships extracted content to an LLM) on ALL of that owner's policies.
+    // getPolicyAccess requires a grant scoped to THIS policy (or ownership / an
+    // active managing-agent relationship).
+    const { getPolicyAccess } = await import("@/lib/policy-access")
+    const access = await getPolicyAccess(policyId, {
+        id: authResult.dbUser.id,
+        roles: authResult.dbUser.roles,
     })
+    const isOwner = access.isOwner
 
-    if (!hasAccess) return { error: "Unauthorized" }
+    if (!access.canRead) return { error: "Unauthorized" }
 
     // GDPR Art. 9 gate: Q&A sends extracted policy content to an LLM — the policy
     // OWNER (the data subject) must have granted AI-processing consent.

@@ -92,7 +92,7 @@ export function Billing({
         <div className="max-w-7xl mx-auto py-8">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-8">
-                    <div className="bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[32px] p-8 shadow-sm relative overflow-hidden group">
+                    <div className="pw-card p-8 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full -mr-32 -mt-32"></div>
                         <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-6">
@@ -185,7 +185,7 @@ export function Billing({
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[32px] shadow-sm overflow-hidden">
+                    <div className="pw-card overflow-hidden">
                         <div className="px-8 py-6 border-b border-black/10 dark:border-white/15 flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <span className="w-8 h-px bg-black/10 dark:bg-white/20" />
@@ -235,7 +235,7 @@ export function Billing({
                                                         {invoice.pdf_url && (
                                                             <button
                                                                 onClick={() => onDownloadInvoice?.(invoice.invoice_id)}
-                                                                className="w-8 h-8 rounded-lg bg-black/5 dark:bg-black flex items-center justify-center text-black/45 dark:text-white/60 hover:bg-primary hover:text-white dark:hover:text-[#1A2420] transition-all shadow-sm"
+                                                                className="w-8 h-8 rounded-lg bg-black/5 dark:bg-black flex items-center justify-center text-black/45 dark:text-white/60 hover:bg-primary hover:text-white dark:hover:text-[#1A2420] transition-all"
                                                             >
                                                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" strokeWidth="2.5" /></svg>
                                                             </button>
@@ -252,7 +252,7 @@ export function Billing({
                 </div>
 
                 <div className="space-y-8">
-                    <div className="bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[32px] p-8 shadow-sm">
+                    <div className="pw-card p-8">
                         <div className="flex items-center justify-between mb-8">
                             <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">{t.billing.paymentMethod}</h3>
                             {defaultPaymentMethod && (

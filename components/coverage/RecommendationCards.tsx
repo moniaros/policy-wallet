@@ -196,7 +196,7 @@ export function RecommendationCards({
     }
 
     return (
-        <div className="pw-card rounded-3xl p-6">
+        <div className="pw-card p-6">
             {/* Header */}
             <div className="flex items-center gap-3 mb-5">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100/80 dark:bg-amber-900/25">

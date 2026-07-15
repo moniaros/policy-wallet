@@ -29,7 +29,9 @@ export default async function WalletPage() {
         include: {
             documents: true,
             _count: {
-                select: { gapInstances: { where: { status: 'active' } } }
+                // Open gaps use the same status set as home / coverage-insights.
+                // (Gaps are written 'open'/'detected'; 'active' matched nothing.)
+                select: { gapInstances: { where: { status: { in: ['open', 'detected', 'acknowledged'] } } } }
             }
         },
         orderBy: {
@@ -120,7 +122,14 @@ export default async function WalletPage() {
         insurerName: resolveInsurerDisplay(p.insurerName).displayName || p.insurerName,
             insurerLogo: null, // Placeholder
             lineOfBusiness: p.lineOfBusiness as any,
-            status: mapStatus(p.status, p.endDate),
+            // Pass the RAW stored status and the extracted envelope; the card
+            // derives the displayed status via getPolicyStatusView /
+            // resolvePolicyLifecycle (canonical, expiry-aware). The old
+            // mapStatus was a second pipeline off the placeholder-prone endDate
+            // column that could never show 'expired'/'unknown_duration' and
+            // contradicted the detail page.
+            status: p.status as Policy['status'],
+            acordData: p.acordData,
             startDate: p.startDate.toISOString(),
             endDate: p.endDate.toISOString(),
             lastUpdated: p.updatedAt.toISOString(),
@@ -155,19 +164,4 @@ export default async function WalletPage() {
             <PolicyWalletClient policies={mappedPolicies} user={user} agent={agent} showTour={showTour} tier={tier} />
         </div>
     )
-}
-
-function mapStatus(dbStatus: string, endDate: Date): 'active' | 'expiring_soon' | 'incomplete' | 'action_needed' | 'analyzing' | 'cancelled' {
-    const now = new Date()
-    const daysUntilExpiry = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
-
-    if (dbStatus === 'analyzing') return 'analyzing'
-    if (dbStatus === 'cancelled') return 'cancelled'
-    // Preserve DB-level terminal states so failed/blocked runs are never shown as active
-    if (dbStatus === 'action_needed') return 'action_needed'
-    if (dbStatus === 'incomplete') return 'incomplete'
-    if (daysUntilExpiry < 0) return 'action_needed' // Expired
-    if (daysUntilExpiry < 30) return 'expiring_soon'
-
-    return 'active'
 }

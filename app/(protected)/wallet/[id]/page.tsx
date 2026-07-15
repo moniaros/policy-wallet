@@ -10,6 +10,7 @@ import { getAIUsageStats } from "../actions"
 import { PolicyDetailsClient } from "./PolicyDetailsClient"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { normalizeRemindersSent } from "@/lib/wallet/policy-detail"
+import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
 import { FREE_LIFETIME_QUESTIONS } from "@/lib/monetization/feature-gates"
 import {
     computeReportUnlocked,
@@ -36,7 +37,9 @@ export default async function PolicyDetailPage({
                     orderBy: { uploadedAt: 'desc' }
                 },
                 gapInstances: {
-                    where: { status: 'open' },
+                    // Match home / coverage-insights: 'open' alone under-counted,
+                    // dropping rule-detected and acknowledged gaps from the report.
+                    where: { status: { in: [...OPEN_GAP_STATUSES] } },
                     include: { definition: true }
                 }
             }

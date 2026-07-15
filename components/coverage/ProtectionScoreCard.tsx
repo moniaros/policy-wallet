@@ -82,7 +82,7 @@ export function ProtectionScoreCard({
     )
 
     return (
-        <div className="pw-card rounded-3xl p-6 mb-8">
+        <div className="pw-card p-6 mb-8">
             <div className="flex flex-col md:flex-row items-center gap-6">
                 {/* Score ring */}
                 <div className="relative flex-shrink-0">

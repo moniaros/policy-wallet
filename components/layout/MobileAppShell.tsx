@@ -56,7 +56,7 @@ export function MobileAppShell({ policies, user, tier = 'free' }: MobileAppShell
 
                 {activeTab === 'tasks' && (
                     <div className="min-h-screen px-5 py-8">
-                        <div className="pw-card rounded-3xl p-8 text-center">
+                        <div className="pw-card p-8 text-center">
                             <h3 className="text-lg font-semibold text-black dark:text-white">{copy.allTasksDone}</h3>
                             <p className="text-sm text-black/55 dark:text-white/65 mt-2">{copy.checkLater}</p>
                         </div>
@@ -65,7 +65,7 @@ export function MobileAppShell({ policies, user, tier = 'free' }: MobileAppShell
 
                 {activeTab === 'coverage' && (
                     <div className="min-h-screen px-5 py-8">
-                        <div className="pw-card rounded-3xl p-6">
+                        <div className="pw-card p-6">
                             <h3 className="text-xl font-semibold text-black dark:text-white mb-2">{copy.coverageTitle}</h3>
                             <p className="text-sm text-black/55 dark:text-white/65 mb-5">{copy.coverageDesc}</p>
                             <button
@@ -80,7 +80,7 @@ export function MobileAppShell({ policies, user, tier = 'free' }: MobileAppShell
 
                 {activeTab === 'alerts' && (
                     <div className="min-h-screen px-5 py-8">
-                        <div className="pw-card rounded-3xl p-8 text-center">
+                        <div className="pw-card p-8 text-center">
                             <h3 className="text-lg font-semibold text-black dark:text-white">{copy.allCaughtUp}</h3>
                             <p className="text-sm text-black/55 dark:text-white/65 mt-2">{copy.noWarnings}</p>
                         </div>

@@ -1,6 +1,7 @@
 "use server"
 
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
+import { createAdminClient } from "@/lib/supabase/admin"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
@@ -62,15 +63,20 @@ export async function getAccountData() {
         where: { userId }
     })
 
-    // 4. Fetch Referrals & Credit Transactions
+    // 4. Fetch Referrals & Credit Transactions.
+    // These are per-user ledgers that grow without bound; the account page shows
+    // recent history, so cap each read. The most recent creditTransaction still
+    // carries the running balance.
     const referrals = await db.referral.findMany({
         where: { referrerUserId: userId },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
+        take: 50,
     })
 
     const creditTransactions = await db.creditTransaction.findMany({
         where: { userId },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
+        take: 50,
     })
 
     const creditBalance = creditTransactions.length > 0
@@ -80,7 +86,8 @@ export async function getAccountData() {
     // 5. Fetch Invoices
     const invoices = await db.invoice.findMany({
         where: { userId },
-        orderBy: { billingDate: 'desc' }
+        orderBy: { billingDate: 'desc' },
+        take: 50,
     })
 
     // Transform for UI (Bridging snake_case and handling types)
@@ -494,19 +501,36 @@ export async function updateEmail(newEmail: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
-    // In production, trigger a verification email flow
+    const email = String(newEmail || "").trim().toLowerCase()
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: "INVALID_EMAIL" }
+    if (email === (authResult.dbUser.email || "").toLowerCase()) return { success: true }
+
+    // The app resolves the DB user FROM the Supabase auth email, so the two must
+    // change together. The old code wrote only the DB column → on the next
+    // request the auth email no longer matched any row and the user was locked
+    // out. Update Supabase auth (the source of truth) first, then mirror to the
+    // DB. A verified-change email flow is a further enhancement; this at least
+    // never desyncs.
+    const admin = createAdminClient()
+    const { error } = await admin.auth.admin.updateUserById(authResult.supabaseUser.id, {
+        email,
+        email_confirm: true,
+    })
+    if (error) {
+        return { error: /already|exists|registered/i.test(error.message) ? "EMAIL_IN_USE" : "EMAIL_UPDATE_FAILED" }
+    }
+
     await db.user.update({
         where: { id: authResult.dbUser.id },
-        data: { email: newEmail }
+        data: { email },
     })
 
-    // Log security event
     await db.securityEvent.create({
         data: {
             userId: authResult.dbUser.id,
             eventType: 'email_change',
-            ipAddress: '192.168.1.1', // Mock
-            userAgent: 'System Update'
+            ipAddress: 'unknown',
+            userAgent: 'account-settings',
         }
     })
 
@@ -518,19 +542,24 @@ export async function updatePassword(newPassword: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
-    // In production, encrypt!
-    await db.user.update({
-        where: { id: authResult.dbUser.id },
-        data: { password: newPassword }
-    })
+    if (String(newPassword || "").length < 8) return { error: "WEAK_PASSWORD" }
 
-    // Log security event
+    // Real auth is Supabase — set the login password THERE. The old code wrote
+    // the plaintext into a User.password column (a credential at rest) and
+    // changed nothing about the actual login, so the "change password" feature
+    // silently did nothing while leaking the typed password.
+    const admin = createAdminClient()
+    const { error } = await admin.auth.admin.updateUserById(authResult.supabaseUser.id, {
+        password: newPassword,
+    })
+    if (error) return { error: "PASSWORD_UPDATE_FAILED" }
+
     await db.securityEvent.create({
         data: {
             userId: authResult.dbUser.id,
             eventType: 'password_change',
-            ipAddress: '192.168.1.1', // Mock
-            userAgent: 'System Update'
+            ipAddress: 'unknown',
+            userAgent: 'account-settings',
         }
     })
 

@@ -57,7 +57,7 @@ export function Referrals({
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
                 <div className="lg:col-span-2 relative group">
                     <div className="absolute -inset-0.5 bg-primary/20 rounded-[40px] blur opacity-50 group-hover:opacity-100 transition duration-1000"></div>
-                    <div className="relative bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[32px] p-8 shadow-sm h-full flex flex-col justify-between">
+                    <div className="relative pw-card p-8 h-full flex flex-col justify-between">
                         <div>
                             <div className="flex items-center gap-3 mb-6">
                                 <span className="w-8 h-px bg-primary" />
@@ -80,7 +80,7 @@ export function Referrals({
                                 </div>
                                 <button
                                     onClick={handleCopyLink}
-                                    className="px-6 py-3 border border-black/15 dark:border-white/20 bg-white dark:bg-black text-black dark:text-white rounded-2xl text-[10px] font-black uppercase tracking-wider hover:bg-black/5 dark:hover:bg-white/10 transition-all shadow-sm active:scale-95"
+                                    className="px-6 py-3 border border-black/15 dark:border-white/20 bg-white dark:bg-black text-black dark:text-white rounded-2xl text-[10px] font-black uppercase tracking-wider hover:bg-black/5 dark:hover:bg-white/10 transition-all active:scale-95"
                                 >
                                     {copied ? t.referrals.copied : t.referrals.copyLink}
                                 </button>
@@ -135,7 +135,7 @@ export function Referrals({
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div className="bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[32px] shadow-sm overflow-hidden flex flex-col">
+                <div className="pw-card overflow-hidden flex flex-col">
                     <div className="px-8 py-6 border-b border-black/10 dark:border-white/15">
                         <div className="flex items-center gap-3">
                             <span className="w-8 h-px bg-black/10 dark:bg-white/20" />
@@ -174,7 +174,7 @@ export function Referrals({
                     )}
                 </div>
 
-                <div className="bg-white dark:bg-black border border-black/10 dark:border-white/15 rounded-[32px] shadow-sm overflow-hidden">
+                <div className="pw-card overflow-hidden">
                     <div className="px-8 py-6 border-b border-black/10 dark:border-white/15">
                         <div className="flex items-center gap-3">
                             <span className="w-8 h-px bg-black/10 dark:bg-white/20" />

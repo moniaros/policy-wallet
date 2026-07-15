@@ -166,7 +166,7 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
     const labelClass = "block text-sm font-medium text-black/75 dark:text-white/75"
 
     return (
-        <div className="pw-card rounded-3xl p-6">
+        <div className="pw-card p-6">
             <div className="flex items-center gap-3 mb-6">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-soft dark:bg-primary/15">
                     <ShieldCheck className="h-5 w-5 text-primary dark:text-mint" />

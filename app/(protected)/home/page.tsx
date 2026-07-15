@@ -6,7 +6,7 @@ import { db } from "@/lib/db"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { getTranslations } from "@/lib/i18n"
 import type { User } from "@prisma/client"
-import { getProtectionScore } from "@/lib/services/gap-engine"
+import { getCachedProtectionScore } from "@/lib/services/gap-engine"
 import { CircleHelp, Upload } from "lucide-react"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
 import { resolvePolicyLifecycle } from "@/lib/policy-status"
@@ -155,8 +155,11 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     })
     const openGapCount = openGaps.length
 
-    // Protection score: prefer cached gap engine score, fallback to legacy penalty-based calculation
-    const cachedScore = await getProtectionScore(dbUser.id, 24 * 60 * 60 * 1000).catch(() => null)
+    // Protection score: READ-ONLY cached score (never runs the engine on a GET
+    // render — that would be a write transaction + heavy compute per user per
+    // day on the hottest page). Freshness is the cron / upload pipeline's job;
+    // when the cache is absent we fall back to the lightweight penalty estimate.
+    const cachedScore = await getCachedProtectionScore(dbUser.id).catch(() => null)
     let healthScore: number
     if (cachedScore) {
         healthScore = cachedScore.overallScore

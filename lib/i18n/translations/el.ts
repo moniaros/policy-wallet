@@ -1071,6 +1071,7 @@ export const el = {
     // Errors
     errors: {
         somethingWentWrong: 'Κάτι πήγε στραβά',
+        errorBoundaryBody: 'Παρουσιάστηκε ένα απρόσμενο σφάλμα σε αυτή τη σελίδα. Δοκιμάστε ξανά ή επιστρέψτε στην αρχική.',
         tryAgain: 'Δοκιμάστε ξανά',
         notFound: 'Δεν βρέθηκε',
         unauthorized: 'Μη εξουσιοδοτημένο',
@@ -1375,6 +1376,11 @@ export const el = {
         securingPassword: 'Ασφάλιση νέου κωδικού...',
         switchingLanguage: 'Αλλαγή γλώσσας...',
         finalizingDeletion: 'Οριστικοποίηση διαγραφής...',
+        deleteAccountConfirm: 'Είστε βέβαιοι ότι θέλετε να διαγράψετε τον λογαριασμό σας; Η ενέργεια είναι μη αναστρέψιμη.',
+        deleteFailed: 'Η διαγραφή του λογαριασμού απέτυχε',
+        autoRenewalDisabled: 'Η αυτόματη ανανέωση απενεργοποιήθηκε.',
+        updateSuccess: 'Τα στοιχεία ενημερώθηκαν',
+        updateFailed: 'Η ενημέρωση απέτυχε. Δοκιμάστε ξανά.',
         successfulLogin: 'Επιτυχής Σύνδεση',
         loginFailed: 'Αποτυχία Σύνδεσης',
         systemSignOut: 'Αποσύνδεση Συστήματος',

@@ -243,24 +243,32 @@ pre {
     background: linear-gradient(140deg, #000000 0%, #111111 60%, #171717 100%);
   }
 
+  /* Card recipe mirrors the public marketing site (e.g. ServicesGrid): flat and
+     border-first — no resting shadow, with a mint-border + soft-green-shadow lift
+     on hover. The old heavy resting shadow read as a different, boxier product. */
   .pw-card {
     border-radius: var(--pw-radius-card);
     border: 1px solid var(--pw-border);
     background: var(--pw-bg-light);
-    box-shadow: var(--pw-shadow-card);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   }
 
   .dark .pw-card {
     border-color: rgba(255, 255, 255, 0.10);
     background: var(--pw-surface-dark);
-    /* Shadows are invisible on dark bg; use a subtle inner ring for elevation */
+    /* Shadows are invisible on dark bg; a subtle inner ring is the dark "flat". */
     box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
   }
 
   .pw-card:hover {
     transform: translateY(-2px);
-    box-shadow: var(--pw-shadow-card-hover);
+    border-color: #A7F3D0;
+    box-shadow: 0 8px 24px rgba(41, 104, 91, 0.08);
+  }
+
+  .dark .pw-card:hover {
+    border-color: rgba(137, 217, 178, 0.5);
   }
 
   .pw-pill {
@@ -301,12 +309,13 @@ pre {
     color: var(--pw-text-muted);
   }
 
+  /* Dashboard-shell alias of .pw-card — same flat, border-first public recipe. */
   .arc-card {
     border-radius: var(--pw-radius-card);
     border: 1px solid var(--pw-border);
     background: var(--pw-bg-light);
-    box-shadow: var(--pw-shadow-card);
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   }
 
   .dark .arc-card {
@@ -316,7 +325,12 @@ pre {
 
   .arc-card:hover {
     transform: translateY(-2px);
-    box-shadow: var(--pw-shadow-card-hover);
+    border-color: #A7F3D0;
+    box-shadow: 0 8px 24px rgba(41, 104, 91, 0.08);
+  }
+
+  .dark .arc-card:hover {
+    border-color: rgba(137, 217, 178, 0.5);
   }
 
   .arc-btn {

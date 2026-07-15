@@ -83,7 +83,7 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
             return
         }
         if (result.success) {
-            alert('Auto-renewal disabled.')
+            toast.success(t.settings.autoRenewalDisabled)
         }
     }
 
@@ -130,11 +130,16 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
     }
 
     const handleUpdateEmail = async (email: string) => {
-        await updateEmail(email)
+        const res = await updateEmail(email)
+        if ('error' in res && res.error) toast.error(t.settings.updateFailed)
+        else toast.success(t.settings.updateSuccess)
     }
 
     const handleChangePassword = async (password?: string) => {
-        if (password) await updatePassword(password)
+        if (!password) return
+        const res = await updatePassword(password)
+        if ('error' in res && res.error) toast.error(t.settings.updateFailed)
+        else toast.success(t.settings.updateSuccess)
     }
 
     const handleToggleNotification = async (eventType: string, channel: string, enabled: boolean) => {

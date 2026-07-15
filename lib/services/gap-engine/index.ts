@@ -404,6 +404,31 @@ export async function getGapEngineSnapshot(userId: string): Promise<GapEngineSna
 // ── Cached score access ──────────────────────────────────────────────
 
 /**
+ * Read-only cached protection score — NEVER runs the engine.
+ *
+ * Use this on render paths (e.g. /home). `getProtectionScore` recomputes via
+ * `runGapEngine` (a write transaction) when the cache is stale, which turns a
+ * page GET into a synchronous write + heavy compute — a thundering-herd hazard
+ * at scale. This returns whatever is cached (even if older than a day) or null;
+ * freshness is the cron / upload pipeline's job, and callers fall back to a
+ * lightweight inline estimate when null.
+ */
+export async function getCachedProtectionScore(
+    userId: string
+): Promise<CachedProtectionScore | null> {
+    const cached = await db.protectionScore.findUnique({ where: { userId } })
+    if (!cached) return null
+    return {
+        overallScore: cached.overallScore,
+        categoryScores: cached.categoryScores as Record<string, any>,
+        gapCount: cached.gapCount,
+        expectedLines: cached.expectedLines as string[],
+        actualLines: cached.actualLines as string[],
+        computedAt: cached.computedAt,
+    }
+}
+
+/**
  * Get the cached protection score, or compute if stale/missing.
  * Use this for lightweight reads (e.g., dashboard cards, agent client lists).
  */

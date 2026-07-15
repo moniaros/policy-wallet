@@ -204,7 +204,9 @@ export function CoverageInsightsClient({
     }
 
     return (
-        <div className="pw-page-shell">
+        // No page shell here — the coverage-insights route provides the single
+        // shared `.pw-page-shell` so the sections don't each claim a full screen.
+        <div>
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-7 lg:py-10">
                 <div className="mb-7 text-center">
                     <h1 className="pw-kicker mb-2">{copy.summaryTitle}</h1>
@@ -276,7 +278,7 @@ export function CoverageInsightsClient({
                                 />
                             ))
                         ) : (
-                            <div className="text-center py-10 pw-card rounded-3xl">
+                            <div className="text-center py-10 pw-card">
                                 <Sparkles className="w-8 h-8 text-primary dark:text-mint mx-auto mb-3" />
                                 <p className="text-black dark:text-white font-semibold">{copy.allGoodTitle}</p>
                                 <p className="text-black/55 dark:text-white/65 text-sm">{copy.allGoodDescription}</p>

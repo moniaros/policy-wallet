@@ -10,10 +10,12 @@ export async function getNotificationData() {
 
     const userId = authResult.dbUser.id
 
-    // 1. Fetch History
+    // 1. Fetch History — bounded to recent events; this table grows unbounded
+    // per user (every reminder, gap alert, share, quote request).
     const history = await db.notificationEvent.findMany({
         where: { userId },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
+        take: 50,
     })
 
     // 2. Fetch Preferences
