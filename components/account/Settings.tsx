@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Shield, Smartphone, Globe, Bell, Lock, AlertTriangle, CheckCircle2, Zap, Loader2, ChevronRight, LogIn, LogOut, KeyRound, Mail } from 'lucide-react'
 import { ProcessingHUD } from '@/components/ui/ProcessingHUD'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { toast } from 'sonner'
 
 export function Settings({
     currentUser,
@@ -99,7 +100,7 @@ export function Settings({
     }
 
     const handleDeleteAccount = async () => {
-        if (confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+        if (confirm(t.settings.deleteAccountConfirm)) {
             setIsDeleting(true)
             setProcessingMessage(t.settings.finalizingDeletion)
             setIsProcessing(true)
@@ -107,7 +108,7 @@ export function Settings({
             if (res.success) {
                 router.push('/')
             } else {
-                alert("Failed to delete account")
+                toast.error(t.settings.deleteFailed)
                 setIsDeleting(false)
                 setIsProcessing(false)
             }

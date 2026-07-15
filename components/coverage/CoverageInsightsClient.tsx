@@ -204,7 +204,9 @@ export function CoverageInsightsClient({
     }
 
     return (
-        <div className="pw-page-shell">
+        // No page shell here — the coverage-insights route provides the single
+        // shared `.pw-page-shell` so the sections don't each claim a full screen.
+        <div>
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-7 lg:py-10">
                 <div className="mb-7 text-center">
                     <h1 className="pw-kicker mb-2">{copy.summaryTitle}</h1>

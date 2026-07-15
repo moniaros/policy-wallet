@@ -62,15 +62,20 @@ export async function getAccountData() {
         where: { userId }
     })
 
-    // 4. Fetch Referrals & Credit Transactions
+    // 4. Fetch Referrals & Credit Transactions.
+    // These are per-user ledgers that grow without bound; the account page shows
+    // recent history, so cap each read. The most recent creditTransaction still
+    // carries the running balance.
     const referrals = await db.referral.findMany({
         where: { referrerUserId: userId },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
+        take: 50,
     })
 
     const creditTransactions = await db.creditTransaction.findMany({
         where: { userId },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
+        take: 50,
     })
 
     const creditBalance = creditTransactions.length > 0
@@ -80,7 +85,8 @@ export async function getAccountData() {
     // 5. Fetch Invoices
     const invoices = await db.invoice.findMany({
         where: { userId },
-        orderBy: { billingDate: 'desc' }
+        orderBy: { billingDate: 'desc' },
+        take: 50,
     })
 
     // Transform for UI (Bridging snake_case and handling types)

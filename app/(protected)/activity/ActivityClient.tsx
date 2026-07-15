@@ -82,7 +82,8 @@ const getCategoryDetails = (category: ActivityCategory, type: string) => {
 }
 
 const getEntityLink = (event: ActivityEvent) => {
-    if (event.policyId) return `/policies/${event.policyId}`
+    // The policy route is /wallet/[id]; there is no /policies/[id] (was a 404).
+    if (event.policyId) return `/wallet/${event.policyId}`
     if (event.opportunityId) return `/opportunities?id=${event.opportunityId}`
     if (event.customerId) return `/customers/${event.customerId}`
     return "#"

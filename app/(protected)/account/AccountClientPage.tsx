@@ -83,7 +83,7 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
             return
         }
         if (result.success) {
-            alert('Auto-renewal disabled.')
+            toast.success(t.settings.autoRenewalDisabled)
         }
     }
 
