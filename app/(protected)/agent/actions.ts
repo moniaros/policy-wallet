@@ -690,17 +690,31 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
         return { error: "PolicyWallet AI is not configured" }
     }
 
+    // Abuse/cost cap: this is a real, billable AI extraction. Without a limit an
+    // agent could scan unbounded PDFs and never create a policy, running up cost
+    // outside the analysis-quota gate that addPolicyForCustomer enforces.
+    const { rateLimit } = await import("@/lib/rate-limit")
+    const scan = await rateLimit(authResult.dbUser.id, 30, 60 * 60 * 1000, `agent-scan:${authResult.dbUser.id}`)
+    if (!scan.success) {
+        return { error: "Too many scans. Please wait a bit and try again." }
+    }
+
     try {
         const aiService = getAIService();
 
         const arrayBuffer = await file.arrayBuffer();
         const base64Data = Buffer.from(arrayBuffer).toString("base64");
 
-        const result = await aiService.extractPolicyData({
-            data: base64Data,
-            mimeType: file.type,
-            fileName: file.name
-        });
+        const result = await aiService.extractPolicyData(
+            {
+                data: base64Data,
+                mimeType: file.type,
+                fileName: file.name
+            },
+            // Attribute the token cost to the agent — the scan used to run
+            // entirely off the books.
+            { userId: authResult.dbUser.id },
+        );
 
         return { success: true, data: result }
     } catch (e) {

@@ -11,6 +11,7 @@ import { computeClientHealthScore } from "@/lib/agent/health-score"
 import { classifyUrgencyTier } from "@/lib/agent/format"
 import { db as prisma } from "@/lib/db"
 import { isPremiumBearing } from "@/lib/wallet/premium-footprint"
+import { commissionOn } from "@/lib/agent/commission"
 import { getAgentPortalData } from "@/lib/services/agent-portal.service"
 import { getAgentPolicyVisibilityWhere } from "@/lib/agent-visibility"
 import type { AgentDashboardData, ActionQueueItem, ClientCardData, GapsSummary } from "@/components/agent/types"
@@ -60,9 +61,17 @@ export default async function DashboardPage() {
         }),
         prisma.opportunity.findMany({
             where: { ownerAgentUserId: agentId },
-            select: { status: true, estimatedPremium: true, wonPremium: true },
+            select: { status: true, estimatedPremium: true, estimatedCommission: true, wonPremium: true, lineOfBusiness: true },
         }),
     ])
+
+    // Real per-line commission rates the agent configured on /commissions — the
+    // Revenue Pulse used to invent a flat 15% (and call premium/12 "revenue").
+    const agentProfile = await prisma.agentProfile.findUnique({
+        where: { userId: agentId },
+        select: { commissionRates: true },
+    })
+    const commissionRates = (agentProfile?.commissionRates as Record<string, number> | null) ?? {}
 
     const totalPolicies = policies.length
     // Book value counts only policies actually in force. The stored status is
@@ -84,13 +93,19 @@ export default async function DashboardPage() {
         ? (newCustomers > 0 ? 100 : 0)
         : Math.round((newCustomers / customersBefore) * 100)
 
-    // Pipeline / won revenue
-    const pipelineValue = opportunities
+    // Agent commission on the open pipeline, using the agent's real per-line
+    // rates (mirrors /commissions' totalEstimated) — respecting any
+    // per-opportunity estimatedCommission the system already stored.
+    const commissionPipeline = opportunities
         .filter((o) => o.status !== "won" && o.status !== "lost")
-        .reduce((sum, o) => sum + Number(o.estimatedPremium ?? 0), 0)
-    const wonRevenue = opportunities
-        .filter((o) => o.status === "won")
-        .reduce((sum, o) => sum + Number(o.wonPremium ?? o.estimatedPremium ?? 0), 0)
+        .reduce((sum, o) => sum + Number(o.estimatedCommission ?? commissionOn(commissionRates, o.lineOfBusiness, Number(o.estimatedPremium ?? 0))), 0)
+
+    // Estimated MONTHLY commission income from the in-force book — the agent's
+    // actual recurring revenue, not the customer's annual premium / 12.
+    const annualBookCommission = policies
+        .filter((p) => isPremiumBearing(p))
+        .reduce((sum, p) => sum + commissionOn(commissionRates, p.lineOfBusiness, Number(p.premiumAmount ?? 0)), 0)
+    const monthlyCommission = annualBookCommission / 12
 
     // Renewals due this month
     const now = new Date()
@@ -150,10 +165,10 @@ export default async function DashboardPage() {
 
     // ── Revenue Metrics ───────────────────────────────────────────
     const revenue = {
-        mrr: totalPremium / 12,
+        mrr: monthlyCommission,
         renewalsDueThisMonth: renewalsDue.length,
         renewalsDueAmount: renewalsDue.reduce((sum, p) => sum + Number(p.premiumAmount || 0), 0),
-        commissionPipeline: pipelineValue * 0.15, // approximate
+        commissionPipeline,
         monthlyGrowthPercent: monthlyGrowth,
     }
 

@@ -227,12 +227,18 @@ export class CustomerService extends BaseService {
             throw AppError.conflict("Customer already exists in your list");
         }
 
-        // 3. Create relationship
+        // 3. Create relationship. Status must reflect the CUSTOMER's reality:
+        // a manually-added phantom (no password / never verified / never seen)
+        // has not activated anything, so calling the relationship 'active'
+        // ("activated" in the UI) inflates the activation rate and misrepresents
+        // the customer. Only an already-activated account is 'active'; everyone
+        // else is 'pending_activation' until they join.
+        const isActivatedAccount = Boolean(user.password || user.emailVerified || user.lastActiveAt);
         const relationship = await this.db.customerRelationship.create({
             data: {
                 agentUserId,
                 policyholderUserId: user.id,
-                status: 'active',
+                status: isActivatedAccount ? 'active' : 'pending_activation',
                 lastInteractionAt: new Date()
             }
         });

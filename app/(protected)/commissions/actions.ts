@@ -2,6 +2,7 @@
 
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { commissionRate } from "@/lib/agent/commission"
 
 export interface CommissionSummary {
     totalEstimated: number
@@ -31,7 +32,6 @@ export async function getCommissionDashboard(): Promise<CommissionSummary | null
     })
 
     const rates = (profile?.commissionRates as Record<string, number> | null) ?? {}
-    const defaultRate = 15 // 15% fallback
 
     // Get all opportunities with monetary data
     const opportunities = await db.opportunity.findMany({
@@ -62,7 +62,7 @@ export async function getCommissionDashboard(): Promise<CommissionSummary | null
 
     for (const opp of opportunities) {
         const lob = opp.lineOfBusiness?.toLowerCase() || "other"
-        const rate = (rates[lob] ?? defaultRate) / 100
+        const rate = commissionRate(rates, lob)
 
         const est = lobMap.get(lob) || { estimatedPremium: 0, estimatedCommission: 0, wonPremium: 0, wonCommission: 0, count: 0 }
         est.count++
@@ -105,7 +105,7 @@ export async function getCommissionDashboard(): Promise<CommissionSummary | null
             const date = opp.updatedAt
             if (date >= d && date <= monthEnd) {
                 const lob = opp.lineOfBusiness?.toLowerCase() || "other"
-                const rate = (rates[lob] ?? defaultRate) / 100
+                const rate = commissionRate(rates, lob)
                 const premium = Number(opp.wonPremium ?? opp.estimatedPremium ?? 0)
 
                 if (opp.status === "won") won += premium * rate
