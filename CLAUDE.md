@@ -15,7 +15,7 @@ Guidance for Claude Code when working in this repository. For setup, environment
 
 **PolicyWallet** is a Greek-market insurance portfolio hub serving three roles — **policyholder**, **agent**, and **admin**. It ingests insurance policy documents (PDFs), runs an AI analysis pipeline to extract and translate coverage, detects coverage **gaps**, scores protection, and surfaces recommendations. The UI is fully bilingual (Greek default, English).
 
-**Stack:** Next.js 16 (App Router) · React 19 · TypeScript (`strict`) · Prisma 5 + PostgreSQL · Supabase Auth · Tailwind CSS 4 · Vitest + Playwright · Stripe · Brevo (email) · Upstash Redis (rate-limit) · Sentry. AI runs through the `ai` SDK with pluggable Gemini / Anthropic / OpenAI providers.
+Stack is in `package.json`. Two things it won't tell you: AI runs through the `ai` SDK with pluggable Gemini / Anthropic / OpenAI providers (selected by which API key is set), and rate-limiting needs Upstash Redis.
 
 - **Node:** `20.11.0` (see `.nvmrc` — run `nvm use`).
 - **Path alias:** `@/*` → repo root (e.g. `import { db } from "@/lib/db"`).
@@ -76,31 +76,6 @@ E2E (Playwright) is **not** in CI — run it locally before merging UI changes. 
 
 ## Architecture
 
-```
-app/
-  (public)/      Unauthenticated pages (landing, pricing, product, company)
-  (protected)/   Authenticated pages. layout.tsx calls getAuthenticatedUser();
-                 admin/layout.tsx additionally gates on the admin role.
-  auth/          Sign-in / sign-up / reset / callback; server actions in actions.ts
-  api/           API routes. Put new production endpoints under api/v1/.
-  onboarding/    Post-signup flows
-components/
-  ui/            Design system primitives + design-tokens.ts
-  wallet/ agent/ account/ coverage/ admin/ …  Feature components by domain
-lib/
-  db.ts          Prisma singleton — the only place a client is created
-  auth-helpers.ts  getAuthenticatedUser / getAuthenticatedUserOrNull / requirePayingUser
-  api-auth.ts api-guard.ts api-utils.ts  API auth + response helpers
-  i18n/          Translations (el/en) + getTranslations()
-  utils.ts       cn() class merger
-  services/      ai/ (factory + gemini/anthropic/openai/mock providers),
-                 analysis/ (multi-step policy-analysis orchestrator),
-                 gap-engine/ + gap-analysis, billing/, compliance/, translation/
-prisma/          schema.prisma, migrations/, seed.ts
-contexts/        LanguageContext, ThemeContext
-hooks/           useSupabaseUser, useResponsive, …
-```
-
 Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middleware.ts`): it redirects any path not on its public allowlist to `/auth/signin`. **When adding a public page or public route handler, add its path to the allowlist in `proxy.ts`** or crawlers and anonymous users get a login redirect. Layouts and API guards enforce auth again underneath (defense in depth).
 
 ## Key conventions
@@ -111,6 +86,6 @@ Auth-gating middleware lives in **`proxy.ts`** (Next 16's replacement for `middl
 - **i18n:** no hardcoded UI strings. Client components use `useLanguage()` ([contexts/LanguageContext.tsx](contexts/LanguageContext.tsx)); server code uses `getTranslations(lang)` ([lib/i18n/index.ts](lib/i18n/index.ts)) and passes `t` down as props. Default language is `el`.
 - **Next.js 16:** dynamic-route `params` are **Promises** — `const { id } = await params`. Validate request input with Zod.
 - **Schema changes:** edit `prisma/schema.prisma`, then `npx prisma migrate dev`. Never hand-edit the DB; run `npm run verify:migrations` before committing.
-- **Styling:** Tailwind 4 + `cn()` ([lib/utils.ts](lib/utils.ts)) + `class-variance-authority`. Follow the design system in [design-system/policywallet/MASTER.md](design-system/policywallet/MASTER.md) and tokens in [components/ui/design-tokens.ts](components/ui/design-tokens.ts).
+- **Styling:** Tailwind 4 + `cn()` ([lib/utils.ts](lib/utils.ts)) + `class-variance-authority`. Follow the design system in [design-system/policywallet/MASTER.md](design-system/policywallet/MASTER.md). The runtime source of truth for tokens/utilities (`--primary`, `.pw-card`, `.pw-pill`, `.pw-kicker`) is [app/globals.css](app/globals.css) — note MASTER.md still cites a `components/ui/design-tokens.ts`, which was deleted in `834957c` and no longer exists.
 - **Encoding:** the codebase is full of Greek text — keep files UTF-8 and watch for mojibake when editing on Windows.
 - **AI providers:** selected by available env keys (`GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`); use the `mock` provider for tests. Env vars are grouped in `.env.example`.

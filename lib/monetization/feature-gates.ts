@@ -23,6 +23,9 @@ export type FeatureKey =
     | "advanced_renewal_reminders"
     | "pdf_preview"
     | "token_topup"
+    | "duplicate_coverage_detection"
+    | "claims_preparation_assistant"
+    | "family_portfolio"
 
 /** Reasons understood by UpgradePrompt/LimitReachedModal (superset). */
 export type UpgradeTriggerReason =
@@ -43,6 +46,9 @@ export interface FeatureGate {
     lockedViewedEvent: JourneyEventName
 }
 
+// Paid-aha-loop model: every DEEP-AI feature unlocks at "pro" (displayed
+// "Plus", €7.99). Only the organizer-level gates (more policies, in-app PDF
+// preview, token top-ups) unlock at "plus" (displayed "Starter", €2.99).
 export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
     policy_upload_limit: {
         featureKey: "policy_upload_limit",
@@ -52,31 +58,31 @@ export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
     },
     full_ai_policy_analysis: {
         featureKey: "full_ai_policy_analysis",
-        requiredPlan: "plus",
+        requiredPlan: "pro",
         upgradeReason: "feature_locked",
         lockedViewedEvent: "feature_locked_viewed",
     },
     advanced_gap_detection: {
         featureKey: "advanced_gap_detection",
-        requiredPlan: "plus",
+        requiredPlan: "pro",
         upgradeReason: "gap_limit",
         lockedViewedEvent: "feature_locked_viewed",
     },
     unlimited_ai_questions: {
         featureKey: "unlimited_ai_questions",
-        requiredPlan: "plus",
+        requiredPlan: "pro",
         upgradeReason: "daily_limit",
         lockedViewedEvent: "ai_question_limit_reached",
     },
     multi_insurer_insights: {
         featureKey: "multi_insurer_insights",
-        requiredPlan: "plus",
+        requiredPlan: "pro",
         upgradeReason: "feature_locked",
         lockedViewedEvent: "feature_locked_viewed",
     },
     agent_collaboration: {
         featureKey: "agent_collaboration",
-        requiredPlan: "plus",
+        requiredPlan: "pro",
         upgradeReason: "feature_locked",
         lockedViewedEvent: "feature_locked_viewed",
     },
@@ -88,7 +94,7 @@ export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
     },
     advanced_renewal_reminders: {
         featureKey: "advanced_renewal_reminders",
-        requiredPlan: "plus",
+        requiredPlan: "pro",
         upgradeReason: "notifications_disabled",
         lockedViewedEvent: "feature_locked_viewed",
     },
@@ -104,14 +110,38 @@ export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
         upgradeReason: "token_limit",
         lockedViewedEvent: "feature_locked_viewed",
     },
+    duplicate_coverage_detection: {
+        featureKey: "duplicate_coverage_detection",
+        requiredPlan: "pro",
+        upgradeReason: "feature_locked",
+        lockedViewedEvent: "feature_locked_viewed",
+    },
+    claims_preparation_assistant: {
+        featureKey: "claims_preparation_assistant",
+        requiredPlan: "pro",
+        upgradeReason: "feature_locked",
+        lockedViewedEvent: "feature_locked_viewed",
+    },
+    family_portfolio: {
+        featureKey: "family_portfolio",
+        requiredPlan: "pro",
+        upgradeReason: "feature_locked",
+        lockedViewedEvent: "feature_locked_viewed",
+    },
 }
 
 // ── Client-safe plan facts (parity-tested against server tables) ────
 
-export const FREE_POLICY_LIMIT = 3
-export const PLUS_POLICY_LIMIT = 10
-/** Complimentary lifetime AI questions for free-tier users (floor decision, 2026-07). */
-export const FREE_LIFETIME_QUESTIONS = 3
+export const FREE_POLICY_LIMIT = 1
+/** "Starter" (code key `plus`) policy cap. */
+export const PLUS_POLICY_LIMIT = 5
+/**
+ * Complimentary lifetime AI questions for free-tier users.
+ * Zero under the paid-aha-loop tier restructure — deep-AI Q&A is a paid
+ * feature with no free allowance. Kept as a named constant so the account /
+ * wallet meters that reference it still compile; they render a 0 allowance.
+ */
+export const FREE_LIFETIME_QUESTIONS = 0
 
 export interface PlanPricing {
     planId: string
@@ -122,9 +152,12 @@ export interface PlanPricing {
     trialDays?: number
 }
 
+// Code key `plus` = displayed "Starter" (€2.99); code key `pro` = displayed
+// "Plus" (€7.99, the recommended AI tier). See PlanBadge / public pricing for
+// the display labels.
 export const PLAN_PRICING: Record<Exclude<PlanTier, "free">, PlanPricing> = {
     plus: { planId: "ph-plus", monthlyEur: 2.99, annualEur: 29, annualSavingsMonths: 2 },
-    pro: { planId: "ph-pro", monthlyEur: 9.99, annualEur: 99, annualSavingsMonths: 2, trialDays: 14 },
+    pro: { planId: "ph-pro", monthlyEur: 7.99, annualEur: 79, annualSavingsMonths: 2, trialDays: 14 },
 }
 
 const TIER_RANK: Record<PlanTier, number> = { free: 0, plus: 1, pro: 2 }

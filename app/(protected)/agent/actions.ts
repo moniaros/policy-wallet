@@ -657,6 +657,13 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
 
+    // Agent-only: this runs a paid Gemini extraction. Without a role gate any
+    // authenticated policyholder could invoke the action and burn paid AI
+    // outside their own tier limits.
+    if (!(authResult.dbUser.roles || "").includes("agent")) {
+        return { error: "Unauthorized" }
+    }
+
     const file = formData.get("file") as File
     if (!file) return { error: "No file provided" }
 

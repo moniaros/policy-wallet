@@ -33,7 +33,7 @@ type PlanDef = {
 
 const PLANS: PlanDef[] = [
     { pwKey: "ph-plus", name: "PolicyWallet Plus", planType: "policyholder", monthlyEur: 2.99, annualEur: 29 },
-    { pwKey: "ph-pro", name: "PolicyWallet Pro", planType: "policyholder", monthlyEur: 9.99, annualEur: 99, trialDays: 14 },
+    { pwKey: "ph-pro", name: "PolicyWallet Pro", planType: "policyholder", monthlyEur: 7.99, annualEur: 79, trialDays: 14 },
     { pwKey: "agent-starter", name: "PolicyWallet Agent Starter", planType: "agent", monthlyEur: 19.99, annualEur: 199 },
     { pwKey: "agent-pro", name: "PolicyWallet Agent Pro", planType: "agent", monthlyEur: 49.99, annualEur: 499 },
     { pwKey: "agent-agency", name: "PolicyWallet Agency", planType: "agent", monthlyEur: 99.99, annualEur: 999 },

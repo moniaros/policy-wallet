@@ -36,7 +36,7 @@ export function resolvePolicyLifecycle(policy: {
     insurerName?: string | null
     endDate?: Date | string | null
     acordData?: unknown
-}): PolicyLifecycle {
+}, now: Date = new Date()): PolicyLifecycle {
     const envelope = ((policy.acordData as Record<string, unknown>)?.policy ?? {}) as Record<string, unknown>
     const envelopeRaw = String(envelope.expirationDate ?? '').trim()
 
@@ -54,7 +54,7 @@ export function resolvePolicyLifecycle(policy: {
         (envelopeRaw ? parseDocumentDate(envelopeRaw) : parseDocumentDate(policy.endDate ?? null))
 
     const daysUntilExpiry = endDate
-        ? Math.ceil((endDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+        ? Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
         : null
 
     const stored = String(policy.status || '').toLowerCase()

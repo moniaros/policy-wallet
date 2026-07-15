@@ -10,6 +10,7 @@ import { resolveAgentEntitlements } from "@/lib/subscription-entitlements"
 import { computeClientHealthScore } from "@/lib/agent/health-score"
 import { classifyUrgencyTier } from "@/lib/agent/format"
 import { db as prisma } from "@/lib/db"
+import { isPremiumBearing } from "@/lib/wallet/premium-footprint"
 import { getAgentPortalData } from "@/lib/services/agent-portal.service"
 import type { AgentDashboardData, ActionQueueItem, ClientCardData, GapsSummary } from "@/components/agent/types"
 
@@ -36,7 +37,19 @@ export default async function DashboardPage() {
     const [policies, relationships, opportunities] = await Promise.all([
         prisma.policy.findMany({
             where: { createdByUserId: agentId },
-            select: { id: true, premiumAmount: true, endDate: true, status: true, ownerUserId: true, lineOfBusiness: true },
+            // policyNumber/insurerName/acordData feed resolvePolicyLifecycle — the
+            // real end date lives in the extracted envelope, not the endDate column.
+            select: {
+                id: true,
+                premiumAmount: true,
+                endDate: true,
+                status: true,
+                ownerUserId: true,
+                lineOfBusiness: true,
+                policyNumber: true,
+                insurerName: true,
+                acordData: true,
+            },
         }),
         prisma.customerRelationship.findMany({
             where: { agentUserId: agentId },
@@ -51,7 +64,14 @@ export default async function DashboardPage() {
     ])
 
     const totalPolicies = policies.length
-    const totalPremium = policies.reduce((sum, p) => sum + Number(p.premiumAmount || 0), 0)
+    // Book value counts only policies actually in force. The stored status is
+    // never moved to 'expired', so reducing over every row ever created billed
+    // long-dead policies into the agent's premium total and MRR. No dedupe here:
+    // two customers may legitimately hold the same policy number at different
+    // insurers, and collapsing them would understate the book.
+    const totalPremium = policies
+        .filter((p) => isPremiumBearing(p))
+        .reduce((sum, p) => sum + Number(p.premiumAmount || 0), 0)
 
     // Monthly growth
     const thirtyDaysAgo = new Date()

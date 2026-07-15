@@ -16,16 +16,16 @@ export const subscriptionCopy = {
             price: { el: '€0', en: '€0' },
             period: { el: '/μήνα', en: '/month' },
         },
+        // NOTE relabel-in-place: code key `plus` = "Starter" (€2.99),
+        // code key `pro` = "Plus" (€7.99, the recommended AI tier).
         plus: {
-            name: { el: 'PolicyWallet Plus', en: 'PolicyWallet Plus' },
+            name: { el: 'Starter', en: 'Starter' },
             description: {
-                el: 'Για αυξημένες ανάγκες',
-                en: 'For increased needs'
+                el: 'Για βασική οργάνωση',
+                en: 'For basic organization'
             },
             price: { el: '€2.99', en: '€2.99' },
             period: { el: '/μήνα', en: '/month' },
-            badge: { el: 'Δημοφιλές', en: 'Popular' },
-            savings: { el: 'Καλύτερη Τιμή', en: 'Best Price' },
             annual: {
                 price: { el: '€29', en: '€29' },
                 period: { el: '/έτος', en: '/year' },
@@ -33,18 +33,19 @@ export const subscriptionCopy = {
             },
         },
         pro: {
-            name: { el: 'PolicyWallet Pro', en: 'PolicyWallet Pro' },
+            name: { el: 'PolicyWallet Plus', en: 'PolicyWallet Plus' },
             description: {
-                el: 'Απεριόριστη χρήση & AI',
-                en: 'Unlimited usage & AI'
+                el: 'Πλήρης εμπειρία AI',
+                en: 'The full AI experience'
             },
-            price: { el: '€9.99', en: '€9.99' },
+            price: { el: '€7.99', en: '€7.99' },
             period: { el: '/μήνα', en: '/month' },
-            badge: { el: 'Για Επαγγελματίες', en: 'For Pros' },
+            badge: { el: 'Δημοφιλές', en: 'Popular' },
+            savings: { el: 'Καλύτερη αξία', en: 'Best value' },
             annual: {
-                price: { el: '€99', en: '€99' },
+                price: { el: '€79', en: '€79' },
                 period: { el: '/έτος', en: '/year' },
-                savings: { el: 'Εξοικονομήστε €20', en: 'Save €20' },
+                savings: { el: 'Εξοικονομήστε 2 μήνες', en: 'Save 2 months' },
             },
         },
     },
@@ -61,8 +62,8 @@ export const subscriptionCopy = {
             en: 'Unlimited policies'
         },
         basicAI: {
-            el: '1 δωρεάν δοκιμαστική ανάλυση AI',
-            en: '1 free trial AI analysis'
+            el: 'Βασική σύνοψη συμβολαίου από το AI',
+            en: 'Basic AI policy summary'
         },
         advancedAI: {
             el: 'Προηγμένη ανάλυση AI',
@@ -113,11 +114,11 @@ export const subscriptionCopy = {
     // Call-to-Action Buttons
     cta: {
         upgrade: { el: 'Αναβάθμιση', en: 'Upgrade' },
-        upgradeToPlus: { el: 'Αναβάθμιση σε Plus', en: 'Upgrade to Plus' },
-        upgradeToPro: { el: 'Αναβάθμιση σε Pro', en: 'Upgrade to Pro' },
+        upgradeToPlus: { el: 'Αναβάθμιση σε Starter', en: 'Upgrade to Starter' },
+        upgradeToPro: { el: 'Αναβάθμιση σε Plus', en: 'Upgrade to Plus' },
         getStarted: { el: 'Ξεκινήστε Δωρεάν', en: 'Get Started Free' },
-        startPlus: { el: 'Ξεκινήστε Plus', en: 'Start Plus' },
-        startPro: { el: 'Ξεκινήστε Pro', en: 'Start Pro' },
+        startPlus: { el: 'Ξεκινήστε Starter', en: 'Start Starter' },
+        startPro: { el: 'Ξεκινήστε Plus', en: 'Start Plus' },
         currentPlan: { el: 'Τρέχον Πλάνο', en: 'Current Plan' },
         manage: { el: 'Διαχείριση Συνδρομής', en: 'Manage Subscription' },
         cancel: { el: 'Ακύρωση', en: 'Cancel' },
@@ -257,8 +258,8 @@ export const subscriptionCopy = {
                 en: 'Is there a discount for annual subscription?'
             },
             answer: {
-                el: 'Ναι — το Plus κοστίζει €29/έτος (2 μήνες δωρεάν) και το Pro €99/έτος (εξοικονόμηση €20 έναντι της μηνιαίας χρέωσης).',
-                en: 'Yes — Plus is €29/year (2 months free) and Pro is €99/year (€20 less than paying monthly).'
+                el: 'Ναι — το Starter κοστίζει €29/έτος και το Plus €79/έτος, με 2 μήνες δωρεάν σε σχέση με τη μηνιαία χρέωση.',
+                en: 'Yes — Starter is €29/year and Plus is €79/year, both giving you 2 months free versus paying monthly.'
             },
         },
         {

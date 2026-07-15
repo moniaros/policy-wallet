@@ -215,41 +215,48 @@ async function main() {
 
     const plans = [
         // Policyholder Plans
+        // Paid Aha Loop v1 relabel-in-place: `name` drives tier resolution
+        // (normalizeTier), so it stays Free/Plus/Pro; `displayName` + `price`
+        // carry the new Free / Starter (€2.99) / Plus (€7.99) model. The
+        // entitlements JSON here is informational — real limits live in
+        // lib/subscription-entitlements ENTITLEMENT_LIMITS.
         {
             id: 'ph-free',
             planType: 'policyholder',
             name: 'Free',
-            displayName: 'PolicyWallet Essential',
+            displayName: 'Free',
             price: 0,
             billingPeriod: 'monthly',
             entitlements: {
-                policy_storage: 3,
-                ai_analyses_per_month: 2,
-                notifications: 'basic',
+                policy_storage: 1,
+                ai_analyses_per_month: 0,
+                notifications: 'none',
                 priority_processing: false
             }
         },
         {
+            // name "Plus" → code tier `plus` → displayed "Starter" (€2.99, no AI)
             id: 'ph-plus',
             planType: 'policyholder',
             name: 'Plus',
-            displayName: 'PolicyWallet Plus',
+            displayName: 'Starter',
             price: 2.99,
             billingPeriod: 'monthly',
             entitlements: {
-                policy_storage: 10,
-                ai_analyses_per_month: 5,
-                notifications: 'basic', // or advanced?
+                policy_storage: 5,
+                ai_analyses_per_month: 0,
+                notifications: 'basic',
                 priority_processing: false,
                 full_history: true
             }
         },
         {
+            // name "Pro" → code tier `pro` → displayed "Plus" (€7.99, all AI)
             id: 'ph-pro',
             planType: 'policyholder',
             name: 'Pro',
-            displayName: 'PolicyWallet Pro',
-            price: 9.99,
+            displayName: 'PolicyWallet Plus',
+            price: 7.99,
             billingPeriod: 'monthly',
             entitlements: {
                 policy_storage: 'unlimited',

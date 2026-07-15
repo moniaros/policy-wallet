@@ -44,7 +44,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
     const [policies, setPolicies] = useState<ExtractedPolicy[]>([])
     const [isProcessing, setIsProcessing] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
-    const [limitModalOpen, setLimitModalOpen] = useState(false)
+    const [showUpgrade, setShowUpgrade] = useState(false)
 
     if (!isOpen) return null
 
@@ -67,11 +67,23 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                 body: formData,
             })
 
+            const result = await response.json().catch(() => ({} as any))
+
             if (!response.ok) {
+                // Free/Starter hit their policy cap — the extract endpoint blocks
+                // the paid AI parse. Surface the upgrade modal once instead of a
+                // generic per-file error.
+                if (response.status === 403 && result?.code === "POLICY_LIMIT_REACHED") {
+                    setShowUpgrade(true)
+                    return {
+                        id,
+                        fileName: file.name,
+                        status: "error",
+                        error: mapWalletErrorToMessage("POLICY_LIMIT_REACHED", t, "batchUpload"),
+                    }
+                }
                 throw new Error(response.statusText || "BATCH_EXTRACT_FAILED")
             }
-
-            const result = await response.json()
 
             if (result.error) {
                 return {
@@ -186,11 +198,6 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                 router.refresh()
                 onSuccess?.()
                 handleClose()
-            } else if (result.error === "POLICY_LIMIT_REACHED") {
-                // Highest-intent conversion moment: the user is holding more
-                // documents than the free plan allows — offer the upgrade in
-                // place instead of dead-ending in an error toast.
-                setLimitModalOpen(true)
             } else if ((result.failedCount || 0) > 0) {
                 toast.error(withVars(copy.saveNoneFailedValidation, { failed: result.failedCount }))
             } else {
@@ -226,6 +233,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
     }
 
     return (
+        <>
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={handleClose} />
 
@@ -407,14 +415,19 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                     )}
                 </div>
             </div>
-
-            <UpgradeModal
-                isOpen={limitModalOpen}
-                onClose={() => setLimitModalOpen(false)}
-                featureKey="policy_upload_limit"
-                triggerSource="batch_upload_limit"
-                returnTo="/wallet/add"
-            />
         </div>
+        {showUpgrade && (
+            /* relative z-[110] beats the batch modal's z-[100] so the (z-50) UpgradeModal paints on top */
+            <div className="relative z-[110]">
+                <UpgradeModal
+                    isOpen={showUpgrade}
+                    onClose={() => setShowUpgrade(false)}
+                    featureKey="policy_upload_limit"
+                    triggerSource="batch_upload_limit"
+                    returnTo="/wallet"
+                />
+            </div>
+        )}
+        </>
     )
 }

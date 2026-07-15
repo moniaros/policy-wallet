@@ -8,7 +8,7 @@ import { extractStripeCustomerId, fulfillReportUnlockSession, fulfillTokenPurcha
 import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
 import { FEATURE_GATES, getUpgradeCopy, type FeatureKey } from "@/lib/monetization"
-import { UpgradeSuccessAnalytics } from "@/components/monetization/UpgradeSuccessAnalytics"
+import { UpgradeSuccessTracker } from "@/components/monetization/UpgradeSuccessTracker"
 
 /**
  * Post-checkout landing. Verifies the Stripe session server-side and
@@ -53,21 +53,22 @@ const pick = (pair: { el: string; en: string }, language: string) =>
 export default async function UpgradeSuccessPage({
     searchParams,
 }: {
-    searchParams: Promise<{ session_id?: string; return?: string }>
+    searchParams: Promise<{ session_id?: string; return?: string; feature?: string }>
 }) {
-    const { session_id: sessionId, return: returnParam } = await searchParams
+    const { session_id: sessionId, return: returnParam, feature } = await searchParams
     const { dbUser } = await getAuthenticatedUser()
     const language = dbUser.preferredLanguage === "en" ? "en" : "el"
     const returnPath = sanitizeReturnPath(returnParam) || "/wallet"
 
+    // Per-feature success copy (already authored per gate) when the upgrade was
+    // triggered by a specific locked feature; falls back to the generic message.
+    const featureKey = feature && feature in FEATURE_GATES ? (feature as FeatureKey) : null
+    const featureCopy = featureKey ? getUpgradeCopy(featureKey, language) : null
+
     let activated = false
     let tokenPurchase = false
     let reportUnlock = false
-    // Gate the user upgraded from (checkout metadata) — drives the per-feature
-    // success copy and the client-side funnel events.
-    let featureKey: FeatureKey | null = null
-    let purchasedPlan: string | undefined
-    let purchasedPeriod: "monthly" | "annual" | undefined
+    let activatedPlanId: string | undefined
     if (sessionId) {
         try {
             const session = await stripe.checkout.sessions.retrieve(sessionId)
@@ -101,12 +102,7 @@ export default async function UpgradeSuccessPage({
                     customerId
                 )
                 activated = true
-                purchasedPlan = session.metadata.planId
-                purchasedPeriod = session.metadata.billingPeriod === "annual" ? "annual" : "monthly"
-                const metaFeature = session.metadata.featureKey
-                if (metaFeature && metaFeature in FEATURE_GATES) {
-                    featureKey = metaFeature as FeatureKey
-                }
+                activatedPlanId = session.metadata.planId
             } else if (paid && !belongsToUser) {
                 logger("warn", "Upgrade success page: session user mismatch", {
                     sessionId,
@@ -131,21 +127,6 @@ export default async function UpgradeSuccessPage({
         activated = Boolean(sub)
     }
 
-    // Per-feature success copy when we know which gate sent the user to
-    // checkout; the generic subscription copy stays the fallback.
-    const featureCopy = activated && featureKey ? getUpgradeCopy(featureKey, language) : null
-
-    const bodyText = reportUnlock
-        ? pick(COPY.reportBody, language)
-        : tokenPurchase
-            ? pick(COPY.tokensBody, language)
-            : activated
-                ? featureCopy?.successMessage || pick(COPY.body, language)
-                : pick(COPY.pendingBody, language)
-
-    const ctaLabel = featureCopy?.successCta
-        || (returnPath === "/wallet" ? pick(COPY.ctaHome, language) : pick(COPY.cta, language))
-
     return (
         <div className="flex min-h-[70vh] items-center justify-center px-4">
             <div className="pw-card w-full max-w-md rounded-3xl p-8 text-center">
@@ -162,25 +143,29 @@ export default async function UpgradeSuccessPage({
                                 : pick(COPY.pendingTitle, language)}
                 </h1>
                 <p className="mt-2 text-sm leading-relaxed text-black/60 dark:text-white/65">
-                    {bodyText}
+                    {reportUnlock
+                        ? pick(COPY.reportBody, language)
+                        : tokenPurchase
+                            ? pick(COPY.tokensBody, language)
+                            : activated
+                                ? (featureCopy?.successMessage ?? pick(COPY.body, language))
+                                : pick(COPY.pendingBody, language)}
                 </p>
                 <Link
                     href={returnPath}
                     className="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-primary py-3.5 text-sm font-bold uppercase tracking-widest text-white shadow-xl shadow-primary/25 transition-all hover:bg-primary-hover dark:text-[#1A2420]"
                 >
-                    {ctaLabel}
+                    {activated && !tokenPurchase && !reportUnlock && featureCopy
+                        ? featureCopy.successCta
+                        : returnPath === "/wallet" ? pick(COPY.ctaHome, language) : pick(COPY.cta, language)}
                 </Link>
+                {activated && !tokenPurchase && !reportUnlock && (
+                    <UpgradeSuccessTracker feature={featureKey ?? undefined} plan={activatedPlanId} />
+                )}
                 <p className="mt-4 inline-flex items-center gap-1.5 text-xs text-black/45 dark:text-white/50">
                     <ShieldCheck className="h-3.5 w-3.5 text-primary dark:text-mint" />
                     {pick(COPY.trust, language)}
                 </p>
-                {activated && !tokenPurchase && !reportUnlock && (
-                    <UpgradeSuccessAnalytics
-                        plan={purchasedPlan}
-                        featureKey={featureKey || undefined}
-                        billingPeriod={purchasedPeriod}
-                    />
-                )}
             </div>
         </div>
     )

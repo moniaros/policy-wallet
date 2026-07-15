@@ -11,10 +11,13 @@ export function PortfolioSummaryCard({
     totalLabel,
     chips,
     labels,
+    excludedNote,
 }: {
     totalLabel: string
     chips: LobChip[]
     labels: { kicker: string; totalAnnualPremium: string }
+    /** Says which policies the total could not count. Omitted when none. */
+    excludedNote?: string
 }) {
     return (
         <div className="pw-card p-5 lg:col-span-3">
@@ -23,6 +26,9 @@ export function PortfolioSummaryCard({
                 <div>
                     <p className="text-3xl font-semibold text-black dark:text-white">{totalLabel}</p>
                     <p className="mt-1 text-xs text-black/55 dark:text-white/60">{labels.totalAnnualPremium}</p>
+                    {excludedNote && (
+                        <p className="mt-1 text-[10px] text-black/45 dark:text-white/45">{excludedNote}</p>
+                    )}
                 </div>
                 <div className="flex flex-wrap gap-2">
                     {chips.map((chip) => (

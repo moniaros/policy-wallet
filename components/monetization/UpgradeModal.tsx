@@ -3,9 +3,12 @@
 /**
  * Context-aware upgrade modal — the standard paid-conversion surface.
  * Opens IN PLACE at the trigger (no navigation), shows the benefit that
- * prompted it, current vs recommended plan, monthly/annual toggle, and
- * hands off to Stripe Checkout with a same-origin return path so the user
- * lands back on the exact feature after paying (/upgrade/success).
+ * prompted it, and offers a DUAL choice: Plus (€7.99, recommended — unlocks
+ * the AI feature) as the primary CTA, Starter (€2.99, basic organization) as
+ * the cheaper secondary entry. Hands off to Stripe Checkout with a same-origin
+ * return path so the user lands back on the exact feature after paying
+ * (/upgrade/success). Plus is always the recommended tier; Starter is visible
+ * but never positioned as best value.
  */
 
 import { useEffect, useState } from "react"
@@ -16,10 +19,8 @@ import { Modal } from "@/components/ui/Modal"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import {
-    FEATURE_GATES,
     PLAN_PRICING,
     getUpgradeCopy,
-    recommendedPlan,
     type FeatureKey,
 } from "@/lib/monetization"
 import type { PlanTier } from "@/types/subscription-entitlements"
@@ -27,7 +28,6 @@ import { BillingTrustBox } from "./BillingTrustBox"
 import { PlanBadge } from "./PlanBadge"
 
 const MODAL_COPY = {
-    payCta: { el: "Συνέχεια στην πληρωμή", en: "Continue to payment" },
     monthly: { el: "Μηνιαία", en: "Monthly" },
     annual: { el: "Ετήσια", en: "Annual" },
     perMonth: { el: "/μήνα", en: "/month" },
@@ -35,12 +35,20 @@ const MODAL_COPY = {
     savings: { el: "2 μήνες δωρεάν", en: "2 months free" },
     trial: { el: "14 ημέρες δωρεάν δοκιμή", en: "14-day free trial" },
     currentPlan: { el: "Τρέχον πλάνο", en: "Current plan" },
-    recommended: { el: "Προτεινόμενο", en: "Recommended" },
+    recommendedTag: { el: "Προτείνεται · Πιο δημοφιλές · Καλύτερη αξία", en: "Recommended · Most popular · Best value" },
+    plusPrefix: { el: "Συνέχεια με Plus —", en: "Continue with Plus —" },
+    starterPrefix: { el: "Ξεκίνα με Starter —", en: "Start with Starter —" },
+    notNow: { el: "Όχι τώρα", en: "Not now" },
     checkoutError: { el: "Η μετάβαση στην πληρωμή απέτυχε. Δοκιμάστε ξανά.", en: "Could not start checkout. Please try again." },
 } as const
 
 const pick = (pair: { el: string; en: string }, language: string) =>
     language === "el" ? pair.el : pair.en
+
+// Plus (code key "pro") is the recommended AI tier; Starter (code key "plus")
+// is the cheaper organizer entry.
+const PLUS = PLAN_PRICING.pro
+const STARTER = PLAN_PRICING.plus
 
 export interface UpgradeModalProps {
     isOpen: boolean
@@ -55,15 +63,12 @@ export interface UpgradeModalProps {
 export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSource }: UpgradeModalProps) {
     const { language } = useLanguage()
     const pathname = usePathname()
-    const gate = FEATURE_GATES[featureKey]
     const copy = getUpgradeCopy(featureKey, language)
 
     const [tier, setTier] = useState<PlanTier>("free")
     const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly")
-    const [isRedirecting, setIsRedirecting] = useState(false)
+    const [redirectingPlan, setRedirectingPlan] = useState<string | null>(null)
 
-    const targetPlan = recommendedPlan(tier, gate)
-    const pricing = PLAN_PRICING[targetPlan]
     const effectiveReturn = returnTo || pathname || "/wallet"
 
     useEffect(() => {
@@ -72,6 +77,11 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
             plan: tier,
             trigger_source: triggerSource,
             screen: pathname || undefined,
+            feature_requested: featureKey,
+            locale: language,
+        })
+        trackJourneyEvent("plus_recommended_seen", {
+            trigger_source: triggerSource,
             feature_requested: featureKey,
             locale: language,
         })
@@ -93,10 +103,27 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
         })
     }
 
-    const handleCheckout = async () => {
-        setIsRedirecting(true)
+    const startCheckout = async (
+        planId: string,
+        planKey: "plus" | "pro",
+        selectEvent: "plus_selected" | "starter_selected",
+    ) => {
+        setRedirectingPlan(planId)
+        trackJourneyEvent(selectEvent, {
+            plan: planKey,
+            billing_period: billingPeriod,
+            trigger_source: triggerSource,
+            feature_requested: featureKey,
+            locale: language,
+        })
+        trackJourneyEvent("plan_selected", {
+            plan: planKey,
+            billing_period: billingPeriod,
+            trigger_source: triggerSource,
+            feature_requested: featureKey,
+        })
         trackJourneyEvent("checkout_started", {
-            plan: targetPlan,
+            plan: planKey,
             billing_period: billingPeriod,
             trigger_source: triggerSource,
             feature_requested: featureKey,
@@ -107,11 +134,11 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    planId: pricing.planId,
+                    planId,
                     billingPeriod,
                     returnTo: effectiveReturn,
                     triggerSource,
-                    featureKey,
+                    feature: featureKey,
                 }),
             })
             const payload = await res.json()
@@ -119,7 +146,7 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
             if (!res.ok || !url) throw new Error("NO_CHECKOUT_URL")
             window.location.href = url
         } catch {
-            setIsRedirecting(false)
+            setRedirectingPlan(null)
             toast.error(pick(MODAL_COPY.checkoutError, language))
         }
     }
@@ -132,8 +159,10 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
         onClose()
     }
 
-    const price = billingPeriod === "annual" ? pricing.annualEur : pricing.monthlyEur
-    const priceSuffix = billingPeriod === "annual" ? pick(MODAL_COPY.perYear, language) : pick(MODAL_COPY.perMonth, language)
+    const suffix = billingPeriod === "annual" ? pick(MODAL_COPY.perYear, language) : pick(MODAL_COPY.perMonth, language)
+    const plusPrice = billingPeriod === "annual" ? PLUS.annualEur : PLUS.monthlyEur
+    const starterPrice = billingPeriod === "annual" ? STARTER.annualEur : STARTER.monthlyEur
+    const isRedirecting = redirectingPlan !== null
 
     return (
         <Modal isOpen={isOpen} onClose={handleDismiss}>
@@ -147,18 +176,21 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                     <p className="mt-2 text-sm leading-relaxed text-black/60 dark:text-white/65">{copy.body}</p>
                 </div>
 
-                {/* Current vs recommended */}
+                {/* Current → recommended (Plus) */}
                 <div className="mt-5 flex items-center justify-center gap-3 text-xs text-black/50 dark:text-white/55">
                     <span className="inline-flex items-center gap-1.5">
                         {pick(MODAL_COPY.currentPlan, language)}: <PlanBadge tier={tier} />
                     </span>
                     <span aria-hidden>→</span>
                     <span className="inline-flex items-center gap-1.5 font-semibold text-black/75 dark:text-white/80">
-                        {pick(MODAL_COPY.recommended, language)}: <PlanBadge tier={targetPlan} />
+                        <PlanBadge tier="pro" />
                     </span>
                 </div>
+                <p className="mt-1 text-center text-[10px] font-bold uppercase tracking-widest text-primary dark:text-mint">
+                    {pick(MODAL_COPY.recommendedTag, language)}
+                </p>
 
-                {/* Benefits */}
+                {/* Benefits (what Plus unlocks) */}
                 <ul className="mt-5 space-y-2">
                     {copy.benefits.map((benefit, i) => (
                         <li key={i} className="flex items-start gap-2 text-sm text-black/75 dark:text-white/80">
@@ -193,34 +225,40 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                     ))}
                 </div>
 
-                {/* Price + trial */}
-                <div className="mt-4 text-center">
-                    <span className="text-3xl font-black text-black dark:text-white">€{price}</span>
-                    <span className="text-sm text-black/50 dark:text-white/55">{priceSuffix}</span>
-                    {pricing.trialDays && (
-                        <p className="mt-1 text-xs font-semibold text-primary dark:text-mint">
-                            {pick(MODAL_COPY.trial, language)}
-                        </p>
-                    )}
-                </div>
-
-                {/* CTA */}
+                {/* Primary CTA — Plus (recommended) */}
                 <button
                     type="button"
-                    onClick={handleCheckout}
+                    onClick={() => startCheckout(PLUS.planId, "pro", "plus_selected")}
                     disabled={isRedirecting}
                     className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-bold uppercase tracking-widest text-white shadow-xl shadow-primary/25 transition-all hover:bg-primary-hover disabled:opacity-60 dark:text-[#1A2420]"
                 >
-                    {isRedirecting && <Loader2 className="h-4 w-4 animate-spin" />}
-                    {pick(MODAL_COPY.payCta, language)}
+                    {redirectingPlan === PLUS.planId && <Loader2 className="h-4 w-4 animate-spin" />}
+                    {pick(MODAL_COPY.plusPrefix, language)} €{plusPrice}{suffix}
+                </button>
+                {PLUS.trialDays && (
+                    <p className="mt-1.5 text-center text-xs font-semibold text-primary dark:text-mint">
+                        {pick(MODAL_COPY.trial, language)}
+                    </p>
+                )}
+
+                {/* Secondary CTA — Starter (cheaper entry) */}
+                <button
+                    type="button"
+                    onClick={() => startCheckout(STARTER.planId, "plus", "starter_selected")}
+                    disabled={isRedirecting}
+                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-black/10 bg-transparent py-3.5 text-sm font-bold text-black/75 transition-all hover:bg-black/5 disabled:opacity-60 dark:border-white/15 dark:text-white/80 dark:hover:bg-white/10"
+                >
+                    {redirectingPlan === STARTER.planId && <Loader2 className="h-4 w-4 animate-spin" />}
+                    {pick(MODAL_COPY.starterPrefix, language)} €{starterPrice}{suffix}
                 </button>
 
+                {/* Tertiary — dismiss */}
                 <button
                     type="button"
                     onClick={handleDismiss}
                     className="mt-3 w-full text-center text-xs text-black/45 underline transition-colors hover:text-black/70 dark:text-white/50 dark:hover:text-white/75"
                 >
-                    {copy.secondaryCta}
+                    {pick(MODAL_COPY.notNow, language)}
                 </button>
 
                 <div className="mt-4">

@@ -11,11 +11,12 @@ import type {
 // ── B2C Policyholder Limits ──────────────────────────────────────────
 
 export const ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> = {
-    // Free tier is organizer-only: every AI-cost feature requires a paid plan.
-    // The single exception is one complimentary trial analysis, granted at the
-    // orchestrator level via User.trialAnalysisUsedAt (see createRun).
+    // Free = organizer only. One policy, its basic parsed summary, and basic
+    // renewal reminders — NO paid AI at all (parse/extraction is the entry,
+    // deep analysis/Q&A/gaps require Plus). There is no complimentary deep
+    // "trial analysis"; the paid-aha-loop model gates all deep AI to Plus.
     free: {
-        policies: 3,
+        policies: 1,
         aiAnalysisPerMonth: 0,
         questionsPerDay: 0,
         gapAnalysisPerDay: 0,
@@ -28,20 +29,25 @@ export const ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> = {
         priorityQueue: false,
         savingsReportExport: false,
     },
+    // "Starter" (displayed) = €2.99 organizer + basic renewal reminders, still
+    // NO deep AI. More policies than Free, but every AI-cost feature stays off
+    // so it can't cannibalise Plus. (Code key stays `plus`; see PLAN_PRICING /
+    // public-pricing-content for the display name.)
     plus: {
-        policies: 10,
-        aiAnalysisPerMonth: 25,
-        questionsPerDay: 25,
-        gapAnalysisPerDay: 5,
+        policies: 5,
+        aiAnalysisPerMonth: 0,
+        questionsPerDay: 0,
+        gapAnalysisPerDay: 0,
         notifications: true,
         advancedAnalytics: false,
-        agentCollaboration: true,
-        interactiveQA: true,
-        analysisComparison: true,
-        portfolioGapView: true,
+        agentCollaboration: false,
+        interactiveQA: false,
+        analysisComparison: false,
+        portfolioGapView: false,
         priorityQueue: false,
         savingsReportExport: false,
     },
+    // "Plus" (displayed) = €7.99, the AI tier: unlimited everything.
     pro: {
         policies: null,
         aiAnalysisPerMonth: null,
