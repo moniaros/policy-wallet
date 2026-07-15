@@ -12,6 +12,7 @@ import { classifyUrgencyTier } from "@/lib/agent/format"
 import { db as prisma } from "@/lib/db"
 import { isPremiumBearing } from "@/lib/wallet/premium-footprint"
 import { getAgentPortalData } from "@/lib/services/agent-portal.service"
+import { getAgentPolicyVisibilityWhere } from "@/lib/agent-visibility"
 import type { AgentDashboardData, ActionQueueItem, ClientCardData, GapsSummary } from "@/components/agent/types"
 
 export default async function DashboardPage() {
@@ -280,13 +281,17 @@ export default async function DashboardPage() {
     })
 
     // ── Gaps Summary (critical/high gaps across clients) ────────────
+    // PRIVACY: only gaps on policies the agent may see (their own uploads or
+    // owner-granted) — a relationship is not consent to read the customer's
+    // whole portfolio. Same rule as agent-portal.service (see #95).
     const clientUserIds = relationships.map((r) => r.policyholderUserId)
+    const gapsVisibilityWhere = await getAgentPolicyVisibilityWhere(agentId)
     const criticalHighGaps = clientUserIds.length > 0
         ? await prisma.gapInstance.findMany({
             where: {
                 status: { in: ["open", "detected"] },
                 severity: { in: ["critical", "high"] },
-                policy: { ownerUserId: { in: clientUserIds } },
+                policy: { ownerUserId: { in: clientUserIds }, ...gapsVisibilityWhere },
             },
             select: {
                 severity: true,

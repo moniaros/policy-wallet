@@ -24,6 +24,7 @@ import { collaborationService } from "@/lib/services/collaboration.service";
 import { sendPolicyInviteEmail, sendAiConsentRequestEmail } from "@/lib/email/invite-emails";
 import { getTranslations } from "@/lib/i18n";
 import { daysFromNow, INVITE_EXPIRY_DAYS } from "@/lib/constants/time";
+import { isAgentRole } from "@/lib/auth/require-agent";
 
 const customerService = new CustomerService(db);
 
@@ -34,6 +35,7 @@ const customerService = new CustomerService(db);
 export async function getDashboardData() {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return null
+    if (!isAgentRole(authResult.dbUser.roles)) return null
 
     const agentId = authResult.dbUser.id
 
@@ -55,6 +57,7 @@ export async function getDashboardData() {
 export async function getCustomers(query?: string): Promise<Customer[]> {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return []
+    if (!isAgentRole(authResult.dbUser.roles)) return []
 
     const agentId = authResult.dbUser.id
 
@@ -91,6 +94,7 @@ export async function getCustomers(query?: string): Promise<Customer[]> {
 export async function getCustomerProfile(customerId: string): Promise<Customer | null> {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return null
+    if (!isAgentRole(authResult.dbUser.roles)) return null
 
     try {
         const profile = await customerService.getCustomerProfile(authResult.dbUser.id, customerId)
@@ -231,6 +235,7 @@ export async function updateOpportunityStatus(
 ) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
 
     // Verify ownership
     const oppAuth = await db.opportunity.findUnique({
@@ -266,6 +271,7 @@ export async function updateOpportunityStatus(
 export async function inviteCustomer(formData: FormData) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { success: false, error: "Unauthorized" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { success: false, error: "Unauthorized" }
 
     const email = formData.get("email") as string
     if (!email) return { success: false, error: "Email is required" }
@@ -276,6 +282,7 @@ export async function inviteCustomer(formData: FormData) {
 export async function createAgentInvite(email: string, scope: AccessScope) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { success: false, error: "Unauthorized" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { success: false, error: "Unauthorized" }
 
     // Check customer limit
     const { canAgentAddCustomer } = await import("@/lib/subscription-entitlements")
@@ -367,6 +374,7 @@ export async function addCustomerManually(data: {
 }) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
 
     const agentId = authResult.dbUser.id
 
@@ -421,11 +429,12 @@ export async function addCustomerManually(data: {
         revalidatePath("/customers")
         return { success: true, customerId: relationship.policyholderUserId }
     } catch (e) {
-        console.error(e)
-        // Check if it's our custom AppError
+        // Expected conflicts (e.g. "customer already exists") are a normal user
+        // outcome, not an incident — don't spam the error dashboards at scale.
         if (e && typeof e === 'object' && 'userMessage' in e) {
             return { error: (e as any).userMessage }
         }
+        console.error(e)
         return { error: "Failed to add customer" }
     }
 }
@@ -447,6 +456,7 @@ export async function addPolicyForCustomer(data: {
 }, documentFormData?: FormData) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { success: false, error: "Unauthorized" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { success: false, error: "Unauthorized" }
 
     const agentId = authResult.dbUser.id
     const agentUser = authResult.dbUser as { name?: string | null; email?: string | null }
@@ -656,13 +666,7 @@ export async function addPolicyForCustomer(data: {
 export async function parsePolicyPdfWithGemini(formData: FormData) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
-
-    // Agent-only: this runs a paid Gemini extraction. Without a role gate any
-    // authenticated policyholder could invoke the action and burn paid AI
-    // outside their own tier limits.
-    if (!(authResult.dbUser.roles || "").includes("agent")) {
-        return { error: "Unauthorized" }
-    }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
 
     const file = formData.get("file") as File
     if (!file) return { error: "No file provided" }
@@ -709,6 +713,7 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
 export async function getQuestionnaireTemplates() {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) throw new Error("Unauthorized")
+    if (!isAgentRole(authResult.dbUser.roles)) throw new Error("Unauthorized")
 
     // Same visibility rule as the questionnaire manager: system templates
     // plus the caller's own — never other agents' custom templates.
@@ -724,6 +729,7 @@ export async function getQuestionnaireTemplates() {
 export async function sendQuestionnaire(relationshipId: string, templateId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) throw new Error("Unauthorized")
+    if (!isAgentRole(authResult.dbUser.roles)) throw new Error("Unauthorized")
 
     const relationship = await db.customerRelationship.findUnique({
         where: { id: relationshipId },
@@ -766,6 +772,7 @@ export async function sendQuestionnaire(relationshipId: string, templateId: stri
 export async function sendReminder(customerId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) throw new Error("Unauthorized")
+    if (!isAgentRole(authResult.dbUser.roles)) throw new Error("Unauthorized")
 
     // In a real app, this would send an email or push via a notification service
     // For now, we update the lastInteractionAt to show we touched this relationship
@@ -792,6 +799,7 @@ export async function updateAgentProfile(data: {
 }) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
 
     const agentId = authResult.dbUser.id
 
@@ -830,6 +838,7 @@ export async function updateAgentProfile(data: {
 export async function getCustomerCrossSell(customerId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return null
+    if (!isAgentRole(authResult.dbUser.roles)) return null
 
     const { runCrossSellForCustomer } = await import("@/lib/services/cross-sell.service")
     return runCrossSellForCustomer(authResult.dbUser.id, customerId, false)
@@ -838,6 +847,7 @@ export async function getCustomerCrossSell(customerId: string) {
 export async function createCrossSellOpportunities(customerId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
 
     const { runCrossSellForCustomer } = await import("@/lib/services/cross-sell.service")
     const result = await runCrossSellForCustomer(authResult.dbUser.id, customerId, true)
@@ -857,7 +867,7 @@ export async function createCrossSellOpportunities(customerId: string) {
 export async function requestAiConsent(policyId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
-    if (!authResult.dbUser.roles?.includes("agent")) return { error: "Unauthorized" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
 
     const policy = await db.policy.findUnique({ where: { id: policyId } })
     if (!policy) return { error: "Policy not found" }
