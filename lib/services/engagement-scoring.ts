@@ -24,38 +24,30 @@ interface EngagementScore {
 }
 
 /**
- * Calculate engagement score for a single user.
+ * The raw per-user inputs the scoring math consumes. Gathering these is the
+ * only part that touches the database; keeping the math pure lets the single
+ * and batch paths share one implementation and stay in lock-step.
  */
-export async function calculateEngagementScore(userId: string): Promise<EngagementScore> {
-    const user = await db.user.findUnique({
-        where: { id: userId },
-        select: {
-            name: true,
-            email: true,
-            phoneNumber: true,
-            image: true,
-            preferredLanguage: true,
-            lastActiveAt: true,
-            createdAt: true,
-            roles: true,
-            pushToken: true,
-        },
-    })
+interface EngagementFacts {
+    lastActive: Date
+    name: string | null
+    phoneNumber: string | null
+    email: string | null
+    image: string | null
+    pushToken: string | null
+    activePolicies: number
+    completedAnalyses: number
+    hasActiveAgentConnection: boolean
+    threadCount: number
+    proposalCount: number
+}
 
-    if (!user) {
-        return {
-            total: 0,
-            breakdown: { loginRecency: 0, policyCount: 0, analysisUsage: 0, collaboration: 0, profileCompleteness: 0 },
-            riskLevel: "inactive",
-        }
-    }
+// ── Pure scoring math (no I/O) ───────────────────────────────────────
 
-    const now = new Date()
-
+function scoreFromFacts(facts: EngagementFacts, now: Date): EngagementScore {
     // 1. Login recency (0-30)
+    const daysSinceActive = Math.floor((now.getTime() - facts.lastActive.getTime()) / (1000 * 60 * 60 * 24))
     let loginRecency = 0
-    const lastActive = user.lastActiveAt || user.createdAt
-    const daysSinceActive = Math.floor((now.getTime() - lastActive.getTime()) / (1000 * 60 * 60 * 24))
     if (daysSinceActive <= 1) loginRecency = 30
     else if (daysSinceActive <= 3) loginRecency = 25
     else if (daysSinceActive <= 7) loginRecency = 20
@@ -64,70 +56,39 @@ export async function calculateEngagementScore(userId: string): Promise<Engageme
     else loginRecency = 0
 
     // 2. Policy count (0-20)
-    const activePolicies = await db.policy.count({
-        where: { ownerUserId: userId, status: "active" },
-    })
     let policyScore = 0
-    if (activePolicies >= 5) policyScore = 20
-    else if (activePolicies >= 3) policyScore = 15
-    else if (activePolicies >= 1) policyScore = 10
+    if (facts.activePolicies >= 5) policyScore = 20
+    else if (facts.activePolicies >= 3) policyScore = 15
+    else if (facts.activePolicies >= 1) policyScore = 10
     else policyScore = 0
 
     // 3. Analysis usage (0-20)
-    const completedAnalyses = await db.policyAnalysisRun.count({
-        where: { userId, status: "completed" },
-    })
     let analysisScore = 0
-    if (completedAnalyses >= 10) analysisScore = 20
-    else if (completedAnalyses >= 5) analysisScore = 15
-    else if (completedAnalyses >= 2) analysisScore = 10
-    else if (completedAnalyses >= 1) analysisScore = 5
+    if (facts.completedAnalyses >= 10) analysisScore = 20
+    else if (facts.completedAnalyses >= 5) analysisScore = 15
+    else if (facts.completedAnalyses >= 2) analysisScore = 10
+    else if (facts.completedAnalyses >= 1) analysisScore = 5
     else analysisScore = 0
 
     // 4. Collaboration (0-15)
     let collaborationScore = 0
-
-    const hasAgentConnection = await db.customerRelationship.findFirst({
-        where: {
-            policyholderUserId: userId,
-            status: "active",
-        },
-        select: { id: true },
-    })
-    if (hasAgentConnection) collaborationScore += 5
-
-    const threadCount = await db.collaborationThread.count({
-        where: {
-            OR: [
-                { createdByUserId: userId },
-                { participants: { some: { userId } } },
-            ],
-        },
-    })
-    if (threadCount >= 3) collaborationScore += 5
-    else if (threadCount >= 1) collaborationScore += 3
-
-    const proposalCount = await db.proposal.count({
-        where: {
-            relationship: { policyholderUserId: userId },
-        },
-    })
-    if (proposalCount >= 1) collaborationScore += 5
-
+    if (facts.hasActiveAgentConnection) collaborationScore += 5
+    if (facts.threadCount >= 3) collaborationScore += 5
+    else if (facts.threadCount >= 1) collaborationScore += 3
+    if (facts.proposalCount >= 1) collaborationScore += 5
     collaborationScore = Math.min(15, collaborationScore)
 
     // 5. Profile completeness (0-15)
     let profileScore = 0
-    if (user.name) profileScore += 3
-    if (user.phoneNumber) profileScore += 3
-    if (user.email && !user.email.endsWith("@phone.policywallet.local")) profileScore += 3
-    if (user.image) profileScore += 3
-    if (user.pushToken) profileScore += 3
+    if (facts.name) profileScore += 3
+    if (facts.phoneNumber) profileScore += 3
+    if (facts.email && !facts.email.endsWith("@phone.policywallet.local")) profileScore += 3
+    if (facts.image) profileScore += 3
+    if (facts.pushToken) profileScore += 3
     profileScore = Math.min(15, profileScore)
 
     const total = loginRecency + policyScore + analysisScore + collaborationScore + profileScore
 
-    // Risk level
     let riskLevel: EngagementScore["riskLevel"] = "healthy"
     if (total <= 15 || daysSinceActive > 30) riskLevel = "inactive"
     else if (total <= 30 || daysSinceActive > 14) riskLevel = "churning"
@@ -144,6 +105,127 @@ export async function calculateEngagementScore(userId: string): Promise<Engageme
         },
         riskLevel,
     }
+}
+
+const INACTIVE_SCORE: EngagementScore = {
+    total: 0,
+    breakdown: { loginRecency: 0, policyCount: 0, analysisUsage: 0, collaboration: 0, profileCompleteness: 0 },
+    riskLevel: "inactive",
+}
+
+/**
+ * Calculate engagement score for a single user.
+ */
+export async function calculateEngagementScore(userId: string): Promise<EngagementScore> {
+    const scores = await calculateEngagementScoresBatch([userId])
+    return scores.get(userId) ?? INACTIVE_SCORE
+}
+
+/**
+ * Calculate engagement scores for many users at once.
+ *
+ * The single-user path used to fire six queries per user; scoring an agent's
+ * whole book one user at a time was an N×6 stampede. This gathers every factor
+ * with a handful of set-based queries (groupBy / `in` lookups) regardless of
+ * how many users are passed, then scores each in memory.
+ *
+ * Returns a Map keyed by userId. Users with no `User` row are omitted.
+ */
+export async function calculateEngagementScoresBatch(
+    userIds: string[]
+): Promise<Map<string, EngagementScore>> {
+    const result = new Map<string, EngagementScore>()
+    const ids = [...new Set(userIds)]
+    if (ids.length === 0) return result
+
+    const now = new Date()
+
+    const [
+        users,
+        policyGroups,
+        analysisGroups,
+        activeRelationships,
+        threadsCreated,
+        participantRows,
+        proposalRows,
+    ] = await Promise.all([
+        db.user.findMany({
+            where: { id: { in: ids } },
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                phoneNumber: true,
+                image: true,
+                lastActiveAt: true,
+                createdAt: true,
+                pushToken: true,
+            },
+        }),
+        db.policy.groupBy({
+            by: ["ownerUserId"],
+            where: { ownerUserId: { in: ids }, status: "active" },
+            _count: { _all: true },
+        }),
+        db.policyAnalysisRun.groupBy({
+            by: ["userId"],
+            where: { userId: { in: ids }, status: "completed" },
+            _count: { _all: true },
+        }),
+        db.customerRelationship.findMany({
+            where: { policyholderUserId: { in: ids }, status: "active" },
+            select: { policyholderUserId: true },
+            distinct: ["policyholderUserId"],
+        }),
+        db.collaborationThread.findMany({
+            where: { createdByUserId: { in: ids } },
+            select: { id: true, createdByUserId: true },
+        }),
+        db.collaborationParticipant.findMany({
+            where: { userId: { in: ids } },
+            select: { threadId: true, userId: true },
+        }),
+        db.proposal.findMany({
+            where: { relationship: { policyholderUserId: { in: ids } } },
+            select: { relationshipId: true, relationship: { select: { policyholderUserId: true } } },
+            distinct: ["relationshipId"],
+        }),
+    ])
+
+    const policyCountByUser = new Map(policyGroups.map((g) => [g.ownerUserId, g._count._all]))
+    const analysisCountByUser = new Map(analysisGroups.map((g) => [g.userId, g._count._all]))
+    const activeAgentUsers = new Set(activeRelationships.map((r) => r.policyholderUserId))
+    const usersWithProposals = new Set(proposalRows.map((p) => p.relationship.policyholderUserId))
+
+    // Distinct threads per user across both "created" and "participant" roles —
+    // a user who both created and joined the same thread must count it once.
+    const threadIdsByUser = new Map<string, Set<string>>()
+    const addThread = (userId: string, threadId: string) => {
+        let set = threadIdsByUser.get(userId)
+        if (!set) { set = new Set(); threadIdsByUser.set(userId, set) }
+        set.add(threadId)
+    }
+    for (const t of threadsCreated) addThread(t.createdByUserId, t.id)
+    for (const p of participantRows) addThread(p.userId, p.threadId)
+
+    for (const user of users) {
+        const facts: EngagementFacts = {
+            lastActive: user.lastActiveAt || user.createdAt,
+            name: user.name,
+            phoneNumber: user.phoneNumber,
+            email: user.email,
+            image: user.image,
+            pushToken: user.pushToken,
+            activePolicies: policyCountByUser.get(user.id) ?? 0,
+            completedAnalyses: analysisCountByUser.get(user.id) ?? 0,
+            hasActiveAgentConnection: activeAgentUsers.has(user.id),
+            threadCount: threadIdsByUser.get(user.id)?.size ?? 0,
+            proposalCount: usersWithProposals.has(user.id) ? 1 : 0,
+        }
+        result.set(user.id, scoreFromFacts(facts, now))
+    }
+
+    return result
 }
 
 /**
@@ -163,11 +245,10 @@ export async function calculateAllEngagementScores(): Promise<{
         take: 5000,
     })
 
+    const scores = await calculateEngagementScoresBatch(users.map((u) => u.id))
+
     let healthy = 0, atRisk = 0, churning = 0, inactive = 0
-
-    for (const user of users) {
-        const score = await calculateEngagementScore(user.id)
-
+    for (const score of scores.values()) {
         switch (score.riskLevel) {
             case "healthy": healthy++; break
             case "at_risk": atRisk++; break

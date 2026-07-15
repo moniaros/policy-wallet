@@ -189,33 +189,36 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
                 status: p.status as any,
                 managedByAgent: p.createdByUserId === authResult.dbUser.id
             })),
-            opportunities: await Promise.all(profile.opportunities.map(async (o) => {
-                // Compute a lightweight conversion score from available data
-                let conversionLikelihood: "high" | "medium" | "low" | null = null
-                let conversionScore: number | null = null
+            opportunities: (await (async () => {
+                // Score all of this customer's opportunities in one batched pass.
+                // Engagement + profile are per-customer, so per-opportunity
+                // scoring re-fetched the same customer facts N times.
+                let scores = new Map<string, { likelihood: "high" | "medium" | "low"; score: number }>()
                 try {
-                    const { scoreOpportunity } = await import("@/lib/services/gap-engine/opportunity-scoring")
-                    const scored = await scoreOpportunity(o.id)
-                    conversionLikelihood = scored.likelihood
-                    conversionScore = scored.score
+                    const { scoreOpportunitiesBatch } = await import("@/lib/services/gap-engine/opportunity-scoring")
+                    const scored = await scoreOpportunitiesBatch(profile.opportunities.map(o => o.id))
+                    scores = new Map([...scored].map(([id, s]) => [id, { likelihood: s.likelihood, score: s.score }]))
                 } catch {
-                    // Best-effort enrichment: opportunity scoring is non-critical.
-                    // On failure, leave conversionLikelihood/conversionScore as null.
+                    // Best-effort enrichment: scoring is non-critical. On failure
+                    // opportunities render without a conversion score.
                 }
-                return {
-                    opportunityId: o.id,
-                    policyId: o.policyId || '',
-                    gapId: o.gapInstanceId || '',
-                    gapTitle: o.relatedGap || 'Coverage Gap',
-                    severity: (o.severity || 'medium') as any,
-                    status: o.status as OpportunityStatus,
-                    nextActionDate: '',
-                    notes: o.notes || '',
-                    createdAt: new Date(o.createdAt).toISOString(),
-                    conversionLikelihood,
-                    conversionScore,
-                }
-            })),
+                return profile.opportunities.map((o) => {
+                    const scored = scores.get(o.id)
+                    return {
+                        opportunityId: o.id,
+                        policyId: o.policyId || '',
+                        gapId: o.gapInstanceId || '',
+                        gapTitle: o.relatedGap || 'Coverage Gap',
+                        severity: (o.severity || 'medium') as any,
+                        status: o.status as OpportunityStatus,
+                        nextActionDate: '',
+                        notes: o.notes || '',
+                        createdAt: new Date(o.createdAt).toISOString(),
+                        conversionLikelihood: scored?.likelihood ?? null,
+                        conversionScore: scored?.score ?? null,
+                    }
+                })
+            })()),
             interactions
         }
     } catch (e) {
