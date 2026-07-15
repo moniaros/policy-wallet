@@ -48,7 +48,7 @@ export default async function ProtectedLayout({
                 {
                     label: t.nav.coverageInsights,
                     href: "/coverage-insights",
-                    variant: 'plus',
+                    variant: 'pro',
                     isLocked: false,
                     icon: <Shield className="w-5 h-5" />
                 },

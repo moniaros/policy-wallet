@@ -10,19 +10,25 @@ test.describe('Policy Wallet', () => {
     test('wallet page renders for an authenticated user', async ({ page }) => {
         await page.goto('/wallet');
 
-        // No signin bounce; wallet chrome renders
+        // No signin bounce; wallet chrome renders. `ασφαλιστήρια` is the Greek the
+        // desktop wallet actually uses for the policy-list heading — the regex only
+        // knew `συμβόλαια`, so it was matching nothing and passing on retry luck.
         await expect(page).toHaveURL(/\/wallet/);
         await expect(
-            page.getByRole('heading', { name: /πορτοφόλι|wallet|συμβόλαι|policies/i }).first()
+            page.getByRole('heading', { name: /πορτοφόλι|wallet|συμβόλαι|ασφαλιστήρι|policies/i }).first()
         ).toBeVisible({ timeout: 15000 });
     });
 
     test('wallet shows either policies or the premium empty state', async ({ page }) => {
         await page.goto('/wallet');
 
-        // Either a policy card/table row exists, or the first-policy empty state pitch
+        // Either a policy card/table row exists, or the first-policy empty state pitch.
+        // Match the `ενεργ` STEM, not `ενεργό`: the status pill renders uppercase
+        // (ΕΝΕΡΓΟ) and JS case-folding does not equate the accented ό with Ο, so the
+        // old pattern only ever matched a prose line ("Ενεργό έως …") that the
+        // column-based table no longer prints. The stem survives case and gender.
         const anyContent = page
-            .getByText(/πρώτο συμβόλαιο|first policy|λήγει|expires|ενεργό|active/i)
+            .getByText(/πρώτο συμβόλαιο|first policy|λήγει|expires|ενεργ|active/i)
             .first();
         await expect(anyContent).toBeVisible({ timeout: 15000 });
     });

@@ -17,8 +17,8 @@ import { BillingTrustBox } from "./BillingTrustBox"
 const DISMISS_KEY = "pw-carried-plan-dismissed"
 
 const PLAN_LABEL: Record<string, string> = {
-    "ph-plus": "Plus",
-    "ph-pro": "Pro",
+    "ph-plus": "Starter",
+    "ph-pro": "Plus",
 }
 
 const COPY = {

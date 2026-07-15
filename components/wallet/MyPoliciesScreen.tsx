@@ -3,8 +3,11 @@
 import { useLanguage } from '@/contexts/LanguageContext'
 import type { Policy } from './types'
 import { PolicyWalletLogo } from '@/components/branding/Logo'
-import { CarIcon, HomeIcon, DocumentIcon, ShieldIcon, HeartIcon, BriefcaseIcon, PlaneIcon } from '@/components/icons/PolicyIcons'
 import { calculatePremiumFootprint } from '@/lib/wallet/premium-footprint'
+import { getPolicyStatusView } from '@/lib/wallet/policy-status-view'
+import { StatusPill } from '@/components/ui/StatusPill'
+import { normalizeBranch } from '@/lib/insurance/taxonomy'
+import { getBranchIcon } from '@/lib/insurance/branch-icons'
 import { getDocumentPolicySummary } from '@/lib/wallet/document-insights'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
 import { Wallet, Car } from 'lucide-react'
@@ -20,8 +23,10 @@ interface MyPoliciesScreenProps {
 
 export function MyPoliciesScreen({ policies, tier = 'free', onViewPolicy, onAddPolicy }: MyPoliciesScreenProps) {
     const { language, t } = useLanguage()
+    const lang: 'el' | 'en' = language === 'el' ? 'el' : 'en'
     const roleCopy = getRoleCopy(language)
     const totalPremium = calculatePremiumFootprint(policies)
+    const activeCount = policies.filter((p) => getPolicyStatusView(p, t).key === 'active').length
 
     const copy = {
         title: roleCopy.walletDashboard.noPoliciesYet,
@@ -33,31 +38,6 @@ export function MyPoliciesScreen({ policies, tier = 'free', onViewPolicy, onAddP
         emptyDescription: roleCopy.walletDashboard.emptyWalletDescription,
         expires: roleCopy.walletDashboard.expires,
         policyCount: roleCopy.walletDashboard.policyCountLabel,
-    }
-
-    const statusClass = (tone: 'critical' | 'warning' | 'active' | 'inactive' | 'info') => {
-        if (tone === 'critical') return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'
-        if (tone === 'warning') return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
-        if (tone === 'inactive') return 'bg-black/5 text-black/65 dark:bg-black dark:text-white/70'
-        if (tone === 'info') return 'bg-black/5 text-black/75 dark:bg-black dark:text-white/75'
-        return 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint'
-    }
-
-    const getVisual = (policy: Policy) => {
-        switch (policy.lineOfBusiness) {
-            case 'motor':
-                return { Icon: CarIcon, shell: 'bg-black/5 dark:bg-black border border-black/10 dark:border-white/15', icon: 'text-primary dark:text-mint' }
-            case 'health':
-                return { Icon: HeartIcon, shell: 'bg-black/5 dark:bg-black border border-black/10 dark:border-white/15', icon: 'text-primary dark:text-mint' }
-            case 'home':
-                return { Icon: HomeIcon, shell: 'bg-black/5 dark:bg-black border border-black/10 dark:border-white/15', icon: 'text-primary dark:text-mint' }
-            case 'life':
-                return { Icon: ShieldIcon, shell: 'bg-black/5 dark:bg-black border border-black/10 dark:border-white/15', icon: 'text-primary dark:text-mint' }
-            case 'travel':
-                return { Icon: PlaneIcon, shell: 'bg-black/5 dark:bg-black border border-black/10 dark:border-white/15', icon: 'text-primary dark:text-mint' }
-            default:
-                return { Icon: BriefcaseIcon, shell: 'bg-black/5 dark:bg-black border border-black/10 dark:border-white/15', icon: 'text-primary dark:text-mint' }
-        }
     }
 
     return (
@@ -84,15 +64,19 @@ export function MyPoliciesScreen({ policies, tier = 'free', onViewPolicy, onAddP
                 </p>
 
                 <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-3xl p-4 bg-white dark:bg-black border border-black/10 dark:border-white/15">
+                    <div className="rounded-2xl p-4 bg-white dark:bg-black border border-black/10 dark:border-white/15">
                         <p className="text-[11px] font-bold text-black/55 dark:text-white/65 uppercase tracking-wider">{copy.activePolicies}</p>
-                        <p className="text-3xl font-black text-black dark:text-white mt-2">{policies.length}</p>
-                        <p className="text-xs text-black/45 dark:text-white/55 mt-1">{copy.policyCount}</p>
+                        {/* Was policies.length — it counted expired policies as active while the
+                            premium tile beside it excluded them, so the two tiles disagreed. */}
+                        <p className="text-3xl font-semibold tracking-tight text-black dark:text-white mt-2 tabular-nums">{activeCount}</p>
+                        <p className="text-xs text-black/45 dark:text-white/55 mt-1">
+                            {activeCount}/{policies.length} {copy.policyCount}
+                        </p>
                     </div>
-                    <div className="rounded-3xl p-4 bg-primary-tint dark:bg-primary/15 border border-primary/30 dark:border-primary/35 text-black dark:text-white">
+                    <div className="rounded-2xl p-4 bg-primary-tint dark:bg-primary/15 border border-primary/30 dark:border-primary/35 text-black dark:text-white">
                         <p className="text-[11px] font-bold uppercase tracking-wider text-primary dark:text-mint">{copy.yearlyFootprint}</p>
-                        <p className="text-2xl font-black mt-2">
-                            {new Intl.NumberFormat(language === 'el' ? 'el-GR' : 'en-US', { style: 'currency', currency: 'EUR' }).format(totalPremium)}
+                        <p className="text-2xl font-semibold tracking-tight mt-2 tabular-nums">
+                            {new Intl.NumberFormat(language === 'el' ? 'el-GR' : 'en-US', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(totalPremium)}
                         </p>
                     </div>
                 </div>
@@ -130,42 +114,40 @@ export function MyPoliciesScreen({ policies, tier = 'free', onViewPolicy, onAddP
                     />
                 ) : (
                     policies.map((policy) => {
-                        const typeLabel = policy.lineOfBusiness
-                        const summary = getDocumentPolicySummary(policy, language === 'el' ? 'el' : 'en', typeLabel)
-                        const visual = getVisual(policy)
+                        const branch = normalizeBranch(policy.lineOfBusiness)
+                        // Was `policy.lineOfBusiness` — the raw enum, so a Greek wallet
+                        // showed "motor", "legal_expenses", "cyber".
+                        const typeLabel = branch.label[lang]
+                        const summary = getDocumentPolicySummary(policy, lang, typeLabel)
+                        const view = getPolicyStatusView(policy, t)
+                        const Icon = getBranchIcon(branch.id)
 
                         return (
                             <button
                                 key={policy.id}
                                 onClick={() => onViewPolicy?.(policy.id)}
-                                className="w-full bg-white dark:bg-black rounded-3xl p-4 flex items-center gap-4 border border-black/10 dark:border-white/15 active:scale-[0.98] transition-all cursor-pointer text-left"
+                                className="w-full bg-white dark:bg-black rounded-2xl px-3.5 py-3 flex items-center gap-3 border border-black/10 dark:border-white/15 active:scale-[0.98] transition-all cursor-pointer text-left"
                             >
-                                <div className={`w-12 h-12 rounded-2xl ${visual.shell} flex items-center justify-center`}>
-                                    <visual.Icon className={`w-6 h-6 ${visual.icon}`} />
-                                </div>
+                                <span className={`w-9 h-9 shrink-0 rounded-xl flex items-center justify-center ${view.chipClass}`}>
+                                    <Icon className="w-4 h-4" />
+                                </span>
 
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="text-base font-black text-black dark:text-white truncate">
+                                    <h3 className="text-[14px] font-semibold text-black dark:text-white truncate">
                                         {summary.assetTitle}
                                     </h3>
-                                    <p className="text-xs font-medium text-black/55 dark:text-white/65 uppercase tracking-wider truncate">
-                                        {summary.assetSubtitle}
-                                    </p>
-                                    <p className="text-xs text-black/55 dark:text-white/65 mt-1 truncate">
-                                        {summary.insurerLine}
+                                    {/* assetTitle falls back to the insurer when there is no
+                                        vehicle/property to name — don't print it twice. */}
+                                    <p className="text-[11px] text-black/50 dark:text-white/50 truncate">
+                                        {summary.assetTitle === policy.insurerName
+                                            ? typeLabel
+                                            : `${typeLabel} · ${policy.insurerName}`}
                                     </p>
                                 </div>
 
-                                <div className="flex flex-col items-end gap-1.5">
-                                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusClass(summary.status.tone)}`}>
-                                        {summary.status.label}
-                                    </span>
-                                    {summary.expiryDisplay && (
-                                        <span className="text-[11px] text-black/55 dark:text-white/65">
-                                            {copy.expires} {summary.expiryDisplay}
-                                        </span>
-                                    )}
-                                    <span className="text-[11px] text-black/55 dark:text-white/65 font-semibold">
+                                <div className="flex flex-col items-end gap-1 shrink-0">
+                                    <StatusPill tone={view.tone} label={view.label} icon={false} />
+                                    <span className="text-[12px] font-semibold tabular-nums text-black dark:text-white">
                                         {summary.premiumDisplay}
                                     </span>
                                 </div>

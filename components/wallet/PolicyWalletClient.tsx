@@ -6,6 +6,7 @@ import type { Policy } from "@/components/wallet/types"
 import { useRouter } from "next/navigation"
 import { PageHeader } from "@/components/ui/PageHeader"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { isInForceKey, resolvePolicyStatusKey } from "@/lib/wallet/policy-status-view"
 import { toast } from "sonner"
 import { deletePolicy, runPolicyAnalysis } from "@/app/(protected)/wallet/actions"
 import DashboardTour from '@/components/onboarding/DashboardTour'
@@ -75,16 +76,20 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
         }
     }
 
-    // Check if any LOB has 2+ active policies (comparison eligible)
+    // Check if any LOB has 2+ in-force policies (comparison eligible). The stored
+    // status is never recomputed, so `status === 'active'` also matched policies
+    // that expired years ago — they were offered up for "comparison" as live cover.
+    const comparablePolicies = React.useMemo(
+        () => policies.filter((p) => isInForceKey(resolvePolicyStatusKey(p))),
+        [policies]
+    )
     const hasComparablePolicies = React.useMemo(() => {
         const lobCounts = new Map<string, number>()
-        for (const p of policies) {
-            if (p.status === 'active' || p.status === 'expiring_soon') {
-                lobCounts.set(p.lineOfBusiness, (lobCounts.get(p.lineOfBusiness) || 0) + 1)
-            }
+        for (const p of comparablePolicies) {
+            lobCounts.set(p.lineOfBusiness, (lobCounts.get(p.lineOfBusiness) || 0) + 1)
         }
         return [...lobCounts.values()].some(count => count >= 2)
-    }, [policies])
+    }, [comparablePolicies])
 
     const copy = t.wallet.analysisNotifications
 
@@ -305,7 +310,7 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
 
             {hasComparablePolicies && (
                 <PolicyComparison
-                    policies={policies.filter(p => p.status === 'active' || p.status === 'expiring_soon').map(p => ({
+                    policies={comparablePolicies.map(p => ({
                         id: p.id,
                         policyNumber: p.policyNumber,
                         insurerName: p.insurerName,

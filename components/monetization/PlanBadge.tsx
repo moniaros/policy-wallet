@@ -9,10 +9,12 @@ const TIER_STYLES: Record<PlanTier, string> = {
     pro: "bg-[#1A2420] text-mint dark:bg-mint dark:text-[#1A2420]",
 }
 
+// Display labels. NOTE the relabel-in-place mapping: code key `plus` is the
+// €2.99 "Starter" tier; code key `pro` is the €7.99 "Plus" (AI) tier.
 const TIER_LABELS: Record<PlanTier, string> = {
     free: "Free",
-    plus: "Plus",
-    pro: "Pro",
+    plus: "Starter",
+    pro: "Plus",
 }
 
 /** Small pill showing the user's current plan. */

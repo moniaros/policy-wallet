@@ -326,6 +326,23 @@ export async function triggerOnboardingAnalysis(policyId: string): Promise<{
     try {
         const { PolicyAnalysisOrchestratorService } = await import("@/lib/services/analysis/policy-analysis-orchestrator.service")
         const orchestrator = new PolicyAnalysisOrchestratorService()
+
+        // Free/Starter get the basic parsed summary only — deep AI (gaps,
+        // clarity) is a Plus feature. Onboarding users are typically free.
+        const initiator = await db.user.findUnique({ where: { id: dbUser.id }, select: { roles: true } })
+        const isAgent = Boolean(initiator?.roles?.includes("agent"))
+        if (!isAgent) {
+            const { resolveUserEntitlements } = await import("@/lib/subscription-entitlements")
+            const entitlements = await resolveUserEntitlements(dbUser.id)
+            if (entitlements.tier !== "pro") {
+                const basic = await orchestrator.extractBasicSummary(policyId, dbUser.id)
+                return {
+                    success: basic.status === "completed",
+                    status: basic.status === "completed" ? "completed" : "failed",
+                }
+            }
+        }
+
         const result = await orchestrator.createAndExecuteRun(
             policyId,
             dbUser.id,

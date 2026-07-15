@@ -1,23 +1,16 @@
-﻿"use client"
+"use client"
 
-import { AlertCircle, CheckCircle2, Clock3, MoreVertical, RefreshCw, Search, ShieldAlert, ShieldCheck, Trash2, Share2, FileText } from 'lucide-react'
+import { AlertCircle, CalendarDays, FileText, MoreVertical, RefreshCw, Search, Share2, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import type { ReactNode } from 'react'
 import type { Policy } from './types'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { getDocumentPolicySummary } from '@/lib/wallet/document-insights'
-import {
-    CarIcon,
-    HeartIcon,
-    HomeIcon,
-    ShieldIcon,
-    PlaneIcon,
-    ScaleIcon,
-    PawIcon,
-    BriefcaseIcon,
-    DocumentIcon,
-} from '@/components/icons/PolicyIcons'
+import { getPolicyStatusView } from '@/lib/wallet/policy-status-view'
+import { StatusPill } from '@/components/ui/StatusPill'
+import { normalizeBranch } from '@/lib/insurance/taxonomy'
+import { getBranchIcon } from '@/lib/insurance/branch-icons'
+import { cn } from '@/lib/utils'
 
 interface PolicyTableProps {
     policies: Policy[]
@@ -30,17 +23,7 @@ interface PolicyTableProps {
     onViewDocuments?: (policyId: string) => void
 }
 
-const POLICY_VISUALS: Record<string, { icon: any; badge: string; iconColor: string }> = {
-    motor: { icon: CarIcon, badge: 'bg-[#000000] dark:bg-black', iconColor: 'text-white' },
-    health: { icon: HeartIcon, badge: 'bg-[#000000] dark:bg-black', iconColor: 'text-white' },
-    home: { icon: HomeIcon, badge: 'bg-[#000000] dark:bg-black', iconColor: 'text-white' },
-    life: { icon: ShieldIcon, badge: 'bg-[#000000] dark:bg-black', iconColor: 'text-white' },
-    travel: { icon: PlaneIcon, badge: 'bg-[#000000] dark:bg-black', iconColor: 'text-white' },
-    liability: { icon: ScaleIcon, badge: 'bg-[#000000] dark:bg-black', iconColor: 'text-white' },
-    pet: { icon: PawIcon, badge: 'bg-[#000000] dark:bg-black', iconColor: 'text-white' },
-    professional: { icon: BriefcaseIcon, badge: 'bg-[#000000] dark:bg-black', iconColor: 'text-white' },
-    other: { icon: DocumentIcon, badge: 'bg-[#000000] dark:bg-black', iconColor: 'text-white' },
-}
+const POLICIES_PER_PAGE = 10
 
 export function PolicyTable({
     policies,
@@ -52,298 +35,234 @@ export function PolicyTable({
     onViewDocuments,
 }: PolicyTableProps) {
     const { language, t } = useLanguage()
+    const lang: 'el' | 'en' = language === 'el' ? 'el' : 'en'
+    const locale = lang === 'el' ? 'el-GR' : 'en-US'
+
     const [currentPage, setCurrentPage] = useState(1)
     const [openMenuId, setOpenMenuId] = useState<string | null>(null)
-    const [menuPosition, setMenuPosition] = useState<{ top: number; left: number; origin: 'top right' | 'bottom right' } | null>(null)
-    const policiesPerPage = 6
+    const [menuPosition, setMenuPosition] = useState<{ top: number; left: number; origin: string } | null>(null)
 
-    const totalPages = Math.max(1, Math.ceil(policies.length / policiesPerPage))
-    const startIndex = (currentPage - 1) * policiesPerPage
-    const currentPolicies = policies.slice(startIndex, startIndex + policiesPerPage)
-
-    useEffect(() => {
-        const closeMenu = () => {
-            setOpenMenuId(null)
-            setMenuPosition(null)
-        }
-        window.addEventListener('scroll', closeMenu, true)
-        window.addEventListener('resize', closeMenu)
-        return () => {
-            window.removeEventListener('scroll', closeMenu, true)
-            window.removeEventListener('resize', closeMenu)
-        }
-    }, [])
+    const totalPages = Math.max(1, Math.ceil(policies.length / POLICIES_PER_PAGE))
+    const page = Math.min(currentPage, totalPages)
+    const currentPolicies = policies.slice((page - 1) * POLICIES_PER_PAGE, page * POLICIES_PER_PAGE)
 
     useEffect(() => {
-        if (!openMenuId) return
-        const closeOnEscape = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') {
-                setOpenMenuId(null)
-                setMenuPosition(null)
-            }
-        }
-        window.addEventListener('keydown', closeOnEscape)
-        return () => window.removeEventListener('keydown', closeOnEscape)
-    }, [openMenuId])
+        setCurrentPage(1)
+    }, [policies.length])
 
-    const label = {
-        cancelled: t.policyStatus.cancelled,
-        expired: t.policyStatus.expired,
-        analyzing: t.dashboard.statusLabels.analyzing,
-        actionNeeded: t.policyStatus.actionNeeded,
-        active: t.policyStatus.active,
-        renewalPending: t.policyStatus.renewalPending,
-        unverified: t.policyStatus.unverified,
-        noIssues: t.policyStatus.noIssues,
-        understandPolicy: t.dashboard.runAnalysis,
-        premium: t.wallet.premium,
+    const closeMenu = () => {
+        setOpenMenuId(null)
+        setMenuPosition(null)
     }
 
-    const getStatusBadge = (policy: Policy) => {
-        const typeLabel = t.policyTypes[policy.lineOfBusiness as keyof typeof t.policyTypes] || policy.lineOfBusiness
-        const summary = getDocumentPolicySummary(policy, language === 'el' ? 'el' : 'en', typeLabel)
-        if (policy.status === 'analyzing') {
-            return {
-                text: label.analyzing,
-                className: 'bg-black/5 dark:bg-white/10 text-black/80 dark:text-white/75',
-                icon: <RefreshCw className="w-3.5 h-3.5 animate-spin" />,
-                message: summary.status.message,
-            }
-        }
-
-        const styleByTone: Record<string, string> = {
-            critical: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300',
-            warning: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
-            active: 'bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint',
-            inactive: 'bg-black/10 dark:bg-white/15 text-black/80 dark:text-white/85',
-            info: 'bg-black/5 dark:bg-black/30 text-black/80 dark:text-white/70',
-        }
-
-        const iconByTone: Record<string, ReactNode> = {
-            critical: <AlertCircle className="w-3.5 h-3.5" />,
-            warning: <AlertCircle className="w-3.5 h-3.5" />,
-            active: <ShieldCheck className="w-3.5 h-3.5" />,
-            inactive: <ShieldAlert className="w-3.5 h-3.5" />,
-            info: <Clock3 className="w-3.5 h-3.5" />,
-        }
-
-        return {
-            text: summary.status.label,
-            className: styleByTone[summary.status.tone] || styleByTone.active,
-            icon: iconByTone[summary.status.tone] || iconByTone.active,
-            message: summary.status.message,
-        }
-    }
-
-    const getInsightBadge = (policy: Policy) => {
-        if (policy.status === 'expiring_soon') {
-            return { text: label.renewalPending, className: 'text-amber-600 dark:text-amber-400', icon: <Clock3 className="w-3.5 h-3.5" /> }
-        }
-        if (!policy.verified) {
-            return { text: label.unverified, className: 'text-black/60 dark:text-white/60', icon: <ShieldAlert className="w-3.5 h-3.5" /> }
-        }
-        return { text: label.noIssues, className: 'text-[#166534] dark:text-mint', icon: <CheckCircle2 className="w-3.5 h-3.5" /> }
-    }
+    const columns = t.wallet.columns
 
     return (
-        <div className="bg-[#FFFFFF] dark:bg-[#111111] rounded-[2rem] shadow-[0_2px_12px_rgb(0,0,0,0.02)] border border-black/10 dark:border-white/15 overflow-hidden arc-card">
-            <div className="px-6 py-5 border-b border-black/10 dark:border-white/15">
-                <h2 className="text-xl font-bold text-black dark:text-white">{t.dashboard.myPolicies}</h2>
-            </div>
-
+        <div className="pw-card overflow-hidden p-0">
+            {/* Wide content scrolls inside its own container — the page never scrolls sideways. */}
             <div className="overflow-x-auto">
-                <table className="w-full min-w-[720px]">
+                <table className="w-full min-w-[760px] text-left">
                     <thead>
-                        <tr className="bg-black/5 dark:bg-black border-b border-black/10 dark:border-white/15">
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 dark:text-white/70">{t.dashboard.insuredItem}</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 dark:text-white/70">{t.wallet.policyNumber}</th>
-                            <th className="px-6 py-4 text-left text-sm font-semibold text-black/80 dark:text-white/70">{t.dashboard.status}</th>
-                            <th className="px-6 py-4 text-right text-sm font-semibold text-black/80 dark:text-white/70">{t.dashboard.actions}</th>
+                        <tr className="border-b border-black/[0.07] dark:border-white/10">
+                            <th className="pw-kicker px-4 py-2.5">{columns.policy}</th>
+                            <th className="pw-kicker px-4 py-2.5">{columns.type}</th>
+                            <th className="pw-kicker px-4 py-2.5">{columns.renewal}</th>
+                            <th className="pw-kicker px-4 py-2.5 text-right">{columns.annualPremium}</th>
+                            <th className="pw-kicker px-4 py-2.5">{columns.status}</th>
+                            <th className="pw-kicker px-4 py-2.5 text-right">{columns.actions}</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-black/10 dark:divide-white/10">
+
+                    <tbody>
                         {currentPolicies.map((policy) => {
-                            const statusBadge = getStatusBadge(policy)
-                            const insightBadge = getInsightBadge(policy)
+                            const branch = normalizeBranch(policy.lineOfBusiness)
+                            const Icon = getBranchIcon(branch.id)
+                            const summary = getDocumentPolicySummary(policy, lang, branch.label[lang])
+                            const view = getPolicyStatusView(policy, t)
                             const isMenuOpen = openMenuId === policy.id
-                            const visual = POLICY_VISUALS[policy.lineOfBusiness] || POLICY_VISUALS.other
-                            const Icon = visual.icon
-                            const typeLabel = t.policyTypes[policy.lineOfBusiness as keyof typeof t.policyTypes] || policy.lineOfBusiness
-                            const summary = getDocumentPolicySummary(policy, language === 'el' ? 'el' : 'en', typeLabel)
+
+                            const renewalLabel = view.endDate
+                                ? view.endDate.toLocaleDateString(locale, { timeZone: 'UTC' })
+                                : '—'
+                            const daysLeft =
+                                view.daysUntilExpiry !== null &&
+                                view.daysUntilExpiry >= 0 &&
+                                view.daysUntilExpiry <= 60
+                                    ? view.daysUntilExpiry
+                                    : null
 
                             return (
-                                <tr key={policy.id} onClick={() => onViewPolicy?.(policy.id)} className="hover:bg-black/5 dark:hover:bg-black/80 transition-colors group cursor-pointer">
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-11 h-11 rounded-xl ${visual.badge} flex items-center justify-center`}>
-                                                <Icon className={`w-6 h-6 ${visual.iconColor}`} />
-                                            </div>
-                                            <div className="min-w-0">
-                                                {/* Insurer appears exactly once, in the row title. */}
-                                                <div className="font-bold text-black dark:text-white text-sm truncate">{summary.insurerLine}</div>
-                                                {summary.assetTitle && summary.assetTitle !== policy.insurerName ? (
-                                                    <div className="text-xs text-black/60 dark:text-white/60 mt-0.5 truncate">{summary.assetTitle}</div>
-                                                ) : null}
-                                                {summary.assetSubtitle ? <div className="text-xs text-black/60 dark:text-white/60 font-mono mt-0.5 truncate">{summary.assetSubtitle}</div> : null}
-                                            </div>
-                                        </div>
-                                    </td>
-
-                                    <td className="px-6 py-4">
-                                        <div className="text-xs text-black/60 dark:text-white/60 font-mono">{policy.policyNumber}</div>
-                                    </td>
-
-                                    <td className="px-6 py-4">
-                                        <div className="flex flex-col items-start gap-1.5">
-                                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap ${statusBadge.className}`}>
-                                                {statusBadge.icon}
-                                                {statusBadge.text}
+                                <tr
+                                    key={policy.id}
+                                    onClick={() => onViewPolicy?.(policy.id)}
+                                    className="cursor-pointer border-b border-black/[0.05] transition-colors last:border-0 hover:bg-black/[0.02] dark:border-white/[0.07] dark:hover:bg-white/[0.03]"
+                                >
+                                    {/* Policy — insured asset over insurer, two tight lines */}
+                                    <td className="px-4 py-2.5">
+                                        <div className="flex items-center gap-2.5">
+                                            <span
+                                                className={cn(
+                                                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
+                                                    view.chipClass
+                                                )}
+                                            >
+                                                <Icon className="h-4 w-4" />
                                             </span>
-                                            {/* One expiry statement only — the status message carries
-                                                «Ενεργό έως …» / «Έληξε στις …» from the lifecycle util. */}
-                                            <div className="text-xs text-black/70 dark:text-white/60">
-                                                {label.premium}: <span className="font-semibold">{summary.premiumDisplay}</span>
-                                            </div>
-                                            <div className="text-xs text-black/70 dark:text-white/60">
-                                                <span className="font-medium">{statusBadge.message}</span>
-                                            </div>
-                                            <div className={`inline-flex items-center gap-1.5 text-xs font-medium ${insightBadge.className} px-1`}>
-                                                {insightBadge.icon}
-                                                {insightBadge.text}
+                                            <div className="min-w-0">
+                                                <p className="truncate text-[13px] font-semibold text-[#0F172A] dark:text-white">
+                                                    {summary.assetTitle}
+                                                </p>
+                                                {/* assetTitle falls back to the insurer when there is no
+                                                    vehicle/property to name — don't print it twice. */}
+                                                <p className="truncate text-[11px] text-[#94A3B8]">
+                                                    {summary.assetTitle === policy.insurerName
+                                                        ? policy.policyNumber
+                                                        : policy.insurerName}
+                                                </p>
                                             </div>
                                         </div>
                                     </td>
 
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+                                    <td className="px-4 py-2.5">
+                                        <span className="text-[12px] text-black/70 dark:text-white/70">
+                                            {branch.label[lang]}
+                                        </span>
+                                    </td>
+
+                                    <td className="px-4 py-2.5">
+                                        <span className="inline-flex items-center gap-1.5 text-[12px] whitespace-nowrap text-black/70 dark:text-white/70">
+                                            <CalendarDays className="h-3.5 w-3.5 shrink-0 text-[#94A3B8]" />
+                                            <span className="tabular-nums">{renewalLabel}</span>
+                                            {daysLeft !== null && (
+                                                <span className="tabular-nums text-[11px] text-[#94A3B8]">
+                                                    ({daysLeft}
+                                                    {lang === 'el' ? 'η' : 'd'})
+                                                </span>
+                                            )}
+                                        </span>
+                                    </td>
+
+                                    <td className="px-4 py-2.5 text-right">
+                                        <span className="text-[13px] font-semibold tabular-nums text-[#0F172A] dark:text-white">
+                                            {summary.premiumDisplay}
+                                        </span>
+                                    </td>
+
+                                    <td className="px-4 py-2.5">
+                                        <StatusPill tone={view.tone} label={view.label} />
+                                    </td>
+
+                                    <td className="px-4 py-2.5">
+                                        <div
+                                            className="flex items-center justify-end gap-1"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
                                             <button
                                                 onClick={() => onViewPolicy?.(policy.id)}
-                                                className="arc-btn arc-btn-primary px-4 py-2 text-sm font-bold cursor-pointer"
+                                                className="cursor-pointer rounded-full bg-primary px-3 py-1.5 text-[12px] font-semibold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none"
                                             >
-                                                {t.dashboard.viewDetails}
+                                                {columns.manage}
                                             </button>
 
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation()
                                                     const rect = e.currentTarget.getBoundingClientRect()
-                                                    const MENU_WIDTH = 256
-                                                    const MENU_HEIGHT = 272
-                                                    const VIEWPORT_PADDING = 12
-                                                    const GAP = 8
-                                                    const spaceBelow = window.innerHeight - rect.bottom
-                                                    const openUpward = spaceBelow < MENU_HEIGHT
-
-                                                    const top = openUpward
-                                                        ? Math.max(VIEWPORT_PADDING, rect.top - MENU_HEIGHT - GAP)
-                                                        : Math.min(window.innerHeight - MENU_HEIGHT - VIEWPORT_PADDING, rect.bottom + GAP)
-
-                                                    const left = Math.min(
-                                                        window.innerWidth - MENU_WIDTH - VIEWPORT_PADDING,
-                                                        Math.max(VIEWPORT_PADDING, rect.right - MENU_WIDTH)
-                                                    )
+                                                    const MENU_WIDTH = 240
+                                                    const MENU_HEIGHT = 240
+                                                    const PAD = 12
+                                                    const openUpward = window.innerHeight - rect.bottom < MENU_HEIGHT
 
                                                     setMenuPosition({
-                                                        top,
-                                                        left,
+                                                        top: openUpward
+                                                            ? Math.max(PAD, rect.top - MENU_HEIGHT - 8)
+                                                            : Math.min(
+                                                                window.innerHeight - MENU_HEIGHT - PAD,
+                                                                rect.bottom + 8
+                                                            ),
+                                                        left: Math.min(
+                                                            window.innerWidth - MENU_WIDTH - PAD,
+                                                            Math.max(PAD, rect.right - MENU_WIDTH)
+                                                        ),
                                                         origin: openUpward ? 'bottom right' : 'top right',
                                                     })
-                                                    if (isMenuOpen) {
-                                                        setOpenMenuId(null)
-                                                        setMenuPosition(null)
-                                                    } else {
-                                                        setOpenMenuId(policy.id)
-                                                    }
+                                                    if (isMenuOpen) closeMenu()
+                                                    else setOpenMenuId(policy.id)
                                                 }}
-                                                className={`p-2.5 rounded-lg transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${isMenuOpen ? 'bg-black/5 dark:bg-black text-black dark:text-white shadow-sm' : 'hover:bg-black/5 dark:hover:bg-black/80 text-black/70 dark:text-white/70'}`}
-                                                aria-label={t.dashboard.actions}
+                                                className={cn(
+                                                    'cursor-pointer rounded-lg p-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none',
+                                                    isMenuOpen
+                                                        ? 'bg-black/5 dark:bg-white/10'
+                                                        : 'hover:bg-black/5 dark:hover:bg-white/10'
+                                                )}
+                                                aria-label={columns.actions}
                                                 aria-expanded={isMenuOpen}
                                                 aria-haspopup="menu"
-                                                aria-controls={isMenuOpen ? `policy-actions-menu-${policy.id}` : undefined}
                                             >
-                                                <MoreVertical className="w-5 h-5 text-black/70 dark:text-white/70" />
+                                                <MoreVertical className="h-4 w-4 text-black/60 dark:text-white/60" />
                                             </button>
 
-                                            {isMenuOpen && typeof document !== 'undefined' && createPortal(
-                                                <>
-                                                    <div
-                                                        className="fixed inset-0 z-[9998] bg-black/5 dark:bg-black/20 backdrop-blur-[1px]"
-                                                        onClick={() => {
-                                                            setOpenMenuId(null)
-                                                            setMenuPosition(null)
-                                                        }}
-                                                    />
-                                                    <div
-                                                        id={`policy-actions-menu-${policy.id}`}
-                                                        role="menu"
-                                                        className="fixed z-[9999] w-64 bg-white dark:bg-black rounded-2xl shadow-2xl border border-black/10 dark:border-white/15 py-2 animate-in fade-in zoom-in-95 duration-150"
-                                                        style={{
-                                                            top: `${menuPosition?.top ?? 0}px`,
-                                                            left: `${menuPosition?.left ?? 0}px`,
-                                                            transformOrigin: menuPosition?.origin ?? 'top right',
-                                                        }}
-                                                    >
-                                                        <button
-                                                            onClick={() => {
-                                                                onRunAnalysis?.(policy.id)
-                                                                setOpenMenuId(null)
+                                            {isMenuOpen &&
+                                                typeof document !== 'undefined' &&
+                                                createPortal(
+                                                    <>
+                                                        <div className="fixed inset-0 z-[9998]" onClick={closeMenu} />
+                                                        <div
+                                                            role="menu"
+                                                            className="animate-in fade-in zoom-in-95 fixed z-[9999] w-60 rounded-2xl border border-black/10 bg-white py-1.5 shadow-2xl duration-150 dark:border-white/15 dark:bg-black"
+                                                            style={{
+                                                                top: `${menuPosition?.top ?? 0}px`,
+                                                                left: `${menuPosition?.left ?? 0}px`,
+                                                                transformOrigin: menuPosition?.origin ?? 'top right',
                                                             }}
-                                                            role="menuitem"
-                                                            className="w-full px-4 py-2.5 text-left text-sm font-medium text-black/80 dark:text-white/85 hover:bg-black/5 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:bg-black/5 dark:focus-visible:bg-white/10 flex items-center gap-3 transition-colors"
                                                         >
-                                                            <Search className="w-4 h-4" />
-                                                            {label.understandPolicy}
-                                                        </button>
-                                                        <button
-                                                            onClick={() => {
-                                                                onViewDocuments?.(policy.id)
-                                                                setOpenMenuId(null)
-                                                            }}
-                                                            role="menuitem"
-                                                            className="w-full px-4 py-2.5 text-left text-sm font-medium text-black/80 dark:text-white/85 hover:bg-black/5 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:bg-black/5 dark:focus-visible:bg-white/10 flex items-center gap-3 transition-colors"
-                                                        >
-                                                            <FileText className="w-4 h-4" />
-                                                            {t.wallet.documents}
-                                                        </button>
-                                                        <button
-                                                            onClick={() => {
-                                                                onShare?.(policy.id)
-                                                                setOpenMenuId(null)
-                                                            }}
-                                                            role="menuitem"
-                                                            className="w-full px-4 py-2.5 text-left text-sm font-medium text-black/80 dark:text-white/85 hover:bg-black/5 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:bg-black/5 dark:focus-visible:bg-white/10 flex items-center gap-3 transition-colors"
-                                                        >
-                                                            <Share2 className="w-4 h-4" />
-                                                            {t.wallet.shareWithAgent}
-                                                        </button>
-                                                        {policy.status === 'expiring_soon' && (
-                                                            <button
+                                                            <MenuItem
+                                                                icon={Search}
+                                                                label={t.dashboard.runAnalysis}
                                                                 onClick={() => {
-                                                                    onRenewPolicy?.(policy.id)
-                                                                    setOpenMenuId(null)
+                                                                    onRunAnalysis?.(policy.id)
+                                                                    closeMenu()
                                                                 }}
-                                                                role="menuitem"
-                                                                className="w-full px-4 py-2.5 text-left text-sm font-medium text-black/80 dark:text-white/85 hover:bg-black/5 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:bg-black/5 dark:focus-visible:bg-white/10 flex items-center gap-3 transition-colors"
-                                                            >
-                                                                <RefreshCw className="w-4 h-4" />
-                                                                {t.dashboard.renewPolicy}
-                                                            </button>
-                                                        )}
-                                                        <button
-                                                            onClick={() => {
-                                                                onDelete?.(policy.id)
-                                                                setOpenMenuId(null)
-                                                            }}
-                                                            role="menuitem"
-                                                            className="w-full px-4 py-2.5 text-left text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 focus-visible:outline-none focus-visible:bg-red-50 dark:focus-visible:bg-red-900/10 flex items-center gap-3 transition-colors"
-                                                        >
-                                                            <Trash2 className="w-4 h-4" />
-                                                            {t.dashboard.delete}
-                                                        </button>
-                                                    </div>
-                                                </>,
-                                                document.body
-                                            )}
+                                                            />
+                                                            <MenuItem
+                                                                icon={FileText}
+                                                                label={t.wallet.documents}
+                                                                onClick={() => {
+                                                                    onViewDocuments?.(policy.id)
+                                                                    closeMenu()
+                                                                }}
+                                                            />
+                                                            <MenuItem
+                                                                icon={Share2}
+                                                                label={t.wallet.shareWithAgent}
+                                                                onClick={() => {
+                                                                    onShare?.(policy.id)
+                                                                    closeMenu()
+                                                                }}
+                                                            />
+                                                            {(view.key === 'expiring_soon' || view.key === 'expired') && (
+                                                                <MenuItem
+                                                                    icon={RefreshCw}
+                                                                    label={t.dashboard.renewPolicy}
+                                                                    onClick={() => {
+                                                                        onRenewPolicy?.(policy.id)
+                                                                        closeMenu()
+                                                                    }}
+                                                                />
+                                                            )}
+                                                            <MenuItem
+                                                                icon={Trash2}
+                                                                label={t.dashboard.delete}
+                                                                destructive
+                                                                onClick={() => {
+                                                                    onDelete?.(policy.id)
+                                                                    closeMenu()
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </>,
+                                                    document.body
+                                                )}
                                         </div>
                                     </td>
                                 </tr>
@@ -354,44 +273,31 @@ export function PolicyTable({
             </div>
 
             {currentPolicies.length === 0 && (
-                <div className="px-6 py-12 text-center">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-black/5 dark:bg-black rounded-full flex items-center justify-center">
-                        <AlertCircle className="w-8 h-8 text-black/45 dark:text-white/55" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-black dark:text-white mb-2">{t.dashboard.noPolicies}</h3>
-                    <p className="text-black/70 dark:text-white/60">{t.dashboard.addFirstPolicy}</p>
+                <div className="px-6 py-10 text-center">
+                    <AlertCircle className="mx-auto mb-2 h-6 w-6 text-black/30 dark:text-white/30" />
+                    <h3 className="text-[13px] font-semibold text-black dark:text-white">{t.dashboard.noPolicies}</h3>
+                    <p className="mt-0.5 text-[12px] text-black/55 dark:text-white/55">{t.dashboard.addFirstPolicy}</p>
                 </div>
             )}
 
             {totalPages > 1 && (
-                <div className="px-6 py-4 border-t border-black/10 dark:border-white/15 flex items-center justify-between">
+                <div className="flex items-center justify-between border-t border-black/[0.07] px-4 py-2.5 dark:border-white/10">
                     <button
                         onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                        disabled={currentPage === 1}
-                        className="px-4 py-2 text-sm font-medium text-black/80 dark:text-white/70 bg-white dark:bg-[#111111] border border-black/10 dark:border-white/15 rounded-lg hover:bg-black/5 dark:hover:bg-black/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                        disabled={page === 1}
+                        className="cursor-pointer rounded-full px-3 py-1.5 text-[12px] font-medium text-black/70 transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white/70 dark:hover:bg-white/10"
                     >
                         {t.dashboard.previous}
                     </button>
 
-                    <div className="flex items-center gap-2">
-                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                            <button
-                                key={page}
-                                onClick={() => setCurrentPage(page)}
-                                className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors cursor-pointer ${currentPage === page
-                                    ? 'bg-primary text-white dark:text-[#1A2420]'
-                                    : 'bg-white dark:bg-[#111111] text-black/80 dark:text-white/70 border border-black/10 dark:border-white/15 hover:bg-black/5 dark:hover:bg-black/80'
-                                    }`}
-                            >
-                                {page}
-                            </button>
-                        ))}
-                    </div>
+                    <span className="text-[12px] tabular-nums text-black/50 dark:text-white/50">
+                        {page} / {totalPages}
+                    </span>
 
                     <button
                         onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                        disabled={currentPage === totalPages}
-                        className="px-4 py-2 text-sm font-medium text-black/80 dark:text-white/70 bg-white dark:bg-[#111111] border border-black/10 dark:border-white/15 rounded-lg hover:bg-black/5 dark:hover:bg-black/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                        disabled={page === totalPages}
+                        className="cursor-pointer rounded-full px-3 py-1.5 text-[12px] font-medium text-black/70 transition-colors hover:bg-black/5 disabled:cursor-not-allowed disabled:opacity-40 dark:text-white/70 dark:hover:bg-white/10"
                     >
                         {t.dashboard.next}
                     </button>
@@ -401,7 +307,30 @@ export function PolicyTable({
     )
 }
 
-
-
-
-
+function MenuItem({
+    icon: Icon,
+    label,
+    onClick,
+    destructive,
+}: {
+    icon: React.ElementType
+    label: string
+    onClick: () => void
+    destructive?: boolean
+}) {
+    return (
+        <button
+            role="menuitem"
+            onClick={onClick}
+            className={cn(
+                'flex w-full cursor-pointer items-center gap-2.5 px-3.5 py-2 text-left text-[13px] font-medium transition-colors',
+                destructive
+                    ? 'text-red-600 hover:bg-red-50 dark:hover:bg-red-900/15'
+                    : 'text-black/80 hover:bg-black/5 dark:text-white/85 dark:hover:bg-white/10'
+            )}
+        >
+            <Icon className="h-4 w-4" />
+            {label}
+        </button>
+    )
+}

@@ -12,6 +12,7 @@ import { uploadFile, deleteFile } from '@/lib/storage'
 import { logger } from '@/lib/logger'
 import { sendPolicyInviteEmail, sendPolicySharedAccessEmail } from '@/lib/email/invite-emails'
 import { refreshProtectionScore } from '@/lib/services/gap-engine'
+import { recordConversionEvent } from '@/lib/journey/conversion-events'
 import type { Policy, PolicyDocument } from '@prisma/client'
 import type {
     CreatePolicyInput,
@@ -355,9 +356,31 @@ export class PolicyService extends BaseService {
         logger('info', 'Starting background policy analysis', { policyId, userId })
 
         try {
-            // 1. Run orchestrated AI analysis (token-gated checklist + gaps + persistence)
             const { PolicyAnalysisOrchestratorService } = await import('./analysis/policy-analysis-orchestrator.service')
             const orchestrator = new PolicyAnalysisOrchestratorService()
+
+            // Free/Starter (non-agent) get the basic parsed summary only —
+            // extraction, no deep AI. Deep analysis is a Plus (code "pro")
+            // feature and never runs the full pipeline for them.
+            const initiator = await this.db.user.findUnique({
+                where: { id: userId },
+                select: { roles: true },
+            })
+            const isAgent = Boolean(initiator?.roles?.includes('agent'))
+            if (!isAgent) {
+                const { resolveUserEntitlements } = await import('@/lib/subscription-entitlements')
+                const entitlements = await resolveUserEntitlements(userId)
+                if (entitlements.tier !== 'pro') {
+                    await orchestrator.extractBasicSummary(policyId, userId)
+                    return
+                }
+            }
+
+            // 1. Run orchestrated AI analysis (token-gated checklist + gaps + persistence)
+            await recordConversionEvent(userId, "paid_ai_call_started", {
+                kind: "full_analysis",
+                source: "background_analysis",
+            })
             const run = await orchestrator.createAndExecuteRun(policyId, userId, language)
 
             if (!run) {
@@ -365,6 +388,21 @@ export class PolicyService extends BaseService {
             }
 
             if (run.status === 'blocked') {
+                // Free/Starter: deep AI is a Plus feature and was intentionally
+                // not run. The basic parsed summary is already saved from upload,
+                // so leave the policy as a normal basic policy — NOT a failure.
+                if (run.blockedReason === 'free_tier_ai_locked') {
+                    await this.db.policy.update({
+                        where: { id: policyId },
+                        data: { status: 'active' }
+                    })
+                    await this.db.policyDocument.updateMany({
+                        where: { policyId },
+                        data: { processingStatus: 'completed' }
+                    })
+                    return
+                }
+
                 logger('warn', 'Background policy analysis blocked by token budget', {
                     policyId,
                     userId,
@@ -391,6 +429,11 @@ export class PolicyService extends BaseService {
                     runId: run.id
                 })
             }
+
+            await recordConversionEvent(userId, "paid_ai_call_completed", {
+                kind: "full_analysis",
+                source: "background_analysis",
+            })
 
             // 2. Post-Analysis Deduplication
             // Now that we have the real policy number extracted by AI, check if it already exists in the user's wallet

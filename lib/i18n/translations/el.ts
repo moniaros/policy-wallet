@@ -616,6 +616,25 @@ export const el = {
             copyFailed: 'Η αντιγραφή απέτυχε.',
             generic: 'Κάτι πήγε στραβά. Δοκιμάστε ξανά.',
         },
+        notices: {
+            title: 'Σημαντικές ειδοποιήσεις',
+            allClear: 'Όλα εντάξει — κανένα συμβόλαιο δεν χρειάζεται ενέργεια.',
+            showMore: '+{count} ακόμη',
+            showLess: 'Λιγότερα',
+            expired: '{policy}: έληξε στις {date}.',
+            expiringSoon: '{policy}: λήγει σε {days} ημέρες.',
+            actionNeeded: '{policy}: λείπουν στοιχεία από το έγγραφο.',
+            unknownDuration: '{policy}: δεν εντοπίστηκε ημερομηνία λήξης.',
+        },
+        columns: {
+            policy: 'Συμβόλαιο',
+            type: 'Κλάδος',
+            renewal: 'Ανανέωση',
+            annualPremium: 'Ασφάλιστρο / έτος',
+            status: 'Κατάσταση',
+            actions: 'Ενέργειες',
+            manage: 'Διαχείριση',
+        },
         review: {
             title: 'Επισκόπηση Ασφαλιστηρίου',
             analyzing: 'Διαβάζουμε το έγγραφό σας...',
@@ -862,7 +881,8 @@ export const el = {
 
     // Policy Status
     policyStatus: {
-        active: 'ΕΝΕΡΓΗ',
+        // Neuter — the subject is «το ασφαλιστήριο», like ΛΗΓΜΕΝΟ / ΕΛΛΙΠΕΣ below.
+        active: 'ΕΝΕΡΓΟ',
         expiringSoon: 'ΛΗΓΕΙ ΣΥΝΤΟΜΑ',
         expired: 'ΛΗΓΜΕΝΟ',
         unknownDuration: 'ΑΓΝΩΣΤΗ ΔΙΑΡΚΕΙΑ',
@@ -1364,9 +1384,13 @@ export const el = {
 
     status: {
         totalPremium: 'Ασφαλιστικό Αποτύπωμα',
+        premiumExcludesUnknown: '{count} συμβόλαιο χωρίς αναγνώσιμη ημ/νία λήξης δεν προσμετράται',
+        premiumExcludesUnknownPlural: '{count} συμβόλαια χωρίς αναγνώσιμη ημ/νία λήξης δεν προσμετρώνται',
         activePolicies: 'Ενεργή Προστασία',
         added: 'προστεθέντα',
         attentionNeeded: 'Χρειάζεται Προσοχή',
+        needsReview: 'Προς έλεγχο',
+        within30Days: 'Εντός 30 ημερών',
         upcomingRenewals: 'Επερχόμενες Ανανεώσεις',
         fromLastMonth: 'από τον προηγούμενο μήνα',
         noHistory: 'Δεν υπάρχει ιστορικό',

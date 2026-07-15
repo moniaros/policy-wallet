@@ -9,8 +9,9 @@ import { EmptyState } from './EmptyState'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { Skeleton } from '@/components/ui/skeleton'
 import { AlertCircle, FileUp, Grid3X3, List, PenSquare, Sparkles, Search } from 'lucide-react'
-import { calculatePremiumFootprint } from '@/lib/wallet/premium-footprint'
-import { resolvePolicyLifecycle } from '@/lib/policy-status'
+import { calculatePremiumFootprintDetailed } from '@/lib/wallet/premium-footprint'
+import { getPolicyStatusView, isAttentionKey } from '@/lib/wallet/policy-status-view'
+import { ImportantNotices, type Notice } from './ImportantNotices'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
 import { INSURANCE_BRANCHES, normalizeBranch } from '@/lib/insurance/taxonomy'
 
@@ -81,14 +82,40 @@ export function PolicyWallet({
     // KPI counts come from the computed lifecycle (real end dates), not the
     // stored status string — nothing ever recomputes the stored value, so an
     // expired policy would count as active forever.
-    const lifecycles = useMemo(() => policies.map((p) => resolvePolicyLifecycle(p)), [policies])
-    const attentionCount = lifecycles.filter((l) =>
-        l.status === 'action_needed' || l.status === 'expiring_soon' || l.status === 'expired' || l.status === 'unknown_duration'
-    ).length
-    const activeCount = lifecycles.filter((l) => l.status === 'active').length
-    const expiringCount = lifecycles.filter((l) => l.status === 'expiring_soon').length
-    const actionNeededCount = lifecycles.filter((l) => l.status === 'action_needed' || l.status === 'unknown_duration').length
-    const totalPremium = calculatePremiumFootprint(policies)
+    const views = useMemo(() => policies.map((p) => getPolicyStatusView(p, t)), [policies, t])
+    const activeCount = views.filter((v) => v.key === 'active').length
+    const expiringCount = views.filter((v) => v.key === 'expiring_soon').length
+    const attentionCount = views.filter((v) => isAttentionKey(v.key)).length
+    // Same lifecycle predicate as the counts above, so the premium total and the
+    // "active" tile can never tell two different stories.
+    const premiumFootprint = calculatePremiumFootprintDetailed(policies)
+
+    // One notice per policy that needs the user, newest problem first. The old UI
+    // shouted this as a full-width block; it is a bulleted list now.
+    const notices = useMemo<Notice[]>(() => {
+        const copy = t.wallet.notices
+        return policies
+            .map((policy, i) => ({ policy, view: views[i] }))
+            .filter(({ view }) => isAttentionKey(view.key))
+            .sort((a, b) => (a.view.daysUntilExpiry ?? 9999) - (b.view.daysUntilExpiry ?? 9999))
+            .map(({ policy, view }) => {
+                const name = `${normalizeBranch(policy.lineOfBusiness).label[language === 'el' ? 'el' : 'en']} · ${policy.insurerName}`
+                const date = view.endDate?.toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US', { timeZone: 'UTC' }) ?? ''
+                const template =
+                    view.key === 'expired' ? copy.expired
+                        : view.key === 'expiring_soon' ? copy.expiringSoon
+                            : view.key === 'unknown_duration' ? copy.unknownDuration
+                                : copy.actionNeeded
+                return {
+                    id: policy.id,
+                    policyId: policy.id,
+                    text: template
+                        .replace('{policy}', name)
+                        .replace('{date}', date)
+                        .replace('{days}', String(Math.max(view.daysUntilExpiry ?? 0, 0))),
+                }
+            })
+    }, [policies, views, t, language])
 
     // Filter chips follow the branches actually present in this portfolio,
     // in canonical taxonomy order — a pet-only wallet gets a pet chip, not
@@ -122,42 +149,21 @@ export function PolicyWallet({
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 py-8 sm:py-12 sm:px-6 lg:px-8 bg-transparent">
-            <div className="mb-8">
-                {attentionCount > 0 ? (
-                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-2xl p-4 flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center text-amber-600 flex-shrink-0">
-                            <AlertCircle className="w-5 h-5" />
-                        </div>
-                        <div>
-                            <h3 className="text-sm font-bold text-amber-900 dark:text-amber-100">
-                                {attentionCount === 1
-                                    ? (t.dashboard as any).portfolioInsights?.oneNeedsAttention
-                                    : (t.dashboard as any).portfolioInsights?.multipleNeedAttention?.replace('{count}', String(attentionCount))}
-                            </h3>
-                            <p className="text-xs text-amber-700 dark:text-amber-300">
-                                {roleCopy.walletDashboard.checkExpirations}
-                            </p>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="bg-primary-tint dark:bg-primary/15 border border-primary/30 dark:border-primary/35 rounded-2xl p-4 flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/20 flex items-center justify-center text-primary dark:text-mint flex-shrink-0">
-                            <Sparkles className="w-5 h-5" />
-                        </div>
-                        <div>
-                            <h3 className="text-sm font-bold text-black dark:text-mint">
-                                {(t.dashboard as any).portfolioInsights?.allGood || roleCopy.walletDashboard.allPoliciesActive}
-                            </h3>
-                            <p className="text-xs text-[#166534] dark:text-mint">
-                                {roleCopy.walletDashboard.coverageUpToDate}
-                            </p>
-                        </div>
-                    </div>
-                )}
-            </div>
+        <div className="mx-auto max-w-7xl bg-transparent px-4 py-6 sm:px-6 lg:px-8">
+            {/* KPIs lead — they are the answer to "how is my cover doing?" and used to
+                sit below the filter bar, where nobody looked. */}
+            <StatusSummary
+                activeCount={activeCount}
+                expiringCount={expiringCount}
+                attentionCount={attentionCount}
+                totalPolicies={policies.length}
+                totalPremium={premiumFootprint.total}
+                unknownDurationCount={premiumFootprint.unknownDurationCount}
+            />
 
-            <div className="mb-6">
+            <ImportantNotices notices={notices} onSelect={onViewPolicy} />
+
+            <div className="mb-4">
                 <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white/60 dark:bg-black/60 backdrop-blur-md p-2 rounded-2xl border border-black/10 dark:border-white/15 shadow-sm">
                     <div className="relative group w-full sm:max-w-md">
                         <input
@@ -214,38 +220,18 @@ export function PolicyWallet({
                 </div>
             </div>
 
-            <StatusSummary
-                activeCount={activeCount}
-                expiringCount={expiringCount}
-                actionNeededCount={actionNeededCount}
-                totalPremium={totalPremium}
-                policyBreakdown={{
-                    health: policies.filter((p) => normalizeBranch(p.lineOfBusiness).id === 'health').length,
-                    auto: policies.filter((p) => normalizeBranch(p.lineOfBusiness).id === 'motor').length,
-                    home: policies.filter((p) => normalizeBranch(p.lineOfBusiness).id === 'home').length,
-                    life: policies.filter((p) => normalizeBranch(p.lineOfBusiness).id === 'life').length,
-                    travel: policies.filter((p) => normalizeBranch(p.lineOfBusiness).id === 'travel').length,
-                }}
-                expiringPolicies={policies
-                    .filter((_, index) => lifecycles[index]?.status === 'expiring_soon')
-                    .map((p, _, __) => {
-                        const end = resolvePolicyLifecycle(p).endDate
-                        return {
-                            name: `${t.policyTypes[p.lineOfBusiness as keyof typeof t.policyTypes] || p.lineOfBusiness}`,
-                            expiryDate: end
-                                ? end.toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US', {
-                                    month: 'short',
-                                    day: 'numeric',
-                                    year: 'numeric',
-                                    timeZone: 'UTC',
-                                })
-                                : '-',
-                        }
-                    })}
-                premiumTrend={[]}
-            />
+            {/* The policy list needs an accessible name. The old table carried this
+                heading inside itself; the rewrite dropped it, which left the whole
+                list unnamed to a screen reader (the only heading on the page was the
+                "welcome back" greeting). It lives here now so grid and list share it. */}
+            <section aria-labelledby="wallet-policy-list-heading">
+                <h2
+                    id="wallet-policy-list-heading"
+                    className="mb-2 text-sm font-semibold text-black/70 dark:text-white/70"
+                >
+                    {t.dashboard.myPolicies}
+                </h2>
 
-            <div>
                 {viewMode === 'list' ? (
                     <PolicyTable
                         policies={filteredPolicies}
@@ -258,7 +244,7 @@ export function PolicyWallet({
                         onViewDocuments={onViewDocuments}
                     />
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                         {filteredPolicies.map((policy, index) => (
                             <PolicyCard
                                 key={policy.id}
@@ -274,7 +260,7 @@ export function PolicyWallet({
                         ))}
                     </div>
                 )}
-            </div>
+            </section>
 
             {filteredPolicies.length === 0 && policies.length > 0 && (
                 <div className="py-20 text-center">

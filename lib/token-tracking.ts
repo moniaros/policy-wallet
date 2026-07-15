@@ -19,13 +19,15 @@ import {
 export { formatTokens, formatCost, TOKEN_COSTS, type AIModel, type OperationType }
 
 // Token budgets are the single AI meter (per-day feature counters are abuse
-// guards only). Free is 0 — AI is paid-only apart from the one-time trial
-// analysis, which bypasses this gate at the orchestrator. Pro is capped at 3M
-// so worst-case provider cost stays under the plan price (see
-// docs/planning/TOKEN_ECONOMICS_2026-07.md).
+// guards only). Free AND Starter (code key `plus`) are 0 — the paid-aha-loop
+// model puts ALL deep AI behind Plus (code key `pro`), so only `pro` gets a
+// budget. Parse/extraction is the one AI op free/Starter may run and is
+// exempt from this gate (policy-count-capped instead). Pro is capped at 3M so
+// worst-case provider cost stays under the plan price
+// (see docs/planning/TOKEN_ECONOMICS_2026-07.md).
 export const TOKEN_LIMITS: Record<'free' | 'plus' | 'pro', number | null> = {
     free: 0,
-    plus: 1_000_000,
+    plus: 0,
     pro: 3_000_000,
 }
 

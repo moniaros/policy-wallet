@@ -9,6 +9,8 @@ import type { User } from "@prisma/client"
 import { getProtectionScore } from "@/lib/services/gap-engine"
 import { CircleHelp, Upload } from "lucide-react"
 import { normalizeBranch } from "@/lib/insurance/taxonomy"
+import { resolvePolicyLifecycle } from "@/lib/policy-status"
+import { selectPremiumBearingPolicies } from "@/lib/wallet/premium-footprint"
 import { getBranchIcon } from "@/lib/insurance/branch-icons"
 import { GettingStartedWrapper } from "@/components/dashboard/GettingStartedWrapper"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
@@ -24,7 +26,6 @@ import { QuickActionsRow } from "@/components/dashboard/home/QuickActionsRow"
 import { StatusRow } from "@/components/dashboard/home/StatusRow"
 import { CoverageGapsWidget } from "@/components/dashboard/home/CoverageGapsWidget"
 import { RecommendedActionsWidget } from "@/components/dashboard/home/RecommendedActionsWidget"
-import { effectivePolicyStatus, isPolicyCoverageActive } from "@/lib/policy-status"
 
 function daysUntil(date: Date) {
     return Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
@@ -92,18 +93,23 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     }
 
     const now = new Date()
-    // Coverage liveness from the REAL end date — the stored status string is
-    // never recomputed, so an expired policy would count as protection.
-    const activePolicies = policies.filter((policy) => isPolicyCoverageActive(policy))
+    // The stored status is an ingestion state nothing ever recomputes — no code
+    // path writes 'expired' onto a policy — so `status === "active"` matched every
+    // policy ever uploaded and inflated the premium total. Resolve the real
+    // lifecycle from the extracted end date instead. Everything below (count,
+    // insurers, premium, per-branch chips) derives from this one list so the
+    // tiles cannot contradict each other.
+    const { policies: activePolicies, unknownDurationCount } = selectPremiumBearingPolicies(policies, now)
     const insurerCount = new Set(
         activePolicies.map((policy) => policy.insurerName).filter(Boolean)
     ).size
     const sixMonthsOut = new Date(now.getTime() + 180 * 24 * 60 * 60 * 1000)
     const upcomingRenewals = policies
-        .filter((policy) => policy.endDate > now && policy.endDate <= sixMonthsOut)
+        .map((policy) => ({ policy, endDate: resolvePolicyLifecycle(policy, now).endDate }))
+        .filter((entry): entry is { policy: typeof entry.policy; endDate: Date } =>
+            entry.endDate !== null && entry.endDate > now && entry.endDate <= sixMonthsOut
+        )
         .sort((a, b) => a.endDate.getTime() - b.endDate.getTime())
-
-    const hasPolicies = policies.length > 0
 
     const recentDocuments = policies
         .flatMap((policy) =>
@@ -118,7 +124,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         .sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime())
         .slice(0, 5)
 
-    const hasHealthPolicy = activePolicies.some((policy) => normalizeBranch(policy.lineOfBusiness).id === "health")
+    const hasHealthPolicy = policies.some((policy) => normalizeBranch(policy.lineOfBusiness).id === "health")
 
     // Branches where the user holds more than one active policy — surfaced
     // as an honest "worth checking for overlaps" note (the old tile invented
@@ -130,9 +136,8 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     }
     const overlapBranchCount = [...branchPolicyCounts.values()].filter((count) => count > 1).length
 
-    // Portfolio summary: total premium + LOB breakdown
+    // Portfolio summary: total premium + LOB breakdown, both off the in-force list.
     const totalAnnualPremium = activePolicies
-        .filter(p => p.premiumAmount != null)
         .reduce((sum, p) => sum + Number(p.premiumAmount ?? 0), 0)
     const lobBreakdown = activePolicies.reduce((acc, p) => {
         const lob = p.lineOfBusiness || 'other'
@@ -141,17 +146,13 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         return acc
     }, {} as Record<string, number>)
 
-    // Gaps inside a lapsed policy are not the user's current risk — same rule
-    // as the engine (lib/services/gap-engine) and coverage-insights.
-    const livePolicyIds = new Set(activePolicies.map((policy) => policy.id))
-    const allOpenGaps = await db.gapInstance.findMany({
+    const openGaps = await db.gapInstance.findMany({
         where: {
             policy: { ownerUserId: dbUser.id },
             status: { in: ["open", "detected", "acknowledged"] },
         },
-        select: { severity: true, policyId: true },
+        select: { severity: true },
     })
-    const openGaps = allOpenGaps.filter((gap) => !gap.policyId || livePolicyIds.has(gap.policyId))
     const openGapCount = openGaps.length
 
     // Protection score: prefer cached gap engine score, fallback to legacy penalty-based calculation
@@ -192,15 +193,15 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             }
         })
 
-    const renewalItems = upcomingRenewals.slice(0, 6).map((policy) => {
+    const renewalItems = upcomingRenewals.slice(0, 6).map(({ policy, endDate }) => {
         const branch = normalizeBranch(policy.lineOfBusiness)
         return {
             id: policy.id,
             insurerName: policy.insurerName,
             icon: getBranchIcon(branch.id),
             typeLabel: branch.label[lang],
-            endDateLabel: policy.endDate.toLocaleDateString(isGreek ? "el-GR" : "en-GB"),
-            days: daysUntil(policy.endDate),
+            endDateLabel: endDate.toLocaleDateString(isGreek ? "el-GR" : "en-GB"),
+            days: daysUntil(endDate),
             premiumLabel: formatCurrencyValue(policy.premiumAmount, policy.premiumCurrency || "EUR"),
         }
     })
@@ -230,15 +231,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         gap: t.branches.statusGap,
         neutral: t.branches.statusNeutral,
     } as const
-    const coverageMapEntries = buildBranchOverview(
-        policies.map((policy) => ({
-            id: policy.id,
-            lineOfBusiness: policy.lineOfBusiness,
-            status: effectivePolicyStatus(policy),
-            endDate: policy.endDate,
-        })),
-        cachedScore?.expectedLines ?? []
-    ).map((entry) => ({
+    const coverageMapEntries = buildBranchOverview(policies, cachedScore?.expectedLines ?? []).map((entry) => ({
         id: entry.branch.id,
         icon: getBranchIcon(entry.branch.id),
         label: policyTypeLabels[entry.branch.id] || entry.branch.label[lang],
@@ -277,18 +270,10 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                     </h1>
                 </div>
 
-                {/* ── Ordering principle ──────────────────────────────────
-                    What the user must ACT on comes first (uncovered risks,
-                    expiring policies), then what they can DO (quick actions),
-                    then the picture of their coverage, then passive numbers,
-                    and only then the upgrade offers. The old order led with
-                    upsells and buried the "you are uninsured" card 11th. */}
-
-                {/* Getting Started Checklist — self-hiding; the only useful
-                    thing on an empty portfolio */}
+                {/* Getting Started Checklist */}
                 <div className="mb-4">
                     <GettingStartedWrapper
-                        policyCount={activePolicies.length}
+                        policyCount={policies.length}
                         hasAnalysis={Boolean(hasAnalysisRun)}
                         gapCount={openGapCount}
                         hasAgent={Boolean(customerRelationship)}
@@ -296,58 +281,101 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                     />
                 </div>
 
-                {hasPolicies && (
-                    <>
-                        {/* 1 ── Needs your attention: what to do + what is missing */}
-                        <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-                            <RecommendedActionsWidget
-                                items={recommendedActions}
-                                language={lang}
-                                labels={{
-                                    kicker: home.actionsKicker,
-                                    noActions: home.noActions,
-                                    viewAll: home.viewAllActions,
-                                }}
-                            />
-                            <CoverageGapsWidget
-                                counts={gapSeverityCounts}
-                                labels={{
-                                    kicker: home.gapsKicker,
-                                    noGaps: home.noGaps,
-                                    severity: {
-                                        critical: home.severityCritical,
-                                        high: home.severityHigh,
-                                        medium: home.severityMedium,
-                                        low: home.severityLow,
-                                    },
-                                }}
-                            />
-                        </div>
-
-                        {/* 2 ── Time-critical: what expires next */}
-                        <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-                            <div className="lg:col-span-3">
-                                <RenewalsTimelineCard
-                                    items={renewalItems}
-                                    hasPolicies={hasPolicies}
-                                    showUpgradeTeaser={isFreeTier && upcomingRenewals.length > 0}
-                                    labels={{
-                                        kicker: home.renewalTimeline,
-                                        policiesSuffix: home.policiesSuffix,
-                                        trackExpirationsTitle: home.trackExpirationsTitle,
-                                        trackExpirationsBody: home.trackExpirationsBody,
-                                        addPolicy: home.addPolicy,
-                                        noExpirationsTitle: home.noExpirationsTitle,
-                                        noExpirationsBody: home.noExpirationsBody,
-                                        daysShort: home.daysShort,
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    </>
+                {/* Signup-selected plan continuity (never activated → offer checkout) */}
+                {carriedPlan && (
+                    <div className="mb-4">
+                        <CarriedPlanCard planId={carriedPlan} billingPeriod={carriedBilling} />
+                    </div>
                 )}
 
-                {/* 3 ── Primary actions: ask AI · upload · recent documents */}
+                {/* Free-tier usage banner (Trigger A surface: approaching the policy cap).
+                    The meter counts every stored policy — that is what checkPolicyLimit
+                    blocks on. Metering only the in-force ones would promise headroom the
+                    next upload does not actually have. */}
+                {isFreeTier && policies.length >= 2 && (
+                    <div className="mb-4">
+                        <UpgradeTriggerCard
+                            featureKey="policy_upload_limit"
+                            triggerSource="home_usage_banner"
+                            returnTo="/home"
+                            dismissible
+                            meter={{
+                                label: home.freePlanPolicies,
+                                used: policies.length,
+                                limit: FREE_POLICY_LIMIT,
+                                hint: home.freePlanHint,
+                            }}
+                        />
+                    </div>
+                )}
+
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                    <StatTiles
+                        activeCount={activePolicies.length}
+                        healthScore={healthScore}
+                        openGapCount={openGapCount}
+                        labels={{
+                            activePolicies: home.activePolicies,
+                            protectionScore: home.protectionScore,
+                            scoreSummary,
+                            gapsCount: home.coverageGapsCount.replace('{count}', String(openGapCount)),
+                        }}
+                    />
+
+                    {totalAnnualPremium > 0 && (
+                        <PortfolioSummaryCard
+                            totalLabel={formatCurrencyValue(totalAnnualPremium) || '€0'}
+                            chips={portfolioChips}
+                            labels={{
+                                kicker: home.portfolioKicker,
+                                totalAnnualPremium: home.totalAnnualPremium,
+                            }}
+                            excludedNote={
+                                unknownDurationCount > 0
+                                    ? (unknownDurationCount === 1
+                                        ? t.status.premiumExcludesUnknown
+                                        : t.status.premiumExcludesUnknownPlural
+                                    ).replace('{count}', String(unknownDurationCount))
+                                    : undefined
+                            }
+                        />
+                    )}
+
+                    {/* Branch coverage map — every branch with its covered/gap state */}
+                    <BranchCoverageMap
+                        entries={coverageMapEntries}
+                        labels={{ kicker: home.coverageMapKicker, viewAll: home.viewAllBranches }}
+                        className="lg:col-span-3"
+                    />
+
+                    {/* Trigger G: multi-insurer portfolio insight for free tier */}
+                    {isFreeTier && insurerCount >= 2 && (
+                        <UpgradeTriggerCard
+                            featureKey="multi_insurer_insights"
+                            triggerSource="home_multi_insurer"
+                            returnTo="/coverage-insights"
+                            dismissible
+                            className="lg:col-span-3"
+                        />
+                    )}
+
+                    <RenewalsTimelineCard
+                        items={renewalItems}
+                        hasPolicies={policies.length > 0}
+                        showUpgradeTeaser={isFreeTier && upcomingRenewals.length > 0}
+                        labels={{
+                            kicker: home.renewalTimeline,
+                            policiesSuffix: home.policiesSuffix,
+                            trackExpirationsTitle: home.trackExpirationsTitle,
+                            trackExpirationsBody: home.trackExpirationsBody,
+                            addPolicy: home.addPolicy,
+                            noExpirationsTitle: home.noExpirationsTitle,
+                            noExpirationsBody: home.noExpirationsBody,
+                            daysShort: home.daysShort,
+                        }}
+                    />
+                </div>
+
                 <QuickActionsRow
                     openGapCount={openGapCount}
                     recentDocuments={recentDocuments}
@@ -364,78 +392,31 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                     }}
                 />
 
-                {/* 4 ── Coverage at a glance (lapsed branches read amber, not green) */}
+                {/* Detected gaps + top recommended actions (persisted engine output) */}
                 <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-                    <BranchCoverageMap
-                        entries={coverageMapEntries}
-                        labels={{ kicker: home.coverageMapKicker, viewAll: home.viewAllBranches }}
-                        className="lg:col-span-3"
-                    />
-                </div>
-
-                {/* 5 ── Passive but motivating: count + protection score */}
-                <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-                    <StatTiles
-                        activeCount={activePolicies.length}
-                        healthScore={healthScore}
-                        openGapCount={openGapCount}
+                    <RecommendedActionsWidget
+                        items={recommendedActions}
+                        language={lang}
                         labels={{
-                            activePolicies: home.activePolicies,
-                            protectionScore: home.protectionScore,
-                            scoreSummary,
-                            gapsCount: home.coverageGapsCount.replace('{count}', String(openGapCount)),
+                            kicker: home.actionsKicker,
+                            noActions: home.noActions,
+                            viewAll: home.viewAllActions,
+                        }}
+                    />
+                    <CoverageGapsWidget
+                        counts={gapSeverityCounts}
+                        labels={{
+                            kicker: home.gapsKicker,
+                            noGaps: home.noGaps,
+                            severity: {
+                                critical: home.severityCritical,
+                                high: home.severityHigh,
+                                medium: home.severityMedium,
+                                low: home.severityLow,
+                            },
                         }}
                     />
                 </div>
-
-                {/* 6 ── Plan offers — below the value, never above it */}
-                {carriedPlan && (
-                    <div className="mt-4">
-                        <CarriedPlanCard planId={carriedPlan} billingPeriod={carriedBilling} />
-                    </div>
-                )}
-
-                {isFreeTier && activePolicies.length >= 2 && (
-                    <div className="mt-4">
-                        <UpgradeTriggerCard
-                            featureKey="policy_upload_limit"
-                            triggerSource="home_usage_banner"
-                            returnTo="/home"
-                            dismissible
-                            meter={{
-                                label: home.freePlanPolicies,
-                                used: activePolicies.length,
-                                limit: FREE_POLICY_LIMIT,
-                                hint: home.freePlanHint,
-                            }}
-                        />
-                    </div>
-                )}
-
-                {isFreeTier && insurerCount >= 2 && (
-                    <div className="mt-4">
-                        <UpgradeTriggerCard
-                            featureKey="multi_insurer_insights"
-                            triggerSource="home_multi_insurer"
-                            returnTo="/coverage-insights"
-                            dismissible
-                        />
-                    </div>
-                )}
-
-                {/* 7 ── Reference numbers and status */}
-                {totalAnnualPremium > 0 && (
-                    <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-                        <PortfolioSummaryCard
-                            totalLabel={formatCurrencyValue(totalAnnualPremium) || '€0'}
-                            chips={portfolioChips}
-                            labels={{
-                                kicker: home.portfolioKicker,
-                                totalAnnualPremium: home.totalAnnualPremium,
-                            }}
-                        />
-                    </div>
-                )}
 
                 <StatusRow
                     agentConnected={Boolean(customerRelationship)}
