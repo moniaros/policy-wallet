@@ -30,7 +30,7 @@ export function calculateVAT(netAmount: number, countryCode: string = 'GR'): VAT
  * amount charged equals what the visitor was offered.  If a plan has no
  * explicit annual price, fall back to 12 × monthly (no discount).
  */
-const ANNUAL_PRICE_BY_PLAN: Record<string, number> = {
+export const ANNUAL_PRICE_BY_PLAN: Record<string, number> = {
     "ph-plus": 29,        // Starter — UI: €29/yr  (monthly €2.99 × 12 = €35.88)
     "ph-pro": 79,         // Plus    — UI: €79/yr  (monthly €7.99 × 12 = €95.88)
     "agent-starter": 199, // UI: €199/yr (monthly €19.99 × 12 = €239.88)

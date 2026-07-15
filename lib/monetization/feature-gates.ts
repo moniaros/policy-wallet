@@ -135,6 +135,13 @@ export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
 export const FREE_POLICY_LIMIT = 1
 /** "Starter" (code key `plus`) policy cap. */
 export const PLUS_POLICY_LIMIT = 5
+/**
+ * Complimentary lifetime AI questions for free-tier users.
+ * Zero under the paid-aha-loop tier restructure — deep-AI Q&A is a paid
+ * feature with no free allowance. Kept as a named constant so the account /
+ * wallet meters that reference it still compile; they render a 0 allowance.
+ */
+export const FREE_LIFETIME_QUESTIONS = 0
 
 export interface PlanPricing {
     planId: string

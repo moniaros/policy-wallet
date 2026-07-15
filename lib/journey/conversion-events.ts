@@ -26,13 +26,11 @@ export interface ConversionEventDetails {
     billingPeriod?: string
     /** For limit_hit / *_ai_call_*: which operation, e.g. "gap_analysis", "ai_question". */
     kind?: string
-    /** Feature gate the checkout was started from (FEATURE_GATES key). */
+    /** Feature the checkout started from / the user attempted (FEATURE_GATES key). */
     feature?: string
     tokens?: number
     /** For report_unlock: which policy's report was purchased. */
     policyId?: string
-    /** For *_ai_call_* events: the feature the user attempted. */
-    feature?: string
 }
 
 export async function recordConversionEvent(
