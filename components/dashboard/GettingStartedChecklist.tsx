@@ -120,7 +120,7 @@ export function GettingStartedChecklist({
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
-            className="pw-card rounded-3xl p-6"
+            className="pw-card p-6"
         >
             {/* Header */}
             <div className="flex items-center justify-between">

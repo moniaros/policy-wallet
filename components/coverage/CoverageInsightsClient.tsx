@@ -278,7 +278,7 @@ export function CoverageInsightsClient({
                                 />
                             ))
                         ) : (
-                            <div className="text-center py-10 pw-card rounded-3xl">
+                            <div className="text-center py-10 pw-card">
                                 <Sparkles className="w-8 h-8 text-primary dark:text-mint mx-auto mb-3" />
                                 <p className="text-black dark:text-white font-semibold">{copy.allGoodTitle}</p>
                                 <p className="text-black/55 dark:text-white/65 text-sm">{copy.allGoodDescription}</p>
