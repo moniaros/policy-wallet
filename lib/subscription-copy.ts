@@ -57,6 +57,10 @@ export const subscriptionCopy = {
             el: 'Μέχρι {count} συμβόλαια',
             en: 'Up to {count} policies'
         },
+        policyLimitLabel: {
+            el: 'Όριο συμβολαίων',
+            en: 'Policy limit'
+        },
         unlimitedPolicies: {
             el: 'Απεριόριστα συμβόλαια',
             en: 'Unlimited policies'
@@ -111,9 +115,22 @@ export const subscriptionCopy = {
         },
     },
 
+    // Billing period toggle
+    billing: {
+        monthly: { el: 'Μηνιαία', en: 'Monthly' },
+        annual: { el: 'Ετήσια', en: 'Yearly' },
+    },
+
+    // Free-trial affordances
+    trial: {
+        badge: { el: '14 ΗΜΕΡΕΣ ΔΩΡΕΑΝ', en: '14-DAY FREE TRIAL' },
+        cta: { el: 'ΔΩΡΕΑΝ ΔΟΚΙΜΗ 14 ΗΜΕΡΩΝ', en: 'START 14-DAY FREE TRIAL' },
+    },
+
     // Call-to-Action Buttons
     cta: {
         upgrade: { el: 'Αναβάθμιση', en: 'Upgrade' },
+        processing: { el: 'ΠΕΡΙΜΕΝΕΤΕ...', en: 'PROCESSING...' },
         upgradeToPlus: { el: 'Αναβάθμιση σε Starter', en: 'Upgrade to Starter' },
         upgradeToPro: { el: 'Αναβάθμιση σε Plus', en: 'Upgrade to Plus' },
         getStarted: { el: 'Ξεκινήστε Δωρεάν', en: 'Get Started Free' },

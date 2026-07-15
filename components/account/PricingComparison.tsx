@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Check, X, Star, Shield, Zap } from 'lucide-react'
 import { subscriptionCopy } from '@/lib/subscription-copy'
+import { FREE_POLICY_LIMIT, PLUS_POLICY_LIMIT } from '@/lib/monetization/feature-gates'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { trackJourneyEvent } from '@/lib/journey/funnel'
 
@@ -59,7 +60,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
             ...copy.tiers.free,
             icon: Shield,
             features: [
-                { name: { el: 'Μέχρι 3 συμβόλαια', en: 'Up to 3 policies' }[language], included: true },
+                { name: copy.features.policyLimit[language].replace('{count}', String(FREE_POLICY_LIMIT)), included: true },
                 { name: copy.features.basicAI[language], included: true },
                 { name: copy.features.documentStorage[language], included: true },
                 { name: copy.features.advancedAI[language], included: false },
@@ -67,17 +68,19 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
             ]
         },
         {
+            // "Starter" (code key `plus`): organizer tier — more policies + basic
+            // reminders, NO deep AI (that unlocks at Plus / code `pro`).
             id: 'ph-plus',
             ...copy.tiers.plus,
             icon: Zap,
             popular: true,
             features: [
-                { name: { el: 'Μέχρι 10 συμβόλαια', en: 'Up to 10 policies' }[language], included: true },
-                { name: copy.features.advancedAI[language], included: true },
+                { name: copy.features.policyLimit[language].replace('{count}', String(PLUS_POLICY_LIMIT)), included: true },
                 { name: copy.features.documentStorage[language], included: true },
                 { name: copy.features.emailNotifications[language], included: true },
-                { name: copy.features.interactiveQA[language], included: true },
-                { name: copy.features.automaticGapDetection[language], included: true },
+                { name: copy.features.basicInsights[language], included: true },
+                { name: copy.features.advancedAI[language], included: false },
+                { name: copy.features.interactiveQA[language], included: false },
             ]
         },
         {
@@ -95,11 +98,11 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
     ]
 
     const comparisonFeatures = [
-        { name: copy.features.policyLimit[language].replace('{count}', language === 'el' ? 'Συμβόλαια' : 'Policies'), free: "3", plus: "10", pro: "∞" },
-        { name: copy.features.advancedAI[language], free: false, plus: true, pro: true },
-        { name: copy.features.automaticGapDetection[language], free: false, plus: true, pro: true },
-        { name: copy.features.interactiveQA[language], free: false, plus: true, pro: true },
-        { name: copy.features.digitalWallet[language], free: false, plus: true, pro: true },
+        { name: copy.features.policyLimitLabel[language], free: String(FREE_POLICY_LIMIT), plus: String(PLUS_POLICY_LIMIT), pro: "∞" },
+        { name: copy.features.advancedAI[language], free: false, plus: false, pro: true },
+        { name: copy.features.automaticGapDetection[language], free: false, plus: false, pro: true },
+        { name: copy.features.interactiveQA[language], free: false, plus: false, pro: true },
+        { name: copy.features.digitalWallet[language], free: false, plus: false, pro: true },
         { name: copy.features.prioritySupport[language], free: false, plus: false, pro: true },
         { name: copy.features.advancedAnalytics[language], free: false, plus: false, pro: true },
         { name: copy.features.agentCollaboration[language], free: false, plus: false, pro: true },
@@ -110,24 +113,24 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
 
             {/* Billing toggle — drives the checkout's billingPeriod, not just the price label. */}
             <div className="flex justify-center mb-12">
-                <div className="bg-stone-100 dark:bg-stone-800 p-1 rounded-2xl flex items-center relative">
+                <div className="bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl flex items-center relative">
                     <button
                         onClick={() => selectBillingPeriod('monthly')}
                         className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all relative z-10 ${billingPeriod === 'monthly'
-                            ? 'text-stone-900 dark:text-white shadow-sm bg-white dark:bg-stone-700'
-                            : 'text-stone-500 dark:text-stone-400 hover:text-stone-700'
+                            ? 'text-slate-900 dark:text-white shadow-sm bg-white dark:bg-slate-700'
+                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
                             }`}
                     >
-                        {language === 'el' ? 'Μηνιαία' : 'Monthly'}
+                        {copy.billing.monthly[language]}
                     </button>
                     <button
                         onClick={() => selectBillingPeriod('annual')}
                         className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all relative z-10 ${billingPeriod === 'annual'
-                            ? 'text-stone-900 dark:text-white shadow-sm bg-white dark:bg-stone-700'
-                            : 'text-stone-500 dark:text-stone-400 hover:text-stone-700'
+                            ? 'text-slate-900 dark:text-white shadow-sm bg-white dark:bg-slate-700'
+                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
                             }`}
                     >
-                        {language === 'el' ? 'Ετήσια' : 'Yearly'}
+                        {copy.billing.annual[language]}
                         <span className="absolute -top-3 -right-3 bg-primary text-white dark:text-[#1A2420] text-[9px] font-black uppercase px-2 py-0.5 rounded-full shadow-lg">
                             -20%
                         </span>
@@ -136,7 +139,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                     {/* Animated Background */}
                     <motion.div
                         layoutId="billingToggle"
-                        className="absolute inset-y-1 rounded-xl bg-white dark:bg-stone-700 shadow-sm z-0"
+                        className="absolute inset-y-1 rounded-xl bg-white dark:bg-slate-700 shadow-sm z-0"
                         initial={false}
                         transition={{ type: "spring", stiffness: 500, damping: 30 }}
                         style={{
@@ -165,7 +168,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                         >
                             {tier.id === 'ph-pro' && (
                                 <div className="absolute top-0 right-0 bg-primary text-white dark:text-[#1A2420] text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-bl-2xl rounded-tr-[30px] shadow-lg z-20">
-                                    {language === 'el' ? '14 ΗΜΕΡΕΣ ΔΩΡΕΑΝ' : '14-DAY FREE TRIAL'}
+                                    {copy.trial.badge[language]}
                                 </div>
                             )}
 
@@ -180,20 +183,20 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                     }`}>
                                     <tier.icon className="w-6 h-6" />
                                 </div>
-                                <h3 className="text-xl font-black text-stone-900 dark:text-white mb-2">
+                                <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">
                                     {tier.name[language]}
                                 </h3>
-                                <p className="text-sm text-stone-500 h-10">
+                                <p className="text-sm text-slate-500 h-10">
                                     {tier.description[language]}
                                 </p>
                             </div>
 
                             <div className="mb-8">
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl font-black text-stone-900 dark:text-white tracking-tighter">
+                                    <span className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter">
                                         {billingPeriod === 'annual' ? tier.annual?.price[language] : tier.price[language]}
                                     </span>
-                                    <span className="text-sm font-bold text-stone-400">
+                                    <span className="text-sm font-bold text-slate-400">
                                         {billingPeriod === 'annual' ? tier.annual?.period[language] : tier.period[language]}
                                     </span>
                                 </div>
@@ -207,8 +210,8 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                             <div className="space-y-4 mb-8 flex-1">
                                 {tier.features.map((feature, i) => (
                                     <div key={i} className={`flex items-start gap-3 text-sm ${feature.included
-                                        ? 'text-stone-700 dark:text-stone-300'
-                                        : 'text-stone-400 line-through decoration-stone-300'
+                                        ? 'text-slate-700 dark:text-slate-300'
+                                        : 'text-slate-400 line-through decoration-slate-300'
                                         }`}>
                                         <div className={`mt-0.5 w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${feature.included
                                             ? 'bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint'
@@ -225,9 +228,9 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                 onClick={() => selectPlan(tier.id)}
                                 disabled={isCurrent || !!loadingPlanId}
                                 className={`w-full py-4 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer ${isCurrent
-                                    ? 'bg-stone-100 dark:bg-stone-800 text-stone-400 cursor-default'
+                                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-default'
                                     : loadingPlanId === tier.id
-                                        ? 'bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 border-none animate-pulse'
+                                        ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border-none animate-pulse'
                                         : isPopular
                                             ? 'bg-primary dark:bg-primary text-white dark:text-[#1A2420] hover:bg-primary-hover dark:hover:bg-mint shadow-lg shadow-primary/25 hover:shadow-primary/40 active:scale-95'
                                             : 'bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 text-slate-900 dark:text-white hover:border-primary dark:hover:border-primary active:scale-95'
@@ -236,9 +239,9 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                 {isCurrent
                                     ? copy.cta.currentPlan[language]
                                     : loadingPlanId === tier.id
-                                        ? (language === 'el' ? 'ΠΕΡΙΜΈΝΕΤΕ...' : 'PROCESSING...')
+                                        ? copy.cta.processing[language]
                                         : (tier.id === 'ph-pro'
-                                            ? (language === 'el' ? 'ΔΩΡΕΑΝ ΔΟΚΙΜΗ 14 ΗΜΕΡΩΝ' : 'START 14-DAY FREE TRIAL')
+                                            ? copy.trial.cta[language]
                                             : copy.cta.upgrade[language])}
                             </button>
                         </motion.div>
@@ -249,32 +252,32 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
             {/* In-depth Comparison Table */}
             <div className="mt-24 mb-16 overflow-hidden">
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl font-black text-stone-900 dark:text-white tracking-tight">
-                        {language === 'el' ? 'Σύγκριση Δυνατοτήτων' : 'Compare Features'}
+                    <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                        {copy.headings.comparison.title[language]}
                     </h2>
                 </div>
 
-                <div className="overflow-x-auto rounded-[32px] border border-stone-100 dark:border-stone-800">
+                <div className="overflow-x-auto rounded-[32px] border border-slate-100 dark:border-slate-800">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-stone-50 dark:bg-stone-900/50">
-                                <th className="px-8 py-6 text-sm font-black text-stone-400 uppercase tracking-widest">Feature</th>
-                                <th className="px-8 py-6 text-sm font-black text-stone-900 dark:text-white uppercase tracking-widest">Free</th>
+                            <tr className="bg-slate-50 dark:bg-slate-900/50">
+                                <th className="px-8 py-6 text-sm font-black text-slate-400 uppercase tracking-widest">Feature</th>
+                                <th className="px-8 py-6 text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">Free</th>
                                 <th className="px-8 py-6 text-sm font-black text-primary dark:text-mint uppercase tracking-widest">Plus</th>
                                 <th className="px-8 py-6 text-sm font-black text-primary dark:text-mint uppercase tracking-widest">Pro</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-stone-50 dark:divide-stone-800">
+                        <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
                             {comparisonFeatures.map((feat, i) => (
-                                <tr key={i} className="hover:bg-stone-50/50 dark:hover:bg-stone-800/20 transition-colors">
-                                    <td className="px-8 py-5 text-sm font-bold text-stone-700 dark:text-stone-300">{feat.name}</td>
+                                <tr key={i} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors">
+                                    <td className="px-8 py-5 text-sm font-bold text-slate-700 dark:text-slate-300">{feat.name}</td>
                                     <td className="px-8 py-5">
                                         {typeof feat.free === 'string' ? (
-                                            <span className="text-sm font-bold text-stone-500">{feat.free}</span>
+                                            <span className="text-sm font-bold text-slate-500">{feat.free}</span>
                                         ) : feat.free ? (
                                             <Check className="w-5 h-5 text-primary dark:text-mint" />
                                         ) : (
-                                            <X className="w-5 h-5 text-stone-300" />
+                                            <X className="w-5 h-5 text-slate-300" />
                                         )}
                                     </td>
                                     <td className="px-8 py-5">
@@ -283,7 +286,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                         ) : feat.plus ? (
                                             <Check className="w-5 h-5 text-primary dark:text-mint" />
                                         ) : (
-                                            <X className="w-5 h-5 text-stone-200" />
+                                            <X className="w-5 h-5 text-slate-200" />
                                         )}
                                     </td>
                                     <td className="px-8 py-5">
@@ -292,7 +295,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                         ) : feat.pro ? (
                                             <Check className="w-5 h-5 text-primary dark:text-mint" />
                                         ) : (
-                                            <X className="w-5 h-5 text-stone-200" />
+                                            <X className="w-5 h-5 text-slate-200" />
                                         )}
                                     </td>
                                 </tr>
@@ -302,16 +305,16 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                 </div>
             </div>
 
-            <div className="mt-16 bg-stone-50 dark:bg-stone-900/50 rounded-[32px] p-8 md:p-12 text-center relative overflow-hidden">
+            <div className="mt-16 bg-slate-50 dark:bg-slate-900/50 rounded-[32px] p-8 md:p-12 text-center relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full -mr-32 -mt-32"></div>
-                <h2 className="text-2xl font-black text-stone-900 dark:text-white mb-8 relative z-10">
+                <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-8 relative z-10">
                     {copy.headings.faq.title[language]}
                 </h2>
                 <div className="grid md:grid-cols-2 gap-8 text-left max-w-4xl mx-auto relative z-10">
                     {copy.faq.map((item, i) => (
                         <div key={i}>
-                            <h4 className="font-bold text-stone-900 dark:text-white mb-2">{item.question[language]}</h4>
-                            <p className="text-sm text-stone-500 dark:text-stone-400 leading-relaxed">{item.answer[language]}</p>
+                            <h4 className="font-bold text-slate-900 dark:text-white mb-2">{item.question[language]}</h4>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{item.answer[language]}</p>
                         </div>
                     ))}
                 </div>
