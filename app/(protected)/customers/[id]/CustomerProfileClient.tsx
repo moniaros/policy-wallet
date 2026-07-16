@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { QuestionnaireSender } from "@/components/agent"
 import { Customer, OpportunityStatus } from "@/components/agent/types"
-import { updateOpportunityStatus, sendReminder, createAgentInvite } from "../../agent/actions"
+import { updateOpportunityStatus, createAgentInvite } from "../../agent/actions"
 import { useRouter } from "next/navigation"
 import { CreateTaskModal } from "@/components/agent/CreateTaskModal"
 import { AddPolicyForCustomerModal } from "@/components/agent/AddPolicyForCustomerModal"

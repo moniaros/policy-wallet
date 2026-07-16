@@ -1,5 +1,4 @@
 export * from './CustomerList'
-export * from './CustomerProfile'
 export * from './Dashboard'
 export * from './DesktopDashboard'
 export * from './InviteModal'

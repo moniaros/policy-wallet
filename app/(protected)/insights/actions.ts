@@ -159,34 +159,34 @@ export async function getInsightsData(): Promise<InsightsData | null> {
         }))
         .sort((a, b) => a.daysUntilExpiry - b.daysUntilExpiry)
 
-    // 4. Opportunity metrics
-    const opportunities = await db.opportunity.findMany({
-        where: {
-            relationship: { agentUserId: agentId }
-        },
-        select: {
-            id: true,
-            status: true,
-            estimatedPremium: true,
-            wonPremium: true,
-        }
+    // 4. Opportunity metrics — grouped counts + summed estimate in the DB
+    // instead of loading every opportunity row and running five filter passes.
+    const oppGroups = await db.opportunity.groupBy({
+        by: ['status'],
+        where: { relationship: { agentUserId: agentId } },
+        _count: { _all: true },
+        _sum: { estimatedPremium: true },
     })
-
-    const oppTotal = opportunities.length
-    const oppOpen = opportunities.filter(o => o.status === 'open').length
-    const oppContacted = opportunities.filter(o => o.status === 'contacted').length
-    const oppQuoted = opportunities.filter(o => o.status === 'quoted').length
-    const oppWon = opportunities.filter(o => o.status === 'won').length
-    const oppLost = opportunities.filter(o => o.status === 'lost').length
+    const countByStatus = (s: string) => oppGroups.find(g => g.status === s)?._count._all ?? 0
+    const oppTotal = oppGroups.reduce((n, g) => n + g._count._all, 0)
+    const oppOpen = countByStatus('open')
+    const oppContacted = countByStatus('contacted')
+    const oppQuoted = countByStatus('quoted')
+    const oppWon = countByStatus('won')
+    const oppLost = countByStatus('lost')
     const conversionRate = oppTotal > 0 ? Math.round((oppWon / oppTotal) * 100) : 0
 
-    // Calculate pipeline value from estimated premiums on active opportunities
-    const totalPotentialValue = opportunities
-        .filter(o => o.status !== 'won' && o.status !== 'lost')
-        .reduce((sum, o) => sum + Number(o.estimatedPremium ?? 0), 0)
+    const totalPotentialValue = oppGroups
+        .filter(g => g.status !== 'won' && g.status !== 'lost')
+        .reduce((sum, g) => sum + Number(g._sum.estimatedPremium ?? 0), 0)
 
-    const totalWonValue = opportunities
-        .filter(o => o.status === 'won')
+    // Won value needs a per-row (wonPremium ?? estimatedPremium) coalesce that
+    // groupBy can't express — fetch just the won rows (a small subset).
+    const wonOpps = await db.opportunity.findMany({
+        where: { relationship: { agentUserId: agentId }, status: 'won' },
+        select: { wonPremium: true, estimatedPremium: true },
+    })
+    const totalWonValue = wonOpps
         .reduce((sum, o) => sum + Number(o.wonPremium ?? o.estimatedPremium ?? 0), 0)
 
     // 5. Premium summary

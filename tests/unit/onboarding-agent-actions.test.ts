@@ -23,7 +23,6 @@ import {
     updateAgentProfile,
     completeOnboarding,
     sendClientInvite,
-    generateDemoProposal,
 } from '@/app/onboarding/agent/actions'
 
 const mockAuth = vi.mocked(getAuthenticatedUserOrNull)
@@ -130,14 +129,4 @@ describe('onboarding/agent server actions — identity is derived from the sessi
         })
     })
 
-    describe('generateDemoProposal', () => {
-        it('rejects an unauthenticated caller before doing any work', async () => {
-            mockAuth.mockResolvedValue(null)
-
-            const result = await generateDemoProposal(null as any)
-
-            expect(result.success).toBe(false)
-            expect((result as any).data).toBeUndefined()
-        })
-    })
 })

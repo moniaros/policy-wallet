@@ -786,29 +786,6 @@ export async function sendQuestionnaire(relationshipId: string, templateId: stri
     return instance
 }
 
-export async function sendReminder(customerId: string) {
-    const authResult = await getAuthenticatedUserOrNull()
-    if (!authResult) throw new Error("Unauthorized")
-    if (!isAgentRole(authResult.dbUser.roles)) throw new Error("Unauthorized")
-
-    // In a real app, this would send an email or push via a notification service
-    // For now, we update the lastInteractionAt to show we touched this relationship
-
-    await (db.customerRelationship.updateMany as any)({
-        where: {
-            agentUserId: authResult.dbUser.id,
-            policyholderUserId: customerId
-        },
-        data: {
-            lastInteractionAt: new Date()
-        }
-    })
-
-    revalidatePath(`/customers/${customerId}`)
-    revalidatePath("/customers")
-    return { success: true }
-}
-
 export async function updateAgentProfile(data: {
     agencyName?: string;
     licenseNumber?: string;

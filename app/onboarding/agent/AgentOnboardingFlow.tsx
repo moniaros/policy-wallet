@@ -7,7 +7,6 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { AgentWelcomeStep } from "@/components/onboarding/agent/AgentWelcomeStep"
 import { AgencyBrandingStep } from "@/components/onboarding/agent/AgencyBrandingStep"
 import { LicenseVerificationStep } from "@/components/onboarding/agent/LicenseVerificationStep"
-import { DemoAnalysisStep } from "@/components/onboarding/agent/DemoAnalysisStep"
 import { FirstClientInviteStep } from "@/components/onboarding/agent/FirstClientInviteStep"
 
 export default function AgentOnboardingFlow() {
@@ -29,7 +28,7 @@ export default function AgentOnboardingFlow() {
         <div className="w-full max-w-xl">
             <div className="mb-8 flex items-center justify-between">
                 <div className="flex gap-2">
-                    {[1, 2, 3, 4, 5].map(i => (
+                    {[1, 2, 3, 4].map(i => (
                         <div
                             key={i}
                             className={`h-1.5 rounded-full transition-all duration-300 ${i <= step ? 'w-8 bg-primary' : 'w-2 bg-slate-200 dark:bg-slate-700'
@@ -38,7 +37,7 @@ export default function AgentOnboardingFlow() {
                     ))}
                 </div>
                 <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
-                    {t(`Βήμα ${step} από 5`, `Step ${step} of 5`)}
+                    {t(`Βήμα ${step} από 4`, `Step ${step} of 4`)}
                 </span>
             </div>
 
@@ -55,8 +54,7 @@ export default function AgentOnboardingFlow() {
                     {step === 1 && <AgentWelcomeStep onNext={nextStep} />}
                     {step === 2 && <AgencyBrandingStep onNext={nextStep} onBack={prevStep} />}
                     {step === 3 && <LicenseVerificationStep onNext={nextStep} onBack={prevStep} />}
-                    {step === 4 && <DemoAnalysisStep onNext={nextStep} onBack={prevStep} />}
-                    {step === 5 && <FirstClientInviteStep onNext={() => window.location.href = '/dashboard/agent'} onBack={prevStep} />}
+                    {step === 4 && <FirstClientInviteStep onNext={() => window.location.href = '/dashboard/agent'} onBack={prevStep} />}
                 </motion.div>
             </AnimatePresence>
         </div>

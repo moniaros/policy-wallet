@@ -59,7 +59,6 @@ export default async function AgentPage() {
         email: agentUser.email,
         company: agentProfile?.agencyName || roleCopy.defaults.agentCompany,
         photoUrl: agentProfile?.logoUrl || agentUser.image || undefined,
-        isOnline: true,
         branding: agentProfile ? {
             agencyName: agentProfile.agencyName,
             licenseNumber: agentProfile.licenseNumber,
@@ -75,7 +74,6 @@ export default async function AgentPage() {
         name: dbUser.name || roleCopy.defaults.userName,
         email: dbUser.email,
         photoUrl: dbUser.image || undefined,
-        isOnline: true
     }
 
     // Map policies
