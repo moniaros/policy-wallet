@@ -2,6 +2,7 @@ import { db } from "../db"
 import { logger } from "../logger"
 import { getAgentPolicyVisibilityWhere } from "@/lib/agent-visibility"
 import { isPolicyCoverageActive } from "@/lib/policy-status"
+import { commissionOn } from "@/lib/agent/commission"
 
 /**
  * Greek insurance coverage matrix.
@@ -134,6 +135,14 @@ export async function runCrossSellForCustomer(
     let opportunitiesCreated = 0
 
     if (autoCreateOpportunities && missingLines.length > 0) {
+        // The agent's real per-line commission rates, so the estimate matches
+        // the dashboard and /commissions instead of a hardcoded 15%.
+        const agentProfile = await db.agentProfile.findUnique({
+            where: { userId: agentUserId },
+            select: { commissionRates: true },
+        })
+        const commissionRates = (agentProfile?.commissionRates as Record<string, number> | null) ?? {}
+
         // Check for existing cross-sell opportunities to avoid duplicates
         const existingOpportunities = await db.opportunity.findMany({
             where: {
@@ -164,7 +173,7 @@ export async function runCrossSellForCustomer(
                     notes: `Cross-sell: Customer missing ${line.label.en} coverage. ${line.reason.en}`,
                     lineOfBusiness: line.lob,
                     estimatedPremium: estimatedPremium,
-                    estimatedCommission: estimatedPremium ? estimatedPremium * 0.15 : null, // 15% default
+                    estimatedCommission: estimatedPremium ? commissionOn(commissionRates, line.lob, estimatedPremium) : null,
                     currency: "EUR",
                 },
             })

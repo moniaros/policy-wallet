@@ -10,6 +10,7 @@ import { createAgentInvite } from "../agent/actions"
 import { useRouter } from "next/navigation"
 import { resendVerificationEmail } from "@/app/auth/actions"
 import { AlertCircle, CheckCircle, Loader2, X } from "lucide-react"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 interface Props {
     dashboardData: AgentDashboardData
@@ -34,6 +35,8 @@ export function DashboardClient({
     isEmailVerified = true,
     userEmail,
 }: Props) {
+    const { language, t } = useLanguage()
+    const tb = t.agentDashboard
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
     const [showBanner, setShowBanner] = useState(!isEmailVerified)
     const [isResending, setIsResending] = useState(false)
@@ -70,13 +73,13 @@ export function DashboardClient({
         if (!userEmail || isResending) return
         setResendError(null)
         setIsResending(true)
-        const result = await resendVerificationEmail(userEmail, "en")
+        const result = await resendVerificationEmail(userEmail, language)
         setIsResending(false)
         if (result.success) {
             setResendSuccess(true)
             setTimeout(() => setResendSuccess(false), 5000)
         } else {
-            setResendError("Could not send verification email right now.")
+            setResendError(tb.verifyBannerError)
         }
     }
 
@@ -90,7 +93,7 @@ export function DashboardClient({
                                 <AlertCircle className="mt-0.5 w-5 h-5 text-amber-600 dark:text-amber-500 flex-shrink-0" />
                                 <div className="space-y-1">
                                     <p className="text-sm text-amber-900 dark:text-amber-100">
-                                        <span className="font-bold">Verify your email address.</span> Please check your inbox ({userEmail}) to unlock full account protection.
+                                        <span className="font-bold">{tb.verifyBannerTitle}</span> {tb.verifyBannerCheckInbox} ({userEmail}) {tb.verifyBannerUnlock}
                                     </p>
                                     {resendError && (
                                         <p className="text-xs font-medium text-rose-700 dark:text-rose-300">{resendError}</p>
@@ -100,7 +103,7 @@ export function DashboardClient({
                             <button
                                 onClick={() => setShowBanner(false)}
                                 className="text-amber-500 hover:text-amber-700 dark:hover:text-amber-300 transition-colors"
-                                aria-label="Dismiss verification banner"
+                                aria-label={tb.verifyBannerDismiss}
                             >
                                 <X className="w-4 h-4" />
                             </button>
@@ -109,7 +112,7 @@ export function DashboardClient({
                             {resendSuccess && (
                                 <span className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary-soft px-2.5 py-1.5 text-xs font-semibold text-[#166534] dark:border-primary/30 dark:bg-primary/15 dark:text-mint">
                                     <CheckCircle className="w-3.5 h-3.5" />
-                                    Verification email sent
+                                    {tb.verifyBannerSent}
                                 </span>
                             )}
                             <button
@@ -118,7 +121,7 @@ export function DashboardClient({
                                 className="inline-flex items-center gap-2 rounded-lg border border-amber-300 bg-white px-3 py-1.5 text-xs font-semibold text-amber-800 transition hover:bg-amber-100 disabled:opacity-60 dark:border-amber-700 dark:bg-amber-900/10 dark:text-amber-200 dark:hover:bg-amber-900/30"
                             >
                                 {isResending ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-                                {isResending ? "Sending..." : "Resend verification email"}
+                                {isResending ? tb.verifyBannerSending : tb.verifyBannerResend}
                             </button>
                         </div>
                     </div>

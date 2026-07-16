@@ -108,8 +108,8 @@ model User {
   tokenBalance                    TokenBalance?              @relation("TokenBalance")
   tokenPurchases                  TokenPurchase[]            @relation("TokenPurchases")
   reportUnlockPurchases           ReportUnlockPurchase[]     @relation("ReportUnlockPurchases")
-  mergeRequestsRaised             PolicyMergeRequest[]      @relation("MergeRequester")
-  mergeRequestsToApprove          PolicyMergeRequest[]      @relation("MergeApprover")
+  mergeRequestsRaised             PolicyMergeRequest[]       @relation("MergeRequester")
+  mergeRequestsToApprove          PolicyMergeRequest[]       @relation("MergeApprover")
   monthlyTokenUsage               MonthlyTokenUsage[]        @relation("MonthlyTokenUsage")
   policyAnalysisRuns              PolicyAnalysisRun[]
   collaborationThreadsCreated     CollaborationThread[]      @relation("CollaborationThreadCreatedBy")
@@ -214,7 +214,7 @@ model PolicyholderProfile {
   // Enhanced Risk Fields (Gap Detection Engine)
   dateOfBirth       DateTime? @map("date_of_birth")
   annualIncome      Decimal?  @map("annual_income")
-  occupation        String?   // e.g. 'office_worker', 'manual_labor', 'freelancer'
+  occupation        String? // e.g. 'office_worker', 'manual_labor', 'freelancer'
   riskTolerance     String?   @map("risk_tolerance") // 'conservative', 'moderate', 'aggressive'
   hasLoans          Boolean   @default(false) @map("has_loans")
   loanAmount        Decimal?  @map("loan_amount")
@@ -223,13 +223,13 @@ model PolicyholderProfile {
   lifeEvents        Json?     @map("life_events") // [{type: 'new_baby', date: '2026-03'}]
 
   // Health & Lifestyle Risk Fields
-  gender               String? @map("gender")                // 'male', 'female', 'prefer_not_to_say'
-  heightCm             Int?    @map("height_cm")             // used for BMI
-  weightKg             Int?    @map("weight_kg")             // used for BMI
-  chronicConditions    Json?   @map("chronic_conditions")    // string[] e.g. ['diabetes', 'hypertension']
+  gender               String? @map("gender") // 'male', 'female', 'prefer_not_to_say'
+  heightCm             Int?    @map("height_cm") // used for BMI
+  weightKg             Int?    @map("weight_kg") // used for BMI
+  chronicConditions    Json?   @map("chronic_conditions") // string[] e.g. ['diabetes', 'hypertension']
   familyMedicalHistory Json?   @map("family_medical_history") // string[] e.g. ['heart_disease', 'cancer']
-  drivingRecord        String? @map("driving_record")        // 'clean', 'minor_violations', 'major_violations', 'accidents'
-  activityLevel        String? @map("activity_level")        // 'sedentary', 'moderate', 'active', 'very_active'
+  drivingRecord        String? @map("driving_record") // 'clean', 'minor_violations', 'major_violations', 'accidents'
+  activityLevel        String? @map("activity_level") // 'sedentary', 'moderate', 'active', 'very_active'
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -297,36 +297,36 @@ model TenantMembership {
 }
 
 model Policy {
-  id                   String                @id @default(cuid()) @map("policy_id")
-  ownerUserId          String                @map("owner_user_id")
-  createdByUserId      String                @map("created_by_user_id")
-  policyNumber         String                @map("policy_number")
-  insurerName          String                @map("insurer_name")
-  lineOfBusiness       String                @map("line_of_business")
-  startDate            DateTime              @map("start_date")
-  endDate              DateTime              @map("end_date")
-  status               String
-  premiumAmount        Decimal?              @map("premium_amount")
-  premiumCurrency      String?               @default("EUR") @map("premium_currency")
-  coverageSummary      String?               @map("coverage_summary")
-  createdAt            DateTime              @default(now()) @map("created_at")
-  updatedAt            DateTime              @updatedAt @map("updated_at")
-  acordData            Json?                 @map("acord_data")
-  lastAnalyzedAt       DateTime?             @map("last_analyzed_at")
+  id                      String                 @id @default(cuid()) @map("policy_id")
+  ownerUserId             String                 @map("owner_user_id")
+  createdByUserId         String                 @map("created_by_user_id")
+  policyNumber            String                 @map("policy_number")
+  insurerName             String                 @map("insurer_name")
+  lineOfBusiness          String                 @map("line_of_business")
+  startDate               DateTime               @map("start_date")
+  endDate                 DateTime               @map("end_date")
+  status                  String
+  premiumAmount           Decimal?               @map("premium_amount")
+  premiumCurrency         String?                @default("EUR") @map("premium_currency")
+  coverageSummary         String?                @map("coverage_summary")
+  createdAt               DateTime               @default(now()) @map("created_at")
+  updatedAt               DateTime               @updatedAt @map("updated_at")
+  acordData               Json?                  @map("acord_data")
+  lastAnalyzedAt          DateTime?              @map("last_analyzed_at")
   // One-off €3 gap-report unlock (free tier); survives re-analysis.
-  reportUnlockedAt     DateTime?             @map("report_unlocked_at")
-  gapInstances         GapInstance[]
-  opportunities        Opportunity[]
-  creator              User                  @relation("Creator", fields: [createdByUserId], references: [id])
-  owner                User                  @relation("Owner", fields: [ownerUserId], references: [id])
-  documents            PolicyDocument[]
-  tokenUsages          TokenUsage[]          @relation("PolicyTokenUsage")
-  analysisRuns         PolicyAnalysisRun[]
-  collaborationThreads CollaborationThread[]
-  renewals             PolicyRenewal[]
-  reportUnlocks        ReportUnlockPurchase[]
-  mergeRequestsAsExisting PolicyMergeRequest[] @relation("MergeExisting")
-  mergeRequestsAsIncoming PolicyMergeRequest[] @relation("MergeIncoming")
+  reportUnlockedAt        DateTime?              @map("report_unlocked_at")
+  gapInstances            GapInstance[]
+  opportunities           Opportunity[]
+  creator                 User                   @relation("Creator", fields: [createdByUserId], references: [id])
+  owner                   User                   @relation("Owner", fields: [ownerUserId], references: [id])
+  documents               PolicyDocument[]
+  tokenUsages             TokenUsage[]           @relation("PolicyTokenUsage")
+  analysisRuns            PolicyAnalysisRun[]
+  collaborationThreads    CollaborationThread[]
+  renewals                PolicyRenewal[]
+  reportUnlocks           ReportUnlockPurchase[]
+  mergeRequestsAsExisting PolicyMergeRequest[]   @relation("MergeExisting")
+  mergeRequestsAsIncoming PolicyMergeRequest[]   @relation("MergeIncoming")
 
   @@index([ownerUserId])
   @@index([createdByUserId])
@@ -383,21 +383,21 @@ model GapDefinition {
 }
 
 model GapInstance {
-  id                   String                @id @default(cuid()) @map("gap_instance_id")
-  policyId             String?               @map("policy_id")
-  userId               String?               @map("user_id")
-  gapDefinitionId      String                @map("gap_definition_id")
+  id                   String                   @id @default(cuid()) @map("gap_instance_id")
+  policyId             String?                  @map("policy_id")
+  userId               String?                  @map("user_id")
+  gapDefinitionId      String                   @map("gap_definition_id")
   severity             String
-  status               String                @default("open")
-  aiExplanation        String?               @map("ai_explanation")
-  aiSuggestion         String?               @map("ai_suggestion")
-  detectedAt           DateTime              @default(now()) @map("detected_at")
-  resolvedAt           DateTime?             @map("resolved_at")
-  aiExplanationEl      String?               @map("ai_explanation_el")
-  aiSuggestionEl       String?               @map("ai_suggestion_el")
-  definition           GapDefinition         @relation(fields: [gapDefinitionId], references: [id])
-  policy               Policy?               @relation(fields: [policyId], references: [id], onDelete: Cascade)
-  user                 User?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status               String                   @default("open")
+  aiExplanation        String?                  @map("ai_explanation")
+  aiSuggestion         String?                  @map("ai_suggestion")
+  detectedAt           DateTime                 @default(now()) @map("detected_at")
+  resolvedAt           DateTime?                @map("resolved_at")
+  aiExplanationEl      String?                  @map("ai_explanation_el")
+  aiSuggestionEl       String?                  @map("ai_suggestion_el")
+  definition           GapDefinition            @relation(fields: [gapDefinitionId], references: [id])
+  policy               Policy?                  @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  user                 User?                    @relation(fields: [userId], references: [id], onDelete: Cascade)
   opportunities        Opportunity[]
   collaborationThreads CollaborationThread[]
   recommendations      RecommendationInstance[]
@@ -429,6 +429,10 @@ model CustomerRelationship {
   // Every B2C page looks up the relationship by policyholder; the unique index
   // above leads with agentUserId and cannot serve it.
   @@index([policyholderUserId, status])
+  // Agent customer list sorts by last interaction; priorities/summary filter by
+  // (agentUserId, status). The unique index serves only agentUserId equality.
+  @@index([agentUserId, lastInteractionAt])
+  @@index([agentUserId, status])
   @@map("customer_relationships")
 }
 
@@ -463,6 +467,10 @@ model Invite {
   invitee              User?     @relation("Invitee", fields: [inviteeUserId], references: [id])
   inviter              User      @relation("Inviter", fields: [inviterUserId], references: [id])
 
+  // Agent invite lists and the profile timeline filter by inviter (and
+  // inviter+email). Previously only `token` was indexed — every "my invites"
+  // query full-scanned the table.
+  @@index([inviterUserId, inviteeEmail])
   @@map("invites")
 }
 
@@ -493,6 +501,9 @@ model Opportunity {
   @@index([policyId])
   @@index([ownerAgentUserId])
   @@index([status])
+  // Dashboard, priorities and scoring all filter by (owner, status); the two
+  // single-column indexes force a scan-and-filter on the larger side.
+  @@index([ownerAgentUserId, status])
   @@map("opportunities")
 }
 
@@ -1286,9 +1297,9 @@ model RecommendationInstance {
   gapInstanceId    String?      @map("gap_instance_id")
   lineOfBusiness   String       @map("line_of_business")
   ruleId           String?      @map("rule_id") // e.g. 'mortgage_no_life'
-  title            Json         // { en: "...", el: "..." }
-  description      Json         // { en: "...", el: "..." }
-  urgency          String       // 'critical', 'high', 'medium', 'low'
+  title            Json // { en: "...", el: "..." }
+  description      Json // { en: "...", el: "..." }
+  urgency          String // 'critical', 'high', 'medium', 'low'
   estimatedCostEur Decimal?     @map("estimated_cost_eur") @db.Decimal(10, 2)
   personalReason   Json         @map("personal_reason") // { en: "You have a mortgage...", el: "..." }
   status           String       @default("active") // 'active', 'dismissed', 'actioned'
@@ -1299,8 +1310,8 @@ model RecommendationInstance {
   user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   gapInstance      GapInstance? @relation(fields: [gapInstanceId], references: [id], onDelete: SetNull)
 
-  productId        String?      @map("product_id")
-  product          InsuranceProduct? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productId String?           @map("product_id")
+  product   InsuranceProduct? @relation(fields: [productId], references: [id], onDelete: SetNull)
 
   // Exactly one row per (user, rule): the engine has ten call sites, five of
   // them unawaited background promises, and the old read-then-write sync
@@ -1316,23 +1327,23 @@ model RecommendationInstance {
 // Used for product matching in recommendations and cross-sell.
 
 model InsuranceProduct {
-  id                      String       @id @default(cuid()) @map("product_id")
-  lineOfBusiness          String       @map("line_of_business") // motor, home, health, life, travel, pet, liability, legal_expenses
-  name                    Json         // { en: "...", el: "..." }
-  description             Json         // { en: "...", el: "..." }
-  category                String       @default("individual") // individual, group, corporate
-  estimatedAnnualPremium  Decimal      @map("estimated_annual_premium") @db.Decimal(10, 2)
-  premiumRangeLow         Decimal?     @map("premium_range_low") @db.Decimal(10, 2)
-  premiumRangeHigh        Decimal?     @map("premium_range_high") @db.Decimal(10, 2)
-  keyBenefits             Json?        @map("key_benefits") // [{ en: "...", el: "..." }, ...]
-  idealProfileTags        String[]     @map("ideal_profile_tags") // e.g. ['homeowner', 'has_dependents', 'self_employed']
-  urgencyForProfiles      String       @default("medium") @map("urgency_for_profiles") // critical, high, medium, low
-  greekMarketPopularity   Int          @default(50) @map("greek_market_popularity") // 0-100
-  isActive                Boolean      @default(true) @map("is_active")
-  sortOrder               Int          @default(0) @map("sort_order")
-  createdAt               DateTime     @default(now()) @map("created_at")
-  updatedAt               DateTime     @updatedAt @map("updated_at")
-  recommendations         RecommendationInstance[]
+  id                     String                   @id @default(cuid()) @map("product_id")
+  lineOfBusiness         String                   @map("line_of_business") // motor, home, health, life, travel, pet, liability, legal_expenses
+  name                   Json // { en: "...", el: "..." }
+  description            Json // { en: "...", el: "..." }
+  category               String                   @default("individual") // individual, group, corporate
+  estimatedAnnualPremium Decimal                  @map("estimated_annual_premium") @db.Decimal(10, 2)
+  premiumRangeLow        Decimal?                 @map("premium_range_low") @db.Decimal(10, 2)
+  premiumRangeHigh       Decimal?                 @map("premium_range_high") @db.Decimal(10, 2)
+  keyBenefits            Json?                    @map("key_benefits") // [{ en: "...", el: "..." }, ...]
+  idealProfileTags       String[]                 @map("ideal_profile_tags") // e.g. ['homeowner', 'has_dependents', 'self_employed']
+  urgencyForProfiles     String                   @default("medium") @map("urgency_for_profiles") // critical, high, medium, low
+  greekMarketPopularity  Int                      @default(50) @map("greek_market_popularity") // 0-100
+  isActive               Boolean                  @default(true) @map("is_active")
+  sortOrder              Int                      @default(0) @map("sort_order")
+  createdAt              DateTime                 @default(now()) @map("created_at")
+  updatedAt              DateTime                 @updatedAt @map("updated_at")
+  recommendations        RecommendationInstance[]
 
   @@index([lineOfBusiness, isActive])
   @@index([isActive, sortOrder])

@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import * as Sentry from "@sentry/nextjs"
+import { toast } from "sonner"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 interface BulkImportModalProps {
     isOpen: boolean
@@ -19,6 +21,8 @@ interface CustomerRow {
 }
 
 export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalProps) {
+    const { t } = useLanguage()
+    const tt = t.agentModals.bulkImport
     const [step, setStep] = useState<'upload' | 'preview' | 'importing' | 'complete'>('upload')
     const [customers, setCustomers] = useState<CustomerRow[]>([])
     const [isProcessing, setIsProcessing] = useState(false)
@@ -47,10 +51,10 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
 
                 if (!name || !email) {
                     status = 'invalid'
-                    error = 'Missing required fields'
+                    error = tt.errMissingFields
                 } else if (!email.includes('@')) {
                     status = 'invalid'
-                    error = 'Invalid email format'
+                    error = tt.errInvalidEmail
                 }
 
                 return { name, surname, email, phone, status, error }
@@ -62,7 +66,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
             Sentry.captureException(error, {
                 tags: { component: 'BulkImportModal', action: 'file_upload' }
             })
-            alert('Failed to parse CSV file. Please check the format.')
+            toast.error(tt.parseError)
         } finally {
             setIsProcessing(false)
         }
@@ -95,7 +99,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
             Sentry.captureException(error, {
                 tags: { component: 'BulkImportModal', action: 'import' }
             })
-            alert('Failed to import customers. Please try again.')
+            toast.error(tt.importError)
             setStep('preview')
         } finally {
             setIsProcessing(false)
@@ -120,10 +124,10 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                     <div className="flex items-center justify-between">
                         <div>
                             <h2 className="text-2xl font-bold text-stone-900 dark:text-white">
-                                Bulk Import Customers
+                                {tt.title}
                             </h2>
                             <p className="text-sm text-stone-600 dark:text-stone-400 mt-1">
-                                Import multiple customers from a CSV file
+                                {tt.subtitle}
                             </p>
                         </div>
                         <button
@@ -143,15 +147,15 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                         <div className="space-y-6">
                             {/* Instructions */}
                             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-                                <h3 className="font-bold text-blue-900 dark:text-blue-300 mb-2">CSV Format Instructions</h3>
+                                <h3 className="font-bold text-blue-900 dark:text-blue-300 mb-2">{tt.csvFormatTitle}</h3>
                                 <p className="text-sm text-blue-800 dark:text-blue-400 mb-2">
-                                    Your CSV file should have the following columns:
+                                    {tt.csvFormatDesc}
                                 </p>
                                 <code className="block bg-blue-100 dark:bg-blue-900/40 text-blue-900 dark:text-blue-300 p-3 rounded text-xs font-mono">
                                     name,surname,email,phone
                                 </code>
                                 <p className="text-xs text-blue-700 dark:text-blue-400 mt-2">
-                                    Example: John,Doe,john@example.com,+306912345678
+                                    {tt.csvExample}
                                 </p>
                             </div>
 
@@ -173,10 +177,10 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                     </svg>
                                     <span className="text-lg font-bold text-stone-700 dark:text-stone-300">
-                                        {isProcessing ? 'Processing...' : 'Click to upload CSV file'}
+                                        {isProcessing ? tt.processing : tt.clickToUpload}
                                     </span>
                                     <span className="text-sm text-stone-500 dark:text-stone-400 mt-1">
-                                        or drag and drop
+                                        {tt.dragAndDrop}
                                     </span>
                                 </label>
                             </div>
@@ -189,15 +193,15 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                             <div className="grid grid-cols-3 gap-4">
                                 <div className="bg-primary-tint dark:bg-primary/15 border border-primary/20 dark:border-primary/30 rounded-xl p-4">
                                     <div className="text-3xl font-bold text-[#166534] dark:text-mint">{validCount}</div>
-                                    <div className="text-sm font-medium text-primary dark:text-mint">Valid</div>
+                                    <div className="text-sm font-medium text-primary dark:text-mint">{tt.valid}</div>
                                 </div>
                                 <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
                                     <div className="text-3xl font-bold text-red-700 dark:text-red-400">{invalidCount}</div>
-                                    <div className="text-sm font-medium text-red-600 dark:text-red-500">Invalid</div>
+                                    <div className="text-sm font-medium text-red-600 dark:text-red-500">{tt.invalid}</div>
                                 </div>
                                 <div className="bg-stone-50 dark:bg-stone-700 border border-stone-200 dark:border-stone-600 rounded-xl p-4">
                                     <div className="text-3xl font-bold text-stone-700 dark:text-stone-300">{customers.length}</div>
-                                    <div className="text-sm font-medium text-stone-600 dark:text-stone-400">Total</div>
+                                    <div className="text-sm font-medium text-stone-600 dark:text-stone-400">{tt.total}</div>
                                 </div>
                             </div>
 
@@ -206,10 +210,10 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                 <table className="w-full text-sm">
                                     <thead className="bg-stone-50 dark:bg-stone-900/50 sticky top-0">
                                         <tr>
-                                            <th className="px-4 py-3 text-left font-bold text-stone-600 dark:text-stone-400">Name</th>
-                                            <th className="px-4 py-3 text-left font-bold text-stone-600 dark:text-stone-400">Email</th>
-                                            <th className="px-4 py-3 text-left font-bold text-stone-600 dark:text-stone-400">Phone</th>
-                                            <th className="px-4 py-3 text-left font-bold text-stone-600 dark:text-stone-400">Status</th>
+                                            <th className="px-4 py-3 text-left font-bold text-stone-600 dark:text-stone-400">{tt.colName}</th>
+                                            <th className="px-4 py-3 text-left font-bold text-stone-600 dark:text-stone-400">{tt.colEmail}</th>
+                                            <th className="px-4 py-3 text-left font-bold text-stone-600 dark:text-stone-400">{tt.colPhone}</th>
+                                            <th className="px-4 py-3 text-left font-bold text-stone-600 dark:text-stone-400">{tt.colStatus}</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-stone-100 dark:divide-stone-700">
@@ -223,7 +227,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                                 <td className="px-4 py-3">
                                                     {customer.status === 'valid' ? (
                                                         <span className="px-2 py-1 bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint rounded-full text-xs font-bold">
-                                                            Valid
+                                                            {tt.validBadge}
                                                         </span>
                                                     ) : (
                                                         <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full text-xs font-bold">
@@ -243,14 +247,14 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                     onClick={() => setStep('upload')}
                                     className="flex-1 px-6 py-3 rounded-xl font-bold text-stone-700 dark:text-stone-300 bg-stone-100 dark:bg-stone-700 hover:bg-stone-200 dark:hover:bg-stone-600 transition-colors"
                                 >
-                                    Back
+                                    {tt.back}
                                 </button>
                                 <button
                                     onClick={handleImport}
                                     disabled={validCount === 0 || isProcessing}
                                     className="flex-1 px-6 py-3 rounded-xl font-bold text-white dark:text-[#1A2420] bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/25"
                                 >
-                                    Import {validCount} Customer{validCount !== 1 ? 's' : ''}
+                                    {tt.importBtn} {validCount} {validCount !== 1 ? tt.custBtnPlural : tt.custBtnSingular}
                                 </button>
                             </div>
                         </div>
@@ -259,8 +263,8 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                     {step === 'importing' && (
                         <div className="py-12 text-center">
                             <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary/20 border-t-primary mb-4"></div>
-                            <h3 className="text-xl font-bold text-stone-900 dark:text-white">Importing Customers...</h3>
-                            <p className="text-stone-600 dark:text-stone-400 mt-2">Please wait while we process your data</p>
+                            <h3 className="text-xl font-bold text-stone-900 dark:text-white">{tt.importingTitle}</h3>
+                            <p className="text-stone-600 dark:text-stone-400 mt-2">{tt.importingDesc}</p>
                         </div>
                     )}
 
@@ -271,9 +275,9 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
-                            <h3 className="text-xl font-bold text-stone-900 dark:text-white">Import Complete!</h3>
+                            <h3 className="text-xl font-bold text-stone-900 dark:text-white">{tt.completeTitle}</h3>
                             <p className="text-stone-600 dark:text-stone-400 mt-2">
-                                Successfully imported {importedCount} customer{importedCount !== 1 ? 's' : ''}
+                                {tt.successfullyImported} {importedCount} {importedCount !== 1 ? tt.custPlural : tt.custSingular}
                             </p>
                         </div>
                     )}

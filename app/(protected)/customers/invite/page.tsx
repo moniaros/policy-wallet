@@ -8,7 +8,6 @@ export default function InviteCustomerPage() {
     const [isPending, setIsPending] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState(false)
-    const [token, setToken] = useState<string | null>(null)
     const router = useRouter()
 
     async function handleSubmit(formData: FormData) {
@@ -18,7 +17,6 @@ export default function InviteCustomerPage() {
             const result = await inviteCustomer(formData)
             if (result.success) {
                 setSuccess(true)
-                setToken((result as any).token)
             }
         } catch (err: any) {
             setError(err.message || "Failed to send invitation")
@@ -43,13 +41,8 @@ export default function InviteCustomerPage() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
-                            <h2 className="text-2xl font-bold text-stone-900 dark:text-white mb-2">Invitation Sent!</h2>
-                            <p className="text-stone-600 dark:text-stone-400 mb-6">An invitation has been created for the customer.</p>
-
-                            <div className="bg-stone-50 dark:bg-stone-900/50 p-4 rounded-xl border border-stone-200 dark:border-stone-700 mb-6 text-left">
-                                <div className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-1">Invitation Token (Dev Only)</div>
-                                <code className="text-primary dark:text-mint font-mono break-all">{token}</code>
-                            </div>
+                            <h2 className="text-2xl font-bold text-stone-900 dark:text-white mb-2">Η πρόσκληση στάλθηκε</h2>
+                            <p className="text-stone-600 dark:text-stone-400 mb-6">Στείλαμε στον πελάτη έναν σύνδεσμο πρόσκλησης στο email του.</p>
 
                             <button
                                 onClick={() => router.push("/customers")}

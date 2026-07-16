@@ -100,8 +100,8 @@ export function DesktopDashboard({
         <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950">
             {/* Header */}
             <div className="relative overflow-hidden bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/60">
-                <div className="max-w-[1400px] mx-auto px-8 py-6">
-                    <div className="flex items-center justify-between">
+                <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-6">
+                    <div className="flex items-center justify-between flex-wrap gap-3">
                         <div className="flex items-center gap-4">
                             <div className="relative bg-primary text-white dark:text-[#1A2420] p-3 rounded-2xl shadow-lg shadow-primary/25">
                                 <Briefcase className="w-6 h-6" />
@@ -135,13 +135,13 @@ export function DesktopDashboard({
                 </div>
             </div>
 
-            <div className="max-w-[1400px] mx-auto px-8 py-6 space-y-6">
+            <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-6 space-y-6">
                 {/* ── Book-of-business KPI strip ─────────────────────────── */}
                 {data.portalStats && <AgentKpiStrip stats={data.portalStats} />}
 
                 {/* ── Above the fold: Action Queue + Revenue Pulse ──────── */}
-                <div className="grid grid-cols-12 gap-5">
-                    <div className="col-span-7">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    <div className="lg:col-span-7">
                         <ActionQueueCard
                             items={data.actionQueue}
                             onAction={onActionQueueItem}
@@ -150,7 +150,7 @@ export function DesktopDashboard({
                             onGapClientClick={onClientClick}
                         />
                     </div>
-                    <div className="col-span-5">
+                    <div className="lg:col-span-5">
                         <AgentPlanGate
                             currentTier={agentTier}
                             requiredTier="agent_starter"
@@ -166,14 +166,14 @@ export function DesktopDashboard({
                 </div>
 
                 {/* ── Mid fold: Portfolio Health + Today's Follow-ups ──── */}
-                <div className="grid grid-cols-12 gap-5">
-                    <div className="col-span-5">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    <div className="lg:col-span-5">
                         <PortfolioHealth
                             health={data.portfolioHealth}
                             isLoading={isLoading}
                         />
                     </div>
-                    <div className="col-span-7">
+                    <div className="lg:col-span-7">
                         <TodaysFollowUps
                             items={data.todaysFollowUps}
                             language={language}
@@ -183,8 +183,8 @@ export function DesktopDashboard({
                 </div>
 
                 {/* ── Below the fold: Clients + Activity Feed ─────────── */}
-                <div className="grid grid-cols-12 gap-5">
-                    <div className="col-span-8">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                    <div className="lg:col-span-8">
                         <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-5">
                             <div className="flex items-center justify-between mb-4">
                                 <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
@@ -201,7 +201,7 @@ export function DesktopDashboard({
                         </div>
                     </div>
 
-                    <div className="col-span-4 space-y-5">
+                    <div className="lg:col-span-4 space-y-5">
                         {/* Activity Feed */}
                         <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-5">
                             <h2 className="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">

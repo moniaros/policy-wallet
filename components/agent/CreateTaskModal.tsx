@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { createUserTask } from "@/app/(protected)/tasks/taskActions"
 import { toast } from "sonner"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 interface CreateTaskModalProps {
     isOpen: boolean
@@ -11,20 +12,21 @@ interface CreateTaskModalProps {
     customerName: string
 }
 
-const TASK_TYPES = [
-    { value: 'reminder', label: '⏰ Reminder', description: 'Schedule a time-sensitive reminder' },
-    { value: 'request', label: '📄 Request', description: 'Ask for documents or information' },
-    { value: 'recommendation', label: '💡 Recommendation', description: 'Suggest an improvement' },
-    { value: 'general', label: '📝 General', description: 'General task or note' },
-]
-
-const PRIORITIES = [
-    { value: 'low', label: 'Low', color: 'blue' },
-    { value: 'medium', label: 'Medium', color: 'amber' },
-    { value: 'high', label: 'High', color: 'red' },
-]
-
 export function CreateTaskModal({ isOpen, onClose, userId, customerName }: CreateTaskModalProps) {
+    const { t } = useLanguage()
+    const tt = t.agentModals.createTask
+    const TASK_TYPES = [
+        { value: 'reminder', label: `⏰ ${tt.typeReminder}`, description: tt.typeReminderDesc },
+        { value: 'request', label: `📄 ${tt.typeRequest}`, description: tt.typeRequestDesc },
+        { value: 'recommendation', label: `💡 ${tt.typeRecommendation}`, description: tt.typeRecommendationDesc },
+        { value: 'general', label: `📝 ${tt.typeGeneral}`, description: tt.typeGeneralDesc },
+    ]
+    const PRIORITIES = [
+        { value: 'low', label: tt.priorityLow, color: 'blue' },
+        { value: 'medium', label: tt.priorityMedium, color: 'amber' },
+        { value: 'high', label: tt.priorityHigh, color: 'red' },
+    ]
+
     const [type, setType] = useState('reminder')
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
@@ -49,18 +51,18 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
             })
 
             if (result.success) {
-                toast.success("Task created successfully")
+                toast.success(tt.taskCreated)
                 onClose()
                 // Reset form
                 setTitle('')
                 setDescription('')
                 setDueDate('')
             } else {
-                toast.error(result.error || "Failed to create task")
+                toast.error(result.error || tt.createFailed)
             }
         } catch (error) {
             console.error(error)
-            toast.error("An unexpected error occurred")
+            toast.error(tt.unexpectedError)
         } finally {
             setIsSubmitting(false)
         }
@@ -73,10 +75,10 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
                 <div className="border-b border-stone-100 dark:border-stone-800 px-6 py-5 flex items-center justify-between">
                     <div>
                         <h2 className="text-xl font-bold text-stone-900 dark:text-white">
-                            Create Task for {customerName}
+                            {tt.titlePrefix} {customerName}
                         </h2>
                         <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">
-                            Add an item to their Action Center
+                            {tt.subtitle}
                         </p>
                     </div>
                     <button
@@ -109,14 +111,14 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
                     {/* Title */}
                     <div>
                         <label className="block text-sm font-bold text-stone-700 dark:text-stone-300 mb-2">
-                            Title <span className="text-red-500">*</span>
+                            {tt.titleLabel} <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
                             required
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            placeholder="e.g., Renew Driving License"
+                            placeholder={tt.titlePlaceholder}
                             className="w-full px-4 py-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-stone-900 dark:focus:ring-white transition-all"
                         />
                     </div>
@@ -124,13 +126,13 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
                     {/* Description */}
                     <div>
                         <label className="block text-sm font-bold text-stone-700 dark:text-stone-300 mb-2">
-                            Description
+                            {tt.descriptionLabel}
                         </label>
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             rows={3}
-                            placeholder="Add details about what needs to be done..."
+                            placeholder={tt.descriptionPlaceholder}
                             className="w-full px-4 py-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 text-stone-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-stone-900 dark:focus:ring-white transition-all resize-none"
                         />
                     </div>
@@ -139,7 +141,7 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-bold text-stone-700 dark:text-stone-300 mb-2">
-                                Priority
+                                {tt.priorityLabel}
                             </label>
                             <select
                                 value={priority}
@@ -153,7 +155,7 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
                         </div>
                         <div>
                             <label className="block text-sm font-bold text-stone-700 dark:text-stone-300 mb-2">
-                                Due Date
+                                {tt.dueDateLabel}
                             </label>
                             <input
                                 type="date"
@@ -171,14 +173,14 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
                             onClick={onClose}
                             className="flex-1 px-6 py-3.5 rounded-xl font-bold text-stone-600 dark:text-stone-300 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
                         >
-                            Cancel
+                            {tt.cancel}
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting}
                             className="flex-1 px-6 py-3.5 rounded-xl font-bold text-white bg-stone-900 dark:bg-white dark:text-stone-900 hover:bg-stone-700 dark:hover:bg-stone-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg"
                         >
-                            {isSubmitting ? 'Creating...' : 'Create Task'}
+                            {isSubmitting ? tt.creating : tt.createTaskBtn}
                         </button>
                     </div>
                 </form>

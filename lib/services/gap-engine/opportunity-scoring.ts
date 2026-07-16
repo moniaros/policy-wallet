@@ -12,7 +12,7 @@
  */
 
 import { db } from "@/lib/db"
-import { calculateEngagementScore } from "../engagement-scoring"
+import { calculateEngagementScoresBatch } from "../engagement-scoring"
 
 export type ConversionLikelihood = "high" | "medium" | "low"
 
@@ -37,99 +37,112 @@ const SEVERITY_WEIGHTS: Record<string, number> = {
     low: 20,
 }
 
-// ── Main scoring function ────────────────────────────────────────────
+// ── Main scoring functions ───────────────────────────────────────────
+
+const ZERO_SCORE = (opportunityId: string): OpportunityScore => ({
+    opportunityId,
+    score: 0,
+    likelihood: "low",
+    factors: { gapSeverity: 0, profileCompleteness: 0, engagementScore: 0, detectionRecency: 0 },
+})
+
+function detectionRecencyScore(detectedAt: Date, now: number): number {
+    const days = Math.floor((now - detectedAt.getTime()) / (1000 * 60 * 60 * 24))
+    return days <= 1 ? 100
+        : days <= 7 ? 80
+            : days <= 14 ? 60
+                : days <= 30 ? 40
+                    : days <= 60 ? 20
+                        : 10
+}
 
 /**
- * Score a single opportunity.
+ * Score many opportunities at once.
+ *
+ * Scoring one opportunity needs its customer's engagement score and profile —
+ * both of which are per-CUSTOMER, not per-opportunity, and many opportunities
+ * share a customer. Doing this one opportunity at a time (as the old
+ * `scoreOpportunity` loop did) fired ~8 queries EACH; an agent with hundreds of
+ * open opportunities turned a dashboard render into thousands of serial round
+ * trips. This gathers the opportunities, then engagement + profiles for the
+ * distinct customers, in a bounded set of queries and scores in memory.
+ *
+ * Returns a Map keyed by opportunityId; ids with no matching row are omitted.
+ */
+export async function scoreOpportunitiesBatch(
+    opportunityIds: string[]
+): Promise<Map<string, OpportunityScore>> {
+    const result = new Map<string, OpportunityScore>()
+    const ids = [...new Set(opportunityIds)]
+    if (ids.length === 0) return result
+
+    const opps = await db.opportunity.findMany({
+        where: { id: { in: ids } },
+        select: {
+            id: true,
+            createdAt: true,
+            gapInstance: { select: { severity: true, detectedAt: true } },
+            relationship: { select: { policyholderUserId: true } },
+        },
+    })
+
+    const customerIds = [...new Set(opps.map((o) => o.relationship.policyholderUserId))]
+
+    const [engagementByCustomer, profiles] = await Promise.all([
+        calculateEngagementScoresBatch(customerIds),
+        db.policyholderProfile.findMany({ where: { userId: { in: customerIds } } }),
+    ])
+    const profileByCustomer = new Map(profiles.map((p) => [p.userId, p]))
+
+    const now = Date.now()
+
+    for (const opp of opps) {
+        const customerId = opp.relationship.policyholderUserId
+
+        const gapSeverity = opp.gapInstance
+            ? SEVERITY_WEIGHTS[opp.gapInstance.severity] ?? 40
+            : 40
+
+        const profile = profileByCustomer.get(customerId)
+        const profileCompleteness = profile ? computeProfileCompleteness(profile) : 0
+
+        const engagementScore = engagementByCustomer.get(customerId)?.total ?? 0
+
+        const detectionRecency = detectionRecencyScore(
+            opp.gapInstance?.detectedAt || opp.createdAt,
+            now
+        )
+
+        const score = Math.round(
+            gapSeverity * 0.4 +
+            profileCompleteness * 0.2 +
+            engagementScore * 0.2 +
+            detectionRecency * 0.2
+        )
+
+        const likelihood: ConversionLikelihood =
+            score >= 65 ? "high" : score >= 40 ? "medium" : "low"
+
+        result.set(opp.id, {
+            opportunityId: opp.id,
+            score,
+            likelihood,
+            factors: { gapSeverity, profileCompleteness, engagementScore, detectionRecency },
+        })
+    }
+
+    return result
+}
+
+/**
+ * Score a single opportunity. Thin wrapper over the batch path so both share
+ * one implementation.
  */
 export async function scoreOpportunity(
     opportunityId: string
 ): Promise<OpportunityScore> {
-    const opp = await db.opportunity.findUnique({
-        where: { id: opportunityId },
-        include: {
-            gapInstance: {
-                select: { severity: true, detectedAt: true },
-            },
-            relationship: {
-                select: {
-                    policyholderUserId: true,
-                },
-            },
-        },
-    })
-
-    if (!opp) {
-        return {
-            opportunityId,
-            score: 0,
-            likelihood: "low",
-            factors: {
-                gapSeverity: 0,
-                profileCompleteness: 0,
-                engagementScore: 0,
-                detectionRecency: 0,
-            },
-        }
-    }
-
-    const customerId = opp.relationship.policyholderUserId
-
-    // 1. Gap severity (0-100)
-    const gapSeverity = opp.gapInstance
-        ? SEVERITY_WEIGHTS[opp.gapInstance.severity] ?? 40
-        : 40
-
-    // 2. Profile completeness (0-100)
-    const profile = await db.policyholderProfile.findUnique({
-        where: { userId: customerId },
-    })
-    const profileCompleteness = profile ? computeProfileCompleteness(profile) : 0
-
-    // 3. Engagement score (0-100)
-    const engagement = await calculateEngagementScore(customerId)
-    const engagementScore = engagement.total
-
-    // 4. Detection recency (0-100)
-    const detectedAt = opp.gapInstance?.detectedAt || opp.createdAt
-    const daysSinceDetection = Math.floor(
-        (Date.now() - detectedAt.getTime()) / (1000 * 60 * 60 * 24)
-    )
-    const detectionRecency =
-        daysSinceDetection <= 1
-            ? 100
-            : daysSinceDetection <= 7
-                ? 80
-                : daysSinceDetection <= 14
-                    ? 60
-                    : daysSinceDetection <= 30
-                        ? 40
-                        : daysSinceDetection <= 60
-                            ? 20
-                            : 10
-
-    // Weighted score
-    const score = Math.round(
-        gapSeverity * 0.4 +
-        profileCompleteness * 0.2 +
-        engagementScore * 0.2 +
-        detectionRecency * 0.2
-    )
-
-    const likelihood: ConversionLikelihood =
-        score >= 65 ? "high" : score >= 40 ? "medium" : "low"
-
-    return {
-        opportunityId,
-        score,
-        likelihood,
-        factors: {
-            gapSeverity,
-            profileCompleteness,
-            engagementScore,
-            detectionRecency,
-        },
-    }
+    const scores = await scoreOpportunitiesBatch([opportunityId])
+    return scores.get(opportunityId) ?? ZERO_SCORE(opportunityId)
 }
 
 /**
@@ -147,14 +160,8 @@ export async function scoreAgentOpportunities(
         select: { id: true },
     })
 
-    const scores: OpportunityScore[] = []
-
-    for (const opp of opportunities) {
-        const score = await scoreOpportunity(opp.id)
-        scores.push(score)
-    }
-
-    return scores.sort((a, b) => b.score - a.score)
+    const scores = await scoreOpportunitiesBatch(opportunities.map((o) => o.id))
+    return [...scores.values()].sort((a, b) => b.score - a.score)
 }
 
 /**

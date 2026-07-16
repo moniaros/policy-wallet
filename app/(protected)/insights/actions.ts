@@ -5,6 +5,7 @@ import { db } from "@/lib/db"
 import { getAgentPolicyVisibilityWhere } from "@/lib/agent-visibility"
 import { resolvePolicyLifecycle } from "@/lib/policy-status"
 import { isPremiumBearing } from "@/lib/wallet/premium-footprint"
+import { isAgentRole } from "@/lib/auth/require-agent"
 
 export interface InsightsData {
     portfolioHealth: {
@@ -68,6 +69,7 @@ export interface InsightsData {
 export async function getInsightsData(): Promise<InsightsData | null> {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return null
+    if (!isAgentRole(authResult.dbUser.roles)) return null
 
     const agentId = authResult.dbUser.id
 
@@ -192,10 +194,12 @@ export async function getInsightsData(): Promise<InsightsData | null> {
     const avgPremiumPerCustomer = totalCustomers > 0 ? totalPremium / totalCustomers : 0
     const avgPoliciesPerCustomer = totalCustomers > 0 ? policies.length / totalCustomers : 0
 
-    // 6. Recent gaps across customers
+    // 6. Recent gaps across customers — only on policies the agent may see
+    // (their own uploads or owner-granted). Exposing gap titles + policy
+    // numbers of un-granted policies is the leak #95 closed everywhere else.
     const recentGaps = await db.gapInstance.findMany({
         where: {
-            policy: { ownerUserId: { in: customerIds } },
+            policy: { ownerUserId: { in: customerIds }, ...(await getAgentPolicyVisibilityWhere(agentId)) },
             status: { in: ['detected', 'open'] }
         },
         include: {

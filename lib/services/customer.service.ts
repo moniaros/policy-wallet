@@ -227,12 +227,18 @@ export class CustomerService extends BaseService {
             throw AppError.conflict("Customer already exists in your list");
         }
 
-        // 3. Create relationship
+        // 3. Create relationship. Status must reflect the CUSTOMER's reality:
+        // a manually-added phantom (no password / never verified / never seen)
+        // has not activated anything, so calling the relationship 'active'
+        // ("activated" in the UI) inflates the activation rate and misrepresents
+        // the customer. Only an already-activated account is 'active'; everyone
+        // else is 'pending_activation' until they join.
+        const isActivatedAccount = Boolean(user.password || user.emailVerified || user.lastActiveAt);
         const relationship = await this.db.customerRelationship.create({
             data: {
                 agentUserId,
                 policyholderUserId: user.id,
-                status: 'active',
+                status: isActivatedAccount ? 'active' : 'pending_activation',
                 lastInteractionAt: new Date()
             }
         });
@@ -249,11 +255,14 @@ export class CustomerService extends BaseService {
      * Get Dashboard Stats for Mission Control
      */
     async getDashboardStats(agentUserId: string) {
+        const grantedPolicyIds = await getGrantedPolicyIds(agentUserId);
+
         const [
             totalCustomers,
             activePolicies,
             pendingOpportunities,
-            recentActivity
+            recentActivity,
+            statusGroups
         ] = await Promise.all([
             // Total Customers
             this.db.customerRelationship.count({
@@ -269,7 +278,7 @@ export class CustomerService extends BaseService {
                             some: { agentUserId }
                         }
                     },
-                    ...agentPolicyVisibilityWhere(agentUserId, await getGrantedPolicyIds(agentUserId))
+                    ...agentPolicyVisibilityWhere(agentUserId, grantedPolicyIds)
                 },
                 select: { id: true, status: true, endDate: true, acordData: true }
             }),
@@ -292,8 +301,19 @@ export class CustomerService extends BaseService {
                 },
                 orderBy: { createdAt: 'desc' },
                 take: 5
+            }),
+
+            // Relationship counts by status — one grouped query instead of three
+            // serial counts.
+            this.db.customerRelationship.groupBy({
+                by: ['status'],
+                where: { agentUserId },
+                _count: { _all: true }
             })
         ]);
+
+        const statusCount = (status: string) =>
+            statusGroups.find((g) => g.status === status)?._count._all ?? 0;
 
         return {
             overview: {
@@ -310,9 +330,9 @@ export class CustomerService extends BaseService {
                 createdAt: a.createdAt
             })),
             summary: {
-                activated: await this.db.customerRelationship.count({ where: { agentUserId, status: 'active' } }),
-                invited: await this.db.customerRelationship.count({ where: { agentUserId, status: 'pending_activation' } }),
-                inactive: await this.db.customerRelationship.count({ where: { agentUserId, status: 'inactive' } })
+                activated: statusCount('active'),
+                invited: statusCount('pending_activation'),
+                inactive: statusCount('inactive')
             }
         };
     }

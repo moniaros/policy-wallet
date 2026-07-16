@@ -23,24 +23,24 @@ export default async function OpportunitiesPage() {
                 }
             }
         },
-        orderBy: { createdAt: 'desc' }
+        orderBy: { createdAt: 'desc' },
+        // Safety bound — the client renders the full list, so cap the newest
+        // page rather than streaming an unbounded book to the browser.
+        take: 500,
     })
 
-    // Batch-score open/contacted opportunities
-    const { scoreOpportunity } = await import("@/lib/services/gap-engine/opportunity-scoring")
-    const scores = new Map<string, { likelihood: string; score: number }>()
+    // Score every open/contacted opportunity in one batched pass (was ~8
+    // queries per opportunity, capped at 20; now a bounded set for all of them).
+    const { scoreOpportunitiesBatch } = await import("@/lib/services/gap-engine/opportunity-scoring")
+    let scores = new Map<string, { likelihood: string; score: number }>()
     const openOpps = opportunities.filter(o => o.status === "open" || o.status === "contacted")
-    await Promise.all(
-        openOpps.slice(0, 20).map(async (opp) => {
-            try {
-                const result = await scoreOpportunity(opp.id)
-                scores.set(opp.id, { likelihood: result.likelihood, score: result.score })
-            } catch {
-                // Best-effort enrichment: scoring is non-critical. On failure the
-                // opportunity is simply omitted from the scores map (renders unscored).
-            }
-        })
-    )
+    try {
+        const scored = await scoreOpportunitiesBatch(openOpps.map(o => o.id))
+        scores = new Map([...scored].map(([id, s]) => [id, { likelihood: s.likelihood, score: s.score }]))
+    } catch {
+        // Best-effort enrichment: scoring is non-critical. On failure every
+        // opportunity simply renders unscored.
+    }
 
     const formattedOpportunities = opportunities.map(opp => {
         const scored = scores.get(opp.id)
