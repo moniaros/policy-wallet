@@ -12,6 +12,8 @@ import { classifyUrgencyTier } from "@/lib/agent/format"
 import { db as prisma } from "@/lib/db"
 import { isPremiumBearing } from "@/lib/wallet/premium-footprint"
 import { commissionOn } from "@/lib/agent/commission"
+import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
+import { resolvePolicyLifecycle } from "@/lib/policy-status"
 import { getAgentPortalData } from "@/lib/services/agent-portal.service"
 import { getAgentPolicyVisibilityWhere } from "@/lib/agent-visibility"
 import type { AgentDashboardData, ActionQueueItem, ClientCardData, GapsSummary } from "@/components/agent/types"
@@ -107,13 +109,18 @@ export default async function DashboardPage() {
         .reduce((sum, p) => sum + commissionOn(commissionRates, p.lineOfBusiness, Number(p.premiumAmount ?? 0)), 0)
     const monthlyCommission = annualBookCommission / 12
 
-    // Renewals due this month
+    // Resolve the REAL end date per policy (renewal history → extracted
+    // envelope → column) — the raw endDate column is placeholder-prone, so
+    // renewal/expiry detection must use the lifecycle date, matching insights
+    // and the portal. Null = unknown duration → not treated as due/expiring.
     const now = new Date()
+    const resolvedEndByPolicy = new Map(policies.map((p) => [p.id, resolvePolicyLifecycle(p, now).endDate]))
+
+    // Renewals due this month
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
     const renewalsDue = policies.filter((p) => {
-        if (!p.endDate) return false
-        const end = new Date(p.endDate)
-        return end >= now && end <= endOfMonth
+        const end = resolvedEndByPolicy.get(p.id)
+        return Boolean(end && end >= now && end <= endOfMonth)
     })
 
     // Index the book once so every section below is a Map/Set lookup instead
@@ -134,8 +141,8 @@ export default async function DashboardPage() {
     const thirtyDaysFromNow = new Date()
     thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30)
     for (const policy of policies) {
-        if (!policy.endDate) continue
-        const endDate = new Date(policy.endDate)
+        const endDate = resolvedEndByPolicy.get(policy.id)
+        if (!endDate) continue
         if (endDate >= now && endDate <= thirtyDaysFromNow) {
             const ownerRel = relByPolicyholder.get(policy.ownerUserId)
             const lobLabel = policy.lineOfBusiness || "Policy"
@@ -186,16 +193,21 @@ export default async function DashboardPage() {
     // ── Portfolio Health ───────────────────────────────────────────
     const gapCounts = await prisma.gapInstance.groupBy({
         by: ["policyId"],
-        where: { status: "open", policy: { createdByUserId: agentId } },
+        where: { status: { in: [...OPEN_GAP_STATUSES] }, policy: { createdByUserId: agentId } },
         _count: true,
     })
     const gapCountByPolicy = new Map(gapCounts.map((g) => [g.policyId, g._count]))
+    // Intersect with the CURRENT client set: a policy whose owner is no longer a
+    // relationship (orphaned / uploaded for a non-client) must not push the
+    // numerator past customersNow → the percentages below could exceed 100%.
     const clientsWithGaps = new Set(
         policies
-            .filter((p) => gapCountByPolicy.has(p.id))
+            .filter((p) => gapCountByPolicy.has(p.id) && relByPolicyholder.has(p.ownerUserId))
             .map((p) => p.ownerUserId)
     )
-    const clientsWithPolicies = new Set(policies.map((p) => p.ownerUserId))
+    const clientsWithPolicies = new Set(
+        policies.filter((p) => relByPolicyholder.has(p.ownerUserId)).map((p) => p.ownerUserId)
+    )
     const activeRelationships = relationships.filter((r) => r.status === "active")
 
     const portfolioHealth = {
@@ -253,7 +265,7 @@ export default async function DashboardPage() {
             lastInteractionDate: rel.lastInteractionAt?.toISOString() || null,
             policyCount: clientPolicies.length,
             policies: clientPolicies.map((p) => ({
-                endDate: p.endDate?.toISOString() || "",
+                endDate: resolvedEndByPolicy.get(p.id)?.toISOString() || "",
                 status: p.status || "active",
             })),
         })
@@ -320,7 +332,7 @@ export default async function DashboardPage() {
     const criticalHighGaps = clientUserIds.length > 0
         ? await prisma.gapInstance.findMany({
             where: {
-                status: { in: ["open", "detected"] },
+                status: { in: [...OPEN_GAP_STATUSES] },
                 severity: { in: ["critical", "high"] },
                 policy: { ownerUserId: { in: clientUserIds }, ...gapsVisibilityWhere },
             },

@@ -111,6 +111,13 @@ export async function sendClientInvite(clientEmail: string) {
     try {
         const dbUser = await requireAgent()
 
+        // Sends an email — cap per agent to prevent email-bombing an address.
+        const { rateLimit } = await import("@/lib/rate-limit")
+        const inviteLimit = await rateLimit(dbUser.id, 20, 60 * 60 * 1000, `agent-invite:${dbUser.id}`)
+        if (!inviteLimit.success) {
+            return { success: false, error: "Too many invites sent. Please wait a bit and try again." }
+        }
+
         const invite = await db.invite.create({
             data: {
                 inviterUserId: dbUser.id,

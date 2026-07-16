@@ -287,6 +287,14 @@ export async function createAgentInvite(email: string, scope: AccessScope) {
     if (!authResult) return { success: false, error: "Unauthorized" }
     if (!isAgentRole(authResult.dbUser.roles)) return { success: false, error: "Unauthorized" }
 
+    // Sends an email — cap per agent so re-inviting an existing customer (which
+    // doesn't consume the customer count) can't be used to email-bomb an address.
+    const { rateLimit } = await import("@/lib/rate-limit")
+    const inviteLimit = await rateLimit(authResult.dbUser.id, 20, 60 * 60 * 1000, `agent-invite:${authResult.dbUser.id}`)
+    if (!inviteLimit.success) {
+        return { success: false, error: "Too many invites sent. Please wait a bit and try again." }
+    }
+
     // Check customer limit
     const { canAgentAddCustomer } = await import("@/lib/subscription-entitlements")
     const customerCheck = await canAgentAddCustomer(authResult.dbUser.id)
@@ -561,9 +569,17 @@ export async function addPolicyForCustomer(data: {
         if (data.attestedAiConsent) {
             const owner = await db.user.findUnique({
                 where: { id: data.customerId },
-                select: { aiProcessingConsentVersion: true, password: true, emailVerified: true },
+                select: { aiProcessingConsentVersion: true, password: true, emailVerified: true, lastActiveAt: true },
             })
-            const isUnactivated = owner && !owner.password && !owner.emailVerified
+            // "Unactivated" MUST match the canonical activation check
+            // (customer.service isActivatedAccount): password OR emailVerified
+            // OR lastActiveAt. `password` is always null for real users (Supabase
+            // holds the credential), so without lastActiveAt this collapsed to
+            // "email-unverified" — letting an agent attest consent for a real,
+            // logged-in account and run AI over their policy without genuine
+            // consent (GDPR). A user who has EVER been active is a live account
+            // and must be asked directly.
+            const isUnactivated = owner && !owner.password && !owner.emailVerified && !owner.lastActiveAt
             if (owner && !owner.aiProcessingConsentVersion && isUnactivated) {
                 const { AGENT_ATTESTED_CONSENT_PREFIX } = await import("@/lib/ai-consent")
                 await db.user.update({
@@ -759,6 +775,21 @@ export async function sendQuestionnaire(relationshipId: string, templateId: stri
         throw new Error("Relationship not found")
     }
 
+    // Same visibility rule as getQuestionnaireTemplates: only a system template
+    // or the agent's OWN — never another agent's private template (its id could
+    // be guessed, disclosing its questions).
+    const template = await db.questionnaireTemplate.findFirst({
+        where: {
+            id: templateId,
+            isActive: true,
+            OR: [{ isSystem: true }, { createdByUserId: authResult.dbUser.id }],
+        },
+        select: { id: true },
+    })
+    if (!template) {
+        throw new Error("Template not found")
+    }
+
     const instance = await db.questionnaireInstance.create({
         data: {
             relationshipId,
@@ -864,6 +895,13 @@ export async function requestAiConsent(policyId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
     if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
+
+    // Sends an email/notification to the policy owner — cap per agent.
+    const { rateLimit } = await import("@/lib/rate-limit")
+    const consentLimit = await rateLimit(authResult.dbUser.id, 20, 60 * 60 * 1000, `agent-consent:${authResult.dbUser.id}`)
+    if (!consentLimit.success) {
+        return { error: "Too many consent requests. Please wait a bit and try again." }
+    }
 
     const policy = await db.policy.findUnique({ where: { id: policyId } })
     if (!policy) return { error: "Policy not found" }

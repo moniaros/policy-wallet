@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // ── Mock side-effecting dependencies BEFORE importing the action module ──
 vi.mock('@/lib/auth-helpers', () => ({ getAuthenticatedUserOrNull: vi.fn() }))
+vi.mock('@/lib/rate-limit', () => ({ rateLimit: vi.fn(async () => ({ success: true })) }))
 vi.mock('@/lib/db', () => ({
     db: {
         policy: { findUnique: vi.fn() },

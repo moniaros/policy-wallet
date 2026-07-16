@@ -171,14 +171,17 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
                 },
             }),
             db.opportunity.findMany({
-                where: { ownerAgentUserId: agentUserId, status: "open" },
+                // Pipeline = every still-open deal (open/contacted/quoted…), not
+                // just the first "open" stage — otherwise the KPI shrank as a deal
+                // advanced toward closing. Matches insights' totalPotentialValue.
+                where: { ownerAgentUserId: agentUserId, status: { notIn: ["won", "lost"] } },
                 select: { estimatedPremium: true },
             }),
         ])
 
     const clientIds = relationships.map((rel) => rel.customer.id)
 
-    const [protectionScores, openGaps] = await Promise.all([
+    const [protectionScores, openGaps, visiblePolicyOwners] = await Promise.all([
         clientIds.length
             ? db.protectionScore.findMany({
                   where: { userId: { in: clientIds } },
@@ -203,9 +206,22 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
                   },
               })
             : Promise.resolve([]),
+        // Clients the agent has ≥1 visible policy for — same rule as the gaps
+        // query, so the protection score (computed over the WHOLE portfolio) is
+        // only surfaced for customers whose policies the agent may actually see.
+        clientIds.length
+            ? db.policy.findMany({
+                  where: { ownerUserId: { in: clientIds }, ...visibilityWhere },
+                  select: { ownerUserId: true },
+                  distinct: ["ownerUserId"],
+              })
+            : Promise.resolve([]),
     ])
 
-    const scoreByClient = new Map(protectionScores.map((s) => [s.userId, s.overallScore]))
+    const visibleOwners = new Set(visiblePolicyOwners.map((p) => p.ownerUserId))
+    const scoreByClient = new Map(
+        protectionScores.filter((s) => visibleOwners.has(s.userId)).map((s) => [s.userId, s.overallScore])
+    )
 
     const gapsByClient = new Map<string, { total: number; critical: number }>()
     for (const gap of openGaps) {

@@ -145,6 +145,21 @@ export async function redeemInvite(token: string, userId: string) {
     const invite = await db.invite.findUnique({ where: { token } })
     if (!invite || invite.consumedAt || invite.expiresAt < new Date()) return
 
+    const isShareInvite = ["share", "policy_share", "access_grant"].includes(invite.inviteType)
+
+    // Bind a share/access invite to the address it was sent to: a leaked
+    // policy-share token must not grant access to whoever opens the link. Check
+    // BEFORE consuming so a wrong-recipient click leaves the invite valid for
+    // the intended user. (The signup branch is already email-bound — its
+    // relationship was pre-created keyed on the invited user's id.)
+    if (isShareInvite && invite.inviteeEmail) {
+        const redeemer = await db.user.findUnique({ where: { id: userId }, select: { email: true } })
+        const redeemerEmail = redeemer?.email?.trim().toLowerCase()
+        if (!redeemerEmail || redeemerEmail !== invite.inviteeEmail.trim().toLowerCase()) {
+            return
+        }
+    }
+
     await db.invite.update({
         where: { id: invite.id },
         data: { consumedAt: new Date(), inviteeUserId: userId },
@@ -161,7 +176,6 @@ export async function redeemInvite(token: string, userId: string) {
         return
     }
 
-    const isShareInvite = ["share", "policy_share", "access_grant"].includes(invite.inviteType)
     if (isShareInvite && invite.scope) {
         // Self-grant no-op: if the redeemer already OWNS the scoped policy,
         // a grant would be meaningless (owners hold full capabilities) —
