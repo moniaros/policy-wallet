@@ -10,7 +10,7 @@ import { resolveAgentEntitlements } from "@/lib/subscription-entitlements"
 import { computeClientHealthScore } from "@/lib/agent/health-score"
 import { classifyUrgencyTier } from "@/lib/agent/format"
 import { db as prisma } from "@/lib/db"
-import { isPremiumBearing } from "@/lib/wallet/premium-footprint"
+import { computeAgentBookRevenue } from "@/lib/agent/revenue"
 import { commissionOn } from "@/lib/agent/commission"
 import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
 import { resolvePolicyLifecycle } from "@/lib/policy-status"
@@ -76,14 +76,13 @@ export default async function DashboardPage() {
     const commissionRates = (agentProfile?.commissionRates as Record<string, number> | null) ?? {}
 
     const totalPolicies = policies.length
-    // Book value counts only policies actually in force. The stored status is
-    // never moved to 'expired', so reducing over every row ever created billed
-    // long-dead policies into the agent's premium total and MRR. No dedupe here:
-    // two customers may legitimately hold the same policy number at different
-    // insurers, and collapsing them would understate the book.
-    const totalPremium = policies
-        .filter((p) => isPremiumBearing(p))
-        .reduce((sum, p) => sum + Number(p.premiumAmount || 0), 0)
+    // In-force book revenue, DEDUPED by policy number (re-uploads of the same
+    // policy are one exposure, not three) and guarded against mis-extracted
+    // premiums (a sum-insured captured as premiumAmount). Without this, three
+    // duplicate uploads tripled the premium total and MRR. See
+    // computeAgentBookRevenue.
+    const bookRevenue = computeAgentBookRevenue(policies, commissionRates)
+    const totalPremium = bookRevenue.dedupedPremium
 
     // Monthly growth
     const thirtyDaysAgo = new Date()
@@ -102,12 +101,9 @@ export default async function DashboardPage() {
         .filter((o) => o.status !== "won" && o.status !== "lost")
         .reduce((sum, o) => sum + Number(o.estimatedCommission ?? commissionOn(commissionRates, o.lineOfBusiness, Number(o.estimatedPremium ?? 0))), 0)
 
-    // Estimated MONTHLY commission income from the in-force book — the agent's
-    // actual recurring revenue, not the customer's annual premium / 12.
-    const annualBookCommission = policies
-        .filter((p) => isPremiumBearing(p))
-        .reduce((sum, p) => sum + commissionOn(commissionRates, p.lineOfBusiness, Number(p.premiumAmount ?? 0)), 0)
-    const monthlyCommission = annualBookCommission / 12
+    // Estimated MONTHLY commission income from the in-force book (deduped +
+    // guarded above) — the agent's actual recurring revenue, not premium / 12.
+    const monthlyCommission = bookRevenue.monthlyCommission
 
     // Resolve the REAL end date per policy (renewal history → extracted
     // envelope → column) — the raw endDate column is placeholder-prone, so

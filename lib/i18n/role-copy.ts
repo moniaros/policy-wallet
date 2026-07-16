@@ -347,7 +347,7 @@ const roleCopy: Record<Language, RoleCopy> = {
             policiesThisMonth: "Συμβόλαια αυτόν τον μήνα",
             followUps: "Προτεινόμενα follow-ups",
             pipeline: "Εκτίμηση ευκαιριών",
-            completeness: "Πληρότητα χαρτοφυλακίου",
+            completeness: "Μέσος δείκτης προστασίας",
             noScores: "Χωρίς βαθμολόγηση ακόμα",
         },
         walletDashboard: {
@@ -551,7 +551,7 @@ const roleCopy: Record<Language, RoleCopy> = {
             policiesThisMonth: "Policies this month",
             followUps: "Recommended follow-ups",
             pipeline: "Revenue opportunity",
-            completeness: "Portfolio completeness",
+            completeness: "Avg. protection score",
             noScores: "No scores yet",
         },
         walletDashboard: {

@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { ArrowLeft, LayoutDashboard, Shield, Activity, DollarSign } from "lucide-react"
+import { ArrowLeft, LayoutDashboard, Shield, Activity, Euro } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ClientOverviewTab } from "./tabs/ClientOverviewTab"
@@ -85,7 +85,7 @@ export function ClientDetailView({
         {
             id: "financials",
             label: pick(TAB_COPY.financials, language),
-            icon: DollarSign,
+            icon: Euro,
             agentOnly: true,
         },
     ]
