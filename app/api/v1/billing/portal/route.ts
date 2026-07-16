@@ -1,7 +1,7 @@
 import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { withApiGuard } from "@/lib/api-guard"
 import { stripe } from "@/lib/stripe"
-import { env } from "@/lib/env"
+import { getSiteOrigin } from "@/lib/seo/site"
 
 export const POST = withApiGuard(
     {
@@ -22,7 +22,7 @@ export const POST = withApiGuard(
 
         const session = await stripe.billingPortal.sessions.create({
             customer: dbUser.stripeCustomerId,
-            return_url: `${env.NEXTAUTH_URL || "http://localhost:3000"}/account`,
+            return_url: `${getSiteOrigin()}/account`,
         })
 
         return createApiResponse(

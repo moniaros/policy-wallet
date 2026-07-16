@@ -24,6 +24,10 @@ const COPY = {
         el: "Το πλάνο σας είναι ενεργό. Ξεκλειδώσατε πλήρη ανάλυση, περισσότερα συμβόλαια και απεριόριστες ερωτήσεις AI.",
         en: "Your plan is active. You unlocked full analysis, more policies and unlimited AI questions.",
     },
+    agentBody: {
+        el: "Το πλάνο πράκτορα είναι ενεργό. Ξεκλειδώσατε περισσότερους πελάτες, πλήρες pipeline εσόδων και προτεραιότητα στην ανάλυση AI.",
+        en: "Your agent plan is active. You unlocked more customers, the full revenue pipeline and priority AI analysis.",
+    },
     pendingTitle: { el: "Η πληρωμή επεξεργάζεται", en: "Payment processing" },
     pendingBody: {
         el: "Η συνδρομή σας ενεργοποιείται. Αν δεν εμφανιστεί σε λίγα λεπτά, επικοινωνήστε μαζί μας.",
@@ -58,7 +62,7 @@ export default async function UpgradeSuccessPage({
     const { session_id: sessionId, return: returnParam, feature } = await searchParams
     const { dbUser } = await getAuthenticatedUser()
     const language = dbUser.preferredLanguage === "en" ? "en" : "el"
-    const returnPath = sanitizeReturnPath(returnParam) || "/wallet"
+    const returnParamSafe = sanitizeReturnPath(returnParam)
 
     // Per-feature success copy (already authored per gate) when the upgrade was
     // triggered by a specific locked feature; falls back to the generic message.
@@ -127,6 +131,10 @@ export default async function UpgradeSuccessPage({
         activated = Boolean(sub)
     }
 
+    // Default the return target to the surface that matches the plan bought.
+    const returnPath =
+        returnParamSafe || (activatedPlanId?.startsWith("agent-") ? "/dashboard/agent" : "/wallet")
+
     return (
         <div className="flex min-h-[70vh] items-center justify-center px-4">
             <div className="pw-card w-full max-w-md p-8 text-center">
@@ -148,7 +156,10 @@ export default async function UpgradeSuccessPage({
                         : tokenPurchase
                             ? pick(COPY.tokensBody, language)
                             : activated
-                                ? (featureCopy?.successMessage ?? pick(COPY.body, language))
+                                ? (featureCopy?.successMessage
+                                    ?? (activatedPlanId?.startsWith("agent-")
+                                        ? pick(COPY.agentBody, language)
+                                        : pick(COPY.body, language)))
                                 : pick(COPY.pendingBody, language)}
                 </p>
                 <Link

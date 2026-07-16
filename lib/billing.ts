@@ -4,6 +4,7 @@ import { daysFromNow, SUBSCRIPTION_PERIOD_DAYS } from "@/lib/constants/time"
 import { TOKEN_PACKAGES, type TokenPackageKey } from "@/lib/billing/token-packages"
 import { recordConversionEvent } from "@/lib/journey/conversion-events"
 import { logger } from "@/lib/logger"
+import { getSiteOrigin } from "@/lib/seo/site"
 
 export interface VATInfo {
     rate: number
@@ -80,7 +81,10 @@ export async function createCheckoutSession(
         : monthlyPrice
     const vat = calculateVAT(periodPrice)
 
-    const base = process.env.NEXTAUTH_URL || "http://localhost:3000"
+    // Return targets must land on the canonical public site (policywallet.gr),
+    // NOT NEXTAUTH_URL — that resolves to the raw Vercel deployment domain in
+    // prod, so checkout used to bounce users to *.vercel.app after paying.
+    const base = getSiteOrigin()
     const safeReturn = sanitizeReturnPath(returnTo)
     const successUrl =
         `${base}/upgrade/success?session_id={CHECKOUT_SESSION_ID}` +
@@ -96,8 +100,11 @@ export async function createCheckoutSession(
                 price_data: {
                     currency: "eur",
                     product_data: {
-                        name: plan.name,
-                        description: `PolicyWallet ${plan.name} Subscription (${isAnnual ? "Annual" : "Monthly"})`,
+                        // Human-facing plan name (e.g. "Agent Starter"), never the
+                        // machine `name` ("agent_starter") which leaked onto the
+                        // Stripe checkout page.
+                        name: plan.displayName,
+                        description: `PolicyWallet ${isAnnual ? "annual" : "monthly"} subscription`,
                     },
                     unit_amount: Math.round(vat.totalWithVat * 100), // Stripe expects cents
                     recurring: {
@@ -147,7 +154,10 @@ export async function createTokenCheckoutSession(
     const user = await db.user.findUnique({ where: { id: userId }, select: { email: true } })
     if (!user) throw new Error("User not found")
 
-    const base = process.env.NEXTAUTH_URL || "http://localhost:3000"
+    // Return targets must land on the canonical public site (policywallet.gr),
+    // NOT NEXTAUTH_URL — that resolves to the raw Vercel deployment domain in
+    // prod, so checkout used to bounce users to *.vercel.app after paying.
+    const base = getSiteOrigin()
     const safeReturn = sanitizeReturnPath(returnTo)
     const successUrl =
         `${base}/upgrade/success?session_id={CHECKOUT_SESSION_ID}` +
@@ -247,7 +257,10 @@ export async function createReportUnlockCheckoutSession(
     const user = await db.user.findUnique({ where: { id: userId }, select: { email: true } })
     if (!user) throw new Error("User not found")
 
-    const base = process.env.NEXTAUTH_URL || "http://localhost:3000"
+    // Return targets must land on the canonical public site (policywallet.gr),
+    // NOT NEXTAUTH_URL — that resolves to the raw Vercel deployment domain in
+    // prod, so checkout used to bounce users to *.vercel.app after paying.
+    const base = getSiteOrigin()
     const safeReturn = sanitizeReturnPath(returnTo) || `/wallet/${policyId}`
     const successUrl =
         `${base}/upgrade/success?session_id={CHECKOUT_SESSION_ID}` +
