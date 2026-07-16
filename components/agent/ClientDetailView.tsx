@@ -14,6 +14,16 @@ import type { AgentTier } from "@/types/subscription-entitlements"
 
 type TabId = "overview" | "policies" | "activity" | "financials"
 
+const TAB_COPY = {
+    overview: { el: "Επισκόπηση", en: "Overview" },
+    policies: { el: "Ασφαλιστήρια", en: "Policies" },
+    activity: { el: "Δραστηριότητα", en: "Activity" },
+    financials: { el: "Οικονομικά", en: "Financials" },
+} as const
+
+const pick = (pair: { el: string; en: string }, language: string) =>
+    language === "el" ? pair.el : pair.en
+
 interface ClientDetailViewProps {
     customer: Customer
     viewerRole: ViewerRole
@@ -59,28 +69,32 @@ export function ClientDetailView({
     const tabs: Array<{ id: TabId; label: string; icon: React.ElementType; agentOnly?: boolean }> = [
         {
             id: "overview",
-            label: language === "el" ? "Επισκόπηση" : "Overview",
+            label: pick(TAB_COPY.overview, language),
             icon: LayoutDashboard,
         },
         {
             id: "policies",
-            label: language === "el" ? "Ασφαλιστήρια" : "Policies",
+            label: pick(TAB_COPY.policies, language),
             icon: Shield,
         },
         {
             id: "activity",
-            label: language === "el" ? "Δραστηριότητα" : "Activity",
+            label: pick(TAB_COPY.activity, language),
             icon: Activity,
         },
         {
             id: "financials",
-            label: language === "el" ? "Οικονομικά" : "Financials",
+            label: pick(TAB_COPY.financials, language),
             icon: DollarSign,
             agentOnly: true,
         },
     ]
 
-    const visibleTabs = tabs.filter((tab) => !tab.agentOnly || viewerRole === "agent")
+    const visibleTabs = tabs
+        // The Financials tab renders nothing without a `financials` prop (no
+        // caller supplies one today) — don't show a tab that opens a blank pane.
+        .filter((tab) => tab.id !== "financials" || !!financials)
+        .filter((tab) => !tab.agentOnly || viewerRole === "agent")
 
     const initials = `${customer.name.charAt(0)}${customer.surname.charAt(0)}`.toUpperCase()
 

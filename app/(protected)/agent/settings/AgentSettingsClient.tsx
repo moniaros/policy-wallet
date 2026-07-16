@@ -19,6 +19,18 @@ const LOB_OPTIONS = [
     { key: "legal_expenses", en: "Legal Expenses", el: "Νομική Προστασία" },
 ] as const
 
+const SETTINGS_COPY = {
+    commissionRatesTitle: { el: "Ποσοστά Προμήθειας", en: "Commission Rates" },
+    saveCommissions: { el: "Αποθήκευση Προμηθειών", en: "Save Commission Rates" },
+    subscription: { el: "Συνδρομή", en: "Subscription" },
+    customers: { el: "Πελάτες", en: "Customers" },
+    aiAnalysesPerMo: { el: "AI Αναλύσεις/μήνα", en: "AI Analyses/mo" },
+    upgradePlan: { el: "Αναβάθμιση πλάνου", en: "Upgrade plan" },
+} as const
+
+const pick = (pair: { el: string; en: string }, language: string) =>
+    language === "el" ? pair.el : pair.en
+
 interface Props {
     initialAgencyName?: string | null
     initialLicenseNumber?: string | null
@@ -78,16 +90,12 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    {/* Sidebar Navigation */}
+                    {/* Sidebar Navigation — only one real section exists today.
+                        "Verification" and "Payouts" were dead buttons (no handler,
+                        no matching pane), so they've been removed. */}
                     <div className="space-y-3">
                         <button className="w-full flex items-center gap-3 px-5 py-4 bg-slate-900 text-white rounded-2xl text-[13px] font-black uppercase tracking-widest transition-all shadow-xl shadow-slate-900/10 dark:bg-slate-100 dark:text-slate-900">
                             <Building className="w-4 h-4" /> {roleCopy.agentSettings.agencyProfile}
-                        </button>
-                        <button className="w-full flex items-center gap-3 px-5 py-4 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 rounded-2xl text-[13px] font-bold uppercase tracking-widest transition-all">
-                            <Shield className="w-4 h-4" /> {roleCopy.agentSettings.verification}
-                        </button>
-                        <button className="w-full flex items-center gap-3 px-5 py-4 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800 rounded-2xl text-[13px] font-bold uppercase tracking-widest transition-all">
-                            <CreditCard className="w-4 h-4" /> {roleCopy.agentSettings.payouts}
                         </button>
                     </div>
 
@@ -158,7 +166,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                             <div>
                                 <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
                                     <Percent className="w-4 h-4 text-primary dark:text-mint" />
-                                    {language === "el" ? "Ποσοστά Προμήθειας" : "Commission Rates"}
+                                    {pick(SETTINGS_COPY.commissionRatesTitle, language)}
                                 </h3>
                                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                                     {language === "el"
@@ -199,7 +207,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                     <Save className="w-4 h-4" />
                                     {isSaving
                                         ? roleCopy.agentSettings.saving
-                                        : language === "el" ? "Αποθήκευση Προμηθειών" : "Save Commission Rates"}
+                                        : pick(SETTINGS_COPY.saveCommissions, language)}
                                 </button>
                             </div>
                         </div>
@@ -209,7 +217,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                             <div className="arc-card p-8 space-y-4 border-t-4 border-t-primary">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">
-                                        {language === "el" ? "Συνδρομή" : "Subscription"}
+                                        {pick(SETTINGS_COPY.subscription, language)}
                                     </h3>
                                     <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${
                                         subscription.isPaid
@@ -223,7 +231,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4">
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
-                                            {language === "el" ? "Πελάτες" : "Customers"}
+                                            {pick(SETTINGS_COPY.customers, language)}
                                         </p>
                                         <p className="text-lg font-black text-slate-900 dark:text-white">
                                             {subscription.currentCustomers}
@@ -234,7 +242,7 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                     </div>
                                     <div className="bg-slate-50 dark:bg-slate-800 rounded-xl p-4">
                                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
-                                            {language === "el" ? "AI Αναλύσεις/μήνα" : "AI Analyses/mo"}
+                                            {pick(SETTINGS_COPY.aiAnalysesPerMo, language)}
                                         </p>
                                         <p className="text-lg font-black text-slate-900 dark:text-white">
                                             {subscription.aiAnalysesPerMonth ?? "∞"}
@@ -246,19 +254,22 @@ export function AgentSettingsClient({ initialAgencyName, initialLicenseNumber, i
                                     href="/agent/pricing"
                                     className="inline-flex items-center gap-2 text-sm font-bold text-primary dark:text-mint hover:text-primary-hover dark:hover:text-mint transition-colors"
                                 >
-                                    {language === "el" ? "Αναβάθμιση πλάνου" : "Upgrade plan"}
+                                    {pick(SETTINGS_COPY.upgradePlan, language)}
                                     <ArrowUpRight className="w-4 h-4" />
                                 </Link>
                             </div>
                         )}
 
-                        {/* Danger Zone */}
+                        {/* Danger Zone — account deactivation runs through the
+                            real GDPR deletion flow on the account page; the button
+                            here had no handler, so it links there instead of
+                            being a dead (destructive) control. */}
                         <div className="arc-card p-8 border border-rose-100 dark:border-rose-900/30 bg-rose-50/50 dark:bg-rose-900/10">
                             <h3 className="text-xs font-black text-rose-900 dark:text-rose-400 uppercase tracking-widest mb-2">{roleCopy.agentSettings.dangerZone}</h3>
                             <p className="text-sm text-rose-700/70 dark:text-rose-400/70 mb-6 font-medium">{roleCopy.agentSettings.dangerDescription}</p>
-                            <button className="arc-btn bg-rose-600 hover:bg-rose-700 text-white transition-all">
+                            <Link href="/account" className="arc-btn bg-rose-600 hover:bg-rose-700 text-white transition-all inline-flex">
                                 {roleCopy.agentSettings.deactivateAccount}
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>

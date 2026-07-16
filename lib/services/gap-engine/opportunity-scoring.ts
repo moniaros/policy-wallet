@@ -197,11 +197,12 @@ function computeProfileCompleteness(profile: any): number {
         profile.smokingStatus != null,
     ]
 
+    // Only the nullable fields are counted. The boolean/count fields
+    // (ownsHome, hasPets, vehiclesCount, travelsFrequently, hasLoans) all
+    // default to false/0, so they can't tell "answered no" from "never
+    // answered" — counting them as always-present gave an empty profile a
+    // fabricated ~45% floor. Completeness now reflects real answers only:
+    // empty profile → 0%, fully filled → 100%.
     const filled = fields.filter(Boolean).length
-    // Boolean fields (ownsHome, hasPets, etc.) count as always present once profile exists
-    const booleanCount = 5 // ownsHome, hasPets, vehiclesCount>0 check, travelsFrequently, hasLoans
-    const total = fields.length + booleanCount
-    const filledTotal = filled + booleanCount
-
-    return Math.round((filledTotal / total) * 100)
+    return Math.round((filled / fields.length) * 100)
 }

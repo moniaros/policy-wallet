@@ -143,6 +143,18 @@ export async function runCrossSellForCustomer(
         })
         const commissionRates = (agentProfile?.commissionRates as Record<string, number> | null) ?? {}
 
+        // Rough opportunity size from the customer's OWN in-force premiums —
+        // never a flat per-line constant (which made every customer's missing
+        // motor gap show an identical fabricated €400 in the pipeline). Null
+        // when we have no basis: we don't invent a number.
+        const realPremiums = policies
+            .filter((p) => isPolicyCoverageActive(p))
+            .map((p) => Number(p.premiumAmount ?? 0))
+            .filter((n) => n > 0)
+        const estimatedPremium = realPremiums.length
+            ? Math.round(realPremiums.reduce((sum, n) => sum + n, 0) / realPremiums.length)
+            : null
+
         // Check for existing cross-sell opportunities to avoid duplicates
         const existingOpportunities = await db.opportunity.findMany({
             where: {
@@ -161,9 +173,6 @@ export async function runCrossSellForCustomer(
 
         for (const line of missingLines) {
             if (existingOppLobs.has(line.lob)) continue
-
-            // Estimate premium based on Greek market averages
-            const estimatedPremium = getEstimatedPremium(line.lob)
 
             await db.opportunity.create({
                 data: {
@@ -290,21 +299,4 @@ function getReasonForLine(
         en: `Adding ${lob} coverage would strengthen overall protection.`,
         el: `Η προσθήκη κάλυψης ${lob} θα ενισχύσει τη συνολική προστασία.`,
     }
-}
-
-/**
- * Greek market average annual premiums by line of business (rough estimates for opportunity sizing).
- */
-function getEstimatedPremium(lob: string): number | null {
-    const estimates: Record<string, number> = {
-        motor: 400,
-        home: 250,
-        health: 800,
-        life: 600,
-        travel: 80,
-        pet: 150,
-        liability: 200,
-        legal_expenses: 120,
-    }
-    return estimates[lob] ?? null
 }

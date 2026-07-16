@@ -406,6 +406,8 @@ model GapInstance {
   @@index([status])
   // Profile-level gaps and the engine's OR query filter by (userId, status).
   @@index([userId, status])
+  // Agent gap views filter by a policy set + status (dashboard, insights, portal).
+  @@index([policyId, status])
   @@map("gap_instances")
 }
 
@@ -1219,6 +1221,8 @@ model PolicyRenewal {
   @@index([agentUserId])
   @@index([status])
   @@index([policyEndDate])
+  // Agent renewal metrics fire several (agentUserId, status) filters per load.
+  @@index([agentUserId, status])
   @@map("policy_renewals")
 }
 
