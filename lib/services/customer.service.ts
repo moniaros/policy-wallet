@@ -255,80 +255,20 @@ export class CustomerService extends BaseService {
      * Get Dashboard Stats for Mission Control
      */
     async getDashboardStats(agentUserId: string) {
-        const grantedPolicyIds = await getGrantedPolicyIds(agentUserId);
-
-        const [
-            totalCustomers,
-            activePolicies,
-            pendingOpportunities,
-            recentActivity,
-            statusGroups
-        ] = await Promise.all([
-            // Total Customers
-            this.db.customerRelationship.count({
-                where: { agentUserId }
-            }),
-
-            // Policies the agent actually manages or was granted — never the
-            // customer's whole portfolio.
-            this.db.policy.findMany({
-                where: {
-                    owner: {
-                        customerRelationshipsAsCustomer: {
-                            some: { agentUserId }
-                        }
-                    },
-                    ...agentPolicyVisibilityWhere(agentUserId, grantedPolicyIds)
-                },
-                select: { id: true, status: true, endDate: true, acordData: true }
-            }),
-
-            // Open Opportunities
-            this.db.opportunity.count({
-                where: {
-                    ownerAgentUserId: agentUserId,
-                    status: 'open'
-                }
-            }),
-
-            // Recent Activity (Events)
-            this.db.notificationEvent.findMany({
-                where: {
-                    // Notifications for customers of this agent??
-                    // Or notifications for the agent themselves?
-                    // Let's get notifications for the agent for now
-                    userId: agentUserId
-                },
-                orderBy: { createdAt: 'desc' },
-                take: 5
-            }),
-
-            // Relationship counts by status — one grouped query instead of three
-            // serial counts.
-            this.db.customerRelationship.groupBy({
-                by: ['status'],
-                where: { agentUserId },
-                _count: { _all: true }
-            })
-        ]);
+        // Relationship counts by status — one grouped query. (The old `overview`
+        // and `recentActivity` blocks were computed and then discarded by the
+        // only caller, which reads .summary — including an expensive
+        // acordData-laden policy scan and a conversionRate:0 placeholder.)
+        const statusGroups = await this.db.customerRelationship.groupBy({
+            by: ['status'],
+            where: { agentUserId },
+            _count: { _all: true }
+        });
 
         const statusCount = (status: string) =>
             statusGroups.find((g) => g.status === status)?._count._all ?? 0;
 
         return {
-            overview: {
-                totalCustomers,
-                // Coverage liveness from the real end date, not the stale column.
-                activePolicies: activePolicies.filter((p) => isPolicyCoverageActive(p)).length,
-                pendingOpportunities,
-                conversionRate: 0 // Placeholder
-            },
-            recentActivity: recentActivity.map(a => ({
-                id: a.id,
-                type: a.eventType,
-                message: a.message,
-                createdAt: a.createdAt
-            })),
             summary: {
                 activated: statusCount('active'),
                 invited: statusCount('pending_activation'),
