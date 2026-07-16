@@ -116,6 +116,17 @@ export default async function DashboardPage() {
         return end >= now && end <= endOfMonth
     })
 
+    // Index the book once so every section below is a Map/Set lookup instead
+    // of a repeated linear scan — this page used to do O(P·R)/O(R·P)/O(P·G) JS
+    // joins (find/filter/some inside loops), which explode on a large book.
+    const relByPolicyholder = new Map(relationships.map((r) => [r.policyholderUserId, r]))
+    const policiesByOwner = new Map<string, typeof policies>()
+    for (const p of policies) {
+        const arr = policiesByOwner.get(p.ownerUserId)
+        if (arr) arr.push(p)
+        else policiesByOwner.set(p.ownerUserId, [p])
+    }
+
     // ── Action Queue ──────────────────────────────────────────────
     const actionQueue: ActionQueueItem[] = []
 
@@ -126,7 +137,7 @@ export default async function DashboardPage() {
         if (!policy.endDate) continue
         const endDate = new Date(policy.endDate)
         if (endDate >= now && endDate <= thirtyDaysFromNow) {
-            const ownerRel = relationships.find((r) => r.policyholderUserId === policy.ownerUserId)
+            const ownerRel = relByPolicyholder.get(policy.ownerUserId)
             const lobLabel = policy.lineOfBusiness || "Policy"
             actionQueue.push({
                 id: `expiring-${policy.id}`,
@@ -144,7 +155,7 @@ export default async function DashboardPage() {
 
     // Clients with no policies
     for (const rel of relationships) {
-        const clientPolicies = policies.filter((p) => p.ownerUserId === rel.policyholderUserId)
+        const clientPolicies = policiesByOwner.get(rel.policyholderUserId) ?? []
         if (clientPolicies.length === 0 && rel.status === "active") {
             actionQueue.push({
                 id: `incomplete-${rel.id}`,
@@ -178,9 +189,10 @@ export default async function DashboardPage() {
         where: { status: "open", policy: { createdByUserId: agentId } },
         _count: true,
     })
+    const gapCountByPolicy = new Map(gapCounts.map((g) => [g.policyId, g._count]))
     const clientsWithGaps = new Set(
         policies
-            .filter((p) => gapCounts.some((g) => g.policyId === p.id))
+            .filter((p) => gapCountByPolicy.has(p.id))
             .map((p) => p.ownerUserId)
     )
     const clientsWithPolicies = new Set(policies.map((p) => p.ownerUserId))
@@ -216,11 +228,16 @@ export default async function DashboardPage() {
         inactive: [],
     }
 
+    const actionsByClient = new Map<string, ActionQueueItem[]>()
+    for (const a of actionQueue) {
+        const arr = actionsByClient.get(a.clientId)
+        if (arr) arr.push(a)
+        else actionsByClient.set(a.clientId, [a])
+    }
+
     for (const rel of relationships) {
-        const clientPolicies = policies.filter((p) => p.ownerUserId === rel.policyholderUserId)
-        const clientGaps = gapCounts
-            .filter((g) => clientPolicies.some((p) => p.id === g.policyId))
-            .reduce((sum, g) => sum + g._count, 0)
+        const clientPolicies = policiesByOwner.get(rel.policyholderUserId) ?? []
+        const clientGaps = clientPolicies.reduce((sum, p) => sum + (gapCountByPolicy.get(p.id) ?? 0), 0)
 
         const healthScore = computeClientHealthScore({
             policyCount: clientPolicies.length,
@@ -242,8 +259,7 @@ export default async function DashboardPage() {
         })
 
         // Find next action due
-        const clientActions = actionQueue.filter((a) => a.clientId === rel.customer.id)
-        const nextAction = clientActions[0]
+        const nextAction = actionsByClient.get(rel.customer.id)?.[0]
         const nameParts = (rel.customer.name || "").split(" ")
 
         const clientCard: ClientCardData = {
