@@ -2,6 +2,8 @@
 
 import { useState } from "react"
 import * as Sentry from "@sentry/nextjs"
+import { toast } from "sonner"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 interface OpportunityUpdateModalProps {
     isOpen: boolean
@@ -16,16 +18,18 @@ interface OpportunityUpdateModalProps {
     onUpdate: (opportunityId: string, status: string, notes: string, nextActionDate?: string) => Promise<void>
 }
 
-const OPPORTUNITY_STATUSES = [
-    { value: 'open', label: 'Open', color: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-2 border-amber-500' },
-    { value: 'contacted', label: 'Contacted', color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-2 border-blue-500' },
-    { value: 'quoted', label: 'Quoted', color: 'bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint border-2 border-primary' },
-    { value: 'won', label: 'Won', color: 'bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint border-2 border-primary' },
-    { value: 'lost', label: 'Lost', color: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-2 border-red-500' },
-    { value: 'on_hold', label: 'On Hold', color: 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-2 border-slate-400' },
-]
-
 export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate }: OpportunityUpdateModalProps) {
+    const { t } = useLanguage()
+    const tt = t.agentModals.opportunityUpdate
+    const OPPORTUNITY_STATUSES = [
+        { value: 'open', label: tt.statusOpen, color: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-2 border-amber-500' },
+        { value: 'contacted', label: tt.statusContacted, color: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-2 border-blue-500' },
+        { value: 'quoted', label: tt.statusQuoted, color: 'bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint border-2 border-primary' },
+        { value: 'won', label: tt.statusWon, color: 'bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint border-2 border-primary' },
+        { value: 'lost', label: tt.statusLost, color: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-2 border-red-500' },
+        { value: 'on_hold', label: tt.statusOnHold, color: 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-2 border-slate-400' },
+    ]
+
     const [status, setStatus] = useState(opportunity.status)
     const [notes, setNotes] = useState(opportunity.notes || '')
     const [nextActionDate, setNextActionDate] = useState('')
@@ -47,7 +51,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                     opportunityId: opportunity.id
                 }
             })
-            alert('Failed to update opportunity. Please try again.')
+            toast.error(tt.updateError)
         } finally {
             setIsSubmitting(false)
         }
@@ -61,7 +65,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                     <div className="flex items-center justify-between">
                         <div>
                             <h2 className="text-2xl font-bold text-stone-900 dark:text-white">
-                                Update Opportunity
+                                {tt.title}
                             </h2>
                             <p className="text-sm text-stone-600 dark:text-stone-400 mt-1">
                                 {opportunity.customerName} • {opportunity.title}
@@ -83,7 +87,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                     {/* Status */}
                     <div>
                         <label className="block text-sm font-bold text-stone-700 dark:text-stone-300 mb-2">
-                            Status
+                            {tt.statusLabel}
                         </label>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                             {OPPORTUNITY_STATUSES.map((s) => (
@@ -105,7 +109,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                     {/* Notes */}
                     <div>
                         <label htmlFor="notes" className="block text-sm font-bold text-stone-700 dark:text-stone-300 mb-2">
-                            Notes
+                            {tt.notesLabel}
                         </label>
                         <textarea
                             id="notes"
@@ -113,14 +117,14 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                             onChange={(e) => setNotes(e.target.value)}
                             rows={4}
                             className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-primary dark:focus:border-mint focus:ring-0 transition-colors"
-                            placeholder="Add notes about this opportunity..."
+                            placeholder={tt.notesPlaceholder}
                         />
                     </div>
 
                     {/* Next Action Date */}
                     <div>
                         <label htmlFor="nextActionDate" className="block text-sm font-bold text-stone-700 dark:text-stone-300 mb-2">
-                            Next Action Date (Optional)
+                            {tt.nextActionLabel}
                         </label>
                         <input
                             type="date"
@@ -138,14 +142,14 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                             onClick={onClose}
                             className="flex-1 px-6 py-3 rounded-xl font-bold text-stone-700 dark:text-stone-300 bg-stone-100 dark:bg-stone-700 hover:bg-stone-200 dark:hover:bg-stone-600 transition-colors"
                         >
-                            Cancel
+                            {tt.cancel}
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting}
                             className="flex-1 px-6 py-3 rounded-xl font-bold text-white dark:text-[#1A2420] bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-lg shadow-primary/25"
                         >
-                            {isSubmitting ? 'Updating...' : 'Update Opportunity'}
+                            {isSubmitting ? tt.updating : tt.updateBtn}
                         </button>
                     </div>
                 </form>

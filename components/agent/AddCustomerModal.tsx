@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react'
 import { addCustomerManually, parsePolicyPdfWithGemini } from '@/app/(protected)/agent/actions'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface Props {
     isOpen: boolean
@@ -12,6 +13,7 @@ interface Props {
 type View = 'choice' | 'manual' | 'pdf' | 'parsing' | 'success'
 
 export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
+    const { t } = useLanguage()
     const [view, setView] = useState<View>('choice')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -131,10 +133,10 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     <div className="w-8 h-8 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                     </div>
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">CRM Entry</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">{t.agentModals.addCustomer.kicker}</span>
                                 </div>
-                                <h2 className="text-3xl font-black text-stone-900 dark:text-white tracking-tighter mb-2">Add New <span className="text-stone-400 dark:text-stone-500 italic">Customer.</span></h2>
-                                <p className="text-base text-stone-500 dark:text-stone-400 font-medium text-balance">Select how you want to ingest the customer data into your portfolio.</p>
+                                <h2 className="text-3xl font-black text-stone-900 dark:text-white tracking-tighter mb-2">{t.agentModals.addCustomer.title} <span className="text-stone-400 dark:text-stone-500 italic">{t.agentModals.addCustomer.titleAccent}</span></h2>
+                                <p className="text-base text-stone-500 dark:text-stone-400 font-medium text-balance">{t.agentModals.addCustomer.desc}</p>
                             </header>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -145,8 +147,8 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     <div className="w-12 h-12 rounded-2xl bg-stone-900 dark:bg-white text-white dark:text-stone-900 flex items-center justify-center mb-6 shadow-xl group-hover:scale-110 transition-transform">
                                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                     </div>
-                                    <h3 className="text-lg font-black text-stone-900 dark:text-white tracking-tight mb-2">Manual Entry</h3>
-                                    <p className="text-xs text-stone-400 font-medium leading-relaxed">Type in personal and policy details manually into the CRM.</p>
+                                    <h3 className="text-lg font-black text-stone-900 dark:text-white tracking-tight mb-2">{t.agentModals.addCustomer.manualTitle}</h3>
+                                    <p className="text-xs text-stone-400 font-medium leading-relaxed">{t.agentModals.addCustomer.manualDesc}</p>
                                 </button>
 
                                 <button
@@ -156,8 +158,8 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     <div className="w-12 h-12 rounded-2xl bg-primary text-white dark:text-[#1A2420] flex items-center justify-center mb-6 shadow-xl shadow-primary/25 group-hover:scale-110 transition-transform">
                                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                     </div>
-                                    <h3 className="text-lg font-black text-stone-900 dark:text-white tracking-tight mb-2">Smart PDF Upload</h3>
-                                    <p className="text-xs text-stone-400 font-medium leading-relaxed">Upload a policy PDF and let PolicyWallet AI extract all details automatically.</p>
+                                    <h3 className="text-lg font-black text-stone-900 dark:text-white tracking-tight mb-2">{t.agentModals.addCustomer.pdfTitle}</h3>
+                                    <p className="text-xs text-stone-400 font-medium leading-relaxed">{t.agentModals.addCustomer.pdfDesc}</p>
                                     <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="application/pdf" className="hidden" />
                                 </button>
                             </div>
@@ -166,7 +168,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                 onClick={onClose}
                                 className="w-full py-5 text-[10px] font-black uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors"
                             >
-                                Nevermind, go back
+                                {t.agentModals.addCustomer.goBack}
                             </button>
                         </div>
                     )}
@@ -179,8 +181,8 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     <svg className="w-8 h-8 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.989-2.386l-.548-.547z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                 </div>
                             </div>
-                            <h2 className="text-2xl font-black text-stone-900 dark:text-white tracking-tighter mb-2">PolicyWallet AI is analyzing…</h2>
-                            <p className="text-stone-400 font-medium">Extracting customer and policy data from your document.</p>
+                            <h2 className="text-2xl font-black text-stone-900 dark:text-white tracking-tighter mb-2">{t.agentModals.addCustomer.analyzingTitle}</h2>
+                            <p className="text-stone-400 font-medium">{t.agentModals.addCustomer.analyzingDesc}</p>
                         </div>
                     )}
 
@@ -188,35 +190,35 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                         <form onSubmit={handleManualSubmit} className="space-y-10">
                             <header className="flex justify-between items-start">
                                 <div>
-                                    <h2 className="text-2xl font-black text-stone-900 dark:text-white tracking-tighter mb-1">Customer <span className="text-stone-400 italic">Details.</span></h2>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint">Manual Entry Protocol</p>
+                                    <h2 className="text-2xl font-black text-stone-900 dark:text-white tracking-tighter mb-1">{t.agentModals.addCustomer.detailsTitle} <span className="text-stone-400 italic">{t.agentModals.addCustomer.detailsAccent}</span></h2>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint">{t.agentModals.addCustomer.manualProtocol}</p>
                                 </div>
-                                <button type="button" onClick={() => setView('choice')} className="text-[10px] font-black uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors">Change Method</button>
+                                <button type="button" onClick={() => setView('choice')} className="text-[10px] font-black uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors">{t.agentModals.addCustomer.changeMethod}</button>
                             </header>
 
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">First Name</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.firstName}</label>
                                     <input
                                         required
                                         value={formData.name}
                                         onChange={e => setFormData({ ...formData, name: e.target.value })}
                                         className="w-full h-14 px-6 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
-                                        placeholder="John"
+                                        placeholder={t.agentModals.addCustomer.phFirstName}
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">Last Name</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.lastName}</label>
                                     <input
                                         required
                                         value={formData.surname}
                                         onChange={e => setFormData({ ...formData, surname: e.target.value })}
                                         className="w-full h-14 px-6 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
-                                        placeholder="Doe"
+                                        placeholder={t.agentModals.addCustomer.phLastName}
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">Email Address</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.emailAddress}</label>
                                     <input
                                         required
                                         type="email"
@@ -227,7 +229,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">Phone Number</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.phoneNumber}</label>
                                     <input
                                         value={formData.phone}
                                         onChange={e => setFormData({ ...formData, phone: e.target.value })}
@@ -245,23 +247,23 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                         onChange={e => setFormData({ ...formData, addPolicy: e.target.checked })}
                                         className="w-5 h-5 rounded-lg border-slate-300 text-primary focus:ring-primary/30"
                                     />
-                                    <span className="text-sm font-black text-stone-900 dark:text-white tracking-tight">Include Initial Policy Details</span>
+                                    <span className="text-sm font-black text-stone-900 dark:text-white tracking-tight">{t.agentModals.addCustomer.includePolicy}</span>
                                 </label>
 
                                 {formData.addPolicy && (
                                     <div className="grid grid-cols-2 gap-6 animate-in slide-in-from-top-4 duration-300">
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">Insurer</label>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.insurer}</label>
                                             <input
                                                 required={formData.addPolicy}
                                                 value={formData.policy.insurerName}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, insurerName: e.target.value } })}
                                                 className="w-full h-12 px-5 bg-white dark:bg-slate-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
-                                                placeholder="e.g. Allianz"
+                                                placeholder={t.agentModals.addCustomer.phInsurer}
                                             />
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">Policy Number</label>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.policyNumber}</label>
                                             <input
                                                 required={formData.addPolicy}
                                                 value={formData.policy.policyNumber}
@@ -271,23 +273,23 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                             />
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">Line of Business</label>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.lineOfBusiness}</label>
                                             <select
                                                 required={formData.addPolicy}
                                                 value={formData.policy.lineOfBusiness}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, lineOfBusiness: e.target.value } })}
                                                 className="w-full h-12 px-5 bg-white dark:bg-slate-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold appearance-none"
                                             >
-                                                <option value="motor">Motor</option>
-                                                <option value="health">Health</option>
-                                                <option value="home">Home</option>
-                                                <option value="life">Life</option>
-                                                <option value="travel">Travel</option>
-                                                <option value="liability">Liability</option>
+                                                <option value="motor">{t.agentModals.addCustomer.lobMotor}</option>
+                                                <option value="health">{t.agentModals.addCustomer.lobHealth}</option>
+                                                <option value="home">{t.agentModals.addCustomer.lobHome}</option>
+                                                <option value="life">{t.agentModals.addCustomer.lobLife}</option>
+                                                <option value="travel">{t.agentModals.addCustomer.lobTravel}</option>
+                                                <option value="liability">{t.agentModals.addCustomer.lobLiability}</option>
                                             </select>
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">Premium (€)</label>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.premium}</label>
                                             <input
                                                 type="number"
                                                 value={formData.policy.premiumAmount}
@@ -297,7 +299,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                             />
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">Start Date</label>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.startDate}</label>
                                             <input
                                                 required={formData.addPolicy}
                                                 type="date"
@@ -307,7 +309,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                             />
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">End Date</label>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.endDate}</label>
                                             <input
                                                 required={formData.addPolicy}
                                                 type="date"
@@ -328,14 +330,14 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     onClick={() => { reset(); onClose(); }}
                                     className="flex-1 px-8 py-5 bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-white rounded-[24px] text-[10px] font-black uppercase tracking-widest hover:bg-stone-200 transition-all"
                                 >
-                                    Cancel
+                                    {t.agentModals.addCustomer.cancel}
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={loading}
                                     className="flex-[2] px-8 py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-slate-900/10 hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all disabled:opacity-50"
                                 >
-                                    {loading ? 'Processing...' : 'Add to Pipeline'}
+                                    {loading ? t.agentModals.addCustomer.processing : t.agentModals.addCustomer.addToPipeline}
                                 </button>
                             </div>
                         </form>

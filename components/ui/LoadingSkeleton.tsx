@@ -6,6 +6,47 @@ export function Skeleton({ className }: { className?: string }) {
     )
 }
 
+/**
+ * Generic skeleton for the agent's data-heavy list/insight routes (customers,
+ * opportunities, commissions, insights) — header + stat row + a list of rows.
+ * Intentionally text-free so it needs no translations.
+ */
+export function AgentListSkeleton() {
+    return (
+        <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-[1400px] mx-auto animate-in fade-in duration-500">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+                <div className="space-y-2">
+                    <Skeleton className="h-8 w-56" />
+                    <Skeleton className="h-4 w-40" />
+                </div>
+                <Skeleton className="h-11 w-36 rounded-xl" />
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[...Array(4)].map((_, i) => (
+                    <div key={i} className="p-5 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 h-28">
+                        <Skeleton className="h-4 w-20 mb-3" />
+                        <Skeleton className="h-7 w-16" />
+                    </div>
+                ))}
+            </div>
+
+            <div className="space-y-3">
+                {[...Array(6)].map((_, i) => (
+                    <div key={i} className="flex items-center gap-4 p-4 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800">
+                        <Skeleton className="h-10 w-10 rounded-full shrink-0" />
+                        <div className="flex-1 space-y-2">
+                            <Skeleton className="h-4 w-1/3" />
+                            <Skeleton className="h-3 w-1/4" />
+                        </div>
+                        <Skeleton className="h-8 w-20 rounded-lg" />
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+}
+
 export function DashboardSkeleton() {
     return (
         <div className="p-4 md:p-6 space-y-8 max-w-[1400px] mx-auto animate-in fade-in duration-500">
