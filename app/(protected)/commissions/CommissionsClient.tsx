@@ -1,6 +1,6 @@
 "use client"
 
-import { DollarSign, TrendingUp, Briefcase, BarChart3 } from "lucide-react"
+import { Euro, TrendingUp, Briefcase, BarChart3 } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import type { CommissionSummary } from "./actions"
 
@@ -78,7 +78,7 @@ export function CommissionsClient({ data }: Props) {
                     <div className="arc-card p-6 border-t-4 border-t-primary">
                         <div className="flex items-center gap-3 mb-3">
                             <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
-                                <DollarSign className="w-5 h-5 text-primary dark:text-mint" />
+                                <Euro className="w-5 h-5 text-primary dark:text-mint" />
                             </div>
                             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.wonCommission}</span>
                         </div>

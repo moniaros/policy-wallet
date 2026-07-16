@@ -603,8 +603,6 @@ export function AddPolicyForCustomerModal({
                                         className="w-24 px-3 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
                                     >
                                         <option value="EUR">EUR</option>
-                                        <option value="USD">USD</option>
-                                        <option value="GBP">GBP</option>
                                     </select>
                                 </div>
                             </div>

@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { TrendingUp, ArrowUp, ArrowDown, DollarSign, Calendar, Briefcase } from "lucide-react"
+import { TrendingUp, ArrowUp, ArrowDown, Euro, Calendar, Briefcase } from "lucide-react"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -15,25 +15,25 @@ interface RevenuePulseProps {
 }
 
 export function RevenuePulse({ metrics, isLoading, isPipelineGated }: RevenuePulseProps) {
-    const { language } = useLanguage()
+    const { t, language } = useLanguage()
 
     if (isLoading) return <RevenuePulseSkeleton />
 
     const stats = [
         {
-            label: language === "el" ? "Μηνιαία Έσοδα" : "Monthly Revenue",
+            label: t.agentDashboard.monthlyRevenue,
             value: formatCurrencyCompact(metrics.mrr, language),
-            icon: DollarSign,
+            icon: Euro,
             change: metrics.monthlyGrowthPercent,
         },
         {
-            label: language === "el" ? "Ανανεώσεις Μήνα" : "Renewals This Month",
+            label: t.agentDashboard.renewalsThisMonth,
             value: String(metrics.renewalsDueThisMonth),
             subValue: formatCurrencyCompact(metrics.renewalsDueAmount, language),
             icon: Calendar,
         },
         {
-            label: language === "el" ? "Pipeline Προμηθειών" : "Commission Pipeline",
+            label: t.agentDashboard.commissionPipeline,
             value: formatCurrencyCompact(metrics.commissionPipeline, language),
             icon: Briefcase,
             gated: isPipelineGated,
@@ -45,7 +45,7 @@ export function RevenuePulse({ metrics, isLoading, isPipelineGated }: RevenuePul
             <div className="flex items-center gap-2 mb-4">
                 <TrendingUp className="h-5 w-5 text-primary dark:text-mint" />
                 <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                    {language === "el" ? "Παλμός Εσόδων" : "Revenue Pulse"}
+                    {t.agentDashboard.revenuePulse}
                 </h2>
             </div>
 

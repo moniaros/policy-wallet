@@ -14,7 +14,7 @@ import {
     RefreshCw,
     TrendingUp,
     ShieldAlert,
-    DollarSign,
+    Euro,
 } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -271,7 +271,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                     <StatCard icon={Clock} label={t.expiringThisMonth} value={stats.expiringThisMonth} accent="blue" />
                     <StatCard icon={ShieldAlert} label={t.overdue} value={stats.overdue} accent="rose" />
                     <StatCard icon={CheckCircle2} label={t.completedThisMonth} value={stats.completedThisMonth} accent="emerald" />
-                    <StatCard icon={DollarSign} label={t.premiumAtRisk} value={`€${stats.premiumAtRisk.toLocaleString()}`} accent="orange" />
+                    <StatCard icon={Euro} label={t.premiumAtRisk} value={`€${stats.premiumAtRisk.toLocaleString()}`} accent="orange" />
                     <StatCard icon={TrendingUp} label={t.totalTracked} value={stats.total} accent="slate" />
                 </div>
 

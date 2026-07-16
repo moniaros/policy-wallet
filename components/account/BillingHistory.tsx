@@ -66,8 +66,7 @@ export function BillingHistory({ invoices, language, className = '' }: BillingHi
                                 </div>
                                 <div className="flex items-center gap-2 ml-8">
                                     <span className="text-lg font-bold text-slate-900 dark:text-white">
-                                        {invoice.currency === 'EUR' ? '€' : '$'}
-                                        {invoice.amount.toFixed(2)}
+                                        €{invoice.amount.toFixed(2)}
                                     </span>
                                     {getStatusBadge(invoice.status, language)}
                                 </div>

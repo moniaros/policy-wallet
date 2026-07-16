@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import {
     Users, UserPlus, Crown, Shield, User, ArrowRightLeft,
-    TrendingUp, DollarSign, Briefcase, Building2, MoreVertical,
+    TrendingUp, Euro, Briefcase, Building2, MoreVertical,
     ChevronDown, X, AlertCircle
 } from "lucide-react"
 import type { TeamOverview } from "@/lib/services/team.service"
@@ -176,7 +176,7 @@ export function TeamClient({ team, pipeline }: Props) {
                         color="amber"
                     />
                     <StatCard
-                        icon={<DollarSign className="w-5 h-5 text-primary dark:text-mint" />}
+                        icon={<Euro className="w-5 h-5 text-primary dark:text-mint" />}
                         label={t.totalWon}
                         value={fmt(team.stats.totalWon)}
                         color="primary"
