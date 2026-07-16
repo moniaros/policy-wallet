@@ -4,6 +4,7 @@ import { getStripe } from '@/lib/stripe'
 import { db } from '@/lib/db'
 import { withLegacyBillingDeprecationHeaders } from '@/lib/api-deprecation'
 import { rateLimit } from '@/lib/rate-limit'
+import { getSiteOrigin } from '@/lib/seo/site'
 
 const stripe = getStripe()
 
@@ -76,8 +77,8 @@ export async function POST(req: NextRequest) {
                     quantity: 1,
                 },
             ],
-            success_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/account?success=true`,
-            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/pricing?canceled=true`,
+            success_url: `${getSiteOrigin()}/account?success=true`,
+            cancel_url: `${getSiteOrigin()}/pricing?canceled=true`,
             metadata: {
                 userId: dbUser.id,
                 tier: tier

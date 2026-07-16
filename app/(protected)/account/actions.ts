@@ -14,6 +14,7 @@ import { syncRevenueCatSubscription } from "@/lib/services/revenuecat.service"
 import { daysFromNow, TRIAL_PERIOD_DAYS } from "@/lib/constants/time"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { FREE_LIFETIME_QUESTIONS } from "@/lib/monetization/feature-gates"
+import { getSiteOrigin } from "@/lib/seo/site"
 
 export async function getAccountData() {
     const authResult = await getAuthenticatedUserOrNull()
@@ -347,6 +348,13 @@ export async function upgradeSubscription(
     if (!plan) return { error: "Plan not found" }
     if (Number(plan.price) <= 0) return { error: "Plan is not purchasable" }
 
+    // Don't start a redundant checkout for the plan the user is already on
+    // (the pricing UI disables that button; this is the server-side backstop).
+    const existing = await db.subscription.findFirst({
+        where: { userId: authResult.dbUser.id, planId, status: "active" },
+    })
+    if (existing) return { error: "You are already on this plan." }
+
     try {
         const checkout = await createCheckoutSession(
             authResult.dbUser.id,
@@ -379,7 +387,7 @@ export async function createBillingPortalSession() {
     try {
         const session = await stripe.billingPortal.sessions.create({
             customer: authResult.dbUser.stripeCustomerId,
-            return_url: `${env.NEXTAUTH_URL || 'http://localhost:3000'}/account`,
+            return_url: `${getSiteOrigin()}/account`,
         })
 
         return { url: session.url }
