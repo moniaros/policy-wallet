@@ -6,7 +6,7 @@ import { Customer, OpportunityStatus } from "@/components/agent/types"
 import { updateOpportunityStatus, createAgentInvite } from "../../agent/actions"
 import { useRouter } from "next/navigation"
 import { CreateTaskModal } from "@/components/agent/CreateTaskModal"
-import { AddPolicyForCustomerModal } from "@/components/agent/AddPolicyForCustomerModal"
+import { UploadPolicyModal } from "@/components/agent/UploadPolicyModal"
 import { ClientDetailView } from "@/components/agent/ClientDetailView"
 import { DocumentRequestCreate, DocumentRequestCard } from "@/components/collaboration/DocumentRequestFlow"
 import { ProposalCreate, ProposalView } from "@/components/collaboration/ProposalCard"
@@ -240,13 +240,13 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                 customerName={customerFullName}
             />
 
-            {/* Add Policy Modal */}
-            <AddPolicyForCustomerModal
+            {/* Add Policy Modal — smart upload, customer already known */}
+            <UploadPolicyModal
                 isOpen={isPolicyModalOpen}
                 onClose={() => setIsPolicyModalOpen(false)}
-                customerId={initialCustomer.id}
-                customerName={customerFullName}
-                customerEmail={initialCustomer.email || undefined}
+                onSuccess={() => router.refresh()}
+                presetCustomerId={initialCustomer.id}
+                presetCustomerName={customerFullName}
             />
 
             {/* Document Request Modal */}

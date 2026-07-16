@@ -1,6 +1,7 @@
 import type { PremiumFrequency } from './ai-service.interface'
 import { sanitizeExtractionSources } from './extraction-citations'
 import { parseDocumentDate, toIsoDateString } from '@/lib/dates/document-date'
+import { normalizeTaxId } from '@/lib/identity/tax-id'
 
 type RawExtractionPayload = {
     insurerName?: unknown
@@ -15,6 +16,8 @@ type RawExtractionPayload = {
     customerName?: unknown
     customerSurname?: unknown
     customerEmail?: unknown
+    customerPhone?: unknown
+    customerTaxId?: unknown
     exclusions?: unknown
     extractionConfidence?: unknown
     /** Per-field source citations (flag-gated; see extraction-citations.ts) */
@@ -152,6 +155,8 @@ export function enrichExtractionPayload(
     const customerLast = asText(payload.customerSurname)
     const customerFullName = [customerFirst, customerLast].filter(Boolean).join(' ').trim()
     const customerEmail = asText(payload.customerEmail)
+    const customerPhone = asText(payload.customerPhone)
+    const customerTaxId = normalizeTaxId(asText(payload.customerTaxId))
 
     const extractionSources = sanitizeExtractionSources(payload.extractionSources)
 
@@ -202,11 +207,15 @@ export function enrichExtractionPayload(
             ...(baseAcord?.policyholder || {}),
             name: customerFullName || baseAcord?.policyholder?.name || null,
             email: customerEmail || baseAcord?.policyholder?.email || null,
+            phone: customerPhone || baseAcord?.policyholder?.phone || null,
+            taxId: customerTaxId || baseAcord?.policyholder?.taxId || null,
         },
         insured: {
             ...(baseAcord?.insured || {}),
             name: customerFullName || baseAcord?.insured?.name || null,
             email: customerEmail || baseAcord?.insured?.email || null,
+            phone: customerPhone || baseAcord?.insured?.phone || null,
+            taxId: customerTaxId || baseAcord?.insured?.taxId || null,
         }
     }
 

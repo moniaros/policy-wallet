@@ -25,6 +25,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
         surname: '',
         email: '',
         phone: '',
+        taxId: '',
         addPolicy: false,
         policy: {
             insurerName: '',
@@ -48,6 +49,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
             surname: formData.surname,
             email: formData.email,
             phone: formData.phone,
+            taxId: formData.taxId,
             policy: formData.addPolicy ? {
                 ...formData.policy,
                 premiumAmount: formData.policy.premiumAmount ? parseFloat(formData.policy.premiumAmount) : undefined
@@ -107,6 +109,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
             surname: '',
             email: '',
             phone: '',
+            taxId: '',
             addPolicy: false,
             policy: {
                 insurerName: '',
@@ -235,6 +238,15 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                         onChange={e => setFormData({ ...formData, phone: e.target.value })}
                                         className="w-full h-14 px-6 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
                                         placeholder="+30 690 000 0000"
+                                    />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.taxId}</label>
+                                    <input
+                                        value={formData.taxId}
+                                        onChange={e => setFormData({ ...formData, taxId: e.target.value })}
+                                        className="w-full h-14 px-6 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
+                                        placeholder={t.agentModals.addCustomer.phTaxId}
                                     />
                                 </div>
                             </div>

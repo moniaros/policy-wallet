@@ -212,6 +212,8 @@ ${extractionCitationsEnabled()
         customerName: z.string().optional().describe("Policyholder first name"),
         customerSurname: z.string().optional().describe("Policyholder surname"),
         customerEmail: z.string().optional(),
+        customerPhone: z.string().optional().describe("Policyholder phone number (look for Τηλέφωνο, Κινητό, Phone)"),
+        customerTaxId: z.string().optional().describe("Policyholder VAT / tax number — 9-digit Greek ΑΦΜ (look for ΑΦΜ, Α.Φ.Μ., ΔΟΥ, VAT, Tax ID)"),
         exclusions: z.array(z.string()).optional().describe("Top exclusions from Εξαιρέσεις/Exclusions sections"),
         extractionConfidence: z.object({
           overall: z.number().describe("0-100 confidence score"),
@@ -293,6 +295,8 @@ ${schemaPromptBlock(ExtractionSchema)}`
         customerName: extracted.customerName,
         customerSurname: extracted.customerSurname,
         customerEmail: extracted.customerEmail,
+        customerPhone: extracted.customerPhone,
+        customerTaxId: extracted.customerTaxId,
         exclusions: enriched.exclusions,
         extractionMeta: enriched.extractionMeta,
         acordData: enriched.acordData,

@@ -104,6 +104,10 @@ export class MockAIService implements IAIService {
             customerName: 'John',
             customerSurname: 'Doe',
             customerEmail: 'john.doe@example.com',
+            customerPhone: '+30 210 000 0000',
+            // Valid 9-digit Greek ΑΦΜ (mod-11 checksum) so the smart-upload
+            // resolution flow exercises the strong VAT-match path in dev/tests.
+            customerTaxId: '123456783',
             exclusions: ['Driving under influence', 'Commercial use not declared'],
             extractionConfidence: {
                 overall: 88,

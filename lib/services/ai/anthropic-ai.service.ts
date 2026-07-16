@@ -136,6 +136,8 @@ export class AnthropicAIService implements IAIService {
             customerName: z.string().optional(),
             customerSurname: z.string().optional(),
             customerEmail: z.string().optional(),
+            customerPhone: z.string().optional().describe("Policyholder phone number (Τηλέφωνο, Κινητό)"),
+            customerTaxId: z.string().optional().describe("Policyholder VAT / 9-digit Greek ΑΦΜ (ΑΦΜ, Α.Φ.Μ., ΔΟΥ, VAT)"),
             exclusions: z.array(z.string()).optional().describe("Top exclusions found"),
             extractionConfidence: z.object({
                 overall: z.number().describe("0-100 confidence score"),
@@ -255,6 +257,8 @@ ${extractionCitationsEnabled()
             customerName: extracted.customerName,
             customerSurname: extracted.customerSurname,
             customerEmail: extracted.customerEmail,
+            customerPhone: extracted.customerPhone,
+            customerTaxId: extracted.customerTaxId,
             exclusions: enriched.exclusions,
             extractionMeta: enriched.extractionMeta,
             acordData: enriched.acordData,

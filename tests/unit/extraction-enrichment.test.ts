@@ -103,6 +103,34 @@ describe('enrichExtractionPayload — extended fields', () => {
     })
 })
 
+describe('enrichExtractionPayload — policyholder identity (ΑΦΜ + phone)', () => {
+    it('writes a normalized ΑΦΜ and phone into policyholder/insured', () => {
+        const enriched = enrichExtractionPayload({
+            ...FULL_PAYLOAD,
+            customerName: 'Maria',
+            customerSurname: 'Papadopoulou',
+            customerEmail: 'maria@x.gr',
+            customerPhone: '+30 210 111 2222',
+            customerTaxId: '12 3.4-5 6783',
+        })
+        expect(enriched.acordData.policyholder.taxId).toBe('123456783')
+        expect(enriched.acordData.policyholder.phone).toBe('+30 210 111 2222')
+        expect(enriched.acordData.insured.taxId).toBe('123456783')
+        expect(enriched.acordData.policyholder.name).toBe('Maria Papadopoulou')
+    })
+
+    it('drops an implausible ΑΦΜ (too short) to null rather than storing junk', () => {
+        const enriched = enrichExtractionPayload({ ...FULL_PAYLOAD, customerTaxId: '123' })
+        expect(enriched.acordData.policyholder.taxId).toBeNull()
+    })
+
+    it('stays back-compatible when the new identity fields are absent', () => {
+        const enriched = enrichExtractionPayload(FULL_PAYLOAD)
+        expect(enriched.acordData.policyholder.taxId).toBeNull()
+        expect(enriched.acordData.policyholder.phone).toBeNull()
+    })
+})
+
 describe('enrichExtractionPayload — reviewState', () => {
     it('defaults reviewState to unconfirmed', () => {
         const enriched = enrichExtractionPayload(FULL_PAYLOAD)

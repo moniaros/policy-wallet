@@ -1,6 +1,7 @@
 import { BaseService } from "./base.service";
 import { agentPolicyVisibilityWhere, getGrantedPolicyIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility";
 import { effectivePolicyStatus, isPolicyCoverageActive, isCoveredByEndDate } from "@/lib/policy-status";
+import { normalizeTaxId } from "@/lib/identity/tax-id";
 import { Prisma } from "@prisma/client";
 import { AppError } from "@/lib/errors";
 
@@ -15,6 +16,7 @@ export interface CreateCustomerData {
     email: string;
     name: string;
     phoneNumber?: string;
+    taxId?: string;
     notes?: string;
 }
 
@@ -194,6 +196,8 @@ export class CustomerService extends BaseService {
      * Create a new customer (manual entry)
      */
     async createCustomer(agentUserId: string, data: CreateCustomerData) {
+        const taxId = normalizeTaxId(data.taxId);
+
         // 1. Check if user exists
         let user = await this.db.user.findUnique({
             where: { email: data.email }
@@ -206,6 +210,7 @@ export class CustomerService extends BaseService {
                     email: data.email,
                     name: data.name,
                     phoneNumber: data.phoneNumber,
+                    taxId,
                     roles: 'policyholder', // Default role
                     password: null, // No password, phantom user
                     emailVerified: null,
@@ -213,6 +218,13 @@ export class CustomerService extends BaseService {
                         create: {}
                     }
                 }
+            });
+        } else if (taxId && !user.taxId) {
+            // Backfill ΑΦΜ only when the existing record has none — never
+            // overwrite a value the customer or another source already set.
+            await this.db.user.update({
+                where: { id: user.id },
+                data: { taxId },
             });
         }
 

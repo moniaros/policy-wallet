@@ -64,6 +64,7 @@ model User {
   lastActiveAt                    DateTime?                  @map("last_active_at")
   password                        String?
   phoneNumber                     String?                    @map("phone_number")
+  taxId                           String?                    @map("tax_id")
   pushToken                       String?                    @map("push_token")
   stripeCustomerId                String?                    @unique @map("stripe_customer_id")
   termsVersionAccepted            String?                    @map("terms_version_accepted")
@@ -130,6 +131,7 @@ model User {
   protectionScore                 ProtectionScore?
   recommendations                 RecommendationInstance[]
 
+  @@index([taxId])
   @@map("users")
 }
 
