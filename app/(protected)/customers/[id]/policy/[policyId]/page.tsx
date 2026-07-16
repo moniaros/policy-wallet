@@ -8,11 +8,8 @@ import { calculatePolicyStatus, getStatusColor, getStatusLabel, getDaysUntilExpi
 import { AnalysisCard } from "@/app/(protected)/wallet/[id]/AnalysisCard"
 import { CollaborationTimeline } from "@/components/collaboration/CollaborationTimeline"
 import { TrendingUp, MessageSquare, Plus, FileText } from "lucide-react"
-
-const PAGE_COPY = {
-    managedByYou: { el: "Διαχειριζόμενο από εσάς", en: "Managed by you" },
-    edit: { el: "Επεξεργασία", en: "Edit" },
-} as const
+import { getTranslations } from "@/lib/i18n"
+import { getBranch, normalizeBranch } from "@/lib/insurance/taxonomy"
 
 export default async function AgentPolicyDetailPage({ params }: { params: Promise<{ id: string, policyId: string }> }) {
     const { id: customerId, policyId } = await params
@@ -66,6 +63,11 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
     const daysLeft = getDaysUntilExpiry(policy.endDate)
 
     const language = ((dbUser.preferredLanguage as 'el' | 'en') || 'el')
+    const t = getTranslations(language)
+    const pd = t.agentPages.policyDetail
+    const locale = language === 'el' ? 'el-GR' : 'en-US'
+    const branch = getBranch(policy.lineOfBusiness) ?? normalizeBranch(policy.lineOfBusiness)
+    const lobPhrase = { el: `Κάλυψη ${branch.genitiveEl}`, en: `${branch.label.en} Protection` }[language]
     const isManagedByViewer = access.grantLevel === 'manage' || policy.createdByUserId === dbUser.id
     const editHref = `/wallet/${policyId}/edit?returnTo=${encodeURIComponent(`/customers/${customerId}/policy/${policyId}`)}`
 
@@ -73,7 +75,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
         <div className="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
             {/* Breadcrumbs */}
             <nav className="flex items-center gap-2 mb-8 text-sm font-medium">
-                <Link href="/customers" className="text-stone-400 hover:text-primary dark:hover:text-mint transition-colors">Customers</Link>
+                <Link href="/customers" className="text-stone-400 hover:text-primary dark:hover:text-mint transition-colors">{pd.breadcrumbCustomers}</Link>
                 <svg className="w-4 h-4 text-stone-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                 </svg>
@@ -82,7 +84,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                         {customer.name}
                     </Link>
                 ) : (
-                    <span className="text-stone-400">Loading...</span>
+                    <span className="text-stone-400">{pd.loading}</span>
                 )}
                 <svg className="w-4 h-4 text-stone-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
@@ -97,8 +99,8 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                         <TrendingUp className="w-6 h-6 text-amber-700 dark:text-amber-400" />
                     </div>
                     <div>
-                        <p className="text-sm font-black text-amber-900 dark:text-amber-100 uppercase tracking-widest">Agent Portfolio Manager</p>
-                        <p className="text-xs text-amber-700 dark:text-amber-400 font-medium mt-0.5">You are currently managing this customer policy.</p>
+                        <p className="text-sm font-black text-amber-900 dark:text-amber-100 uppercase tracking-widest">{pd.portfolioManager}</p>
+                        <p className="text-xs text-amber-700 dark:text-amber-400 font-medium mt-0.5">{pd.portfolioManagerDesc}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-3 w-full md:w-auto">
@@ -107,15 +109,9 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                             href={editHref}
                             className="flex-1 md:flex-none px-6 py-2.5 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-2xl text-xs font-black uppercase tracking-widest text-center shadow-lg shadow-primary/20 transition-all active:scale-95"
                         >
-                            {PAGE_COPY.edit[language]}
+                            {pd.edit}
                         </Link>
                     )}
-                    <button className="flex-1 md:flex-none px-6 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-amber-500/20 transition-all active:scale-95">
-                        New Quote
-                    </button>
-                    <button className="flex-1 md:flex-none px-6 py-2.5 bg-white dark:bg-stone-800 text-stone-900 dark:text-white rounded-2xl text-xs font-black uppercase tracking-widest border border-amber-200 dark:border-amber-700 transition-all hover:bg-amber-100/50 active:scale-95">
-                        Add Note
-                    </button>
                 </div>
             </div>
 
@@ -133,39 +129,39 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                         </span>
                                         {isManagedByViewer && (
                                             <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint">
-                                                {PAGE_COPY.managedByYou[language]}
+                                                {pd.managedByYou}
                                             </span>
                                         )}
                                         {daysLeft >= 0 && daysLeft <= 30 && (
                                             <span className="text-amber-600 dark:text-amber-400 text-xs font-bold">
-                                                Expires in {daysLeft} days
+                                                {{ el: `Λήγει σε ${daysLeft} ημέρες`, en: `Expires in ${daysLeft} days` }[language]}
                                             </span>
                                         )}
                                     </div>
                                     <h1 className="text-4xl font-black text-stone-900 dark:text-white tracking-tight leading-tight">
                                         {policy.insurerName}
                                     </h1>
-                                    <p className="text-xl text-stone-500 font-medium mt-1 uppercase tracking-tighter">{policy.lineOfBusiness} Protection</p>
+                                    <p className="text-xl text-stone-500 font-medium mt-1 uppercase tracking-tighter">{lobPhrase}</p>
                                 </div>
                                 <div className="bg-stone-50 dark:bg-stone-900 p-6 rounded-2xl border border-stone-100 dark:border-stone-700 text-center md:min-w-[200px]">
-                                    <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-1">Annual Premium</p>
+                                    <p className="text-xs font-bold text-stone-400 uppercase tracking-widest mb-1">{pd.annualPremium}</p>
                                     <p className="text-3xl font-black text-stone-900 dark:text-white leading-none">
-                                        {Number(policy.premiumAmount || 0).toLocaleString('el-GR', { style: 'currency', currency: policy.premiumCurrency || 'EUR' })}
+                                        {Number(policy.premiumAmount || 0).toLocaleString(locale, { style: 'currency', currency: policy.premiumCurrency || 'EUR' })}
                                     </p>
                                 </div>
                             </div>
                         </div>
 
                         <div className="p-8">
-                            <h2 className="text-sm font-black text-stone-400 uppercase tracking-widest mb-6">Coverage Highlights</h2>
+                            <h2 className="text-sm font-black text-stone-400 uppercase tracking-widest mb-6">{pd.coverageHighlights}</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="flex items-start gap-4">
                                     <div className="mt-1 w-5 h-5 rounded-full bg-primary-soft dark:bg-primary/15 flex items-center justify-center text-primary dark:text-mint shrink-0">
                                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" /></svg>
                                     </div>
                                     <div>
-                                        <p className="font-bold text-stone-900 dark:text-stone-100">Standard Coverage</p>
-                                        <p className="text-sm text-stone-500 mt-1">Full protection based on policy specifications.</p>
+                                        <p className="font-bold text-stone-900 dark:text-stone-100">{pd.standardCoverage}</p>
+                                        <p className="text-sm text-stone-500 mt-1">{pd.standardCoverageDesc}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start gap-4">
@@ -173,8 +169,8 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="3" /></svg>
                                     </div>
                                     <div>
-                                        <p className="font-bold text-stone-900 dark:text-stone-100">Direct Support</p>
-                                        <p className="text-sm text-stone-500 mt-1">24/7 assistance via insurer.</p>
+                                        <p className="font-bold text-stone-900 dark:text-stone-100">{pd.directSupport}</p>
+                                        <p className="text-sm text-stone-500 mt-1">{pd.directSupportDesc}</p>
                                     </div>
                                 </div>
                             </div>
@@ -183,9 +179,9 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
 
                     {/* Summary Section */}
                     <div className="bg-stone-50 dark:bg-stone-900/30 rounded-3xl p-8 border border-stone-100 dark:border-stone-800">
-                        <h2 className="text-sm font-black text-stone-400 uppercase tracking-widest mb-4">Summary</h2>
+                        <h2 className="text-sm font-black text-stone-400 uppercase tracking-widest mb-4">{pd.summary}</h2>
                         <div className="prose dark:prose-invert max-w-none text-stone-600 dark:text-stone-400 leading-relaxed">
-                            {policy.coverageSummary || "No summary provided for this policy. Run AI analysis below."}
+                            {policy.coverageSummary || pd.noSummary}
                         </div>
                     </div>
 
@@ -203,14 +199,14 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                         <div className="bg-white dark:bg-stone-800 rounded-3xl p-8 border border-stone-200 dark:border-stone-700 shadow-sm">
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center gap-3">
-                                    <h2 className="text-sm font-black text-stone-900 dark:text-white uppercase tracking-widest">AI Policy Insights</h2>
+                                    <h2 className="text-sm font-black text-stone-900 dark:text-white uppercase tracking-widest">{pd.aiInsights}</h2>
                                     <span className="px-2 py-0.5 rounded-full bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint text-[9px] font-black uppercase tracking-widest border border-primary/20 dark:border-primary/30">
-                                        ACORD Verified
+                                        {pd.acordVerified}
                                     </span>
                                 </div>
                                 {(policy as any).lastAnalyzedAt && (
                                     <span className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">
-                                        Last Check: {new Date((policy as any).lastAnalyzedAt).toLocaleDateString()}
+                                        {pd.lastCheck}: {new Date((policy as any).lastAnalyzedAt).toLocaleDateString(locale)}
                                     </span>
                                 )}
                             </div>
@@ -218,21 +214,21 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 <div className="space-y-6">
                                     <div>
-                                        <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">Verification Overview</p>
+                                        <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">{pd.verificationOverview}</p>
                                         <div className="p-4 bg-stone-50 dark:bg-stone-900/50 rounded-2xl border border-stone-100 dark:border-stone-800">
                                             <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
-                                                AI-verified details from the source document.
+                                                {pd.verificationOverviewDesc}
                                             </p>
                                         </div>
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">Contract Insurer</p>
+                                            <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">{pd.contractInsurer}</p>
                                             <p className="text-xs font-bold text-stone-900 dark:text-white">{(policy as any).acordData.policy?.insurer || policy.insurerName}</p>
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">Premium Found</p>
+                                            <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">{pd.premiumFound}</p>
                                             <p className="text-xs font-bold text-primary dark:text-mint">
                                                 {(policy as any).acordData.policy?.premium?.amount} {(policy as any).acordData.policy?.premium?.currency}
                                             </p>
@@ -241,13 +237,13 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                 </div>
 
                                 <div className="space-y-3">
-                                    <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">Structured Coverages</p>
+                                    <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">{pd.structuredCoverages}</p>
                                     <div className="space-y-2">
                                         {(policy as any).acordData.coverages?.map((cov: any, idx: number) => (
                                             <div key={idx} className="flex justify-between items-center text-[11px] p-3 bg-white dark:bg-stone-800 rounded-xl border border-stone-100 dark:border-stone-700 shadow-sm">
                                                 <div className="flex flex-col">
                                                     <span className="font-black text-stone-900 dark:text-stone-100 uppercase tracking-tighter">{cov.name}</span>
-                                                    {cov.deductible && <span className="text-[9px] text-stone-400">Deductible: {cov.deductible}</span>}
+                                                    {cov.deductible && <span className="text-[9px] text-stone-400">{pd.deductible}: {cov.deductible}</span>}
                                                 </div>
                                                 <span className="font-mono text-primary dark:text-mint font-black">{cov.limit}</span>
                                             </div>
@@ -264,25 +260,25 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                     {/* Quick Stats Sidebar */}
                     <div className="bg-white dark:bg-stone-800 rounded-3xl p-6 shadow-sm border border-stone-200 dark:border-stone-700 space-y-6">
                         <div>
-                            <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">Policy ID</p>
+                            <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2">{pd.policyId}</p>
                             <p className="font-mono text-sm text-stone-900 dark:text-stone-100 font-bold bg-stone-50 dark:bg-stone-900/50 p-3 rounded-xl">{policy.policyNumber}</p>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">Starts</p>
-                                <p className="text-stone-900 dark:text-stone-100 font-bold">{policy.startDate.toLocaleDateString()}</p>
+                                <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">{pd.starts}</p>
+                                <p className="text-stone-900 dark:text-stone-100 font-bold">{policy.startDate.toLocaleDateString(locale)}</p>
                             </div>
                             <div>
-                                <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">Ends</p>
-                                <p className="text-stone-900 dark:text-stone-100 font-bold">{policy.endDate.toLocaleDateString()}</p>
+                                <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">{pd.ends}</p>
+                                <p className="text-stone-900 dark:text-stone-100 font-bold">{policy.endDate.toLocaleDateString(locale)}</p>
                             </div>
                         </div>
 
                         <div className="pt-4 border-t border-stone-100 dark:border-stone-700">
                             <div className="flex items-center gap-2">
                                 <span className={`w-2 h-2 rounded-full ${policy.status === 'active' ? 'bg-primary' : 'bg-slate-400'}`}></span>
-                                <span className="text-xs font-bold text-stone-500 uppercase">Agent Access Active</span>
+                                <span className="text-xs font-bold text-stone-500 uppercase">{pd.agentAccessActive}</span>
                             </div>
                         </div>
                     </div>
@@ -290,12 +286,12 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                     {/* Documents Sidebar */}
                     <div className="bg-white dark:bg-stone-800 rounded-3xl p-6 shadow-sm border border-stone-200 dark:border-stone-700">
                         <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-sm font-black text-stone-400 uppercase tracking-widest">Documents</h3>
+                            <h3 className="text-sm font-black text-stone-400 uppercase tracking-widest">{pd.documents}</h3>
                         </div>
 
                         {policy.documents.length === 0 ? (
                             <div className="text-center py-8">
-                                <p className="text-xs text-stone-400 italic">No files attached</p>
+                                <p className="text-xs text-stone-400 italic">{pd.noFiles}</p>
                             </div>
                         ) : (
                             <ul className="space-y-4">
@@ -307,7 +303,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
                                             </div>
                                             <div className="overflow-hidden">
                                                 <p className="text-xs font-bold text-stone-900 dark:text-white truncate">{doc.fileName}</p>
-                                                <p className="text-xs text-stone-400 uppercase tracking-widest">Contract</p>
+                                                <p className="text-xs text-stone-400 uppercase tracking-widest">{pd.contract}</p>
                                             </div>
                                         </a>
                                     </li>

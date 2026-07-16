@@ -8,6 +8,7 @@ import { Customer } from "@/components/agent/types"
 import { getCustomers } from "../agent/actions"
 import { useRouter } from "next/navigation"
 import { Clock, User, FileText, AlertTriangle, Upload } from "lucide-react"
+import { useLanguage } from "@/contexts/LanguageContext"
 import type { AgentPortalStats } from "@/lib/services/agent-portal.service"
 
 interface Props {
@@ -37,6 +38,8 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false)
     const [isBulkImportOpen, setIsBulkImportOpen] = useState(false)
     const router = useRouter()
+    const { t } = useLanguage()
+    const cust_t = t.agentPages.customers
 
     const handleSuccess = () => {
         router.refresh()
@@ -66,12 +69,12 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
             <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
                 <header className="mb-10 text-center sm:text-left flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div>
-                        <span className="pw-kicker inline-block mb-2">DIRECTORY</span>
+                        <span className="pw-kicker inline-block mb-2">{cust_t.kicker}</span>
                         <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-3">
-                            Client Directory
+                            {cust_t.title}
                         </h1>
                         <p className="max-w-xl text-lg text-slate-600 dark:text-slate-400">
-                            Manage your customer relationships and portfolios.
+                            {cust_t.subtitle}
                         </p>
                     </div>
                     <div className="flex gap-3">
@@ -80,14 +83,14 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
                             className="arc-btn bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 flex items-center gap-2"
                         >
                             <Upload className="w-4 h-4" />
-                            <span>Import</span>
+                            <span>{cust_t.import}</span>
                         </button>
                         <button
                             onClick={() => setIsAddModalOpen(true)}
                             className="arc-btn arc-btn-primary shadow-sm flex items-center gap-2"
                         >
                             <User className="w-4 h-4" />
-                            <span>Add Client</span>
+                            <span>{cust_t.addClient}</span>
                         </button>
                     </div>
                 </header>
