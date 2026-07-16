@@ -16,6 +16,7 @@ import { GapAnalysisService } from "@/lib/services/gap-analysis.service"
 import { AppError } from "@/lib/errors/app-error"
 import { enqueueAnalysisRun } from "@/lib/services/analysis/analysis-queue"
 import { refreshProtectionScore } from "@/lib/services/gap-engine"
+import { resolveCoverageEndDate } from "@/lib/policy-status"
 import { PolicyService } from "@/lib/services/policy.service"
 import { canUserUseTokens } from "@/lib/token-tracking"
 import { canUserAddPolicy, canUserUseFeature, getUserSubscription, SUBSCRIPTION_LIMITS } from "@/lib/subscription-limits"
@@ -102,6 +103,7 @@ export async function createPolicy(formData: FormData) {
             lineOfBusiness: validatedData.lineOfBusiness,
             startDate: new Date(validatedData.startDate),
             endDate: new Date(validatedData.endDate),
+            coverageEndDate: new Date(validatedData.endDate),
             premiumAmount: validatedData.premiumAmount,
             status: initialStatus,
         }
@@ -292,7 +294,17 @@ export async function confirmPolicyReview(policyId: string, edits: ConfirmReview
         await db.$transaction([
             db.policy.update({
                 where: { id: policyId },
-                data: { ...columnData, acordData: nextAcord },
+                data: {
+                    ...columnData,
+                    acordData: nextAcord,
+                    coverageEndDate: resolveCoverageEndDate({
+                        acordData: nextAcord,
+                        endDate: (columnData as { endDate?: Date }).endDate ?? policy.endDate,
+                        status: policy.status,
+                        policyNumber: input.policyNumber || policy.policyNumber,
+                        insurerName: (columnData as { insurerName?: string }).insurerName ?? policy.insurerName,
+                    }),
+                },
             }),
             (db as any).activityLog.create({
                 data: {

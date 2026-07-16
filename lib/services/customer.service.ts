@@ -1,6 +1,6 @@
 import { BaseService } from "./base.service";
 import { agentPolicyVisibilityWhere, getGrantedPolicyIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility";
-import { effectivePolicyStatus, isPolicyCoverageActive } from "@/lib/policy-status";
+import { effectivePolicyStatus, isPolicyCoverageActive, isCoveredByEndDate } from "@/lib/policy-status";
 import { Prisma } from "@prisma/client";
 import { AppError } from "@/lib/errors";
 
@@ -59,9 +59,12 @@ export class CustomerService extends BaseService {
                             createdAt: true,
                             // Only what the agent may see: policies they
                             // uploaded, or ones the owner explicitly granted.
+                            // coverageEndDate (denormalized) lets us judge "in
+                            // force" without deserializing the heavy acordData
+                            // JSON per policy on every customer-list render.
                             policiesOwned: {
                                 where: visibilityWhere,
-                                select: { id: true, status: true, endDate: true, acordData: true }
+                                select: { id: true, status: true, coverageEndDate: true }
                             },
                         }
                     },
@@ -87,7 +90,7 @@ export class CustomerService extends BaseService {
                 status: rel.status,
                 joinedAt: rel.customer.createdAt,
                 policyCount: rel.customer.policiesOwned.length,
-                activePolicyCount: rel.customer.policiesOwned.filter(p => isPolicyCoverageActive(p)).length,
+                activePolicyCount: rel.customer.policiesOwned.filter(p => isCoveredByEndDate(p)).length,
                 openOpportunities: rel.opportunities.length,
                 lastInteraction: rel.lastInteractionAt,
             })),

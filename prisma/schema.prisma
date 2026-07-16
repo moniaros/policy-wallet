@@ -305,6 +305,11 @@ model Policy {
   lineOfBusiness          String                 @map("line_of_business")
   startDate               DateTime               @map("start_date")
   endDate                 DateTime               @map("end_date")
+  // Denormalized real coverage end date (resolvePolicyLifecycle: renewal
+  // history → extracted envelope → endDate column). Lets active-policy counts
+  // filter/count in SQL instead of deserializing acordData per row. NULL =
+  // "unknown duration" (unreadable/absent expiry) — counts as coverage.
+  coverageEndDate         DateTime?              @map("coverage_end_date")
   status                  String
   premiumAmount           Decimal?               @map("premium_amount")
   premiumCurrency         String?                @default("EUR") @map("premium_currency")
@@ -331,6 +336,7 @@ model Policy {
   @@index([ownerUserId])
   @@index([createdByUserId])
   @@index([endDate])
+  @@index([coverageEndDate])
   @@map("policies")
 }
 
