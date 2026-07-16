@@ -12,6 +12,7 @@ import { uploadFile, deleteFile } from '@/lib/storage'
 import { logger } from '@/lib/logger'
 import { sendPolicyInviteEmail, sendPolicySharedAccessEmail } from '@/lib/email/invite-emails'
 import { refreshProtectionScore } from '@/lib/services/gap-engine'
+import { resolveCoverageEndDate } from '@/lib/policy-status'
 import { recordConversionEvent } from '@/lib/journey/conversion-events'
 import type { Policy, PolicyDocument } from '@prisma/client'
 import type {
@@ -95,6 +96,7 @@ export class PolicyService extends BaseService {
                     lineOfBusiness: data.lineOfBusiness,
                     startDate: new Date(data.startDate),
                     endDate: new Date(data.endDate),
+                    coverageEndDate: new Date(data.endDate),
                     premiumAmount: data.premiumAmount,
                     premiumCurrency: data.premiumCurrency || 'EUR',
                     status: data.status || 'active'
@@ -527,6 +529,13 @@ export class PolicyService extends BaseService {
                             premiumCurrency: shouldPromoteIncoming ? currentPolicy.premiumCurrency : existingPolicyFull?.premiumCurrency,
                             coverageSummary: currentPolicy.coverageSummary || existingPolicyFull?.coverageSummary,
                             acordData: mergedAcordData,
+                            coverageEndDate: resolveCoverageEndDate({
+                                acordData: mergedAcordData,
+                                endDate: shouldPromoteIncoming ? currentPolicy.endDate : existingPolicyFull?.endDate,
+                                status: 'active',
+                                policyNumber: shouldPromoteIncoming ? currentPolicy.policyNumber : existingPolicyFull?.policyNumber,
+                                insurerName: shouldPromoteIncoming ? currentPolicy.insurerName : existingPolicyFull?.insurerName,
+                            }),
                             lastAnalyzedAt: new Date(),
                             status: 'active',
                         }
@@ -583,10 +592,16 @@ export class PolicyService extends BaseService {
                 data: { processingStatus: 'completed' }
             })
 
-            // 4. Mark policy as active (if not deduplicated)
+            // 4. Mark policy as active + persist the resolved coverage end date
+            // (acordData is now final) so counts can run in SQL.
             await this.db.policy.update({
                 where: { id: policyId },
-                data: { status: 'active' }
+                data: {
+                    status: 'active',
+                    ...(currentPolicy
+                        ? { coverageEndDate: resolveCoverageEndDate({ ...currentPolicy, status: 'active' }) }
+                        : {}),
+                }
             })
 
             // 5. Notify User

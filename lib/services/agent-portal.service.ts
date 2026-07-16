@@ -10,7 +10,7 @@
 import { db } from "@/lib/db"
 import { isAgentAttestedConsent } from "@/lib/ai-consent"
 import { agentPolicyVisibilityWhere, getGrantedPolicyIds } from "@/lib/agent-visibility"
-import { isPolicyCoverageActive } from "@/lib/policy-status"
+import { isCoveredByEndDate } from "@/lib/policy-status"
 
 const DAY_MS = 24 * 60 * 60 * 1000
 const EXPIRING_WINDOW_DAYS = 30
@@ -145,9 +145,12 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
                             id: true,
                             aiProcessingConsentVersion: true,
                             // Only the agent's own uploads + owner-granted policies.
+                            // coverageEndDate (denormalized resolved end date)
+                            // replaces the acordData deserialization + the
+                            // placeholder-prone endDate column.
                             policiesOwned: {
                                 where: visibilityWhere,
-                                select: { id: true, status: true, endDate: true, acordData: true },
+                                select: { id: true, status: true, coverageEndDate: true },
                             },
                         },
                     },
@@ -221,9 +224,9 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
 
     for (const rel of relationships) {
         const clientId = rel.customer.id
-        const activePolicies = rel.customer.policiesOwned.filter((p) => isPolicyCoverageActive(p))
+        const activePolicies = rel.customer.policiesOwned.filter((p) => isCoveredByEndDate(p))
         const upcomingRenewals = activePolicies
-            .map((p) => p.endDate)
+            .map((p) => p.coverageEndDate)
             .filter((d): d is Date => Boolean(d && d.getTime() > now.getTime()))
             .sort((a, b) => a.getTime() - b.getTime())
         const nextRenewal = upcomingRenewals[0] ?? null

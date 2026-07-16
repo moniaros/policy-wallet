@@ -1,5 +1,6 @@
 import { db } from "@/lib/db"
 import { logger } from "@/lib/logger"
+import { resolveCoverageEndDate } from "@/lib/policy-status"
 
 /**
  * Same policy, two uploaders.
@@ -186,6 +187,13 @@ export async function decidePolicyMerge(
             where: { id: existing.id },
             data: {
                 acordData: mergedAcord,
+                coverageEndDate: resolveCoverageEndDate({
+                    acordData: mergedAcord,
+                    endDate: promoteIncoming ? incoming.endDate : existing.endDate,
+                    status: existing.status,
+                    policyNumber: promoteIncoming ? incoming.policyNumber : existing.policyNumber,
+                    insurerName: promoteIncoming ? incoming.insurerName : existing.insurerName,
+                }),
                 ...(promoteIncoming
                     ? {
                           insurerName: incoming.insurerName,

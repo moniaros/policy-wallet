@@ -100,6 +100,45 @@ export function isPolicyCoverageActive(policy: CoverageInput): boolean {
 }
 
 /**
+ * The value to persist into Policy.coverageEndDate — the resolved real end
+ * date (renewal history → extracted envelope → endDate column). NULL means the
+ * expiry is unreadable/absent ("unknown duration"), which counts as coverage.
+ * Call this wherever a policy's acordData / endDate is written.
+ */
+export function resolveCoverageEndDate(policy: CoverageInput): Date | null {
+    return resolvePolicyLifecycle(policy).endDate
+}
+
+/**
+ * Coverage check from the DENORMALIZED column — equivalent to
+ * isPolicyCoverageActive but without needing acordData. Use when a row was
+ * loaded with `coverageEndDate` (not the heavy acordData JSON).
+ */
+export function isCoveredByEndDate(
+    policy: { status?: string | null; coverageEndDate?: Date | null },
+    now: Date = new Date()
+): boolean {
+    const stored = String(policy.status || '').toLowerCase()
+    if (stored === 'analyzing' || stored === 'cancelled') return false
+    // Unknown/absent expiry counts as coverage (mirrors isPolicyCoverageActive).
+    if (policy.coverageEndDate == null) return true
+    return policy.coverageEndDate.getTime() >= now.getTime()
+}
+
+/**
+ * Prisma `where` fragment selecting policies that provide coverage right now,
+ * using the denormalized column — so counts run in the DB. Mirrors
+ * isPolicyCoverageActive: exclude analyzing/cancelled/deleted; a null
+ * coverageEndDate (unknown duration) counts as coverage.
+ */
+export function coveredPolicyWhere(now: Date = new Date()) {
+    return {
+        status: { notIn: ['analyzing', 'cancelled', 'deleted'] },
+        OR: [{ coverageEndDate: null }, { coverageEndDate: { gte: now } }],
+    }
+}
+
+/**
  * Lifecycle-derived status for display/grouping. Preserves the transient
  * 'analyzing' state; everything else comes from the real end date.
  */

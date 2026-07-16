@@ -413,6 +413,7 @@ export async function addCustomerManually(data: {
                         lineOfBusiness: data.policy!.lineOfBusiness,
                         startDate: new Date(data.policy!.startDate),
                         endDate: new Date(data.policy!.endDate),
+                        coverageEndDate: new Date(data.policy!.endDate),
                         premiumAmount: data.policy!.premiumAmount,
                         status: 'active'
                     }
@@ -522,6 +523,7 @@ export async function addPolicyForCustomer(data: {
                     lineOfBusiness: data.policy.lineOfBusiness,
                     startDate: new Date(data.policy.startDate),
                     endDate: new Date(data.policy.endDate),
+                    coverageEndDate: new Date(data.policy.endDate),
                     premiumAmount: data.policy.premiumAmount,
                     premiumCurrency: data.policy.premiumCurrency || 'EUR',
                     status: 'active',
