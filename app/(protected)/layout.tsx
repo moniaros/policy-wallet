@@ -3,6 +3,7 @@ export const runtime = 'nodejs'
 import { getAuthenticatedUser, getIsPayingUser, emailVerificationRequired } from "@/lib/auth-helpers"
 import { redirect } from "next/navigation"
 import { AppShell } from "@/components/shell"
+import { NotificationWatcher } from "@/components/notifications/NotificationWatcher"
 import { getTranslations } from "@/lib/i18n"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { signOut } from "@/app/auth/actions"
@@ -114,6 +115,9 @@ export default async function ProtectedLayout({
             notificationCount={unreadNotificationCount}
             onLogout={signOut}
         >
+            {/* Live analysis-completion toasts for agents (b2c uses the wallet
+                page's own analyzing poller). */}
+            {currentRole === "agent" && <NotificationWatcher userId={dbUser.id} />}
             {children}
         </AppShell>
     )

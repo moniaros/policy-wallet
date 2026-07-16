@@ -1372,7 +1372,7 @@ export const en: TranslationKeys = {
             successAccent: 'Added.',
             successCreatedDesc: 'A new customer was created and their policy was added.',
             successAttachedDesc: 'The policy was added to the customer.',
-            analysisStarted: 'AI analysis has started and will finish shortly.',
+            analysisStarted: 'Analysis is running in the background — you can close this and keep working. We will notify you when it is ready.',
             analysisConsentRequired: 'The customer must consent before AI analysis can run.',
             analysisLimitReached: 'You reached your plan\'s monthly AI analysis limit.',
             requestConsentCta: 'Request consent',

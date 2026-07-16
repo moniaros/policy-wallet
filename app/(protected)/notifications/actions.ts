@@ -3,6 +3,7 @@
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
+import type { RecentNotification } from "@/lib/notifications/watcher"
 
 export async function getNotificationData() {
     const authResult = await getAuthenticatedUserOrNull()
@@ -165,6 +166,45 @@ export async function getNotificationData() {
         relationships: uiRelationships,
         preferences: uiPreferences
     }
+}
+
+/**
+ * Slim recent-notifications feed for the client-side NotificationWatcher poll.
+ * Deliberately minimal (no policy/relationship enrichment like getNotificationData)
+ * so it stays cheap to call on an interval.
+ */
+export async function getRecentNotifications(limit = 10): Promise<{ items: RecentNotification[] }> {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { items: [] }
+
+    const events = await db.notificationEvent.findMany({
+        where: { userId: authResult.dbUser.id },
+        orderBy: { createdAt: "desc" },
+        take: Math.min(Math.max(limit, 1), 25),
+        select: {
+            id: true,
+            eventType: true,
+            title: true,
+            message: true,
+            relatedObjectType: true,
+            relatedObjectId: true,
+            readAt: true,
+            createdAt: true,
+        },
+    })
+
+    const items: RecentNotification[] = events.map((e) => ({
+        id: e.id,
+        eventType: e.eventType,
+        title: e.title,
+        message: e.message,
+        relatedObjectType: e.relatedObjectType,
+        relatedObjectId: e.relatedObjectId,
+        read: Boolean(e.readAt),
+        createdAt: e.createdAt.toISOString(),
+    }))
+
+    return { items }
 }
 
 export async function markNotificationRead(notificationId: string) {

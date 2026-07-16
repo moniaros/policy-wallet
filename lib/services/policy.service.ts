@@ -416,6 +416,7 @@ export class PolicyService extends BaseService {
                     where: { policyId },
                     data: { processingStatus: 'failed' }
                 })
+                await this.notifyAnalysisFailed(userId, policyId, language)
                 return
             }
 
@@ -663,6 +664,51 @@ export class PolicyService extends BaseService {
             await this.db.policyDocument.updateMany({
                 where: { policyId },
                 data: { processingStatus: 'failed' }
+            })
+            await this.notifyAnalysisFailed(userId, policyId, language)
+        }
+    }
+
+    /**
+     * Emit exactly one "analysis finished unsuccessfully" notification to the
+     * initiator (the agent, for an agent upload). Success and silent-merge
+     * already notify inside runBackgroundAnalysis; this covers the token-blocked
+     * and failure branches so a finished-but-failed run always tells the agent
+     * (who may have closed the upload dialog and moved on) instead of leaving
+     * them waiting. Never throws — a notification failure must not surface as an
+     * analysis failure.
+     */
+    private async notifyAnalysisFailed(
+        userId: string,
+        policyId: string,
+        language: 'en' | 'el'
+    ): Promise<void> {
+        try {
+            const policy = await this.db.policy.findUnique({
+                where: { id: policyId },
+                select: { policyNumber: true, insurerName: true },
+            })
+            const label = [policy?.policyNumber, policy?.insurerName ? `(${policy.insurerName})` : null]
+                .filter(Boolean)
+                .join(' ')
+            await this.db.notificationEvent.create({
+                data: {
+                    userId,
+                    eventType: 'policy_analysis_failed',
+                    channel: 'in_app',
+                    title: language === 'el' ? 'Η ανάλυση δεν ολοκληρώθηκε' : 'Analysis not completed',
+                    message: language === 'el'
+                        ? `Η ανάλυση του συμβολαίου ${label} δεν ολοκληρώθηκε. Μπορείτε να δοκιμάσετε ξανά.`
+                        : `Analysis of policy ${label} could not be completed. You can retry.`,
+                    relatedObjectType: 'policy',
+                    relatedObjectId: policyId,
+                },
+            })
+        } catch (error) {
+            logger('error', 'Failed to emit analysis-failed notification', {
+                policyId,
+                userId,
+                error: error instanceof Error ? error.message : String(error),
             })
         }
     }
