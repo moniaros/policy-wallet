@@ -41,6 +41,7 @@ const relFindFirst = vi.fn()
 const relUpdate = vi.fn()
 const notifCreate = vi.fn()
 const dbTransaction = vi.fn()
+const policyFindFirst = vi.fn()
 vi.mock('@/lib/db', () => ({
     db: {
         user: { findUnique: (...a: unknown[]) => userFindUnique(...a), update: (...a: unknown[]) => userUpdate(...a) },
@@ -49,6 +50,7 @@ vi.mock('@/lib/db', () => ({
             update: (...a: unknown[]) => relUpdate(...a),
         },
         notificationEvent: { create: (...a: unknown[]) => notifCreate(...a) },
+        policy: { findFirst: (...a: unknown[]) => policyFindFirst(...a) },
         $transaction: (...a: unknown[]) => dbTransaction(...a),
     },
 }))
@@ -77,6 +79,8 @@ beforeEach(() => {
     notifCreate.mockResolvedValue({})
     userUpdate.mockResolvedValue({})
     userFindUnique.mockResolvedValue(null)
+    // No pre-existing duplicate by default.
+    policyFindFirst.mockResolvedValue(null)
     // Policy create + grant inside the atomic transaction.
     dbTransaction.mockImplementation(async (fn: any) => fn({
         policy: { create: vi.fn(async () => ({ id: 'pol-1', policyNumber: 'P-1', lineOfBusiness: 'motor', insurerName: 'Allianz' })) },
@@ -153,5 +157,38 @@ describe('commitScannedPolicy', () => {
         await commitScannedPolicy({ mode: 'attach', customerId: 'cust-9', taxId: '123456783' }, POLICY)
 
         expect(userUpdate).not.toHaveBeenCalled()
+    })
+
+    it('warns on a duplicate (same number + branch + start date) instead of creating a second row', async () => {
+        policyFindFirst.mockResolvedValue({
+            id: 'pol-existing', policyNumber: 'P-1', insurerName: 'Allianz',
+            lineOfBusiness: 'motor', startDate: new Date('2026-01-01'),
+        })
+
+        const res = await commitScannedPolicy({ mode: 'attach', customerId: 'cust-9' }, POLICY)
+
+        expect(res).toMatchObject({ success: false, duplicate: true, existing: expect.objectContaining({ id: 'pol-existing' }) })
+        expect(dbTransaction).not.toHaveBeenCalled() // no policy created
+        // The duplicate query is scoped to owner + number + branch + start date.
+        expect(policyFindFirst).toHaveBeenCalledWith(expect.objectContaining({
+            where: expect.objectContaining({
+                ownerUserId: 'cust-9',
+                lineOfBusiness: 'motor',
+                policyNumber: { equals: 'P-1', mode: 'insensitive' },
+            }),
+        }))
+    })
+
+    it('creates the policy when the agent confirms the duplicate (Add anyway)', async () => {
+        policyFindFirst.mockResolvedValue({
+            id: 'pol-existing', policyNumber: 'P-1', insurerName: 'Allianz',
+            lineOfBusiness: 'motor', startDate: new Date('2026-01-01'),
+        })
+
+        const res = await commitScannedPolicy({ mode: 'attach', customerId: 'cust-9' }, POLICY, false, undefined, true)
+
+        expect(res).toMatchObject({ success: true, policyId: 'pol-1' })
+        expect(policyFindFirst).not.toHaveBeenCalled() // check skipped when confirmed
+        expect(dbTransaction).toHaveBeenCalled()
     })
 })

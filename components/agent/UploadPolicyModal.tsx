@@ -15,7 +15,15 @@ interface Props {
     presetCustomerName?: string
 }
 
-type View = 'upload' | 'parsing' | 'resolve' | 'confirm' | 'success'
+type View = 'upload' | 'parsing' | 'resolve' | 'confirm' | 'duplicate' | 'success'
+
+interface DuplicatePolicy {
+    id: string
+    policyNumber: string
+    insurerName: string
+    lineOfBusiness: string
+    startDate: string
+}
 
 interface Extraction {
     customerName?: string
@@ -61,12 +69,13 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
 
     const [result, setResult] = useState<{ policyId?: string; customerId?: string; created?: boolean; analysisState?: AnalysisState } | null>(null)
     const [consentSent, setConsentSent] = useState(false)
+    const [duplicate, setDuplicate] = useState<DuplicatePolicy | null>(null)
 
     if (!isOpen) return null
 
     const reset = () => {
         setView('upload'); setLoading(false); setError(null); setScannedFile(null)
-        setResolution(null); setSelected('new'); setResult(null); setConsentSent(false)
+        setResolution(null); setSelected('new'); setResult(null); setConsentSent(false); setDuplicate(null)
         setCustomer({ name: '', surname: '', email: '', phone: '', taxId: '' })
         setPolicy({ insurerName: '', policyNumber: '', lineOfBusiness: 'motor', startDate: '', endDate: '', premiumAmount: '' })
         setAttestedAiConsent(false)
@@ -127,7 +136,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         setView('resolve')
     }
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (confirmDuplicate = false) => {
         if (!canSubmitPolicy) return
         setLoading(true); setError(null)
 
@@ -147,8 +156,15 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
             ? { mode: 'create_new' as const, customer: { name: customer.name, surname: customer.surname, email: customer.email, phone: customer.phone, taxId: customer.taxId } }
             : { mode: 'attach' as const, customerId: selected, taxId: customer.taxId || undefined }
 
-        const res = await commitScannedPolicy(decision, policyInput, attestedAiConsent, documentFormData)
+        const res = await commitScannedPolicy(decision, policyInput, attestedAiConsent, documentFormData, confirmDuplicate)
         setLoading(false)
+
+        // Possible duplicate — let the agent keep (add anyway) or cancel.
+        if (!res.success && (res as any).duplicate) {
+            setDuplicate((res as any).existing as DuplicatePolicy)
+            setView('duplicate')
+            return
+        }
 
         if (!res.success) {
             setError((res as any).error || up.genericError)
@@ -354,8 +370,35 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
 
                             <div className="flex gap-4">
                                 <button onClick={() => setView(presetCustomerId ? 'upload' : 'resolve')} className="flex-1 px-6 py-4 bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-white rounded-[20px] text-[10px] font-black uppercase tracking-widest hover:bg-stone-200 transition-all">{up.back}</button>
-                                <button disabled={loading || !canSubmitPolicy} onClick={handleSubmit} className="flex-[2] px-6 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[20px] text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all disabled:opacity-50">
+                                <button disabled={loading || !canSubmitPolicy} onClick={() => handleSubmit()} className="flex-[2] px-6 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[20px] text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all disabled:opacity-50">
                                     {loading ? up.submitting : (isCreateNew ? up.submitCreate : up.submitAttach)}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ── DUPLICATE WARNING ── */}
+                    {view === 'duplicate' && duplicate && (
+                        <div className="space-y-8">
+                            <header>
+                                <div className="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 flex items-center justify-center mb-5">
+                                    <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                                </div>
+                                <h2 className="text-2xl font-black text-stone-900 dark:text-white tracking-tighter">{up.duplicateTitle}</h2>
+                                <p className="text-sm text-stone-500 dark:text-stone-400 font-medium mt-2">{up.duplicateDesc}</p>
+                            </header>
+
+                            <div className="p-6 rounded-[28px] bg-stone-50 dark:bg-stone-800/40 border border-stone-100 dark:border-stone-800">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-stone-400 mb-3">{up.duplicateExistingLabel}</p>
+                                <p className="text-base font-black text-stone-900 dark:text-white">{duplicate.policyNumber} <span className="text-stone-400 font-medium">· {duplicate.insurerName}</span></p>
+                            </div>
+
+                            {error && <p className="text-red-500 text-xs font-bold text-center">{error}</p>}
+
+                            <div className="flex gap-4">
+                                <button disabled={loading} onClick={() => setView('confirm')} className="flex-1 px-6 py-4 bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-white rounded-[20px] text-[10px] font-black uppercase tracking-widest hover:bg-stone-200 transition-all disabled:opacity-50">{up.duplicateCancel}</button>
+                                <button disabled={loading} onClick={() => handleSubmit(true)} className="flex-[2] px-6 py-4 bg-amber-500 text-white rounded-[20px] text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-amber-600 transition-all disabled:opacity-50">
+                                    {loading ? up.submitting : up.duplicateKeep}
                                 </button>
                             </div>
                         </div>

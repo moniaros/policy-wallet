@@ -54,19 +54,37 @@ export function InstallPrompt() {
 
         if (isStandalone) return
 
+        // Snooze as soon as we decide to show it: the banner still appears this
+        // session, but a reload within the window won't re-trigger it — this is
+        // what stops the "opens on every reload" nagging.
+        const snooze = () => {
+            try { localStorage.setItem(DISMISS_KEY, String(Date.now())) } catch { /* ignore */ }
+        }
+
+        // Once installed, never prompt again.
+        const onInstalled = () => { snooze(); setShowPrompt(false) }
+        window.addEventListener("appinstalled", onInstalled)
+
         if (isIOSDevice) {
-            const timer = setTimeout(() => setShowPrompt(true), 5000)
-            return () => clearTimeout(timer)
+            const timer = setTimeout(() => { setShowPrompt(true); snooze() }, 5000)
+            return () => {
+                clearTimeout(timer)
+                window.removeEventListener("appinstalled", onInstalled)
+            }
         }
 
         const handler = (e: any) => {
             e.preventDefault()
             setDeferredPrompt(e)
             setShowPrompt(true)
+            snooze()
         }
 
         window.addEventListener("beforeinstallprompt", handler)
-        return () => window.removeEventListener("beforeinstallprompt", handler)
+        return () => {
+            window.removeEventListener("beforeinstallprompt", handler)
+            window.removeEventListener("appinstalled", onInstalled)
+        }
     }, [hiddenForRoute])
 
     const dismissPrompt = () => {
@@ -78,11 +96,12 @@ export function InstallPrompt() {
         if (!deferredPrompt) return
 
         deferredPrompt.prompt()
-        const { outcome } = await deferredPrompt.userChoice
+        await deferredPrompt.userChoice
 
-        if (outcome === "accepted") {
-            setShowPrompt(false)
-        }
+        // Persist regardless of outcome so an install attempt (accepted, or the
+        // native dialog cancelled) doesn't leave the banner re-appearing.
+        try { localStorage.setItem(DISMISS_KEY, String(Date.now())) } catch { /* ignore */ }
+        setShowPrompt(false)
         setDeferredPrompt(null)
     }
 
