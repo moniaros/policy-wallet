@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { createUserTask } from "@/app/(protected)/tasks/taskActions"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -33,6 +33,14 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
     const [priority, setPriority] = useState('medium')
     const [dueDate, setDueDate] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+    // Close on Escape.
+    useEffect(() => {
+        if (!isOpen) return
+        const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose() }
+        window.addEventListener("keydown", onKey)
+        return () => window.removeEventListener("keydown", onKey)
+    }, [isOpen, onClose])
 
     if (!isOpen) return null
 
@@ -69,10 +77,10 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
     }
 
     return (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-            <div className="bg-white dark:bg-stone-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+        <div onClick={onClose} className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-stone-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
                 {/* Header */}
-                <div className="border-b border-stone-100 dark:border-stone-800 px-6 py-5 flex items-center justify-between">
+                <div className="sticky top-0 z-10 bg-white dark:bg-stone-900 border-b border-stone-100 dark:border-stone-800 px-6 py-5 flex items-center justify-between">
                     <div>
                         <h2 className="text-xl font-bold text-stone-900 dark:text-white">
                             {tt.titlePrefix} {customerName}

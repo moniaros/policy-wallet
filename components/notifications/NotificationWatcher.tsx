@@ -17,7 +17,7 @@ interface Props {
     intervalMs?: number
 }
 
-const POLL_MS = 25_000
+const POLL_MS = 10_000
 // Guard against a flood when returning after a long absence — a stale marker
 // could otherwise fire many toasts at once.
 const MAX_TOASTS_PER_TICK = 3

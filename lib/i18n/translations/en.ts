@@ -1380,6 +1380,11 @@ export const en: TranslationKeys = {
             done: 'Done',
             genericError: 'Something went wrong. Please try again.',
             scanError: 'We could not analyze the document. Please try again.',
+            duplicateTitle: 'Possible duplicate',
+            duplicateDesc: 'This customer already has a policy with the same number, branch, and start date. Add it anyway?',
+            duplicateExistingLabel: 'Existing policy',
+            duplicateKeep: 'Add anyway',
+            duplicateCancel: 'Cancel',
         },
         bulkImport: {
             title: 'Bulk Import Customers',

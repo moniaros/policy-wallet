@@ -469,6 +469,8 @@ export async function addPolicyForCustomer(data: {
     };
     /** Agent affirms the customer consented to AI processing (phantom owners). */
     attestedAiConsent?: boolean;
+    /** Agent saw the duplicate warning and chose to add the policy anyway. */
+    confirmDuplicate?: boolean;
 }, documentFormData?: FormData) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { success: false, error: "Unauthorized" }
@@ -519,6 +521,41 @@ export async function addPolicyForCustomer(data: {
                     return { success: false, error: "Invalid file type. Only PDF and images are allowed." }
                 }
                 file = candidate
+            }
+        }
+
+        // 3b. Pre-add duplicate guard. The only other dedup runs post-analysis
+        // and is skipped when analysis doesn't run (no consent/quota), so the
+        // same policy could be added twice. Warn the agent BEFORE creating a
+        // second row for the same customer + policy number + branch + start date
+        // (startDate is the issue-date proxy — a genuine renewal has a different
+        // term, so it's not flagged). The agent can "Add anyway" (confirmDuplicate).
+        if (!data.confirmDuplicate && data.policy.policyNumber.trim() && data.policy.startDate) {
+            const startDate = new Date(data.policy.startDate)
+            const existing = !isNaN(startDate.getTime())
+                ? await db.policy.findFirst({
+                    where: {
+                        ownerUserId: data.customerId,
+                        policyNumber: { equals: data.policy.policyNumber.trim(), mode: 'insensitive' },
+                        lineOfBusiness: data.policy.lineOfBusiness,
+                        startDate,
+                        NOT: { status: 'cancelled' },
+                    },
+                    select: { id: true, policyNumber: true, insurerName: true, lineOfBusiness: true, startDate: true },
+                })
+                : null
+            if (existing) {
+                return {
+                    success: false as const,
+                    duplicate: true as const,
+                    existing: {
+                        id: existing.id,
+                        policyNumber: existing.policyNumber,
+                        insurerName: existing.insurerName,
+                        lineOfBusiness: existing.lineOfBusiness,
+                        startDate: existing.startDate.toISOString(),
+                    },
+                }
             }
         }
 
@@ -814,6 +851,7 @@ export async function commitScannedPolicy(
     policy: CommitPolicyInput,
     attestedAiConsent?: boolean,
     documentFormData?: FormData,
+    confirmDuplicate?: boolean,
 ) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { success: false, error: "Unauthorized" }
@@ -870,7 +908,7 @@ export async function commitScannedPolicy(
         }
 
         const result = await addPolicyForCustomer(
-            { customerId, policy, attestedAiConsent },
+            { customerId, policy, attestedAiConsent, confirmDuplicate },
             documentFormData,
         )
 
