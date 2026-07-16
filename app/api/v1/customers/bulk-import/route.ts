@@ -35,7 +35,9 @@ export async function POST(req: Request) {
             )
         }
 
-        // Check customer limit
+        // Check customer limit — accounting for the WHOLE batch, not just the
+        // current count. Without this, an agent at 95/100 could import 50 rows
+        // (the up-front check only saw 95 < 100) and end up at 145.
         const { canAgentAddCustomer } = await import("@/lib/subscription-entitlements")
         const customerCheck = await canAgentAddCustomer(authResult.dbUser.id)
         if (!customerCheck.allowed) {
@@ -44,6 +46,22 @@ export async function POST(req: Request) {
                 `Customer limit reached (${customerCheck.current}/${customerCheck.limit}). Upgrade your plan.`,
                 403
             )
+        }
+        if (customerCheck.limit != null && customerCheck.current != null) {
+            // Only rows that aren't already this agent's customers consume headroom.
+            const emails = [...new Set(customers.map((c) => c.email.toLowerCase()))]
+            const alreadyLinked = await db.customerRelationship.count({
+                where: { agentUserId: authResult.dbUser.id, customer: { email: { in: emails } } },
+            })
+            const newCount = emails.length - alreadyLinked
+            const headroom = customerCheck.limit - customerCheck.current
+            if (newCount > headroom) {
+                return createApiError(
+                    "FORBIDDEN",
+                    `This import adds ${newCount} new customers but only ${Math.max(0, headroom)} slots remain on your plan (${customerCheck.current}/${customerCheck.limit}). Upgrade your plan.`,
+                    403
+                )
+            }
         }
 
         let imported = 0
@@ -68,7 +86,9 @@ export async function POST(req: Request) {
                     })
                 }
 
-                // Create or update relationship
+                // Create the relationship if it's new; NEVER touch an existing
+                // one — a re-imported CSV row used to downgrade an already
+                // active/invited customer back to 'inactive'.
                 await db.customerRelationship.upsert({
                     where: {
                         agentUserId_policyholderUserId: {
@@ -76,13 +96,11 @@ export async function POST(req: Request) {
                             policyholderUserId: user.id
                         }
                     },
-                    update: {
-                        status: 'inactive' // Imported but not yet invited
-                    },
+                    update: {},
                     create: {
                         agentUserId: authResult.dbUser.id,
                         policyholderUserId: user.id,
-                        status: 'inactive',
+                        status: 'inactive', // Imported but not yet invited
                         activationStatus: 'not_invited'
                     }
                 })
