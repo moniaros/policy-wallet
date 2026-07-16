@@ -13,7 +13,6 @@ import {
     Plus,
     UserPlus,
     FileText,
-    Send,
 } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
@@ -245,11 +244,13 @@ export function DesktopDashboard({
                                 <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
                                     {pick(DASH_COPY.quickAdd, language)}
                                 </h3>
-                                <div className="grid grid-cols-3 gap-2">
+                                {/* "Request" (document_request) was removed — there is
+                                    no dashboard-level document-request flow to wire it
+                                    to, so it did nothing on click. */}
+                                <div className="grid grid-cols-2 gap-2">
                                     {[
                                         { type: "client" as const, icon: UserPlus, label: pick(DASH_COPY.quickClient, language) },
                                         { type: "policy" as const, icon: FileText, label: pick(DASH_COPY.quickPolicy, language) },
-                                        { type: "document_request" as const, icon: Send, label: pick(DASH_COPY.quickRequest, language) },
                                     ].map(({ type, icon: Icon, label }) => (
                                         <button
                                             key={type}

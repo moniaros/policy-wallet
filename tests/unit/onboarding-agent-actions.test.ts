@@ -14,6 +14,7 @@ vi.mock('@/lib/db', () => ({
 
 vi.mock('@/lib/storage', () => ({ uploadFile: vi.fn(async () => 'https://cdn.test/asset') }))
 vi.mock('@/lib/email/invite-emails', () => ({ sendPolicyInviteEmail: vi.fn(async () => ({ success: true })) }))
+vi.mock('@/lib/rate-limit', () => ({ rateLimit: vi.fn(async () => ({ success: true })) }))
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 
 import { getAuthenticatedUserOrNull } from '@/lib/auth-helpers'

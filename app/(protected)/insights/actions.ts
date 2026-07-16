@@ -6,6 +6,7 @@ import { getAgentPolicyVisibilityWhere } from "@/lib/agent-visibility"
 import { resolvePolicyLifecycle } from "@/lib/policy-status"
 import { isPremiumBearing } from "@/lib/wallet/premium-footprint"
 import { isAgentRole } from "@/lib/auth/require-agent"
+import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
 
 export interface InsightsData {
     portfolioHealth: {
@@ -200,7 +201,7 @@ export async function getInsightsData(): Promise<InsightsData | null> {
     const recentGaps = await db.gapInstance.findMany({
         where: {
             policy: { ownerUserId: { in: customerIds }, ...(await getAgentPolicyVisibilityWhere(agentId)) },
-            status: { in: ['detected', 'open'] }
+            status: { in: [...OPEN_GAP_STATUSES] }
         },
         include: {
             definition: { select: { title: true } },

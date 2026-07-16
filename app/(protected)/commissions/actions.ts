@@ -3,6 +3,7 @@
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { commissionRate } from "@/lib/agent/commission"
+import { isAgentRole } from "@/lib/auth/require-agent"
 
 export interface CommissionSummary {
     totalEstimated: number
@@ -24,6 +25,7 @@ export interface CommissionSummary {
 
 export async function getCommissionDashboard(): Promise<CommissionSummary | null> {
     const { dbUser } = await getAuthenticatedUser()
+    if (!isAgentRole(dbUser.roles)) return null
 
     // Get agent's commission rates
     const profile = await db.agentProfile.findUnique({
@@ -109,7 +111,9 @@ export async function getCommissionDashboard(): Promise<CommissionSummary | null
                 const premium = Number(opp.wonPremium ?? opp.estimatedPremium ?? 0)
 
                 if (opp.status === "won") won += premium * rate
-                else if (opp.status !== "lost") estimated += premium * rate
+                // Estimated bar honours any stored estimatedCommission, so the
+                // trend reconciles with the "Pipeline Commission" KPI.
+                else if (opp.status !== "lost") estimated += Number(opp.estimatedCommission ?? premium * rate)
             }
         }
 

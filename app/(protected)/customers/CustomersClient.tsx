@@ -41,23 +41,56 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
     const { t } = useLanguage()
     const cust_t = t.agentPages.customers
 
+    const customerById = useMemo(() => new Map(customers.map((c) => [c.id, c])), [customers])
+
     const handleSuccess = () => {
         router.refresh()
     }
 
-    const handleBulkImportSuccess = (count: number) => {
+    const handleBulkImportSuccess = () => {
+        // The modal shows its own "Import Complete" step; just refresh the list.
         router.refresh()
-        // In a real app, we'd show a toast here
-        console.log(`Successfully imported ${count} customers!`)
     }
 
     const handleBulkAction = (action: 'export' | 'email' | 'delete', ids: string[]) => {
-        console.log(`Bulk action: ${action} on ${ids.length} items`)
-        // Implement bulk actions here
+        const selected = ids.map((id) => customerById.get(id)).filter(Boolean) as Customer[]
+
         if (action === 'email') {
-            // Open email modal or similar
-            window.location.href = `mailto:?bcc=${ids.join(',')}` // Naive implementation
+            // BCC the customers' real email addresses (not their ids).
+            const emails = selected.map((c) => c.email).filter(Boolean)
+            if (emails.length) window.location.href = `mailto:?bcc=${emails.join(',')}`
+            return
         }
+
+        if (action === 'export') {
+            // Real client-side CSV download of the selected customers.
+            const csvCell = (v: unknown) => `"${String(v ?? '').replace(/"/g, '""')}"`
+            const header = ['Name', 'Email', 'Phone', 'Policies', 'Status']
+            const rows = selected.map((c) => [
+                `${c.name} ${c.surname}`.trim(),
+                c.email,
+                c.phone,
+                c.policyCount ?? 0,
+                c.activationStatus,
+            ])
+            const csv = [header, ...rows].map((r) => r.map(csvCell).join(',')).join('\n')
+            const blob = new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8;' })
+            const url = URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = 'customers.csv'
+            a.click()
+            URL.revokeObjectURL(url)
+        }
+    }
+
+    const handleCall = (id: string) => {
+        const phone = customerById.get(id)?.phone
+        if (phone) window.location.href = `tel:${phone}`
+    }
+    const handleEmail = (id: string) => {
+        const email = customerById.get(id)?.email
+        if (email) window.location.href = `mailto:${email}`
     }
 
     // Map Customer to CustomerListItem format (CustomerList expects 'Customer' interface which matches our agent/types Customer mostly but check compatibility)
@@ -101,6 +134,8 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
                     customers={customers}
                     onCustomerClick={(id: string) => router.push(`/customers/${id}`)}
                     onBulkAction={handleBulkAction}
+                    onCall={handleCall}
+                    onEmail={handleEmail}
                 />
 
                 <AddCustomerModal
