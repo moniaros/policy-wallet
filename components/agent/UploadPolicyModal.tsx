@@ -128,6 +128,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
     }
 
     const handleSubmit = async () => {
+        if (!canSubmitPolicy) return
         setLoading(true); setError(null)
 
         const documentFormData = new FormData()
@@ -174,6 +175,12 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
     const isCreateNew = selected === 'new'
     const canContinueResolve = selected !== '' && (
         selected !== 'new' || Boolean(customer.email.trim() && customer.name.trim())
+    )
+    // The confirm submit is a plain button (not a <form>), so the inputs'
+    // `required` isn't enforced — guard the required policy fields here, else an
+    // empty date reaches the server as new Date('') and Prisma rejects it.
+    const canSubmitPolicy = Boolean(
+        policy.insurerName.trim() && policy.policyNumber.trim() && policy.startDate && policy.endDate
     )
 
     return (
@@ -347,7 +354,7 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
 
                             <div className="flex gap-4">
                                 <button onClick={() => setView(presetCustomerId ? 'upload' : 'resolve')} className="flex-1 px-6 py-4 bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-white rounded-[20px] text-[10px] font-black uppercase tracking-widest hover:bg-stone-200 transition-all">{up.back}</button>
-                                <button disabled={loading} onClick={handleSubmit} className="flex-[2] px-6 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[20px] text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all disabled:opacity-50">
+                                <button disabled={loading || !canSubmitPolicy} onClick={handleSubmit} className="flex-[2] px-6 py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[20px] text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all disabled:opacity-50">
                                     {loading ? up.submitting : (isCreateNew ? up.submitCreate : up.submitAttach)}
                                 </button>
                             </div>
