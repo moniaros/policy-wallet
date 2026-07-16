@@ -4,6 +4,7 @@ import { useState } from "react"
 import { OpportunityUpdateModal } from "@/components/agent/OpportunityUpdateModal"
 import { updateOpportunityStatus } from "../agent/actions"
 import { useRouter } from "next/navigation"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 interface Opportunity {
     id: string
@@ -28,6 +29,10 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
     const [selectedOpp, setSelectedOpp] = useState<Opportunity | null>(null)
     const [filter, setFilter] = useState<string>('all')
     const router = useRouter()
+    const { language, t } = useLanguage()
+    const opp_t = t.agentPages.opportunities
+    const statusLabel = (key: string) =>
+        opp_t.status[key as keyof typeof opp_t.status] ?? key
 
     const handleUpdate = async (opportunityId: string, status: string, notes: string, nextActionDate?: string) => {
         await updateOpportunityStatus(
@@ -66,25 +71,25 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
         <div className="pw-page-shell min-h-screen">
             <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-12 lg:py-16">
                 <header className="mb-10 text-center sm:text-left">
-                    <span className="pw-kicker inline-block mb-2">PIPELINE</span>
+                    <span className="pw-kicker inline-block mb-2">{opp_t.kicker}</span>
                     <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-3">
-                        Opportunities
+                        {opp_t.title}
                     </h1>
                     <p className="max-w-xl text-lg text-slate-600 dark:text-slate-400">
-                        Track potential sales and coverage improvements for your customers.
+                        {opp_t.subtitle}
                     </p>
                 </header>
 
                 {/* Filters */}
                 <div className="mb-8 flex gap-2 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
                     {[
-                        { key: 'all', label: 'All', count: statusCounts.all },
-                        { key: 'open', label: 'Open', count: statusCounts.open },
-                        { key: 'contacted', label: 'Contacted', count: statusCounts.contacted },
-                        { key: 'quoted', label: 'Quoted', count: statusCounts.quoted },
-                        { key: 'won', label: 'Won', count: statusCounts.won },
-                        { key: 'lost', label: 'Lost', count: statusCounts.lost },
-                    ].map(({ key, label, count }) => (
+                        { key: 'all', count: statusCounts.all },
+                        { key: 'open', count: statusCounts.open },
+                        { key: 'contacted', count: statusCounts.contacted },
+                        { key: 'quoted', count: statusCounts.quoted },
+                        { key: 'won', count: statusCounts.won },
+                        { key: 'lost', count: statusCounts.lost },
+                    ].map(({ key, count }) => (
                         <button
                             key={key}
                             onClick={() => setFilter(key)}
@@ -93,7 +98,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                 : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 dark:bg-slate-900/50 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white shadow-sm'
                                 }`}
                         >
-                            {label} {count > 0 && <span className="ml-1.5 opacity-60 text-xs">({count})</span>}
+                            {statusLabel(key)} {count > 0 && <span className="ml-1.5 opacity-60 text-xs">({count})</span>}
                         </button>
                     ))}
                 </div>
@@ -104,12 +109,12 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-slate-50/50 dark:bg-slate-900/20 border-b border-slate-100 dark:border-slate-800/60">
-                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-8">Customer</th>
-                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Opportunity</th>
-                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Status</th>
-                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Likelihood</th>
-                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">Next Action</th>
-                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest text-right pr-8">Actions</th>
+                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-8">{opp_t.colCustomer}</th>
+                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{opp_t.colOpportunity}</th>
+                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{opp_t.colStatus}</th>
+                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{opp_t.colLikelihood}</th>
+                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{opp_t.colNextAction}</th>
+                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest text-right pr-8">{opp_t.colActions}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
@@ -123,8 +128,8 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                             </div>
                                             <p className="text-slate-500 dark:text-slate-400 font-medium tracking-tight">
                                                 {filter === 'all'
-                                                    ? 'No active opportunities. Run gap detection to find new ones!'
-                                                    : `No ${filter} opportunities.`
+                                                    ? opp_t.emptyAll
+                                                    : opp_t.emptyFiltered.replace('{status}', statusLabel(filter))
                                                 }
                                             </p>
                                         </td>
@@ -151,7 +156,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                             opp.status === 'contacted' ? 'bg-mint/25 text-primary dark:bg-primary/15 dark:text-mint' :
                                                                 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400'
                                                     }`}>
-                                                    {opp.status}
+                                                    {statusLabel(opp.status)}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-6">
@@ -161,8 +166,8 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                             opp.conversionLikelihood === "high" ? "bg-primary" :
                                                             opp.conversionLikelihood === "medium" ? "bg-amber-500" : "bg-slate-400"
                                                         }`} />
-                                                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400 capitalize">
-                                                            {opp.conversionLikelihood}
+                                                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400">
+                                                            {opp_t.likelihood[opp.conversionLikelihood]}
                                                         </span>
                                                         {opp.conversionScore != null && (
                                                             <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
@@ -175,7 +180,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                 )}
                                             </td>
                                             <td className="px-6 py-6 text-sm font-bold text-slate-500 dark:text-slate-400">
-                                                {opp.nextActionAt ? new Date(opp.nextActionAt).toLocaleDateString() : '—'}
+                                                {opp.nextActionAt ? new Date(opp.nextActionAt).toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US') : '—'}
                                             </td>
                                             <td className="px-6 py-6 text-right pr-8">
                                                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -183,7 +188,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                         onClick={() => setSelectedOpp(opp)}
                                                         className="arc-btn bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 px-4 py-2 text-[13px]"
                                                     >
-                                                        Update
+                                                        {opp_t.update}
                                                     </button>
 
                                                     {opp.policyId && (
@@ -191,7 +196,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                             href={`/wallet/${opp.policyId}`}
                                                             className="arc-btn arc-btn-primary px-4 py-2 text-[13px]"
                                                         >
-                                                            View
+                                                            {opp_t.view}
                                                         </a>
                                                     )}
                                                 </div>

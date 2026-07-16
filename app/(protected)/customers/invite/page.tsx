@@ -3,12 +3,15 @@
 import { inviteCustomer } from "@/app/(protected)/agent/actions"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 export default function InviteCustomerPage() {
     const [isPending, setIsPending] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState(false)
     const router = useRouter()
+    const { t } = useLanguage()
+    const inv_t = t.agentPages.invite
 
     async function handleSubmit(formData: FormData) {
         setIsPending(true)
@@ -19,7 +22,7 @@ export default function InviteCustomerPage() {
                 setSuccess(true)
             }
         } catch (err: any) {
-            setError(err.message || "Failed to send invitation")
+            setError(err.message || inv_t.errorFallback)
         } finally {
             setIsPending(false)
         }
@@ -29,8 +32,8 @@ export default function InviteCustomerPage() {
         <div className="max-w-2xl mx-auto px-4 py-12">
             <div className="bg-white dark:bg-stone-800 rounded-2xl shadow-xl border border-stone-200 dark:border-stone-700 overflow-hidden">
                 <div className="bg-primary px-8 py-10 text-white dark:text-[#1A2420]">
-                    <h1 className="text-3xl font-bold">Invite Customer</h1>
-                    <p className="mt-2 text-white/80 dark:text-[#1A2420]/80 italic">Grow your portfolio by inviting new customers to join PolicyWallet.</p>
+                    <h1 className="text-3xl font-bold">{inv_t.title}</h1>
+                    <p className="mt-2 text-white/80 dark:text-[#1A2420]/80 italic">{inv_t.subtitle}</p>
                 </div>
 
                 <div className="p-8">
@@ -41,20 +44,20 @@ export default function InviteCustomerPage() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
-                            <h2 className="text-2xl font-bold text-stone-900 dark:text-white mb-2">Η πρόσκληση στάλθηκε</h2>
-                            <p className="text-stone-600 dark:text-stone-400 mb-6">Στείλαμε στον πελάτη έναν σύνδεσμο πρόσκλησης στο email του.</p>
+                            <h2 className="text-2xl font-bold text-stone-900 dark:text-white mb-2">{inv_t.successTitle}</h2>
+                            <p className="text-stone-600 dark:text-stone-400 mb-6">{inv_t.successBody}</p>
 
                             <button
                                 onClick={() => router.push("/customers")}
                                 className="w-full bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 py-3 rounded-xl font-bold hover:opacity-90 transition-opacity"
                             >
-                                Back to Customers
+                                {inv_t.backToCustomers}
                             </button>
                         </div>
                     ) : (
                         <form action={handleSubmit} className="space-y-6">
                             <div>
-                                <label htmlFor="email" className="block text-sm font-bold text-stone-700 dark:text-stone-300 mb-2">Customer Email Address</label>
+                                <label htmlFor="email" className="block text-sm font-bold text-stone-700 dark:text-stone-300 mb-2">{inv_t.emailLabel}</label>
                                 <input
                                     type="email"
                                     id="email"
@@ -63,7 +66,7 @@ export default function InviteCustomerPage() {
                                     placeholder="customer@example.com"
                                     className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl focus:ring-2 focus:ring-primary outline-none transition-all dark:text-white"
                                 />
-                                <p className="mt-2 text-xs text-stone-500">We&apos;ll create a secure invitation link for this email.</p>
+                                <p className="mt-2 text-xs text-stone-500">{inv_t.emailHelper}</p>
                             </div>
 
                             {error && (
@@ -81,7 +84,7 @@ export default function InviteCustomerPage() {
                                     onClick={() => router.back()}
                                     className="flex-1 px-6 py-3 border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 rounded-xl font-bold hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
                                 >
-                                    Cancel
+                                    {inv_t.cancel}
                                 </button>
                                 <button
                                     type="submit"
@@ -94,10 +97,10 @@ export default function InviteCustomerPage() {
                                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                             </svg>
-                                            Sending...
+                                            {inv_t.sending}
                                         </>
                                     ) : (
-                                        "Send Invitation"
+                                        inv_t.send
                                     )}
                                 </button>
                             </div>
