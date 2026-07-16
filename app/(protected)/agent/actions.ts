@@ -20,6 +20,8 @@ import {
 
 import { AIServiceFactory, getAIService } from "@/lib/services/ai/ai-service.factory";
 import { CustomerService } from "@/lib/services/customer.service";
+import { customerResolutionService } from "@/lib/services/customer-resolution.service";
+import { normalizeTaxId } from "@/lib/identity/tax-id";
 import { collaborationService } from "@/lib/services/collaboration.service";
 import { sendPolicyInviteEmail, sendAiConsentRequestEmail } from "@/lib/email/invite-emails";
 import { getTranslations } from "@/lib/i18n";
@@ -374,6 +376,7 @@ export async function addCustomerManually(data: {
     surname: string;
     email: string;
     phone: string;
+    taxId?: string;
     policy?: {
         insurerName: string;
         policyNumber: string;
@@ -406,7 +409,8 @@ export async function addCustomerManually(data: {
         const relationship = await customerService.createCustomer(agentId, {
             email: data.email,
             name: `${data.name} ${data.surname}`,
-            phoneNumber: data.phone
+            phoneNumber: data.phone,
+            taxId: data.taxId,
         });
 
         // 2. Create policy if provided, minting the management grant with it
@@ -738,6 +742,142 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
     } catch (e) {
         console.error(e)
         return { error: "Failed to parse PDF" }
+    }
+}
+
+/**
+ * SMART UPLOAD — scan a policy document, then resolve the extracted
+ * policyholder identity against the agent's existing customers.
+ *
+ * Reuses parsePolicyPdfWithGemini for extraction so the billable scan runs
+ * exactly once on the shared 30/hr `agent-scan:` rate-limit bucket; the commit
+ * step (commitScannedPolicy) never re-extracts.
+ */
+export async function scanPolicyForResolution(formData: FormData) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { success: false as const, error: "Unauthorized" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { success: false as const, error: "Unauthorized" }
+    const agentId = authResult.dbUser.id
+
+    const parsed = await parsePolicyPdfWithGemini(formData)
+    if (!('data' in parsed) || !parsed.data) {
+        return { success: false as const, error: ('error' in parsed && parsed.error) || "Failed to parse PDF" }
+    }
+
+    const data = parsed.data
+    const fullName = [data.customerName, data.customerSurname].filter(Boolean).join(' ').trim()
+
+    const resolution = await customerResolutionService.resolveCustomerCandidates(agentId, {
+        taxId: data.customerTaxId,
+        email: data.customerEmail,
+        name: fullName || undefined,
+        phone: data.customerPhone,
+    })
+
+    return { success: true as const, extraction: data, resolution }
+}
+
+/** Backfill a customer's ΑΦΜ only when the record has none — never overwrite. */
+async function backfillCustomerTaxId(customerId: string, rawTaxId?: string | null) {
+    const taxId = normalizeTaxId(rawTaxId)
+    if (!taxId) return
+    const user = await db.user.findUnique({ where: { id: customerId }, select: { taxId: true } })
+    if (user && !user.taxId) {
+        await db.user.update({ where: { id: customerId }, data: { taxId } })
+    }
+}
+
+type CommitPolicyInput = {
+    insurerName: string
+    policyNumber: string
+    lineOfBusiness: string
+    startDate: string
+    endDate: string
+    premiumAmount?: number
+    premiumCurrency?: string
+    carPlate?: string
+}
+
+type CommitDecision =
+    | { mode: 'attach'; customerId: string; taxId?: string }
+    | { mode: 'create_new'; customer: { name: string; surname?: string; email: string; phone?: string; taxId?: string } }
+
+/**
+ * SMART UPLOAD — commit the agent's resolution decision, then converge on the
+ * existing addPolicyForCustomer core (policy + grant + document + deferred
+ * analysis + agent-attested consent). For a new customer we create the
+ * phantom + relationship first so the core's relationship gate is satisfied
+ * without relaxing it.
+ */
+export async function commitScannedPolicy(
+    decision: CommitDecision,
+    policy: CommitPolicyInput,
+    attestedAiConsent?: boolean,
+    documentFormData?: FormData,
+) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { success: false, error: "Unauthorized" }
+    if (!isAgentRole(authResult.dbUser.roles)) return { success: false, error: "Unauthorized" }
+    const agentId = authResult.dbUser.id
+
+    try {
+        let customerId: string
+        let created = false
+
+        if (decision.mode === 'create_new') {
+            // createCustomer does not self-gate — enforce the customer cap here,
+            // matching addCustomerManually.
+            const { canAgentAddCustomer } = await import("@/lib/subscription-entitlements")
+            const gate = await canAgentAddCustomer(agentId)
+            if (!gate.allowed) {
+                return {
+                    success: false,
+                    error: `Customer limit reached (${gate.current}/${gate.limit}). Upgrade your plan.`,
+                    reason: gate.reason,
+                    current: gate.current,
+                    limit: gate.limit,
+                }
+            }
+
+            const name = [decision.customer.name, decision.customer.surname].filter(Boolean).join(' ').trim()
+            try {
+                const relationship = await customerService.createCustomer(agentId, {
+                    email: decision.customer.email,
+                    name,
+                    phoneNumber: decision.customer.phone,
+                    taxId: decision.customer.taxId,
+                })
+                customerId = relationship.policyholderUserId
+                created = true
+            } catch (e: any) {
+                // The agent already has this customer (email already maps to a
+                // relationship) — attach to the existing customer instead of
+                // failing. createCustomer already backfilled the ΑΦΜ if null.
+                if (e?.code === 'CONFLICT') {
+                    const existing = await db.user.findUnique({
+                        where: { email: decision.customer.email },
+                        select: { id: true },
+                    })
+                    if (!existing) throw e
+                    customerId = existing.id
+                } else {
+                    throw e
+                }
+            }
+        } else {
+            customerId = decision.customerId
+            await backfillCustomerTaxId(customerId, decision.taxId)
+        }
+
+        const result = await addPolicyForCustomer(
+            { customerId, policy, attestedAiConsent },
+            documentFormData,
+        )
+
+        return { ...result, customerId, created }
+    } catch (e) {
+        console.error(e)
+        return { success: false, error: "Failed to add policy" }
     }
 }
 

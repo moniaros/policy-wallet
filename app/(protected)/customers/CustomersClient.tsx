@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react"
 import { CustomerList, AddCustomerModal } from "@/components/agent"
+import { UploadPolicyModal } from "@/components/agent/UploadPolicyModal"
 import { BulkImportModal } from "@/components/agent/BulkImportModal"
 import { AgentKpiStrip } from "@/components/agent/AgentKpiStrip"
 import { Customer } from "@/components/agent/types"
@@ -36,6 +37,7 @@ interface CustomerListItem {
 export function CustomersClient({ initialCustomers, portalStats }: Props) {
     const [customers, setCustomers] = useState(initialCustomers)
     const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
     const [isBulkImportOpen, setIsBulkImportOpen] = useState(false)
     const router = useRouter()
     const { t } = useLanguage()
@@ -120,10 +122,17 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
                         </button>
                         <button
                             onClick={() => setIsAddModalOpen(true)}
-                            className="arc-btn arc-btn-primary shadow-sm flex items-center gap-2"
+                            className="arc-btn bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 flex items-center gap-2"
                         >
                             <User className="w-4 h-4" />
                             <span>{cust_t.addClient}</span>
+                        </button>
+                        <button
+                            onClick={() => setIsUploadModalOpen(true)}
+                            className="arc-btn arc-btn-primary shadow-sm flex items-center gap-2"
+                        >
+                            <FileText className="w-4 h-4" />
+                            <span>{cust_t.uploadPolicy}</span>
                         </button>
                     </div>
                 </header>
@@ -141,6 +150,12 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
                 <AddCustomerModal
                     isOpen={isAddModalOpen}
                     onClose={() => setIsAddModalOpen(false)}
+                    onSuccess={handleSuccess}
+                />
+
+                <UploadPolicyModal
+                    isOpen={isUploadModalOpen}
+                    onClose={() => setIsUploadModalOpen(false)}
                     onSuccess={handleSuccess}
                 />
 

@@ -103,6 +103,9 @@ export interface AIPolicyExtractionResponse {
     customerName?: string
     customerSurname?: string
     customerEmail?: string
+    customerPhone?: string
+    /** Policyholder VAT / ΑΦΜ (raw as extracted; normalize before use). */
+    customerTaxId?: string
     exclusions?: string[]
     extractionMeta?: {
         overallConfidence: number

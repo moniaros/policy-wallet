@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { DesktopDashboard } from "@/components/agent/DesktopDashboard"
 import { InviteModal } from "@/components/agent"
+import { UploadPolicyModal } from "@/components/agent/UploadPolicyModal"
 import type { AccessScope } from "@/components/agent/types"
 import type { ActionQueueItem, AgentDashboardData } from "@/components/agent/types"
 import type { AgentTier } from "@/types/subscription-entitlements"
@@ -38,6 +39,7 @@ export function DashboardClient({
     const { language, t } = useLanguage()
     const tb = t.agentDashboard
     const [isInviteModalOpen, setIsInviteModalOpen] = useState(false)
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
     const [showBanner, setShowBanner] = useState(!isEmailVerified)
     const [isResending, setIsResending] = useState(false)
     const [resendSuccess, setResendSuccess] = useState(false)
@@ -65,7 +67,9 @@ export function DashboardClient({
         if (type === "client") {
             setIsInviteModalOpen(true)
         } else if (type === "policy") {
-            router.push("/wallet/add")
+            // Smart upload: identify the customer from the document, then
+            // create/attach — not the agent's own B2C wallet upload.
+            setIsUploadModalOpen(true)
         }
     }
 
@@ -142,6 +146,11 @@ export function DashboardClient({
                 isOpen={isInviteModalOpen}
                 onClose={() => setIsInviteModalOpen(false)}
                 onSendInvite={handleInvite}
+            />
+            <UploadPolicyModal
+                isOpen={isUploadModalOpen}
+                onClose={() => setIsUploadModalOpen(false)}
+                onSuccess={() => router.refresh()}
             />
         </>
     )
