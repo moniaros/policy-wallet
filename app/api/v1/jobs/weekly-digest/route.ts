@@ -29,3 +29,6 @@ export async function POST(req: Request) {
         return createApiError("INTERNAL_ERROR", "Failed to run weekly digest job", 500, String(error))
     }
 }
+
+// Vercel Cron issues GET; reuse the same guarded handler (no request body is read).
+export const GET = POST

@@ -91,6 +91,13 @@ export async function proxy(request: NextRequest) {
         // which itself redirects them to signup with the invite pre-filled.
         // Blocking this here bounced every agent→client invite to signin.
         "/invite/",
+        // Scheduled jobs (Vercel Cron) + QStash workers. Cron requests carry no
+        // Supabase session, so without this the proxy 307-redirected every
+        // firing to /auth/signin — a redirect Vercel counts as a "successful"
+        // ping — silently killing the renewal ladder and all lifecycle emails.
+        // Each route self-authenticates (CRON_SECRET / QStash signature / admin
+        // role), same defense-in-depth as the Stripe webhooks below.
+        "/api/v1/jobs/",
         // PWA service-worker chunks (workbox-<hash>.js at the root)
         "/workbox-",
     ]
