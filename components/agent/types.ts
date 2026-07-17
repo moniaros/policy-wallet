@@ -178,7 +178,34 @@ export interface ActionQueueItem {
     urgency: "low" | "medium" | "high"
     oneTapAction: OneTapAction
     policyId?: string
+    /**
+     * Agent commission at stake if this renewal lapses — renewal premium ×
+     * the agent's per-line commission rate. Only set for expiring-policy items
+     * with a plausible priced premium; undefined otherwise (no fabrication).
+     */
+    revenueAtRisk?: number
     metadata?: Record<string, unknown>
+}
+
+/** A persisted cross-sell opportunity surfaced on the dashboard (Pro+). */
+export interface CrossSellOpportunityItem {
+    id: string
+    customerId: string
+    customerName: string
+    /** Suggested missing line of business (raw lob key, localized client-side). */
+    lineOfBusiness: string
+    /** Estimated agent commission for the suggested line (> 0). */
+    estimatedCommission: number
+}
+
+/** A real pending task assigned to the agent (due today or overdue). */
+export interface AgentTaskItem {
+    id: string
+    title: string
+    dueDate: string | null
+    /** True when the due date is before today (past-due), false when due today. */
+    overdue: boolean
+    priority: "low" | "medium" | "high"
 }
 
 export interface GapsSummary {
@@ -229,6 +256,8 @@ export interface ClientCardData {
 
 export interface AgentDashboardData {
     actionQueue: ActionQueueItem[]
+    /** Sum of revenueAtRisk across the action queue — "€X in renewals at risk". */
+    revenueAtRiskTotal: number
     revenue: RevenueMetrics
     portfolioHealth: PortfolioHealth
     clientsByUrgency: {
@@ -236,7 +265,13 @@ export interface AgentDashboardData {
         on_track: ClientCardData[]
         inactive: ClientCardData[]
     }
-    todaysFollowUps: ActionQueueItem[]
+    /** Real pending UserTasks assigned to the agent (due today + overdue). */
+    pendingTasks: AgentTaskItem[]
+    /**
+     * Top persisted cross-sell opportunities by estimated commission (Pro+).
+     * Empty for below-Pro tiers — the data is withheld server-side.
+     */
+    crossSellOpportunities: CrossSellOpportunityItem[]
     gapsSummary?: GapsSummary | null
     /** B2B portal KPI strip data (book-of-business metrics). */
     portalStats?: import("@/lib/services/agent-portal.service").AgentPortalStats | null
