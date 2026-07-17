@@ -65,38 +65,6 @@ export async function getAuthenticatedUserOrNull() {
 }
 
 /**
- * Check if the user has an active paid subscription.
- * Redirects to account page if not.
- */
-export async function requirePayingUser() {
-    const { dbUser } = await getAuthenticatedUser()
-
-    // Admins have full access
-    if (dbUser.roles.includes('admin')) {
-        return { dbUser, subscription: null, isPaid: true }
-    }
-
-    const subscription = await db.subscription.findFirst({
-        where: {
-            userId: dbUser.id,
-            status: 'active'
-        },
-        include: {
-            plan: true
-        }
-    })
-
-    const isPaid = subscription ? Number(subscription.plan.price) > 0 : false
-
-    if (!isPaid) {
-        logger('info', 'Access denied to paid feature: Redirecting to upgrade', { userId: dbUser.id })
-        redirect("/upgrade?reason=feature_locked")
-    }
-
-    return { dbUser, subscription, isPaid: true }
-}
-
-/**
  * Check if the user is a paying user without redirecting.
  */
 export async function getIsPayingUser(dbUser: any) {
