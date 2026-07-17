@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { ShieldAlert, UserCheck, AlertTriangle, Activity } from "lucide-react"
+import { ShieldAlert, UserCheck, AlertTriangle, Activity, Users } from "lucide-react"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -48,6 +48,29 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
     const { language, t } = useLanguage()
 
     if (isLoading) return <PortfolioHealthSkeleton />
+
+    // With zero clients, the 0% rings read as *healthy* ("0% have coverage
+    // gaps") when they really mean "no clients". Show a first-run prompt instead.
+    if (health.totalClients === 0) {
+        return (
+            <BrandCard className="p-5">
+                <div className="flex items-center gap-2 mb-4">
+                    <Activity className="h-5 w-5 text-primary dark:text-mint" />
+                    <h2 className="text-base font-bold text-foreground">
+                        {t.agentUi.portfolioHealth}
+                    </h2>
+                </div>
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
+                        <Users className="h-5 w-5 text-primary dark:text-mint" />
+                    </div>
+                    <p className="max-w-xs text-sm text-muted-foreground">
+                        {t.agentUi.portfolioHealthEmpty}
+                    </p>
+                </div>
+            </BrandCard>
+        )
+    }
 
     const gapColor = health.coverageGapPercent > 30
         ? "#ef4444"

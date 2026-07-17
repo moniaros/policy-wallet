@@ -156,21 +156,17 @@ export interface InviteModalProps {
 
 export type UrgencyTier = "needs_attention" | "on_track" | "inactive"
 
+// Only the two item types the dashboard actually produces (page.tsx):
+// expiring policies and clients with no linked policy. Dead types
+// (unsigned_document / unanswered_request / inbound_lead /
+// scheduled_followup) were removed to kill unreachable render branches.
 export type ActionQueueItemType =
     | "expiring_policy"
-    | "unsigned_document"
-    | "unanswered_request"
     | "incomplete_profile"
-    | "inbound_lead"
-    | "scheduled_followup"
 
 export type OneTapAction =
     | "renew"
-    | "follow_up"
-    | "send_reminder"
-    | "view_document"
     | "complete_profile"
-    | "accept_lead"
 
 export interface ActionQueueItem {
     id: string
