@@ -8,7 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { upgradeSubscription } from "../../account/actions"
 
 const PRICING_COPY = {
-    redirecting: { el: "Μεταφορά στο Stripe...", en: "Redirecting to Stripe..." },
+    redirecting: { el: "Μετάβαση σε ασφαλή πληρωμή...", en: "Redirecting to secure payment..." },
     genericError: { el: "Κάτι πήγε στραβά.", en: "Something went wrong." },
     freeBadge: { el: "Δωρεάν", en: "Free" },
     agencyBadge: { el: "Πρακτορείο", en: "Agency" },
@@ -135,7 +135,9 @@ const copy = {
         contact: "Contact Sales",
         popular: "Most Popular",
         backToDashboard: "Back to Dashboard",
-        vatNote: "Prices exclude 24% Greek VAT",
+        vatNote: "Prices include 24% Greek VAT — the amount shown is exactly what you're charged.",
+        vatIncluded: "incl. VAT",
+        recurringNote: "Paid plans are monthly subscriptions that auto-renew. Cancel anytime from your account.",
     },
     el: {
         title: "Πλάνα Πρακτόρων",
@@ -148,7 +150,9 @@ const copy = {
         contact: "Επικοινωνία",
         popular: "Δημοφιλέστερο",
         backToDashboard: "Πίσω στο Dashboard",
-        vatNote: "Οι τιμές δεν περιλαμβάνουν 24% ΦΠΑ",
+        vatNote: "Οι τιμές περιλαμβάνουν 24% ΦΠΑ — το ποσό που βλέπετε είναι ακριβώς αυτό που χρεώνεστε.",
+        vatIncluded: "με ΦΠΑ",
+        recurringNote: "Τα επί πληρωμή πλάνα είναι μηνιαίες συνδρομές που ανανεώνονται αυτόματα. Ακύρωση ανά πάσα στιγμή από τον λογαριασμό σας.",
     },
 }
 
@@ -253,7 +257,9 @@ export function AgentPricingClient({ currentTier }: { currentTier: string }) {
                                         {plan.priceEur === 0 ? t.free : `€${plan.priceEur}`}
                                     </span>
                                     {plan.priceEur > 0 && (
-                                        <span className="text-muted-foreground text-sm">{t.month}</span>
+                                        <span className="text-muted-foreground text-sm">
+                                            {t.month} <span className="text-neutral-400 dark:text-neutral-500">{t.vatIncluded}</span>
+                                        </span>
                                     )}
                                 </div>
 
@@ -298,6 +304,9 @@ export function AgentPricingClient({ currentTier }: { currentTier: string }) {
 
                 <p className="text-center text-xs text-neutral-400 dark:text-neutral-500 mt-8">
                     {t.vatNote}
+                </p>
+                <p className="text-center text-xs text-neutral-400 dark:text-neutral-500 mt-1.5">
+                    {t.recurringNote}
                 </p>
             </div>
         </div>

@@ -4,6 +4,7 @@ import type { AccountOverviewProps } from './types'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { subscriptionCopy } from '@/lib/subscription-copy'
 import { UsageMeter } from '@/components/monetization/UsageMeter'
+import { planHasTrial } from '@/lib/billing/trial-plans'
 
 export function AccountOverview({
     currentUser,
@@ -312,13 +313,18 @@ export function AccountOverview({
                         {availablePlans
                             .filter(plan => plan.price > (currentPlan.price || 0))
                             .map((plan) => {
-                                const isPro = plan.name.toLowerCase().includes('pro')
+                                // Highlight the flagship tier for STYLING only; the trial badge/CTA
+                                // must reflect a real per-plan trial, never a name substring —
+                                // Agent Pro matched "pro" and falsely advertised a 14-day trial it
+                                // does not get, then charged the agent immediately.
+                                const isFeatured = plan.name.toLowerCase().includes('pro')
+                                const hasTrial = planHasTrial(plan.plan_id)
                                 return (
                                     <div
                                         key={plan.plan_id}
-                                        className={`pw-card ${isPro ? 'border-primary' : ''} p-8 hover:scale-[1.02] transition-all group relative overflow-hidden`}
+                                        className={`pw-card ${isFeatured ? 'border-primary' : ''} p-8 hover:scale-[1.02] transition-all group relative overflow-hidden`}
                                     >
-                                        {isPro && (
+                                        {hasTrial && (
                                             <div className="absolute top-5 right-5 bg-primary text-white dark:text-[#1A2420] text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-lg">
                                                 {subscriptionCopy.trial.badge[language]}
                                             </div>
@@ -329,7 +335,7 @@ export function AccountOverview({
                                             </h4>
                                             <div className="flex items-end gap-1">
                                                 <span className="text-3xl font-black text-black dark:text-white">{formatPrice(plan.price)}</span>
-                                                <span className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-widest pb-1">/ mo</span>
+                                                <span className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-widest pb-1">{t.account.perMonth} · {t.account.inclVat}</span>
                                             </div>
                                         </div>
 
@@ -338,7 +344,7 @@ export function AccountOverview({
                                                 .slice(0, 4)
                                                 .map(([key, value]) => (
                                                     <div key={key} className="flex items-center gap-3 text-xs font-medium text-black/60 dark:text-white/60">
-                                                        <div className={`w-1.5 h-1.5 rounded-full ${isPro ? 'bg-primary shadow-[0_0_8px_rgba(41,104,91,0.5)]' : 'bg-primary shadow-[0_0_8px_rgba(41,104,91,0.45)]'}`} />
+                                                        <div className={`w-1.5 h-1.5 rounded-full ${isFeatured ? 'bg-primary shadow-[0_0_8px_rgba(41,104,91,0.5)]' : 'bg-primary shadow-[0_0_8px_rgba(41,104,91,0.45)]'}`} />
                                                         <span>{value === 'unlimited' ? t.account.unlimited : value} {t.account.entitlements[key as keyof typeof t.account.entitlements] || key.replace(/_/g, ' ')}</span>
                                                     </div>
                                                 ))}
@@ -348,7 +354,7 @@ export function AccountOverview({
                                             onClick={() => onUpgrade?.(plan.plan_id)}
                                             className="w-full py-4 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-2xl text-[10px] font-black uppercase tracking-wider shadow-xl shadow-primary/20 transition-all active:scale-95"
                                         >
-                                            {isPro
+                                            {hasTrial
                                                 ? subscriptionCopy.trial.startCta[language]
                                                 : t.account.selectPlan}
                                         </button>

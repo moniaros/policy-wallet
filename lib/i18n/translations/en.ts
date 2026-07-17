@@ -1164,6 +1164,7 @@ export const en: TranslationKeys = {
         policyholder: 'Policyholder',
         agent: 'Agent',
         perMonth: 'per month',
+        inclVat: 'incl. 24% VAT',
         perYear: 'per year',
         includedPrivileges: 'Included Privileges',
         walletCredits: 'Wallet Credits',
