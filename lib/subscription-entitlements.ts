@@ -129,7 +129,7 @@ export const AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlementLimits>
         renewalAutomation: true,
         commissionTracking: true,
         bulkImportLimit: 500,
-        apiAccess: true,
+        apiAccess: false, // de-listed: sold with zero implementation. Re-enable when a real API + keys ship.
         teamMembers: 3,
         portfolioGapView: true,
         analysisComparison: true,
@@ -154,7 +154,7 @@ export const AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlementLimits>
         renewalAutomation: true,
         commissionTracking: true,
         bulkImportLimit: null,
-        apiAccess: true,
+        apiAccess: false, // de-listed: sold with zero implementation. Re-enable when a real API + keys ship.
         teamMembers: null,
         portfolioGapView: true,
         analysisComparison: true,
