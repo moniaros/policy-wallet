@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ArrowRight, Send, UserPlus, Copy, Check } from "lucide-react"
+import { ArrowRight, Send, UserPlus, Check } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 
 import { sendClientInvite, completeOnboarding } from "@/app/onboarding/agent/actions"
@@ -18,11 +18,7 @@ export function FirstClientInviteStep({ onNext, onBack }: StepProps) {
     const t = (el: string, en: string) => (language === "el" ? el : en)
     const [email, setEmail] = useState("")
     const [inviteSent, setInviteSent] = useState(false)
-    const [copied, setCopied] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-
-    const agentSlug = user?.user_metadata?.agency_slug || user?.id || ""
-    const portalUrl = agentSlug ? `https://policywallet.app/agent/${agentSlug}` : ""
 
     const handleInvite = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -43,13 +39,6 @@ export function FirstClientInviteStep({ onNext, onBack }: StepProps) {
         onNext()
     }
 
-    const copyLink = () => {
-        if (portalUrl) {
-            navigator.clipboard.writeText(portalUrl)
-        }
-        setCopied(true)
-        setTimeout(() => setCopied(false), 2000)
-    }
 
     return (
         <div className="space-y-6">
@@ -113,26 +102,6 @@ export function FirstClientInviteStep({ onNext, onBack }: StepProps) {
                     </div>
                 )}
 
-                <div className="relative flex py-2 items-center">
-                    <div className="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
-                    <span className="flex-shrink-0 mx-4 text-slate-400 text-xs font-bold uppercase">
-                        {t("Ή μοιραστείτε σύνδεσμο", "Or share link")}
-                    </span>
-                    <div className="flex-grow border-t border-slate-200 dark:border-slate-700"></div>
-                </div>
-
-                <div
-                    onClick={copyLink}
-                    className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 cursor-pointer hover:border-primary transition-colors group"
-                >
-                    <span className="text-sm text-slate-600 dark:text-slate-300 font-mono truncate max-w-[200px]">
-                        {portalUrl ? portalUrl.replace("https://", "") : t("policywallet.app/agent/...", "policywallet.app/agent/...")}
-                    </span>
-                    <div className="flex items-center gap-2 text-xs font-bold text-slate-500 group-hover:text-primary dark:group-hover:text-mint">
-                        {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                        {copied ? t("Αντιγράφηκε", "Copied") : t("Αντιγραφή", "Copy")}
-                    </div>
-                </div>
             </div>
 
             <div className="flex gap-3 pt-4">

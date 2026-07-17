@@ -194,13 +194,19 @@ export default async function DashboardPage() {
     actionQueue.sort((a, b) => urgencyOrder[a.urgency] - urgencyOrder[b.urgency])
 
     // ── Revenue Metrics ───────────────────────────────────────────
-    const revenue = {
-        mrr: monthlyCommission,
-        renewalsDueThisMonth: renewalsDue.length,
-        renewalsDueAmount: renewalsDue.reduce((sum, p) => sum + Number(p.premiumAmount || 0), 0),
-        commissionPipeline,
-        monthlyGrowthPercent: monthlyGrowth,
-    }
+    // The Revenue Pulse card is a paid entitlement (pipelineAnalytics, Starter+).
+    // The AgentPlanGate blur was cosmetic — the real figures still shipped in the
+    // free agent's payload. Withhold them server-side: below-tier agents get a
+    // zeroed shape (same type) behind the upgrade gate, no real data to un-blur.
+    const revenue = agentEntitlements.limits.pipelineAnalytics
+        ? {
+            mrr: monthlyCommission,
+            renewalsDueThisMonth: renewalsDue.length,
+            renewalsDueAmount: renewalsDue.reduce((sum, p) => sum + Number(p.premiumAmount || 0), 0),
+            commissionPipeline,
+            monthlyGrowthPercent: monthlyGrowth,
+        }
+        : { mrr: 0, renewalsDueThisMonth: 0, renewalsDueAmount: 0, commissionPipeline: 0, monthlyGrowthPercent: 0 }
 
     // ── Portfolio Health ───────────────────────────────────────────
     const gapCounts = await prisma.gapInstance.groupBy({
