@@ -285,7 +285,7 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
                     { label: { el: "Portfolio dashboard", en: "Portfolio dashboard" }, included: true, highlight: true },
                     { label: { el: "Renewal pipeline", en: "Renewal pipeline" }, included: true },
                     { label: { el: "Bulk import έως 100 γραμμές", en: "Bulk import up to 100 rows" }, included: true },
-                    { label: { el: "Ερωτηματολόγια πελατών (7 πρότυπα)", en: "Client questionnaires (7 templates)" }, included: true },
+                    { label: { el: "Ερωτηματολόγια πελατών (5 πρότυπα)", en: "Client questionnaires (5 templates)" }, included: true },
                 ],
             },
             {

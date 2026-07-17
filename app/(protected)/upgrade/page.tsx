@@ -18,7 +18,7 @@ const TIER_TO_PLAN_ID: Record<string, string> = {
 }
 
 const UPGRADE_COPY = {
-    redirecting: { el: 'Μεταφορά στο Stripe...', en: 'Redirecting to Stripe...' },
+    redirecting: { el: 'Μετάβαση σε ασφαλή πληρωμή...', en: 'Redirecting to secure payment...' },
     genericError: { el: 'Κάτι πήγε στραβά. Δοκιμάστε ξανά.', en: 'Something went wrong. Please try again.' },
 } as const
 

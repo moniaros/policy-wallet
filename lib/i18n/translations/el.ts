@@ -1162,6 +1162,7 @@ export const el = {
         policyholder: 'Ασφαλισμένος',
         agent: 'Πράκτορας',
         perMonth: 'ανά μήνα',
+        inclVat: 'με ΦΠΑ 24%',
         perYear: 'ανά έτος',
         includedPrivileges: 'Περιλαμβανόμενα Προνόμια',
         walletCredits: 'Μονάδες Πορτοφολιού',

@@ -205,8 +205,8 @@ export const subscriptionCopy = {
             en: 'Upgrade to unlock this feature'
         },
         premiumFeature: {
-            el: 'Αυτό είναι χαρακτηριστικό Premium',
-            en: 'This is a Premium feature'
+            el: 'Αυτή η λειτουργία απαιτεί αναβάθμιση',
+            en: 'This feature requires an upgrade'
         },
         nextBilling: {
             el: 'Επόμενη χρέωση: {date}',
@@ -221,8 +221,8 @@ export const subscriptionCopy = {
             en: 'Payment failed. Please update your payment method.'
         },
         upgradeSuccess: {
-            el: 'Επιτυχής αναβάθμιση σε Premium!',
-            en: 'Successfully upgraded to Premium!'
+            el: 'Η αναβάθμιση ολοκληρώθηκε!',
+            en: 'Upgrade complete!'
         },
         cancelSuccess: {
             el: 'Η συνδρομή ακυρώθηκε επιτυχώς',

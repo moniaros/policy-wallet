@@ -210,7 +210,7 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                             paymentMethods={initialData.paymentMethods}
                             invoices={initialData.invoices}
                             onCancel={handleCancel}
-                            onDowngrade={() => router.push('/upgrade')}
+                            onDowngrade={() => router.push(initialData.currentPlan?.plan_type === 'agent' ? '/agent/pricing' : '/upgrade')}
                             onOpenPortal={handleOpenPortal}
                             onSwitchToAnnual={handleSwitchToAnnual}
                         />

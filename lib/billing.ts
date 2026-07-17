@@ -5,25 +5,10 @@ import { TOKEN_PACKAGES, type TokenPackageKey } from "@/lib/billing/token-packag
 import { recordConversionEvent } from "@/lib/journey/conversion-events"
 import { logger } from "@/lib/logger"
 import { getSiteOrigin } from "@/lib/seo/site"
+import { TRIAL_DAYS_BY_PLAN } from "@/lib/billing/trial-plans"
+import { vatInclusiveBreakdown, type VATBreakdown } from "@/lib/billing/vat"
 
-export interface VATInfo {
-    rate: number
-    amount: number
-    totalWithVat: number
-}
-
-/**
- * Calculate VAT for Greek market (Default 24%)
- */
-export function calculateVAT(netAmount: number, countryCode: string = 'GR'): VATInfo {
-    const rate = countryCode === 'GR' ? 0.24 : 0
-    const amount = netAmount * rate
-    return {
-        rate,
-        amount: Math.round(amount * 100) / 100,
-        totalWithVat: Math.round((netAmount + amount) * 100) / 100
-    }
-}
+export { vatInclusiveBreakdown, type VATBreakdown }
 
 /**
  * Annual price lookup.
@@ -49,11 +34,6 @@ export function sanitizeReturnPath(returnTo: string | null | undefined): string 
     return returnTo
 }
 
-/** Plans whose Stripe subscription starts with a free trial. */
-const TRIAL_DAYS_BY_PLAN: Record<string, number> = {
-    "ph-pro": 14,
-}
-
 /**
  * Create a real Stripe Checkout Session.
  *
@@ -76,10 +56,11 @@ export async function createCheckoutSession(
 
     const monthlyPrice = Number(plan.price)
     const isAnnual = billingPeriod === "annual"
+    // Advertised prices are VAT-inclusive, so periodPrice IS the amount charged.
     const periodPrice = isAnnual
         ? (ANNUAL_PRICE_BY_PLAN[planId] ?? monthlyPrice * 12)
         : monthlyPrice
-    const vat = calculateVAT(periodPrice)
+    const vat = vatInclusiveBreakdown(periodPrice)
 
     // Return targets must land on the canonical public site (policywallet.gr),
     // NOT NEXTAUTH_URL — that resolves to the raw Vercel deployment domain in
@@ -106,7 +87,9 @@ export async function createCheckoutSession(
                         name: plan.displayName,
                         description: `PolicyWallet ${isAnnual ? "annual" : "monthly"} subscription`,
                     },
-                    unit_amount: Math.round(vat.totalWithVat * 100), // Stripe expects cents
+                    // Charge the advertised (VAT-inclusive) price as-is — never
+                    // ×1.24, which double-charged VAT (€49.99 shown → €61.99 taken).
+                    unit_amount: Math.round(periodPrice * 100), // Stripe expects cents
                     recurring: {
                         interval: isAnnual ? "year" : "month",
                     },
@@ -130,9 +113,9 @@ export async function createCheckoutSession(
     return {
         id: session.id,
         url: session.url!,
-        amount: periodPrice,
-        vatAmount: vat.amount,
-        total: vat.totalWithVat
+        amount: vat.net,        // ex-VAT portion
+        vatAmount: vat.vat,     // VAT contained in the price
+        total: periodPrice,     // VAT-inclusive total = what's charged
     }
 }
 
