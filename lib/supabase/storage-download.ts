@@ -29,6 +29,24 @@ export function resolveSupabaseStorageObject(
     }
 }
 
+/**
+ * Short-lived signed URL for a stored (private-bucket) object, resolved from the
+ * stored fileUrl. Used to hand an authorized viewer a time-boxed download link
+ * instead of the previous stub that returned the bare (private, un-fetchable)
+ * object URL. Returns null when storage isn't configured or the URL is opaque.
+ */
+export async function createSignedUrlForStoredObject(
+    fileUrl: string,
+    expirySeconds: number
+): Promise<string | null> {
+    const ref = resolveSupabaseStorageObject(fileUrl)
+    if (!ref || !process.env.SUPABASE_SERVICE_ROLE_KEY) return null
+    const admin = createAdminClient()
+    const { data, error } = await admin.storage.from(ref.bucket).createSignedUrl(ref.objectPath, expirySeconds)
+    if (error) return null
+    return data?.signedUrl ?? null
+}
+
 export async function downloadPolicyDocument(fileUrl: string): Promise<Buffer> {
     const ref = resolveSupabaseStorageObject(fileUrl)
 

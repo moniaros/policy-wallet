@@ -4,10 +4,15 @@ import { withApiGuard } from "@/lib/api-guard"
 import { z } from "zod"
 import { msFromNow, SIGNED_URL_EXPIRY_MS } from "@/lib/constants/time"
 import { getPolicyAccess } from "@/lib/policy-access"
+import { uploadFile } from "@/lib/storage"
+import { createSignedUrlForStoredObject } from "@/lib/supabase/storage-download"
 
 const policyDocumentParamsSchema = z.object({
     id: z.string().min(1),
 })
+
+const ALLOWED_DOCUMENT_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/webp"]
+const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024
 
 export const POST = withApiGuard(
     {
@@ -30,6 +35,12 @@ export const POST = withApiGuard(
             if (!file) {
                 return createApiError("BAD_REQUEST", "No file provided", 400)
             }
+            if (file.size > MAX_DOCUMENT_BYTES) {
+                return createApiError("BAD_REQUEST", "File too large. Maximum size is 10MB.", 400)
+            }
+            if (file.type && !ALLOWED_DOCUMENT_TYPES.includes(file.type)) {
+                return createApiError("BAD_REQUEST", "Invalid file type. Only PDF and images are allowed.", 400)
+            }
 
             const access = await getPolicyAccess(id, {
                 id: authResult.dbUser.id,
@@ -51,13 +62,21 @@ export const POST = withApiGuard(
             // never trust the form value for provenance.
             const source = access.isOwner ? "policyholder" : "agent"
 
-            // Mock upload to object storage
-            const mockUrl = `https://storage.googleapis.com/policywallet-uploads/${crypto.randomUUID()}-${file.name}`
+            // Real upload into the private 'policies' bucket (service-role),
+            // replacing a fabricated storage.googleapis.com URL that persisted a
+            // phantom document record no file ever backed.
+            let fileUrl: string
+            try {
+                fileUrl = await uploadFile(file, "policies")
+            } catch (uploadError) {
+                console.error("Policy document upload failed:", uploadError)
+                return createApiError("INTERNAL_ERROR", "Document upload failed", 500)
+            }
 
             const document = await db.policyDocument.create({
                 data: {
                     policyId: id,
-                    fileUrl: mockUrl,
+                    fileUrl,
                     fileName: file.name,
                     fileSize: file.size,
                     source: source as string,
@@ -76,14 +95,19 @@ export const POST = withApiGuard(
                 }
             })
 
+            const signedUrl = await createSignedUrlForStoredObject(
+                document.fileUrl,
+                Math.floor(SIGNED_URL_EXPIRY_MS / 1000)
+            )
+
             return createApiResponse({
                 id: document.id,
                 policy_id: document.policyId,
                 file_name: document.fileName,
                 file_size: document.fileSize,
                 file_url: document.fileUrl,
-                signed_url: document.fileUrl, // Stub
-                signed_url_expires_at: msFromNow(SIGNED_URL_EXPIRY_MS),
+                signed_url: signedUrl,
+                signed_url_expires_at: signedUrl ? msFromNow(SIGNED_URL_EXPIRY_MS) : null,
                 processing_status: document.processingStatus,
                 uploaded_at: document.uploadedAt
             })
