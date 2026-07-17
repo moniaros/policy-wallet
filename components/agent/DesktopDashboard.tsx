@@ -147,6 +147,8 @@ export function DesktopDashboard({
                             isLoading={isLoading}
                             gapsSummary={data.gapsSummary}
                             onGapClientClick={onClientClick}
+                            hasClients={data.portfolioHealth.totalClients > 0}
+                            onInviteClient={onInviteCustomer}
                         />
                     </div>
                     <div className="lg:col-span-5">
@@ -208,6 +210,11 @@ export function DesktopDashboard({
                                 {pick(DASH_COPY.recentActivity, language)}
                             </h2>
                             <div className="space-y-4">
+                                {recentActivity.length === 0 && (
+                                    <p className="py-4 text-center text-xs text-muted-foreground">
+                                        {t.agentUi.noRecentActivity}
+                                    </p>
+                                )}
                                 {recentActivity.slice(0, 6).map((activity, i) => {
                                     const Icon = ACTIVITY_ICONS[activity.type] || Activity
                                     const color = ACTIVITY_COLORS[activity.type] || "text-neutral-500"

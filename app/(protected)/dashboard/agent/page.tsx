@@ -1,7 +1,6 @@
 export const runtime = "nodejs"
 
 import { redirect } from "next/navigation"
-import { getDashboardData } from "../../agent/actions"
 import { getActivityFeed } from "../../activity/actions"
 import { DashboardClient } from "../DashboardClient"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
@@ -26,13 +25,10 @@ export default async function DashboardPage() {
         redirect(role === "admin" ? "/admin/dashboard" : "/dashboard")
     }
 
-    const data = await getDashboardData()
-    if (!data) {
-        // Role is already verified above; a null here means the data layer
-        // declined — send them to a safe surface rather than a raw string.
-        redirect("/dashboard")
-    }
-
+    // getAuthenticatedUser() already redirected anonymous callers and the role
+    // is verified above, so the previous getDashboardData() auth/null gate was
+    // redundant — and it re-queried the whole book (summary + priorities) only
+    // to discard the result. Dropped it: two DB round-trips saved per load.
     const agentId = dbUser.id
 
     // Resolve agent tier
@@ -40,7 +36,7 @@ export default async function DashboardPage() {
     const agentTier = agentEntitlements.tier
 
     // Fetch policies and customers
-    const [policies, relationships, opportunities] = await Promise.all([
+    const [policies, relationships, opportunities, agentProfile, analysisRunCount] = await Promise.all([
         prisma.policy.findMany({
             where: { createdByUserId: agentId },
             // policyNumber/insurerName/acordData feed resolvePolicyLifecycle — the
@@ -67,14 +63,28 @@ export default async function DashboardPage() {
             where: { ownerAgentUserId: agentId },
             select: { status: true, estimatedPremium: true, estimatedCommission: true, wonPremium: true, lineOfBusiness: true },
         }),
+        // commissionRates feeds Revenue Pulse; the other fields drive the
+        // getting-started checklist's profile/license/commission signals.
+        prisma.agentProfile.findUnique({
+            where: { userId: agentId },
+            select: {
+                commissionRates: true,
+                agencyName: true,
+                phone: true,
+                logoUrl: true,
+                brandColor: true,
+                licenseNumber: true,
+                documents: true,
+            },
+        }),
+        // hasAnalysis: has the agent ever initiated an AI analysis? (run.userId —
+        // the same signal the analysis-quota gate counts, covering both their own
+        // uploads and grant-shared customer policies).
+        prisma.policyAnalysisRun.count({ where: { userId: agentId } }),
     ])
 
     // Real per-line commission rates the agent configured on /commissions — the
     // Revenue Pulse used to invent a flat 15% (and call premium/12 "revenue").
-    const agentProfile = await prisma.agentProfile.findUnique({
-        where: { userId: agentId },
-        select: { commissionRates: true },
-    })
     const commissionRates = (agentProfile?.commissionRates as Record<string, number> | null) ?? {}
 
     const totalPolicies = policies.length
@@ -92,8 +102,12 @@ export default async function DashboardPage() {
     const customersNow = relationships.length
     const customersBefore = relationships.filter((r) => new Date(r.createdAt) < thirtyDaysAgo).length
     const newCustomers = customersNow - customersBefore
-    const monthlyGrowth = customersBefore === 0
-        ? (newCustomers > 0 ? 100 : 0)
+    // Suppress the vanity "+100%": going from 1→2 clients is real but a "+100%"
+    // growth chip on a near-empty book is misleading, not motivating. Require a
+    // meaningful prior-period base before reporting a percentage at all.
+    const MIN_PRIOR_CLIENTS_FOR_GROWTH = 3
+    const monthlyGrowth = customersBefore < MIN_PRIOR_CLIENTS_FOR_GROWTH
+        ? 0
         : Math.round((newCustomers / customersBefore) * 100)
 
     // Agent commission on the open pipeline, using the agent's real per-line
@@ -386,6 +400,29 @@ export default async function DashboardPage() {
         portalStats,
     }
 
+    // ── Getting-started checklist signals (all derived from real data) ──────
+    // A license was PROVIDED when either a license document was uploaded during
+    // onboarding (documents[].type === "license") or a license number is on file
+    // (agent settings). verificationStatus is unusable here — it defaults to
+    // "pending" and is never null, so it can't distinguish "not started".
+    const profileDocuments = Array.isArray(agentProfile?.documents)
+        ? (agentProfile.documents as Array<{ type?: string }>)
+        : []
+    const checklistSignals = {
+        // agencyName + a contact phone + some branding (logo or brand color).
+        profileComplete:
+            Boolean(agentProfile?.agencyName) &&
+            Boolean(agentProfile?.phone) &&
+            Boolean(agentProfile?.logoUrl || agentProfile?.brandColor),
+        licenseUploaded:
+            profileDocuments.some((d) => d?.type === "license") ||
+            Boolean(agentProfile?.licenseNumber),
+        hasClients: customersNow > 0,
+        hasAnalysis: analysisRunCount > 0,
+        // At least one per-line rate actually configured (default is {} / all 0).
+        commissionRatesSet: Object.values(commissionRates).some((r) => Number(r) > 0),
+    }
+
     return (
         <DashboardClient
             dashboardData={dashboardData}
@@ -394,6 +431,7 @@ export default async function DashboardPage() {
             agentName={dbUser.name?.split(" ")[0]}
             isEmailVerified={!!dbUser.emailVerified}
             userEmail={dbUser.email}
+            checklistSignals={checklistSignals}
         />
     )
 }

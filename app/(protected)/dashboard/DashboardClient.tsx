@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { DesktopDashboard } from "@/components/agent/DesktopDashboard"
+import { AgentGettingStartedChecklist } from "@/components/agent/GettingStartedChecklist"
 import { InviteModal } from "@/components/agent"
 import { UploadPolicyModal } from "@/components/agent/UploadPolicyModal"
 import type { AccessScope } from "@/components/agent/types"
@@ -26,6 +27,14 @@ interface Props {
     agentName?: string
     isEmailVerified?: boolean
     userEmail?: string
+    /** Real first-run signals for the getting-started checklist (server-computed). */
+    checklistSignals: {
+        profileComplete: boolean
+        licenseUploaded: boolean
+        hasClients: boolean
+        hasAnalysis: boolean
+        commissionRatesSet: boolean
+    }
 }
 
 export function DashboardClient({
@@ -35,6 +44,7 @@ export function DashboardClient({
     agentName,
     isEmailVerified = true,
     userEmail,
+    checklistSignals,
 }: Props) {
     const { language, t } = useLanguage()
     const tb = t.agentDashboard
@@ -131,6 +141,21 @@ export function DashboardClient({
                     </div>
                 </div>
             )}
+
+            {/* First-run getting-started checklist. Self-hides (renders null)
+                once every step is done or the agent dismisses it, so the empty
+                wrapper collapses via [&:empty]:hidden — no stray gap above the
+                dashboard header for established agents. */}
+            <div className="max-w-[1400px] mx-auto px-4 sm:px-8 pt-6 [&:empty]:hidden">
+                <AgentGettingStartedChecklist
+                    language={language}
+                    profileComplete={checklistSignals.profileComplete}
+                    licenseUploaded={checklistSignals.licenseUploaded}
+                    hasClients={checklistSignals.hasClients}
+                    hasAnalysis={checklistSignals.hasAnalysis}
+                    commissionRatesSet={checklistSignals.commissionRatesSet}
+                />
+            </div>
 
             <DesktopDashboard
                 data={dashboardData}

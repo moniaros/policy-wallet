@@ -5,36 +5,25 @@ import {
     AlertTriangle,
     Calendar,
     Clock,
-    FileText,
     RefreshCw,
-    Send,
     UserPlus,
     Eye,
-    UserCheck,
     ChevronRight,
 } from "lucide-react"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { formatRelativeDate } from "@/lib/agent/format"
-import type { ActionQueueItem, GapsSummary, OneTapAction } from "./types"
+import type { ActionQueueItem, ActionQueueItemType, GapsSummary, OneTapAction } from "./types"
 
-const ACTION_ICONS: Record<string, React.ElementType> = {
+const ACTION_ICONS: Record<ActionQueueItemType, React.ElementType> = {
     expiring_policy: Calendar,
-    unsigned_document: FileText,
-    unanswered_request: Clock,
     incomplete_profile: UserPlus,
-    inbound_lead: UserCheck,
-    scheduled_followup: Send,
 }
 
 const ONE_TAP_LABELS: Record<OneTapAction, { en: string; el: string }> = {
     renew: { en: "Renew", el: "Ανανέωση" },
-    follow_up: { en: "Follow up", el: "Παρακολούθηση" },
-    send_reminder: { en: "Remind", el: "Υπενθύμιση" },
-    view_document: { en: "View", el: "Προβολή" },
     complete_profile: { en: "Complete", el: "Συμπλήρωση" },
-    accept_lead: { en: "Accept", el: "Αποδοχή" },
 }
 
 function getUrgencyStyles(urgency: "low" | "medium" | "high") {
@@ -52,9 +41,14 @@ interface ActionQueueCardProps {
     onGapClientClick?: (clientId: string) => void
     isLoading?: boolean
     gapsSummary?: GapsSummary | null
+    /** Whether the agent has any clients — drives the empty state (activation
+     *  prompt vs. "all caught up"). */
+    hasClients?: boolean
+    /** Invite CTA used by the no-clients activation empty state. */
+    onInviteClient?: () => void
 }
 
-export function ActionQueueCard({ items, onAction, onViewAll, onGapClientClick, isLoading, gapsSummary }: ActionQueueCardProps) {
+export function ActionQueueCard({ items, onAction, onViewAll, onGapClientClick, isLoading, gapsSummary, hasClients = false, onInviteClient }: ActionQueueCardProps) {
     const { language, t } = useLanguage()
 
     if (isLoading) return <ActionQueueCardSkeleton />
@@ -95,7 +89,7 @@ export function ActionQueueCard({ items, onAction, onViewAll, onGapClientClick, 
 
             {/* Items */}
             {totalCount === 0 ? (
-                <ActionQueueEmpty t={t} />
+                <ActionQueueEmpty t={t} hasClients={hasClients} onInviteClient={onInviteClient} />
             ) : (
                 <div className="space-y-2">
                     {items.slice(0, 5).map((item) => {
@@ -211,7 +205,35 @@ function GapsSummaryBanner({
     )
 }
 
-function ActionQueueEmpty({ t }: { t: any }) {
+function ActionQueueEmpty({ t, hasClients, onInviteClient }: { t: any; hasClients: boolean; onInviteClient?: () => void }) {
+    // With zero clients, "All caught up" reads as false success — the agent has
+    // done nothing. Show an activation prompt to invite the first client instead.
+    if (!hasClients) {
+        return (
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
+                    <UserPlus className="h-5 w-5 text-primary dark:text-mint" />
+                </div>
+                <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                    {t.agentUi.noClientsTitle}
+                </p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                    {t.agentUi.inviteFirstClientPrompt}
+                </p>
+                {onInviteClient && (
+                    <button
+                        type="button"
+                        onClick={onInviteClient}
+                        className="mt-4 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-white dark:text-[#1A2420] shadow-sm transition hover:bg-primary-hover"
+                    >
+                        <UserPlus className="h-3.5 w-3.5" />
+                        {t.agentUi.inviteClient}
+                    </button>
+                )}
+            </div>
+        )
+    }
+
     return (
         <div className="flex flex-col items-center justify-center py-8 text-center">
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
