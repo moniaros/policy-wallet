@@ -60,7 +60,7 @@ export function RevenuePulse({ metrics, isLoading, isPipelineGated }: RevenuePul
                             {stat.gated && (
                                 <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/60 backdrop-blur-sm dark:bg-neutral-900/60">
                                     <span className="text-xs font-medium text-neutral-500">
-                                        Pro+
+                                        {t.agentDashboard.proPlusBadge}
                                     </span>
                                 </div>
                             )}
