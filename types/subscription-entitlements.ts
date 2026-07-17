@@ -71,6 +71,8 @@ export interface AgentEntitlementLimits {
     analysisComparison: boolean
     /** Savings report export */
     savingsReportExport: boolean
+    /** Agent-branded, print-ready policy report (Pro+) */
+    brandedReport: boolean
     /** Priority analysis queue */
     priorityQueue: boolean
     /** Cross-sell / upsell intelligence */

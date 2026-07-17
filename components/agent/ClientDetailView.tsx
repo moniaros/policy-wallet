@@ -28,6 +28,8 @@ interface ClientDetailViewProps {
     customer: Customer
     viewerRole: ViewerRole
     agentTier: AgentTier
+    /** True when the viewing agent's plan includes branded reports (Pro+). */
+    canBrandedReport?: boolean
     healthScore: number
     policies: Policy[]
     opportunities: Opportunity[]
@@ -51,6 +53,7 @@ export function ClientDetailView({
     customer,
     viewerRole,
     agentTier,
+    canBrandedReport = false,
     healthScore,
     policies,
     opportunities,
@@ -176,6 +179,7 @@ export function ClientDetailView({
                         policies={policies}
                         viewerRole={viewerRole}
                         commissionRates={commissionRates}
+                        canBrandedReport={canBrandedReport}
                         onRenewPolicy={onRenewPolicy}
                         onUploadPolicy={onUploadPolicy}
                     />

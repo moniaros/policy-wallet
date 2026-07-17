@@ -20,6 +20,7 @@ import type { DocumentRequestData, ProposalData, DocumentTypeKey, DocumentUrgenc
 interface Props {
     initialCustomer: Customer
     agentTier: AgentTier
+    canBrandedReport: boolean
     healthScore: number
 }
 
@@ -36,7 +37,7 @@ const PROFILE_COPY = {
     noProposals: { el: "Δεν υπάρχουν προτάσεις", en: "No proposals" },
 } as const
 
-export function CustomerProfileClient({ initialCustomer, agentTier, healthScore }: Props) {
+export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedReport, healthScore }: Props) {
     const router = useRouter()
     const { language } = useLanguage()
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
@@ -283,6 +284,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                 customer={initialCustomer}
                 viewerRole="agent"
                 agentTier={agentTier}
+                canBrandedReport={canBrandedReport}
                 healthScore={healthScore}
                 policies={initialCustomer.policies || []}
                 opportunities={initialCustomer.opportunities || []}

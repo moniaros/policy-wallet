@@ -888,6 +888,7 @@ export const el = {
         activityHistory: 'Ιστορικό Δραστηριότητας',
         questions: 'ερωτήσεις',
         upgrade: 'Αναβάθμιση',
+        brandedReport: 'Επώνυμη αναφορά',
         thankYou: 'Ευχαριστούμε!',
         responsesSubmitted: 'Οι απαντήσεις σας υποβλήθηκαν με επιτυχία.'
     },

@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from "react"
-import { Shield, Calendar, RefreshCw, TrendingUp, Eye, EyeOff, Filter, Plus } from "lucide-react"
+import { Shield, Calendar, RefreshCw, TrendingUp, Eye, EyeOff, Filter, Plus, FileText } from "lucide-react"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { BrandActionButton } from "@/components/ui/brand/BrandActionButton"
 import { EmptyState, PolicyPreviewRow } from "@/components/ui/EmptyState"
@@ -14,6 +14,8 @@ interface ClientPoliciesTabProps {
     policies: Policy[]
     viewerRole: ViewerRole
     commissionRates?: Record<string, number>
+    /** True when the viewing agent's plan includes branded reports (Pro+). */
+    canBrandedReport?: boolean
     onRenewPolicy?: (policyId: string) => void
     onUploadPolicy?: () => void
 }
@@ -64,6 +66,7 @@ export function ClientPoliciesTab({
     policies,
     viewerRole,
     commissionRates,
+    canBrandedReport = false,
     onRenewPolicy,
     onUploadPolicy,
 }: ClientPoliciesTabProps) {
@@ -204,6 +207,20 @@ export function ClientPoliciesTab({
 
                                 {/* Inline actions */}
                                 <div className="flex items-center gap-1.5">
+                                    {/* Branded report — agent-only, needs a completed
+                                        analysis and a Pro+ plan. Opens the print-ready
+                                        HTML in a new tab (agent saves / shares as PDF). */}
+                                    {viewerRole === "agent" && canBrandedReport && policy.hasAnalysis && (
+                                        <a
+                                            href={`/api/v1/agent/policies/${policy.policyId}/branded-report`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="rounded-lg border border-neutral-200 dark:border-neutral-700 px-3 py-1.5 text-xs font-semibold text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition cursor-pointer flex items-center gap-1"
+                                        >
+                                            <FileText className="h-3 w-3" />
+                                            {t.agentUi.brandedReport}
+                                        </a>
+                                    )}
                                     {daysToExpiry <= 30 && daysToExpiry >= 0 && onRenewPolicy && (
                                         <button
                                             type="button"

@@ -5,7 +5,7 @@ import { CustomerProfileClient } from "./CustomerProfileClient"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import { notFound } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
-import { resolveAgentEntitlements } from "@/lib/subscription-entitlements"
+import { canAgentUseFeature, resolveAgentEntitlements } from "@/lib/subscription-entitlements"
 import { computeHealthScoreFromCustomer } from "@/lib/agent/health-score"
 
 interface Props {
@@ -20,6 +20,7 @@ export default async function CustomerProfilePage({ params }: Props) {
 
     // Compute data for ClientDetailView
     const agentEntitlements = await resolveAgentEntitlements(dbUser.id)
+    const canBrandedReport = await canAgentUseFeature(dbUser.id, "brandedReport")
     const healthScore = computeHealthScoreFromCustomer(customer)
 
     return (
@@ -27,6 +28,7 @@ export default async function CustomerProfilePage({ params }: Props) {
             <CustomerProfileClient
                 initialCustomer={customer}
                 agentTier={agentEntitlements.tier}
+                canBrandedReport={canBrandedReport}
                 healthScore={healthScore}
             />
             {/* The health score, gaps and cross-sell shown here are AI-generated. */}

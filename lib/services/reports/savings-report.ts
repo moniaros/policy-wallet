@@ -29,10 +29,37 @@ function localized(val: any, lang: "en" | "el" = "en"): string {
     return val[lang] || val.en || val.el || ""
 }
 
+/**
+ * Optional agent branding for the report header/footer. All string values are
+ * escaped before interpolation; `brandColor` is validated as a hex before it
+ * ever reaches the stylesheet (never interpolate raw untrusted CSS).
+ */
+export interface AgentReportBranding {
+    agencyName?: string | null
+    logoUrl?: string | null
+    brandColor?: string | null
+    website?: string | null
+    phone?: string | null
+}
+
+/** The B2C default heading color — also the fallback when no valid brandColor. */
+const DEFAULT_HEADING_COLOR = "#16213e"
+
+/**
+ * Accept ONLY a `#RGB` / `#RRGGBB` hex. Anything else returns null so the
+ * caller falls back to the default — untrusted branding text never lands in CSS.
+ */
+function sanitizeHexColor(input?: string | null): string | null {
+    if (!input) return null
+    const value = input.trim()
+    return /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value) ? value : null
+}
+
 export function generateSavingsReportHtml(
     resultJson: Record<string, any>,
     generatedAt: string,
-    language: "en" | "el" = "en"
+    language: "en" | "el" = "en",
+    branding?: AgentReportBranding
 ): string {
     const loc = (val: any) => localized(val, language)
     const metadata = resultJson.metadata ?? {}
@@ -58,18 +85,51 @@ export function generateSavingsReportHtml(
         }
     }
 
+    // ── Optional agent branding ──────────────────────────────────────
+    // When `branding` is absent every value below collapses to "" / the
+    // default color, so the emitted HTML is byte-identical to the B2C report.
+    const agencyName = branding?.agencyName?.trim() || ""
+    const logoUrl = branding?.logoUrl?.trim() || ""
+    const website = branding?.website?.trim() || ""
+    const phone = branding?.phone?.trim() || ""
+    const hasBranding = Boolean(branding && (agencyName || logoUrl))
+    const accent = sanitizeHexColor(branding?.brandColor) || DEFAULT_HEADING_COLOR
+    const headingColor = hasBranding ? "var(--pw-accent)" : DEFAULT_HEADING_COLOR
+
+    const brandingStyleVars = hasBranding
+        ? `\n  :root { --pw-accent: ${accent}; }` +
+          `\n  .agency-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 2px solid var(--pw-accent); }` +
+          `\n  .agency-header img { max-height: 52px; max-width: 180px; object-fit: contain; }` +
+          `\n  .agency-name { font-size: 18px; font-weight: 700; color: var(--pw-accent); }` +
+          `\n  .agency-contact { font-size: 12px; color: #666; margin-top: 2px; }` +
+          `\n  .powered-by { font-weight: 600; color: var(--pw-accent); margin-bottom: 6px; }`
+        : ""
+
+    const preparedByLabel = language === "el" ? "Ετοιμάστηκε από" : "Prepared by"
+    const contactBits = [website, phone].filter(Boolean).map((b) => escapeHtml(b)).join(" · ")
+    const headerBlock = hasBranding
+        ? `<div class="agency-header">${logoUrl ? `<img src="${escapeHtml(logoUrl)}" alt="${escapeHtml(agencyName)}">` : ""}<div>${agencyName ? `<div class="agency-name">${escapeHtml(agencyName)}</div>` : ""}${contactBits ? `<div class="agency-contact">${contactBits}</div>` : ""}</div></div>
+<h1>Savings &amp; Coverage Report</h1>
+<p class="subtitle">${agencyName ? `${preparedByLabel} ${escapeHtml(agencyName)} · ` : ""}${formatDate(generatedAt)}</p>`
+        : `<h1>Savings &amp; Coverage Report</h1>
+<p class="subtitle">Generated ${formatDate(generatedAt)} by PolicyWallet</p>`
+
+    const poweredByBlock = hasBranding
+        ? `<p class="powered-by">Powered by PolicyWallet</p>\n  `
+        : ""
+
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Savings Report — ${escapeHtml(metadata.policyNumber || "Policy")}</title>
-<style>
+<style>${brandingStyleVars}
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1a1a2e; line-height: 1.6; padding: 40px; max-width: 800px; margin: 0 auto; }
   @media print { body { padding: 20px; } .no-print { display: none; } }
-  h1 { font-size: 24px; margin-bottom: 4px; color: #16213e; }
-  h2 { font-size: 18px; margin: 28px 0 12px; color: #16213e; border-bottom: 2px solid #e8e8f0; padding-bottom: 6px; }
+  h1 { font-size: 24px; margin-bottom: 4px; color: ${headingColor}; }
+  h2 { font-size: 18px; margin: 28px 0 12px; color: ${headingColor}; border-bottom: 2px solid #e8e8f0; padding-bottom: 6px; }
   h3 { font-size: 15px; margin: 16px 0 8px; color: #0f3460; }
   .subtitle { color: #666; font-size: 14px; margin-bottom: 24px; }
   .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; margin-bottom: 24px; font-size: 14px; }
@@ -101,8 +161,7 @@ export function generateSavingsReportHtml(
 
 <button class="print-btn no-print" onclick="window.print()">Print / Save as PDF</button>
 
-<h1>Savings &amp; Coverage Report</h1>
-<p class="subtitle">Generated ${formatDate(generatedAt)} by PolicyWallet</p>
+${headerBlock}
 
 <div class="meta-grid">
   <span class="meta-label">Insurer</span><span class="meta-value">${escapeHtml(metadata.insurerName || "—")}</span>
@@ -160,7 +219,7 @@ ${snapshot.exclusions?.length ? `
 ` : ""}
 
 <div class="footer">
-  ${escapeHtml(getTranslations(language).common.aiAdviceDisclaimer)}
+  ${poweredByBlock}${escapeHtml(getTranslations(language).common.aiAdviceDisclaimer)}
 </div>
 
 </body>
