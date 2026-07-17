@@ -773,10 +773,15 @@ model ActivityLog {
   description  String
   metadata     Json?
   isBreakGlass Boolean  @default(false) @map("is_break_glass")
+  // Data subject whose personal data was accessed/affected (GDPR read-access
+  // audit) — e.g. the customer an agent viewed. Nullable; set for access events.
+  targetUserId String?  @map("target_user_id")
   timestamp    DateTime @default(now())
 
   // Usage metering counts by (user, action, time window) on the AI hot paths.
   @@index([adminUserId, actionType, timestamp])
+  // "Who accessed data subject X" — GDPR right-of-access reporting.
+  @@index([targetUserId, timestamp])
   @@map("activity_logs")
 }
 
