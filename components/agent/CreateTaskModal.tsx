@@ -1,9 +1,10 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { createUserTask } from "@/app/(protected)/tasks/taskActions"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { useDialog } from "@/hooks/useDialog"
 
 interface CreateTaskModalProps {
     isOpen: boolean
@@ -34,13 +35,8 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
     const [dueDate, setDueDate] = useState('')
     const [isSubmitting, setIsSubmitting] = useState(false)
 
-    // Close on Escape.
-    useEffect(() => {
-        if (!isOpen) return
-        const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose() }
-        window.addEventListener("keydown", onKey)
-        return () => window.removeEventListener("keydown", onKey)
-    }, [isOpen, onClose])
+    // Escape-to-close, focus trap, and focus return.
+    const dialogRef = useDialog<HTMLDivElement>(onClose, isOpen)
 
     if (!isOpen) return null
 
@@ -78,11 +74,11 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
 
     return (
         <div onClick={onClose} className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-            <div onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-stone-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="create-task-title" tabIndex={-1} onClick={(e) => e.stopPropagation()} className="bg-white dark:bg-stone-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-200">
                 {/* Header */}
                 <div className="sticky top-0 z-10 bg-white dark:bg-stone-900 border-b border-stone-100 dark:border-stone-800 px-6 py-5 flex items-center justify-between">
                     <div>
-                        <h2 className="text-xl font-bold text-stone-900 dark:text-white">
+                        <h2 id="create-task-title" className="text-xl font-bold text-stone-900 dark:text-white">
                             {tt.titlePrefix} {customerName}
                         </h2>
                         <p className="text-sm text-stone-500 dark:text-stone-400 mt-0.5">
@@ -91,6 +87,7 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
                     </div>
                     <button
                         onClick={onClose}
+                        aria-label={t.common.close}
                         className="p-2 -mr-2 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-400 transition-colors"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>

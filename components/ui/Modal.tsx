@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import { X } from "lucide-react"
+import { useDialog } from "@/hooks/useDialog"
 
 interface ModalProps {
     isOpen: boolean
@@ -11,6 +12,11 @@ interface ModalProps {
     children: React.ReactNode
     className?: string
     showCloseButton?: boolean
+    /** Accessible name for the dialog (aria-label) or id of its heading. */
+    ariaLabel?: string
+    ariaLabelledBy?: string
+    /** Accessible label for the close button (localize per caller). */
+    closeLabel?: string
 }
 
 export function Modal({
@@ -18,9 +24,13 @@ export function Modal({
     onClose,
     children,
     className = "",
-    showCloseButton = true
+    showCloseButton = true,
+    ariaLabel,
+    ariaLabelledBy,
+    closeLabel = "Close"
 }: ModalProps) {
     const [mounted, setMounted] = useState(false)
+    const dialogRef = useDialog<HTMLDivElement>(onClose, isOpen)
 
     useEffect(() => {
         setMounted(true)
@@ -51,6 +61,12 @@ export function Modal({
 
                     {/* Content */}
                     <motion.div
+                        ref={dialogRef}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label={ariaLabelledBy ? undefined : ariaLabel}
+                        aria-labelledby={ariaLabelledBy}
+                        tabIndex={-1}
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -60,6 +76,7 @@ export function Modal({
                         {showCloseButton && (
                             <button
                                 onClick={onClose}
+                                aria-label={closeLabel}
                                 className="absolute top-4 right-4 p-2 bg-stone-100/50 dark:bg-stone-800/50 hover:bg-stone-200 dark:hover:bg-stone-700 rounded-full text-stone-500 dark:text-stone-400 transition-colors z-10"
                             >
                                 <X className="w-5 h-5" />

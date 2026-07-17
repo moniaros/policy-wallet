@@ -4,6 +4,7 @@ import { useState } from "react"
 import * as Sentry from "@sentry/nextjs"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { useDialog } from "@/hooks/useDialog"
 
 interface OpportunityUpdateModalProps {
     isOpen: boolean
@@ -20,6 +21,7 @@ interface OpportunityUpdateModalProps {
 
 export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate }: OpportunityUpdateModalProps) {
     const { t } = useLanguage()
+    const dialogRef = useDialog<HTMLDivElement>(onClose, isOpen)
     const tt = t.agentModals.opportunityUpdate
     const OPPORTUNITY_STATUSES = [
         { value: 'open', label: tt.statusOpen, color: 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-2 border-amber-500' },
@@ -59,12 +61,12 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-stone-800 rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="opportunity-update-title" tabIndex={-1} className="bg-white dark:bg-stone-800 rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
                 {/* Header */}
                 <div className="border-b border-stone-200 dark:border-stone-700 px-6 py-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="text-2xl font-bold text-stone-900 dark:text-white">
+                            <h2 id="opportunity-update-title" className="text-2xl font-bold text-stone-900 dark:text-white">
                                 {tt.title}
                             </h2>
                             <p className="text-sm text-stone-600 dark:text-stone-400 mt-1">
@@ -73,6 +75,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                         </div>
                         <button
                             onClick={onClose}
+                            aria-label={t.common.close}
                             className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 transition-colors"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

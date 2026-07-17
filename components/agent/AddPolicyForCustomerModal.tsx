@@ -5,6 +5,7 @@ import Link from "next/link"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { useDialog } from "@/hooks/useDialog"
 
 interface AddPolicyForCustomerModalProps {
     isOpen: boolean
@@ -175,7 +176,8 @@ export function AddPolicyForCustomerModal({
     customerEmail
 }: AddPolicyForCustomerModalProps) {
     const router = useRouter()
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
+    const dialogRef = useDialog<HTMLDivElement>(() => handleClose(), isOpen)
     const isEl = language === "el"
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isScanning, setIsScanning] = useState(false)
@@ -369,12 +371,12 @@ export function AddPolicyForCustomerModal({
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={handleClose} />
 
-            <div className="relative w-full max-w-lg bg-white dark:bg-stone-900 rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="add-policy-title" tabIndex={-1} className="relative w-full max-w-lg bg-white dark:bg-stone-900 rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
                 <div className="p-8">
                     {/* Header */}
                     <div className="flex items-center justify-between mb-6">
                         <div>
-                            <h2 className="text-xl font-black text-stone-900 dark:text-white tracking-tight">
+                            <h2 id="add-policy-title" className="text-xl font-black text-stone-900 dark:text-white tracking-tight">
                                 Add Policy for {customerName}
                             </h2>
                             <p className="text-xs text-stone-500 mt-1">
@@ -383,6 +385,7 @@ export function AddPolicyForCustomerModal({
                         </div>
                         <button
                             onClick={handleClose}
+                            aria-label={t.common.close}
                             className="p-2 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl transition-colors"
                         >
                             <svg className="w-5 h-5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
