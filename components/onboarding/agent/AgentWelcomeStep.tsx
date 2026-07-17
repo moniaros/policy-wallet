@@ -42,8 +42,8 @@ export function AgentWelcomeStep({ onNext }: StepProps) {
                 </h1>
                 <p className="text-slate-600 dark:text-slate-400 text-lg">
                     {t(
-                        "Ορίστε το επαγγελματικό σας προφίλ για να χτίσετε εμπιστοσύνη με τους πελάτες σας.",
-                        "Define your professional profile to build trust with your clients."
+                        "Ορίστε το επαγγελματικό σας προφίλ για να χτίσετε εμπιστοσύνη με τους πελάτες σας και να ενεργοποιήσετε επώνυμες αναφορές.",
+                        "Define your professional profile to build trust with clients and enable branded reports."
                     )}
                 </p>
             </div>

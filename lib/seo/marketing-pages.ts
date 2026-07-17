@@ -106,13 +106,13 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/solutions/agents",
         title: "Λογισμικό με AI για ασφαλιστικούς πράκτορες",
         description:
-            "Χαρτοφυλάκιο πελατών, ανάλυση κενών με AI, pipeline ευκαιριών και υπενθυμίσεις ανανεώσεων για πράκτορες και πρακτορεία. Δείτε πώς λειτουργεί το PolicyWallet.",
+            "Χαρτοφυλάκιο πελατών, ανάλυση κενών με AI, υπενθυμίσεις ανανεώσεων και branded αναφορές για πράκτορες και πρακτορεία. Δείτε πώς λειτουργεί το PolicyWallet.",
         keywords: ["λογισμικό ασφαλιστικού πράκτορα", "CRM ασφαλιστών"],
         breadcrumb: "Για Πράκτορες",
         en: {
             title: "AI software for insurance agents",
             description:
-                "Client portfolio oversight, AI coverage-gap analysis, opportunity pipeline and renewal reminders for insurance agents and agencies. See how PolicyWallet works.",
+                "Client portfolio oversight, AI coverage-gap analysis, renewal reminders and branded reports for insurance agents and agencies. See how PolicyWallet works.",
             breadcrumb: "For Agents",
         },
     },

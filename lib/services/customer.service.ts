@@ -142,6 +142,13 @@ export class CustomerService extends BaseService {
                             include: {
                                 gapInstances: {
                                     where: { status: 'open' }
+                                },
+                                // One completed run is enough to know a branded
+                                // report can be generated for this policy.
+                                analysisRuns: {
+                                    where: { status: { in: ['completed', 'completed_with_warnings'] } },
+                                    select: { id: true },
+                                    take: 1,
                                 }
                             }
                         }
@@ -219,6 +226,7 @@ export class CustomerService extends BaseService {
                 startDate: p.startDate,
                 expiresAt: p.endDate,
                 gaps: p.gapInstances.length,
+                hasAnalysis: p.analysisRuns.length > 0,
                 createdByUserId: p.createdByUserId
             })),
             opportunities: relationship.opportunities.map(o => ({

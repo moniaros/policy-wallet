@@ -891,6 +891,7 @@ export const en: TranslationKeys = {
         activityHistory: 'Activity History',
         questions: 'questions',
         upgrade: 'Upgrade',
+        brandedReport: 'Branded report',
         thankYou: 'Thank You!',
         responsesSubmitted: 'Your responses have been successfully submitted.'
     },

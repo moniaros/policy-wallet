@@ -189,6 +189,7 @@ export async function getCustomerProfile(customerId: string): Promise<Customer |
                 // to hardcode 'active', so an expired policy showed as active
                 // in the agent's client view.
                 status: p.status as any,
+                hasAnalysis: p.hasAnalysis,
                 managedByAgent: p.createdByUserId === authResult.dbUser.id
             })),
             opportunities: (await (async () => {

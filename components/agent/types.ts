@@ -27,6 +27,8 @@ export interface Policy {
     status: 'active' | 'expiring_soon' | 'expired' | 'unknown_duration' | 'action_needed' | 'cancelled' | 'analyzing' | 'incomplete'
     /** True when the viewing agent created (manages) this policy. */
     managedByAgent?: boolean
+    /** True when the policy has at least one completed analysis run (branded report available). */
+    hasAnalysis?: boolean
 }
 
 export interface Opportunity {

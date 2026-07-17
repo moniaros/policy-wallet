@@ -1199,6 +1199,25 @@
       }
     },
     {
+      "route": "v1/agent/policies/[id]/branded-report/route.ts",
+      "methods": [
+        "GET"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "user"
+        },
+        "rateLimit": {
+          "required": true,
+          "profile": "agent-read"
+        },
+        "validation": {
+          "required": true,
+          "profile": "zod-or-guard"
+        }
+      }
+    },
+    {
       "route": "v1/policies/route.ts",
       "methods": [
         "GET",
