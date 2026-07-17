@@ -113,8 +113,8 @@ export default function AgentSolutionsPage() {
                                 </h3>
                                 <p className="text-[16px] leading-relaxed text-[#475569]">
                                     {t(
-                                        "Παραδώστε αναφορές με το brand σας, έτοιμες για αποστολή και αρχειοθέτηση.",
-                                        "Deliver branded reports ready to send and archive with your own identity."
+                                        "Παραδώστε αναφορές με το brand σας, έτοιμες για αποστολή και αρχειοθέτηση. (Σύντομα διαθέσιμο.)",
+                                        "Deliver branded reports ready to send and archive with your own identity. (Coming soon.)"
                                     )}
                                 </p>
                             </div>
@@ -153,10 +153,10 @@ export default function AgentSolutionsPage() {
                         <div className="rounded-2xl border border-[#EBE5D9] bg-white p-6">
                             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.15em] text-[#29685B]">03</p>
                             <h3 className="mb-2 text-[22px] font-medium text-[#0F172A]">
-                                {t("Send branded report", "Send branded report")}
+                                {t("Αποστολή branded αναφοράς", "Send branded report")}
                             </h3>
                             <p className="text-[15px] text-[#475569]">
-                                {t("Στέλνετε branded αναφορά στον πελάτη με ένα κλικ.", "Send a branded report to the client in one click.")}
+                                {t("Στέλνετε branded αναφορά στον πελάτη με ένα κλικ. (Σύντομα.)", "Send a branded report to the client in one click. (Coming soon.)")}
                             </p>
                         </div>
                     </div>
@@ -175,8 +175,8 @@ export default function AgentSolutionsPage() {
                         </h3>
                         <p className="mb-6 text-[16px] leading-relaxed text-[#475569]">
                             {t(
-                                "Απεριόριστοι πελάτες, role-based πρόσβαση, pipeline ανανεώσεων και branded reports.",
-                                "Unlimited clients, role-based access, renewal pipeline, and branded reports."
+                                "Απεριόριστοι πελάτες, role-based πρόσβαση και pipeline ανανεώσεων (branded reports σύντομα).",
+                                "Unlimited clients, role-based access, and a renewal pipeline (branded reports coming soon)."
                             )}
                         </p>
                         <Link href="/pricing?audience=agent" className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-[#0F172A] hover:underline">

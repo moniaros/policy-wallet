@@ -399,8 +399,8 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                                 {t("Ασφαλιστική Αναφορά", "Insurance Report")}
                             </span>
                         </div>
-                        <div className="rounded bg-white/15 px-2 py-0.5 text-[10px] font-medium text-white/90">
-                            01/04/2026
+                        <div className="rounded bg-white/15 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white/90">
+                            {t("Σύντομα", "Coming soon")}
                         </div>
                     </div>
 
