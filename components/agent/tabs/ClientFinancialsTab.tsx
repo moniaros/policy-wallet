@@ -4,6 +4,7 @@ import React from "react"
 import { DollarSign, TrendingUp, RefreshCw, BarChart3 } from "lucide-react"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { BrandStat } from "@/components/ui/brand/BrandStat"
+import { EmptyState } from "@/components/ui/EmptyState"
 import { AgentPlanGate } from "../AgentPlanGate"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { formatCurrencyCompact, formatCurrencyFull } from "@/lib/agent/format"
@@ -60,6 +61,14 @@ export function ClientFinancialsTab({ financials, agentTier }: ClientFinancialsT
                         <BarChart3 className="h-5 w-5 text-primary dark:text-mint" />
                         {t.clientFinancials.premiumsByLob}
                     </h3>
+                    {Object.keys(financials.premiumsByLob).length === 0 ? (
+                        <EmptyState
+                            className="!border-0 !bg-transparent !shadow-none dark:!bg-transparent"
+                            icon={BarChart3}
+                            headline={t.emptyStates.premiumsByLob.headline}
+                            description={t.emptyStates.premiumsByLob.description}
+                        />
+                    ) : (
                     <div className="space-y-3">
                         {Object.entries(financials.premiumsByLob).map(([lob, amount]) => {
                             const maxAmount = Math.max(...Object.values(financials.premiumsByLob))
@@ -85,6 +94,7 @@ export function ClientFinancialsTab({ financials, agentTier }: ClientFinancialsT
                             )
                         })}
                     </div>
+                    )}
                 </BrandCard>
 
                 {/* Renewal Probability */}

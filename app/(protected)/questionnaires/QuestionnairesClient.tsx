@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 import type { TemplateData, InstanceData, TemplateQuestion } from "./actions"
 import { createTemplate, updateTemplate, deleteTemplate, analyzeQuestionnaireResponse } from "./actions"
+import { EmptyState } from "@/components/ui/EmptyState"
 
 const copy = {
     en: {
@@ -44,7 +45,10 @@ const copy = {
         completed: "Completed",
         analyze: "AI Analysis",
         noTemplates: "No templates yet",
+        noTemplatesDesc: "Build a reusable questionnaire to capture client needs and detect coverage gaps faster.",
         noInstances: "No sent questionnaires yet",
+        noInstancesDesc: "Send a questionnaire from a client's profile to start collecting responses here.",
+        viewClients: "View clients",
         analysisTitle: "Response Analysis",
         needs: "Needs Identified",
         recommendations: "Recommendations",
@@ -89,7 +93,10 @@ const copy = {
         completed: "Ολοκληρωμένο",
         analyze: "Ανάλυση AI",
         noTemplates: "Δεν υπάρχουν πρότυπα",
+        noTemplatesDesc: "Δημιουργήστε ένα επαναχρησιμοποιήσιμο ερωτηματολόγιο για να καταγράφετε ανάγκες πελατών και να εντοπίζετε κενά κάλυψης πιο γρήγορα.",
         noInstances: "Δεν υπάρχουν απεσταλμένα ερωτηματολόγια",
+        noInstancesDesc: "Στείλτε ένα ερωτηματολόγιο από το προφίλ ενός πελάτη για να αρχίσετε να συλλέγετε απαντήσεις εδώ.",
+        viewClients: "Προβολή πελατών",
         analysisTitle: "Ανάλυση Απαντήσεων",
         needs: "Αναγνωρισμένες Ανάγκες",
         recommendations: "Συστάσεις",
@@ -184,6 +191,7 @@ export function QuestionnairesClient({ templates, instances }: Props) {
                         t={t}
                         language={language}
                         onEdit={(id) => { setEditingId(id); setShowBuilder(true) }}
+                        onCreate={() => { setShowBuilder(true); setEditingId(null) }}
                     />
                 )}
 
@@ -198,11 +206,12 @@ export function QuestionnairesClient({ templates, instances }: Props) {
 
 // ── Templates Grid ──
 
-function TemplatesGrid({ templates, t, language, onEdit }: {
+function TemplatesGrid({ templates, t, language, onEdit, onCreate }: {
     templates: TemplateData[]
     t: typeof copy.en
     language: string
     onEdit: (id: string) => void
+    onCreate: () => void
 }) {
     const handleDelete = async (id: string) => {
         await deleteTemplate(id)
@@ -210,10 +219,12 @@ function TemplatesGrid({ templates, t, language, onEdit }: {
 
     if (templates.length === 0) {
         return (
-            <div className="arc-card p-12 text-center">
-                <FileQuestion className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-                <p className="text-sm text-slate-400">{t.noTemplates}</p>
-            </div>
+            <EmptyState
+                icon={FileQuestion}
+                headline={t.noTemplates}
+                description={t.noTemplatesDesc}
+                cta={{ label: t.createNew, onClick: onCreate }}
+            />
         )
     }
 
@@ -519,10 +530,12 @@ function SentList({ instances, t, language }: {
 
     if (instances.length === 0) {
         return (
-            <div className="arc-card p-12 text-center">
-                <Send className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-                <p className="text-sm text-slate-400">{t.noInstances}</p>
-            </div>
+            <EmptyState
+                icon={Send}
+                headline={t.noInstances}
+                description={t.noInstancesDesc}
+                cta={{ label: t.viewClients, href: "/customers" }}
+            />
         )
     }
 

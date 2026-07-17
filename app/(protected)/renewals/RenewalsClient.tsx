@@ -140,7 +140,7 @@ interface Props {
 type OutcomeType = "renewed_same_insurer" | "renewed_different_insurer" | "lapsed" | "cancelled"
 
 export function RenewalsClient({ initialRenewals, stats }: Props) {
-    const { language } = useLanguage()
+    const { language, t: gt } = useLanguage()
     const t = copy[language === "el" ? "el" : "en"]
     const router = useRouter()
 
@@ -340,11 +340,15 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                             }
                         />
                     ) : (
-                        <div className="arc-card p-12 text-center">
-                            <CalendarClock className="w-12 h-12 text-neutral-300 dark:text-neutral-600 mx-auto mb-4" />
-                            <h3 className="text-lg font-bold text-neutral-700 dark:text-neutral-300 mb-1">{t.noRenewals}</h3>
-                            <p className="text-sm text-muted-foreground">{t.noRenewalsDesc}</p>
-                        </div>
+                        <EmptyState
+                            icon={Filter}
+                            headline={t.noRenewals}
+                            description={t.noRenewalsDesc}
+                            cta={{
+                                label: gt.emptyStates.clearFilters,
+                                onClick: () => handleFilterChange("all", "all"),
+                            }}
+                        />
                     )
                 ) : (
                     <div className="arc-card overflow-hidden">

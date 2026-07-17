@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { EmptyState } from "@/components/ui/EmptyState"
 import {
     Users, UserPlus, Crown, Shield, User, ArrowRightLeft,
     TrendingUp, Euro, Briefcase, Building2, MoreVertical,
@@ -53,6 +54,7 @@ const copy = {
         value: "Value",
         lob: "LoB",
         noOpps: "No opportunities in the pipeline yet.",
+        noOppsDesc: "Opportunities appear here as your team logs cross-sell and coverage prospects for shared clients.",
         transfer: "Transfer",
         transferCustomer: "Transfer Customer",
         transferTo: "Transfer to",
@@ -98,6 +100,7 @@ const copy = {
         value: "Αξία",
         lob: "Κλάδος",
         noOpps: "Δεν υπάρχουν ευκαιρίες ακόμα.",
+        noOppsDesc: "Οι ευκαιρίες εμφανίζονται εδώ καθώς η ομάδα σας καταγράφει προοπτικές cross-sell και κάλυψης για κοινούς πελάτες.",
         transfer: "Μεταφορά",
         transferCustomer: "Μεταφορά Πελάτη",
         transferTo: "Μεταφορά σε",
@@ -412,9 +415,12 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
             </h3>
 
             {pipeline.length === 0 ? (
-                <div className="py-12 text-center">
-                    <p className="text-sm text-neutral-400">{t.noOpps}</p>
-                </div>
+                <EmptyState
+                    className="!border-0 !bg-transparent !shadow-none dark:!bg-transparent"
+                    icon={TrendingUp}
+                    headline={t.noOpps}
+                    description={t.noOppsDesc}
+                />
             ) : (
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">

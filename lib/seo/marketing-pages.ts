@@ -112,7 +112,7 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         en: {
             title: "AI software for insurance agents",
             description:
-                "Client portfolio oversight, AI coverage-gap analysis, an opportunity pipeline and renewal reminders for insurance agents and agencies. See how PolicyWallet works.",
+                "Client portfolio oversight, AI coverage-gap analysis, opportunity pipeline and renewal reminders for insurance agents and agencies. See how PolicyWallet works.",
             breadcrumb: "For Agents",
         },
     },

@@ -4,6 +4,7 @@ import React from "react"
 import { Shield, AlertTriangle, Users, Plus, Calendar, ArrowUpRight } from "lucide-react"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { BrandActionButton } from "@/components/ui/brand/BrandActionButton"
+import { EmptyState } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getHealthScoreColor } from "@/lib/agent/health-score"
 import { formatDateGreek } from "@/lib/agent/format"
@@ -84,13 +85,12 @@ export function ClientOverviewTab({
                         </h3>
                     </div>
                     {activePolicies.length === 0 ? (
-                        <div className="py-8 text-center">
-                            <p className="text-sm text-neutral-500">
-                                {language === "el"
-                                    ? "Δεν υπάρχουν ενεργά ασφαλιστήρια ακόμα."
-                                    : "No active policies yet."}
-                            </p>
-                        </div>
+                        <EmptyState
+                            className="!border-0 !bg-transparent !shadow-none dark:!bg-transparent"
+                            icon={Shield}
+                            headline={t.emptyStates.overviewPolicies.headline}
+                            description={t.emptyStates.overviewPolicies.description}
+                        />
                     ) : (
                         <div className="space-y-2">
                             {activePolicies.map((policy) => (

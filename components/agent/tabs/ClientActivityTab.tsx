@@ -13,6 +13,7 @@ import {
     Shield,
 } from "lucide-react"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
+import { EmptyState } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { formatRelativeDate } from "@/lib/agent/format"
 import type { Interaction, Customer } from "../types"
@@ -51,23 +52,11 @@ export function ClientActivityTab({ interactions, customer }: ClientActivityTabP
 
     if (interactions.length === 0) {
         return (
-            <BrandCard className="p-8">
-                <div className="flex flex-col items-center text-center">
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-                        <Clock className="h-5 w-5 text-neutral-500" />
-                    </div>
-                    <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                        {language === "el"
-                            ? "Δεν υπάρχει δραστηριότητα ακόμα"
-                            : "No activity yet"}
-                    </p>
-                    <p className="mt-1 text-xs text-neutral-500">
-                        {language === "el"
-                            ? "Ξεκινήστε αλληλεπιδρώντας με τον πελάτη"
-                            : "Start by interacting with this client"}
-                    </p>
-                </div>
-            </BrandCard>
+            <EmptyState
+                icon={Clock}
+                headline={t.emptyStates.clientActivity.headline}
+                description={t.emptyStates.clientActivity.description}
+            />
         )
     }
 

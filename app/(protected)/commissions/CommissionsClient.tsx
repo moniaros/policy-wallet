@@ -1,6 +1,7 @@
 "use client"
 
 import { Euro, TrendingUp, Briefcase, BarChart3 } from "lucide-react"
+import { EmptyState } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
 import type { CommissionSummary } from "./actions"
 
@@ -105,10 +106,12 @@ export function CommissionsClient({ data }: Props) {
                         </h3>
 
                         {data.byLob.length === 0 ? (
-                            <div className="py-12 text-center">
-                                <p className="text-sm text-neutral-400">{t.noData}</p>
-                                <p className="text-xs text-neutral-400 mt-1">{t.noDataDesc}</p>
-                            </div>
+                            <EmptyState
+                                className="!border-0 !bg-transparent !shadow-none dark:!bg-transparent"
+                                icon={Briefcase}
+                                headline={t.noData}
+                                description={t.noDataDesc}
+                            />
                         ) : (
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
@@ -152,6 +155,14 @@ export function CommissionsClient({ data }: Props) {
                             {t.monthlyTrend}
                         </h3>
 
+                        {data.monthlyTrend.length === 0 ? (
+                            <EmptyState
+                                className="!border-0 !bg-transparent !shadow-none dark:!bg-transparent"
+                                icon={BarChart3}
+                                headline={t.noData}
+                                description={t.noDataDesc}
+                            />
+                        ) : (
                         <div className="space-y-3">
                             {data.monthlyTrend.map((m) => {
                                 const wonPct = maxBar > 0 ? (m.won / maxBar) * 100 : 0
@@ -185,6 +196,7 @@ export function CommissionsClient({ data }: Props) {
                                 )
                             })}
                         </div>
+                        )}
 
                         <div className="flex items-center gap-6 mt-5 pt-4 border-t border-neutral-100 dark:border-neutral-800">
                             <div className="flex items-center gap-2">

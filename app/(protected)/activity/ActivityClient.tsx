@@ -19,6 +19,7 @@ import {
 import type { ActivityEvent, ActivityCategory } from "./actions"
 import Link from "next/link"
 
+import { EmptyState } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
 
 interface ActivityClientProps {
@@ -152,19 +153,12 @@ export function ActivityClient({ events }: ActivityClientProps) {
             {/* ── Feed Timeline ── */}
             <div className="max-w-[800px] mx-auto px-4 sm:px-6 pt-10">
                 {filteredEvents.length === 0 ? (
-                    <motion.div 
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="py-16 text-center arc-card"
-                    >
-                        <Clock className="w-12 h-12 mx-auto text-neutral-300 dark:text-neutral-700 mb-4" />
-                        <h3 className="text-lg font-bold text-foreground">
-                            {t.activity.emptyTitle}
-                        </h3>
-                        <p className="text-muted-foreground mt-2">
-                            {t.activity.emptyDesc}
-                        </p>
-                    </motion.div>
+                    <EmptyState
+                        icon={Clock}
+                        headline={t.activity.emptyTitle}
+                        description={t.activity.emptyDesc}
+                        cta={{ label: t.emptyStates.viewClients, href: "/customers" }}
+                    />
                 ) : (
                     <div className="relative">
                         {/* Vertical line connecting timeline */}

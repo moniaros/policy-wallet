@@ -4,6 +4,7 @@ import React, { useState } from "react"
 import { Shield, Calendar, RefreshCw, TrendingUp, Eye, EyeOff, Filter, Plus } from "lucide-react"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { BrandActionButton } from "@/components/ui/brand/BrandActionButton"
+import { EmptyState, PolicyPreviewRow } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { formatCurrencyCompact, formatCurrencyFull, formatDateGreek } from "@/lib/agent/format"
 import type { Policy } from "../types"
@@ -26,8 +27,6 @@ const LOB_LABELS: Record<string, { en: string; el: string }> = {
 }
 
 const TAB_COPY = {
-    noPolicies: { el: "Δεν υπάρχουν ασφαλιστήρια ακόμα", en: "No policies linked yet" },
-    addPolicy: { el: "Προσθήκη Ασφαλιστηρίου", en: "Add Policy" },
     allTypes: { el: "Όλοι οι τύποι", en: "All types" },
     allStatuses: { el: "Όλες οι καταστάσεις", en: "All statuses" },
     commission: { el: "Προμήθειες", en: "Commission" },
@@ -68,7 +67,7 @@ export function ClientPoliciesTab({
     onRenewPolicy,
     onUploadPolicy,
 }: ClientPoliciesTabProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
     const [showCommission, setShowCommission] = useState(false)
     const [filterLob, setFilterLob] = useState<string | null>(null)
     const [filterStatus, setFilterStatus] = useState<string | null>(null)
@@ -84,22 +83,20 @@ export function ClientPoliciesTab({
 
     if (policies.length === 0) {
         return (
-            <BrandCard className="p-8">
-                <div className="flex flex-col items-center text-center">
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
-                        <Shield className="h-5 w-5 text-primary dark:text-mint" />
-                    </div>
-                    <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                        {TAB_COPY.noPolicies[language]}
-                    </p>
-                    {onUploadPolicy && (
-                        <BrandActionButton onClick={onUploadPolicy} className="mt-4 text-sm">
-                            <Plus className="h-4 w-4" />
-                            {TAB_COPY.addPolicy[language]}
-                        </BrandActionButton>
-                    )}
-                </div>
-            </BrandCard>
+            <EmptyState
+                icon={Shield}
+                headline={t.emptyStates.clientPolicies.headline}
+                description={t.emptyStates.clientPolicies.description}
+                cta={onUploadPolicy ? { label: t.emptyStates.clientPolicies.cta, onClick: onUploadPolicy } : undefined}
+                previewLabel={t.emptyStates.example}
+                preview={
+                    <PolicyPreviewRow
+                        name={t.emptyStates.clientPolicies.exampleName}
+                        meta={t.emptyStates.clientPolicies.exampleMeta}
+                        statusLabel={t.emptyStates.clientPolicies.exampleStatus}
+                    />
+                }
+            />
         )
     }
 

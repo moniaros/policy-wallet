@@ -2,8 +2,7 @@
 
 import React from "react"
 import { ChevronRight, Shield, Clock, UserPlus, AlertTriangle } from "lucide-react"
-import { BrandCard } from "@/components/ui/brand/BrandCard"
-import { BrandActionButton } from "@/components/ui/brand/BrandActionButton"
+import { EmptyState, CustomerPreviewRow } from "@/components/ui/EmptyState"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getHealthScoreDotColor } from "@/lib/agent/health-score"
@@ -121,32 +120,20 @@ export function ClientListGrouped({ clients, onClientClick, onInviteClient, isLo
 
     if (allEmpty) {
         return (
-            <BrandCard className="p-8">
-                <div className="flex flex-col items-center text-center">
-                    <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
-                        <UserPlus className="h-5 w-5 text-primary dark:text-mint" />
-                    </div>
-                    <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                        {language === "el"
-                            ? "Προσκαλέστε τον πρώτο σας πελάτη"
-                            : "Invite your first client"}
-                    </p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                        {language === "el"
-                            ? "Ξεκινήστε να χτίζετε το χαρτοφυλάκιό σας"
-                            : "Start building your portfolio"}
-                    </p>
-                    {onInviteClient && (
-                        <BrandActionButton
-                            onClick={onInviteClient}
-                            className="mt-4 text-sm"
-                        >
-                            <UserPlus className="h-4 w-4" />
-                            {t.agentUi.inviteClient}
-                        </BrandActionButton>
-                    )}
-                </div>
-            </BrandCard>
+            <EmptyState
+                icon={UserPlus}
+                headline={t.emptyStates.clients.headline}
+                description={t.emptyStates.clients.description}
+                cta={onInviteClient ? { label: t.agentUi.inviteClient, onClick: onInviteClient } : undefined}
+                previewLabel={t.emptyStates.example}
+                preview={
+                    <CustomerPreviewRow
+                        name={t.emptyStates.clients.exampleName}
+                        meta={t.emptyStates.clients.exampleMeta}
+                        initial={t.emptyStates.clients.exampleName.charAt(0)}
+                    />
+                }
+            />
         )
     }
 

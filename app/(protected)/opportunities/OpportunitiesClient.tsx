@@ -1,7 +1,9 @@
 "use client"
 
 import { useState } from "react"
+import { Target } from "lucide-react"
 import { OpportunityUpdateModal } from "@/components/agent/OpportunityUpdateModal"
+import { EmptyState, RecommendationPreviewCard } from "@/components/ui/EmptyState"
 import { updateOpportunityStatus } from "../agent/actions"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -104,6 +106,24 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                 </div>
 
                 {/* Opportunities Table */}
+                {filteredOpportunities.length === 0 ? (
+                    <EmptyState
+                        icon={Target}
+                        headline={filter === 'all' ? t.emptyStates.opportunities.headline : t.emptyStates.opportunities.filteredHeadline}
+                        description={filter === 'all' ? opp_t.emptyAll : opp_t.emptyFiltered.replace('{status}', statusLabel(filter))}
+                        cta={filter === 'all'
+                            ? { label: t.emptyStates.viewClients, href: '/customers' }
+                            : { label: t.emptyStates.clearFilters, onClick: () => setFilter('all') }}
+                        previewLabel={filter === 'all' ? t.emptyStates.example : undefined}
+                        preview={filter === 'all' ? (
+                            <RecommendationPreviewCard
+                                title={t.emptyStates.opportunities.exampleTitle}
+                                meta={t.emptyStates.opportunities.exampleMeta}
+                                urgencyLabel={t.emptyStates.opportunities.exampleUrgency}
+                            />
+                        ) : undefined}
+                    />
+                ) : (
                 <div className="arc-card overflow-hidden border-t-4 border-t-primary">
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
@@ -118,24 +138,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/50">
-                                {filteredOpportunities.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={6} className="px-6 py-20 text-center">
-                                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-muted text-neutral-400 mb-4">
-                                                <svg className="w-8 h-8 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                            </div>
-                                            <p className="text-muted-foreground font-medium tracking-tight">
-                                                {filter === 'all'
-                                                    ? opp_t.emptyAll
-                                                    : opp_t.emptyFiltered.replace('{status}', statusLabel(filter))
-                                                }
-                                            </p>
-                                        </td>
-                                    </tr>
-                                ) : (
-                                    filteredOpportunities.map((opp) => (
+                                {filteredOpportunities.map((opp) => (
                                         <tr key={opp.id} className="hover:bg-neutral-50/80 dark:hover:bg-neutral-800/30 transition-colors group">
                                             <td className="px-6 py-6 pl-8">
                                                 <div className="font-bold text-foreground capitalize tracking-tight">{opp.customerName}</div>
@@ -202,12 +205,12 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                 </div>
                                             </td>
                                         </tr>
-                                    ))
-                                )}
+                                    ))}
                             </tbody>
                         </table>
                     </div>
                 </div>
+                )}
             </div>
 
             {/* Update Modal */}

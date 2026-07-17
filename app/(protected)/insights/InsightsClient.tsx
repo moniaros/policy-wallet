@@ -19,6 +19,7 @@ import {
 import Link from "next/link"
 import type { InsightsData } from "./actions"
 
+import { EmptyState } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
 
 interface InsightsClientProps {
@@ -307,9 +308,12 @@ export function InsightsClient({ data }: InsightsClientProps) {
                             {p.premiumBreakdown}
                         </h2>
                         {data.policyBreakdown.length === 0 ? (
-                            <div className="py-12 text-center text-sm text-neutral-400">
-                                {p.noData}
-                            </div>
+                            <EmptyState
+                                className="!border-0 !bg-transparent !shadow-none dark:!bg-transparent"
+                                icon={BarChart3}
+                                headline={p.noData}
+                                description={t.emptyStates.insights.premiumBreakdownDesc}
+                            />
                         ) : (
                             <div className="space-y-4">
                                 {data.policyBreakdown.map((item) => {
@@ -360,9 +364,12 @@ export function InsightsClient({ data }: InsightsClientProps) {
                         </p>
 
                         {data.opportunityMetrics.total === 0 ? (
-                            <div className="py-12 text-center text-sm text-neutral-400">
-                                {p.noOpportunities}
-                            </div>
+                            <EmptyState
+                                className="!border-0 !bg-transparent !shadow-none dark:!bg-transparent"
+                                icon={Target}
+                                headline={p.noOpportunities}
+                                description={t.emptyStates.insights.opportunitiesDesc}
+                            />
                         ) : (
                             <div className="space-y-3.5">
                                 {funnel.map((stage, i) => (
@@ -400,12 +407,12 @@ export function InsightsClient({ data }: InsightsClientProps) {
                         </p>
 
                         {data.renewalTimeline.length === 0 ? (
-                            <div className="py-12 text-center">
-                                <CheckCircle2 className="w-10 h-10 text-[#22C55E] mx-auto mb-3" />
-                                <p className="text-sm font-bold text-neutral-700 dark:text-neutral-300">
-                                    {p.noUpcomingRenewals}
-                                </p>
-                            </div>
+                            <EmptyState
+                                className="!border-0 !bg-transparent !shadow-none dark:!bg-transparent"
+                                icon={CheckCircle2}
+                                headline={p.noUpcomingRenewals}
+                                description={t.emptyStates.insights.renewalsDesc}
+                            />
                         ) : (
                             <div className="space-y-2.5 max-h-[340px] overflow-y-auto pr-1 custom-scrollbar">
                                 {data.renewalTimeline.slice(0, 15).map((item) => {
@@ -494,15 +501,12 @@ export function InsightsClient({ data }: InsightsClientProps) {
                     </p>
 
                     {data.recentGaps.length === 0 ? (
-                        <div className="py-12 text-center">
-                            <CheckCircle2 className="w-10 h-10 text-[#22C55E] mx-auto mb-3" />
-                            <p className="text-sm font-bold text-neutral-700 dark:text-neutral-300">
-                                {p.noGaps}
-                            </p>
-                            <p className="text-xs text-neutral-400 mt-1">
-                                {p.wellCovered}
-                            </p>
-                        </div>
+                        <EmptyState
+                            className="!border-0 !bg-transparent !shadow-none dark:!bg-transparent"
+                            icon={CheckCircle2}
+                            headline={p.noGaps}
+                            description={p.wellCovered}
+                        />
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
                             {data.recentGaps.map((gap) => {
