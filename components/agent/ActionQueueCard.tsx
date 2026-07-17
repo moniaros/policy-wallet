@@ -13,7 +13,7 @@ import {
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { formatRelativeDate } from "@/lib/agent/format"
+import { formatRelativeDate, formatCurrencyCompact } from "@/lib/agent/format"
 import type { ActionQueueItem, ActionQueueItemType, GapsSummary, OneTapAction } from "./types"
 
 const ACTION_ICONS: Record<ActionQueueItemType, React.ElementType> = {
@@ -36,6 +36,8 @@ function getUrgencyStyles(urgency: "low" | "medium" | "high") {
 
 interface ActionQueueCardProps {
     items: ActionQueueItem[]
+    /** Total agent commission at stake across the queue ("€X in renewals at risk"). */
+    revenueAtRisk?: number
     onAction: (item: ActionQueueItem) => void
     onViewAll?: () => void
     onGapClientClick?: (clientId: string) => void
@@ -48,7 +50,7 @@ interface ActionQueueCardProps {
     onInviteClient?: () => void
 }
 
-export function ActionQueueCard({ items, onAction, onViewAll, onGapClientClick, isLoading, gapsSummary, hasClients = false, onInviteClient }: ActionQueueCardProps) {
+export function ActionQueueCard({ items, revenueAtRisk, onAction, onViewAll, onGapClientClick, isLoading, gapsSummary, hasClients = false, onInviteClient }: ActionQueueCardProps) {
     const { language, t } = useLanguage()
 
     if (isLoading) return <ActionQueueCardSkeleton />
@@ -59,22 +61,29 @@ export function ActionQueueCard({ items, onAction, onViewAll, onGapClientClick, 
     return (
         <BrandCard className="p-5">
             {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                    <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-                    <h2 className="text-base font-bold text-foreground">
-                        {t.agentUi.actionQueue}
-                    </h2>
-                    {totalCount > 0 && (
-                        <span className="ml-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-red-600 px-1.5 text-xs font-bold text-white">
-                            {totalCount}
+            <div className="mb-4">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                        <h2 className="text-base font-bold text-foreground">
+                            {t.agentUi.actionQueue}
+                        </h2>
+                        {totalCount > 0 && (
+                            <span className="ml-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-red-600 px-1.5 text-xs font-bold text-white">
+                                {totalCount}
+                            </span>
+                        )}
+                    </div>
+                    {urgentCount > 0 && (
+                        <span className="text-xs font-medium text-red-600 dark:text-red-400">
+                            {urgentCount} {t.agentUi.urgent}
                         </span>
                     )}
                 </div>
-                {urgentCount > 0 && (
-                    <span className="text-xs font-medium text-red-600 dark:text-red-400">
-                        {urgentCount} {t.agentUi.urgent}
-                    </span>
+                {revenueAtRisk !== undefined && revenueAtRisk > 0 && (
+                    <p className="mt-1 text-xs font-semibold text-amber-700 dark:text-amber-400">
+                        {formatCurrencyCompact(revenueAtRisk, language)} {t.agentDashboard.inRenewalsAtRisk}
+                    </p>
                 )}
             </div>
 

@@ -4,7 +4,6 @@ import React from "react"
 import {
     Briefcase,
     Users,
-    Clock,
     Calendar,
     CheckCircle2,
     AlertCircle,
@@ -23,6 +22,8 @@ import { RevenuePulse } from "./RevenuePulse"
 import { PortfolioHealth } from "./PortfolioHealth"
 import { ClientListGrouped } from "./ClientCard"
 import { AgentPlanGate } from "./AgentPlanGate"
+import { PendingTasksCard } from "./PendingTasksCard"
+import { CrossSellCard } from "./CrossSellCard"
 import type {
     ActionQueueItem,
     RevenueMetrics,
@@ -41,7 +42,6 @@ const DASH_COPY = {
     quickClient: { el: "Πελάτης", en: "Client" },
     quickPolicy: { el: "Ασφαλιστήριο", en: "Policy" },
     quickRequest: { el: "Αίτημα", en: "Request" },
-    action: { el: "Δράση", en: "Action" },
 } as const
 
 const pick = (pair: { el: string; en: string }, language: string) =>
@@ -143,6 +143,7 @@ export function DesktopDashboard({
                     <div className="lg:col-span-7">
                         <ActionQueueCard
                             items={data.actionQueue}
+                            revenueAtRisk={data.revenueAtRiskTotal}
                             onAction={onActionQueueItem}
                             isLoading={isLoading}
                             gapsSummary={data.gapsSummary}
@@ -175,11 +176,7 @@ export function DesktopDashboard({
                         />
                     </div>
                     <div className="lg:col-span-7">
-                        <TodaysFollowUps
-                            items={data.todaysFollowUps}
-                            language={language}
-                            onAction={onActionQueueItem}
-                        />
+                        <PendingTasksCard items={data.pendingTasks} />
                     </div>
                 </div>
 
@@ -203,6 +200,20 @@ export function DesktopDashboard({
                     </div>
 
                     <div className="lg:col-span-4 space-y-5">
+                        {/* Cross-sell opportunities (Pro+). Data is withheld
+                            server-side for below-Pro tiers; the gate blurs the
+                            empty card and shows the upgrade prompt. */}
+                        <AgentPlanGate
+                            currentTier={agentTier}
+                            requiredTier="agent_pro"
+                            featureLabel={t.agentDashboard.crossSell}
+                        >
+                            <CrossSellCard
+                                items={data.crossSellOpportunities}
+                                onClientClick={onClientClick}
+                            />
+                        </AgentPlanGate>
+
                         {/* Activity Feed */}
                         <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-5">
                             <h2 className="text-base font-bold text-foreground mb-4 flex items-center gap-2">
@@ -277,66 +288,6 @@ export function DesktopDashboard({
                     </div>
                 </div>
             </div>
-        </div>
-    )
-}
-
-// ── Today's Follow-ups sub-component ──────────────────────────────────
-
-function TodaysFollowUps({
-    items,
-    language,
-    onAction,
-}: {
-    items: ActionQueueItem[]
-    language: string
-    onAction: (item: ActionQueueItem) => void
-}) {
-    return (
-        <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-5">
-            <div className="flex items-center gap-2 mb-4">
-                <Calendar className="h-5 w-5 text-primary dark:text-mint" />
-                <h2 className="text-base font-bold text-foreground">
-                    {language === "el" ? "Σημερινά Follow-ups" : "Today's Follow-ups"}
-                </h2>
-                {items.length > 0 && (
-                    <span className="text-xs text-neutral-400 ml-1">({items.length})</span>
-                )}
-            </div>
-            {items.length === 0 ? (
-                <div className="flex flex-col items-center py-6 text-center">
-                    <CheckCircle2 className="h-8 w-8 text-[#22C55E] mb-2" />
-                    <p className="text-sm text-muted-foreground">
-                        {language === "el"
-                            ? "Κανένα follow-up για σήμερα"
-                            : "No follow-ups scheduled for today"}
-                    </p>
-                </div>
-            ) : (
-                <div className="space-y-2">
-                    {items.map((item) => (
-                        <div
-                            key={item.id}
-                            className="flex items-center gap-3 rounded-xl border border-neutral-200/60 dark:border-neutral-700/60 bg-neutral-50/50 dark:bg-neutral-800/50 p-3"
-                        >
-                            <Clock className="h-4 w-4 text-primary dark:text-mint shrink-0" />
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-foreground truncate">
-                                    {item.clientName}
-                                </p>
-                                <p className="text-xs text-neutral-500 truncate">{item.description}</p>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={() => onAction(item)}
-                                className="shrink-0 rounded-lg bg-primary-soft dark:bg-primary/15 px-3 py-1.5 text-xs font-semibold text-primary dark:text-mint transition hover:bg-primary/20 dark:hover:bg-primary/25 cursor-pointer"
-                            >
-                                {pick(DASH_COPY.action, language)}
-                            </button>
-                        </div>
-                    ))}
-                </div>
-            )}
         </div>
     )
 }

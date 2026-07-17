@@ -9,13 +9,13 @@ import { resolveAgentEntitlements } from "@/lib/subscription-entitlements"
 import { computeClientHealthScore } from "@/lib/agent/health-score"
 import { classifyUrgencyTier } from "@/lib/agent/format"
 import { db as prisma } from "@/lib/db"
-import { computeAgentBookRevenue } from "@/lib/agent/revenue"
+import { computeAgentBookRevenue, MAX_PLAUSIBLE_ANNUAL_PREMIUM } from "@/lib/agent/revenue"
 import { commissionOn } from "@/lib/agent/commission"
 import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
 import { resolvePolicyLifecycle } from "@/lib/policy-status"
 import { getAgentPortalData } from "@/lib/services/agent-portal.service"
 import { getAgentPolicyVisibilityWhere } from "@/lib/agent-visibility"
-import type { AgentDashboardData, ActionQueueItem, ClientCardData, GapsSummary } from "@/components/agent/types"
+import type { AgentDashboardData, ActionQueueItem, ClientCardData, GapsSummary, CrossSellOpportunityItem, AgentTaskItem } from "@/components/agent/types"
 
 export default async function DashboardPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -35,8 +35,15 @@ export default async function DashboardPage() {
     const agentEntitlements = await resolveAgentEntitlements(agentId)
     const agentTier = agentEntitlements.tier
 
+    // Day boundaries for the agent's own pending-task widget (due today +
+    // overdue). Computed here so the task query can join the parallel batch.
+    const startOfToday = new Date()
+    startOfToday.setHours(0, 0, 0, 0)
+    const endOfToday = new Date()
+    endOfToday.setHours(23, 59, 59, 999)
+
     // Fetch policies and customers
-    const [policies, relationships, opportunities, agentProfile, analysisRunCount] = await Promise.all([
+    const [policies, relationships, opportunities, agentProfile, analysisRunCount, agentTasks] = await Promise.all([
         prisma.policy.findMany({
             where: { createdByUserId: agentId },
             // policyNumber/insurerName/acordData feed resolvePolicyLifecycle — the
@@ -61,7 +68,17 @@ export default async function DashboardPage() {
         }),
         prisma.opportunity.findMany({
             where: { ownerAgentUserId: agentId },
-            select: { status: true, estimatedPremium: true, estimatedCommission: true, wonPremium: true, lineOfBusiness: true },
+            // customer name/id (via the relationship) feeds the cross-sell widget;
+            // the money/lob fields feed both commissionPipeline and cross-sell.
+            select: {
+                id: true,
+                status: true,
+                estimatedPremium: true,
+                estimatedCommission: true,
+                wonPremium: true,
+                lineOfBusiness: true,
+                relationship: { select: { customer: { select: { id: true, name: true } } } },
+            },
         }),
         // commissionRates feeds Revenue Pulse; the other fields drive the
         // getting-started checklist's profile/license/commission signals.
@@ -81,6 +98,14 @@ export default async function DashboardPage() {
         // the same signal the analysis-quota gate counts, covering both their own
         // uploads and grant-shared customer policies).
         prisma.policyAnalysisRun.count({ where: { userId: agentId } }),
+        // The agent's OWN pending tasks that are due today or overdue
+        // (userTask.userId === agentId). Bounded to the soonest 5.
+        prisma.userTask.findMany({
+            where: { userId: agentId, status: "pending", dueDate: { lte: endOfToday } },
+            orderBy: { dueDate: "asc" },
+            take: 5,
+            select: { id: true, title: true, dueDate: true, priority: true },
+        }),
     ])
 
     // Real per-line commission rates the agent configured on /commissions — the
@@ -116,6 +141,32 @@ export default async function DashboardPage() {
     const commissionPipeline = opportunities
         .filter((o) => o.status !== "won" && o.status !== "lost")
         .reduce((sum, o) => sum + Number(o.estimatedCommission ?? commissionOn(commissionRates, o.lineOfBusiness, Number(o.estimatedPremium ?? 0))), 0)
+
+    // ── Cross-sell opportunities (Pro+) ────────────────────────────
+    // Read the ALREADY-PERSISTED cross-sell opportunity rows — never re-run the
+    // bulk cross-sell engine on a dashboard load (that re-analyses every
+    // customer). Cross-sell rows are the only opportunities the system prices
+    // (estimatedCommission set); gap-request opportunities carry none, so a
+    // positive estimatedCommission on an open/contacted row cleanly isolates
+    // them. Server-gated on crossSellIntelligence: below-Pro agents get an empty
+    // list (no data to un-blur), mirroring the pipelineAnalytics gate below.
+    const crossSellOpportunities: CrossSellOpportunityItem[] = agentEntitlements.limits.crossSellIntelligence
+        ? opportunities
+            .filter((o) =>
+                (o.status === "open" || o.status === "contacted") &&
+                Boolean(o.lineOfBusiness) &&
+                Number(o.estimatedCommission ?? 0) > 0
+            )
+            .map((o) => ({
+                id: o.id,
+                customerId: o.relationship?.customer?.id ?? "",
+                customerName: o.relationship?.customer?.name || "Client",
+                lineOfBusiness: o.lineOfBusiness as string,
+                estimatedCommission: Number(o.estimatedCommission ?? 0),
+            }))
+            .sort((a, b) => b.estimatedCommission - a.estimatedCommission)
+            .slice(0, 5)
+        : []
 
     // Estimated MONTHLY commission income from the in-force book (deduped +
     // guarded above) — the agent's actual recurring revenue, not premium / 12.
@@ -158,6 +209,14 @@ export default async function DashboardPage() {
         if (endDate >= now && endDate <= thirtyDaysFromNow) {
             const ownerRel = relByPolicyholder.get(policy.ownerUserId)
             const lobLabel = policy.lineOfBusiness || "Policy"
+            // Commission at stake if this renewal lapses = renewal premium ×
+            // the agent's per-line rate. Guard mis-extractions (a sum-insured
+            // captured as premium) the same way the book-revenue figure does —
+            // an implausible premium yields no revenue-at-risk, not a bogus one.
+            const premium = Number(policy.premiumAmount ?? 0)
+            const revenueAtRisk = Number.isFinite(premium) && premium > 0 && premium <= MAX_PLAUSIBLE_ANNUAL_PREMIUM
+                ? commissionOn(commissionRates, policy.lineOfBusiness, premium)
+                : undefined
             actionQueue.push({
                 id: `expiring-${policy.id}`,
                 type: "expiring_policy",
@@ -168,6 +227,7 @@ export default async function DashboardPage() {
                 urgency: (endDate.getTime() - now.getTime()) < 7 * 86_400_000 ? "high" : "medium",
                 oneTapAction: "renew",
                 policyId: policy.id,
+                revenueAtRisk,
             })
         }
     }
@@ -189,9 +249,20 @@ export default async function DashboardPage() {
         }
     }
 
-    // Sort by urgency
+    // Composite sort: urgency tier first (keep the "act now" ordering
+    // interpretable), then revenue-at-risk descending WITHIN a tier so the
+    // high-urgency-high-commission renewals rise to the top. Items with no
+    // revenue-at-risk (incomplete profiles) fall to the back of their tier.
     const urgencyOrder = { high: 0, medium: 1, low: 2 }
-    actionQueue.sort((a, b) => urgencyOrder[a.urgency] - urgencyOrder[b.urgency])
+    actionQueue.sort((a, b) => {
+        const tier = urgencyOrder[a.urgency] - urgencyOrder[b.urgency]
+        if (tier !== 0) return tier
+        return (b.revenueAtRisk ?? 0) - (a.revenueAtRisk ?? 0)
+    })
+
+    // Total agent commission riding on the queued renewals — surfaced as
+    // "€X in renewals at risk" in the Action Queue header.
+    const revenueAtRiskTotal = actionQueue.reduce((sum, i) => sum + (i.revenueAtRisk ?? 0), 0)
 
     // ── Revenue Metrics ───────────────────────────────────────────
     // The Revenue Pulse card is a paid entitlement (pipelineAnalytics, Starter+).
@@ -312,11 +383,16 @@ export default async function DashboardPage() {
         clientsByUrgency[urgencyTier].push(clientCard)
     }
 
-    // ── Today's Follow-ups ────────────────────────────────────────
-    const todaysFollowUps = actionQueue.filter((item) => {
-        const due = new Date(item.dueDate)
-        return due.toDateString() === now.toDateString()
-    })
+    // ── Pending tasks (real UserTasks assigned to the agent) ──────
+    // Driven by actual UserTask rows (agent's own, due today or overdue) — not
+    // a re-slice of the synthetic action queue. `overdue` = due before today.
+    const pendingTasks: AgentTaskItem[] = agentTasks.map((task) => ({
+        id: task.id,
+        title: task.title,
+        dueDate: task.dueDate ? task.dueDate.toISOString() : null,
+        overdue: Boolean(task.dueDate && task.dueDate < startOfToday),
+        priority: task.priority === "high" || task.priority === "low" ? task.priority : "medium",
+    }))
 
     // ── Activity Feed ─────────────────────────────────────────────
     const feed = await getActivityFeed(10)
@@ -398,10 +474,12 @@ export default async function DashboardPage() {
 
     const dashboardData: AgentDashboardData = {
         actionQueue,
+        revenueAtRiskTotal,
         revenue,
         portfolioHealth,
         clientsByUrgency,
-        todaysFollowUps,
+        pendingTasks,
+        crossSellOpportunities,
         gapsSummary,
         portalStats,
     }
