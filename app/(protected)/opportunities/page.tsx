@@ -3,6 +3,7 @@ export const runtime = 'nodejs'
 import { db } from "@/lib/db"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { OpportunitiesClient } from "./OpportunitiesClient"
+import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 
 export default async function OpportunitiesPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -59,5 +60,13 @@ export default async function OpportunitiesPage() {
         }
     })
 
-    return <OpportunitiesClient initialOpportunities={formattedOpportunities} />
+    return (
+        <>
+            <OpportunitiesClient initialOpportunities={formattedOpportunities} />
+            {/* Opportunities are generated from AI gap detection — informational. */}
+            <div className="mx-auto max-w-[1200px] px-4 sm:px-6 pb-10">
+                <AiDisclaimer />
+            </div>
+        </>
+    )
 }

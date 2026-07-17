@@ -173,6 +173,27 @@ export class CustomerService extends BaseService {
             relationship.customer.policiesOwned.length
         );
 
+        // GDPR read-access audit: record that this agent viewed this customer's
+        // profile, queryable by targetUserId for a right-of-access report.
+        // Best-effort — the audit log must never fail or block the read.
+        try {
+            const agent = await this.db.user.findUnique({
+                where: { id: agentUserId },
+                select: { email: true },
+            });
+            await this.db.activityLog.create({
+                data: {
+                    adminUserId: agentUserId,
+                    adminEmail: agent?.email ?? "",
+                    actionType: "AGENT_VIEWED_CUSTOMER",
+                    description: "Agent viewed customer profile",
+                    targetUserId: customerId,
+                },
+            });
+        } catch {
+            // audit log is best-effort; never let it break a read
+        }
+
         return {
             customer: {
                 id: relationship.customer.id,
