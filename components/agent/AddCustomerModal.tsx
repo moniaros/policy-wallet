@@ -3,6 +3,7 @@
 import React, { useState, useRef } from 'react'
 import { addCustomerManually, parsePolicyPdfWithGemini } from '@/app/(protected)/agent/actions'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useDialog } from '@/hooks/useDialog'
 
 interface Props {
     isOpen: boolean
@@ -14,6 +15,7 @@ type View = 'choice' | 'manual' | 'pdf' | 'parsing' | 'success'
 
 export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
     const { t } = useLanguage()
+    const dialogRef = useDialog<HTMLDivElement>(onClose, isOpen)
     const [view, setView] = useState<View>('choice')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -127,7 +129,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={() => { reset(); onClose(); }} />
 
-            <div className="relative w-full max-w-2xl bg-white dark:bg-stone-900 rounded-[48px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="add-customer-title" tabIndex={-1} className="relative w-full max-w-2xl bg-white dark:bg-stone-900 rounded-[48px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
                 <div className="p-12">
                     {view === 'choice' && (
                         <div className="space-y-10">
@@ -138,7 +140,7 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     </div>
                                     <span className="text-[10px] font-black uppercase tracking-[0.2em]">{t.agentModals.addCustomer.kicker}</span>
                                 </div>
-                                <h2 className="text-3xl font-black text-stone-900 dark:text-white tracking-tighter mb-2">{t.agentModals.addCustomer.title} <span className="text-stone-400 dark:text-stone-500 italic">{t.agentModals.addCustomer.titleAccent}</span></h2>
+                                <h2 id="add-customer-title" className="text-3xl font-black text-stone-900 dark:text-white tracking-tighter mb-2">{t.agentModals.addCustomer.title} <span className="text-stone-400 dark:text-stone-500 italic">{t.agentModals.addCustomer.titleAccent}</span></h2>
                                 <p className="text-base text-stone-500 dark:text-stone-400 font-medium text-balance">{t.agentModals.addCustomer.desc}</p>
                             </header>
 

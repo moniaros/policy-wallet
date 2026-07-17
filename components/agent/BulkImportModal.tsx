@@ -4,6 +4,7 @@ import { useState } from "react"
 import * as Sentry from "@sentry/nextjs"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { useDialog } from "@/hooks/useDialog"
 
 interface BulkImportModalProps {
     isOpen: boolean
@@ -22,6 +23,7 @@ interface CustomerRow {
 
 export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalProps) {
     const { t } = useLanguage()
+    const dialogRef = useDialog<HTMLDivElement>(() => handleClose(), isOpen)
     const tt = t.agentModals.bulkImport
     const [step, setStep] = useState<'upload' | 'preview' | 'importing' | 'complete'>('upload')
     const [customers, setCustomers] = useState<CustomerRow[]>([])
@@ -118,12 +120,12 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-stone-800 rounded-2xl shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="bulk-import-title" tabIndex={-1} className="bg-white dark:bg-stone-800 rounded-2xl shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
                 {/* Header */}
                 <div className="border-b border-stone-200 dark:border-stone-700 px-6 py-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="text-2xl font-bold text-stone-900 dark:text-white">
+                            <h2 id="bulk-import-title" className="text-2xl font-bold text-stone-900 dark:text-white">
                                 {tt.title}
                             </h2>
                             <p className="text-sm text-stone-600 dark:text-stone-400 mt-1">
@@ -132,6 +134,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                         </div>
                         <button
                             onClick={handleClose}
+                            aria-label={t.common.close}
                             className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 transition-colors"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

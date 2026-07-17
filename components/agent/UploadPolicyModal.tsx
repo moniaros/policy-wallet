@@ -4,6 +4,7 @@ import React, { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { scanPolicyForResolution, commitScannedPolicy, requestAiConsent } from '@/app/(protected)/agent/actions'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useDialog } from '@/hooks/useDialog'
 import type { CustomerCandidate, CustomerResolution } from '@/lib/services/customer-resolution.service'
 
 interface Props {
@@ -46,6 +47,7 @@ const INPUT_CLASS = 'w-full h-12 px-5 bg-slate-50 dark:bg-slate-800 border-none 
 
 export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId, presetCustomerName }: Props) {
     const { t } = useLanguage()
+    const dialogRef = useDialog<HTMLDivElement>(onClose, isOpen)
     const up = t.agentModals.uploadPolicy
     const ac = t.agentModals.addCustomer
     const router = useRouter()
@@ -203,14 +205,14 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={closeAll} />
 
-            <div className="relative w-full max-w-2xl bg-white dark:bg-stone-900 rounded-[48px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="upload-policy-title" tabIndex={-1} className="relative w-full max-w-2xl bg-white dark:bg-stone-900 rounded-[48px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
                 <div className="p-12">
                     {/* ── UPLOAD ── */}
                     {view === 'upload' && (
                         <div className="space-y-10">
                             <header>
                                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary dark:text-mint">{up.kicker}</span>
-                                <h2 className="text-3xl font-black text-stone-900 dark:text-white tracking-tighter mt-3 mb-2">
+                                <h2 id="upload-policy-title" className="text-3xl font-black text-stone-900 dark:text-white tracking-tighter mt-3 mb-2">
                                     {up.title} <span className="text-stone-400 dark:text-stone-500 italic">{up.titleAccent}</span>
                                 </h2>
                                 <p className="text-base text-stone-500 dark:text-stone-400 font-medium">{up.desc}</p>

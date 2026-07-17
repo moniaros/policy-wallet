@@ -6,6 +6,7 @@ import {
     InviteModalProps
 } from './types'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useDialog } from '@/hooks/useDialog'
 
 export function InviteModal({
     isOpen,
@@ -13,6 +14,7 @@ export function InviteModal({
     onSendInvite
 }: InviteModalProps) {
     const { t } = useLanguage()
+    const dialogRef = useDialog<HTMLDivElement>(() => onClose?.(), isOpen)
     const [email, setEmail] = useState('')
     const [scope, setScope] = useState<AccessScope>('upload_only')
     const [sending, setSending] = useState(false)
@@ -31,7 +33,7 @@ export function InviteModal({
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={onClose} />
 
-            <div className="relative w-full max-w-lg bg-white dark:bg-stone-900 rounded-[48px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="invite-title" tabIndex={-1} className="relative w-full max-w-lg bg-white dark:bg-stone-900 rounded-[48px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
                 <div className="p-12">
                     <header className="mb-10">
                         <div className="flex items-center gap-3 mb-4 text-primary dark:text-mint">
@@ -40,7 +42,7 @@ export function InviteModal({
                             </div>
                             <span className="text-[10px] font-black uppercase tracking-[0.2em]">{t.invite.growthProtocol}</span>
                         </div>
-                        <h2 className="text-3xl font-black text-stone-900 dark:text-white tracking-tighter mb-2">{t.invite.title} <span className="text-stone-400 dark:text-stone-500 italic">{t.invite.subtitle}</span></h2>
+                        <h2 id="invite-title" className="text-3xl font-black text-stone-900 dark:text-white tracking-tighter mb-2">{t.invite.title} <span className="text-stone-400 dark:text-stone-500 italic">{t.invite.subtitle}</span></h2>
                         <p className="text-base text-stone-500 dark:text-stone-400 font-medium">{t.invite.desc}</p>
                     </header>
 
