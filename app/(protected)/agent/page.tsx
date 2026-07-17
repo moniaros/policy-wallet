@@ -6,6 +6,7 @@ import { AgentClient } from "./AgentClient"
 import type { Policy } from "@/components/wallet/types"
 import { redirect } from "next/navigation"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
+import { canAgentUseFeature } from "@/lib/subscription-entitlements"
 
 export default async function AgentPage() {
     const { dbUser } = await getAuthenticatedUser()
@@ -52,14 +53,23 @@ export default async function AgentPage() {
     const agentUser = customerRelationship?.agent
     const agentProfile = agentUser?.agentProfile
 
+    // Custom portal branding (logo + brand color) is a paid entitlement
+    // (brandedPortal, Starter+). Enforce it server-side on the AGENT's tier —
+    // the AgentPlanGate blur was cosmetic, so a free agent's branding still
+    // reached the client. Below-tier agents fall back to default styling +
+    // their personal avatar; name/company/contact stay visible for everyone.
+    const hasBrandedPortal = agentUser
+        ? await canAgentUseFeature(agentUser.id, "brandedPortal")
+        : false
+
     const agent = agentUser ? {
         id: agentUser.id,
         name: agentUser.name || roleCopy.defaults.agentName,
         phone: agentProfile?.phone || agentUser.phoneNumber || '',
         email: agentUser.email,
         company: agentProfile?.agencyName || roleCopy.defaults.agentCompany,
-        photoUrl: agentProfile?.logoUrl || agentUser.image || undefined,
-        branding: agentProfile ? {
+        photoUrl: (hasBrandedPortal ? agentProfile?.logoUrl : undefined) || agentUser.image || undefined,
+        branding: hasBrandedPortal && agentProfile ? {
             agencyName: agentProfile.agencyName,
             licenseNumber: agentProfile.licenseNumber,
             logoUrl: agentProfile.logoUrl,

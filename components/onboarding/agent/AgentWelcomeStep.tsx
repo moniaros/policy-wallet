@@ -17,16 +17,12 @@ export function AgentWelcomeStep({ onNext }: StepProps) {
     const t = (el: string, en: string) => (language === "el" ? el : en)
     const [isLoading, setIsLoading] = useState(false)
     const [agencyName, setAgencyName] = useState("")
-    const [title, setTitle] = useState("")
 
     const handleNext = async () => {
         if (!user?.id) return
 
         setIsLoading(true)
-        const result = await updateAgentProfile({
-            agencyName,
-            // title is not in schema yet, adding just agencyName
-        })
+        const result = await updateAgentProfile({ agencyName })
 
         setIsLoading(false)
         if (result.success) {
@@ -53,20 +49,6 @@ export function AgentWelcomeStep({ onNext }: StepProps) {
             </div>
 
             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-6 shadow-sm space-y-4">
-                <div className="flex gap-4">
-                    <div className="flex-1">
-                        <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
-                            {t("Επαγγελματικός Τίτλος", "Professional Title")}
-                        </label>
-                        <input
-                            type="text"
-                            placeholder={t("π.χ. Ανώτερος Ασφαλιστικός Σύμβουλος", "e.g. Senior Insurance Advisor")}
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:outline-none transition-all"
-                        />
-                    </div>
-                </div>
                 <div className="flex gap-4">
                     <div className="flex-1">
                         <label className="block text-xs font-bold text-slate-500 uppercase mb-1">
