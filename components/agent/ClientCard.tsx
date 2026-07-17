@@ -20,7 +20,7 @@ function getInitials(name: string, surname: string): string {
 }
 
 export function ClientCard({ client, onClick }: ClientCardProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
     const dotColor = getHealthScoreDotColor(client.healthScore)
 
     return (
@@ -45,7 +45,7 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                 {/* Health score dot */}
                 <span
                     className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white dark:border-slate-900 ${dotColor}`}
-                    title={`${language === "el" ? "Βαθμός υγείας" : "Health score"}: ${client.healthScore}`}
+                    title={`${t.agentUi.healthScore}: ${client.healthScore}`}
                 />
             </div>
 
@@ -57,7 +57,7 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                 <div className="flex items-center gap-2 mt-0.5">
                     <span className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
                         <Shield className="h-3 w-3" />
-                        {client.policyCount} {language === "el" ? "ασφ." : "pol."}
+                        {client.policyCount} {t.agentUi.policiesAbbr}
                     </span>
                     {client.nextActionDue && (
                         <span className="flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
@@ -112,7 +112,7 @@ interface ClientListGroupedProps {
 }
 
 export function ClientListGrouped({ clients, onClientClick, onInviteClient, isLoading }: ClientListGroupedProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
 
     if (isLoading) return <ClientListGroupedSkeleton />
 
@@ -142,7 +142,7 @@ export function ClientListGrouped({ clients, onClientClick, onInviteClient, isLo
                             className="mt-4 text-sm"
                         >
                             <UserPlus className="h-4 w-4" />
-                            {language === "el" ? "Πρόσκληση Πελάτη" : "Invite Client"}
+                            {t.agentUi.inviteClient}
                         </BrandActionButton>
                     )}
                 </div>

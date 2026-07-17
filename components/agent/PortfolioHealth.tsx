@@ -45,7 +45,7 @@ function RadialProgress({ value, color, size = 64 }: { value: number; color: str
 }
 
 export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
 
     if (isLoading) return <PortfolioHealthSkeleton />
 
@@ -69,7 +69,7 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
 
     const metrics = [
         {
-            label: language === "el" ? "Κενά Κάλυψης" : "Coverage Gaps",
+            label: t.agentUi.coverageGaps,
             value: health.coverageGapPercent,
             displayValue: `${health.coverageGapPercent}%`,
             color: gapColor,
@@ -79,7 +79,7 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
                 : "of clients have coverage gaps",
         },
         {
-            label: language === "el" ? "Πλήρη Προφίλ" : "Complete Profiles",
+            label: t.agentUi.completeProfiles,
             value: health.completeProfilePercent,
             displayValue: `${health.completeProfilePercent}%`,
             color: profileColor,
@@ -89,7 +89,7 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
                 : "of clients have complete profiles",
         },
         {
-            label: language === "el" ? "Σε Κίνδυνο" : "At Risk",
+            label: t.agentUi.atRisk,
             value: Math.min(100, (health.atRiskCount / Math.max(health.totalClients, 1)) * 100),
             displayValue: String(health.atRiskCount),
             color: atRiskColor,
@@ -105,7 +105,7 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
             <div className="flex items-center gap-2 mb-4">
                 <Activity className="h-5 w-5 text-primary dark:text-mint" />
                 <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                    {language === "el" ? "Υγεία Χαρτοφυλακίου" : "Portfolio Health"}
+                    {t.agentUi.portfolioHealth}
                 </h2>
             </div>
 

@@ -157,41 +157,43 @@ function DonutChart({
 export function InsightsClient({ data }: InsightsClientProps) {
     const { language, t } = useLanguage()
     const locale = language === "el" ? "el-GR" : "en-US"
+    const lang = language || "en"
+    const p = t.insights.practice
 
     /* KPI cards data */
     const kpis = useMemo(() => [
         {
-            label: language === "el" ? "Συνολικό Ασφάλιστρο" : "Total Premium",
-            value: fmtCompact(data.premiumSummary.totalPremium, language || "en"),
+            label: p.totalPremium,
+            value: fmtCompact(data.premiumSummary.totalPremium, lang),
             icon: DollarSign,
             bgAccent: "bg-primary-tint dark:bg-primary/15",
         },
         {
-            label: language === "el" ? "Μέσο Ασφάλιστρο / Πελάτη" : "Avg Premium / Customer",
-            value: fmt(data.premiumSummary.avgPremiumPerCustomer, language || "en"),
+            label: p.avgPremiumPerCustomer,
+            value: fmt(data.premiumSummary.avgPremiumPerCustomer, lang),
             icon: TrendingUp,
             bgAccent: "bg-mint/20 dark:bg-primary/15",
         },
         {
-            label: language === "el" ? "Ασφαλιστήρια / Πελάτη" : "Policies / Customer",
-            value: fmtNum(data.premiumSummary.avgPoliciesPerCustomer, language || "en"),
+            label: p.policiesPerCustomer,
+            value: fmtNum(data.premiumSummary.avgPoliciesPerCustomer, lang),
             icon: FileText,
             bgAccent: "bg-slate-100 dark:bg-slate-800",
         },
         {
-            label: language === "el" ? "Ποσοστό Ενεργοποίησης" : "Activation Rate",
+            label: p.activationRate,
             value: `${data.portfolioHealth.activationRate}%`,
             icon: Zap,
             bgAccent: "bg-amber-50 dark:bg-amber-950/30",
         },
-    ], [data, language])
+    ], [data, lang, p])
 
     /* Donut segments */
     const donutSegments = useMemo(() => [
-        { value: data.portfolioHealth.activeCustomers, color: "#29685B", label: language === "el" ? "Ενεργοί" : "Active" },
-        { value: data.portfolioHealth.invitedCustomers, color: "#f59e0b", label: language === "el" ? "Προσκεκλημένοι" : "Invited" },
-        { value: data.portfolioHealth.inactiveCustomers, color: "#94a3b8", label: language === "el" ? "Ανενεργοί" : "Inactive" },
-    ], [data.portfolioHealth, language])
+        { value: data.portfolioHealth.activeCustomers, color: "#29685B", label: p.active },
+        { value: data.portfolioHealth.invitedCustomers, color: "#f59e0b", label: p.invited },
+        { value: data.portfolioHealth.inactiveCustomers, color: "#94a3b8", label: p.inactive },
+    ], [data.portfolioHealth, p])
 
     /* Premium breakdown max */
     const maxPremium = useMemo(() =>
@@ -204,13 +206,13 @@ export function InsightsClient({ data }: InsightsClientProps) {
         const m = data.opportunityMetrics
         const maxStage = Math.max(m.open, m.contacted, m.quoted, m.won, m.lost, 1)
         return [
-            { key: "open", label: language === "el" ? "Ανοιχτά" : "Open", value: m.open, color: "#3b82f6", pct: (m.open / maxStage) * 100 },
-            { key: "contacted", label: language === "el" ? "Επικοινωνία" : "Contacted", value: m.contacted, color: "#8b5cf6", pct: (m.contacted / maxStage) * 100 },
-            { key: "quoted", label: language === "el" ? "Προσφορά" : "Quoted", value: m.quoted, color: "#f59e0b", pct: (m.quoted / maxStage) * 100 },
-            { key: "won", label: language === "el" ? "Κερδισμένα" : "Won", value: m.won, color: "#29685B", pct: (m.won / maxStage) * 100 },
-            { key: "lost", label: language === "el" ? "Χαμένα" : "Lost", value: m.lost, color: "#ef4444", pct: (m.lost / maxStage) * 100 },
+            { key: "open", label: p.stageOpen, value: m.open, color: "#3b82f6", pct: (m.open / maxStage) * 100 },
+            { key: "contacted", label: p.stageContacted, value: m.contacted, color: "#8b5cf6", pct: (m.contacted / maxStage) * 100 },
+            { key: "quoted", label: p.stageQuoted, value: m.quoted, color: "#f59e0b", pct: (m.quoted / maxStage) * 100 },
+            { key: "won", label: p.stageWon, value: m.won, color: "#29685B", pct: (m.won / maxStage) * 100 },
+            { key: "lost", label: p.stageLost, value: m.lost, color: "#ef4444", pct: (m.lost / maxStage) * 100 },
         ]
-    }, [data.opportunityMetrics, language])
+    }, [data.opportunityMetrics, p])
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950">
@@ -224,12 +226,10 @@ export function InsightsClient({ data }: InsightsClientProps) {
                         </div>
                         <div>
                             <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                                {language === "el" ? "Αναλυτικά Στοιχεία" : "Practice Insights"}
+                                {p.heading}
                             </h1>
                             <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                                {language === "el"
-                                    ? "Αναλυτική επισκόπηση του χαρτοφυλακίου σας"
-                                    : "Comprehensive analytics for your portfolio"}
+                                {p.subheading}
                             </p>
                         </div>
                     </div>
@@ -265,7 +265,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                     <FadeIn delay={0.35} className="arc-card p-6">
                         <h2 className="text-lg font-extrabold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                             <Users className="w-5 h-5 text-primary dark:text-mint" />
-                            {language === "el" ? "Υγεία Χαρτοφυλακίου" : "Portfolio Health"}
+                            {p.portfolioHealth}
                         </h2>
                         <div className="flex flex-col sm:flex-row items-center gap-8">
                             <div className="relative flex-shrink-0">
@@ -275,7 +275,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                         {data.portfolioHealth.totalCustomers}
                                     </span>
                                     <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                                        {language === "el" ? "Πελάτες" : "Customers"}
+                                        {p.customers}
                                     </span>
                                 </div>
                             </div>
@@ -304,11 +304,11 @@ export function InsightsClient({ data }: InsightsClientProps) {
                     <FadeIn delay={0.45} className="arc-card p-6">
                         <h2 className="text-lg font-extrabold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                             <BarChart3 className="w-5 h-5 text-primary dark:text-mint" />
-                            {language === "el" ? "Κατανομή Ασφαλίστρων" : "Premium Breakdown"}
+                            {p.premiumBreakdown}
                         </h2>
                         {data.policyBreakdown.length === 0 ? (
                             <div className="py-12 text-center text-sm text-slate-400">
-                                {language === "el" ? "Δεν υπάρχουν δεδομένα" : "No data available"}
+                                {p.noData}
                             </div>
                         ) : (
                             <div className="space-y-4">
@@ -319,11 +319,11 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                         <div key={item.lineOfBusiness}>
                                             <div className="flex items-center justify-between mb-1.5">
                                                 <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                                                    {getLobLabel(item.lineOfBusiness, language || "en", t)}
+                                                    {getLobLabel(item.lineOfBusiness, lang, t)}
                                                 </span>
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-xs font-bold text-slate-400">{item.count} {language === "el" ? "ασφ." : "pol."}</span>
-                                                    <span className="text-sm font-black text-slate-900 dark:text-white">{fmt(item.totalPremium, language || "en")}</span>
+                                                    <span className="text-xs font-bold text-slate-400">{item.count} {p.policiesAbbr}</span>
+                                                    <span className="text-sm font-black text-slate-900 dark:text-white">{fmt(item.totalPremium, lang)}</span>
                                                 </div>
                                             </div>
                                             <div className="h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
@@ -349,19 +349,19 @@ export function InsightsClient({ data }: InsightsClientProps) {
                     <FadeIn delay={0.55} className="arc-card p-6">
                         <h2 className="text-lg font-extrabold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
                             <Target className="w-5 h-5 text-primary dark:text-mint" />
-                            {language === "el" ? "Χωνί Ευκαιριών" : "Opportunity Funnel"}
+                            {p.opportunityFunnel}
                         </h2>
                         <p className="text-xs text-slate-400 mb-6">
-                            {language === "el" ? "Ποσοστό μετατροπής" : "Conversion rate"}:{" "}
+                            {p.conversionRate}:{" "}
                             <span className="font-black text-primary dark:text-mint">{data.opportunityMetrics.conversionRate}%</span>
                             {" · "}
-                            {language === "el" ? "Σύνολο" : "Total"}:{" "}
+                            {p.total}:{" "}
                             <span className="font-black text-slate-900 dark:text-white">{data.opportunityMetrics.total}</span>
                         </p>
 
                         {data.opportunityMetrics.total === 0 ? (
                             <div className="py-12 text-center text-sm text-slate-400">
-                                {language === "el" ? "Δεν υπάρχουν ευκαιρίες" : "No opportunities yet"}
+                                {p.noOpportunities}
                             </div>
                         ) : (
                             <div className="space-y-3.5">
@@ -393,17 +393,17 @@ export function InsightsClient({ data }: InsightsClientProps) {
                     <FadeIn delay={0.65} className="arc-card p-6">
                         <h2 className="text-lg font-extrabold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
                             <CalendarClock className="w-5 h-5 text-amber-500" />
-                            {language === "el" ? "Χρονοδιάγραμμα Ανανεώσεων" : "Renewal Timeline"}
+                            {p.renewalTimeline}
                         </h2>
                         <p className="text-xs text-slate-400 mb-5">
-                            {language === "el" ? "Ασφαλιστήρια που λήγουν εντός 90 ημερών" : "Policies expiring within 90 days"}
+                            {p.expiringWithin90}
                         </p>
 
                         {data.renewalTimeline.length === 0 ? (
                             <div className="py-12 text-center">
                                 <CheckCircle2 className="w-10 h-10 text-[#22C55E] mx-auto mb-3" />
                                 <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                                    {language === "el" ? "Κανένα ασφαλιστήριο δεν λήγει σύντομα" : "No upcoming renewals"}
+                                    {p.noUpcomingRenewals}
                                 </p>
                             </div>
                         ) : (
@@ -421,15 +421,15 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                                         {item.customerName}
                                                     </p>
                                                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                                                        {item.insurerName} · {getLobLabel(item.lineOfBusiness, language || "en", t)} · {item.policyNumber}
+                                                        {item.insurerName} · {getLobLabel(item.lineOfBusiness, lang, t)} · {item.policyNumber}
                                                     </p>
                                                 </div>
                                                 <div className="text-right flex-shrink-0">
                                                     <span className={`inline-block text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${uc.badge}`}>
-                                                        {item.daysUntilExpiry}{language === "el" ? " ημ." : "d"}
+                                                        {item.daysUntilExpiry}{p.daysAbbr}
                                                     </span>
                                                     <p className="text-xs font-bold text-slate-500 mt-1">
-                                                        {fmt(item.premiumAmount, language || "en")}
+                                                        {fmt(item.premiumAmount, lang)}
                                                     </p>
                                                 </div>
                                             </div>
@@ -447,24 +447,24 @@ export function InsightsClient({ data }: InsightsClientProps) {
                         <div className="flex items-center justify-between mb-5">
                             <h2 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
                                 <RefreshCw className="w-5 h-5 text-primary dark:text-mint" />
-                                {language === "el" ? "Μετρικές Ανανεώσεων" : "Renewal Metrics"}
+                                {p.renewalMetrics}
                             </h2>
                             <Link
                                 href="/renewals"
                                 className="text-xs font-bold text-primary dark:text-mint hover:text-primary-hover dark:hover:text-mint/80 transition-colors"
                             >
-                                {language === "el" ? "Διαχείριση Ανανεώσεων →" : "Manage Renewals →"}
+                                {p.manageRenewals}
                             </Link>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
                             {[
-                                { label: language === "el" ? "Σύνολο" : "Tracked", value: data.renewalMetrics.totalTracked, color: "text-slate-900 dark:text-white" },
-                                { label: language === "el" ? "Εκκρεμείς" : "Pending", value: data.renewalMetrics.pendingRenewals, color: "text-amber-600 dark:text-amber-400" },
-                                { label: language === "el" ? "Ληξιπρόθεσμες" : "Overdue", value: data.renewalMetrics.overdueRenewals, color: "text-rose-600 dark:text-rose-400" },
-                                { label: language === "el" ? "Ανανεώθηκαν" : "Renewed", value: data.renewalMetrics.renewedThisMonth, color: "text-[#166534] dark:text-mint" },
-                                { label: language === "el" ? "Εκπνοή" : "Lapsed", value: data.renewalMetrics.lapsedThisMonth, color: "text-rose-600 dark:text-rose-400" },
-                                { label: language === "el" ? "Ποσοστό Ανανέωσης" : "Renewal Rate", value: `${data.renewalMetrics.renewalRate}%`, color: "text-primary dark:text-mint" },
-                                { label: language === "el" ? "Ασφάλιστρα σε κίνδυνο" : "Premium at Risk", value: fmt(data.renewalMetrics.premiumAtRisk, language || "en"), color: "text-orange-600 dark:text-orange-400" },
+                                { label: p.tracked, value: data.renewalMetrics.totalTracked, color: "text-slate-900 dark:text-white" },
+                                { label: p.pending, value: data.renewalMetrics.pendingRenewals, color: "text-amber-600 dark:text-amber-400" },
+                                { label: p.overdue, value: data.renewalMetrics.overdueRenewals, color: "text-rose-600 dark:text-rose-400" },
+                                { label: p.renewed, value: data.renewalMetrics.renewedThisMonth, color: "text-[#166534] dark:text-mint" },
+                                { label: p.lapsed, value: data.renewalMetrics.lapsedThisMonth, color: "text-rose-600 dark:text-rose-400" },
+                                { label: p.renewalRate, value: `${data.renewalMetrics.renewalRate}%`, color: "text-primary dark:text-mint" },
+                                { label: p.premiumAtRisk, value: fmt(data.renewalMetrics.premiumAtRisk, lang), color: "text-orange-600 dark:text-orange-400" },
                             ].map((metric) => (
                                 <div key={metric.label} className="text-center">
                                     <p className={`text-2xl font-black ${metric.color}`}>{metric.value}</p>
@@ -476,9 +476,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                             <div className="mt-4 flex items-center gap-2 text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-xl px-4 py-2.5">
                                 <AlertTriangle className="w-4 h-4 flex-shrink-0" />
                                 <span className="font-bold">
-                                    {language === "el"
-                                        ? `${data.renewalMetrics.overdueRenewals} ασφαλιστήρια έχουν λήξει χωρίς ενέργεια`
-                                        : `${data.renewalMetrics.overdueRenewals} policies expired without action`}
+                                    {p.expiredWithoutAction.replace("{n}", String(data.renewalMetrics.overdueRenewals))}
                                 </span>
                             </div>
                         )}
@@ -489,22 +487,20 @@ export function InsightsClient({ data }: InsightsClientProps) {
                 <FadeIn delay={0.75} className="arc-card p-6">
                     <h2 className="text-lg font-extrabold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
                         <ShieldAlert className="w-5 h-5 text-red-500" />
-                        {language === "el" ? "Κενά Κάλυψης" : "Coverage Gaps"}
+                        {p.coverageGaps}
                     </h2>
                     <p className="text-xs text-slate-400 mb-5">
-                        {language === "el"
-                            ? "Πρόσφατα κενά κάλυψης σε όλους τους πελάτες"
-                            : "Recent gaps detected across all customers"}
+                        {p.recentGapsDesc}
                     </p>
 
                     {data.recentGaps.length === 0 ? (
                         <div className="py-12 text-center">
                             <CheckCircle2 className="w-10 h-10 text-[#22C55E] mx-auto mb-3" />
                             <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
-                                {language === "el" ? "Δεν εντοπίστηκαν κενά κάλυψης" : "No coverage gaps detected"}
+                                {p.noGaps}
                             </p>
                             <p className="text-xs text-slate-400 mt-1">
-                                {language === "el" ? "Η κάλυψη είναι πλήρης" : "Your customers are well covered"}
+                                {p.wellCovered}
                             </p>
                         </div>
                     ) : (

@@ -56,10 +56,10 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                     <CheckCircle2 className="w-12 h-12 text-primary dark:text-mint relative z-10" />
                 </div>
                 <h2 className="text-3xl font-black text-stone-900 dark:text-white mb-2 tracking-tight">
-                    {language === 'el' ? 'Ευχαριστούμε!' : 'Thank You!'}
+                    {t.agentUi.thankYou}
                 </h2>
                 <p className="text-stone-500 dark:text-stone-400 font-medium">
-                    {language === 'el' ? 'Οι απαντήσεις σας υποβλήθηκαν με επιτυχία.' : 'Your responses have been successfully submitted.'}
+                    {t.agentUi.responsesSubmitted}
                 </p>
             </div>
         )
