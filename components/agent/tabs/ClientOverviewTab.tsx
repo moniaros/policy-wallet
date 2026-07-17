@@ -24,7 +24,7 @@ export function ClientOverviewTab({
     opportunities,
     onCreateProposal,
 }: ClientOverviewTabProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
     const scoreColor = getHealthScoreColor(healthScore)
 
     const activePolicies = policies.filter((p) => p.status === "active" || p.status === "expiring_soon")
@@ -44,7 +44,7 @@ export function ClientOverviewTab({
             <div className="col-span-4">
                 <BrandCard className="p-6 flex flex-col items-center text-center">
                     <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4">
-                        {language === "el" ? "Βαθμός Υγείας Κάλυψης" : "Coverage Health Score"}
+                        {t.clientOverview.healthScore}
                     </h3>
                     <div className="relative mb-4">
                         <svg width={120} height={120} className="transform -rotate-90">
@@ -65,10 +65,10 @@ export function ClientOverviewTab({
                     </div>
                     <p className="text-sm text-slate-500 dark:text-slate-400">
                         {healthScore >= 70
-                            ? (language === "el" ? "Καλή κάλυψη" : "Good coverage")
+                            ? t.clientOverview.goodCoverage
                             : healthScore >= 40
-                                ? (language === "el" ? "Χρειάζεται βελτίωση" : "Needs improvement")
-                                : (language === "el" ? "Κρίσιμα κενά" : "Critical gaps")}
+                                ? t.clientOverview.needsImprovement
+                                : t.clientOverview.criticalGaps}
                     </p>
                 </BrandCard>
             </div>
@@ -79,7 +79,7 @@ export function ClientOverviewTab({
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                             <Shield className="h-5 w-5 text-primary dark:text-mint" />
-                            {language === "el" ? "Ενεργά Ασφαλιστήρια" : "Active Policies"}
+                            {t.clientOverview.activePolicies}
                             <span className="text-xs text-slate-400 font-normal">({activePolicies.length})</span>
                         </h3>
                     </div>
@@ -116,7 +116,7 @@ export function ClientOverviewTab({
                                         </div>
                                         {policy.status === "expiring_soon" && (
                                             <span className="text-[10px] font-medium text-amber-600 dark:text-amber-400">
-                                                {language === "el" ? "Λήγει σύντομα" : "Expiring soon"}
+                                                {t.clientOverview.expiringSoon}
                                             </span>
                                         )}
                                     </div>
@@ -133,7 +133,7 @@ export function ClientOverviewTab({
                     <BrandCard className="p-5">
                         <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
                             <AlertTriangle className="h-5 w-5 text-amber-500" />
-                            {language === "el" ? "Εντοπισμένα Κενά" : "Identified Gaps"}
+                            {t.clientOverview.identifiedGaps}
                             <span className="text-xs text-slate-400 font-normal">({openOpportunities.length})</span>
                         </h3>
                         <div className="grid grid-cols-2 gap-3">
@@ -176,7 +176,7 @@ export function ClientOverviewTab({
                                                 className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-primary dark:text-mint hover:underline cursor-pointer"
                                             >
                                                 <Plus className="h-3 w-3" />
-                                                {language === "el" ? "Δημιουργία Πρότασης" : "Create Proposal"}
+                                                {t.clientOverview.createProposal}
                                             </button>
                                         )}
                                     </div>
@@ -193,7 +193,7 @@ export function ClientOverviewTab({
                     <BrandCard className="p-5">
                         <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
                             <Users className="h-5 w-5 text-primary dark:text-mint" />
-                            {language === "el" ? "Ανάγκες Κάλυψης" : "Coverage Needs"}
+                            {t.clientOverview.coverageNeeds}
                         </h3>
                         <div className="flex items-center gap-3">
                             <div className="text-center">
@@ -201,7 +201,7 @@ export function ClientOverviewTab({
                                     {customer.crossSell.coverageScore}%
                                 </div>
                                 <p className="text-xs text-slate-500">
-                                    {language === "el" ? "Κάλυψη" : "Coverage"}
+                                    {t.clientOverview.coverage}
                                 </p>
                             </div>
                             <div className="flex-1 flex flex-wrap gap-2">

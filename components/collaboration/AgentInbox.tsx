@@ -64,7 +64,7 @@ const STATUS_STYLES: Record<string, string> = {
 }
 
 export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: AgentInboxProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
     const [threads, setThreads] = useState<InboxThread[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState("")
@@ -72,7 +72,7 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
     const [filterStatus, setFilterStatus] = useState<string | null>(null)
 
     function normalizeThread(thread: any): InboxThread {
-        const fallbackClientName = language === "el" ? "Πελάτης" : "Client"
+        const fallbackClientName = t.collaboration.inbox.clientFallback
         return {
             id: String(thread?.id || ""),
             subject: String(thread?.subject || ""),
@@ -143,7 +143,7 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
             <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                     <Inbox className="h-5 w-5 text-primary dark:text-mint" />
-                    {language === "el" ? "Εισερχόμενα" : "Inbox"}
+                    {t.collaboration.inbox.title}
                     {threads.length > 0 && (
                         <span className="text-xs text-slate-400 font-normal">({threads.length})</span>
                     )}
@@ -158,7 +158,7 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder={language === "el" ? "Αναζήτηση θεμάτων..." : "Search threads..."}
+                        placeholder={t.collaboration.inbox.searchThreads}
                         className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 pl-9 pr-4 py-2 text-sm placeholder:text-slate-400"
                     />
                 </div>
@@ -167,7 +167,7 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
                     onChange={(e) => setFilterType(e.target.value || null)}
                     className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs"
                 >
-                    <option value="">{language === "el" ? "Όλοι οι τύποι" : "All types"}</option>
+                    <option value="">{t.collaboration.inbox.allTypes}</option>
                     {Object.entries(THREAD_TYPE_LABELS).map(([key, labels]) => (
                         <option key={key} value={key}>
                             {language === "el" ? labels.el : labels.en}
@@ -179,10 +179,10 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
                     onChange={(e) => setFilterStatus(e.target.value || null)}
                     className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs"
                 >
-                    <option value="">{language === "el" ? "Όλες" : "All statuses"}</option>
-                    <option value="open">{language === "el" ? "Ανοικτά" : "Open"}</option>
-                    <option value="resolved">{language === "el" ? "Επιλυμένα" : "Resolved"}</option>
-                    <option value="closed">{language === "el" ? "Κλειστά" : "Closed"}</option>
+                    <option value="">{t.collaboration.inbox.statusFilterAll}</option>
+                    <option value="open">{t.collaboration.inbox.open}</option>
+                    <option value="resolved">{t.collaboration.inbox.resolved}</option>
+                    <option value="closed">{t.collaboration.inbox.closed}</option>
                 </select>
             </div>
 
@@ -195,8 +195,8 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
                         </div>
                         <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
                             {searchQuery
-                                ? (language === "el" ? "Δεν βρέθηκαν αποτελέσματα" : "No results found")
-                                : (language === "el" ? "Ξεκινήστε μια συζήτηση" : "Start a conversation")}
+                                ? t.collaboration.inbox.noResults
+                                : t.collaboration.inbox.startConversation}
                         </p>
                     </div>
                 </BrandCard>
@@ -207,7 +207,7 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
                 <div>
                     <h3 className="text-xs font-semibold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-2 flex items-center gap-1.5">
                         <AlertCircle className="h-3.5 w-3.5" />
-                        {language === "el" ? "Αναμένει απάντηση" : "Waiting on you"} ({waitingOnYou.length})
+                        {t.collaboration.inbox.waitingOnYou} ({waitingOnYou.length})
                     </h3>
                     <div className="space-y-1.5">
                         {waitingOnYou.map((thread) => (
@@ -222,7 +222,7 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
                 <div>
                     {waitingOnYou.length > 0 && (
                         <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
-                            {language === "el" ? "Υπόλοιπα" : "Other"} ({others.length})
+                            {t.collaboration.inbox.other} ({others.length})
                         </h3>
                     )}
                     <div className="space-y-1.5">
