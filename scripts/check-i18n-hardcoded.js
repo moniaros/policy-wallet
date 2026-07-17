@@ -53,9 +53,34 @@ function getChangedFilesFromGit() {
   }
 }
 
+// Every tracked .ts/.tsx source file — the opt-in full-tree scan. The default
+// (changed-files) keeps CI fast and non-regressive, but hides pre-existing debt;
+// SCAN_ALL=1 (or `--all`) surfaces the whole backlog for a cleanup pass.
+function getAllSourceFiles() {
+  try {
+    const out = execSync("git ls-files '*.ts' '*.tsx'", {
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    })
+    return out
+      .split(/\r?\n/)
+      .map((f) => f.trim())
+      .filter(Boolean)
+  } catch {
+    return []
+  }
+}
+
 function normalizeTargets(args) {
-  if (args.length > 0) {
-    return args
+  const flags = args.filter((a) => a.startsWith('--'))
+  const files = args.filter((a) => !a.startsWith('--'))
+
+  if (process.env.SCAN_ALL === '1' || flags.includes('--all')) {
+    return getAllSourceFiles()
+  }
+
+  if (files.length > 0) {
+    return files
   }
 
   if (process.env.CHANGED_FILES) {

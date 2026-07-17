@@ -31,6 +31,7 @@ const copy = {
         cancel: "Cancel",
         sendInsightsRequest: "Send Insights Request",
         sending: "Sending...",
+        questions: "questions",
     },
     el: {
         sendRequest: "Αποστολή Αιτήματος",
@@ -44,6 +45,7 @@ const copy = {
         cancel: "Ακύρωση",
         sendInsightsRequest: "Αποστολή Αιτήματος",
         sending: "Αποστολή...",
+        questions: "ερωτήσεις",
     },
 } as const
 
@@ -55,6 +57,7 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
     const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
     const { language } = useLanguage()
     const t = copy[language === "el" ? "el" : "en"]
+    const questionsLabel = t.questions // captured here because `t` is shadowed by the template map var below
 
     useEffect(() => {
         if (isOpen) {
@@ -144,7 +147,7 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
                                                             {t.name}
                                                         </p>
                                                         <p className="text-[10px] text-stone-500 uppercase tracking-widest mt-0.5">
-                                                            {t.lineOfBusiness} · {questionCount} {language === 'el' ? 'ερωτήσεις' : 'questions'}
+                                                            {t.lineOfBusiness} · {questionCount} {questionsLabel}
                                                         </p>
                                                     </div>
                                                     {selectedTemplate === t.id && (

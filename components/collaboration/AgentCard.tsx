@@ -12,7 +12,7 @@ interface AgentCardProps {
 }
 
 export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
     const initials = agent.name
         .split(" ")
         .map((n) => n.charAt(0))
@@ -40,7 +40,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                             <ShieldCheck className="h-3 w-3 text-[#22C55E]" />
                         )}
                         <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                            {language === "el" ? "Πιστοποιημένος Ασφαλιστής" : "Licensed Agent"}
+                            {t.agentUi.licensedAgent}
                         </span>
                     </div>
                 </div>
@@ -75,7 +75,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                         {agent.verificationStatus === "verified" && (
                             <span className="flex items-center gap-1 rounded-full bg-primary-soft dark:bg-primary/15 px-2 py-0.5 text-[10px] font-medium text-[#166534] dark:text-mint">
                                 <ShieldCheck className="h-3 w-3" />
-                                {language === "el" ? "Πιστοποιημένος" : "Verified"}
+                                {t.agentUi.verified}
                             </span>
                         )}
                     </div>
@@ -109,7 +109,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                                 className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-mint transition"
                             >
                                 <Globe className="h-3.5 w-3.5" />
-                                {language === "el" ? "Ιστοσελίδα" : "Website"}
+                                {t.agentUi.website}
                                 <ExternalLink className="h-2.5 w-2.5" />
                             </a>
                         )}
@@ -121,7 +121,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
             {agent.licenseNumber && (
                 <div className="mt-4 pt-3 border-t border-slate-200/60 dark:border-slate-700/60">
                     <p className="text-[10px] text-slate-400 dark:text-slate-500">
-                        {language === "el" ? "Αρ. Μητρώου ΕΑΕΕ" : "EAEE License No."}: {agent.licenseNumber}
+                        {t.agentUi.eaeeLicenseNo}: {agent.licenseNumber}
                     </p>
                 </div>
             )}

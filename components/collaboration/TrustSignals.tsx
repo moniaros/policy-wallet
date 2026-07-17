@@ -12,19 +12,19 @@ interface TrustSignalsFooterProps {
 }
 
 export function TrustSignalsFooter({ licenseNumber, lastUpdated }: TrustSignalsFooterProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
 
     return (
         <div className="flex items-center justify-between border-t border-slate-200/60 dark:border-slate-700/60 pt-3 mt-4">
             {licenseNumber && (
                 <p className="text-[10px] text-slate-400 dark:text-slate-500 flex items-center gap-1">
                     <ShieldCheck className="h-3 w-3" />
-                    {language === "el" ? "Αρ. ΕΑΕΕ" : "EAEE No."}: {licenseNumber}
+                    {t.agentUi.eaeeNo}: {licenseNumber}
                 </p>
             )}
             <p className="text-[10px] text-slate-400 dark:text-slate-500 flex items-center gap-1">
                 <Clock className="h-3 w-3" />
-                {language === "el" ? "Τελευταία ενημέρωση" : "Last updated"}: {formatRelativeDate(lastUpdated, language)}
+                {t.agentUi.lastUpdated}: {formatRelativeDate(lastUpdated, language)}
             </p>
         </div>
     )

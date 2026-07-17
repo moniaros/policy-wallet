@@ -21,7 +21,7 @@ interface AgentPlanGateProps {
 }
 
 export function AgentPlanGate({ currentTier, requiredTier, featureLabel, children }: AgentPlanGateProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
 
     if (AGENT_TIER_HIERARCHY[currentTier] >= AGENT_TIER_HIERARCHY[requiredTier]) {
         return <>{children}</>
@@ -60,7 +60,7 @@ export function AgentPlanGate({ currentTier, requiredTier, featureLabel, childre
                         className="mt-1 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-white dark:text-[#1A2420] transition-colors hover:bg-primary-hover"
                     >
                         <Crown className="h-3.5 w-3.5" />
-                        {language === "el" ? "Αναβάθμιση" : "Upgrade"}
+                        {t.agentUi.upgrade}
                     </Link>
                 </div>
             </div>

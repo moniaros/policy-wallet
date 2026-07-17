@@ -55,7 +55,7 @@ interface ActionQueueCardProps {
 }
 
 export function ActionQueueCard({ items, onAction, onViewAll, onGapClientClick, isLoading, gapsSummary }: ActionQueueCardProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
 
     if (isLoading) return <ActionQueueCardSkeleton />
 
@@ -69,7 +69,7 @@ export function ActionQueueCard({ items, onAction, onViewAll, onGapClientClick, 
                 <div className="flex items-center gap-2">
                     <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                     <h2 className="text-base font-bold text-slate-900 dark:text-white">
-                        {language === "el" ? "Ουρά Ενεργειών" : "Action Queue"}
+                        {t.agentUi.actionQueue}
                     </h2>
                     {totalCount > 0 && (
                         <span className="ml-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-red-600 px-1.5 text-xs font-bold text-white">
@@ -79,7 +79,7 @@ export function ActionQueueCard({ items, onAction, onViewAll, onGapClientClick, 
                 </div>
                 {urgentCount > 0 && (
                     <span className="text-xs font-medium text-red-600 dark:text-red-400">
-                        {urgentCount} {language === "el" ? "επείγοντα" : "urgent"}
+                        {urgentCount} {t.agentUi.urgent}
                     </span>
                 )}
             </div>
@@ -95,7 +95,7 @@ export function ActionQueueCard({ items, onAction, onViewAll, onGapClientClick, 
 
             {/* Items */}
             {totalCount === 0 ? (
-                <ActionQueueEmpty language={language} />
+                <ActionQueueEmpty t={t} />
             ) : (
                 <div className="space-y-2">
                     {items.slice(0, 5).map((item) => {
@@ -211,19 +211,17 @@ function GapsSummaryBanner({
     )
 }
 
-function ActionQueueEmpty({ language }: { language: string }) {
+function ActionQueueEmpty({ t }: { t: any }) {
     return (
         <div className="flex flex-col items-center justify-center py-8 text-center">
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
                 <RefreshCw className="h-5 w-5 text-primary dark:text-mint" />
             </div>
             <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                {language === "el" ? "Όλα ενημερωμένα!" : "All caught up!"}
+                {t.agentUi.allCaughtUp}
             </p>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                {language === "el"
-                    ? "Ελέγξτε τη λίστα πελατών σας"
-                    : "Review your client list"}
+                {t.agentUi.reviewClientList}
             </p>
         </div>
     )

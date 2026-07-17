@@ -47,7 +47,7 @@ interface ClientActivityTabProps {
 }
 
 export function ClientActivityTab({ interactions, customer }: ClientActivityTabProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
 
     if (interactions.length === 0) {
         return (
@@ -74,7 +74,7 @@ export function ClientActivityTab({ interactions, customer }: ClientActivityTabP
     return (
         <BrandCard className="p-5">
             <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4">
-                {language === "el" ? "Ιστορικό Δραστηριότητας" : "Activity History"}
+                {t.agentUi.activityHistory}
             </h3>
             <div className="relative">
                 {/* Timeline line */}
