@@ -725,6 +725,61 @@ export const en: TranslationKeys = {
         lockedFeature: 'This feature requires {plan}',
     },
 
+    emptyStates: {
+        example: 'Example',
+        clearFilters: 'Clear filters',
+        viewClients: 'View clients',
+        clients: {
+            headline: 'Invite your first client',
+            description: 'Add clients to start tracking their coverage, renewals, and gaps — all in one place.',
+            exampleName: 'Maria Papadopoulou',
+            exampleMeta: '3 policies · Motor, Home',
+        },
+        overviewPolicies: {
+            headline: 'No active policies yet',
+            description: 'Once this client has active cover, their policies show up here at a glance.',
+        },
+        clientPolicies: {
+            headline: 'No policies linked yet',
+            description: "Upload this client's policies to track coverage, renewals, and commissions in one place.",
+            cta: 'Add policy',
+            exampleName: 'Motor',
+            exampleMeta: 'Interamerican',
+            exampleStatus: 'Active',
+        },
+        clientActivity: {
+            headline: 'No activity yet',
+            description: 'Invites, messages, and document uploads with this client will appear here.',
+        },
+        premiumsByLob: {
+            headline: 'No premium breakdown yet',
+            description: 'Premiums split by line of business appear here once policies are linked.',
+        },
+        insights: {
+            premiumBreakdownDesc: 'Premiums by line of business appear here as customer policies are added.',
+            opportunitiesDesc: 'Detected cross-sell and coverage opportunities will show up here.',
+            renewalsDesc: "Nothing is expiring in the next 90 days — you're all caught up.",
+        },
+        opportunities: {
+            headline: 'No opportunities yet',
+            description: "Run gap detection on your clients' policies to surface cross-sell and coverage opportunities.",
+            filteredHeadline: 'No results',
+            filteredDescription: 'No opportunities match this filter. Try another status.',
+            exampleTitle: 'Missing home insurance',
+            exampleMeta: 'Maria K. · likely to convert',
+            exampleUrgency: 'High',
+        },
+        inbox: {
+            startDescription: 'Message clients, request documents, and send proposals — all in one thread.',
+            noResultsDescription: 'No conversations match your search or filters.',
+            startCta: 'New message',
+        },
+        loadError: {
+            headline: "Couldn't load",
+            description: 'Something went wrong loading this. Check your connection and try again.',
+        },
+    },
+
     activity: {
         subtitle: 'Tracking all recent interactions, document uploads, and policy changes across your customer base.',
         noActivity: 'Quiet for now',

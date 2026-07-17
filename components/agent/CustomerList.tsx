@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useMemo, useState } from "react"
-import { Search, Phone, Mail, User, LayoutList, LayoutGrid, Download, UserPlus, Sparkles, FileText, ChevronRight } from "lucide-react"
+import { Search, Phone, Mail, LayoutList, LayoutGrid, Download, UserPlus, Sparkles, FileText, ChevronRight } from "lucide-react"
 
 import { Customer, CustomerListProps } from "./types"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -17,7 +17,7 @@ export function CustomerList({
     onEmail,
     onBulkAction,
 }: CustomerListProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
     const roleCopy = getRoleCopy(language)
     const [searchQuery, setSearchQuery] = useState("")
     const [statusFilter, setStatusFilter] = useState<"all" | "activated" | "invited" | "inactive">("all")
@@ -226,13 +226,18 @@ export function CustomerList({
                     cta={onAddCustomer ? { label: roleCopy.customerList.invitedEmptyCta, onClick: onAddCustomer } : undefined}
                 />
             ) : filteredCustomers.length === 0 ? (
-                <div className="text-center py-16 bg-white/80 dark:bg-neutral-900/80 rounded-2xl border border-neutral-200/60 dark:border-neutral-800/60">
-                    <div className="mx-auto w-14 h-14 bg-muted text-neutral-400 rounded-2xl flex items-center justify-center mb-4 shadow-sm">
-                        <User className="w-7 h-7" />
-                    </div>
-                    <h3 className="text-lg font-bold text-foreground mb-1">{roleCopy.customerList.emptyTitle}</h3>
-                    <p className="text-neutral-500 text-sm mb-4">{roleCopy.customerList.emptySubtitle}</p>
-                </div>
+                <EmptyState
+                    icon={Search}
+                    headline={roleCopy.customerList.emptyTitle}
+                    description={roleCopy.customerList.emptySubtitle}
+                    cta={{
+                        label: t.emptyStates.clearFilters,
+                        onClick: () => {
+                            setSearchQuery("")
+                            setStatusFilter("all")
+                        },
+                    }}
+                />
             ) : viewMode === "table" ? (
                 <div className="bg-white/80 dark:bg-neutral-900/80 rounded-2xl border border-neutral-200/60 dark:border-neutral-800/60 overflow-hidden shadow-sm">
                     <div className="overflow-x-auto">

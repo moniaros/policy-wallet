@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { FileText, MessageSquare, FileUp, Lock } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
 import type { ViewerRole, ThreadType } from "./types"
 
@@ -271,7 +272,7 @@ export function CollaborationTimeline({
                     <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
                         Collaboration Timeline
                     </h3>
-                    {loading ? <span className="text-xs text-neutral-400">Loading...</span> : null}
+                    {loading ? <Skeleton className="h-4 w-16" /> : null}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-2">

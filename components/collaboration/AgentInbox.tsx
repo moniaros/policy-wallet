@@ -15,7 +15,7 @@ import {
     Lock,
     User,
 } from "lucide-react"
-import { BrandCard } from "@/components/ui/brand/BrandCard"
+import { EmptyState } from "@/components/ui/EmptyState"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { formatRelativeDate } from "@/lib/agent/format"
@@ -67,6 +67,7 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
     const { language, t } = useLanguage()
     const [threads, setThreads] = useState<InboxThread[]>([])
     const [isLoading, setIsLoading] = useState(true)
+    const [loadError, setLoadError] = useState(false)
     const [searchQuery, setSearchQuery] = useState("")
     const [filterType, setFilterType] = useState<string | null>(null)
     const [filterStatus, setFilterStatus] = useState<string | null>(null)
@@ -96,6 +97,7 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
 
     async function fetchThreads() {
         setIsLoading(true)
+        setLoadError(false)
         try {
             const params = new URLSearchParams()
             if (relationshipId) params.set("relationshipId", relationshipId)
@@ -110,9 +112,11 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
                         ? payload.threads
                         : []
                 setThreads(rawThreads.map(normalizeThread))
+            } else {
+                setLoadError(true)
             }
         } catch {
-            // handle silently
+            setLoadError(true)
         } finally {
             setIsLoading(false)
         }
@@ -136,6 +140,17 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
     const others = filteredThreads.filter((t) => !t.isWaitingOnYou)
 
     if (isLoading) return <AgentInboxSkeleton />
+
+    if (loadError) {
+        return (
+            <EmptyState
+                icon={AlertCircle}
+                headline={t.emptyStates.loadError.headline}
+                description={t.emptyStates.loadError.description}
+                cta={{ label: t.errors.tryAgain, onClick: fetchThreads }}
+            />
+        )
+    }
 
     return (
         <div className="space-y-4">
@@ -188,18 +203,12 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
 
             {/* Empty state */}
             {filteredThreads.length === 0 && (
-                <BrandCard className="p-8">
-                    <div className="flex flex-col items-center text-center">
-                        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
-                            <Inbox className="h-5 w-5 text-neutral-500" />
-                        </div>
-                        <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                            {searchQuery
-                                ? t.collaboration.inbox.noResults
-                                : t.collaboration.inbox.startConversation}
-                        </p>
-                    </div>
-                </BrandCard>
+                <EmptyState
+                    icon={Inbox}
+                    headline={searchQuery ? t.collaboration.inbox.noResults : t.collaboration.inbox.startConversation}
+                    description={searchQuery ? t.emptyStates.inbox.noResultsDescription : t.emptyStates.inbox.startDescription}
+                    cta={!searchQuery && onCreateThread ? { label: t.emptyStates.inbox.startCta, onClick: onCreateThread } : undefined}
+                />
             )}
 
             {/* Waiting on you */}
