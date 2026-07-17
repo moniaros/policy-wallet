@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import * as Sentry from '@sentry/nextjs'
 import { z } from 'zod'
 import { createApiResponse, createApiError } from "@/lib/api-utils"
+import { rateLimit } from "@/lib/rate-limit"
 
 const customerImportSchema = z.object({
     email: z.string().email(),
@@ -19,6 +20,16 @@ export async function POST(req: Request) {
     const authCheck = await requireApiUser({ roles: ["agent", "admin"] })
     if ("error" in authCheck) return authCheck.error
     const authResult = authCheck.auth
+
+    // Throttle mass-attach per agent — without this an agent could enumerate/
+    // attach the whole user base by email. Independent of the global /api limit.
+    const limitCheck = await rateLimit(
+        authResult.dbUser.id,
+        5,
+        60_000,
+        `bulk-import:${authResult.dbUser.id}`
+    )
+    if (!limitCheck.success && limitCheck.error) return limitCheck.error
 
     try {
         const { customers } = bulkImportSchema.parse(await req.json())

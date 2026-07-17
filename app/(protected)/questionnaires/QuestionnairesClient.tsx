@@ -528,7 +528,7 @@ function SentList({ instances, t, language }: {
 
     return (
         <>
-            <div className="arc-card overflow-hidden">
+            <div className="arc-card overflow-x-auto">
                 <table className="w-full text-sm">
                     <thead>
                         <tr className="border-b border-slate-100 dark:border-slate-800">
