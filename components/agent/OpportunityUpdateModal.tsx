@@ -29,7 +29,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
         { value: 'quoted', label: tt.statusQuoted, color: 'bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint border-2 border-primary' },
         { value: 'won', label: tt.statusWon, color: 'bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint border-2 border-primary' },
         { value: 'lost', label: tt.statusLost, color: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border-2 border-red-500' },
-        { value: 'on_hold', label: tt.statusOnHold, color: 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-2 border-slate-400' },
+        { value: 'on_hold', label: tt.statusOnHold, color: 'bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 border-2 border-neutral-400' },
     ]
 
     const [status, setStatus] = useState(opportunity.status)
@@ -61,22 +61,22 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="opportunity-update-title" tabIndex={-1} className="bg-white dark:bg-stone-800 rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="opportunity-update-title" tabIndex={-1} className="bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
                 {/* Header */}
-                <div className="border-b border-stone-200 dark:border-stone-700 px-6 py-4">
+                <div className="border-b border-neutral-200 dark:border-neutral-700 px-6 py-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 id="opportunity-update-title" className="text-2xl font-bold text-stone-900 dark:text-white">
+                            <h2 id="opportunity-update-title" className="text-2xl font-bold text-foreground">
                                 {tt.title}
                             </h2>
-                            <p className="text-sm text-stone-600 dark:text-stone-400 mt-1">
+                            <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
                                 {opportunity.customerName} • {opportunity.title}
                             </p>
                         </div>
                         <button
                             onClick={onClose}
                             aria-label={t.common.close}
-                            className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 transition-colors"
+                            className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -89,7 +89,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                 <form onSubmit={handleSubmit} className="p-6 space-y-6">
                     {/* Status */}
                     <div>
-                        <label className="block text-sm font-bold text-stone-700 dark:text-stone-300 mb-2">
+                        <label className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">
                             {tt.statusLabel}
                         </label>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -100,7 +100,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                                     onClick={() => setStatus(s.value)}
                                     className={`px-4 py-3 rounded-xl font-semibold text-sm transition-all ${status === s.value
                                             ? s.color
-                                            : 'bg-stone-50 dark:bg-stone-700 text-stone-600 dark:text-stone-400 border-2 border-transparent hover:border-stone-300 dark:hover:border-stone-600'
+                                            : 'bg-neutral-50 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-400 border-2 border-transparent hover:border-neutral-300 dark:hover:border-neutral-600'
                                         }`}
                                 >
                                     {s.label}
@@ -111,7 +111,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
 
                     {/* Notes */}
                     <div>
-                        <label htmlFor="notes" className="block text-sm font-bold text-stone-700 dark:text-stone-300 mb-2">
+                        <label htmlFor="notes" className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">
                             {tt.notesLabel}
                         </label>
                         <textarea
@@ -119,14 +119,14 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                             rows={4}
-                            className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-primary dark:focus:border-mint focus:ring-0 transition-colors"
+                            className="w-full px-4 py-3 rounded-xl border-2 border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-foreground focus:border-primary dark:focus:border-mint focus:ring-0 transition-colors"
                             placeholder={tt.notesPlaceholder}
                         />
                     </div>
 
                     {/* Next Action Date */}
                     <div>
-                        <label htmlFor="nextActionDate" className="block text-sm font-bold text-stone-700 dark:text-stone-300 mb-2">
+                        <label htmlFor="nextActionDate" className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">
                             {tt.nextActionLabel}
                         </label>
                         <input
@@ -134,7 +134,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                             id="nextActionDate"
                             value={nextActionDate}
                             onChange={(e) => setNextActionDate(e.target.value)}
-                            className="w-full px-4 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-primary dark:focus:border-mint focus:ring-0 transition-colors"
+                            className="w-full px-4 py-3 rounded-xl border-2 border-neutral-200 dark:border-neutral-600 bg-white dark:bg-neutral-700 text-foreground focus:border-primary dark:focus:border-mint focus:ring-0 transition-colors"
                         />
                     </div>
 
@@ -143,7 +143,7 @@ export function OpportunityUpdateModal({ isOpen, onClose, opportunity, onUpdate 
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-6 py-3 rounded-xl font-bold text-stone-700 dark:text-stone-300 bg-stone-100 dark:bg-stone-700 hover:bg-stone-200 dark:hover:bg-stone-600 transition-colors"
+                            className="flex-1 px-6 py-3 rounded-xl font-bold text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors"
                         >
                             {tt.cancel}
                         </button>

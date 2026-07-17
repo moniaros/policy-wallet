@@ -80,13 +80,13 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
         return (
             <BrandCard className="p-5">
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                    <h3 className="text-base font-bold text-foreground">
                         {t.collaboration.proposals.proposalPreview}
                     </h3>
                     <button
                         type="button"
                         onClick={() => setShowPreview(false)}
-                        className="text-slate-400 hover:text-slate-600 transition cursor-pointer"
+                        className="text-neutral-400 hover:text-neutral-600 transition cursor-pointer"
                     >
                         <X className="h-4 w-4" />
                     </button>
@@ -115,7 +115,7 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                     <button
                         type="button"
                         onClick={() => setShowPreview(false)}
-                        className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 transition cursor-pointer"
+                        className="px-4 py-2 text-sm text-neutral-600 hover:text-neutral-900 transition cursor-pointer"
                     >
                         {t.collaboration.proposals.edit}
                     </button>
@@ -132,23 +132,23 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
 
     return (
         <BrandCard className="p-5">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">
+            <h3 className="text-base font-bold text-foreground mb-1">
                 {t.collaboration.proposals.createProposal}
             </h3>
-            <p className="text-sm text-slate-500 mb-4">
+            <p className="text-sm text-neutral-500 mb-4">
                 {t.collaboration.proposals.forClient.replace("{name}", clientName)}
             </p>
 
             <form onSubmit={(e) => { e.preventDefault(); setShowPreview(true) }} className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                     <div>
-                        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                        <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                             {t.collaboration.proposals.proposalType}
                         </label>
                         <select
                             value={proposalType}
                             onChange={(e) => setProposalType(e.target.value as ProposalType)}
-                            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm"
+                            className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm"
                         >
                             {Object.entries(PROPOSAL_TYPE_LABELS).map(([key, labels]) => (
                                 <option key={key} value={key}>
@@ -158,13 +158,13 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                         </select>
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                        <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                             {t.collaboration.proposals.lineOfBusiness}
                         </label>
                         <select
                             value={lineOfBusiness}
                             onChange={(e) => setLineOfBusiness(e.target.value)}
-                            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm"
+                            className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm"
                         >
                             {LOB_OPTIONS.map((lob) => (
                                 <option key={lob.value} value={lob.value}>
@@ -177,7 +177,7 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
 
                 <div className="grid grid-cols-2 gap-3">
                     <div>
-                        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                        <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                             {t.collaboration.proposals.insurer}
                         </label>
                         <input
@@ -186,11 +186,11 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                             onChange={(e) => setInsurerName(e.target.value)}
                             required
                             placeholder={t.collaboration.proposals.insurerPlaceholder}
-                            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm placeholder:text-slate-400"
+                            className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm placeholder:text-neutral-400"
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                        <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                             {t.collaboration.proposals.annualPremium}
                         </label>
                         <input
@@ -200,13 +200,13 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                             onChange={(e) => setPremiumAmount(e.target.value)}
                             required
                             placeholder="0.00"
-                            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm placeholder:text-slate-400"
+                            className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm placeholder:text-neutral-400"
                         />
                     </div>
                 </div>
 
                 <div>
-                    <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                    <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                         {t.collaboration.proposals.coverageSummary}
                     </label>
                     <textarea
@@ -214,12 +214,12 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                         onChange={(e) => setCoverageSummary(e.target.value)}
                         required
                         rows={3}
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm resize-none placeholder:text-slate-400"
+                        className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm resize-none placeholder:text-neutral-400"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                    <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                         {t.collaboration.proposals.plainLanguageSummary}
                     </label>
                     <textarea
@@ -227,7 +227,7 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                         onChange={(e) => setPlainLanguageSummary(e.target.value)}
                         rows={2}
                         placeholder={t.collaboration.proposals.plainLanguagePlaceholder}
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm resize-none placeholder:text-slate-400"
+                        className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm resize-none placeholder:text-neutral-400"
                     />
                 </div>
 
@@ -236,7 +236,7 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 transition cursor-pointer"
+                            className="px-4 py-2 text-sm text-neutral-600 hover:text-neutral-900 transition cursor-pointer"
                         >
                             {t.collaboration.proposals.cancel}
                         </button>
@@ -287,7 +287,7 @@ export function ProposalView({
         },
         expired: {
             label: { en: "Expired", el: "Έληξε" },
-            style: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+            style: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
         },
     }
 
@@ -304,17 +304,17 @@ export function ProposalView({
                             {language === "el" ? statusBadge.label.el : statusBadge.label.en}
                         </span>
                     </div>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-neutral-500">
                         {PROPOSAL_TYPE_LABELS[proposal.proposalType]?.[language] || proposal.proposalType}
                         {" · "}
                         {LOB_OPTIONS.find((l) => l.value === proposal.lineOfBusiness)?.[language] || proposal.lineOfBusiness}
                     </p>
                 </div>
                 <div className="text-right">
-                    <p className="text-2xl font-black text-slate-900 dark:text-white">
+                    <p className="text-2xl font-black text-foreground">
                         {formatCurrencyFull(proposal.premiumAmount, language)}
                     </p>
-                    <p className="text-[10px] text-slate-400">
+                    <p className="text-[10px] text-neutral-400">
                         {t.collaboration.proposals.perYear}
                     </p>
                 </div>
@@ -323,7 +323,7 @@ export function ProposalView({
             {/* Plain language summary */}
             {proposal.plainLanguageSummary && (
                 <div className="rounded-xl bg-primary-tint dark:bg-primary/15 border border-primary/20 dark:border-primary/30 p-4 mb-4">
-                    <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                    <p className="text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed">
                         {proposal.plainLanguageSummary}
                     </p>
                 </div>
@@ -331,25 +331,25 @@ export function ProposalView({
 
             {/* Coverage summary */}
             <div className="mb-4">
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-2">
                     {t.collaboration.proposals.coverage}
                 </h4>
-                <p className="text-sm text-slate-700 dark:text-slate-300">
+                <p className="text-sm text-neutral-700 dark:text-neutral-300">
                     {proposal.coverageSummary}
                 </p>
             </div>
 
             {/* Comparison data */}
             {proposal.comparisonData && (
-                <div className="rounded-xl border border-slate-200/60 dark:border-slate-700/60 p-4 mb-4">
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                <div className="rounded-xl border border-neutral-200/60 dark:border-neutral-700/60 p-4 mb-4">
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-2">
                         {t.collaboration.proposals.comparison}
                     </h4>
                     <div className="space-y-2">
                         {Object.entries(proposal.comparisonData).map(([key, value]) => (
                             <div key={key} className="flex items-center justify-between text-sm">
-                                <span className="text-slate-600 dark:text-slate-400">{key}</span>
-                                <span className="font-medium text-slate-900 dark:text-white">{String(value)}</span>
+                                <span className="text-neutral-600 dark:text-neutral-400">{key}</span>
+                                <span className="font-medium text-foreground">{String(value)}</span>
                             </div>
                         ))}
                     </div>

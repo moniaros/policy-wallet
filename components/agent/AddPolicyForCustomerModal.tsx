@@ -369,26 +369,26 @@ export function AddPolicyForCustomerModal({
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={handleClose} />
+            <div className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm" onClick={handleClose} />
 
-            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="add-policy-title" tabIndex={-1} className="relative w-full max-w-lg bg-white dark:bg-stone-900 rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="add-policy-title" tabIndex={-1} className="relative w-full max-w-lg bg-white dark:bg-neutral-900 rounded-[32px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
                 <div className="p-8">
                     {/* Header */}
                     <div className="flex items-center justify-between mb-6">
                         <div>
-                            <h2 id="add-policy-title" className="text-xl font-black text-stone-900 dark:text-white tracking-tight">
+                            <h2 id="add-policy-title" className="text-xl font-black text-foreground tracking-tight">
                                 Add Policy for {customerName}
                             </h2>
-                            <p className="text-xs text-stone-500 mt-1">
+                            <p className="text-xs text-neutral-500 mt-1">
                                 This policy will appear in their wallet
                             </p>
                         </div>
                         <button
                             onClick={handleClose}
                             aria-label={t.common.close}
-                            className="p-2 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl transition-colors"
+                            className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-xl transition-colors"
                         >
-                            <svg className="w-5 h-5 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="w-5 h-5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
@@ -396,7 +396,7 @@ export function AddPolicyForCustomerModal({
 
                     {/* Info Banner or Scanner */}
                     {!formData.lineOfBusiness && step === 'type' ? (
-                        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 mb-6 group hover:border-mint/50 transition-all cursor-pointer relative overflow-hidden" onClick={() => document.getElementById('scan-upload')?.click()}>
+                        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-6 mb-6 group hover:border-mint/50 transition-all cursor-pointer relative overflow-hidden" onClick={() => document.getElementById('scan-upload')?.click()}>
                             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                                 <svg className="w-16 h-16 text-mint" fill="currentColor" viewBox="0 0 24 24"><path d="M5 3C3.89 3 3 3.89 3 5V19C3 20.11 3.89 21 5 21H19C20.11 21 21 20.11 21 19V5C21 3.89 20.11 3 19 3H5M5 5H19V19H5V5M7 7V9H17V7H7M7 11V13H17V11H7M7 15V17H14V15H7Z" /></svg>
                             </div>
@@ -411,7 +411,7 @@ export function AddPolicyForCustomerModal({
                                     <h3 className="text-sm font-bold text-white group-hover:text-mint transition-colors">
                                         AI Policy Scanner
                                     </h3>
-                                    <p className="text-xs text-stone-400 mt-1">
+                                    <p className="text-xs text-neutral-400 mt-1">
                                         Upload a policy to auto-fill details instantly
                                     </p>
                                     {isScanning && (
@@ -457,7 +457,7 @@ export function AddPolicyForCustomerModal({
                     {/* Step 1: Select Policy Type */}
                     {step === 'type' && (
                         <div className="space-y-4">
-                            <p className="text-sm text-stone-500 dark:text-stone-400 font-medium">
+                            <p className="text-sm text-muted-foreground font-medium">
                                 What type of policy are you adding?
                             </p>
                             <div className="grid grid-cols-2 gap-3">
@@ -465,10 +465,10 @@ export function AddPolicyForCustomerModal({
                                     <button
                                         key={type.value}
                                         onClick={() => handleTypeSelect(type.value)}
-                                        className="flex items-center gap-3 p-4 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 hover:border-primary dark:hover:border-mint rounded-2xl transition-all hover:shadow-lg group"
+                                        className="flex items-center gap-3 p-4 bg-white dark:bg-neutral-800 border-2 border-neutral-200 dark:border-neutral-700 hover:border-primary dark:hover:border-mint rounded-2xl transition-all hover:shadow-lg group"
                                     >
                                         <span className="text-2xl">{type.icon}</span>
-                                        <span className="font-bold text-slate-900 dark:text-white group-hover:text-primary dark:group-hover:text-mint">
+                                        <span className="font-bold text-foreground group-hover:text-primary dark:group-hover:text-mint">
                                             {type.label.split(' ')[1]}
                                         </span>
                                     </button>
@@ -476,7 +476,7 @@ export function AddPolicyForCustomerModal({
                             </div>
                             <button
                                 onClick={handleClose}
-                                className="w-full py-4 text-xs font-bold text-stone-400 hover:text-stone-600 transition-colors"
+                                className="w-full py-4 text-xs font-bold text-neutral-400 hover:text-neutral-600 transition-colors"
                             >
                                 Cancel
                             </button>
@@ -491,20 +491,20 @@ export function AddPolicyForCustomerModal({
                                 <button
                                     type="button"
                                     onClick={() => setStep('type')}
-                                    className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-300"
+                                    className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
                                 >
                                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
                                     </svg>
                                 </button>
-                                <span className="px-3 py-1 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 text-sm font-bold rounded-full capitalize">
+                                <span className="px-3 py-1 bg-muted text-neutral-600 dark:text-neutral-400 text-sm font-bold rounded-full capitalize">
                                     {policyTypes.find(t => t.value === formData.lineOfBusiness)?.icon} {formData.lineOfBusiness}
                                 </span>
                             </div>
 
                             {/* Insurer */}
                             <div>
-                                <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
+                                <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">
                                     Insurer *
                                 </label>
                                 <select
@@ -512,7 +512,7 @@ export function AddPolicyForCustomerModal({
                                     value={formData.insurerName}
                                     onChange={handleInputChange}
                                     required
-                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                                 >
                                     <option value="">Select insurer...</option>
                                     {insurerOptions.map(insurer => (
@@ -523,7 +523,7 @@ export function AddPolicyForCustomerModal({
 
                             {/* Policy Number */}
                             <div>
-                                <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
+                                <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">
                                     Policy Number *
                                 </label>
                                 <input
@@ -533,14 +533,14 @@ export function AddPolicyForCustomerModal({
                                     onChange={handleInputChange}
                                     placeholder="e.g., POL-2024-12345"
                                     required
-                                    className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-foreground placeholder-neutral-400 focus:ring-2 focus:ring-primary focus:border-transparent"
                                 />
                             </div>
 
                             {/* Car Plate (for motor only) */}
                             {formData.lineOfBusiness === 'motor' && (
                                 <div>
-                                    <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
+                                    <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">
                                         License Plate
                                     </label>
                                     <input
@@ -549,7 +549,7 @@ export function AddPolicyForCustomerModal({
                                         value={formData.carPlate}
                                         onChange={handleInputChange}
                                         placeholder="e.g., ΝΑΑ-1234"
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-foreground placeholder-neutral-400 focus:ring-2 focus:ring-primary focus:border-transparent"
                                     />
                                 </div>
                             )}
@@ -557,7 +557,7 @@ export function AddPolicyForCustomerModal({
                             {/* Dates */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
+                                    <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">
                                         Start Date *
                                     </label>
                                     <input
@@ -566,11 +566,11 @@ export function AddPolicyForCustomerModal({
                                         value={formData.startDate}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
+                                    <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">
                                         End Date *
                                     </label>
                                     <input
@@ -579,14 +579,14 @@ export function AddPolicyForCustomerModal({
                                         value={formData.endDate}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                                     />
                                 </div>
                             </div>
 
                             {/* Premium */}
                             <div>
-                                <label className="block text-xs font-bold text-stone-500 uppercase tracking-wider mb-2">
+                                <label className="block text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">
                                     Annual Premium
                                 </label>
                                 <div className="flex gap-2">
@@ -597,13 +597,13 @@ export function AddPolicyForCustomerModal({
                                         onChange={handleInputChange}
                                         placeholder="0.00"
                                         step="0.01"
-                                        className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        className="flex-1 px-4 py-3 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-foreground placeholder-neutral-400 focus:ring-2 focus:ring-primary focus:border-transparent"
                                     />
                                     <select
                                         name="premiumCurrency"
                                         value={formData.premiumCurrency}
                                         onChange={handleInputChange}
-                                        className="w-24 px-3 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
+                                        className="w-24 px-3 py-3 bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-xl text-foreground focus:ring-2 focus:ring-primary focus:border-transparent"
                                     >
                                         <option value="EUR">EUR</option>
                                     </select>
@@ -615,7 +615,7 @@ export function AddPolicyForCustomerModal({
                                 <button
                                     type="button"
                                     onClick={handleClose}
-                                    className="flex-1 px-4 py-3 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 font-bold rounded-xl hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
+                                    className="flex-1 px-4 py-3 bg-muted text-neutral-600 dark:text-neutral-400 font-bold rounded-xl hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
                                 >
                                     Cancel
                                 </button>
@@ -633,41 +633,41 @@ export function AddPolicyForCustomerModal({
                     {/* Step 3: Confirm */}
                     {step === 'confirm' && (
                         <div className="space-y-5">
-                            <div className="bg-stone-50 dark:bg-stone-800/50 rounded-2xl p-5 space-y-4">
-                                <h4 className="text-sm font-bold text-stone-400 uppercase tracking-wider">
+                            <div className="bg-neutral-50 dark:bg-neutral-800/50 rounded-2xl p-5 space-y-4">
+                                <h4 className="text-sm font-bold text-neutral-400 uppercase tracking-wider">
                                     Policy Summary
                                 </h4>
 
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-center">
-                                        <span className="text-sm text-stone-500">Type</span>
-                                        <span className="text-sm font-bold text-stone-900 dark:text-white capitalize">
+                                        <span className="text-sm text-neutral-500">Type</span>
+                                        <span className="text-sm font-bold text-foreground capitalize">
                                             {policyTypes.find(t => t.value === formData.lineOfBusiness)?.icon} {formData.lineOfBusiness}
                                         </span>
                                     </div>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-sm text-stone-500">Insurer</span>
-                                        <span className="text-sm font-bold text-stone-900 dark:text-white">{formData.insurerName}</span>
+                                        <span className="text-sm text-neutral-500">Insurer</span>
+                                        <span className="text-sm font-bold text-foreground">{formData.insurerName}</span>
                                     </div>
                                     <div className="flex justify-between items-center">
-                                        <span className="text-sm text-stone-500">Policy #</span>
-                                        <span className="text-sm font-mono text-stone-900 dark:text-white">{formData.policyNumber}</span>
+                                        <span className="text-sm text-neutral-500">Policy #</span>
+                                        <span className="text-sm font-mono text-foreground">{formData.policyNumber}</span>
                                     </div>
                                     {formData.carPlate && (
                                         <div className="flex justify-between items-center">
-                                            <span className="text-sm text-stone-500">Plate</span>
-                                            <span className="text-sm font-mono text-stone-900 dark:text-white">{formData.carPlate}</span>
+                                            <span className="text-sm text-neutral-500">Plate</span>
+                                            <span className="text-sm font-mono text-foreground">{formData.carPlate}</span>
                                         </div>
                                     )}
                                     <div className="flex justify-between items-center">
-                                        <span className="text-sm text-stone-500">Period</span>
-                                        <span className="text-sm font-bold text-stone-900 dark:text-white">
+                                        <span className="text-sm text-neutral-500">Period</span>
+                                        <span className="text-sm font-bold text-foreground">
                                             {new Date(formData.startDate).toLocaleDateString()} → {new Date(formData.endDate).toLocaleDateString()}
                                         </span>
                                     </div>
                                     {formData.premiumAmount && (
                                         <div className="flex justify-between items-center">
-                                            <span className="text-sm text-stone-500">Premium</span>
+                                            <span className="text-sm text-neutral-500">Premium</span>
                                             <span className="text-sm font-bold text-primary dark:text-mint">
                                                 {formData.premiumCurrency} {parseFloat(formData.premiumAmount).toLocaleString()}
                                             </span>
@@ -687,19 +687,19 @@ export function AddPolicyForCustomerModal({
                             </div>
 
                             {/* AI-consent attestation */}
-                            <div className="bg-stone-50 dark:bg-stone-800/50 rounded-2xl p-4">
+                            <div className="bg-neutral-50 dark:bg-neutral-800/50 rounded-2xl p-4">
                                 <label className="flex items-start gap-3 cursor-pointer">
                                     <input
                                         type="checkbox"
                                         checked={attestedAiConsent}
                                         onChange={(e) => setAttestedAiConsent(e.target.checked)}
-                                        className="mt-0.5 h-4 w-4 shrink-0 rounded border-stone-300 dark:border-stone-600 text-primary focus:ring-primary"
+                                        className="mt-0.5 h-4 w-4 shrink-0 rounded border-neutral-300 dark:border-neutral-600 text-primary focus:ring-primary"
                                     />
-                                    <span className="text-sm text-stone-700 dark:text-stone-300">
+                                    <span className="text-sm text-neutral-700 dark:text-neutral-300">
                                         {COPY.consentLabel[language]}
                                     </span>
                                 </label>
-                                <p className="mt-2 pl-7 text-xs text-stone-400">
+                                <p className="mt-2 pl-7 text-xs text-neutral-400">
                                     {COPY.consentHelper[language]}
                                 </p>
                             </div>
@@ -707,10 +707,10 @@ export function AddPolicyForCustomerModal({
                             {/* Per-customer policy limit reached — inline upgrade card */}
                             {limitInfo && (
                                 <div className="bg-primary-tint border border-[#E2E8F0] rounded-2xl p-5">
-                                    <p className="text-sm font-bold text-stone-900">
+                                    <p className="text-sm font-bold text-neutral-900">
                                         {COPY.limitTitle[language]}
                                     </p>
-                                    <p className="mt-1 text-xs text-stone-600">
+                                    <p className="mt-1 text-xs text-neutral-600">
                                         {COPY.limitBody[language]
                                             .replace("{limit}", String(limitInfo.limit ?? "-"))
                                             .replace("{current}", String(limitInfo.current ?? "-"))}
@@ -729,7 +729,7 @@ export function AddPolicyForCustomerModal({
                                 <button
                                     type="button"
                                     onClick={() => setStep('details')}
-                                    className="flex-1 px-4 py-3 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 font-bold rounded-xl hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
+                                    className="flex-1 px-4 py-3 bg-muted text-neutral-600 dark:text-neutral-400 font-bold rounded-xl hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
                                 >
                                     Back
                                 </button>
@@ -769,11 +769,11 @@ export function AddPolicyForCustomerModal({
                                     </svg>
                                 </div>
                                 <div>
-                                    <p className="text-lg font-black text-stone-900 dark:text-white tracking-tight">
+                                    <p className="text-lg font-black text-foreground tracking-tight">
                                         {COPY.successTitle[language]}
                                     </p>
                                     {successResult.analysisState === 'started' && (
-                                        <p className="text-xs text-stone-500 mt-0.5">
+                                        <p className="text-xs text-neutral-500 mt-0.5">
                                             {COPY.analysisStartedNotice[language]}
                                         </p>
                                     )}
@@ -800,7 +800,7 @@ export function AddPolicyForCustomerModal({
                             {/* Agent AI-analysis limit reached */}
                             {successResult.analysisState === 'limit_reached' && (
                                 <div className="bg-primary-tint border border-[#E2E8F0] rounded-2xl p-4">
-                                    <p className="text-sm text-stone-700">
+                                    <p className="text-sm text-neutral-700">
                                         {COPY.analysisLimitNotice[language]}
                                     </p>
                                     <Link
@@ -827,7 +827,7 @@ export function AddPolicyForCustomerModal({
                                 <button
                                     type="button"
                                     onClick={handleClose}
-                                    className="w-full px-4 py-3 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 font-bold rounded-full hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
+                                    className="w-full px-4 py-3 bg-muted text-neutral-600 dark:text-neutral-400 font-bold rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
                                 >
                                     {COPY.closeCta[language]}
                                 </button>

@@ -65,10 +65,10 @@ export function CommissionsClient({ data }: Props) {
                 {/* Header */}
                 <div className="mb-10 text-center sm:text-left">
                     <span className="pw-kicker inline-block mb-2">{t.kicker}</span>
-                    <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-3">
+                    <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
                         {t.title}
                     </h1>
-                    <p className="max-w-xl text-lg text-slate-600 dark:text-slate-400">
+                    <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400">
                         {t.subtitle}
                     </p>
                 </div>
@@ -80,7 +80,7 @@ export function CommissionsClient({ data }: Props) {
                             <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
                                 <Euro className="w-5 h-5 text-primary dark:text-mint" />
                             </div>
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.wonCommission}</span>
+                            <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.wonCommission}</span>
                         </div>
                         <p className="text-3xl font-black text-primary dark:text-mint">{fmt(data.totalWon)}</p>
                     </div>
@@ -90,7 +90,7 @@ export function CommissionsClient({ data }: Props) {
                             <div className="w-10 h-10 rounded-xl bg-mint/20 dark:bg-primary/15 flex items-center justify-center">
                                 <TrendingUp className="w-5 h-5 text-primary dark:text-mint" />
                             </div>
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.estimatedPipeline}</span>
+                            <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.estimatedPipeline}</span>
                         </div>
                         <p className="text-3xl font-black text-primary/70 dark:text-mint/80">{fmt(data.totalEstimated)}</p>
                     </div>
@@ -99,35 +99,35 @@ export function CommissionsClient({ data }: Props) {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* By LoB */}
                     <div className="arc-card p-6">
-                        <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest mb-5 flex items-center gap-2">
+                        <h3 className="text-xs font-black text-foreground uppercase tracking-widest mb-5 flex items-center gap-2">
                             <Briefcase className="w-4 h-4 text-primary dark:text-mint" />
                             {t.byLine}
                         </h3>
 
                         {data.byLob.length === 0 ? (
                             <div className="py-12 text-center">
-                                <p className="text-sm text-slate-400">{t.noData}</p>
-                                <p className="text-xs text-slate-400 mt-1">{t.noDataDesc}</p>
+                                <p className="text-sm text-neutral-400">{t.noData}</p>
+                                <p className="text-xs text-neutral-400 mt-1">{t.noDataDesc}</p>
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
                                     <thead>
-                                        <tr className="border-b border-slate-100 dark:border-slate-800">
-                                            <th className="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest pb-3">{t.lob}</th>
-                                            <th className="text-right text-[10px] font-black text-slate-400 uppercase tracking-widest pb-3">{t.premium}</th>
-                                            <th className="text-right text-[10px] font-black text-slate-400 uppercase tracking-widest pb-3">{t.commission}</th>
-                                            <th className="text-right text-[10px] font-black text-slate-400 uppercase tracking-widest pb-3">{t.opportunities}</th>
+                                        <tr className="border-b border-neutral-100 dark:border-neutral-800">
+                                            <th className="text-left text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.lob}</th>
+                                            <th className="text-right text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.premium}</th>
+                                            <th className="text-right text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.commission}</th>
+                                            <th className="text-right text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.opportunities}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {data.byLob.map((row) => (
-                                            <tr key={row.lob} className="border-b border-slate-50 dark:border-slate-800/50">
-                                                <td className="py-3 font-bold text-slate-900 dark:text-white capitalize">{row.lob.replace(/_/g, " ")}</td>
-                                                <td className="py-3 text-right text-slate-600 dark:text-slate-400">
+                                            <tr key={row.lob} className="border-b border-neutral-50 dark:border-neutral-800/50">
+                                                <td className="py-3 font-bold text-foreground capitalize">{row.lob.replace(/_/g, " ")}</td>
+                                                <td className="py-3 text-right text-neutral-600 dark:text-neutral-400">
                                                     <div>{fmt(row.wonPremium)}</div>
                                                     {row.estimatedPremium > 0 && (
-                                                        <div className="text-xs text-slate-400">+{fmt(row.estimatedPremium)}</div>
+                                                        <div className="text-xs text-neutral-400">+{fmt(row.estimatedPremium)}</div>
                                                     )}
                                                 </td>
                                                 <td className="py-3 text-right">
@@ -136,7 +136,7 @@ export function CommissionsClient({ data }: Props) {
                                                         <div className="text-xs text-primary/60 dark:text-mint/70">+{fmt(row.estimatedCommission)}</div>
                                                     )}
                                                 </td>
-                                                <td className="py-3 text-right text-slate-500">{row.opportunityCount}</td>
+                                                <td className="py-3 text-right text-neutral-500">{row.opportunityCount}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -147,7 +147,7 @@ export function CommissionsClient({ data }: Props) {
 
                     {/* Monthly Trend */}
                     <div className="arc-card p-6">
-                        <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest mb-5 flex items-center gap-2">
+                        <h3 className="text-xs font-black text-foreground uppercase tracking-widest mb-5 flex items-center gap-2">
                             <BarChart3 className="w-4 h-4 text-primary dark:text-mint" />
                             {t.monthlyTrend}
                         </h3>
@@ -159,7 +159,7 @@ export function CommissionsClient({ data }: Props) {
                                 return (
                                     <div key={m.month}>
                                         <div className="flex items-center justify-between mb-1.5">
-                                            <span className="text-xs font-bold text-slate-500">{m.month}</span>
+                                            <span className="text-xs font-bold text-neutral-500">{m.month}</span>
                                             <div className="flex items-center gap-3 text-xs">
                                                 <span className="font-bold text-primary dark:text-mint">{fmt(m.won)}</span>
                                                 {m.estimated > 0 && (
@@ -167,7 +167,7 @@ export function CommissionsClient({ data }: Props) {
                                                 )}
                                             </div>
                                         </div>
-                                        <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex">
+                                        <div className="h-3 bg-muted rounded-full overflow-hidden flex">
                                             {wonPct > 0 && (
                                                 <div
                                                     className="h-full bg-primary rounded-l-full"
@@ -186,14 +186,14 @@ export function CommissionsClient({ data }: Props) {
                             })}
                         </div>
 
-                        <div className="flex items-center gap-6 mt-5 pt-4 border-t border-slate-100 dark:border-slate-800">
+                        <div className="flex items-center gap-6 mt-5 pt-4 border-t border-neutral-100 dark:border-neutral-800">
                             <div className="flex items-center gap-2">
                                 <div className="w-3 h-3 rounded-full bg-primary" />
-                                <span className="text-xs font-bold text-slate-500">{t.won}</span>
+                                <span className="text-xs font-bold text-neutral-500">{t.won}</span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <div className="w-3 h-3 rounded-full bg-mint" />
-                                <span className="text-xs font-bold text-slate-500">{t.projected}</span>
+                                <span className="text-xs font-bold text-neutral-500">{t.projected}</span>
                             </div>
                         </div>
                     </div>

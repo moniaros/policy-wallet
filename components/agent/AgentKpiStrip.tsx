@@ -26,7 +26,7 @@ interface AgentKpiStripProps {
 }
 
 const ACCENTS: Record<string, string> = {
-    slate: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300",
+    slate: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300",
     amber: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
     red: "bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400",
     blue: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
@@ -53,11 +53,11 @@ function KpiCard({
                     <Icon className="h-4 w-4" />
                 </span>
                 <div className="min-w-0">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-neutral-400 dark:text-neutral-500">
                         {label}
                     </p>
-                    <p className="mt-0.5 truncate text-xl font-black text-slate-900 dark:text-white">{value}</p>
-                    {sub && <p className="text-[10px] text-slate-400 dark:text-slate-500">{sub}</p>}
+                    <p className="mt-0.5 truncate text-xl font-black text-foreground">{value}</p>
+                    {sub && <p className="text-[10px] text-neutral-400 dark:text-neutral-500">{sub}</p>}
                 </div>
             </div>
         </div>

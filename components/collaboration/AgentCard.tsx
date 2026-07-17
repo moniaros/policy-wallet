@@ -34,12 +34,12 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                     </div>
                 )}
                 <div>
-                    <p className="text-sm font-semibold text-slate-900 dark:text-white">{agent.name}</p>
+                    <p className="text-sm font-semibold text-foreground">{agent.name}</p>
                     <div className="flex items-center gap-1">
                         {agent.verificationStatus === "verified" && (
                             <ShieldCheck className="h-3 w-3 text-[#22C55E]" />
                         )}
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                        <span className="text-[10px] text-muted-foreground">
                             {t.agentUi.licensedAgent}
                         </span>
                     </div>
@@ -69,7 +69,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
 
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white truncate">
+                        <h3 className="text-lg font-bold text-foreground truncate">
                             {agent.name}
                         </h3>
                         {agent.verificationStatus === "verified" && (
@@ -79,7 +79,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                             </span>
                         )}
                     </div>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                    <p className="text-sm text-muted-foreground">
                         {agent.agencyName}
                     </p>
 
@@ -88,7 +88,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                         {agent.phone && (
                             <a
                                 href={`tel:${agent.phone}`}
-                                className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-mint transition"
+                                className="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-mint transition"
                             >
                                 <Phone className="h-3.5 w-3.5" />
                                 {agent.phone}
@@ -96,7 +96,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                         )}
                         <a
                             href={`mailto:${agent.email}`}
-                            className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-mint transition"
+                            className="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-mint transition"
                         >
                             <Mail className="h-3.5 w-3.5" />
                             {agent.email}
@@ -106,7 +106,7 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
                                 href={agent.website}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-mint transition"
+                                className="flex items-center gap-1.5 text-xs text-neutral-600 dark:text-neutral-400 hover:text-primary dark:hover:text-mint transition"
                             >
                                 <Globe className="h-3.5 w-3.5" />
                                 {t.agentUi.website}
@@ -119,8 +119,8 @@ export function AgentCard({ agent, viewerRole, compact }: AgentCardProps) {
 
             {/* License footer */}
             {agent.licenseNumber && (
-                <div className="mt-4 pt-3 border-t border-slate-200/60 dark:border-slate-700/60">
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500">
+                <div className="mt-4 pt-3 border-t border-neutral-200/60 dark:border-neutral-700/60">
+                    <p className="text-[10px] text-neutral-400 dark:text-neutral-500">
                         {t.agentUi.eaeeLicenseNo}: {agent.licenseNumber}
                     </p>
                 </div>

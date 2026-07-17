@@ -215,7 +215,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                     <button
                         type="button"
                         onClick={() => setIsTaskModalOpen(true)}
-                        className="bg-stone-900 text-white rounded-full p-4 shadow-lg hover:scale-105 transition-transform group flex items-center gap-3 pr-6"
+                        className="bg-neutral-900 text-white rounded-full p-4 shadow-lg hover:scale-105 transition-transform group flex items-center gap-3 pr-6"
                     >
                         <span className="w-6 h-6 flex items-center justify-center border-2 border-white/30 rounded-full">
                             <Plus className="w-3 h-3" />
@@ -300,7 +300,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                     {/* Document Requests */}
                     <div className="pw-card rounded-2xl p-5">
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                                 <FileText className="h-5 w-5 text-primary dark:text-mint" />
                                 {PROFILE_COPY.documentRequests[language]}
                                 {documentRequests.filter(r => r.status === "pending").length > 0 && (
@@ -322,7 +322,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                                 {[1, 2].map(i => <Skeleton key={i} className="h-14 w-full rounded-xl" />)}
                             </div>
                         ) : documentRequests.length === 0 ? (
-                            <p className="text-sm text-slate-500 text-center py-4">
+                            <p className="text-sm text-neutral-500 text-center py-4">
                                 {PROFILE_COPY.noDocumentRequests[language]}
                             </p>
                         ) : (
@@ -341,7 +341,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                     {/* Proposals */}
                     <div className="pw-card rounded-2xl p-5">
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                            <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                                 <Send className="h-5 w-5 text-primary dark:text-mint" />
                                 {PROFILE_COPY.proposals[language]}
                                 {proposals.filter(p => p.status === "pending").length > 0 && (
@@ -363,7 +363,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, healthScore 
                                 {[1, 2].map(i => <Skeleton key={i} className="h-32 w-full rounded-xl" />)}
                             </div>
                         ) : proposals.length === 0 ? (
-                            <p className="text-sm text-slate-500 text-center py-4">
+                            <p className="text-sm text-neutral-500 text-center py-4">
                                 {PROFILE_COPY.noProposals[language]}
                             </p>
                         ) : (

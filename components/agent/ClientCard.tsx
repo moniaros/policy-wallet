@@ -44,18 +44,18 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                 )}
                 {/* Health score dot */}
                 <span
-                    className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white dark:border-slate-900 ${dotColor}`}
+                    className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-white dark:border-neutral-900 ${dotColor}`}
                     title={`${t.agentUi.healthScore}: ${client.healthScore}`}
                 />
             </div>
 
             {/* Info */}
             <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                <p className="text-sm font-semibold text-foreground truncate">
                     {client.name} {client.surname}
                 </p>
                 <div className="flex items-center gap-2 mt-0.5">
-                    <span className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
                         <Shield className="h-3 w-3" />
                         {client.policyCount} {t.agentUi.policiesAbbr}
                     </span>
@@ -82,7 +82,7 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
                     >
                         {client.protectionScore}
                     </span>
-                    <span className="text-[9px] text-slate-400">/100</span>
+                    <span className="text-[9px] text-neutral-400">/100</span>
                     {(client.gapCount ?? 0) > 0 && (
                         <span className="flex items-center gap-0.5 text-[9px] text-red-500">
                             <AlertTriangle className="h-2.5 w-2.5" />
@@ -93,7 +93,7 @@ export function ClientCard({ client, onClick }: ClientCardProps) {
             )}
 
             {/* Arrow */}
-            <ChevronRight className="h-4 w-4 shrink-0 text-slate-400" />
+            <ChevronRight className="h-4 w-4 shrink-0 text-neutral-400" />
         </button>
     )
 }
@@ -126,12 +126,12 @@ export function ClientListGrouped({ clients, onClientClick, onInviteClient, isLo
                     <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
                         <UserPlus className="h-5 w-5 text-primary dark:text-mint" />
                     </div>
-                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                         {language === "el"
                             ? "Προσκαλέστε τον πρώτο σας πελάτη"
                             : "Invite your first client"}
                     </p>
-                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                    <p className="mt-1 text-xs text-muted-foreground">
                         {language === "el"
                             ? "Ξεκινήστε να χτίζετε το χαρτοφυλάκιό σας"
                             : "Start building your portfolio"}
@@ -163,7 +163,7 @@ export function ClientListGrouped({ clients, onClientClick, onInviteClient, isLo
                             <h3 className={`text-xs font-semibold uppercase tracking-wider ${display.color}`}>
                                 {display.label}
                             </h3>
-                            <span className="text-xs text-slate-400">
+                            <span className="text-xs text-neutral-400">
                                 ({tierClients.length})
                             </span>
                         </div>

@@ -120,22 +120,22 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="bulk-import-title" tabIndex={-1} className="bg-white dark:bg-stone-800 rounded-2xl shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="bulk-import-title" tabIndex={-1} className="bg-white dark:bg-neutral-800 rounded-2xl shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
                 {/* Header */}
-                <div className="border-b border-stone-200 dark:border-stone-700 px-6 py-4">
+                <div className="border-b border-neutral-200 dark:border-neutral-700 px-6 py-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 id="bulk-import-title" className="text-2xl font-bold text-stone-900 dark:text-white">
+                            <h2 id="bulk-import-title" className="text-2xl font-bold text-foreground">
                                 {tt.title}
                             </h2>
-                            <p className="text-sm text-stone-600 dark:text-stone-400 mt-1">
+                            <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
                                 {tt.subtitle}
                             </p>
                         </div>
                         <button
                             onClick={handleClose}
                             aria-label={t.common.close}
-                            className="text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 transition-colors"
+                            className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-colors"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -163,7 +163,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                             </div>
 
                             {/* File Upload */}
-                            <div className="border-2 border-dashed border-stone-300 dark:border-stone-600 rounded-xl p-8 text-center">
+                            <div className="border-2 border-dashed border-neutral-300 dark:border-neutral-600 rounded-xl p-8 text-center">
                                 <input
                                     type="file"
                                     accept=".csv"
@@ -176,13 +176,13 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                     htmlFor="csv-upload"
                                     className="cursor-pointer inline-flex flex-col items-center"
                                 >
-                                    <svg className="w-16 h-16 text-stone-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-16 h-16 text-neutral-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                     </svg>
-                                    <span className="text-lg font-bold text-stone-700 dark:text-stone-300">
+                                    <span className="text-lg font-bold text-neutral-700 dark:text-neutral-300">
                                         {isProcessing ? tt.processing : tt.clickToUpload}
                                     </span>
-                                    <span className="text-sm text-stone-500 dark:text-stone-400 mt-1">
+                                    <span className="text-sm text-muted-foreground mt-1">
                                         {tt.dragAndDrop}
                                     </span>
                                 </label>
@@ -202,31 +202,31 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                     <div className="text-3xl font-bold text-red-700 dark:text-red-400">{invalidCount}</div>
                                     <div className="text-sm font-medium text-red-600 dark:text-red-500">{tt.invalid}</div>
                                 </div>
-                                <div className="bg-stone-50 dark:bg-stone-700 border border-stone-200 dark:border-stone-600 rounded-xl p-4">
-                                    <div className="text-3xl font-bold text-stone-700 dark:text-stone-300">{customers.length}</div>
-                                    <div className="text-sm font-medium text-stone-600 dark:text-stone-400">{tt.total}</div>
+                                <div className="bg-neutral-50 dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600 rounded-xl p-4">
+                                    <div className="text-3xl font-bold text-neutral-700 dark:text-neutral-300">{customers.length}</div>
+                                    <div className="text-sm font-medium text-neutral-600 dark:text-neutral-400">{tt.total}</div>
                                 </div>
                             </div>
 
                             {/* Preview Table */}
-                            <div className="border border-stone-200 dark:border-stone-700 rounded-xl overflow-hidden max-h-96 overflow-y-auto">
+                            <div className="border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden max-h-96 overflow-y-auto">
                                 <table className="w-full text-sm">
-                                    <thead className="bg-stone-50 dark:bg-stone-900/50 sticky top-0">
+                                    <thead className="bg-neutral-50 dark:bg-neutral-900/50 sticky top-0">
                                         <tr>
-                                            <th className="px-4 py-3 text-left font-bold text-stone-600 dark:text-stone-400">{tt.colName}</th>
-                                            <th className="px-4 py-3 text-left font-bold text-stone-600 dark:text-stone-400">{tt.colEmail}</th>
-                                            <th className="px-4 py-3 text-left font-bold text-stone-600 dark:text-stone-400">{tt.colPhone}</th>
-                                            <th className="px-4 py-3 text-left font-bold text-stone-600 dark:text-stone-400">{tt.colStatus}</th>
+                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-400">{tt.colName}</th>
+                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-400">{tt.colEmail}</th>
+                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-400">{tt.colPhone}</th>
+                                            <th className="px-4 py-3 text-left font-bold text-neutral-600 dark:text-neutral-400">{tt.colStatus}</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-stone-100 dark:divide-stone-700">
+                                    <tbody className="divide-y divide-neutral-100 dark:divide-neutral-700">
                                         {customers.map((customer, index) => (
                                             <tr key={index} className={customer.status === 'invalid' ? 'bg-red-50 dark:bg-red-900/10' : ''}>
-                                                <td className="px-4 py-3 text-stone-900 dark:text-white">
+                                                <td className="px-4 py-3 text-foreground">
                                                     {customer.name} {customer.surname}
                                                 </td>
-                                                <td className="px-4 py-3 text-stone-600 dark:text-stone-400">{customer.email}</td>
-                                                <td className="px-4 py-3 text-stone-600 dark:text-stone-400">{customer.phone}</td>
+                                                <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{customer.email}</td>
+                                                <td className="px-4 py-3 text-neutral-600 dark:text-neutral-400">{customer.phone}</td>
                                                 <td className="px-4 py-3">
                                                     {customer.status === 'valid' ? (
                                                         <span className="px-2 py-1 bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint rounded-full text-xs font-bold">
@@ -248,7 +248,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                             <div className="flex gap-3 pt-4">
                                 <button
                                     onClick={() => setStep('upload')}
-                                    className="flex-1 px-6 py-3 rounded-xl font-bold text-stone-700 dark:text-stone-300 bg-stone-100 dark:bg-stone-700 hover:bg-stone-200 dark:hover:bg-stone-600 transition-colors"
+                                    className="flex-1 px-6 py-3 rounded-xl font-bold text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors"
                                 >
                                     {tt.back}
                                 </button>
@@ -266,8 +266,8 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                     {step === 'importing' && (
                         <div className="py-12 text-center">
                             <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary/20 border-t-primary mb-4"></div>
-                            <h3 className="text-xl font-bold text-stone-900 dark:text-white">{tt.importingTitle}</h3>
-                            <p className="text-stone-600 dark:text-stone-400 mt-2">{tt.importingDesc}</p>
+                            <h3 className="text-xl font-bold text-foreground">{tt.importingTitle}</h3>
+                            <p className="text-neutral-600 dark:text-neutral-400 mt-2">{tt.importingDesc}</p>
                         </div>
                     )}
 
@@ -278,8 +278,8 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
-                            <h3 className="text-xl font-bold text-stone-900 dark:text-white">{tt.completeTitle}</h3>
-                            <p className="text-stone-600 dark:text-stone-400 mt-2">
+                            <h3 className="text-xl font-bold text-foreground">{tt.completeTitle}</h3>
+                            <p className="text-neutral-600 dark:text-neutral-400 mt-2">
                                 {tt.successfullyImported} {importedCount} {importedCount !== 1 ? tt.custPlural : tt.custSingular}
                             </p>
                         </div>

@@ -26,7 +26,7 @@ function RadialProgress({ value, color, size = 64 }: { value: number; color: str
                 fill="none"
                 stroke="currentColor"
                 strokeWidth={4}
-                className="text-slate-200 dark:text-slate-700"
+                className="text-neutral-200 dark:text-neutral-700"
             />
             <circle
                 cx={size / 2}
@@ -104,7 +104,7 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
         <BrandCard className="p-5">
             <div className="flex items-center gap-2 mb-4">
                 <Activity className="h-5 w-5 text-primary dark:text-mint" />
-                <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                <h2 className="text-base font-bold text-foreground">
                     {t.agentUi.portfolioHealth}
                 </h2>
             </div>
@@ -117,18 +117,18 @@ export function PortfolioHealth({ health, isLoading }: PortfolioHealthProps) {
                             <div className="relative">
                                 <RadialProgress value={metric.value} color={metric.color} />
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <span className="text-sm font-bold text-slate-900 dark:text-white">
+                                    <span className="text-sm font-bold text-foreground">
                                         {metric.displayValue}
                                     </span>
                                 </div>
                             </div>
                             <div className="mt-2 flex items-center gap-1">
-                                <Icon className="h-3.5 w-3.5 text-slate-500" />
-                                <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+                                <Icon className="h-3.5 w-3.5 text-neutral-500" />
+                                <span className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
                                     {metric.label}
                                 </span>
                             </div>
-                            <p className="mt-0.5 text-[10px] text-slate-400 dark:text-slate-500">
+                            <p className="mt-0.5 text-[10px] text-neutral-400 dark:text-neutral-500">
                                 {metric.description}
                             </p>
                         </div>

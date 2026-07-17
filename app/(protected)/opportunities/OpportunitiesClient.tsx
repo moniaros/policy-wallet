@@ -72,10 +72,10 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
             <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-12 lg:py-16">
                 <header className="mb-10 text-center sm:text-left">
                     <span className="pw-kicker inline-block mb-2">{opp_t.kicker}</span>
-                    <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-3">
+                    <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
                         {opp_t.title}
                     </h1>
-                    <p className="max-w-xl text-lg text-slate-600 dark:text-slate-400">
+                    <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400">
                         {opp_t.subtitle}
                     </p>
                 </header>
@@ -94,8 +94,8 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                             key={key}
                             onClick={() => setFilter(key)}
                             className={`px-5 py-2.5 rounded-full font-bold text-sm tracking-wide whitespace-nowrap transition-all duration-300 ${filter === key
-                                ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-xl shadow-slate-900/10'
-                                : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 dark:bg-slate-900/50 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white shadow-sm'
+                                ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 shadow-xl shadow-neutral-900/10'
+                                : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 dark:bg-neutral-900/50 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white shadow-sm'
                                 }`}
                         >
                             {statusLabel(key)} {count > 0 && <span className="ml-1.5 opacity-60 text-xs">({count})</span>}
@@ -108,25 +108,25 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-slate-50/50 dark:bg-slate-900/20 border-b border-slate-100 dark:border-slate-800/60">
-                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-8">{opp_t.colCustomer}</th>
-                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{opp_t.colOpportunity}</th>
-                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{opp_t.colStatus}</th>
-                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{opp_t.colLikelihood}</th>
-                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{opp_t.colNextAction}</th>
-                                    <th className="px-6 py-5 text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest text-right pr-8">{opp_t.colActions}</th>
+                                <tr className="bg-neutral-50/50 dark:bg-neutral-900/20 border-b border-neutral-100 dark:border-neutral-800/60">
+                                    <th className="px-6 py-5 text-[11px] font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest pl-8">{opp_t.colCustomer}</th>
+                                    <th className="px-6 py-5 text-[11px] font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">{opp_t.colOpportunity}</th>
+                                    <th className="px-6 py-5 text-[11px] font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">{opp_t.colStatus}</th>
+                                    <th className="px-6 py-5 text-[11px] font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">{opp_t.colLikelihood}</th>
+                                    <th className="px-6 py-5 text-[11px] font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">{opp_t.colNextAction}</th>
+                                    <th className="px-6 py-5 text-[11px] font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest text-right pr-8">{opp_t.colActions}</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
+                            <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/50">
                                 {filteredOpportunities.length === 0 ? (
                                     <tr>
                                         <td colSpan={6} className="px-6 py-20 text-center">
-                                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-slate-100 dark:bg-slate-800 text-slate-400 mb-4">
+                                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-muted text-neutral-400 mb-4">
                                                 <svg className="w-8 h-8 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                 </svg>
                                             </div>
-                                            <p className="text-slate-500 dark:text-slate-400 font-medium tracking-tight">
+                                            <p className="text-muted-foreground font-medium tracking-tight">
                                                 {filter === 'all'
                                                     ? opp_t.emptyAll
                                                     : opp_t.emptyFiltered.replace('{status}', statusLabel(filter))
@@ -136,15 +136,15 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                     </tr>
                                 ) : (
                                     filteredOpportunities.map((opp) => (
-                                        <tr key={opp.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-colors group">
+                                        <tr key={opp.id} className="hover:bg-neutral-50/80 dark:hover:bg-neutral-800/30 transition-colors group">
                                             <td className="px-6 py-6 pl-8">
-                                                <div className="font-bold text-slate-900 dark:text-white capitalize tracking-tight">{opp.customerName}</div>
-                                                <div className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">{opp.customerEmail}</div>
+                                                <div className="font-bold text-foreground capitalize tracking-tight">{opp.customerName}</div>
+                                                <div className="text-xs font-medium text-muted-foreground mt-1">{opp.customerEmail}</div>
                                             </td>
                                             <td className="px-6 py-6">
-                                                <div className="text-sm font-bold text-slate-800 dark:text-slate-200">{opp.title}</div>
+                                                <div className="text-sm font-bold text-neutral-800 dark:text-neutral-200">{opp.title}</div>
                                                 {opp.notes && (
-                                                    <div className="text-[13px] text-slate-500 dark:text-slate-400 mt-1.5 line-clamp-1 max-w-[300px]">
+                                                    <div className="text-[13px] text-muted-foreground mt-1.5 line-clamp-1 max-w-[300px]">
                                                         {opp.notes}
                                                     </div>
                                                 )}
@@ -152,7 +152,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                             <td className="px-6 py-6">
                                                 <span className={`pw-pill uppercase tracking-widest ${opp.status === 'won' ? 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint' :
                                                     opp.status === 'lost' ? 'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400' :
-                                                        opp.status === 'quoted' ? 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400' :
+                                                        opp.status === 'quoted' ? 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-400' :
                                                             opp.status === 'contacted' ? 'bg-mint/25 text-primary dark:bg-primary/15 dark:text-mint' :
                                                                 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400'
                                                     }`}>
@@ -164,29 +164,29 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                     <div className="flex items-center gap-1.5">
                                                         <span className={`inline-block h-2 w-2 rounded-full ${
                                                             opp.conversionLikelihood === "high" ? "bg-primary" :
-                                                            opp.conversionLikelihood === "medium" ? "bg-amber-500" : "bg-slate-400"
+                                                            opp.conversionLikelihood === "medium" ? "bg-amber-500" : "bg-neutral-400"
                                                         }`} />
-                                                        <span className="text-xs font-bold text-slate-600 dark:text-slate-400">
+                                                        <span className="text-xs font-bold text-neutral-600 dark:text-neutral-400">
                                                             {opp_t.likelihood[opp.conversionLikelihood]}
                                                         </span>
                                                         {opp.conversionScore != null && (
-                                                            <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono">
+                                                            <span className="text-[10px] text-neutral-400 dark:text-neutral-500 font-mono">
                                                                 {opp.conversionScore}%
                                                             </span>
                                                         )}
                                                     </div>
                                                 ) : (
-                                                    <span className="text-xs text-slate-400">—</span>
+                                                    <span className="text-xs text-neutral-400">—</span>
                                                 )}
                                             </td>
-                                            <td className="px-6 py-6 text-sm font-bold text-slate-500 dark:text-slate-400">
+                                            <td className="px-6 py-6 text-sm font-bold text-muted-foreground">
                                                 {opp.nextActionAt ? new Date(opp.nextActionAt).toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US') : '—'}
                                             </td>
                                             <td className="px-6 py-6 text-right pr-8">
                                                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <button
                                                         onClick={() => setSelectedOpp(opp)}
-                                                        className="arc-btn bg-slate-100 hover:bg-slate-200 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-300 px-4 py-2 text-[13px]"
+                                                        className="arc-btn bg-neutral-100 hover:bg-neutral-200 text-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-neutral-300 px-4 py-2 text-[13px]"
                                                     >
                                                         {opp_t.update}
                                                     </button>

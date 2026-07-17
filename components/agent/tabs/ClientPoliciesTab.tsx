@@ -43,11 +43,11 @@ const STATUS_STYLES: Record<string, string> = {
     // Expired is a calendar fact, not an alarm — same amber language as the
     // policyholder surfaces (never green, never a red siren).
     expired: "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300",
-    unknown_duration: "bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-300",
+    unknown_duration: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300",
     action_needed: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
-    cancelled: "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400",
+    cancelled: "bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400",
     analyzing: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300",
-    incomplete: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+    incomplete: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
 }
 
 const STATUS_LABELS: Record<string, { el: string; en: string }> = {
@@ -89,7 +89,7 @@ export function ClientPoliciesTab({
                     <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
                         <Shield className="h-5 w-5 text-primary dark:text-mint" />
                     </div>
-                    <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                         {TAB_COPY.noPolicies[language]}
                     </p>
                     {onUploadPolicy && (
@@ -108,11 +108,11 @@ export function ClientPoliciesTab({
             {/* Filters and actions */}
             <div className="flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
-                    <Filter className="h-4 w-4 text-slate-400" />
+                    <Filter className="h-4 w-4 text-neutral-400" />
                     <select
                         value={filterLob || ""}
                         onChange={(e) => setFilterLob(e.target.value || null)}
-                        className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs text-slate-700 dark:text-slate-300"
+                        className="rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-1.5 text-xs text-neutral-700 dark:text-neutral-300"
                     >
                         <option value="">{TAB_COPY.allTypes[language]}</option>
                         {uniqueLobs.map((lob) => (
@@ -124,7 +124,7 @@ export function ClientPoliciesTab({
                     <select
                         value={filterStatus || ""}
                         onChange={(e) => setFilterStatus(e.target.value || null)}
-                        className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs text-slate-700 dark:text-slate-300"
+                        className="rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-1.5 text-xs text-neutral-700 dark:text-neutral-300"
                     >
                         <option value="">{TAB_COPY.allStatuses[language]}</option>
                         {uniqueStatuses.map((status) => (
@@ -140,7 +140,7 @@ export function ClientPoliciesTab({
                         <button
                             type="button"
                             onClick={() => setShowCommission(!showCommission)}
-                            className="flex items-center gap-1.5 rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition cursor-pointer"
+                            className="flex items-center gap-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 px-3 py-1.5 text-xs font-medium text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition cursor-pointer"
                         >
                             {showCommission ? (
                                 <EyeOff className="h-3.5 w-3.5" />
@@ -175,7 +175,7 @@ export function ClientPoliciesTab({
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2">
-                                        <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                                        <p className="text-sm font-semibold text-foreground">
                                             {LOB_LABELS[policy.lineOfBusiness]?.[language] || policy.lineOfBusiness}
                                         </p>
                                         <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_STYLES[policy.status] || STATUS_STYLES.incomplete}`}>
@@ -187,14 +187,14 @@ export function ClientPoliciesTab({
                                             </span>
                                         )}
                                     </div>
-                                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                                    <p className="text-xs text-muted-foreground">
                                         {policy.insurerName}
                                         {policy.carPlate && ` · ${policy.carPlate}`}
                                     </p>
                                 </div>
 
                                 <div className="text-right">
-                                    <div className="flex items-center gap-1 text-xs text-slate-400">
+                                    <div className="flex items-center gap-1 text-xs text-neutral-400">
                                         <Calendar className="h-3 w-3" />
                                         {formatDateGreek(policy.endDate)}
                                     </div>

@@ -147,10 +147,10 @@ export function TeamClient({ team, pipeline }: Props) {
                 {/* Header */}
                 <div className="mb-10 text-center sm:text-left">
                     <span className="pw-kicker inline-block mb-2">{t.kicker}</span>
-                    <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-3">
+                    <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
                         {t.title}
                     </h1>
-                    <p className="max-w-xl text-lg text-slate-600 dark:text-slate-400">
+                    <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400">
                         {t.subtitle}
                     </p>
                 </div>
@@ -164,7 +164,7 @@ export function TeamClient({ team, pipeline }: Props) {
                         color="primary"
                     />
                     <StatCard
-                        icon={<Briefcase className="w-5 h-5 text-slate-500 dark:text-slate-400" />}
+                        icon={<Briefcase className="w-5 h-5 text-muted-foreground" />}
                         label={t.totalCustomers}
                         value={String(team.stats.totalCustomers)}
                         color="slate"
@@ -209,7 +209,7 @@ function StatCard({ icon, label, value, color }: {
 }) {
     const bgMap: Record<string, string> = {
         primary: "bg-primary-soft dark:bg-primary/15",
-        slate: "bg-slate-100 dark:bg-slate-800",
+        slate: "bg-muted",
         amber: "bg-amber-50 dark:bg-amber-900/20",
     }
     return (
@@ -219,8 +219,8 @@ function StatCard({ icon, label, value, color }: {
                     {icon}
                 </div>
             </div>
-            <p className="text-2xl font-black text-slate-900 dark:text-white">{value}</p>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">{label}</p>
+            <p className="text-2xl font-black text-foreground">{value}</p>
+            <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mt-1">{label}</p>
         </div>
     )
 }
@@ -250,7 +250,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
     const roleIcon = (role: string) => {
         if (role === "owner") return <Crown className="w-3.5 h-3.5 text-amber-500" />
         if (role === "manager") return <Shield className="w-3.5 h-3.5 text-primary dark:text-mint" />
-        return <User className="w-3.5 h-3.5 text-slate-400" />
+        return <User className="w-3.5 h-3.5 text-neutral-400" />
     }
 
     const roleLabel = (role: string) => {
@@ -268,7 +268,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
     return (
         <div className="arc-card p-6">
             <div className="flex items-center justify-between mb-5">
-                <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest flex items-center gap-2">
+                <h3 className="text-xs font-black text-foreground uppercase tracking-widest flex items-center gap-2">
                     <Users className="w-4 h-4 text-primary dark:text-mint" />
                     {t.members}
                 </h3>
@@ -283,18 +283,18 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
 
             {/* Invite form */}
             {showInvite && (
-                <div className="mb-5 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 space-y-3">
+                <div className="mb-5 p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-800/50 space-y-3">
                     <input
                         type="email"
                         placeholder={t.email}
                         value={inviteEmail}
                         onChange={(e) => setInviteEmail(e.target.value)}
-                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-medium"
+                        className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium"
                     />
                     <select
                         value={inviteRole}
                         onChange={(e) => setInviteRole(e.target.value as "member" | "manager")}
-                        className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-medium"
+                        className="w-full px-3 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium"
                     >
                         <option value="member">{t.member}</option>
                         <option value="manager">{t.manager}</option>
@@ -307,7 +307,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                     <div className="flex gap-2">
                         <button
                             onClick={() => setShowInvite(false)}
-                            className="flex-1 px-3 py-2 text-xs font-bold text-slate-500 hover:text-slate-700"
+                            className="flex-1 px-3 py-2 text-xs font-bold text-neutral-500 hover:text-neutral-700"
                         >
                             {t.cancel}
                         </button>
@@ -325,22 +325,22 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
             {/* Members list */}
             <div className="space-y-3">
                 {team.members.map((m) => (
-                    <div key={m.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors relative">
+                    <div key={m.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors relative">
                         {m.photoUrl ? (
                             <img src={m.photoUrl} alt={m.name} className="w-10 h-10 rounded-xl object-cover" />
                         ) : (
-                            <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-sm font-black text-slate-500">
+                            <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center text-sm font-black text-neutral-500">
                                 {m.name.charAt(0)}
                             </div>
                         )}
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
-                                <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{m.name}</p>
+                                <p className="text-sm font-bold text-foreground truncate">{m.name}</p>
                                 {roleIcon(m.role)}
                                 {statusBadge(m.status)}
                             </div>
                             <div className="flex items-center gap-3 mt-0.5">
-                                <span className="text-[10px] font-bold text-slate-400">
+                                <span className="text-[10px] font-bold text-neutral-400">
                                     {m.customerCount} {t.customers}
                                 </span>
                                 <span className="text-[10px] font-bold text-primary dark:text-mint">
@@ -351,7 +351,7 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
                         {m.role !== "owner" && (
                             <button
                                 onClick={() => setMenuOpen(menuOpen === m.id ? null : m.id)}
-                                className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400"
+                                className="p-1.5 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-400"
                             >
                                 <MoreVertical className="w-4 h-4" />
                             </button>
@@ -359,14 +359,14 @@ function MembersPanel({ team, t, fmt }: { team: TeamOverview; t: typeof copy.en;
 
                         {/* Context menu */}
                         {menuOpen === m.id && (
-                            <div className="absolute right-0 top-full z-10 mt-1 w-44 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                            <div className="absolute right-0 top-full z-10 mt-1 w-44 bg-white dark:bg-neutral-800 rounded-xl shadow-xl border border-neutral-200 dark:border-neutral-700 overflow-hidden">
                                 <button
                                     onClick={async () => {
                                         const newRole = m.role === "manager" ? "member" : "manager"
                                         await updateRoleAction(m.userId, newRole)
                                         setMenuOpen(null)
                                     }}
-                                    className="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-2"
+                                    className="w-full px-4 py-2.5 text-left text-xs font-bold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 flex items-center gap-2"
                                 >
                                     <ArrowRightLeft className="w-3.5 h-3.5" />
                                     {t.changeRole}
@@ -397,7 +397,7 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
     fmt: (n: number) => string
 }) {
     const statusColor: Record<string, string> = {
-        open: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+        open: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
         contacted: "bg-mint/25 text-primary dark:bg-primary/15 dark:text-mint",
         quoted: "bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400",
         won: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
@@ -406,50 +406,50 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
 
     return (
         <div className="arc-card p-6">
-            <h3 className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest mb-5 flex items-center gap-2">
+            <h3 className="text-xs font-black text-foreground uppercase tracking-widest mb-5 flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-primary dark:text-mint" />
                 {t.sharedPipeline}
             </h3>
 
             {pipeline.length === 0 ? (
                 <div className="py-12 text-center">
-                    <p className="text-sm text-slate-400">{t.noOpps}</p>
+                    <p className="text-sm text-neutral-400">{t.noOpps}</p>
                 </div>
             ) : (
                 <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                         <thead>
-                            <tr className="border-b border-slate-100 dark:border-slate-800">
-                                <th className="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest pb-3">{t.customer}</th>
-                                <th className="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest pb-3">{t.agent}</th>
-                                <th className="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest pb-3">{t.lob}</th>
-                                <th className="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest pb-3">{t.status}</th>
-                                <th className="text-right text-[10px] font-black text-slate-400 uppercase tracking-widest pb-3">{t.value}</th>
+                            <tr className="border-b border-neutral-100 dark:border-neutral-800">
+                                <th className="text-left text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.customer}</th>
+                                <th className="text-left text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.agent}</th>
+                                <th className="text-left text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.lob}</th>
+                                <th className="text-left text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.status}</th>
+                                <th className="text-right text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.value}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {pipeline.map((item) => (
-                                <tr key={item.id} className="border-b border-slate-50 dark:border-slate-800/50">
-                                    <td className="py-3 font-bold text-slate-900 dark:text-white">{item.customerName}</td>
+                                <tr key={item.id} className="border-b border-neutral-50 dark:border-neutral-800/50">
+                                    <td className="py-3 font-bold text-foreground">{item.customerName}</td>
                                     <td className="py-3">
                                         <div className="flex items-center gap-2">
                                             {item.agentPhoto ? (
                                                 <img src={item.agentPhoto} alt="" className="w-6 h-6 rounded-lg object-cover" />
                                             ) : (
-                                                <div className="w-6 h-6 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-slate-500">
+                                                <div className="w-6 h-6 rounded-lg bg-muted flex items-center justify-center text-[10px] font-black text-neutral-500">
                                                     {item.agentName.charAt(0)}
                                                 </div>
                                             )}
-                                            <span className="text-sm text-slate-600 dark:text-slate-400">{item.agentName}</span>
+                                            <span className="text-sm text-neutral-600 dark:text-neutral-400">{item.agentName}</span>
                                         </div>
                                     </td>
-                                    <td className="py-3 text-slate-500 capitalize">{(item.lineOfBusiness || "—").replace(/_/g, " ")}</td>
+                                    <td className="py-3 text-neutral-500 capitalize">{(item.lineOfBusiness || "—").replace(/_/g, " ")}</td>
                                     <td className="py-3">
                                         <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full ${statusColor[item.status] || statusColor.open}`}>
                                             {item.status}
                                         </span>
                                     </td>
-                                    <td className="py-3 text-right font-bold text-slate-900 dark:text-white">
+                                    <td className="py-3 text-right font-bold text-foreground">
                                         {item.estimatedPremium ? fmt(item.wonPremium || item.estimatedPremium) : "—"}
                                     </td>
                                 </tr>
@@ -487,60 +487,60 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                     <div className="w-16 h-16 rounded-2xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center mx-auto mb-6">
                         <Building2 className="w-8 h-8 text-primary dark:text-mint" />
                     </div>
-                    <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2">
+                    <h2 className="text-2xl font-black text-foreground mb-2">
                         {t.noTeam}
                     </h2>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 max-w-sm mx-auto">
+                    <p className="text-sm text-muted-foreground mb-8 max-w-sm mx-auto">
                         {t.noTeamDesc}
                     </p>
 
                     <div className="space-y-3 text-left">
                         <div>
-                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">{t.agencyName} *</label>
+                            <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1.5">{t.agencyName} *</label>
                             <input
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-medium"
+                                className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium"
                                 placeholder="Ασφαλιστικό Πρακτορείο..."
                             />
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">{t.phone}</label>
+                                <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1.5">{t.phone}</label>
                                 <input
                                     type="tel"
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-medium"
+                                    className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium"
                                 />
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">{t.taxId}</label>
+                                <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1.5">{t.taxId}</label>
                                 <input
                                     type="text"
                                     value={taxId}
                                     onChange={(e) => setTaxId(e.target.value)}
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-medium"
+                                    className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium"
                                 />
                             </div>
                         </div>
                         <div>
-                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">{t.website}</label>
+                            <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1.5">{t.website}</label>
                             <input
                                 type="url"
                                 value={website}
                                 onChange={(e) => setWebsite(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-medium"
+                                className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium"
                             />
                         </div>
                         <div>
-                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">{t.address}</label>
+                            <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1.5">{t.address}</label>
                             <input
                                 type="text"
                                 value={address}
                                 onChange={(e) => setAddress(e.target.value)}
-                                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm font-medium"
+                                className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-sm font-medium"
                             />
                         </div>
                     </div>
@@ -554,7 +554,7 @@ function CreateAgencyView({ t }: { t: typeof copy.en }) {
                     <button
                         onClick={handleCreate}
                         disabled={loading || !name.trim()}
-                        className="mt-6 w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-6 py-4 rounded-2xl text-sm font-black hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
+                        className="mt-6 w-full bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-6 py-4 rounded-2xl text-sm font-black hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50"
                     >
                         {loading ? "..." : t.createAgency}
                     </button>

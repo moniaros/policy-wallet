@@ -31,12 +31,12 @@ export default function AgentOnboardingFlow() {
                     {[1, 2, 3, 4].map(i => (
                         <div
                             key={i}
-                            className={`h-1.5 rounded-full transition-all duration-300 ${i <= step ? 'w-8 bg-primary' : 'w-2 bg-slate-200 dark:bg-slate-700'
+                            className={`h-1.5 rounded-full transition-all duration-300 ${i <= step ? 'w-8 bg-primary' : 'w-2 bg-neutral-200 dark:bg-neutral-700'
                                 }`}
                         />
                     ))}
                 </div>
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
+                <span className="text-xs font-semibold text-neutral-400 uppercase tracking-wider">
                     {t(`Βήμα ${step} από 4`, `Step ${step} of 4`)}
                 </span>
             </div>

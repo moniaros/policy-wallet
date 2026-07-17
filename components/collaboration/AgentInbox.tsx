@@ -58,7 +58,7 @@ const THREAD_TYPE_LABELS: Record<string, { en: string; el: string }> = {
 const STATUS_STYLES: Record<string, string> = {
     open: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
     resolved: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
-    closed: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+    closed: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
     waiting_agent: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
     waiting_policyholder: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
 }
@@ -141,11 +141,11 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
         <div className="space-y-4">
             {/* Header */}
             <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                     <Inbox className="h-5 w-5 text-primary dark:text-mint" />
                     {t.collaboration.inbox.title}
                     {threads.length > 0 && (
-                        <span className="text-xs text-slate-400 font-normal">({threads.length})</span>
+                        <span className="text-xs text-neutral-400 font-normal">({threads.length})</span>
                     )}
                 </h2>
             </div>
@@ -153,19 +153,19 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
             {/* Search & Filters */}
             <div className="flex items-center gap-2">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
                     <input
                         type="text"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder={t.collaboration.inbox.searchThreads}
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 pl-9 pr-4 py-2 text-sm placeholder:text-slate-400"
+                        className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 pl-9 pr-4 py-2 text-sm placeholder:text-neutral-400"
                     />
                 </div>
                 <select
                     value={filterType || ""}
                     onChange={(e) => setFilterType(e.target.value || null)}
-                    className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs"
+                    className="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2 text-xs"
                 >
                     <option value="">{t.collaboration.inbox.allTypes}</option>
                     {Object.entries(THREAD_TYPE_LABELS).map(([key, labels]) => (
@@ -177,7 +177,7 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
                 <select
                     value={filterStatus || ""}
                     onChange={(e) => setFilterStatus(e.target.value || null)}
-                    className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs"
+                    className="rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-3 py-2 text-xs"
                 >
                     <option value="">{t.collaboration.inbox.statusFilterAll}</option>
                     <option value="open">{t.collaboration.inbox.open}</option>
@@ -190,10 +190,10 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
             {filteredThreads.length === 0 && (
                 <BrandCard className="p-8">
                     <div className="flex flex-col items-center text-center">
-                        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
-                            <Inbox className="h-5 w-5 text-slate-500" />
+                        <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
+                            <Inbox className="h-5 w-5 text-neutral-500" />
                         </div>
-                        <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                        <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                             {searchQuery
                                 ? t.collaboration.inbox.noResults
                                 : t.collaboration.inbox.startConversation}
@@ -221,7 +221,7 @@ export function AgentInbox({ onSelectThread, onCreateThread, relationshipId }: A
             {others.length > 0 && (
                 <div>
                     {waitingOnYou.length > 0 && (
-                        <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                        <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-2">
                             {t.collaboration.inbox.other} ({others.length})
                         </h3>
                     )}
@@ -254,8 +254,8 @@ function ThreadRow({
             className="flex w-full items-center gap-3 rounded-xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-3 text-left transition hover:shadow-md hover:border-primary/40 dark:hover:border-mint/40 cursor-pointer"
         >
             <div className="relative shrink-0">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800">
-                    <Icon className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted">
+                    <Icon className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
                 </div>
                 {thread.unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white">
@@ -265,7 +265,7 @@ function ThreadRow({
             </div>
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                    <p className="text-sm font-semibold text-foreground truncate">
                         {thread.subject}
                     </p>
                     <span className={`rounded-full px-1.5 py-0.5 text-[9px] font-medium ${STATUS_STYLES[thread.status] || STATUS_STYLES.open}`}>
@@ -273,23 +273,23 @@ function ThreadRow({
                     </span>
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
-                    <span className="flex items-center gap-1 text-xs text-slate-500">
+                    <span className="flex items-center gap-1 text-xs text-neutral-500">
                         <User className="h-3 w-3" />
                         {thread.clientName}
                     </span>
                     {thread.lastMessage && (
-                        <span className="text-xs text-slate-400 truncate">
+                        <span className="text-xs text-neutral-400 truncate">
                             — {thread.lastMessage}
                         </span>
                     )}
                 </div>
             </div>
             <div className="text-right shrink-0">
-                <p className="text-[10px] text-slate-400">
+                <p className="text-[10px] text-neutral-400">
                     {formatRelativeDate(thread.lastActivityAt, language as "en" | "el")}
                 </p>
             </div>
-            <ChevronRight className="h-4 w-4 text-slate-400 shrink-0" />
+            <ChevronRight className="h-4 w-4 text-neutral-400 shrink-0" />
         </button>
     )
 }
