@@ -205,6 +205,12 @@ export async function sendBatchRenewalReminder(renewalIds: string[]): Promise<{
     error?: string
 }> {
     const { dbUser } = await getAuthenticatedUser()
+    // Batch renewal reminders are the "renewal automation" feature (Pro+).
+    // Starter agents send reminders one at a time; batch/sequence is Pro.
+    const { canAgentUseFeature } = await import("@/lib/subscription-entitlements")
+    if (!(await canAgentUseFeature(dbUser.id, "renewalAutomation"))) {
+        return { success: false, sent: 0, error: "Batch renewal reminders require the Pro plan or higher." }
+    }
     const { sendNotification } = await import("@/lib/notifications")
 
     let sent = 0

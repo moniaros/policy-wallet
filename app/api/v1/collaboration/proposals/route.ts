@@ -1,6 +1,7 @@
 import { withApiGuard } from "@/lib/api-guard"
 import { db as prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
+import { canAgentUseFeature } from "@/lib/subscription-entitlements"
 
 // POST — Create a proposal
 export const POST = withApiGuard(
@@ -8,6 +9,14 @@ export const POST = withApiGuard(
         auth: { mode: "user", roles: ["agent"] },
     },
     async ({ auth, body }) => {
+        // Proposals are a Starter+ feature (proposalFlow) — sold, previously
+        // given to every agent tier including free.
+        if (!(await canAgentUseFeature(auth!.dbUser.id, "proposalFlow"))) {
+            return NextResponse.json(
+                { error: "Proposals require the Starter plan or higher." },
+                { status: 403 }
+            )
+        }
         const {
             relationshipId,
             proposalType,

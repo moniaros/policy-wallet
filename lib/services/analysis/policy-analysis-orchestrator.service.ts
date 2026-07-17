@@ -51,7 +51,7 @@ import {
 } from "./token-budget-estimator"
 import { getModelForStep } from "@/lib/services/ai/model-router"
 import { detectDeterministicSavings } from "./deterministic-savings"
-import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
+import { resolveUserEntitlements, resolveAgentEntitlements } from "@/lib/subscription-entitlements"
 import {
     emitAnalysisRunTelemetry,
     emitAnalysisStepTelemetry,
@@ -426,7 +426,14 @@ export class PolicyAnalysisOrchestratorService {
             checklistPillarsCount: INSURANCE_CLARITY_CHECKLIST.length,
         })
 
-        const queuePriority = userEntitlements.tier === "pro" ? 2 : userEntitlements.tier === "plus" ? 1 : 0
+        // Priority queue: for an agent-initiated run, honor the AGENT tier's
+        // priorityQueue entitlement (sold Pro+) — the B2C tier below would
+        // always resolve an agent to 0. Otherwise use the B2C tier ladder.
+        let queuePriority = userEntitlements.tier === "pro" ? 2 : userEntitlements.tier === "plus" ? 1 : 0
+        if (isAgentInitiator) {
+            const agentEntitlements = await resolveAgentEntitlements(userId)
+            queuePriority = agentEntitlements.limits.priorityQueue ? 2 : 0
+        }
 
         const run = await db.policyAnalysisRun.create({
             data: {
