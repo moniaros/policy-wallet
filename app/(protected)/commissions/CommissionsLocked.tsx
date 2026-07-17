@@ -10,8 +10,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
  * the client — the page used to render for every tier including agent_free.
  */
 export function CommissionsLocked() {
-    const { language } = useLanguage()
-    const isGreek = language === "el"
+    const { t } = useLanguage()
 
     return (
         <div className="mx-auto flex max-w-xl flex-col items-center px-6 py-24 text-center">
@@ -19,18 +18,16 @@ export function CommissionsLocked() {
                 <Lock className="h-6 w-6" />
             </div>
             <h1 className="text-2xl font-bold text-stone-900 dark:text-white">
-                {isGreek ? "Παρακολούθηση προμηθειών" : "Commission tracking"}
+                {t.commissionsLocked.title}
             </h1>
             <p className="mt-3 text-stone-500 dark:text-stone-400">
-                {isGreek
-                    ? "Η παρακολούθηση προμηθειών περιλαμβάνεται στα πλάνα Pro και Πρακτορείο. Αναβαθμίστε για να δείτε εκτιμώμενες και κερδισμένες προμήθειες ανά κλάδο."
-                    : "Commission tracking is included in the Pro and Agency plans. Upgrade to see estimated and won commissions by line of business."}
+                {t.commissionsLocked.body}
             </p>
             <Link
                 href="/agent/pricing"
                 className="mt-8 inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white transition hover:bg-primary-hover"
             >
-                {isGreek ? "Δείτε τα πλάνα" : "View plans"}
+                {t.commissionsLocked.viewPlans}
                 <ArrowRight className="h-4 w-4" />
             </Link>
         </div>

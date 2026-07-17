@@ -35,7 +35,7 @@ interface DocumentRequestCreateProps {
 }
 
 export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending }: DocumentRequestCreateProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
     const [documentType, setDocumentType] = useState<DocumentTypeKey>("id_card")
     const [instruction, setInstruction] = useState("")
     const [urgency, setUrgency] = useState<DocumentUrgency>("normal")
@@ -54,17 +54,17 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
     return (
         <BrandCard className="p-5">
             <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">
-                {language === "el" ? "Αίτημα Εγγράφου" : "Request Document"}
+                {t.collaboration.documentRequests.requestDocument}
             </h3>
             <p className="text-sm text-slate-500 mb-4">
-                {language === "el" ? `Αποστολή αιτήματος σε ${clientName}` : `Send request to ${clientName}`}
+                {t.collaboration.documentRequests.sendRequestTo.replace("{name}", clientName)}
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Document type */}
                 <div>
                     <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                        {language === "el" ? "Τύπος εγγράφου" : "Document type"}
+                        {t.collaboration.documentRequests.documentType}
                     </label>
                     <select
                         value={documentType}
@@ -82,13 +82,13 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
                 {/* Instruction */}
                 <div>
                     <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                        {language === "el" ? "Οδηγίες (προαιρετικό)" : "Instructions (optional)"}
+                        {t.collaboration.documentRequests.instructions}
                     </label>
                     <textarea
                         value={instruction}
                         onChange={(e) => setInstruction(e.target.value)}
                         rows={2}
-                        placeholder={language === "el" ? "π.χ. Χρειάζομαι την τελευταία σελίδα..." : "e.g. I need the last page..."}
+                        placeholder={t.collaboration.documentRequests.instructionsPlaceholder}
                         className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white resize-none placeholder:text-slate-400"
                     />
                 </div>
@@ -97,21 +97,21 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
                 <div className="grid grid-cols-2 gap-3">
                     <div>
                         <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            {language === "el" ? "Επείγον" : "Urgency"}
+                            {t.collaboration.documentRequests.urgency}
                         </label>
                         <select
                             value={urgency}
                             onChange={(e) => setUrgency(e.target.value as DocumentUrgency)}
                             className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm"
                         >
-                            <option value="low">{language === "el" ? "Χαμηλό" : "Low"}</option>
-                            <option value="normal">{language === "el" ? "Κανονικό" : "Normal"}</option>
-                            <option value="urgent">{language === "el" ? "Επείγον" : "Urgent"}</option>
+                            <option value="low">{t.collaboration.documentRequests.urgencyLow}</option>
+                            <option value="normal">{t.collaboration.documentRequests.urgencyNormal}</option>
+                            <option value="urgent">{t.collaboration.documentRequests.urgent}</option>
                         </select>
                     </div>
                     <div>
                         <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            {language === "el" ? "Προθεσμία" : "Due date"}
+                            {t.collaboration.documentRequests.dueDate}
                         </label>
                         <input
                             type="date"
@@ -130,14 +130,14 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
                             onClick={onCancel}
                             className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
                         >
-                            {language === "el" ? "Ακύρωση" : "Cancel"}
+                            {t.collaboration.documentRequests.cancel}
                         </button>
                     )}
                     <BrandActionButton type="submit" disabled={isSending} className="text-sm">
                         <Send className="h-4 w-4" />
                         {isSending
-                            ? (language === "el" ? "Αποστολή..." : "Sending...")
-                            : (language === "el" ? "Αποστολή Αιτήματος" : "Send Request")}
+                            ? t.collaboration.documentRequests.sending
+                            : t.collaboration.documentRequests.sendRequest}
                     </BrandActionButton>
                 </div>
             </form>
@@ -155,7 +155,7 @@ interface DocumentRequestRespondProps {
 }
 
 export function DocumentRequestRespond({ request, agentName, onUpload, isUploading }: DocumentRequestRespondProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
     const fileInputRef = useRef<HTMLInputElement>(null)
     const [uploaded, setUploaded] = useState(request.status === "uploaded")
     const [error, setError] = useState<string | null>(null)
@@ -197,7 +197,7 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
                 <div className="flex flex-col items-center text-center py-4">
                     <CheckCircle2 className="h-10 w-10 text-[#22C55E] mb-3" />
                     <p className="text-sm font-medium text-slate-900 dark:text-white">
-                        {language === "el" ? "Το έγγραφο στάλθηκε!" : "Document uploaded!"}
+                        {t.collaboration.documentRequests.documentUploaded}
                     </p>
                     <p className="text-xs text-slate-500 mt-1">
                         {language === "el"
@@ -216,7 +216,7 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
                 <div className="flex items-center gap-1.5 mb-3">
                     <AlertTriangle className="h-4 w-4 text-red-600" />
                     <span className="text-xs font-bold text-red-700 dark:text-red-400 uppercase">
-                        {language === "el" ? "Επείγον" : "Urgent"}
+                        {t.collaboration.documentRequests.urgent}
                     </span>
                 </div>
             )}
@@ -237,7 +237,7 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
             {request.dueDate && (
                 <p className="text-xs text-amber-600 dark:text-amber-400 mt-2 flex items-center gap-1">
                     <Clock className="h-3 w-3" />
-                    {language === "el" ? "Προθεσμία" : "Due"}: {formatDateGreek(request.dueDate)}
+                    {t.collaboration.documentRequests.due}: {formatDateGreek(request.dueDate)}
                 </p>
             )}
 
@@ -272,8 +272,8 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
                 >
                     <Upload className="h-4 w-4" />
                     {isUploading
-                        ? (language === "el" ? "Μεταφόρτωση..." : "Uploading...")
-                        : (language === "el" ? "Μεταφόρτωση Αρχείου" : "Upload File")}
+                        ? t.collaboration.documentRequests.uploading
+                        : t.collaboration.documentRequests.uploadFile}
                 </BrandActionButton>
                 <BrandActionButton
                     variant="secondary"
@@ -305,7 +305,7 @@ interface DocumentRequestCardProps {
 }
 
 export function DocumentRequestCard({ request, viewerRole, agentName, onRespond }: DocumentRequestCardProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
     const docLabel = DOCUMENT_TYPE_TAXONOMY[request.documentType as DocumentTypeKey]
     const docName = docLabel ? (language === "el" ? docLabel.el : docLabel.en) : request.documentType
 
@@ -333,10 +333,10 @@ export function DocumentRequestCard({ request, viewerRole, agentName, onRespond 
                 </p>
                 <p className="text-xs text-slate-500">
                     {request.status === "pending"
-                        ? (language === "el" ? "Αναμονή" : "Pending")
+                        ? t.collaboration.documentRequests.pending
                         : request.status === "uploaded"
-                            ? (language === "el" ? "Μεταφορτώθηκε" : "Uploaded")
-                            : (language === "el" ? "Έληξε" : "Expired")}
+                            ? t.collaboration.documentRequests.uploaded
+                            : t.collaboration.documentRequests.expired}
                 </p>
             </div>
             {request.status === "pending" && viewerRole === "policyholder" && onRespond && (
@@ -345,7 +345,7 @@ export function DocumentRequestCard({ request, viewerRole, agentName, onRespond 
                     className="text-xs py-1.5 px-3"
                 >
                     <Upload className="h-3 w-3" />
-                    {language === "el" ? "Ανέβασμα" : "Upload"}
+                    {t.collaboration.documentRequests.upload}
                 </BrandActionButton>
             )}
         </div>

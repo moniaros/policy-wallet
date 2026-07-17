@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
 import { FileText, MessageSquare, FileUp, Lock } from "lucide-react"
+import { useLanguage } from "@/contexts/LanguageContext"
 import type { ViewerRole, ThreadType } from "./types"
 
 type Thread = {
@@ -79,6 +80,7 @@ export function CollaborationTimeline({
     compact = false,
     initialThreadId = null,
 }: CollaborationTimelineProps) {
+    const { t } = useLanguage()
     const [threads, setThreads] = useState<Thread[]>([])
     const [selectedId, setSelectedId] = useState<string | null>(initialThreadId)
     const [selected, setSelected] = useState<ThreadDetail | null>(null)
@@ -114,7 +116,7 @@ export function CollaborationTimeline({
                 setSelectedId(list[0].id)
             }
         } catch (error: any) {
-            toast.error(error.message || "Failed to load collaboration timeline")
+            toast.error(error.message || t.collaboration.timelineToasts.loadTimelineFailed)
         } finally {
             setLoading(false)
         }
@@ -132,13 +134,13 @@ export function CollaborationTimeline({
                 setActionAssigneeId((preferred || detail.participants[0]).user.id)
             }
         } catch (error: any) {
-            toast.error(error.message || "Failed to load thread detail")
+            toast.error(error.message || t.collaboration.timelineToasts.loadThreadDetailFailed)
         }
     }
 
     async function createThread() {
         if (!relationshipId) {
-            toast.error("No active policyholder-agent relationship found for this policy.")
+            toast.error(t.collaboration.timelineToasts.noRelationship)
             return
         }
         if (!threadSubject.trim()) return
@@ -156,11 +158,11 @@ export function CollaborationTimeline({
         })
         const json = await res.json()
         if (!res.ok || json?.error) {
-            toast.error(json?.error?.message || "Failed to create thread")
+            toast.error(json?.error?.message || t.collaboration.timelineToasts.createThreadFailed)
             return
         }
 
-        toast.success("Thread created")
+        toast.success(t.collaboration.timelineToasts.threadCreated)
         setThreadSubject("")
         await loadThreads()
     }
@@ -177,7 +179,7 @@ export function CollaborationTimeline({
         })
         const json = await res.json()
         if (!res.ok || json?.error) {
-            toast.error(json?.error?.message || "Failed to send message")
+            toast.error(json?.error?.message || t.collaboration.timelineToasts.sendMessageFailed)
             return
         }
         setMessage("")
@@ -207,7 +209,7 @@ export function CollaborationTimeline({
         })
         const json = await res.json()
         if (!res.ok || json?.error) {
-            toast.error(json?.error?.message || "Failed to add action")
+            toast.error(json?.error?.message || t.collaboration.timelineToasts.addActionFailed)
             return
         }
         setActionTitle("")
@@ -225,7 +227,7 @@ export function CollaborationTimeline({
         })
         const json = await res.json()
         if (!res.ok || json?.error) {
-            toast.error(json?.error?.message || "Failed to update status")
+            toast.error(json?.error?.message || t.collaboration.timelineToasts.updateStatusFailed)
             return
         }
         await loadThreadDetail(selectedId)
@@ -241,7 +243,7 @@ export function CollaborationTimeline({
         })
         const json = await res.json()
         if (!res.ok || json?.error) {
-            toast.error(json?.error?.message || "Failed to update action")
+            toast.error(json?.error?.message || t.collaboration.timelineToasts.updateActionFailed)
             return
         }
         await loadThreadDetail(selectedId)

@@ -54,7 +54,7 @@ const PROPOSAL_TYPE_LABELS: Record<ProposalType, { en: string; el: string }> = {
 }
 
 export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }: ProposalCreateProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
     const [proposalType, setProposalType] = useState<ProposalType>("new_policy")
     const [insurerName, setInsurerName] = useState("")
     const [lineOfBusiness, setLineOfBusiness] = useState("motor")
@@ -81,7 +81,7 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
             <BrandCard className="p-5">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                        {language === "el" ? "Προεπισκόπηση Πρότασης" : "Proposal Preview"}
+                        {t.collaboration.proposals.proposalPreview}
                     </h3>
                     <button
                         type="button"
@@ -117,13 +117,13 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                         onClick={() => setShowPreview(false)}
                         className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 transition cursor-pointer"
                     >
-                        {language === "el" ? "Επεξεργασία" : "Edit"}
+                        {t.collaboration.proposals.edit}
                     </button>
                     <BrandActionButton onClick={handleSubmit} disabled={isSubmitting} className="text-sm">
                         <Send className="h-4 w-4" />
                         {isSubmitting
-                            ? (language === "el" ? "Αποστολή..." : "Sending...")
-                            : (language === "el" ? "Αποστολή Πρότασης" : "Send Proposal")}
+                            ? t.collaboration.proposals.sending
+                            : t.collaboration.proposals.sendProposal}
                     </BrandActionButton>
                 </div>
             </BrandCard>
@@ -133,17 +133,17 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
     return (
         <BrandCard className="p-5">
             <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">
-                {language === "el" ? "Δημιουργία Πρότασης" : "Create Proposal"}
+                {t.collaboration.proposals.createProposal}
             </h3>
             <p className="text-sm text-slate-500 mb-4">
-                {language === "el" ? `Για τον πελάτη ${clientName}` : `For client ${clientName}`}
+                {t.collaboration.proposals.forClient.replace("{name}", clientName)}
             </p>
 
             <form onSubmit={(e) => { e.preventDefault(); setShowPreview(true) }} className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                     <div>
                         <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            {language === "el" ? "Τύπος πρότασης" : "Proposal type"}
+                            {t.collaboration.proposals.proposalType}
                         </label>
                         <select
                             value={proposalType}
@@ -159,7 +159,7 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                     </div>
                     <div>
                         <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            {language === "el" ? "Κλάδος" : "Line of business"}
+                            {t.collaboration.proposals.lineOfBusiness}
                         </label>
                         <select
                             value={lineOfBusiness}
@@ -178,20 +178,20 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                 <div className="grid grid-cols-2 gap-3">
                     <div>
                         <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            {language === "el" ? "Ασφαλιστική εταιρεία" : "Insurer"}
+                            {t.collaboration.proposals.insurer}
                         </label>
                         <input
                             type="text"
                             value={insurerName}
                             onChange={(e) => setInsurerName(e.target.value)}
                             required
-                            placeholder={language === "el" ? "π.χ. Eurolife" : "e.g. Eurolife"}
+                            placeholder={t.collaboration.proposals.insurerPlaceholder}
                             className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm placeholder:text-slate-400"
                         />
                     </div>
                     <div>
                         <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                            {language === "el" ? "Ετήσιο ασφάλιστρο (€)" : "Annual premium (€)"}
+                            {t.collaboration.proposals.annualPremium}
                         </label>
                         <input
                             type="number"
@@ -207,7 +207,7 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
 
                 <div>
                     <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                        {language === "el" ? "Περίληψη κάλυψης" : "Coverage summary"}
+                        {t.collaboration.proposals.coverageSummary}
                     </label>
                     <textarea
                         value={coverageSummary}
@@ -220,13 +220,13 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
 
                 <div>
                     <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-                        {language === "el" ? "Απλή εξήγηση (Ελληνικά)" : "Plain language summary (Greek)"}
+                        {t.collaboration.proposals.plainLanguageSummary}
                     </label>
                     <textarea
                         value={plainLanguageSummary}
                         onChange={(e) => setPlainLanguageSummary(e.target.value)}
                         rows={2}
-                        placeholder={language === "el" ? "Γράψτε με απλά λόγια τι περιλαμβάνει..." : "Write in plain Greek what this covers..."}
+                        placeholder={t.collaboration.proposals.plainLanguagePlaceholder}
                         className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm resize-none placeholder:text-slate-400"
                     />
                 </div>
@@ -238,11 +238,11 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                             onClick={onCancel}
                             className="px-4 py-2 text-sm text-slate-600 hover:text-slate-900 transition cursor-pointer"
                         >
-                            {language === "el" ? "Ακύρωση" : "Cancel"}
+                            {t.collaboration.proposals.cancel}
                         </button>
                     )}
                     <BrandActionButton type="submit" className="text-sm">
-                        {language === "el" ? "Προεπισκόπηση" : "Preview"}
+                        {t.collaboration.proposals.preview}
                         <ArrowRight className="h-4 w-4" />
                     </BrandActionButton>
                 </div>
@@ -270,7 +270,7 @@ export function ProposalView({
     onAskQuestion,
     isPreview,
 }: ProposalViewProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
 
     const statusBadges: Record<string, { label: { en: string; el: string }; style: string }> = {
         pending: {
@@ -315,7 +315,7 @@ export function ProposalView({
                         {formatCurrencyFull(proposal.premiumAmount, language)}
                     </p>
                     <p className="text-[10px] text-slate-400">
-                        {language === "el" ? "ανά έτος" : "per year"}
+                        {t.collaboration.proposals.perYear}
                     </p>
                 </div>
             </div>
@@ -332,7 +332,7 @@ export function ProposalView({
             {/* Coverage summary */}
             <div className="mb-4">
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
-                    {language === "el" ? "Κάλυψη" : "Coverage"}
+                    {t.collaboration.proposals.coverage}
                 </h4>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
                     {proposal.coverageSummary}
@@ -343,7 +343,7 @@ export function ProposalView({
             {proposal.comparisonData && (
                 <div className="rounded-xl border border-slate-200/60 dark:border-slate-700/60 p-4 mb-4">
                     <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
-                        {language === "el" ? "Σύγκριση" : "Comparison"}
+                        {t.collaboration.proposals.comparison}
                     </h4>
                     <div className="space-y-2">
                         {Object.entries(proposal.comparisonData).map(([key, value]) => (
@@ -365,7 +365,7 @@ export function ProposalView({
                             className="flex-1 text-sm"
                         >
                             <CheckCircle2 className="h-4 w-4" />
-                            {language === "el" ? "Αποδοχή" : "Accept"}
+                            {t.collaboration.proposals.accept}
                         </BrandActionButton>
                     )}
                     {onAskQuestion && (
@@ -375,7 +375,7 @@ export function ProposalView({
                             className="flex-1 text-sm"
                         >
                             <MessageSquare className="h-4 w-4" />
-                            {language === "el" ? "Ρώτησέ με" : "Ask me"}
+                            {t.collaboration.proposals.askMe}
                         </BrandActionButton>
                     )}
                 </div>

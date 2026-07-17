@@ -29,28 +29,28 @@ const LOB_LABELS: Record<string, { en: string; el: string }> = {
 }
 
 export function ClientFinancialsTab({ financials, agentTier }: ClientFinancialsTabProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
 
     return (
         <AgentPlanGate
             currentTier={agentTier}
             requiredTier="agent_pro"
-            featureLabel={language === "el" ? "Οικονομική Ανάλυση Πελάτη" : "Client Financial Analysis"}
+            featureLabel={t.clientFinancials.featureLabel}
         >
             <div className="space-y-5">
                 {/* Top stats */}
                 <div className="grid grid-cols-3 gap-4">
                     <BrandStat
                         value={formatCurrencyCompact(financials.totalPremiums, language)}
-                        label={language === "el" ? "Συνολικά Ασφάλιστρα" : "Total Premiums"}
+                        label={t.clientFinancials.totalPremiums}
                     />
                     <BrandStat
                         value={formatCurrencyCompact(financials.commissionEarned, language)}
-                        label={language === "el" ? "Προμήθεια (YTD)" : "Commission Earned (YTD)"}
+                        label={t.clientFinancials.commissionEarned}
                     />
                     <BrandStat
                         value={formatCurrencyCompact(financials.commissionProjected, language)}
-                        label={language === "el" ? "Προβλεπόμενη (12μ)" : "Projected (12mo)"}
+                        label={t.clientFinancials.projected}
                     />
                 </div>
 
@@ -58,7 +58,7 @@ export function ClientFinancialsTab({ financials, agentTier }: ClientFinancialsT
                 <BrandCard className="p-5">
                     <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
                         <BarChart3 className="h-5 w-5 text-primary dark:text-mint" />
-                        {language === "el" ? "Ασφάλιστρα ανά Κλάδο" : "Premiums by Line of Business"}
+                        {t.clientFinancials.premiumsByLob}
                     </h3>
                     <div className="space-y-3">
                         {Object.entries(financials.premiumsByLob).map(([lob, amount]) => {
@@ -91,7 +91,7 @@ export function ClientFinancialsTab({ financials, agentTier }: ClientFinancialsT
                 <BrandCard className="p-5">
                     <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
                         <RefreshCw className="h-5 w-5 text-primary dark:text-mint" />
-                        {language === "el" ? "Πιθανότητα Ανανέωσης" : "Renewal Probability"}
+                        {t.clientFinancials.renewalProbability}
                     </h3>
                     <div className="flex items-center gap-4">
                         <div className="relative h-24 w-24">
@@ -115,10 +115,10 @@ export function ClientFinancialsTab({ financials, agentTier }: ClientFinancialsT
                         <div>
                             <p className="text-sm text-slate-600 dark:text-slate-400">
                                 {financials.renewalProbability >= 70
-                                    ? (language === "el" ? "Υψηλή πιθανότητα ανανέωσης" : "High renewal probability")
+                                    ? t.clientFinancials.highRenewal
                                     : financials.renewalProbability >= 40
-                                        ? (language === "el" ? "Μέτρια πιθανότητα — χρειάζεται follow-up" : "Moderate — follow-up recommended")
-                                        : (language === "el" ? "Χαμηλή πιθανότητα — άμεση δράση" : "Low probability — immediate action needed")}
+                                        ? t.clientFinancials.moderateRenewal
+                                        : t.clientFinancials.lowRenewal}
                             </p>
                         </div>
                     </div>
