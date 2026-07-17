@@ -319,8 +319,11 @@ pre {
   }
 
   .dark .arc-card {
-    border-color: rgba(255, 255, 255, 0.14);
+    /* Kept identical to .dark .pw-card — this used to drift (border .14, no
+       ring) so agent pages looked subtly different in dark mode. */
+    border-color: rgba(255, 255, 255, 0.10);
     background: var(--pw-surface-dark);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
   }
 
   .arc-card:hover {
