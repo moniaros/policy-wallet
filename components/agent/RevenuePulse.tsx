@@ -44,7 +44,7 @@ export function RevenuePulse({ metrics, isLoading, isPipelineGated }: RevenuePul
         <BrandCard className="p-5">
             <div className="flex items-center gap-2 mb-4">
                 <TrendingUp className="h-5 w-5 text-primary dark:text-mint" />
-                <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                <h2 className="text-base font-bold text-foreground">
                     {t.agentDashboard.revenuePulse}
                 </h2>
             </div>
@@ -58,21 +58,21 @@ export function RevenuePulse({ metrics, isLoading, isPipelineGated }: RevenuePul
                             className="relative rounded-xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-elevated)] p-3"
                         >
                             {stat.gated && (
-                                <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/60 backdrop-blur-sm dark:bg-slate-900/60">
-                                    <span className="text-xs font-medium text-slate-500">
+                                <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-white/60 backdrop-blur-sm dark:bg-neutral-900/60">
+                                    <span className="text-xs font-medium text-neutral-500">
                                         Pro+
                                     </span>
                                 </div>
                             )}
-                            <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+                            <div className="flex items-center gap-1.5 text-muted-foreground">
                                 <Icon className="h-3.5 w-3.5" />
                                 <span className="text-[11px] font-medium">{stat.label}</span>
                             </div>
-                            <p className="mt-1 text-xl font-bold text-slate-900 dark:text-white">
+                            <p className="mt-1 text-xl font-bold text-foreground">
                                 {stat.value}
                             </p>
                             {stat.subValue && (
-                                <p className="text-xs text-slate-500 dark:text-slate-400">
+                                <p className="text-xs text-muted-foreground">
                                     {stat.subValue}
                                 </p>
                             )}

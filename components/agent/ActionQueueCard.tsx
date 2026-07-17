@@ -68,7 +68,7 @@ export function ActionQueueCard({ items, onAction, onViewAll, onGapClientClick, 
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                     <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-                    <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                    <h2 className="text-base font-bold text-foreground">
                         {t.agentUi.actionQueue}
                     </h2>
                     {totalCount > 0 && (
@@ -121,7 +121,7 @@ export function ActionQueueCard({ items, onAction, onViewAll, onGapClientClick, 
                                 <button
                                     type="button"
                                     onClick={() => onAction(item)}
-                                    className="shrink-0 rounded-lg bg-white/80 dark:bg-slate-800/80 px-3 py-1.5 text-xs font-semibold shadow-sm transition hover:shadow-md"
+                                    className="shrink-0 rounded-lg bg-white/80 dark:bg-neutral-800/80 px-3 py-1.5 text-xs font-semibold shadow-sm transition hover:shadow-md"
                                 >
                                     {language === "el" ? label.el : label.en}
                                 </button>
@@ -217,10 +217,10 @@ function ActionQueueEmpty({ t }: { t: any }) {
             <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
                 <RefreshCw className="h-5 w-5 text-primary dark:text-mint" />
             </div>
-            <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                 {t.agentUi.allCaughtUp}
             </p>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            <p className="mt-1 text-xs text-muted-foreground">
                 {t.agentUi.reviewClientList}
             </p>
         </div>

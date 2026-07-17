@@ -242,7 +242,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
             </span>
         )
         return (
-            <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-slate-600 bg-slate-100 dark:text-slate-400 dark:bg-slate-800 px-2.5 py-1 rounded-full">
+            <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-neutral-600 bg-neutral-100 dark:text-neutral-400 dark:bg-neutral-800 px-2.5 py-1 rounded-full">
                 <Clock className="w-3 h-3" /> {daysLeft}d
             </span>
         )
@@ -257,10 +257,10 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                 {/* Header */}
                 <div className="mb-10 text-center sm:text-left">
                     <span className="pw-kicker inline-block mb-2">{t.kicker}</span>
-                    <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-3">
+                    <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
                         {t.title}
                     </h1>
-                    <p className="max-w-xl text-lg text-slate-600 dark:text-slate-400">
+                    <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400">
                         {t.subtitle}
                     </p>
                 </div>
@@ -278,8 +278,8 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                 {/* Filters + Batch Actions */}
                 <div className="flex flex-wrap items-center gap-3 mb-6">
                     <div className="flex items-center gap-1.5">
-                        <Filter className="w-4 h-4 text-slate-400" />
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">{t.filterBy}:</span>
+                        <Filter className="w-4 h-4 text-neutral-400" />
+                        <span className="text-xs font-bold text-neutral-500 uppercase tracking-widest">{t.filterBy}:</span>
                     </div>
                     {["all", "pending", "overdue", "completed", "lapsed"].map((s) => (
                         <button
@@ -287,8 +287,8 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                             onClick={() => handleFilterChange(s)}
                             className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
                                 statusFilter === s
-                                    ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
-                                    : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
+                                    ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
+                                    : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700"
                             }`}
                         >
                             {s === "all" ? t.all : s === "pending" ? t.pending : s === "overdue" ? t.overdue : s === "completed" ? t.completed : t.lapsed}
@@ -299,7 +299,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                         <select
                             value={timeframe}
                             onChange={(e) => handleFilterChange(statusFilter, e.target.value as typeof timeframe)}
-                            className="text-xs font-bold bg-slate-100 dark:bg-slate-800 border-none rounded-lg px-3 py-2 text-slate-700 dark:text-slate-300"
+                            className="text-xs font-bold bg-muted border-none rounded-lg px-3 py-2 text-neutral-700 dark:text-neutral-300"
                         >
                             <option value="all">{t.all}</option>
                             <option value="7">7 {t.days}</option>
@@ -341,9 +341,9 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                         />
                     ) : (
                         <div className="arc-card p-12 text-center">
-                            <CalendarClock className="w-12 h-12 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-                            <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300 mb-1">{t.noRenewals}</h3>
-                            <p className="text-sm text-slate-500 dark:text-slate-400">{t.noRenewalsDesc}</p>
+                            <CalendarClock className="w-12 h-12 text-neutral-300 dark:text-neutral-600 mx-auto mb-4" />
+                            <h3 className="text-lg font-bold text-neutral-700 dark:text-neutral-300 mb-1">{t.noRenewals}</h3>
+                            <p className="text-sm text-muted-foreground">{t.noRenewalsDesc}</p>
                         </div>
                     )
                 ) : (
@@ -351,54 +351,54 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm">
                                 <thead>
-                                    <tr className="border-b border-slate-100 dark:border-slate-800">
+                                    <tr className="border-b border-neutral-100 dark:border-neutral-800">
                                         <th className="px-4 py-3 text-left">
                                             <input
                                                 type="checkbox"
                                                 checked={selectedIds.size > 0 && selectedIds.size === renewals.filter(r => r.status === "pending" || r.status === "overdue").length}
                                                 onChange={toggleSelectAll}
-                                                className="rounded border-slate-300 dark:border-slate-600"
+                                                className="rounded border-neutral-300 dark:border-neutral-600"
                                             />
                                         </th>
-                                        <th className="px-4 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.customer}</th>
-                                        <th className="px-4 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.insurer}</th>
-                                        <th className="px-4 py-3 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.lob}</th>
-                                        <th className="px-4 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.premium}</th>
-                                        <th className="px-4 py-3 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.expires}</th>
-                                        <th className="px-4 py-3 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.status}</th>
-                                        <th className="px-4 py-3 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.actions}</th>
+                                        <th className="px-4 py-3 text-left text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.customer}</th>
+                                        <th className="px-4 py-3 text-left text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.insurer}</th>
+                                        <th className="px-4 py-3 text-left text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.lob}</th>
+                                        <th className="px-4 py-3 text-right text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.premium}</th>
+                                        <th className="px-4 py-3 text-center text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.expires}</th>
+                                        <th className="px-4 py-3 text-center text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.status}</th>
+                                        <th className="px-4 py-3 text-right text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.actions}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {renewals.map((r) => {
                                         const isActionable = r.status === "pending" || r.status === "overdue"
                                         return (
-                                            <tr key={r.id} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                                            <tr key={r.id} className="border-b border-neutral-50 dark:border-neutral-800/50 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/30 transition-colors">
                                                 <td className="px-4 py-3">
                                                     {isActionable && (
                                                         <input
                                                             type="checkbox"
                                                             checked={selectedIds.has(r.id)}
                                                             onChange={() => toggleSelect(r.id)}
-                                                            className="rounded border-slate-300 dark:border-slate-600"
+                                                            className="rounded border-neutral-300 dark:border-neutral-600"
                                                         />
                                                     )}
                                                 </td>
                                                 <td className="px-4 py-3">
-                                                    <span className="font-bold text-slate-900 dark:text-white">{r.customerName}</span>
+                                                    <span className="font-bold text-foreground">{r.customerName}</span>
                                                     <br />
-                                                    <span className="text-xs text-slate-400">{r.policyNumber}</span>
+                                                    <span className="text-xs text-neutral-400">{r.policyNumber}</span>
                                                 </td>
-                                                <td className="px-4 py-3 text-slate-700 dark:text-slate-300">{r.insurerName}</td>
+                                                <td className="px-4 py-3 text-neutral-700 dark:text-neutral-300">{r.insurerName}</td>
                                                 <td className="px-4 py-3">
-                                                    <span className="text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 dark:text-slate-400 px-2 py-0.5 rounded">
+                                                    <span className="text-xs font-bold text-neutral-500 bg-muted dark:text-neutral-400 px-2 py-0.5 rounded">
                                                         {r.lineOfBusiness}
                                                     </span>
                                                 </td>
-                                                <td className="px-4 py-3 text-right font-bold text-slate-900 dark:text-white">
+                                                <td className="px-4 py-3 text-right font-bold text-foreground">
                                                     {r.premiumAmount ? `€${r.premiumAmount.toLocaleString()}` : "—"}
                                                 </td>
-                                                <td className="px-4 py-3 text-center text-slate-600 dark:text-slate-400">
+                                                <td className="px-4 py-3 text-center text-neutral-600 dark:text-neutral-400">
                                                     {formatDate(r.policyEndDate)}
                                                 </td>
                                                 <td className="px-4 py-3 text-center">
@@ -419,7 +419,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                                         </button>
                                                     )}
                                                     {r.outcome && (
-                                                        <span className="text-xs text-slate-400">
+                                                        <span className="text-xs text-neutral-400">
                                                             {r.outcome.replace(/_/g, " ")}
                                                         </span>
                                                     )}
@@ -436,11 +436,11 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                 {/* Outcome Modal */}
                 {outcomeModal && (
                     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-5">
-                            <h3 className="text-lg font-black text-slate-900 dark:text-white">
+                        <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-5">
+                            <h3 className="text-lg font-black text-foreground">
                                 {t.markOutcome}
                             </h3>
-                            <p className="text-sm text-slate-500">{outcomeModal.customerName}</p>
+                            <p className="text-sm text-neutral-500">{outcomeModal.customerName}</p>
 
                             <div className="space-y-2">
                                 {([
@@ -454,7 +454,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                         className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${
                                             outcomeChoice === value
                                                 ? "bg-primary-tint dark:bg-primary/15 ring-2 ring-primary"
-                                                : "bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700"
+                                                : "bg-neutral-50 dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-700"
                                         }`}
                                     >
                                         <input
@@ -465,25 +465,25 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                             onChange={() => setOutcomeChoice(value)}
                                             className="accent-primary"
                                         />
-                                        <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{label}</span>
+                                        <span className="text-sm font-bold text-neutral-800 dark:text-neutral-200">{label}</span>
                                     </label>
                                 ))}
                             </div>
 
                             <div>
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t.notes}</label>
+                                <label className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">{t.notes}</label>
                                 <textarea
                                     value={outcomeNotes}
                                     onChange={(e) => setOutcomeNotes(e.target.value)}
                                     rows={2}
-                                    className="w-full mt-1 bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-primary outline-none resize-none"
+                                    className="w-full mt-1 bg-neutral-50 dark:bg-neutral-800 border-none rounded-xl px-4 py-3 text-sm text-foreground placeholder:text-neutral-400 focus:ring-2 focus:ring-primary outline-none resize-none"
                                 />
                             </div>
 
                             <div className="flex gap-3">
                                 <button
                                     onClick={() => setOutcomeModal(null)}
-                                    className="flex-1 py-2.5 rounded-xl text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                                    className="flex-1 py-2.5 rounded-xl text-sm font-bold bg-muted text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors"
                                 >
                                     {t.cancel}
                                 </button>
@@ -524,7 +524,7 @@ function StatCard({
         rose: "text-rose-600 bg-rose-50 dark:text-rose-400 dark:bg-rose-900/20",
         emerald: "text-primary bg-primary-soft dark:text-mint dark:bg-primary/15",
         orange: "text-orange-600 bg-orange-50 dark:text-orange-400 dark:bg-orange-900/20",
-        slate: "text-slate-600 bg-slate-50 dark:text-slate-400 dark:bg-slate-800",
+        slate: "text-neutral-600 bg-neutral-50 dark:text-neutral-400 dark:bg-neutral-800",
     }
 
     return (
@@ -532,8 +532,8 @@ function StatCard({
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-2 ${accentMap[accent] ?? accentMap.slate}`}>
                 <Icon className="w-4 h-4" />
             </div>
-            <p className="text-xl font-black text-slate-900 dark:text-white">{value}</p>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">{label}</p>
+            <p className="text-xl font-black text-foreground">{value}</p>
+            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-0.5">{label}</p>
         </div>
     )
 }

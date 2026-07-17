@@ -43,12 +43,12 @@ export function ClientOverviewTab({
             {/* Coverage Health Score */}
             <div className="col-span-4">
                 <BrandCard className="p-6 flex flex-col items-center text-center">
-                    <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-4">
+                    <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-4">
                         {t.clientOverview.healthScore}
                     </h3>
                     <div className="relative mb-4">
                         <svg width={120} height={120} className="transform -rotate-90">
-                            <circle cx={60} cy={60} r={52} fill="none" stroke="currentColor" strokeWidth={8} className="text-slate-200 dark:text-slate-700" />
+                            <circle cx={60} cy={60} r={52} fill="none" stroke="currentColor" strokeWidth={8} className="text-neutral-200 dark:text-neutral-700" />
                             <circle
                                 cx={60} cy={60} r={52} fill="none"
                                 stroke={healthScore >= 70 ? "#29685B" : healthScore >= 40 ? "#f59e0b" : "#ef4444"}
@@ -63,7 +63,7 @@ export function ClientOverviewTab({
                             <span className={`text-3xl font-black ${scoreColor}`}>{healthScore}</span>
                         </div>
                     </div>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                    <p className="text-sm text-muted-foreground">
                         {healthScore >= 70
                             ? t.clientOverview.goodCoverage
                             : healthScore >= 40
@@ -77,15 +77,15 @@ export function ClientOverviewTab({
             <div className="col-span-8">
                 <BrandCard className="p-5">
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                             <Shield className="h-5 w-5 text-primary dark:text-mint" />
                             {t.clientOverview.activePolicies}
-                            <span className="text-xs text-slate-400 font-normal">({activePolicies.length})</span>
+                            <span className="text-xs text-neutral-400 font-normal">({activePolicies.length})</span>
                         </h3>
                     </div>
                     {activePolicies.length === 0 ? (
                         <div className="py-8 text-center">
-                            <p className="text-sm text-slate-500">
+                            <p className="text-sm text-neutral-500">
                                 {language === "el"
                                     ? "Δεν υπάρχουν ενεργά ασφαλιστήρια ακόμα."
                                     : "No active policies yet."}
@@ -96,21 +96,21 @@ export function ClientOverviewTab({
                             {activePolicies.map((policy) => (
                                 <div
                                     key={policy.policyId}
-                                    className="flex items-center gap-3 rounded-xl border border-slate-200/60 dark:border-slate-700/60 p-3"
+                                    className="flex items-center gap-3 rounded-xl border border-neutral-200/60 dark:border-neutral-700/60 p-3"
                                 >
                                     <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-soft dark:bg-primary/15">
                                         <Shield className="h-4 w-4 text-primary dark:text-mint" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-slate-900 dark:text-white">
+                                        <p className="text-sm font-medium text-foreground">
                                             {LOB_LABELS[policy.lineOfBusiness]?.[language] || policy.lineOfBusiness}
                                         </p>
-                                        <p className="text-xs text-slate-500">
+                                        <p className="text-xs text-neutral-500">
                                             {policy.insurerName}
                                         </p>
                                     </div>
                                     <div className="text-right">
-                                        <div className="flex items-center gap-1 text-xs text-slate-400">
+                                        <div className="flex items-center gap-1 text-xs text-neutral-400">
                                             <Calendar className="h-3 w-3" />
                                             {formatDateGreek(policy.endDate)}
                                         </div>
@@ -131,10 +131,10 @@ export function ClientOverviewTab({
             {openOpportunities.length > 0 && (
                 <div className="col-span-12">
                     <BrandCard className="p-5">
-                        <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
+                        <h3 className="text-base font-bold text-foreground flex items-center gap-2 mb-4">
                             <AlertTriangle className="h-5 w-5 text-amber-500" />
                             {t.clientOverview.identifiedGaps}
-                            <span className="text-xs text-slate-400 font-normal">({openOpportunities.length})</span>
+                            <span className="text-xs text-neutral-400 font-normal">({openOpportunities.length})</span>
                         </h3>
                         <div className="grid grid-cols-2 gap-3">
                             {openOpportunities.map((opp) => {
@@ -142,7 +142,7 @@ export function ClientOverviewTab({
                                     critical: "border-l-red-500 bg-red-50/50 dark:bg-red-950/20",
                                     high: "border-l-amber-500 bg-amber-50/50 dark:bg-amber-950/20",
                                     medium: "border-l-blue-500 bg-blue-50/50 dark:bg-blue-950/20",
-                                    low: "border-l-slate-400 bg-slate-50/50 dark:bg-slate-900/20",
+                                    low: "border-l-slate-400 bg-neutral-50/50 dark:bg-neutral-900/20",
                                 }
                                 return (
                                     <div
@@ -150,7 +150,7 @@ export function ClientOverviewTab({
                                         className={`border-l-4 rounded-xl p-4 ${severityColors[opp.severity] || severityColors.medium}`}
                                     >
                                         <div className="flex items-center gap-2 flex-wrap">
-                                            <p className="text-sm font-medium text-slate-900 dark:text-white">
+                                            <p className="text-sm font-medium text-foreground">
                                                 {opp.gapTitle}
                                             </p>
                                             {opp.conversionLikelihood && (
@@ -159,14 +159,14 @@ export function ClientOverviewTab({
                                                         ? "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint"
                                                         : opp.conversionLikelihood === "medium"
                                                             ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
-                                                            : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
+                                                            : "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
                                                 }`}>
                                                     <ArrowUpRight className="w-2.5 h-2.5" />
                                                     {opp.conversionScore != null ? `${opp.conversionScore}%` : opp.conversionLikelihood}
                                                 </span>
                                             )}
                                         </div>
-                                        <p className="text-xs text-slate-500 mt-1 line-clamp-2">
+                                        <p className="text-xs text-neutral-500 mt-1 line-clamp-2">
                                             {opp.notes}
                                         </p>
                                         {onCreateProposal && (
@@ -191,16 +191,16 @@ export function ClientOverviewTab({
             {customer.crossSell && (
                 <div className="col-span-12">
                     <BrandCard className="p-5">
-                        <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
+                        <h3 className="text-base font-bold text-foreground flex items-center gap-2 mb-4">
                             <Users className="h-5 w-5 text-primary dark:text-mint" />
                             {t.clientOverview.coverageNeeds}
                         </h3>
                         <div className="flex items-center gap-3">
                             <div className="text-center">
-                                <div className="text-3xl font-black text-slate-900 dark:text-white">
+                                <div className="text-3xl font-black text-foreground">
                                     {customer.crossSell.coverageScore}%
                                 </div>
-                                <p className="text-xs text-slate-500">
+                                <p className="text-xs text-neutral-500">
                                     {t.clientOverview.coverage}
                                 </p>
                             </div>

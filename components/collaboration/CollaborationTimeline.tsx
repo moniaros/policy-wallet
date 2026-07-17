@@ -265,13 +265,13 @@ export function CollaborationTimeline({
     }, [selectedId])
 
     return (
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm">
-            <div className="p-4 border-b border-slate-200 dark:border-slate-700">
+        <div className="rounded-2xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 shadow-sm">
+            <div className="p-4 border-b border-neutral-200 dark:border-neutral-700">
                 <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
                         Collaboration Timeline
                     </h3>
-                    {loading ? <span className="text-xs text-slate-400">Loading...</span> : null}
+                    {loading ? <span className="text-xs text-neutral-400">Loading...</span> : null}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
@@ -279,12 +279,12 @@ export function CollaborationTimeline({
                         value={threadSubject}
                         onChange={(e) => setThreadSubject(e.target.value)}
                         placeholder="Start a new thread..."
-                        className="md:col-span-2 rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm bg-white dark:bg-slate-950"
+                        className="md:col-span-2 rounded-lg border border-neutral-300 dark:border-neutral-600 px-3 py-2 text-sm bg-white dark:bg-neutral-950"
                     />
                     <select
                         value={threadCategory}
                         onChange={(e) => setThreadCategory(e.target.value)}
-                        className="rounded-lg border border-slate-300 dark:border-slate-600 px-3 py-2 text-sm bg-white dark:bg-slate-950"
+                        className="rounded-lg border border-neutral-300 dark:border-neutral-600 px-3 py-2 text-sm bg-white dark:bg-neutral-950"
                     >
                         <option value="general">General</option>
                         <option value="coverage_gap">Coverage gap</option>
@@ -302,10 +302,10 @@ export function CollaborationTimeline({
             </div>
 
             <div className={`grid gap-0 ${compact ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-2"}`}>
-                <div className={`p-4 ${compact ? "" : "border-r border-slate-200 dark:border-slate-700"}`}>
+                <div className={`p-4 ${compact ? "" : "border-r border-neutral-200 dark:border-neutral-700"}`}>
                     <div className="space-y-2 max-h-[380px] overflow-auto">
                         {threads.length === 0 ? (
-                            <p className="text-sm text-slate-500 dark:text-slate-400">No collaboration threads yet.</p>
+                            <p className="text-sm text-muted-foreground">No collaboration threads yet.</p>
                         ) : (
                             threads.map((thread) => {
                                 const waitingOnYou = isWaitingOnYou(thread.status, viewerRole)
@@ -321,19 +321,19 @@ export function CollaborationTimeline({
                                         className={`w-full text-left p-3 rounded-lg border transition ${
                                             selectedId === thread.id
                                                 ? "border-primary bg-primary-tint dark:bg-primary/15"
-                                                : "border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                                                : "border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800"
                                         }`}
                                     >
                                         <div className="flex items-center justify-between gap-2">
                                             <div className="flex items-center gap-2 min-w-0">
                                                 <TypeIcon className={`w-4 h-4 flex-shrink-0 ${typeConfig.color}`} />
-                                                <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">{thread.subject}</p>
+                                                <p className="text-sm font-semibold text-foreground truncate">{thread.subject}</p>
                                             </div>
-                                            <span className="text-[10px] uppercase font-bold text-slate-500">{thread.priority}</span>
+                                            <span className="text-[10px] uppercase font-bold text-neutral-500">{thread.priority}</span>
                                         </div>
                                         <div className="mt-1 flex gap-2 items-center flex-wrap">
-                                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${typeConfig.color} bg-slate-100 dark:bg-slate-800`}>{typeConfig.label}</span>
-                                            <span className="text-xs text-slate-500">{thread.status}</span>
+                                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-semibold ${typeConfig.color} bg-muted`}>{typeConfig.label}</span>
+                                            <span className="text-xs text-neutral-500">{thread.status}</span>
                                             {waitingOnYou ? (
                                                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 font-bold">Waiting on you</span>
                                             ) : null}
@@ -350,15 +350,15 @@ export function CollaborationTimeline({
 
                 <div className="p-4">
                     {!selected ? (
-                        <p className="text-sm text-slate-500 dark:text-slate-400">Select a thread to view timeline details.</p>
+                        <p className="text-sm text-muted-foreground">Select a thread to view timeline details.</p>
                     ) : (
                         <div className="space-y-4">
                             <div className="flex items-center justify-between gap-2">
-                                <h4 className="text-sm font-bold text-slate-900 dark:text-white">{selected.subject}</h4>
+                                <h4 className="text-sm font-bold text-foreground">{selected.subject}</h4>
                                 <div className="flex gap-2">
-                                    <button onClick={() => patchThreadStatus("open")} className="text-xs px-2 py-1 rounded border border-slate-300 dark:border-slate-600">Open</button>
+                                    <button onClick={() => patchThreadStatus("open")} className="text-xs px-2 py-1 rounded border border-neutral-300 dark:border-neutral-600">Open</button>
                                     <button onClick={() => patchThreadStatus("resolved")} className="text-xs px-2 py-1 rounded border border-primary text-primary dark:text-mint">Resolve</button>
-                                    <button onClick={() => patchThreadStatus("closed")} className="text-xs px-2 py-1 rounded border border-slate-400">Close</button>
+                                    <button onClick={() => patchThreadStatus("closed")} className="text-xs px-2 py-1 rounded border border-neutral-400">Close</button>
                                 </div>
                             </div>
 
@@ -382,9 +382,9 @@ export function CollaborationTimeline({
                                 </div>
                             )}
 
-                            <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-3 max-h-[220px] overflow-auto space-y-2">
+                            <div className="rounded-lg border border-neutral-200 dark:border-neutral-700 p-3 max-h-[220px] overflow-auto space-y-2">
                                 {visibleMessages.length === 0 ? (
-                                    <p className="text-xs text-slate-500">No messages yet.</p>
+                                    <p className="text-xs text-neutral-500">No messages yet.</p>
                                 ) : (
                                     visibleMessages.map((item) => (
                                         <div
@@ -392,7 +392,7 @@ export function CollaborationTimeline({
                                             className={`text-sm ${item.isPrivate ? "border-l-2 border-amber-400 pl-2 bg-amber-50/50 dark:bg-amber-950/10 rounded-r" : ""}`}
                                         >
                                             <div className="flex items-center gap-1.5">
-                                                <p className="font-semibold text-slate-800 dark:text-slate-200">{item.sender.name || item.sender.email}</p>
+                                                <p className="font-semibold text-neutral-800 dark:text-neutral-200">{item.sender.name || item.sender.email}</p>
                                                 {item.isPrivate && (
                                                     <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
                                                         <Lock className="w-3 h-3" />
@@ -400,10 +400,10 @@ export function CollaborationTimeline({
                                                     </span>
                                                 )}
                                                 {item.messageType === "system" && (
-                                                    <span className="text-[10px] font-bold text-slate-400 uppercase">System</span>
+                                                    <span className="text-[10px] font-bold text-neutral-400 uppercase">System</span>
                                                 )}
                                             </div>
-                                            <p className="text-slate-600 dark:text-slate-300">{item.body}</p>
+                                            <p className="text-neutral-600 dark:text-neutral-300">{item.body}</p>
                                         </div>
                                     ))
                                 )}
@@ -413,13 +413,13 @@ export function CollaborationTimeline({
                             <div className="space-y-2">
                                 {/* Templates dropdown (agent only) */}
                                 {viewerRole === "agent" && showTemplates && (
-                                    <div className="grid grid-cols-2 gap-1.5 p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+                                    <div className="grid grid-cols-2 gap-1.5 p-2 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/50">
                                         {MESSAGE_TEMPLATES.map((tpl) => (
                                             <button
                                                 key={tpl.label}
                                                 type="button"
                                                 onClick={() => { setMessage(tpl.body); setShowTemplates(false) }}
-                                                className="text-left text-xs px-2 py-1.5 rounded hover:bg-white dark:hover:bg-slate-700 transition text-slate-600 dark:text-slate-300 font-medium"
+                                                className="text-left text-xs px-2 py-1.5 rounded hover:bg-white dark:hover:bg-neutral-700 transition text-neutral-600 dark:text-neutral-300 font-medium"
                                             >
                                                 {tpl.label}
                                             </button>
@@ -433,10 +433,10 @@ export function CollaborationTimeline({
                                             onChange={(e) => setMessage(e.target.value)}
                                             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); addMessage() } }}
                                             placeholder={isPrivateMessage ? "Private note (agent-only)..." : "Post update..."}
-                                            className={`w-full rounded-lg border px-3 py-2 text-sm bg-white dark:bg-slate-950 ${
+                                            className={`w-full rounded-lg border px-3 py-2 text-sm bg-white dark:bg-neutral-950 ${
                                                 isPrivateMessage
                                                     ? "border-amber-300 dark:border-amber-700"
-                                                    : "border-slate-300 dark:border-slate-600"
+                                                    : "border-neutral-300 dark:border-neutral-600"
                                             }`}
                                         />
                                         {viewerRole === "agent" && (
@@ -453,7 +453,7 @@ export function CollaborationTimeline({
                                                         type="checkbox"
                                                         checked={isPrivateMessage}
                                                         onChange={(e) => setIsPrivateMessage(e.target.checked)}
-                                                        className="w-3 h-3 rounded border-slate-300 text-amber-500 focus:ring-amber-500"
+                                                        className="w-3 h-3 rounded border-neutral-300 text-amber-500 focus:ring-amber-500"
                                                     />
                                                     <span className="text-[10px] font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-0.5">
                                                         <Lock className="w-3 h-3" />
@@ -463,23 +463,23 @@ export function CollaborationTimeline({
                                             </div>
                                         )}
                                     </div>
-                                    <button type="button" onClick={addMessage} className="rounded-lg bg-slate-800 hover:bg-slate-900 text-white text-sm px-3 py-2 self-start">Send</button>
+                                    <button type="button" onClick={addMessage} className="rounded-lg bg-neutral-800 hover:bg-neutral-900 text-white text-sm px-3 py-2 self-start">Send</button>
                                 </div>
                             </div>
 
-                            <div className="rounded-lg border border-slate-200 dark:border-slate-700 p-3">
-                                <p className="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">Actions</p>
+                            <div className="rounded-lg border border-neutral-200 dark:border-neutral-700 p-3">
+                                <p className="text-xs font-bold uppercase tracking-wide text-neutral-500 mb-2">Actions</p>
                                 <div className="space-y-2 mb-3">
                                     {selected.actions.map((item) => (
-                                        <div key={item.id} className="flex items-center justify-between gap-2 border border-slate-200 dark:border-slate-700 rounded p-2">
+                                        <div key={item.id} className="flex items-center justify-between gap-2 border border-neutral-200 dark:border-neutral-700 rounded p-2">
                                             <div>
-                                                <p className="text-sm font-semibold text-slate-900 dark:text-white">{item.title}</p>
-                                                <p className="text-xs text-slate-500">Assignee: {item.assignee.name || item.assignee.email}</p>
+                                                <p className="text-sm font-semibold text-foreground">{item.title}</p>
+                                                <p className="text-xs text-neutral-500">Assignee: {item.assignee.name || item.assignee.email}</p>
                                             </div>
                                             <select
                                                 value={item.status}
                                                 onChange={(e) => patchActionStatus(item.id, e.target.value as any)}
-                                                className="text-xs rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-950 px-2 py-1"
+                                                className="text-xs rounded border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-950 px-2 py-1"
                                             >
                                                 <option value="pending">pending</option>
                                                 <option value="in_progress">in_progress</option>
@@ -495,12 +495,12 @@ export function CollaborationTimeline({
                                         value={actionTitle}
                                         onChange={(e) => setActionTitle(e.target.value)}
                                         placeholder="Action title"
-                                        className="rounded border border-slate-300 dark:border-slate-600 px-2 py-1.5 text-sm bg-white dark:bg-slate-950"
+                                        className="rounded border border-neutral-300 dark:border-neutral-600 px-2 py-1.5 text-sm bg-white dark:bg-neutral-950"
                                     />
                                     <select
                                         value={actionAssigneeId}
                                         onChange={(e) => setActionAssigneeId(e.target.value)}
-                                        className="rounded border border-slate-300 dark:border-slate-600 px-2 py-1.5 text-sm bg-white dark:bg-slate-950"
+                                        className="rounded border border-neutral-300 dark:border-neutral-600 px-2 py-1.5 text-sm bg-white dark:bg-neutral-950"
                                     >
                                         {selected.participants.map((p) => (
                                             <option key={p.user.id} value={p.user.id}>
@@ -512,7 +512,7 @@ export function CollaborationTimeline({
                                         type="date"
                                         value={actionDueDate}
                                         onChange={(e) => setActionDueDate(e.target.value)}
-                                        className="rounded border border-slate-300 dark:border-slate-600 px-2 py-1.5 text-sm bg-white dark:bg-slate-950"
+                                        className="rounded border border-neutral-300 dark:border-neutral-600 px-2 py-1.5 text-sm bg-white dark:bg-neutral-950"
                                     />
                                 </div>
                                 <button onClick={addAction} className="mt-2 rounded bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] text-sm px-3 py-2">

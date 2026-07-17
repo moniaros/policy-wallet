@@ -127,9 +127,9 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm" onClick={() => { reset(); onClose(); }} />
+            <div className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm" onClick={() => { reset(); onClose(); }} />
 
-            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="add-customer-title" tabIndex={-1} className="relative w-full max-w-2xl bg-white dark:bg-stone-900 rounded-[48px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="add-customer-title" tabIndex={-1} className="relative w-full max-w-2xl bg-white dark:bg-neutral-900 rounded-[48px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
                 <div className="p-12">
                     {view === 'choice' && (
                         <div className="space-y-10">
@@ -140,38 +140,38 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     </div>
                                     <span className="text-[10px] font-black uppercase tracking-[0.2em]">{t.agentModals.addCustomer.kicker}</span>
                                 </div>
-                                <h2 id="add-customer-title" className="text-3xl font-black text-stone-900 dark:text-white tracking-tighter mb-2">{t.agentModals.addCustomer.title} <span className="text-stone-400 dark:text-stone-500 italic">{t.agentModals.addCustomer.titleAccent}</span></h2>
-                                <p className="text-base text-stone-500 dark:text-stone-400 font-medium text-balance">{t.agentModals.addCustomer.desc}</p>
+                                <h2 id="add-customer-title" className="text-3xl font-black text-foreground tracking-tighter mb-2">{t.agentModals.addCustomer.title} <span className="text-neutral-400 dark:text-neutral-500 italic">{t.agentModals.addCustomer.titleAccent}</span></h2>
+                                <p className="text-base text-muted-foreground font-medium text-balance">{t.agentModals.addCustomer.desc}</p>
                             </header>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <button
                                     onClick={() => setView('manual')}
-                                    className="p-8 rounded-[40px] border border-stone-100 dark:border-stone-800 text-left transition-all bg-stone-50/50 dark:bg-stone-800/30 hover:bg-white dark:hover:bg-stone-800 hover:shadow-2xl hover:shadow-stone-900/5 group"
+                                    className="p-8 rounded-[40px] border border-neutral-100 dark:border-neutral-800 text-left transition-all bg-neutral-50/50 dark:bg-neutral-800/30 hover:bg-white dark:hover:bg-neutral-800 hover:shadow-2xl hover:shadow-neutral-900/5 group"
                                 >
-                                    <div className="w-12 h-12 rounded-2xl bg-stone-900 dark:bg-white text-white dark:text-stone-900 flex items-center justify-center mb-6 shadow-xl group-hover:scale-110 transition-transform">
+                                    <div className="w-12 h-12 rounded-2xl bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 flex items-center justify-center mb-6 shadow-xl group-hover:scale-110 transition-transform">
                                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                     </div>
-                                    <h3 className="text-lg font-black text-stone-900 dark:text-white tracking-tight mb-2">{t.agentModals.addCustomer.manualTitle}</h3>
-                                    <p className="text-xs text-stone-400 font-medium leading-relaxed">{t.agentModals.addCustomer.manualDesc}</p>
+                                    <h3 className="text-lg font-black text-foreground tracking-tight mb-2">{t.agentModals.addCustomer.manualTitle}</h3>
+                                    <p className="text-xs text-neutral-400 font-medium leading-relaxed">{t.agentModals.addCustomer.manualDesc}</p>
                                 </button>
 
                                 <button
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="p-8 rounded-[40px] border border-stone-100 dark:border-stone-800 text-left transition-all bg-stone-50/50 dark:bg-stone-800/30 hover:bg-white dark:hover:bg-stone-800 hover:shadow-2xl hover:shadow-stone-900/5 group"
+                                    className="p-8 rounded-[40px] border border-neutral-100 dark:border-neutral-800 text-left transition-all bg-neutral-50/50 dark:bg-neutral-800/30 hover:bg-white dark:hover:bg-neutral-800 hover:shadow-2xl hover:shadow-neutral-900/5 group"
                                 >
                                     <div className="w-12 h-12 rounded-2xl bg-primary text-white dark:text-[#1A2420] flex items-center justify-center mb-6 shadow-xl shadow-primary/25 group-hover:scale-110 transition-transform">
                                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                     </div>
-                                    <h3 className="text-lg font-black text-stone-900 dark:text-white tracking-tight mb-2">{t.agentModals.addCustomer.pdfTitle}</h3>
-                                    <p className="text-xs text-stone-400 font-medium leading-relaxed">{t.agentModals.addCustomer.pdfDesc}</p>
+                                    <h3 className="text-lg font-black text-foreground tracking-tight mb-2">{t.agentModals.addCustomer.pdfTitle}</h3>
+                                    <p className="text-xs text-neutral-400 font-medium leading-relaxed">{t.agentModals.addCustomer.pdfDesc}</p>
                                     <input type="file" ref={fileInputRef} onChange={handleFileUpload} accept="application/pdf" className="hidden" />
                                 </button>
                             </div>
 
                             <button
                                 onClick={onClose}
-                                className="w-full py-5 text-[10px] font-black uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors"
+                                className="w-full py-5 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-neutral-900 transition-colors"
                             >
                                 {t.agentModals.addCustomer.goBack}
                             </button>
@@ -186,8 +186,8 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                     <svg className="w-8 h-8 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.989-2.386l-.548-.547z" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                                 </div>
                             </div>
-                            <h2 className="text-2xl font-black text-stone-900 dark:text-white tracking-tighter mb-2">{t.agentModals.addCustomer.analyzingTitle}</h2>
-                            <p className="text-stone-400 font-medium">{t.agentModals.addCustomer.analyzingDesc}</p>
+                            <h2 className="text-2xl font-black text-foreground tracking-tighter mb-2">{t.agentModals.addCustomer.analyzingTitle}</h2>
+                            <p className="text-neutral-400 font-medium">{t.agentModals.addCustomer.analyzingDesc}</p>
                         </div>
                     )}
 
@@ -195,104 +195,104 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                         <form onSubmit={handleManualSubmit} className="space-y-10">
                             <header className="flex justify-between items-start">
                                 <div>
-                                    <h2 className="text-2xl font-black text-stone-900 dark:text-white tracking-tighter mb-1">{t.agentModals.addCustomer.detailsTitle} <span className="text-stone-400 italic">{t.agentModals.addCustomer.detailsAccent}</span></h2>
+                                    <h2 className="text-2xl font-black text-foreground tracking-tighter mb-1">{t.agentModals.addCustomer.detailsTitle} <span className="text-neutral-400 italic">{t.agentModals.addCustomer.detailsAccent}</span></h2>
                                     <p className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint">{t.agentModals.addCustomer.manualProtocol}</p>
                                 </div>
-                                <button type="button" onClick={() => setView('choice')} className="text-[10px] font-black uppercase tracking-widest text-stone-400 hover:text-stone-900 transition-colors">{t.agentModals.addCustomer.changeMethod}</button>
+                                <button type="button" onClick={() => setView('choice')} className="text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-neutral-900 transition-colors">{t.agentModals.addCustomer.changeMethod}</button>
                             </header>
 
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.firstName}</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.firstName}</label>
                                     <input
                                         required
                                         value={formData.name}
                                         onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full h-14 px-6 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
+                                        className="w-full h-14 px-6 bg-neutral-50 dark:bg-neutral-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
                                         placeholder={t.agentModals.addCustomer.phFirstName}
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.lastName}</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.lastName}</label>
                                     <input
                                         required
                                         value={formData.surname}
                                         onChange={e => setFormData({ ...formData, surname: e.target.value })}
-                                        className="w-full h-14 px-6 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
+                                        className="w-full h-14 px-6 bg-neutral-50 dark:bg-neutral-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
                                         placeholder={t.agentModals.addCustomer.phLastName}
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.emailAddress}</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.emailAddress}</label>
                                     <input
                                         required
                                         type="email"
                                         value={formData.email}
                                         onChange={e => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full h-14 px-6 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
+                                        className="w-full h-14 px-6 bg-neutral-50 dark:bg-neutral-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
                                         placeholder="john@example.com"
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.phoneNumber}</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.phoneNumber}</label>
                                     <input
                                         value={formData.phone}
                                         onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                                        className="w-full h-14 px-6 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
+                                        className="w-full h-14 px-6 bg-neutral-50 dark:bg-neutral-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
                                         placeholder="+30 690 000 0000"
                                     />
                                 </div>
                                 <div className="space-y-1.5">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.taxId}</label>
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.taxId}</label>
                                     <input
                                         value={formData.taxId}
                                         onChange={e => setFormData({ ...formData, taxId: e.target.value })}
-                                        className="w-full h-14 px-6 bg-slate-50 dark:bg-slate-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
+                                        className="w-full h-14 px-6 bg-neutral-50 dark:bg-neutral-800 border-none rounded-2xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-sm font-bold"
                                         placeholder={t.agentModals.addCustomer.phTaxId}
                                     />
                                 </div>
                             </div>
 
-                            <div className="p-8 rounded-[32px] bg-stone-50 dark:bg-stone-800/30 border border-stone-100 dark:border-stone-800">
+                            <div className="p-8 rounded-[32px] bg-neutral-50 dark:bg-neutral-800/30 border border-neutral-100 dark:border-neutral-800">
                                 <label className="flex items-center gap-3 cursor-pointer mb-6">
                                     <input
                                         type="checkbox"
                                         checked={formData.addPolicy}
                                         onChange={e => setFormData({ ...formData, addPolicy: e.target.checked })}
-                                        className="w-5 h-5 rounded-lg border-slate-300 text-primary focus:ring-primary/30"
+                                        className="w-5 h-5 rounded-lg border-neutral-300 text-primary focus:ring-primary/30"
                                     />
-                                    <span className="text-sm font-black text-stone-900 dark:text-white tracking-tight">{t.agentModals.addCustomer.includePolicy}</span>
+                                    <span className="text-sm font-black text-foreground tracking-tight">{t.agentModals.addCustomer.includePolicy}</span>
                                 </label>
 
                                 {formData.addPolicy && (
                                     <div className="grid grid-cols-2 gap-6 animate-in slide-in-from-top-4 duration-300">
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.insurer}</label>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.insurer}</label>
                                             <input
                                                 required={formData.addPolicy}
                                                 value={formData.policy.insurerName}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, insurerName: e.target.value } })}
-                                                className="w-full h-12 px-5 bg-white dark:bg-slate-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
+                                                className="w-full h-12 px-5 bg-white dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
                                                 placeholder={t.agentModals.addCustomer.phInsurer}
                                             />
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.policyNumber}</label>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.policyNumber}</label>
                                             <input
                                                 required={formData.addPolicy}
                                                 value={formData.policy.policyNumber}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, policyNumber: e.target.value } })}
-                                                className="w-full h-12 px-5 bg-white dark:bg-slate-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
+                                                className="w-full h-12 px-5 bg-white dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
                                                 placeholder="POL-123456"
                                             />
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.lineOfBusiness}</label>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.lineOfBusiness}</label>
                                             <select
                                                 required={formData.addPolicy}
                                                 value={formData.policy.lineOfBusiness}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, lineOfBusiness: e.target.value } })}
-                                                className="w-full h-12 px-5 bg-white dark:bg-slate-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold appearance-none"
+                                                className="w-full h-12 px-5 bg-white dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold appearance-none"
                                             >
                                                 <option value="motor">{t.agentModals.addCustomer.lobMotor}</option>
                                                 <option value="health">{t.agentModals.addCustomer.lobHealth}</option>
@@ -303,33 +303,33 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                             </select>
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.premium}</label>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.premium}</label>
                                             <input
                                                 type="number"
                                                 value={formData.policy.premiumAmount}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, premiumAmount: e.target.value } })}
-                                                className="w-full h-12 px-5 bg-white dark:bg-slate-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
+                                                className="w-full h-12 px-5 bg-white dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
                                                 placeholder="0.00"
                                             />
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.startDate}</label>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.startDate}</label>
                                             <input
                                                 required={formData.addPolicy}
                                                 type="date"
                                                 value={formData.policy.startDate}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, startDate: e.target.value } })}
-                                                className="w-full h-12 px-5 bg-white dark:bg-slate-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
+                                                className="w-full h-12 px-5 bg-white dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
                                             />
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black uppercase tracking-widest text-stone-400 ml-1">{t.agentModals.addCustomer.endDate}</label>
+                                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">{t.agentModals.addCustomer.endDate}</label>
                                             <input
                                                 required={formData.addPolicy}
                                                 type="date"
                                                 value={formData.policy.endDate}
                                                 onChange={e => setFormData({ ...formData, policy: { ...formData.policy, endDate: e.target.value } })}
-                                                className="w-full h-12 px-5 bg-white dark:bg-slate-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
+                                                className="w-full h-12 px-5 bg-white dark:bg-neutral-800 border-none rounded-xl focus:ring-4 focus:ring-primary/10 outline-none transition-all text-xs font-bold"
                                             />
                                         </div>
                                     </div>
@@ -342,14 +342,14 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                                 <button
                                     type="button"
                                     onClick={() => { reset(); onClose(); }}
-                                    className="flex-1 px-8 py-5 bg-stone-100 dark:bg-stone-800 text-stone-900 dark:text-white rounded-[24px] text-[10px] font-black uppercase tracking-widest hover:bg-stone-200 transition-all"
+                                    className="flex-1 px-8 py-5 bg-muted text-foreground rounded-[24px] text-[10px] font-black uppercase tracking-widest hover:bg-neutral-200 transition-all"
                                 >
                                     {t.agentModals.addCustomer.cancel}
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="flex-[2] px-8 py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-slate-900/10 hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all disabled:opacity-50"
+                                    className="flex-[2] px-8 py-5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-neutral-900/10 hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all disabled:opacity-50"
                                 >
                                     {loading ? t.agentModals.addCustomer.processing : t.agentModals.addCustomer.addToPipeline}
                                 </button>
@@ -362,11 +362,11 @@ export function AddCustomerModal({ isOpen, onClose, onSuccess }: Props) {
                             <div className="w-24 h-24 rounded-[32px] bg-primary text-white dark:text-[#1A2420] flex items-center justify-center mx-auto mb-10 shadow-2xl shadow-primary/25 scale-110">
                                 <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" /></svg>
                             </div>
-                            <h2 className="text-3xl font-black text-stone-900 dark:text-white tracking-tighter mb-4 leading-tight">Customer <span className="text-stone-400 italic">Registered.</span></h2>
-                            <p className="text-stone-500 dark:text-stone-400 font-medium mb-12 max-w-sm mx-auto">The customer has been added to your CRM. You can invite them to their digital wallet from their profile page at any time.</p>
+                            <h2 className="text-3xl font-black text-foreground tracking-tighter mb-4 leading-tight">Customer <span className="text-neutral-400 italic">Registered.</span></h2>
+                            <p className="text-muted-foreground font-medium mb-12 max-w-sm mx-auto">The customer has been added to your CRM. You can invite them to their digital wallet from their profile page at any time.</p>
                             <button
                                 onClick={() => { reset(); onClose(); }}
-                                className="px-12 py-5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-slate-900/10 hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all"
+                                className="px-12 py-5 bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 rounded-[24px] text-[10px] font-black uppercase tracking-widest shadow-xl shadow-neutral-900/10 hover:bg-primary dark:hover:bg-mint hover:text-white dark:hover:text-[#1A2420] transition-all"
                             >
                                 Continue to CRM
                             </button>

@@ -30,7 +30,7 @@ export default function InviteCustomerPage() {
 
     return (
         <div className="max-w-2xl mx-auto px-4 py-12">
-            <div className="bg-white dark:bg-stone-800 rounded-2xl shadow-xl border border-stone-200 dark:border-stone-700 overflow-hidden">
+            <div className="bg-white dark:bg-neutral-800 rounded-2xl shadow-xl border border-neutral-200 dark:border-neutral-700 overflow-hidden">
                 <div className="bg-primary px-8 py-10 text-white dark:text-[#1A2420]">
                     <h1 className="text-3xl font-bold">{inv_t.title}</h1>
                     <p className="mt-2 text-white/80 dark:text-[#1A2420]/80 italic">{inv_t.subtitle}</p>
@@ -44,12 +44,12 @@ export default function InviteCustomerPage() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
-                            <h2 className="text-2xl font-bold text-stone-900 dark:text-white mb-2">{inv_t.successTitle}</h2>
-                            <p className="text-stone-600 dark:text-stone-400 mb-6">{inv_t.successBody}</p>
+                            <h2 className="text-2xl font-bold text-foreground mb-2">{inv_t.successTitle}</h2>
+                            <p className="text-neutral-600 dark:text-neutral-400 mb-6">{inv_t.successBody}</p>
 
                             <button
                                 onClick={() => router.push("/customers")}
-                                className="w-full bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 py-3 rounded-xl font-bold hover:opacity-90 transition-opacity"
+                                className="w-full bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 py-3 rounded-xl font-bold hover:opacity-90 transition-opacity"
                             >
                                 {inv_t.backToCustomers}
                             </button>
@@ -57,16 +57,16 @@ export default function InviteCustomerPage() {
                     ) : (
                         <form action={handleSubmit} className="space-y-6">
                             <div>
-                                <label htmlFor="email" className="block text-sm font-bold text-stone-700 dark:text-stone-300 mb-2">{inv_t.emailLabel}</label>
+                                <label htmlFor="email" className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">{inv_t.emailLabel}</label>
                                 <input
                                     type="email"
                                     id="email"
                                     name="email"
                                     required
                                     placeholder="customer@example.com"
-                                    className="w-full px-4 py-3 bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-700 rounded-xl focus:ring-2 focus:ring-primary outline-none transition-all dark:text-white"
+                                    className="w-full px-4 py-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xl focus:ring-2 focus:ring-primary outline-none transition-all dark:text-white"
                                 />
-                                <p className="mt-2 text-xs text-stone-500">{inv_t.emailHelper}</p>
+                                <p className="mt-2 text-xs text-neutral-500">{inv_t.emailHelper}</p>
                             </div>
 
                             {error && (
@@ -82,7 +82,7 @@ export default function InviteCustomerPage() {
                                 <button
                                     type="button"
                                     onClick={() => router.back()}
-                                    className="flex-1 px-6 py-3 border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 rounded-xl font-bold hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
+                                    className="flex-1 px-6 py-3 border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-400 rounded-xl font-bold hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
                                 >
                                     {inv_t.cancel}
                                 </button>

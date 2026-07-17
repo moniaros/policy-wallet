@@ -75,7 +75,7 @@ const ACTIVITY_ICONS: Record<string, React.ElementType> = {
 const ACTIVITY_COLORS: Record<string, string> = {
     policy_added: "text-[#22C55E]",
     customer_invited: "text-primary dark:text-mint",
-    renewal_completed: "text-slate-500",
+    renewal_completed: "text-neutral-500",
     claim_filed: "text-amber-500",
 }
 
@@ -96,9 +96,9 @@ export function DesktopDashboard({
     const greeting = getGreeting(language)
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950">
+        <div className="min-h-screen bg-[#F8FAFC] dark:bg-neutral-950">
             {/* Header */}
-            <div className="relative overflow-hidden bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/60">
+            <div className="relative overflow-hidden bg-white/70 dark:bg-neutral-900/70 backdrop-blur-xl border-b border-neutral-200/60 dark:border-neutral-800/60">
                 <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-6">
                     <div className="flex items-center justify-between flex-wrap gap-3">
                         <div className="flex items-center gap-4">
@@ -106,10 +106,10 @@ export function DesktopDashboard({
                                 <Briefcase className="w-6 h-6" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                                <h1 className="text-2xl font-black text-foreground tracking-tight">
                                     {greeting}{agentName ? `, ${agentName}` : ""}
                                 </h1>
-                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                                <p className="text-sm text-muted-foreground mt-0.5">
                                     {data.actionQueue.length > 0
                                         ? (language === "el"
                                             ? `${data.actionQueue.length} στοιχεία χρειάζονται την προσοχή σας`
@@ -186,7 +186,7 @@ export function DesktopDashboard({
                     <div className="lg:col-span-8">
                         <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-5">
                             <div className="flex items-center justify-between mb-4">
-                                <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                <h2 className="text-base font-bold text-foreground flex items-center gap-2">
                                     <Users className="h-5 w-5 text-primary dark:text-mint" />
                                     {pick(DASH_COPY.clients, language)}
                                 </h2>
@@ -203,32 +203,32 @@ export function DesktopDashboard({
                     <div className="lg:col-span-4 space-y-5">
                         {/* Activity Feed */}
                         <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-5">
-                            <h2 className="text-base font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                            <h2 className="text-base font-bold text-foreground mb-4 flex items-center gap-2">
                                 <Activity className="h-4 w-4 text-primary dark:text-mint" />
                                 {pick(DASH_COPY.recentActivity, language)}
                             </h2>
                             <div className="space-y-4">
                                 {recentActivity.slice(0, 6).map((activity, i) => {
                                     const Icon = ACTIVITY_ICONS[activity.type] || Activity
-                                    const color = ACTIVITY_COLORS[activity.type] || "text-slate-500"
+                                    const color = ACTIVITY_COLORS[activity.type] || "text-neutral-500"
                                     return (
                                         <div key={activity.id} className="flex items-start gap-3">
                                             <div className="relative mt-0.5">
-                                                <div className="p-1.5 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                                                <div className="p-1.5 bg-neutral-50 dark:bg-neutral-800 rounded-lg">
                                                     <Icon className={`w-3.5 h-3.5 ${color}`} />
                                                 </div>
                                                 {i < recentActivity.length - 1 && (
-                                                    <div className="absolute left-1/2 top-8 -translate-x-1/2 w-px h-3 bg-slate-200 dark:bg-slate-800" />
+                                                    <div className="absolute left-1/2 top-8 -translate-x-1/2 w-px h-3 bg-neutral-200 dark:bg-neutral-800" />
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-xs font-semibold text-slate-900 dark:text-white truncate">
+                                                <p className="text-xs font-semibold text-foreground truncate">
                                                     {activity.customerName}
                                                 </p>
-                                                <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                                                <p className="text-[11px] text-muted-foreground truncate">
                                                     {activity.details}
                                                 </p>
-                                                <p className="text-[10px] text-slate-400 mt-0.5">
+                                                <p className="text-[10px] text-neutral-400 mt-0.5">
                                                     {formatRelativeDate(activity.timestamp, language)}
                                                 </p>
                                             </div>
@@ -241,7 +241,7 @@ export function DesktopDashboard({
                         {/* Quick Add */}
                         {onQuickAdd && (
                             <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-4">
-                                <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
+                                <h3 className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mb-3">
                                     {pick(DASH_COPY.quickAdd, language)}
                                 </h3>
                                 {/* "Request" (document_request) was removed — there is
@@ -259,7 +259,7 @@ export function DesktopDashboard({
                                             className="flex flex-col items-center gap-1.5 rounded-xl border border-[var(--brand-border-subtle)] p-3 text-center transition hover:bg-[var(--brand-surface-elevated)] hover:shadow-sm cursor-pointer"
                                         >
                                             <Icon className="h-4 w-4 text-primary dark:text-mint" />
-                                            <span className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
+                                            <span className="text-[11px] font-medium text-neutral-600 dark:text-neutral-300">
                                                 {label}
                                             </span>
                                         </button>
@@ -289,17 +289,17 @@ function TodaysFollowUps({
         <div className="rounded-2xl border border-[var(--brand-border-subtle)] bg-[var(--brand-surface-card)] p-5">
             <div className="flex items-center gap-2 mb-4">
                 <Calendar className="h-5 w-5 text-primary dark:text-mint" />
-                <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                <h2 className="text-base font-bold text-foreground">
                     {language === "el" ? "Σημερινά Follow-ups" : "Today's Follow-ups"}
                 </h2>
                 {items.length > 0 && (
-                    <span className="text-xs text-slate-400 ml-1">({items.length})</span>
+                    <span className="text-xs text-neutral-400 ml-1">({items.length})</span>
                 )}
             </div>
             {items.length === 0 ? (
                 <div className="flex flex-col items-center py-6 text-center">
                     <CheckCircle2 className="h-8 w-8 text-[#22C55E] mb-2" />
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                    <p className="text-sm text-muted-foreground">
                         {language === "el"
                             ? "Κανένα follow-up για σήμερα"
                             : "No follow-ups scheduled for today"}
@@ -310,14 +310,14 @@ function TodaysFollowUps({
                     {items.map((item) => (
                         <div
                             key={item.id}
-                            className="flex items-center gap-3 rounded-xl border border-slate-200/60 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-800/50 p-3"
+                            className="flex items-center gap-3 rounded-xl border border-neutral-200/60 dark:border-neutral-700/60 bg-neutral-50/50 dark:bg-neutral-800/50 p-3"
                         >
                             <Clock className="h-4 w-4 text-primary dark:text-mint shrink-0" />
                             <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                                <p className="text-sm font-medium text-foreground truncate">
                                     {item.clientName}
                                 </p>
-                                <p className="text-xs text-slate-500 truncate">{item.description}</p>
+                                <p className="text-xs text-neutral-500 truncate">{item.description}</p>
                             </div>
                             <button
                                 type="button"

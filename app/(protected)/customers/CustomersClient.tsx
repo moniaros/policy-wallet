@@ -105,24 +105,24 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
                 <header className="mb-10 text-center sm:text-left flex flex-col sm:flex-row sm:items-center justify-between gap-6">
                     <div>
                         <span className="pw-kicker inline-block mb-2">{cust_t.kicker}</span>
-                        <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 dark:text-white mb-3">
+                        <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground mb-3">
                             {cust_t.title}
                         </h1>
-                        <p className="max-w-xl text-lg text-slate-600 dark:text-slate-400">
+                        <p className="max-w-xl text-lg text-neutral-600 dark:text-neutral-400">
                             {cust_t.subtitle}
                         </p>
                     </div>
                     <div className="flex gap-3">
                         <button
                             onClick={() => setIsBulkImportOpen(true)}
-                            className="arc-btn bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 flex items-center gap-2"
+                            className="arc-btn bg-white hover:bg-neutral-50 text-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-700 flex items-center gap-2"
                         >
                             <Upload className="w-4 h-4" />
                             <span>{cust_t.import}</span>
                         </button>
                         <button
                             onClick={() => setIsAddModalOpen(true)}
-                            className="arc-btn bg-white hover:bg-slate-50 text-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 flex items-center gap-2"
+                            className="arc-btn bg-white hover:bg-neutral-50 text-neutral-700 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-700 flex items-center gap-2"
                         >
                             <User className="w-4 h-4" />
                             <span>{cust_t.addClient}</span>

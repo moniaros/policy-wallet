@@ -75,8 +75,8 @@ const getCategoryDetails = (category: ActivityCategory, type: string) => {
         default:
             return {
                 icon: Bell,
-                bgClass: "bg-slate-100 dark:bg-slate-800",
-                textClass: "text-slate-600 dark:text-slate-400"
+                bgClass: "bg-muted",
+                textClass: "text-neutral-600 dark:text-neutral-400"
             }
     }
 }
@@ -109,10 +109,10 @@ export function ActivityClient({ events }: ActivityClientProps) {
     }, [events, filter])
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 pb-12">
+        <div className="min-h-screen bg-[#F8FAFC] dark:bg-neutral-950 pb-12">
             
             {/* ── Header ── */}
-            <div className="relative overflow-hidden bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/60">
+            <div className="relative overflow-hidden bg-white/70 dark:bg-neutral-900/70 backdrop-blur-xl border-b border-neutral-200/60 dark:border-neutral-800/60">
                 <div className="max-w-[800px] mx-auto px-4 sm:px-6 py-6 lg:py-8 pt-8 relative z-10">
                     <div className="flex flex-col gap-6">
                         <div className="flex items-center gap-4">
@@ -120,10 +120,10 @@ export function ActivityClient({ events }: ActivityClientProps) {
                                 <Activity className="w-6 h-6" />
                             </div>
                             <div>
-                                <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                                <h1 className="text-2xl font-black text-foreground tracking-tight">
                                     {t.activity.title}
                                 </h1>
-                                <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                                <p className="text-sm text-muted-foreground mt-0.5">
                                     {t.activity.desc}
                                 </p>
                             </div>
@@ -137,8 +137,8 @@ export function ActivityClient({ events }: ActivityClientProps) {
                                     onClick={() => setFilter(tab.id)}
                                     className={`px-4 py-2 rounded-full text-sm font-bold transition-all ${
                                         filter === tab.id
-                                            ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-sm"
-                                            : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+                                            ? "bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900 shadow-sm"
+                                            : "bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-50 hover:text-neutral-900 dark:bg-neutral-900 dark:border-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-white"
                                     }`}
                                 >
                                     {tab.label}
@@ -157,18 +157,18 @@ export function ActivityClient({ events }: ActivityClientProps) {
                         animate={{ opacity: 1, y: 0 }}
                         className="py-16 text-center arc-card"
                     >
-                        <Clock className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-700 mb-4" />
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                        <Clock className="w-12 h-12 mx-auto text-neutral-300 dark:text-neutral-700 mb-4" />
+                        <h3 className="text-lg font-bold text-foreground">
                             {t.activity.emptyTitle}
                         </h3>
-                        <p className="text-slate-500 dark:text-slate-400 mt-2">
+                        <p className="text-muted-foreground mt-2">
                             {t.activity.emptyDesc}
                         </p>
                     </motion.div>
                 ) : (
                     <div className="relative">
                         {/* Vertical line connecting timeline */}
-                        <div className="absolute left-[27px] top-6 bottom-6 w-0.5 bg-slate-200 dark:bg-slate-800 rounded-full" />
+                        <div className="absolute left-[27px] top-6 bottom-6 w-0.5 bg-neutral-200 dark:bg-neutral-800 rounded-full" />
                         
                         <div className="space-y-6 relative">
                             <AnimatePresence mode="popLayout">
@@ -196,7 +196,7 @@ export function ActivityClient({ events }: ActivityClientProps) {
                                             <div className="flex-1">
                                                 <Link 
                                                     href={getEntityLink(event)}
-                                                    className="block arc-card hover:-translate-y-0.5 hover:shadow-md transition-all duration-300 group-hover:border-slate-300 dark:group-hover:border-slate-700"
+                                                    className="block arc-card hover:-translate-y-0.5 hover:shadow-md transition-all duration-300 group-hover:border-neutral-300 dark:group-hover:border-neutral-700"
                                                 >
                                                     <div className="p-4 sm:p-5">
                                                         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 mb-2">
@@ -205,15 +205,15 @@ export function ActivityClient({ events }: ActivityClientProps) {
                                                                     {event.isUnread && (
                                                                         <span className="w-2 h-2 rounded-full bg-primary flex-shrink-0" />
                                                                     )}
-                                                                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                                                                    <h3 className="text-sm font-bold text-foreground">
                                                                         {event.title[isEl ? "el" : "en"]}
                                                                     </h3>
                                                                 </div>
-                                                                <p className="text-sm text-slate-600 dark:text-slate-300">
+                                                                <p className="text-sm text-neutral-600 dark:text-neutral-300">
                                                                     {event.description[isEl ? "el" : "en"]}
                                                                 </p>
                                                             </div>
-                                                            <div className="flex items-center gap-1.5 text-slate-400 dark:text-slate-500 text-[11px] font-semibold tracking-wider uppercase flex-shrink-0 whitespace-nowrap">
+                                                            <div className="flex items-center gap-1.5 text-neutral-400 dark:text-neutral-500 text-[11px] font-semibold tracking-wider uppercase flex-shrink-0 whitespace-nowrap">
                                                                 <Clock className="w-3.5 h-3.5" />
                                                                 {formatRelativeTime(event.timestamp, t, language || "en")}
                                                             </div>
@@ -221,9 +221,9 @@ export function ActivityClient({ events }: ActivityClientProps) {
 
                                                         {/* Footer metadata */}
                                                         {event.customerName && (
-                                                            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between">
-                                                                <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
-                                                                    <Users className="w-3.5 h-3.5 text-slate-400" />
+                                                            <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-800/60 flex items-center justify-between">
+                                                                <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500">
+                                                                    <Users className="w-3.5 h-3.5 text-neutral-400" />
                                                                     {event.customerName}
                                                                 </div>
                                                                 <div className="opacity-0 group-hover:opacity-100 transition-opacity">

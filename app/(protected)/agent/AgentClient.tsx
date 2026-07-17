@@ -399,17 +399,17 @@ function OverviewTab({ agent, language }: { agent: NonNullable<AgentClientProps[
                     )}
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                            <h1 className="text-2xl font-black text-slate-900 dark:text-white truncate">{agent.name}</h1>
+                            <h1 className="text-2xl font-black text-foreground truncate">{agent.name}</h1>
                             {agent.branding?.verified && <ShieldCheck className="w-5 h-5 text-primary dark:text-mint flex-shrink-0" />}
                         </div>
                         <div className="flex items-center gap-2 mt-0.5">
-                            <Building2 className="w-3.5 h-3.5 text-slate-400" />
-                            <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                            <Building2 className="w-3.5 h-3.5 text-neutral-400" />
+                            <p className="text-sm font-medium text-muted-foreground">
                                 {agent.branding?.agencyName || agent.company || pick(PAGE_COPY.advisorFallback, language)}
                             </p>
                         </div>
                         {agent.branding?.licenseNumber && (
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-1">
                                 License: {agent.branding.licenseNumber}
                             </p>
                         )}
@@ -428,7 +428,7 @@ function OverviewTab({ agent, language }: { agent: NonNullable<AgentClientProps[
                 </a>
                 <a
                     href={`mailto:${agent.email}`}
-                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3 text-sm font-bold text-slate-800 dark:text-white transition hover:bg-slate-50 dark:hover:bg-slate-800 min-h-[44px]"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-neutral-200 dark:border-neutral-700 px-4 py-3 text-sm font-bold text-neutral-800 dark:text-white transition hover:bg-neutral-50 dark:hover:bg-neutral-800 min-h-[44px]"
                 >
                     <Mail className="h-4 w-4" /> Email
                 </a>
@@ -437,7 +437,7 @@ function OverviewTab({ agent, language }: { agent: NonNullable<AgentClientProps[
                         href={agent.branding.website.startsWith("http") ? agent.branding.website : `https://${agent.branding.website}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 px-4 py-3 text-sm font-bold text-slate-800 dark:text-white transition hover:bg-slate-50 dark:hover:bg-slate-800 min-h-[44px]"
+                        className="inline-flex items-center justify-center gap-2 rounded-xl border border-neutral-200 dark:border-neutral-700 px-4 py-3 text-sm font-bold text-neutral-800 dark:text-white transition hover:bg-neutral-50 dark:hover:bg-neutral-800 min-h-[44px]"
                     >
                         <Globe className="h-4 w-4" /> Website
                     </a>
@@ -497,7 +497,7 @@ function DocumentsTab({
             ))}
             {completed.length > 0 && (
                 <div className="space-y-2">
-                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mt-4 mb-2">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-neutral-500 mt-4 mb-2">
                         {pick(PAGE_COPY.completedSection, language)}
                     </p>
                     {completed.map(request => (

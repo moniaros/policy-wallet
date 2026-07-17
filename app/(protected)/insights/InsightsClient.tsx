@@ -117,7 +117,7 @@ function DonutChart({
         return (
             <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block">
                 <circle cx={size / 2} cy={size / 2} r={radius} fill="none"
-                    stroke="currentColor" className="text-slate-200 dark:text-slate-800"
+                    stroke="currentColor" className="text-neutral-200 dark:text-neutral-800"
                     strokeWidth={strokeWidth} />
             </svg>
         )
@@ -131,7 +131,7 @@ function DonutChart({
     return (
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="block">
             <circle cx={size / 2} cy={size / 2} r={radius} fill="none"
-                stroke="currentColor" className="text-slate-100 dark:text-slate-800"
+                stroke="currentColor" className="text-neutral-100 dark:text-neutral-800"
                 strokeWidth={strokeWidth} />
             {segments.map((seg, i) => {
                 const ratio = seg.value / total
@@ -178,7 +178,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
             label: p.policiesPerCustomer,
             value: fmtNum(data.premiumSummary.avgPoliciesPerCustomer, lang),
             icon: FileText,
-            bgAccent: "bg-slate-100 dark:bg-slate-800",
+            bgAccent: "bg-muted",
         },
         {
             label: p.activationRate,
@@ -215,9 +215,9 @@ export function InsightsClient({ data }: InsightsClientProps) {
     }, [data.opportunityMetrics, p])
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950">
+        <div className="min-h-screen bg-[#F8FAFC] dark:bg-neutral-950">
             {/* ── Header ── */}
-            <div className="relative overflow-hidden bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/60">
+            <div className="relative overflow-hidden bg-white/70 dark:bg-neutral-900/70 backdrop-blur-xl border-b border-neutral-200/60 dark:border-neutral-800/60">
                 <div className="absolute inset-0 bg-primary/5" />
                 <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 relative">
                     <div className="flex items-center gap-4">
@@ -225,10 +225,10 @@ export function InsightsClient({ data }: InsightsClientProps) {
                             <BarChart3 className="w-6 h-6" />
                         </div>
                         <div>
-                            <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                            <h1 className="text-2xl font-black text-foreground tracking-tight">
                                 {p.heading}
                             </h1>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+                            <p className="text-sm text-muted-foreground mt-0.5">
                                 {p.subheading}
                             </p>
                         </div>
@@ -245,13 +245,13 @@ export function InsightsClient({ data }: InsightsClientProps) {
                             <FadeIn key={kpi.label} delay={i * 0.08} className="arc-card p-6">
                                 <div className="flex items-start justify-between mb-4">
                                     <div className={`p-3 rounded-xl ${kpi.bgAccent}`}>
-                                        <Icon className="w-5 h-5 text-slate-700 dark:text-slate-200" />
+                                        <Icon className="w-5 h-5 text-neutral-700 dark:text-neutral-200" />
                                     </div>
                                 </div>
-                                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1">
+                                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
                                     {kpi.label}
                                 </p>
-                                <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                                <p className="text-3xl font-black text-foreground tracking-tight">
                                     {kpi.value}
                                 </p>
                             </FadeIn>
@@ -263,7 +263,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                     {/* Portfolio Health Ring */}
                     <FadeIn delay={0.35} className="arc-card p-6">
-                        <h2 className="text-lg font-extrabold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                        <h2 className="text-lg font-extrabold text-foreground mb-6 flex items-center gap-2">
                             <Users className="w-5 h-5 text-primary dark:text-mint" />
                             {p.portfolioHealth}
                         </h2>
@@ -271,10 +271,10 @@ export function InsightsClient({ data }: InsightsClientProps) {
                             <div className="relative flex-shrink-0">
                                 <DonutChart segments={donutSegments} size={180} strokeWidth={22} />
                                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                                    <span className="text-3xl font-black text-slate-900 dark:text-white">
+                                    <span className="text-3xl font-black text-foreground">
                                         {data.portfolioHealth.totalCustomers}
                                     </span>
-                                    <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                                    <span className="text-[11px] font-semibold uppercase tracking-wider text-neutral-400">
                                         {p.customers}
                                     </span>
                                 </div>
@@ -284,11 +284,11 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                     <div key={seg.label} className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <div className="w-3 h-3 rounded-full" style={{ background: seg.color }} />
-                                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{seg.label}</span>
+                                            <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">{seg.label}</span>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <span className="text-lg font-black text-slate-900 dark:text-white">{seg.value}</span>
-                                            <span className="text-xs font-bold text-slate-400">
+                                            <span className="text-lg font-black text-foreground">{seg.value}</span>
+                                            <span className="text-xs font-bold text-neutral-400">
                                                 {data.portfolioHealth.totalCustomers > 0
                                                     ? `${Math.round((seg.value / data.portfolioHealth.totalCustomers) * 100)}%`
                                                     : "0%"}
@@ -302,12 +302,12 @@ export function InsightsClient({ data }: InsightsClientProps) {
 
                     {/* Premium Breakdown */}
                     <FadeIn delay={0.45} className="arc-card p-6">
-                        <h2 className="text-lg font-extrabold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+                        <h2 className="text-lg font-extrabold text-foreground mb-6 flex items-center gap-2">
                             <BarChart3 className="w-5 h-5 text-primary dark:text-mint" />
                             {p.premiumBreakdown}
                         </h2>
                         {data.policyBreakdown.length === 0 ? (
-                            <div className="py-12 text-center text-sm text-slate-400">
+                            <div className="py-12 text-center text-sm text-neutral-400">
                                 {p.noData}
                             </div>
                         ) : (
@@ -318,15 +318,15 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                     return (
                                         <div key={item.lineOfBusiness}>
                                             <div className="flex items-center justify-between mb-1.5">
-                                                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                                <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">
                                                     {getLobLabel(item.lineOfBusiness, lang, t)}
                                                 </span>
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-xs font-bold text-slate-400">{item.count} {p.policiesAbbr}</span>
-                                                    <span className="text-sm font-black text-slate-900 dark:text-white">{fmt(item.totalPremium, lang)}</span>
+                                                    <span className="text-xs font-bold text-neutral-400">{item.count} {p.policiesAbbr}</span>
+                                                    <span className="text-sm font-black text-foreground">{fmt(item.totalPremium, lang)}</span>
                                                 </div>
                                             </div>
-                                            <div className="h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                            <div className="h-2.5 bg-muted rounded-full overflow-hidden">
                                                 <motion.div
                                                     className="h-full rounded-full"
                                                     style={{ background: color }}
@@ -347,20 +347,20 @@ export function InsightsClient({ data }: InsightsClientProps) {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                     {/* Opportunity Funnel */}
                     <FadeIn delay={0.55} className="arc-card p-6">
-                        <h2 className="text-lg font-extrabold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                        <h2 className="text-lg font-extrabold text-foreground mb-2 flex items-center gap-2">
                             <Target className="w-5 h-5 text-primary dark:text-mint" />
                             {p.opportunityFunnel}
                         </h2>
-                        <p className="text-xs text-slate-400 mb-6">
+                        <p className="text-xs text-neutral-400 mb-6">
                             {p.conversionRate}:{" "}
                             <span className="font-black text-primary dark:text-mint">{data.opportunityMetrics.conversionRate}%</span>
                             {" · "}
                             {p.total}:{" "}
-                            <span className="font-black text-slate-900 dark:text-white">{data.opportunityMetrics.total}</span>
+                            <span className="font-black text-foreground">{data.opportunityMetrics.total}</span>
                         </p>
 
                         {data.opportunityMetrics.total === 0 ? (
-                            <div className="py-12 text-center text-sm text-slate-400">
+                            <div className="py-12 text-center text-sm text-neutral-400">
                                 {p.noOpportunities}
                             </div>
                         ) : (
@@ -370,11 +370,11 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                         <div className="flex items-center justify-between mb-1.5">
                                             <div className="flex items-center gap-2">
                                                 <div className="w-2 h-2 rounded-full" style={{ background: stage.color }} />
-                                                <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">{stage.label}</span>
+                                                <span className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">{stage.label}</span>
                                             </div>
-                                            <span className="text-lg font-black text-slate-900 dark:text-white">{stage.value}</span>
+                                            <span className="text-lg font-black text-foreground">{stage.value}</span>
                                         </div>
-                                        <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                                        <div className="h-3 bg-muted rounded-full overflow-hidden">
                                             <motion.div
                                                 className="h-full rounded-full"
                                                 style={{ background: stage.color, opacity: 0.85 }}
@@ -391,18 +391,18 @@ export function InsightsClient({ data }: InsightsClientProps) {
 
                     {/* Renewal Timeline */}
                     <FadeIn delay={0.65} className="arc-card p-6">
-                        <h2 className="text-lg font-extrabold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                        <h2 className="text-lg font-extrabold text-foreground mb-2 flex items-center gap-2">
                             <CalendarClock className="w-5 h-5 text-amber-500" />
                             {p.renewalTimeline}
                         </h2>
-                        <p className="text-xs text-slate-400 mb-5">
+                        <p className="text-xs text-neutral-400 mb-5">
                             {p.expiringWithin90}
                         </p>
 
                         {data.renewalTimeline.length === 0 ? (
                             <div className="py-12 text-center">
                                 <CheckCircle2 className="w-10 h-10 text-[#22C55E] mx-auto mb-3" />
-                                <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                <p className="text-sm font-bold text-neutral-700 dark:text-neutral-300">
                                     {p.noUpcomingRenewals}
                                 </p>
                             </div>
@@ -417,10 +417,10 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                         >
                                             <div className="flex items-start justify-between gap-3">
                                                 <div className="min-w-0 flex-1">
-                                                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                                                    <p className="text-sm font-bold text-foreground truncate">
                                                         {item.customerName}
                                                     </p>
-                                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                                                    <p className="text-xs text-muted-foreground mt-0.5">
                                                         {item.insurerName} · {getLobLabel(item.lineOfBusiness, lang, t)} · {item.policyNumber}
                                                     </p>
                                                 </div>
@@ -428,7 +428,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                                     <span className={`inline-block text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full ${uc.badge}`}>
                                                         {item.daysUntilExpiry}{p.daysAbbr}
                                                     </span>
-                                                    <p className="text-xs font-bold text-slate-500 mt-1">
+                                                    <p className="text-xs font-bold text-neutral-500 mt-1">
                                                         {fmt(item.premiumAmount, lang)}
                                                     </p>
                                                 </div>
@@ -445,7 +445,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                 {data.renewalMetrics && (
                     <FadeIn delay={0.7} className="arc-card p-6 mb-6">
                         <div className="flex items-center justify-between mb-5">
-                            <h2 className="text-lg font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                            <h2 className="text-lg font-extrabold text-foreground flex items-center gap-2">
                                 <RefreshCw className="w-5 h-5 text-primary dark:text-mint" />
                                 {p.renewalMetrics}
                             </h2>
@@ -458,7 +458,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-4">
                             {[
-                                { label: p.tracked, value: data.renewalMetrics.totalTracked, color: "text-slate-900 dark:text-white" },
+                                { label: p.tracked, value: data.renewalMetrics.totalTracked, color: "text-foreground" },
                                 { label: p.pending, value: data.renewalMetrics.pendingRenewals, color: "text-amber-600 dark:text-amber-400" },
                                 { label: p.overdue, value: data.renewalMetrics.overdueRenewals, color: "text-rose-600 dark:text-rose-400" },
                                 { label: p.renewed, value: data.renewalMetrics.renewedThisMonth, color: "text-[#166534] dark:text-mint" },
@@ -468,7 +468,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
                             ].map((metric) => (
                                 <div key={metric.label} className="text-center">
                                     <p className={`text-2xl font-black ${metric.color}`}>{metric.value}</p>
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{metric.label}</p>
+                                    <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest mt-1">{metric.label}</p>
                                 </div>
                             ))}
                         </div>
@@ -485,21 +485,21 @@ export function InsightsClient({ data }: InsightsClientProps) {
 
                 {/* ── Coverage Gaps Summary ── */}
                 <FadeIn delay={0.75} className="arc-card p-6">
-                    <h2 className="text-lg font-extrabold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                    <h2 className="text-lg font-extrabold text-foreground mb-2 flex items-center gap-2">
                         <ShieldAlert className="w-5 h-5 text-red-500" />
                         {p.coverageGaps}
                     </h2>
-                    <p className="text-xs text-slate-400 mb-5">
+                    <p className="text-xs text-neutral-400 mb-5">
                         {p.recentGapsDesc}
                     </p>
 
                     {data.recentGaps.length === 0 ? (
                         <div className="py-12 text-center">
                             <CheckCircle2 className="w-10 h-10 text-[#22C55E] mx-auto mb-3" />
-                            <p className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                            <p className="text-sm font-bold text-neutral-700 dark:text-neutral-300">
                                 {p.noGaps}
                             </p>
-                            <p className="text-xs text-slate-400 mt-1">
+                            <p className="text-xs text-neutral-400 mt-1">
                                 {p.wellCovered}
                             </p>
                         </div>
@@ -515,11 +515,11 @@ export function InsightsClient({ data }: InsightsClientProps) {
                                                 {sev.label[language === "el" ? "el" : "en"]}
                                             </span>
                                         </div>
-                                        <p className="text-sm font-bold text-slate-900 dark:text-white line-clamp-2 mb-1">
+                                        <p className="text-sm font-bold text-foreground line-clamp-2 mb-1">
                                             {gap.title}
                                         </p>
-                                        <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{gap.customerName}</p>
-                                        <p className="text-[11px] text-slate-400 mt-2">
+                                        <p className="text-xs text-muted-foreground truncate">{gap.customerName}</p>
+                                        <p className="text-[11px] text-neutral-400 mt-2">
                                             {gap.policyNumber} · {new Date(gap.detectedAt).toLocaleDateString(locale)}
                                         </p>
                                     </div>

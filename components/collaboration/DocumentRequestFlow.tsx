@@ -53,23 +53,23 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
 
     return (
         <BrandCard className="p-5">
-            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">
+            <h3 className="text-base font-bold text-foreground mb-1">
                 {t.collaboration.documentRequests.requestDocument}
             </h3>
-            <p className="text-sm text-slate-500 mb-4">
+            <p className="text-sm text-neutral-500 mb-4">
                 {t.collaboration.documentRequests.sendRequestTo.replace("{name}", clientName)}
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Document type */}
                 <div>
-                    <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                    <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                         {t.collaboration.documentRequests.documentType}
                     </label>
                     <select
                         value={documentType}
                         onChange={(e) => setDocumentType(e.target.value as DocumentTypeKey)}
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white"
+                        className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm text-foreground"
                     >
                         {Object.entries(DOCUMENT_TYPE_TAXONOMY).map(([key, labels]) => (
                             <option key={key} value={key}>
@@ -81,7 +81,7 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
 
                 {/* Instruction */}
                 <div>
-                    <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                    <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                         {t.collaboration.documentRequests.instructions}
                     </label>
                     <textarea
@@ -89,20 +89,20 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
                         onChange={(e) => setInstruction(e.target.value)}
                         rows={2}
                         placeholder={t.collaboration.documentRequests.instructionsPlaceholder}
-                        className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm text-slate-900 dark:text-white resize-none placeholder:text-slate-400"
+                        className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm text-foreground resize-none placeholder:text-neutral-400"
                     />
                 </div>
 
                 {/* Urgency + Due date */}
                 <div className="grid grid-cols-2 gap-3">
                     <div>
-                        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                        <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                             {t.collaboration.documentRequests.urgency}
                         </label>
                         <select
                             value={urgency}
                             onChange={(e) => setUrgency(e.target.value as DocumentUrgency)}
-                            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm"
+                            className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm"
                         >
                             <option value="low">{t.collaboration.documentRequests.urgencyLow}</option>
                             <option value="normal">{t.collaboration.documentRequests.urgencyNormal}</option>
@@ -110,14 +110,14 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
                         </select>
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+                        <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                             {t.collaboration.documentRequests.dueDate}
                         </label>
                         <input
                             type="date"
                             value={dueDate}
                             onChange={(e) => setDueDate(e.target.value)}
-                            className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm"
+                            className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm"
                         />
                     </div>
                 </div>
@@ -128,7 +128,7 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="px-4 py-2 text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
+                            className="px-4 py-2 text-sm text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition cursor-pointer"
                         >
                             {t.collaboration.documentRequests.cancel}
                         </button>
@@ -187,7 +187,7 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
 
     const urgencyStyles: Record<DocumentUrgency, string> = {
         low: "border-blue-200 bg-blue-50/50 dark:border-blue-800/50 dark:bg-blue-950/20",
-        normal: "border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800",
+        normal: "border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-800",
         urgent: "border-red-200 bg-red-50/50 dark:border-red-800/50 dark:bg-red-950/20",
     }
 
@@ -196,10 +196,10 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
             <BrandCard className="p-5">
                 <div className="flex flex-col items-center text-center py-4">
                     <CheckCircle2 className="h-10 w-10 text-[#22C55E] mb-3" />
-                    <p className="text-sm font-medium text-slate-900 dark:text-white">
+                    <p className="text-sm font-medium text-foreground">
                         {t.collaboration.documentRequests.documentUploaded}
                     </p>
-                    <p className="text-xs text-slate-500 mt-1">
+                    <p className="text-xs text-neutral-500 mt-1">
                         {language === "el"
                             ? `${agentName} θα λάβει ειδοποίηση`
                             : `${agentName} will be notified`}
@@ -221,7 +221,7 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
                 </div>
             )}
 
-            <p className="text-sm text-slate-900 dark:text-white">
+            <p className="text-sm text-foreground">
                 <span className="font-bold">{agentName}</span>{" "}
                 {language === "el"
                     ? `ζητά: ${docName}`
@@ -229,7 +229,7 @@ export function DocumentRequestRespond({ request, agentName, onUpload, isUploadi
             </p>
 
             {request.instruction && (
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 italic">
+                <p className="text-xs text-muted-foreground mt-2 italic">
                     "{request.instruction}"
                 </p>
             )}
@@ -328,10 +328,10 @@ export function DocumentRequestCard({ request, viewerRole, agentName, onRespond 
                 <StatusIcon className="h-4 w-4" />
             </div>
             <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-900 dark:text-white truncate">
+                <p className="text-sm font-medium text-foreground truncate">
                     {docName}
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-neutral-500">
                     {request.status === "pending"
                         ? t.collaboration.documentRequests.pending
                         : request.status === "uploaded"

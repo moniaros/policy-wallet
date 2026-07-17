@@ -15,14 +15,14 @@ export function TrustSignalsFooter({ licenseNumber, lastUpdated }: TrustSignalsF
     const { language, t } = useLanguage()
 
     return (
-        <div className="flex items-center justify-between border-t border-slate-200/60 dark:border-slate-700/60 pt-3 mt-4">
+        <div className="flex items-center justify-between border-t border-neutral-200/60 dark:border-neutral-700/60 pt-3 mt-4">
             {licenseNumber && (
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 flex items-center gap-1">
+                <p className="text-[10px] text-neutral-400 dark:text-neutral-500 flex items-center gap-1">
                     <ShieldCheck className="h-3 w-3" />
                     {t.agentUi.eaeeNo}: {licenseNumber}
                 </p>
             )}
-            <p className="text-[10px] text-slate-400 dark:text-slate-500 flex items-center gap-1">
+            <p className="text-[10px] text-neutral-400 dark:text-neutral-500 flex items-center gap-1">
                 <Clock className="h-3 w-3" />
                 {t.agentUi.lastUpdated}: {formatRelativeDate(lastUpdated, language)}
             </p>
@@ -46,12 +46,12 @@ export function DataConfidenceBadge({ confidence, className }: DataConfidenceBad
         confirmed: {
             icon: CheckCircle2,
             label: { en: "Confirmed", el: "Επιβεβαιωμένο" },
-            style: "text-slate-900 dark:text-white",
+            style: "text-foreground",
         },
         pending: {
             icon: Hourglass,
             label: { en: "Pending verification", el: "Εκκρεμεί επαλήθευση" },
-            style: "text-slate-500 italic dark:text-slate-400",
+            style: "text-neutral-500 italic dark:text-neutral-400",
         },
         agent_suggested: {
             icon: Lightbulb,
@@ -80,7 +80,7 @@ export function VerifiedInsurerBadge({ insurerName, verified = true }: VerifiedI
     const { language } = useLanguage()
 
     return (
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-700 dark:text-slate-300">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-neutral-700 dark:text-neutral-300">
             {verified && <ShieldCheck className="h-3 w-3 text-[#22C55E]" />}
             {insurerName}
         </span>

@@ -56,7 +56,7 @@ export function ClientFinancialsTab({ financials, agentTier }: ClientFinancialsT
 
                 {/* Premiums by LoB */}
                 <BrandCard className="p-5">
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
+                    <h3 className="text-base font-bold text-foreground flex items-center gap-2 mb-4">
                         <BarChart3 className="h-5 w-5 text-primary dark:text-mint" />
                         {t.clientFinancials.premiumsByLob}
                     </h3>
@@ -68,14 +68,14 @@ export function ClientFinancialsTab({ financials, agentTier }: ClientFinancialsT
                             return (
                                 <div key={lob}>
                                     <div className="flex items-center justify-between mb-1">
-                                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                        <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                                             {LOB_LABELS[lob]?.[language] || lob}
                                         </span>
-                                        <span className="text-sm font-bold text-slate-900 dark:text-white">
+                                        <span className="text-sm font-bold text-foreground">
                                             {formatCurrencyFull(amount, language)}
                                         </span>
                                     </div>
-                                    <div className="h-2 rounded-full bg-slate-100 dark:bg-slate-800">
+                                    <div className="h-2 rounded-full bg-muted">
                                         <div
                                             className="h-2 rounded-full bg-primary transition-all duration-500"
                                             style={{ width: `${percentage}%` }}
@@ -89,14 +89,14 @@ export function ClientFinancialsTab({ financials, agentTier }: ClientFinancialsT
 
                 {/* Renewal Probability */}
                 <BrandCard className="p-5">
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
+                    <h3 className="text-base font-bold text-foreground flex items-center gap-2 mb-4">
                         <RefreshCw className="h-5 w-5 text-primary dark:text-mint" />
                         {t.clientFinancials.renewalProbability}
                     </h3>
                     <div className="flex items-center gap-4">
                         <div className="relative h-24 w-24">
                             <svg width={96} height={96} className="transform -rotate-90">
-                                <circle cx={48} cy={48} r={40} fill="none" stroke="currentColor" strokeWidth={6} className="text-slate-200 dark:text-slate-700" />
+                                <circle cx={48} cy={48} r={40} fill="none" stroke="currentColor" strokeWidth={6} className="text-neutral-200 dark:text-neutral-700" />
                                 <circle
                                     cx={48} cy={48} r={40} fill="none"
                                     stroke={financials.renewalProbability >= 70 ? "#29685B" : financials.renewalProbability >= 40 ? "#f59e0b" : "#ef4444"}
@@ -107,13 +107,13 @@ export function ClientFinancialsTab({ financials, agentTier }: ClientFinancialsT
                                 />
                             </svg>
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-2xl font-black text-slate-900 dark:text-white">
+                                <span className="text-2xl font-black text-foreground">
                                     {financials.renewalProbability}%
                                 </span>
                             </div>
                         </div>
                         <div>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">
+                            <p className="text-sm text-neutral-600 dark:text-neutral-400">
                                 {financials.renewalProbability >= 70
                                     ? t.clientFinancials.highRenewal
                                     : financials.renewalProbability >= 40

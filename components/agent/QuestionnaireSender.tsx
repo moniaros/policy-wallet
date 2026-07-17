@@ -99,11 +99,11 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
             {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div
-                        className="absolute inset-0 bg-stone-900/40 backdrop-blur-md animate-in fade-in duration-300"
+                        className="absolute inset-0 bg-neutral-900/40 backdrop-blur-md animate-in fade-in duration-300"
                         onClick={() => !isSending && setIsOpen(false)}
                     />
 
-                    <div className="relative bg-white dark:bg-stone-800 rounded-[32px] w-full max-w-md overflow-hidden shadow-2xl border border-stone-200 dark:border-stone-700 animate-in zoom-in-95 slide-in-from-bottom-8 duration-500">
+                    <div className="relative bg-white dark:bg-neutral-800 rounded-[32px] w-full max-w-md overflow-hidden shadow-2xl border border-neutral-200 dark:border-neutral-700 animate-in zoom-in-95 slide-in-from-bottom-8 duration-500">
                         <div className="p-10">
                             <div className="w-12 h-12 bg-primary-soft dark:bg-primary/15 rounded-2xl flex items-center justify-center text-primary dark:text-mint mb-6">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,16 +111,16 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
                                 </svg>
                             </div>
 
-                            <h3 className="text-3xl font-black text-stone-900 dark:text-white tracking-tight mb-3">
+                            <h3 className="text-3xl font-black text-foreground tracking-tight mb-3">
                                 {t.gatherInsights}
                             </h3>
-                            <p className="text-stone-500 dark:text-stone-400 text-sm mb-10 leading-relaxed">
-                                {t.requestInfo} <span className="font-bold text-stone-900 dark:text-white">{customerName}</span> {t.identifyGaps}
+                            <p className="text-muted-foreground text-sm mb-10 leading-relaxed">
+                                {t.requestInfo} <span className="font-bold text-foreground">{customerName}</span> {t.identifyGaps}
                             </p>
 
                             <div className="space-y-6">
                                 <div>
-                                    <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-3">
+                                    <label className="block text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-3">
                                         {t.selectTemplate}
                                     </label>
                                     <div className="grid grid-cols-1 gap-3">
@@ -133,20 +133,20 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
                                                     onClick={() => setSelectedTemplate(t.id)}
                                                     className={`flex items-center gap-3 p-4 rounded-2xl border-2 transition-all text-left ${selectedTemplate === t.id
                                                         ? 'border-primary dark:border-mint bg-primary-tint dark:bg-primary/15'
-                                                        : 'border-stone-100 dark:border-stone-700 hover:border-stone-200 bg-stone-50 dark:bg-stone-900/50'
+                                                        : 'border-neutral-100 dark:border-neutral-700 hover:border-neutral-200 bg-neutral-50 dark:bg-neutral-900/50'
                                                         }`}
                                                 >
                                                     <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${selectedTemplate === t.id
                                                         ? 'bg-primary text-white dark:text-[#1A2420]'
-                                                        : 'bg-stone-100 dark:bg-stone-700 text-stone-500 dark:text-stone-400'
+                                                        : 'bg-neutral-100 dark:bg-neutral-700 text-muted-foreground'
                                                         }`}>
                                                         <Icon className="w-4 h-4" />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <p className={`font-bold text-sm ${selectedTemplate === t.id ? 'text-primary dark:text-mint' : 'text-slate-900 dark:text-white'}`}>
+                                                        <p className={`font-bold text-sm ${selectedTemplate === t.id ? 'text-primary dark:text-mint' : 'text-foreground'}`}>
                                                             {t.name}
                                                         </p>
-                                                        <p className="text-[10px] text-stone-500 uppercase tracking-widest mt-0.5">
+                                                        <p className="text-[10px] text-neutral-500 uppercase tracking-widest mt-0.5">
                                                             {t.lineOfBusiness} · {questionCount} {questionsLabel}
                                                         </p>
                                                     </div>
@@ -186,22 +186,22 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
                             )}
                         </div>
 
-                        <div className="p-8 bg-stone-50 dark:bg-stone-900/50 flex gap-4 border-t border-stone-100 dark:border-stone-700">
+                        <div className="p-8 bg-neutral-50 dark:bg-neutral-900/50 flex gap-4 border-t border-neutral-100 dark:border-neutral-700">
                             <button
                                 onClick={() => setIsOpen(false)}
                                 disabled={isSending}
-                                className="flex-1 px-6 py-4 text-sm font-bold text-stone-500 hover:text-stone-700 transition-colors disabled:opacity-50"
+                                className="flex-1 px-6 py-4 text-sm font-bold text-neutral-500 hover:text-neutral-700 transition-colors disabled:opacity-50"
                             >
                                 {t.cancel}
                             </button>
                             <button
                                 onClick={handleSend}
                                 disabled={isSending || !selectedTemplate || status === 'success'}
-                                className="flex-[2] bg-stone-900 dark:bg-white text-white dark:text-stone-900 px-8 py-4 rounded-2xl text-sm font-black hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-stone-900/10 disabled:opacity-50 disabled:scale-100"
+                                className="flex-[2] bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 px-8 py-4 rounded-2xl text-sm font-black hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-neutral-900/10 disabled:opacity-50 disabled:scale-100"
                             >
                                 {isSending ? (
                                     <div className="flex items-center justify-center gap-2">
-                                        <svg className="animate-spin h-4 w-4 text-white dark:text-stone-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <svg className="animate-spin h-4 w-4 text-white dark:text-neutral-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
