@@ -458,6 +458,12 @@ model AccessGrant {
   grantee       User      @relation("Grantee", fields: [granteeUserId], references: [id])
   granter       User      @relation("Granter", fields: [granterUserId], references: [id])
 
+  // Hot path: getGrantedPolicyIds / getPolicyAccess filter by
+  // granteeUserId + status + scope on every non-owner policy read and every
+  // agent-visibility query. Without this the table was full-scanned each time.
+  @@index([granteeUserId, status, scope])
+  // Granter-side lookups (share/revoke paths).
+  @@index([granterUserId])
   @@map("access_grants")
 }
 
