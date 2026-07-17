@@ -111,12 +111,8 @@ export function DesktopDashboard({
                                 </h1>
                                 <p className="text-sm text-muted-foreground mt-0.5">
                                     {data.actionQueue.length > 0
-                                        ? (language === "el"
-                                            ? `${data.actionQueue.length} στοιχεία χρειάζονται την προσοχή σας`
-                                            : `${data.actionQueue.length} items need your attention`)
-                                        : (language === "el"
-                                            ? "Κανένα εκκρεμές στοιχείο σήμερα"
-                                            : "No pending items today")}
+                                        ? t.agentDashboard.itemsNeedAttention.replace("{count}", String(data.actionQueue.length))
+                                        : t.agentDashboard.noPendingItems}
                                 </p>
                             </div>
                         </div>
