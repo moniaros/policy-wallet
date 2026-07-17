@@ -7,6 +7,20 @@ const prisma = new PrismaClient()
 async function main() {
     console.log('Start seeding...')
 
+    // Guard: this seed creates demo accounts — incl. an admin
+    // (ph1@example.com, roles 'policyholder,admin') with the known password
+    // 'password123' — and DEMO-* policies. It must never run against
+    // production. Prod reference data (insurance types/products) is applied
+    // via scripts/gen-lookup-seed-sql.ts, not this file. Override with
+    // ALLOW_DEMO_SEED=1 only for a deliberate, non-prod fixture load.
+    if (process.env.NODE_ENV === 'production' && process.env.ALLOW_DEMO_SEED !== '1') {
+        throw new Error(
+            'Refusing to run the demo seed against NODE_ENV=production. ' +
+            'Use scripts/gen-lookup-seed-sql.ts for prod reference data, or set ' +
+            'ALLOW_DEMO_SEED=1 to override deliberately.'
+        )
+    }
+
     // 0. Lookup Tables
     await prisma.insurer.upsert({
         where: { name: 'Interamerican' },

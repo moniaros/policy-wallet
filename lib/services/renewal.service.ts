@@ -2,6 +2,7 @@ import { db } from "../db"
 import { sendNotification } from "../notifications"
 import { logger } from "../logger"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
+import { getGrantedPolicyIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility"
 
 // Milestone days before policy expiry when reminders are sent
 const RENEWAL_MILESTONES = [90, 60, 30, 15, 7] as const
@@ -65,6 +66,13 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
 
         summary.policiesScanned = expiringPolicies.length
         const entitlementCache = new Map<string, boolean>()
+        // Granted policy-ids per agent, cached per run. A relationship is NOT
+        // consent to see a customer's self-uploaded policies (agent-visibility
+        // model): an agent may only be told about a renewal for a policy they
+        // uploaded or hold a policy-scoped grant for. Without this the cron
+        // notifies the linked agent about EVERY expiring policy the customer
+        // owns, leaking insurer/number/dates the visibility model hides.
+        const grantedPolicyIdsCache = new Map<string, Set<string>>()
 
         for (const policy of expiringPolicies) {
             try {
@@ -95,13 +103,29 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
                     select: { agentUserId: true },
                 })
 
+                // Only link/notify the agent for policies they may actually see
+                // (uploaded by them, or an active policy-scoped grant). A bare
+                // relationship confers no visibility.
+                let visibleAgentUserId: string | null = null
+                if (relationship?.agentUserId) {
+                    const aid = relationship.agentUserId
+                    let grantedSet = grantedPolicyIdsCache.get(aid)
+                    if (grantedSet === undefined) {
+                        grantedSet = new Set(await getGrantedPolicyIds(aid))
+                        grantedPolicyIdsCache.set(aid, grantedSet)
+                    }
+                    if (isPolicyVisibleToAgent(policy, aid, grantedSet)) {
+                        visibleAgentUserId = aid
+                    }
+                }
+
                 let renewalRecord = existingRenewal
                 if (!existingRenewal) {
                     renewalRecord = await db.policyRenewal.create({
                         data: {
                             policyId: policy.id,
                             ownerUserId: policy.ownerUserId,
-                            agentUserId: relationship?.agentUserId ?? null,
+                            agentUserId: visibleAgentUserId,
                             policyEndDate: policy.endDate,
                             daysBeforeExpiry: daysUntilExpiry,
                             status: "pending",
@@ -115,7 +139,7 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
                         where: { id: existingRenewal.id },
                         data: {
                             daysBeforeExpiry: daysUntilExpiry,
-                            agentUserId: relationship?.agentUserId ?? existingRenewal.agentUserId,
+                            agentUserId: visibleAgentUserId ?? existingRenewal.agentUserId,
                         },
                     })
                 }
@@ -152,10 +176,11 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
                 await sendPolicyholderReminder(policy, milestone, isEl)
                 summary.policyholderNotificationsSent++
 
-                // 5. Notify and create task for agent if linked
-                if (relationship?.agentUserId) {
+                // 5. Notify and create task for agent — only when the agent may
+                // see this policy (visibility-gated above).
+                if (visibleAgentUserId) {
                     await sendAgentRenewalNotification(
-                        relationship.agentUserId,
+                        visibleAgentUserId,
                         policy,
                         milestone,
                         renewalRecord?.id ?? ""
@@ -165,7 +190,7 @@ export async function runRenewalCheck(): Promise<RenewalRunSummary> {
                     // Create agent task on first detection or at 30-day mark
                     if (!existingRenewal || milestone <= 30) {
                         const taskCreated = await createAgentRenewalTask(
-                            relationship.agentUserId,
+                            visibleAgentUserId,
                             policy,
                             daysUntilExpiry,
                             renewalRecord?.id ?? ""

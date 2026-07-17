@@ -10,6 +10,8 @@
 
 import { db } from "@/lib/db"
 import type { ConversionLikelihood } from "./opportunity-scoring"
+import { agentPolicyVisibilityWhere, getGrantedPolicyIds } from "@/lib/agent-visibility"
+import { isConsentedRelationship, isPhantomCustomer } from "@/lib/agent-consent"
 
 // ── Types ────────────────────────────────────────────────────────────
 
@@ -277,17 +279,19 @@ export async function generatePlaybook(
             agentUserId,
             policyholderUserId: clientUserId,
         },
-        select: { id: true },
+        select: { id: true, activationStatus: true },
     })
     if (!relationship) {
         throw new Error("Unauthorized: no agent-client relationship")
     }
 
-    // Fetch client info
-    const [clientUser, clientProfile, matchedProduct] = await Promise.all([
+    // A relationship is not consent to read a client's profile PII. Require
+    // consent (accepted invite), a phantom the agent created, or at least one
+    // policy the agent may see for this client — same model as agent-visibility.
+    const [clientUser, clientProfile, matchedProduct, visiblePolicyCount] = await Promise.all([
         db.user.findUnique({
             where: { id: clientUserId },
-            select: { name: true },
+            select: { name: true, password: true, emailVerified: true },
         }),
         db.policyholderProfile.findUnique({
             where: { userId: clientUserId },
@@ -300,7 +304,22 @@ export async function generatePlaybook(
             select: { estimatedAnnualPremium: true },
             orderBy: { greekMarketPopularity: "desc" },
         }),
+        (async () =>
+            db.policy.count({
+                where: {
+                    ownerUserId: clientUserId,
+                    ...agentPolicyVisibilityWhere(agentUserId, await getGrantedPolicyIds(agentUserId)),
+                },
+            }))(),
     ])
+
+    if (
+        !isConsentedRelationship(relationship) &&
+        (!clientUser || !isPhantomCustomer(clientUser)) &&
+        visiblePolicyCount === 0
+    ) {
+        throw new Error("Unauthorized: no consent or visible policy for this client")
+    }
 
     // Build steps from templates
     const templateKey =
