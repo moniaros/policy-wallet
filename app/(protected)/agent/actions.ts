@@ -1044,6 +1044,9 @@ export async function getCustomerCrossSell(customerId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return null
     if (!isAgentRole(authResult.dbUser.roles)) return null
+    // Cross-sell intelligence is a Pro+ feature (crossSellIntelligence).
+    const { canAgentUseFeature } = await import("@/lib/subscription-entitlements")
+    if (!(await canAgentUseFeature(authResult.dbUser.id, "crossSellIntelligence"))) return null
 
     const { runCrossSellForCustomer } = await import("@/lib/services/cross-sell.service")
     return runCrossSellForCustomer(authResult.dbUser.id, customerId, false)
@@ -1053,6 +1056,10 @@ export async function createCrossSellOpportunities(customerId: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { error: "Unauthorized" }
     if (!isAgentRole(authResult.dbUser.roles)) return { error: "Unauthorized" }
+    const { canAgentUseFeature } = await import("@/lib/subscription-entitlements")
+    if (!(await canAgentUseFeature(authResult.dbUser.id, "crossSellIntelligence"))) {
+        return { error: "Cross-sell intelligence requires the Pro plan or higher." }
+    }
 
     const { runCrossSellForCustomer } = await import("@/lib/services/cross-sell.service")
     const result = await runCrossSellForCustomer(authResult.dbUser.id, customerId, true)

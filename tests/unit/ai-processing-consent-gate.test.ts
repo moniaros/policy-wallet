@@ -39,6 +39,8 @@ vi.mock('@/lib/services/ai', () => ({
 }))
 vi.mock('@/lib/subscription-entitlements', () => ({
     resolveUserEntitlements: vi.fn(async () => ({ tier: 'plus', limits: {} })),
+    // Agent-initiated runs now resolve queue priority from the agent tier.
+    resolveAgentEntitlements: vi.fn(async () => ({ tier: 'agent_pro', limits: { priorityQueue: true } })),
 }))
 
 import { db } from '@/lib/db'

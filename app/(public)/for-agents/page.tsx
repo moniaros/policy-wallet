@@ -61,25 +61,34 @@ const FEATURES = [
     },
 ]
 
+// Kept truthful against AGENT_PRICING + AGENT_ENTITLEMENT_LIMITS in
+// lib/subscription-entitlements.ts. The old preview showed stale prices
+// (€19/€49), only three tiers, and a false "unlimited" on Pro.
 const TIERS = [
     {
         nameEl: "Free", nameEn: "Free",
         priceEl: "€0/μήνα", priceEn: "€0/month",
-        descEl: "Μέχρι 5 πελάτες", descEn: "Up to 5 clients",
-        features: ["5 clients", "Basic dashboard", "Email notifications"],
+        descEl: "Έως 10 πελάτες", descEn: "Up to 10 clients",
+        features: ["10 clients", "5 AI analyses/mo", "Basic CRM", "Email notifications"],
     },
     {
         nameEl: "Starter", nameEn: "Starter",
-        priceEl: "€19/μήνα", priceEn: "€19/month",
-        descEl: "Μέχρι 25 πελάτες", descEn: "Up to 25 clients",
-        features: ["25 clients", "AI analysis", "Proposals", "Basic reports"],
+        priceEl: "€19,99/μήνα", priceEn: "€19.99/month",
+        descEl: "Έως 100 πελάτες", descEn: "Up to 100 clients",
+        features: ["100 clients", "50 AI analyses/mo", "Proposals & document requests", "Renewal pipeline"],
         highlighted: true,
     },
     {
         nameEl: "Pro", nameEn: "Pro",
-        priceEl: "€49/μήνα", priceEn: "€49/month",
+        priceEl: "€49,99/μήνα", priceEn: "€49.99/month",
+        descEl: "Έως 500 πελάτες", descEn: "Up to 500 clients",
+        features: ["500 clients", "Cross-sell intelligence", "Commission tracking", "Team (3 agents)"],
+    },
+    {
+        nameEl: "Πρακτορείο", nameEn: "Agency",
+        priceEl: "€99,99/μήνα", priceEn: "€99.99/month",
         descEl: "Απεριόριστοι πελάτες", descEn: "Unlimited clients",
-        features: ["Unlimited clients", "Advanced analytics", "Team management", "Priority support"],
+        features: ["Unlimited clients & agents", "Unlimited AI", "Agency management", "Priority support"],
     },
 ]
 
@@ -178,7 +187,7 @@ export default function ForAgentsPage() {
                     </h2>
                 </div>
 
-                <div className="mt-10 grid gap-6 sm:grid-cols-3">
+                <div className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
                     {TIERS.map((tier) => (
                         <div
                             key={tier.nameEn}

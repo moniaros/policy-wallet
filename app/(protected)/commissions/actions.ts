@@ -4,6 +4,7 @@ import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { commissionRate } from "@/lib/agent/commission"
 import { isAgentRole } from "@/lib/auth/require-agent"
+import { canAgentUseFeature } from "@/lib/subscription-entitlements"
 
 export interface CommissionSummary {
     totalEstimated: number
@@ -26,6 +27,8 @@ export interface CommissionSummary {
 export async function getCommissionDashboard(): Promise<CommissionSummary | null> {
     const { dbUser } = await getAuthenticatedUser()
     if (!isAgentRole(dbUser.roles)) return null
+    // commissionTracking is a Pro+ feature — defense in depth behind the page gate.
+    if (!(await canAgentUseFeature(dbUser.id, "commissionTracking"))) return null
 
     // Get agent's commission rates
     const profile = await db.agentProfile.findUnique({

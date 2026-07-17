@@ -1,6 +1,7 @@
 import { withApiGuard } from "@/lib/api-guard"
 import { db as prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
+import { canAgentUseFeature } from "@/lib/subscription-entitlements"
 
 // POST — Create a document request
 export const POST = withApiGuard(
@@ -8,6 +9,13 @@ export const POST = withApiGuard(
         auth: { mode: "user", roles: ["agent"] },
     },
     async ({ auth, body }) => {
+        // Document requests are a Starter+ feature (documentRequestFlow).
+        if (!(await canAgentUseFeature(auth!.dbUser.id, "documentRequestFlow"))) {
+            return NextResponse.json(
+                { error: "Document requests require the Starter plan or higher." },
+                { status: 403 }
+            )
+        }
         const { relationshipId, documentType, instruction, urgency, dueDate } = body as {
             relationshipId: string
             documentType: string

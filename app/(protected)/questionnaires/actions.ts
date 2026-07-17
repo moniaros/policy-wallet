@@ -3,6 +3,8 @@
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
+import { isAgentRole } from "@/lib/auth/require-agent"
+import { resolveAgentEntitlements } from "@/lib/subscription-entitlements"
 
 // ── Types ──
 
@@ -74,9 +76,28 @@ export async function createTemplate(data: {
     questions: TemplateQuestion[]
 }) {
     const { dbUser } = await getAuthenticatedUser()
+    if (!isAgentRole(dbUser.roles)) return { error: "Unauthorized" }
 
     if (!data.name || !data.lineOfBusiness || data.questions.length === 0) {
         return { error: "Name, line of business, and at least one question required" }
+    }
+
+    // Enforce the tier cap on custom templates (agent_free = 0, Starter = 5,
+    // Pro/Agency = unlimited). Was previously unenforced — free agents could
+    // create unlimited templates despite a cap of 0.
+    const { questionnaireTemplates: cap } = (await resolveAgentEntitlements(dbUser.id)).limits
+    if (cap !== null) {
+        const existing = await db.questionnaireTemplate.count({
+            where: { createdByUserId: dbUser.id, isSystem: false },
+        })
+        if (existing >= cap) {
+            return {
+                error:
+                    cap === 0
+                        ? "Custom questionnaire templates require the Starter plan or higher."
+                        : `You've reached your plan's limit of ${cap} custom templates. Upgrade for more.`,
+            }
+        }
     }
 
     await db.questionnaireTemplate.create({
