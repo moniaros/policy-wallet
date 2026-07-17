@@ -670,6 +670,7 @@
     {
       "route": "v1/jobs/collaboration-reminders/route.ts",
       "methods": [
+        "GET",
         "POST"
       ],
       "policy": {
@@ -755,6 +756,7 @@
     {
       "route": "v1/jobs/synthetic-launch-check/route.ts",
       "methods": [
+        "GET",
         "POST"
       ],
       "policy": {
@@ -1659,6 +1661,7 @@
     {
       "route": "v1/jobs/churn-prevention/route.ts",
       "methods": [
+        "GET",
         "POST"
       ],
       "policy": {
@@ -1681,6 +1684,7 @@
     {
       "route": "v1/jobs/engagement-drip/route.ts",
       "methods": [
+        "GET",
         "POST"
       ],
       "policy": {
@@ -1703,6 +1707,7 @@
     {
       "route": "v1/jobs/perk-reminders/route.ts",
       "methods": [
+        "GET",
         "POST"
       ],
       "policy": {
@@ -1725,6 +1730,7 @@
     {
       "route": "v1/jobs/protection-score-refresh/route.ts",
       "methods": [
+        "GET",
         "POST"
       ],
       "policy": {
@@ -1747,6 +1753,7 @@
     {
       "route": "v1/jobs/renewal-check/route.ts",
       "methods": [
+        "GET",
         "POST"
       ],
       "policy": {
@@ -1769,6 +1776,7 @@
     {
       "route": "v1/jobs/weekly-digest/route.ts",
       "methods": [
+        "GET",
         "POST"
       ],
       "policy": {
