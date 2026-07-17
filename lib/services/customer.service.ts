@@ -1,5 +1,6 @@
 import { BaseService } from "./base.service";
 import { agentPolicyVisibilityWhere, getGrantedPolicyIds, isPolicyVisibleToAgent } from "@/lib/agent-visibility";
+import { agentMaySeeCustomerIdentity } from "@/lib/agent-consent";
 import { effectivePolicyStatus, isPolicyCoverageActive, isCoveredByEndDate } from "@/lib/policy-status";
 import { normalizeTaxId } from "@/lib/identity/tax-id";
 import { Prisma } from "@prisma/client";
@@ -59,6 +60,10 @@ export class CustomerService extends BaseService {
                             image: true,
                             phoneNumber: true,
                             createdAt: true,
+                            // Consent signals — an unconsented real account must
+                            // not leak its name/phone/image (see agent-consent).
+                            password: true,
+                            emailVerified: true,
                             // Only what the agent may see: policies they
                             // uploaded, or ones the owner explicitly granted.
                             // coverageEndDate (denormalized) lets us judge "in
@@ -82,20 +87,29 @@ export class CustomerService extends BaseService {
         ]);
 
         return {
-            data: customers.map(rel => ({
-                id: rel.customer.id,
-                relationshipId: rel.id,
-                name: rel.customer.name,
-                email: rel.customer.email,
-                image: rel.customer.image,
-                phoneNumber: rel.customer.phoneNumber,
-                status: rel.status,
-                joinedAt: rel.customer.createdAt,
-                policyCount: rel.customer.policiesOwned.length,
-                activePolicyCount: rel.customer.policiesOwned.filter(p => isCoveredByEndDate(p)).length,
-                openOpportunities: rel.opportunities.length,
-                lastInteraction: rel.lastInteractionAt,
-            })),
+            data: customers.map(rel => {
+                // Identity (name/phone/image) only for consented / phantom /
+                // already-managed customers. Email stays — the agent typed it.
+                const showIdentity = agentMaySeeCustomerIdentity(
+                    rel,
+                    rel.customer,
+                    rel.customer.policiesOwned.length
+                );
+                return {
+                    id: rel.customer.id,
+                    relationshipId: rel.id,
+                    name: showIdentity ? rel.customer.name : null,
+                    email: rel.customer.email,
+                    image: showIdentity ? rel.customer.image : null,
+                    phoneNumber: showIdentity ? rel.customer.phoneNumber : null,
+                    status: rel.status,
+                    joinedAt: rel.customer.createdAt,
+                    policyCount: rel.customer.policiesOwned.length,
+                    activePolicyCount: rel.customer.policiesOwned.filter(p => isCoveredByEndDate(p)).length,
+                    openOpportunities: rel.opportunities.length,
+                    lastInteraction: rel.lastInteractionAt,
+                };
+            }),
             meta: {
                 total,
                 page,
@@ -151,13 +165,21 @@ export class CustomerService extends BaseService {
             });
         }
 
+        // Identity (name/phone/image) only for consented / phantom /
+        // already-managed customers — a bare relationship is not consent.
+        const showIdentity = agentMaySeeCustomerIdentity(
+            relationship,
+            relationship.customer,
+            relationship.customer.policiesOwned.length
+        );
+
         return {
             customer: {
                 id: relationship.customer.id,
-                name: relationship.customer.name,
+                name: showIdentity ? relationship.customer.name : null,
                 email: relationship.customer.email,
-                phone: relationship.customer.phoneNumber,
-                image: relationship.customer.image,
+                phone: showIdentity ? relationship.customer.phoneNumber : null,
+                image: showIdentity ? relationship.customer.image : null,
             },
             relationship: {
                 id: relationship.id,

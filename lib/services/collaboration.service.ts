@@ -232,6 +232,12 @@ export class CollaborationService {
         const thread = await this.assertThreadAccess(userId, rolesRaw, threadId)
         if (!thread) return null
 
+        // Agent-only private notes must never leave the server for the
+        // policyholder. Filtering used to live only in the browser
+        // (CollaborationTimeline), so the raw API/RSC payload leaked them.
+        const roles = parseRoles(rolesRaw)
+        const isPrivileged = roles.includes("admin") || thread.relationship.agentUserId === userId
+
         return db.collaborationThread.findUnique({
             where: { id: threadId },
             include: {
@@ -242,6 +248,7 @@ export class CollaborationService {
                     include: { user: { select: { id: true, name: true, email: true } } },
                 },
                 messages: {
+                    ...(isPrivileged ? {} : { where: { isPrivate: false } }),
                     include: { sender: { select: { id: true, name: true, email: true } } },
                     orderBy: { createdAt: "asc" },
                 },
