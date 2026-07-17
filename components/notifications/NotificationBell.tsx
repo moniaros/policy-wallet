@@ -210,20 +210,21 @@ export function NotificationBell({ initialNotifications = [], initialUnreadCount
                         )}
                     </div>
 
-                    {/* Footer */}
-                    {notifications.length > 0 && (
-                        <div className="px-4 py-3 border-t border-stone-100 dark:border-stone-800">
-                            <button
-                                onClick={() => {
-                                    setIsOpen(false)
-                                    router.push('/notifications')
-                                }}
-                                className="w-full py-2 text-sm font-bold text-center text-primary dark:text-mint hover:text-primary-hover dark:hover:text-mint transition-colors"
-                            >
-                                View all notifications
-                            </button>
-                        </div>
-                    )}
+                    {/* Footer — always shown so the dropdown is never a dead-end.
+                        The inline list is not yet wired to fetch (it renders the
+                        server-provided initial set), so this link is the reliable
+                        path to the full /notifications page regardless of state. */}
+                    <div className="px-4 py-3 border-t border-stone-100 dark:border-stone-800">
+                        <button
+                            onClick={() => {
+                                setIsOpen(false)
+                                router.push('/notifications')
+                            }}
+                            className="w-full py-2 text-sm font-bold text-center text-primary dark:text-mint hover:text-primary-hover dark:hover:text-mint transition-colors"
+                        >
+                            View all notifications
+                        </button>
+                    </div>
                 </div>
             )}
         </div>

@@ -6,20 +6,36 @@ import { env } from "./env"
 
 // 1. Initialize Redis (Distributed Cache)
 let redis: Redis | null = null
-let ratelimit: Ratelimit | null = null
 
 if (env.UPSTASH_REDIS_REST_URL && env.UPSTASH_REDIS_REST_TOKEN) {
     redis = new Redis({
         url: env.UPSTASH_REDIS_REST_URL,
         token: env.UPSTASH_REDIS_REST_TOKEN,
     })
+}
 
-    ratelimit = new Ratelimit({
-        redis: redis,
-        limiter: Ratelimit.slidingWindow(10, "60 s"),
-        analytics: true,
-        prefix: "@upstash/ratelimit",
-    })
+// A single fixed limiter used to be built here, so every route's declared
+// `limit`/`durationMs` was silently ignored and everything ran at 10/60s. Build
+// (and memoize) one limiter per distinct (limit, window) instead, namespacing
+// the Redis prefix by the config so counters for different windows never share
+// a key. This makes per-route limits — including the sensitive ones like
+// bulk-import — actually enforce what they declare.
+const limiterCache = new Map<string, Ratelimit>()
+
+function getLimiter(limit: number, durationMs: number): Ratelimit | null {
+    if (!redis) return null
+    const cacheKey = `${limit}:${durationMs}`
+    let limiter = limiterCache.get(cacheKey)
+    if (!limiter) {
+        limiter = new Ratelimit({
+            redis,
+            limiter: Ratelimit.slidingWindow(limit, `${durationMs} ms`),
+            analytics: true,
+            prefix: `@pw/rl:${cacheKey}`,
+        })
+        limiterCache.set(cacheKey, limiter)
+    }
+    return limiter
 }
 
 // 2. Local Fallback Cache for Dev
@@ -36,10 +52,11 @@ const localCache = new Map<string, { count: number; expires: number }>()
 export async function rateLimit(ip: string, limit: number = 10, durationMs: number = 60000, bucket?: string) {
     const key = bucket || ip
 
-    if (ratelimit) {
+    const limiter = getLimiter(limit, durationMs)
+    if (limiter) {
         try {
-            // Use Global Redis Ratelimiter
-            const { success, limit: totalLimit, remaining, reset } = await ratelimit.limit(key)
+            // Use Global Redis Ratelimiter (per (limit, window) instance)
+            const { success, limit: totalLimit, remaining, reset } = await limiter.limit(key)
 
             if (!success) {
                 return {

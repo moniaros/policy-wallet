@@ -28,7 +28,9 @@ export default async function DashboardPage() {
 
     const data = await getDashboardData()
     if (!data) {
-        return <div>Access Denied. Agent credentials required.</div>
+        // Role is already verified above; a null here means the data layer
+        // declined — send them to a safe surface rather than a raw string.
+        redirect("/dashboard")
     }
 
     const agentId = dbUser.id
