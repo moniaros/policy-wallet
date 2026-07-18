@@ -32,6 +32,7 @@ const copy = {
         sendInsightsRequest: "Send Insights Request",
         sending: "Sending...",
         questions: "questions",
+        whatsappMessage: 'Hi {name}, I\'ve sent you a questionnaire on PolicyWallet so we can check for any gaps in your coverage. You\'ll find it under "Tasks". Thank you!',
     },
     el: {
         sendRequest: "Αποστολή Αιτήματος",
@@ -46,6 +47,7 @@ const copy = {
         sendInsightsRequest: "Αποστολή Αιτήματος",
         sending: "Αποστολή...",
         questions: "ερωτήσεις",
+        whatsappMessage: 'Γεια σας {name}, σας έστειλα ένα ερωτηματολόγιο στο PolicyWallet για να δούμε αν υπάρχουν κενά στην κάλυψή σας. Θα το βρείτε στην ενότητα «Εκκρεμότητες». Ευχαριστώ!',
     },
 } as const
 
@@ -169,7 +171,7 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
                                         {t.requestSent}
                                     </div>
                                     <a
-                                        href={`https://wa.me/?text=${encodeURIComponent(`Γεια σας ${customerName}, σας έστειλα ένα ερωτηματολόγιο στο PolicyWallet για να δούμε αν υπάρχουν κενά στην κάλυψή σας. Θα το βρείτε στην ενότητα "Pending Tasks". Ευχαριστώ!`)}`}
+                                        href={`https://wa.me/?text=${encodeURIComponent(t.whatsappMessage.replace('{name}', customerName))}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex items-center justify-center gap-2 py-4 bg-green-500 hover:bg-green-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-green-500/20"

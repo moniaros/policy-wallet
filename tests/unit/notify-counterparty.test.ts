@@ -12,14 +12,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 const { dbMock, sendEmail } = vi.hoisted(() => ({
     dbMock: {
         user: { findUnique: vi.fn() },
-        notificationPreference: { findMany: vi.fn(async () => []) },
-        notificationEvent: { create: vi.fn(async () => ({})) },
+        notificationPreference: { findMany: vi.fn(async () => [] as any[]) },
+        notificationEvent: { create: vi.fn(async (_args?: any) => ({})) },
     },
-    sendEmail: vi.fn(async () => ({ success: true })),
+    sendEmail: vi.fn(async (_opts?: any) => ({ success: true })),
 }))
 
 vi.mock('@/lib/db', () => ({ db: dbMock }))
-vi.mock('@/lib/email/email-service', () => ({ sendEmail: (...a: unknown[]) => sendEmail(...a) }))
+vi.mock('@/lib/email/email-service', () => ({ sendEmail }))
 vi.mock('@/lib/mail-templates', () => ({ templates: {} }))
 vi.mock('@/lib/services/push.service', () => ({ sendPushNotification: vi.fn(async () => ({ success: true })) }))
 
@@ -50,7 +50,7 @@ describe('notifyCounterparty', () => {
 
         const inApp = inAppCalls()
         expect(inApp).toHaveLength(1)
-        expect(inApp[0][0].data).toMatchObject({
+        expect(inApp[0]![0].data).toMatchObject({
             userId: 'cust-1',
             eventType: 'document_requested',
             channel: 'in_app',
@@ -71,7 +71,7 @@ describe('notifyCounterparty', () => {
             message: { el: 'Μήνυμα', en: 'Message' },
         })
 
-        expect(inAppCalls()[0][0].data.title).toBe('Title')
+        expect(inAppCalls()[0]![0].data.title).toBe('Title')
     })
 
     it('with email:false, writes only the in-app event and sends no email', async () => {

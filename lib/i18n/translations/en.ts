@@ -933,6 +933,12 @@ export const en: TranslationKeys = {
         completedAllTasks: "You've completed all outstanding requests. We'll notify you when new insights are available.",
         startAssessment: 'Start Assessment',
         markAsDone: 'Mark as Done',
+        questionnaireFrom: 'Questionnaire from {name}',
+        responsesSentToAdvisor: 'Your advisor has received your answers',
+        yourProtectionScore: 'Your protection score',
+        improveScoreHint: 'Want a higher score? Complete your risk profile.',
+        viewCoverageInsights: 'View coverage insights',
+        draftSaved: 'Progress saved',
         review: 'Review',
         daily: 'Daily'
     },
