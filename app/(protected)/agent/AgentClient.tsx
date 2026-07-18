@@ -84,6 +84,7 @@ const NO_AGENT_COPY = {
         invalid: { el: "Μη έγκυρος κωδικός. Ελέγξτε τον και δοκιμάστε ξανά.", en: "Invalid code. Check it and try again." },
         already_used: { el: "Ο κωδικός έχει ήδη χρησιμοποιηθεί.", en: "This code has already been used." },
         expired: { el: "Ο κωδικός έχει λήξει. Ζητήστε νέο από τον σύμβουλό σας.", en: "This code has expired. Ask your advisor for a new one." },
+        wrong_account: { el: "Η πρόσκληση στάλθηκε σε διαφορετική διεύθυνση email.", en: "This invite was sent to a different email address." },
     },
 } as const
 
