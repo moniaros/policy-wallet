@@ -32,10 +32,8 @@ import { extractionCitationsEnabled, ExtractionSourcesSchema } from "./extractio
 import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from "./shared-utils"
 import {
     buildExtractionPrompt,
-    buildGapAnalysisPromptFromContext,
-    buildGapAnalysisPromptFromDocument,
-    buildClarityPromptFromContext,
-    buildClarityPromptFromDocument,
+    buildGapAnalysisPrompt,
+    buildClarityPrompt,
     buildQaPrompt,
     buildRiskProfilePrompt,
 } from "./prompts"
@@ -145,7 +143,7 @@ export class OpenAIAIService implements IAIService {
                 fields: z.record(z.string(), z.number()).describe("Per-field confidence 0-100 for: insurerName, policyNumber, lineOfBusiness, startDate, endDate, premiumAmount, issueDate, premiumFrequency, renewalDate"),
             }).optional(),
             ...(extractionCitationsEnabled() ? { extractionSources: ExtractionSourcesSchema } : {}),
-            acordData: AcordDataSchema.optional(),
+            acordData: AcordDataSchema.optional().describe("Type-specific structured data matching the detected lineOfBusiness"),
         })
 
         const result = await withTimeoutAndRetry(
@@ -219,7 +217,6 @@ export class OpenAIAIService implements IAIService {
     ): Promise<AIGapAnalysisResponse> {
         if (!this.aiProvider) throw new Error("OpenAI service not available")
         const modelName = options?.modelOverride || env.OPENAI_MODEL_GAP_ANALYSIS
-        const hasStructuredContext = !!options?.structuredContext
 
         const GapAnalysisSchema = z.object({
             verifiedMetadata: z.object({
@@ -243,9 +240,7 @@ export class OpenAIAIService implements IAIService {
         })
 
         // When structured context is available, use compact JSON instead of re-sending the PDF
-        const prompt = hasStructuredContext && !document
-            ? buildGapAnalysisPromptFromContext(options!.structuredContext!, gapDefinitions)
-            : buildGapAnalysisPromptFromDocument(metadata, gapDefinitions)
+        const prompt = buildGapAnalysisPrompt(metadata, gapDefinitions, options?.structuredContext, !!document)
 
         const parts: any[] = [{ type: "text", text: prompt }]
         if (document) {
@@ -301,7 +296,6 @@ export class OpenAIAIService implements IAIService {
     ): Promise<AIPolicyClarityResponse> {
         if (!this.aiProvider) throw new Error("OpenAI service not available")
         const modelName = options?.modelOverride || env.OPENAI_MODEL_CLARITY_ANALYSIS
-        const hasStructuredContext = !!options?.structuredContext
 
         const ClaritySchema = z.object({
             plainLanguageSummary: z.string().describe("Plain-language summary in Greek"),
@@ -360,9 +354,7 @@ export class OpenAIAIService implements IAIService {
         })
 
         // When structured context is available, use compact JSON instead of re-sending the PDF
-        const prompt = hasStructuredContext && !document
-            ? buildClarityPromptFromContext(options!.structuredContext!, checklist)
-            : buildClarityPromptFromDocument(metadata, checklist)
+        const prompt = buildClarityPrompt(metadata, checklist, options?.structuredContext, !!document)
 
         const parts: any[] = [{ type: "text", text: prompt }]
         if (document) {

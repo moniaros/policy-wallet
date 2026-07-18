@@ -2,9 +2,10 @@
  * Deterministic parsing of dates as they appear in Greek insurance documents
  * and in AI-extracted payloads.
  *
- * The extraction prompts normalize dates to DD-MM-YYYY (locked), documents
- * themselves write "22 ΜΑΪΟΥ 2024", and edited review fields produce ISO
- * yyyy-MM-dd — so every downstream consumer must accept all three. The one
+ * The extraction prompts normalize dates to ISO yyyy-MM-dd (the contract is
+ * owned by lib/services/ai/prompts.ts; older extractions emitted DD-MM-YYYY),
+ * documents themselves write "22 ΜΑΪΟΥ 2024", and edited review fields
+ * produce ISO yyyy-MM-dd — so every downstream consumer must accept all three. The one
  * hard rule: a failed parse yields null. NEVER substitute the current date;
  * the old now()/now()+1y fallbacks are exactly what painted an expired
  * policy as active for a year.

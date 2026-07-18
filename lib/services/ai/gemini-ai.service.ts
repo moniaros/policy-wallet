@@ -33,10 +33,8 @@ import { schemaPromptBlock, validateJsonModeObject, coercedGreekString, normaliz
 import { WRITE_BRANCH_IDS } from '@/lib/insurance/taxonomy'
 import {
   buildExtractionPrompt,
-  buildGapAnalysisPromptFromContext,
-  buildGapAnalysisPromptFromDocument,
-  buildClarityPromptFromContext,
-  buildClarityPromptFromDocument,
+  buildGapAnalysisPrompt,
+  buildClarityPrompt,
   buildQaPrompt,
   buildRiskProfilePrompt,
 } from './prompts'
@@ -145,7 +143,7 @@ export class GeminiAIService implements IAIService {
   }
 
   /**
-   * Extracts policy data from a document using Gemini 2.0 Flash
+   * Extracts policy data from a document (model from GEMINI_MODEL_EXTRACTION)
    * Supports both PDF and image formats with advanced multimodal analysis
    */
   async extractPolicyData(document: AIDocument, options?: AITrackingOptions): Promise<AIPolicyExtractionResponse> {
@@ -160,7 +158,7 @@ export class GeminiAIService implements IAIService {
       // the output contract is the schema block appended below.
       const prompt = buildExtractionPrompt()
 
-      logger('info', 'Starting Gemini 2.0 Flash extraction with UI Zod Schema', {
+      logger('info', 'Starting Gemini extraction', {
         fileName: document.fileName,
         mimeType: document.mimeType,
         model: modelName
@@ -242,7 +240,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
         }
       }
 
-      logger('info', 'Gemini 2.0 Flash Zod extraction successful', {
+      logger('info', 'Gemini extraction successful', {
         fileName: document.fileName,
         insurerName: extracted.insurerName,
         policyNumber: extracted.policyNumber,
@@ -281,7 +279,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
   }
 
   /**
-   * Analyzes policy for gaps using Gemini 2.0 Flash
+   * Analyzes policy for gaps (model from GEMINI_MODEL_GAP_ANALYSIS)
    */
   async analyzeGaps(
     document: AIDocument | null,
@@ -300,9 +298,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
 
       // When structured context is available, use compact JSON instead of re-sending the PDF
       // This saves ~50-100K input tokens per call
-      const prompt = hasStructuredContext && !hasDocument
-        ? buildGapAnalysisPromptFromContext(options!.structuredContext!, gapDefinitions)
-        : buildGapAnalysisPromptFromDocument(metadata, gapDefinitions)
+      const prompt = buildGapAnalysisPrompt(metadata, gapDefinitions, options?.structuredContext, hasDocument)
 
       const parts: any[] = [{ type: 'text', text: prompt }]
       if (document) {
@@ -314,7 +310,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
         })
       }
 
-      logger('info', 'Starting Gemini Zod Flash gap analysis', {
+      logger('info', 'Starting Gemini gap analysis', {
         policyNumber: metadata.policyNumber,
         gapsToCheck: gapDefinitions.length,
         hasDocument,
@@ -434,13 +430,9 @@ ${schemaPromptBlock(ExtractionSchema)}`
     }
 
     const modelName = options?.modelOverride || env.GEMINI_MODEL_CLARITY_ANALYSIS
-    const hasStructuredContext = !!options?.structuredContext
-    const hasDocument = !!document
 
     // When structured context is available, use compact JSON instead of re-sending the PDF
-    const prompt = hasStructuredContext && !hasDocument
-      ? buildClarityPromptFromContext(options!.structuredContext!, checklist)
-      : buildClarityPromptFromDocument(metadata, checklist)
+    const prompt = buildClarityPrompt(metadata, checklist, options?.structuredContext, !!document)
 
     const ClaritySchema = z.object({
       plainLanguageSummary: z.string().describe("Plain-language summary in Greek"),
@@ -612,7 +604,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
 
       return answer
     } catch (error) {
-      logger('error', 'Gemini 2.0 Flash Q&A failed', {
+      logger('error', 'Gemini Q&A failed', {
         policyNumber: metadata.policyNumber,
         error: error instanceof Error ? error.message : String(error)
       })

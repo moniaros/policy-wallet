@@ -34,10 +34,8 @@ import { extractionCitationsEnabled, ExtractionSourcesSchema } from "./extractio
 import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from "./shared-utils"
 import {
     buildExtractionPrompt,
-    buildGapAnalysisPromptFromContext,
-    buildGapAnalysisPromptFromDocument,
-    buildClarityPromptFromContext,
-    buildClarityPromptFromDocument,
+    buildGapAnalysisPrompt,
+    buildClarityPrompt,
     buildQaPrompt,
     buildRiskProfilePrompt,
 } from "./prompts"
@@ -160,8 +158,9 @@ export class AnthropicAIService implements IAIService {
 
         // Shared canonical extraction prompt (lib/services/ai/prompts.ts);
         // the output contract is the schema-constrained ExtractionSchema.
-        // No temperature: current Claude models reject non-default sampling
-        // parameters with a 400.
+        // NEVER pass temperature/top_p in this service: Claude Sonnet 5 (the
+        // extraction/gap/clarity default) rejects non-default sampling params
+        // with a 400; omitting them is safe on every Claude model.
         const result = await withTimeoutAndRetry(
             () =>
                 generateObject({
@@ -238,7 +237,6 @@ export class AnthropicAIService implements IAIService {
     ): Promise<AIGapAnalysisResponse> {
         if (!this.aiProvider) throw new Error("Anthropic service not available")
         const modelName = options?.modelOverride || env.CLAUDE_MODEL_GAP_ANALYSIS
-        const hasStructuredContext = !!options?.structuredContext
 
         const GapAnalysisSchema = z.object({
             verifiedMetadata: z.object({
@@ -261,9 +259,7 @@ export class AnthropicAIService implements IAIService {
             acordData: AcordDataSchema.optional(),
         })
 
-        const prompt = hasStructuredContext && !document
-            ? buildGapAnalysisPromptFromContext(options!.structuredContext!, gapDefinitions)
-            : buildGapAnalysisPromptFromDocument(metadata, gapDefinitions)
+        const prompt = buildGapAnalysisPrompt(metadata, gapDefinitions, options?.structuredContext, !!document)
 
         const parts: any[] = [{ type: "text", text: prompt }]
         if (document) {
@@ -318,7 +314,6 @@ export class AnthropicAIService implements IAIService {
     ): Promise<AIPolicyClarityResponse> {
         if (!this.aiProvider) throw new Error("Anthropic service not available")
         const modelName = options?.modelOverride || env.CLAUDE_MODEL_CLARITY_ANALYSIS
-        const hasStructuredContext = !!options?.structuredContext
 
         const ClaritySchema = z.object({
             plainLanguageSummary: z.string().describe("Plain-language summary in Greek"),
@@ -376,9 +371,7 @@ export class AnthropicAIService implements IAIService {
             acordData: AcordDataSchema.optional(),
         })
 
-        const prompt = hasStructuredContext && !document
-            ? buildClarityPromptFromContext(options!.structuredContext!, checklist)
-            : buildClarityPromptFromDocument(metadata, checklist)
+        const prompt = buildClarityPrompt(metadata, checklist, options?.structuredContext, !!document)
 
         const parts: any[] = [{ type: "text", text: prompt }]
         if (document) {

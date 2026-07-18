@@ -12,6 +12,8 @@
  */
 
 import { WRITE_BRANCH_IDS } from "@/lib/insurance/taxonomy"
+import { toIsoDateString } from "@/lib/dates/document-date"
+import type { InsuranceClarityChecklistPillar } from "@/lib/services/analysis/insurance-clarity-checklist"
 import { extractionCitationsEnabled, CITATIONS_PROMPT_SECTION } from "./extraction-citations"
 import type {
     AIPolicyExtractionResponse,
@@ -20,7 +22,24 @@ import type {
     RiskProfileInput,
 } from "./ai-service.interface"
 
-const isoDate = (value: Date) => value.toISOString().split("T")[0]
+const isoDate = (value: Date) => toIsoDateString(value) ?? "N/A"
+
+/** Shared "Extracted Policy Data" block for the no-PDF (structured context) paths. */
+function formatExtractedPolicyData(ctx: AIPolicyExtractionResponse): string {
+    return `Extracted Policy Data:
+- Insurer: ${ctx.insurerName} | Policy: ${ctx.policyNumber} | Type: ${ctx.lineOfBusiness}
+- Period: ${ctx.startDate} to ${ctx.endDate} | Premium: ${ctx.premiumAmount}
+- Summary: ${ctx.coverageSummary || "N/A"}
+- Exclusions: ${ctx.exclusions?.join(", ") || "None extracted"}
+${ctx.acordData ? `- ACORD Data: ${JSON.stringify(ctx.acordData)}` : ""}`
+}
+
+/** Shared metadata block for the document-attached fallback paths. */
+function formatMetadataBlock(metadata: PolicyMetadata): string {
+    return `- Insurer: ${metadata.insurerName} | Policy: ${metadata.policyNumber} | Type: ${metadata.lineOfBusiness}
+- Period: ${isoDate(metadata.startDate)} to ${isoDate(metadata.endDate)}
+- Premium: ${metadata.premiumAmount ?? "N/A"} | Summary: ${metadata.coverageSummary || "N/A"}`
+}
 
 // ── Extraction ──────────────────────────────────────────────────────
 
@@ -40,6 +59,7 @@ ACCURACY RULES:
 - Amounts: numbers only — no currency symbols, no thousands separators.
 - premiumAmount is the premium the customer PAYS for the policy term (Ολικά Ασφάλιστρα / Πληρωτέο Ποσό, including taxes and fees). It is NEVER the sum insured or a coverage limit (ασφαλιζόμενο κεφάλαιο, όριο κάλυψης). If the document shows an installment plan, report the total premium for the term and capture the plan in premiumFrequency.
 - lineOfBusiness MUST be exactly one of: ${WRITE_BRANCH_IDS.join(", ")}.
+- In acordData, populate ONLY the section matching the detected lineOfBusiness — never fill sections for coverage the policy does not have.
 
 LANGUAGE:
 - Plain string fields: keep the document's original language (Greek stays Greek).
@@ -50,7 +70,9 @@ FINE PRINT & HIDDEN VALUE (inside acordData):
 - finePrintClauses: clauses that limit coverage, impose obligations, or hide exclusions — hunt the Γενικοί Όροι, Ειδικοί Όροι, Εξαιρέσεις and Απαλλαγές sections.
 - perksAndBenefits: every free service, assistance hotline, prevention program, discount, or gift — including the phone number to use it.
 - notableConditions: waiting periods, auto-renewal terms, claim-filing deadlines (προθεσμία αναγγελίας), notification obligations, sub-limits, co-payments.${
-        extractionCitationsEnabled() ? `\n${CITATIONS_PROMPT_SECTION}` : ""
+        extractionCitationsEnabled()
+            ? `\n${CITATIONS_PROMPT_SECTION}`
+            : "\nDo not include citations or an extractionSources field."
     }`
 }
 
@@ -64,31 +86,29 @@ const GAP_RESULT_RULES = `For EVERY gap listed above, return exactly one gapResu
 Base isDetected only on the information provided. If the information is insufficient to decide, set isDetected to false and state what is missing in the explanation.
 Respond in Greek (Ελληνικά) only. explanation and suggestion must be plain Greek strings.`
 
-/** Gap analysis from the structured extraction result (no PDF re-send). */
-export function buildGapAnalysisPromptFromContext(
-    ctx: AIPolicyExtractionResponse,
-    gapDefinitions: GapDefinitionForAI[]
+/**
+ * Gap analysis prompt. When a structured extraction result exists and no
+ * document is attached, the prompt is built from the compact context
+ * (~50-100K input-token saving per call vs re-sending the PDF); otherwise
+ * the document-as-source-of-truth variant is used.
+ */
+export function buildGapAnalysisPrompt(
+    metadata: PolicyMetadata,
+    gapDefinitions: GapDefinitionForAI[],
+    structuredContext?: AIPolicyExtractionResponse,
+    hasDocument?: boolean
 ): string {
-    return `You are an expert insurance analyst. Analyze the following pre-extracted policy data to identify coverage gaps.
+    if (structuredContext && !hasDocument) {
+        return `You are an expert insurance analyst. Analyze the following pre-extracted policy data to identify coverage gaps.
 
-Extracted Policy Data:
-- Insurer: ${ctx.insurerName} | Policy: ${ctx.policyNumber} | Type: ${ctx.lineOfBusiness}
-- Period: ${ctx.startDate} to ${ctx.endDate} | Premium: ${ctx.premiumAmount}
-- Summary: ${ctx.coverageSummary || "N/A"}
-- Exclusions: ${ctx.exclusions?.join(", ") || "None extracted"}
-${ctx.acordData ? `- ACORD Data: ${JSON.stringify(ctx.acordData)}` : ""}
+${formatExtractedPolicyData(structuredContext)}
 
 Potential Gaps to Check:
 ${formatGapDefinitions(gapDefinitions)}
 
 ${GAP_RESULT_RULES}`
-}
+    }
 
-/** Gap analysis with the document attached (fallback when no extraction context exists). */
-export function buildGapAnalysisPromptFromDocument(
-    metadata: PolicyMetadata,
-    gapDefinitions: GapDefinitionForAI[]
-): string {
     return `You are an expert insurance analyst with deep knowledge of ACORD standards and European insurance policies.
 TASK: Analyze the provided policy document and metadata to identify coverage gaps.
 CRITICAL: The DOCUMENT is the SOURCE OF TRUTH. Current metadata may be incomplete or incorrect — verify against the document.
@@ -96,9 +116,7 @@ Step 1: Verify insurer, policy number, dates, and premium from the DOCUMENT. If 
 Step 2: Check for gaps.
 
 Current Metadata (Reference Only):
-Insurer: ${metadata.insurerName} | Policy: ${metadata.policyNumber} | Type: ${metadata.lineOfBusiness}
-Dates: ${isoDate(metadata.startDate)} to ${isoDate(metadata.endDate)}
-Premium: ${metadata.premiumAmount ?? "N/A"} | Summary: ${metadata.coverageSummary || "N/A"}
+${formatMetadataBlock(metadata)}
 
 Potential Gaps to Check:
 ${formatGapDefinitions(gapDefinitions)}
@@ -108,14 +126,11 @@ ${GAP_RESULT_RULES}`
 
 // ── Clarity ─────────────────────────────────────────────────────────
 
-export interface ClarityChecklistPillar {
-    key: string
-    title: { en: string; el: string }
-    description: { en: string; el: string }
-    checks: string[]
-}
+// The canonical pillar type lives with the checklist definition; re-exported
+// here so provider services don't grow a structural copy.
+export type { InsuranceClarityChecklistPillar as ClarityChecklistPillar }
 
-function formatChecklist(checklist: ClarityChecklistPillar[]): string {
+function formatChecklist(checklist: InsuranceClarityChecklistPillar[]): string {
     return checklist
         .map((pillar) => `- ${pillar.key}: ${pillar.title.en} | checks: ${pillar.checks.join(", ")}`)
         .join("\n")
@@ -128,39 +143,36 @@ Respond in Greek (Ελληνικά) only. All text fields must be in Greek.`
 const CLARITY_SPECIAL_FOCUS = `SPECIAL FOCUS — Fine Print & Hidden Value:
 - Identify clauses, restrictions, and conditions that most consumers would be SURPRISED by (look at Γενικοί/Ειδικοί Όροι, Εξαιρέσεις, Απαλλαγές material).
 - Highlight ALL free prevention services, assistance phone numbers, and gifts.
-- Flag auto-renewal traps, claim-filing deadlines, and notification obligations.`
+- Flag auto-renewal traps, claim-filing deadlines, and notification obligations.
+- Populate the finePrintClauses, perksAndBenefits, and notableConditions arrays in acordData with these findings.`
 
 const CLARITY_SCORING_RULES = `Checklist scoring: for each pillar, checksTotal must equal the number of checks listed for that pillar, checksPassed the count satisfied by this policy, and successPct = round(checksPassed / checksTotal × 100).`
 
-/** Clarity report from the structured extraction result (no PDF re-send). */
-export function buildClarityPromptFromContext(
-    ctx: AIPolicyExtractionResponse,
-    checklist: ClarityChecklistPillar[]
+/**
+ * Clarity-report prompt. Same context-vs-document selection rule as
+ * buildGapAnalysisPrompt.
+ */
+export function buildClarityPrompt(
+    metadata: PolicyMetadata,
+    checklist: InsuranceClarityChecklistPillar[],
+    structuredContext?: AIPolicyExtractionResponse,
+    hasDocument?: boolean
 ): string {
-    return `You are an insurance clarity analyst for policyholders.
+    if (structuredContext && !hasDocument) {
+        return `You are an insurance clarity analyst for policyholders.
 ${CLARITY_GOAL}
 Use the extracted data below as source of truth. If details are missing, say so and lower confidence.
 
 ${CLARITY_SPECIAL_FOCUS}
 
-Extracted Policy Data:
-- Insurer: ${ctx.insurerName} | Policy: ${ctx.policyNumber} | Type: ${ctx.lineOfBusiness}
-- Period: ${ctx.startDate} to ${ctx.endDate} | Premium: ${ctx.premiumAmount}
-- Summary: ${ctx.coverageSummary || "N/A"}
-- Exclusions: ${ctx.exclusions?.join(", ") || "None extracted"}
-${ctx.acordData ? `- ACORD Data: ${JSON.stringify(ctx.acordData)}` : ""}
+${formatExtractedPolicyData(structuredContext)}
 
 Checklist pillars:
 ${formatChecklist(checklist)}
 
 ${CLARITY_SCORING_RULES}`
-}
+    }
 
-/** Clarity report with the document attached (fallback when no extraction context exists). */
-export function buildClarityPromptFromDocument(
-    metadata: PolicyMetadata,
-    checklist: ClarityChecklistPillar[]
-): string {
     return `You are an insurance clarity analyst for policyholders.
 ${CLARITY_GOAL}
 Use the document as source of truth. If details are missing, say so and lower confidence.
@@ -168,9 +180,7 @@ Use the document as source of truth. If details are missing, say so and lower co
 ${CLARITY_SPECIAL_FOCUS}
 
 Current metadata:
-- Insurer: ${metadata.insurerName} | Policy: ${metadata.policyNumber} | Type: ${metadata.lineOfBusiness}
-- Period: ${isoDate(metadata.startDate)} to ${isoDate(metadata.endDate)}
-- Premium: ${metadata.premiumAmount ?? "N/A"} | Summary: ${metadata.coverageSummary || "N/A"}
+${formatMetadataBlock(metadata)}
 
 Checklist pillars:
 ${formatChecklist(checklist)}
@@ -185,8 +195,10 @@ export function buildQaPrompt(
     question: string,
     acordData?: unknown
 ): string {
+    // Compact stringify: Q&A is the chatty per-question path, and pretty-
+    // printing a multi-KB acordData adds ~30-60% billed input tokens.
     const acordContext = acordData
-        ? `\n\nDetailed Policy Data (ACORD):\n${JSON.stringify(acordData, null, 2)}`
+        ? `\n\nDetailed Policy Data (ACORD):\n${JSON.stringify(acordData)}`
         : ""
 
     return `You are an insurance advisor helping a policyholder understand their insurance policy.
@@ -196,9 +208,7 @@ If the question is about coverage, state clearly what IS covered and what is NOT
 Use simple language that a non-expert can understand.
 
 Policy Information:
-- Insurer: ${metadata.insurerName} | Policy: ${metadata.policyNumber} | Type: ${metadata.lineOfBusiness}
-- Period: ${isoDate(metadata.startDate)} to ${isoDate(metadata.endDate)}
-- Premium: ${metadata.premiumAmount ?? "N/A"} | Summary: ${metadata.coverageSummary || "N/A"}${acordContext}
+${formatMetadataBlock(metadata)}${acordContext}
 
 User Question: ${question}`
 }

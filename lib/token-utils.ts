@@ -4,68 +4,72 @@
  * Safe for use in Client Components
  */
 
-// Token costs for different AI models (in EUR per 1M tokens)
+// Token costs per model in EUR PER 1M TOKENS. trackTokenUsage computes
+// (tokens / 1_000_000) * cost, so these values must be the full per-million
+// price. The pre-2026-07 table stored per-1K prices against the same
+// divisor, silently under-metering every cost_eur row by 1000x — historical
+// rows written before this fix carry that scale.
 export const TOKEN_COSTS = {
     'gemini-2.0-flash': {
-        input: 0.00007, // €0.070 per 1M tokens
-        output: 0.00028, // €0.28 per 1M tokens
+        input: 0.07,
+        output: 0.28,
     },
     'gemini-2.0-flash-exp': {
-        input: 0.00007,
-        output: 0.00028,
+        input: 0.07,
+        output: 0.28,
     },
     'gemini-2.5-flash': {
-        input: 0.0003,
-        output: 0.0025,
+        input: 0.30,
+        output: 2.50,
     },
     'gemini-2.5-pro': {
-        input: 0.00125,
-        output: 0.01,
+        input: 1.25,
+        output: 10,
     },
     'gemini-3-flash-preview': {
-        input: 0.0005,  // €0.50 per 1M tokens
-        output: 0.003,  // €3.00 per 1M tokens
+        input: 0.50,
+        output: 3,
     },
     'gemini-3-pro-preview': {
-        input: 0.002,
-        output: 0.012,
+        input: 2,
+        output: 12,
     },
     'gemini-3.1-pro-preview': {
-        input: 0.002,
-        output: 0.012,
+        input: 2,
+        output: 12,
     },
     'gemini-3.5-flash': {
-        input: 0.0015,
-        output: 0.009,
+        input: 1.50,
+        output: 9,
     },
     'gemini-3.1-flash-lite': {
-        input: 0.00025,
-        output: 0.0015,
+        input: 0.25,
+        output: 1.50,
     },
     'gpt-4.1-mini': {
-        input: 0.0004,
-        output: 0.0016,
+        input: 0.40,
+        output: 1.60,
     },
     'gpt-4o-mini': {
-        input: 0.00015,
-        output: 0.0006,
+        input: 0.15,
+        output: 0.60,
     },
     'claude-sonnet-5': {
-        input: 0.003,   // €3.00 per 1M tokens (sticker; intro pricing is lower through 2026-08)
-        output: 0.015,  // €15.00 per 1M tokens
+        input: 3,   // sticker; intro pricing is lower through 2026-08
+        output: 15,
     },
     'claude-haiku-4-5': {
-        input: 0.001,   // €1.00 per 1M tokens
-        output: 0.005,  // €5.00 per 1M tokens
+        input: 1,
+        output: 5,
     },
     // Legacy keys — keep so historical usage rows still resolve exact prices.
     'claude-sonnet-4-20250514': {
-        input: 0.003,
-        output: 0.015,
+        input: 3,
+        output: 15,
     },
     'claude-haiku-4-20250414': {
-        input: 0.0008,
-        output: 0.004,
+        input: 0.80,
+        output: 4,
     },
 } as const
 
@@ -75,7 +79,9 @@ export type AIModel = keyof typeof TOKEN_COSTS
 // (GEMINI_MODEL_* etc.), so an exact TOKEN_COSTS hit is never guaranteed.
 // Missing entries used to crash trackTokenUsage mid-analysis
 // ("Cannot read properties of undefined (reading 'input')").
-const UNKNOWN_MODEL_COSTS = { input: 0.00125, output: 0.01 } // priced as gemini-2.5-pro (conservative)
+// Priced at Opus-tier — the fallback must OVER-meter an unknown model
+// (e.g. an env override to a claude-opus-* ID), never under-meter it.
+const UNKNOWN_MODEL_COSTS = { input: 5, output: 25 }
 
 export function resolveTokenCosts(model: string): { input: number; output: number } {
     const exact = TOKEN_COSTS[model as AIModel]

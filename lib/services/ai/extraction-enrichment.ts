@@ -187,9 +187,10 @@ export function enrichExtractionPayload(
             insurerName: asText(payload.insurerName) || baseAcord?.policy?.insurerName || null,
             policyNumber: asText(payload.policyNumber) || baseAcord?.policy?.policyNumber || null,
             lineOfBusiness: asText(payload.lineOfBusiness) || baseAcord?.policy?.lineOfBusiness || null,
-            // Dates normalize to ISO when parseable (prompts emit DD-MM-YYYY,
-            // documents write Greek month names); an unparseable raw string is
-            // kept verbatim so the review screen can show and flag it.
+            // Dates normalize to ISO when parseable (prompts emit yyyy-MM-dd;
+            // legacy runs emitted DD-MM-YYYY and documents write Greek month
+            // names); an unparseable raw string is kept verbatim so the
+            // review screen can show and flag it.
             effectiveDate: asDateText(payload.startDate) || baseAcord?.policy?.effectiveDate || null,
             expirationDate: asDateText(payload.endDate) || baseAcord?.policy?.expirationDate || null,
             issueDate: asDateText(payload.issueDate) || baseAcord?.policy?.issueDate || null,

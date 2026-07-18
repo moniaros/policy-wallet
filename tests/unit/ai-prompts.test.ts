@@ -2,10 +2,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import {
     buildExtractionPrompt,
-    buildGapAnalysisPromptFromContext,
-    buildGapAnalysisPromptFromDocument,
-    buildClarityPromptFromContext,
-    buildClarityPromptFromDocument,
+    buildGapAnalysisPrompt,
+    buildClarityPrompt,
     buildQaPrompt,
 } from '@/lib/services/ai/prompts'
 import { WRITE_BRANCH_IDS } from '@/lib/insurance/taxonomy'
@@ -33,8 +31,8 @@ const ctx = {
 } as AIPolicyExtractionResponse
 
 const gapDefinitions = [
-    { slug: 'no-roadside', checkCriteria: 'Roadside assistance missing' },
-    { slug: 'low-liability', checkCriteria: 'Liability limit below legal minimum' },
+    { slug: 'no-roadside', name: 'No roadside assistance', description: null, checkCriteria: 'Roadside assistance missing' },
+    { slug: 'low-liability', name: 'Low liability limit', description: null, checkCriteria: 'Liability limit below legal minimum' },
 ]
 
 const checklist = [
@@ -86,41 +84,57 @@ describe('buildExtractionPrompt', () => {
         expect(prompt).toContain('Never emit an {en, el} object where the schema expects a plain string')
     })
 
-    it('appends the citations section only when the flag is on', () => {
+    it('keeps the single-acord-section invariant', () => {
+        expect(buildExtractionPrompt()).toContain('ONLY the section matching the detected lineOfBusiness')
+    })
+
+    it('asks for citations only when the flag is on, and forbids them when off', () => {
         vi.stubEnv('EXTRACTION_CITATIONS', '')
-        expect(buildExtractionPrompt()).not.toContain('extractionSources')
+        const off = buildExtractionPrompt()
+        // JSON mode has no server-side schema enforcement — the negative
+        // instruction is what keeps invented citation fields out (flag off).
+        expect(off).toContain('Do not include citations')
+        expect(off).not.toContain('CITATIONS:')
 
         vi.stubEnv('EXTRACTION_CITATIONS', '1')
         expect(buildExtractionPrompt()).toContain('extractionSources')
     })
 })
 
-describe('gap analysis prompts', () => {
-    it('lists every gap definition and demands one result per slug (context path)', () => {
-        const prompt = buildGapAnalysisPromptFromContext(ctx, gapDefinitions)
+describe('buildGapAnalysisPrompt', () => {
+    it('uses the compact context path when extraction context exists and no document is attached', () => {
+        const prompt = buildGapAnalysisPrompt(metadata, gapDefinitions, ctx, false)
+        expect(prompt).toContain('pre-extracted policy data')
         expect(prompt).toContain('no-roadside')
         expect(prompt).toContain('low-liability')
         expect(prompt).toContain('exactly one gapResults entry')
         expect(prompt).toContain('Ελληνικά')
     })
 
-    it('keeps the document as source of truth on the document path', () => {
-        const prompt = buildGapAnalysisPromptFromDocument(metadata, gapDefinitions)
+    it('keeps the document as source of truth when a document is attached', () => {
+        const prompt = buildGapAnalysisPrompt(metadata, gapDefinitions, ctx, true)
         expect(prompt).toContain('SOURCE OF TRUTH')
         expect(prompt).toContain('2026-01-01')
         expect(prompt).toContain('exactly one gapResults entry')
     })
+
+    it('falls back to the document path when no context exists', () => {
+        expect(buildGapAnalysisPrompt(metadata, gapDefinitions, undefined, false)).toContain('SOURCE OF TRUTH')
+    })
 })
 
-describe('clarity prompts', () => {
-    it('includes checklist pillars and scoring rules on both paths', () => {
+describe('buildClarityPrompt', () => {
+    it('includes checklist pillars, scoring rules and the acordData destination on both paths', () => {
         for (const prompt of [
-            buildClarityPromptFromContext(ctx, checklist),
-            buildClarityPromptFromDocument(metadata, checklist),
+            buildClarityPrompt(metadata, checklist, ctx, false),
+            buildClarityPrompt(metadata, checklist, undefined, true),
         ]) {
             expect(prompt).toContain('transparency')
             expect(prompt).toContain('checksTotal')
             expect(prompt).toContain('Ελληνικά')
+            // The orchestrator merges clarity acordData over extraction's —
+            // the model must be told WHERE to put fine-print findings.
+            expect(prompt).toContain('finePrintClauses, perksAndBenefits, and notableConditions arrays in acordData')
         }
     })
 })

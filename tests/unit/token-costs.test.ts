@@ -46,6 +46,23 @@ describe('resolveTokenCosts', () => {
         expect(costs.input).toBeGreaterThan(0)
         expect(costs.output).toBeGreaterThan(0)
     })
+
+    // Regression: the table stored per-1K prices against trackTokenUsage's
+    // per-1M divisor, under-metering every cost_eur row by 1000x. Values are
+    // EUR per 1M tokens — 1M input tokens of claude-sonnet-5 must cost ~€3.
+    it('prices are EUR per 1M tokens (magnitude guard)', () => {
+        const oneMillionTokensCost = (1_000_000 / 1_000_000) * TOKEN_COSTS['claude-sonnet-5'].input
+        expect(oneMillionTokensCost).toBe(3)
+        expect(TOKEN_COSTS['gemini-3-flash-preview'].input).toBe(0.5)
+    })
+
+    it('unknown-model fallback over-meters relative to every known model', () => {
+        const unknown = resolveTokenCosts('totally-unknown-model')
+        for (const costs of Object.values(TOKEN_COSTS)) {
+            expect(unknown.input).toBeGreaterThanOrEqual(costs.input)
+            expect(unknown.output).toBeGreaterThanOrEqual(costs.output)
+        }
+    })
 })
 
 describe('trackTokenUsage', () => {
