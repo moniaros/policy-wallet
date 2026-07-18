@@ -12,7 +12,7 @@ vi.mock('@/lib/db', () => ({
     db: {
         policy: { findUnique: vi.fn() },
         user: { findUnique: vi.fn() },
-        accessGrant: { create: vi.fn() },
+        accessGrant: { create: vi.fn(), update: vi.fn() },
         invite: { create: vi.fn() },
         customerRelationship: { findUnique: vi.fn(), create: vi.fn() },
         notificationEvent: { create: vi.fn() },
@@ -60,7 +60,7 @@ vi.mock('@/lib/subscription-limits', () => ({
 vi.mock('@/lib/subscription-entitlements', () => ({ resolveUserEntitlements: vi.fn() }))
 vi.mock('@google/generative-ai', () => ({ GoogleGenerativeAI: vi.fn() }))
 
-import { sharePolicy } from '@/app/(protected)/wallet/actions'
+import { sharePolicy, revokeShare } from '@/app/(protected)/wallet/actions'
 import { db } from '@/lib/db'
 
 const OWNER_ID = 'owner-1'
@@ -126,5 +126,36 @@ describe('sharePolicy ownership gate', () => {
         expect(result).toEqual({ error: 'Policy not found' })
         expect(db.accessGrant.create).not.toHaveBeenCalled()
         expect(db.invite.create).not.toHaveBeenCalled()
+    })
+})
+
+describe('revokeShare — the shared-access ledger revoke', () => {
+    beforeEach(() => {
+        vi.clearAllMocks()
+        mockGetAuthenticatedUserOrNull.mockResolvedValue({ dbUser: { id: OWNER_ID } })
+        vi.mocked(db.accessGrant.update).mockResolvedValue({} as any)
+    })
+
+    it('soft-revokes the grant, scoped to the caller as granter', async () => {
+        const res = await revokeShare('grant-1')
+
+        expect(res).toEqual({ success: true })
+        expect(db.accessGrant.update).toHaveBeenCalledWith(
+            expect.objectContaining({
+                where: { id: 'grant-1', granterUserId: OWNER_ID },
+                data: expect.objectContaining({ status: 'revoked' }),
+            })
+        )
+        // revokedAt is stamped
+        expect(vi.mocked(db.accessGrant.update).mock.calls[0]![0].data.revokedAt).toBeInstanceOf(Date)
+    })
+
+    it('rejects an unauthenticated caller without touching any grant', async () => {
+        mockGetAuthenticatedUserOrNull.mockResolvedValue(null)
+
+        const res = await revokeShare('grant-1')
+
+        expect(res).toEqual({ error: 'Unauthorized' })
+        expect(db.accessGrant.update).not.toHaveBeenCalled()
     })
 })

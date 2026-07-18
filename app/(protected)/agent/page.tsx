@@ -79,6 +79,38 @@ export default async function AgentPage() {
         } : undefined,
     } : undefined
 
+    // Shared-access ledger: the policies this agent can currently see via an
+    // active AccessGrant the customer granted (both policies the customer shared
+    // and policies the advisor uploaded — which mint a grant too). The customer
+    // controls all of them and can revoke any at will (revokeShare).
+    const shareGrants = agentUser
+        ? await db.accessGrant.findMany({
+            where: {
+                granterUserId: dbUser.id,
+                granteeUserId: agentUser.id,
+                status: "active",
+                scope: { startsWith: "policy:" },
+            },
+            select: { id: true, scope: true, grantedAt: true },
+        })
+        : []
+
+    const sharedPolicies = shareGrants
+        .map((g) => {
+            const policyId = g.scope.slice("policy:".length)
+            const policy = policies.find((p) => p.id === policyId)
+            return {
+                grantId: g.id,
+                policyId,
+                policyNumber: policy?.policyNumber ?? policyId,
+                insurerName: policy?.insurerName ?? "",
+                lineOfBusiness: (policy?.lineOfBusiness as string) ?? "",
+                addedByAdvisor: policy ? policy.createdByUserId === agentUser!.id : false,
+                grantedAt: g.grantedAt.toISOString(),
+            }
+        })
+        .filter((sp) => Boolean(sp.policyId))
+
     const user = {
         id: dbUser.id,
         name: dbUser.name || roleCopy.defaults.userName,
@@ -115,6 +147,7 @@ export default async function AgentPage() {
             user={user}
             agent={agent}
             relationshipId={customerRelationship?.id || null}
+            sharedPolicies={sharedPolicies}
         />
     )
 }
