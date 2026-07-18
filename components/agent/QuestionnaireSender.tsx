@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { getQuestionnaireTemplates, sendQuestionnaire } from "@/app/(protected)/agent/actions"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { Car, Home, HeartPulse, Shield, PawPrint, FileQuestion } from "lucide-react"
@@ -8,6 +8,11 @@ import { Car, Home, HeartPulse, Shield, PawPrint, FileQuestion } from "lucide-re
 interface QuestionnaireSenderProps {
     relationshipId: string
     customerName: string
+    /** Controlled open state — omit to keep the component self-triggered. */
+    open?: boolean
+    onOpenChange?: (open: boolean) => void
+    /** Hide the built-in trigger button (e.g. when opened from an external FAB). */
+    hideTrigger?: boolean
 }
 
 const LOB_ICONS: Record<string, typeof Car> = {
@@ -51,8 +56,14 @@ const copy = {
     },
 } as const
 
-export function QuestionnaireSender({ relationshipId, customerName }: QuestionnaireSenderProps) {
-    const [isOpen, setIsOpen] = useState(false)
+export function QuestionnaireSender({ relationshipId, customerName, open, onOpenChange, hideTrigger }: QuestionnaireSenderProps) {
+    const [internalOpen, setInternalOpen] = useState(false)
+    const isControlled = open !== undefined
+    const isOpen = isControlled ? open : internalOpen
+    const setIsOpen = useCallback((next: boolean) => {
+        if (!isControlled) setInternalOpen(next)
+        onOpenChange?.(next)
+    }, [isControlled, onOpenChange])
     const [templates, setTemplates] = useState<any[]>([])
     const [selectedTemplate, setSelectedTemplate] = useState("")
     const [isSending, setIsSending] = useState(false)
@@ -99,15 +110,17 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
 
     return (
         <>
-            <button
-                onClick={() => setIsOpen(true)}
-                className="group flex items-center gap-2 px-3 py-1.5 bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint rounded-lg text-xs font-black uppercase tracking-widest hover:bg-primary hover:text-white dark:hover:text-[#1A2420] transition-all"
-            >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-                {t.sendRequest}
-            </button>
+            {!hideTrigger && (
+                <button
+                    onClick={() => setIsOpen(true)}
+                    className="group flex items-center gap-2 px-3 py-1.5 bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint rounded-lg text-xs font-black uppercase tracking-widest hover:bg-primary hover:text-white dark:hover:text-[#1A2420] transition-all"
+                >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                    {t.sendRequest}
+                </button>
+            )}
 
             {isOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4">

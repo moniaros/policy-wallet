@@ -9,6 +9,7 @@ import { Mail, Phone, Globe, ShieldCheck, ShieldOff, Building2, MessageSquare, F
 import { EmptyState as SharedEmptyState } from "@/components/ui/EmptyState"
 import { redeemInviteCode } from "@/app/onboarding/actions"
 import { revokeShare } from "@/app/(protected)/wallet/actions"
+import { toast } from "sonner"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { DocumentRequestRespond, DocumentRequestCard } from "@/components/collaboration/DocumentRequestFlow"
@@ -82,6 +83,10 @@ const PAGE_COPY = {
     sharedByYou: { el: "Κοινοποιήθηκε από εσάς", en: "Shared by you" },
     revoke: { el: "Ανάκληση", en: "Revoke" },
     revoking: { el: "Ανάκληση…", en: "Revoking…" },
+    proposalAccepted: { el: "Η πρόταση έγινε αποδεκτή", en: "Proposal accepted" },
+    proposalDeclined: { el: "Η απάντησή σας στάλθηκε", en: "Your response was sent" },
+    documentUploaded: { el: "Το έγγραφο ανέβηκε", en: "Document uploaded" },
+    responseFailed: { el: "Κάτι πήγε στραβά. Δοκιμάστε ξανά.", en: "Something went wrong. Please try again." },
 } as const
 
 const pick = (pair: { el: string; en: string }, language: string) =>
@@ -259,9 +264,11 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
     }, [relationshipId])
 
     useEffect(() => {
-        if (activeTab === "documents") fetchDocumentRequests()
-        if (activeTab === "proposals") fetchProposals()
-    }, [activeTab, fetchDocumentRequests, fetchProposals])
+        // Fetch both up front so the Documents/Proposals tab badges reflect what's
+        // pending from the start — not only after the customer opens each tab.
+        fetchDocumentRequests()
+        fetchProposals()
+    }, [fetchDocumentRequests, fetchProposals])
 
     const handleDocumentUpload = async (requestId: string, file: File): Promise<boolean> => {
         setUploadingRequestId(requestId)
@@ -285,11 +292,16 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ uploadedDocumentUrl: fileUrl }),
             })
-            if (!patchRes.ok) return false
+            if (!patchRes.ok) {
+                toast.error(pick(PAGE_COPY.responseFailed, language))
+                return false
+            }
 
+            toast.success(pick(PAGE_COPY.documentUploaded, language))
             fetchDocumentRequests()
             return true
         } catch {
+            toast.error(pick(PAGE_COPY.responseFailed, language))
             return false
         } finally {
             setUploadingRequestId(null)
@@ -298,24 +310,38 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
 
     const handleAcceptProposal = async (proposalId: string) => {
         try {
-            await fetch(`/api/v1/collaboration/proposals/${proposalId}`, {
+            const res = await fetch(`/api/v1/collaboration/proposals/${proposalId}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ status: "accepted" }),
             })
-            fetchProposals()
-        } catch { /* silent */ }
+            if (res.ok) {
+                toast.success(pick(PAGE_COPY.proposalAccepted, language))
+                fetchProposals()
+            } else {
+                toast.error(pick(PAGE_COPY.responseFailed, language))
+            }
+        } catch {
+            toast.error(pick(PAGE_COPY.responseFailed, language))
+        }
     }
 
     const handleDeclineProposal = async (proposalId: string, data: ProposalDeclineData) => {
         try {
-            await fetch(`/api/v1/collaboration/proposals/${proposalId}`, {
+            const res = await fetch(`/api/v1/collaboration/proposals/${proposalId}`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ status: "declined", ...data }),
             })
-            fetchProposals()
-        } catch { /* silent */ }
+            if (res.ok) {
+                toast.success(pick(PAGE_COPY.proposalDeclined, language))
+                fetchProposals()
+            } else {
+                toast.error(pick(PAGE_COPY.responseFailed, language))
+            }
+        } catch {
+            toast.error(pick(PAGE_COPY.responseFailed, language))
+        }
     }
 
     const [revokingGrantId, setRevokingGrantId] = useState<string | null>(null)

@@ -12,8 +12,10 @@ import { DocumentRequestCreate, DocumentRequestCard } from "@/components/collabo
 import { ProposalCreate, ProposalView } from "@/components/collaboration/ProposalCard"
 import { AgentInbox } from "@/components/collaboration/AgentInbox"
 import { Skeleton } from "@/components/ui/skeleton"
+import { FloatingActionButton, type FABAction } from "@/components/ui/FloatingActionButton"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { MessageSquare, FileText, Send, X, Plus } from "lucide-react"
+import { toast } from "sonner"
+import { FileText, Send, Plus, ClipboardList, Sparkles } from "lucide-react"
 import type { AgentTier } from "@/types/subscription-entitlements"
 import type { DocumentRequestData, ProposalData, DocumentTypeKey, DocumentUrgency } from "@/components/collaboration/types"
 
@@ -25,16 +27,23 @@ interface Props {
 }
 
 const PROFILE_COPY = {
+    actionsMenu: { el: "Ενέργειες", en: "Actions" },
     requestDocument: { el: "Αίτημα Εγγράφου", en: "Request Document" },
     createProposal: { el: "Δημιουργία Πρότασης", en: "Create Proposal" },
     addPolicy: { el: "Προσθήκη Ασφαλιστηρίου", en: "Add Policy" },
     createTask: { el: "Δημιουργία Task", en: "Create Task" },
+    questionnaire: { el: "Ερωτηματολόγιο", en: "Questionnaire" },
     documentRequests: { el: "Αιτήματα Εγγράφων", en: "Document Requests" },
     newRequest: { el: "Νέο", en: "New" },
     noDocumentRequests: { el: "Δεν υπάρχουν αιτήματα", en: "No document requests" },
     proposals: { el: "Προτάσεις", en: "Proposals" },
     newProposal: { el: "Νέα", en: "New" },
     noProposals: { el: "Δεν υπάρχουν προτάσεις", en: "No proposals" },
+    proposalSent: { el: "Η πρόταση στάλθηκε", en: "Proposal sent" },
+    docRequestSent: { el: "Το αίτημα εγγράφου στάλθηκε", en: "Document request sent" },
+    sendFailed: { el: "Η αποστολή απέτυχε. Δοκιμάστε ξανά.", en: "Send failed. Please try again." },
+    proposalUpgrade: { el: "Οι προτάσεις απαιτούν το πρόγραμμα Starter ή ανώτερο.", en: "Proposals require the Starter plan or higher." },
+    docRequestUpgrade: { el: "Τα αιτήματα εγγράφων απαιτούν το πρόγραμμα Starter ή ανώτερο.", en: "Document requests require the Starter plan or higher." },
 } as const
 
 export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedReport, healthScore }: Props) {
@@ -44,6 +53,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
     const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false)
     const [isDocRequestFormOpen, setIsDocRequestFormOpen] = useState(false)
     const [isProposalFormOpen, setIsProposalFormOpen] = useState(false)
+    const [isQuestionnaireOpen, setIsQuestionnaireOpen] = useState(false)
     const [isSendingDocRequest, setIsSendingDocRequest] = useState(false)
     const [isSendingProposal, setIsSendingProposal] = useState(false)
     const [documentRequests, setDocumentRequests] = useState<DocumentRequestData[]>([])
@@ -135,10 +145,20 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                 }),
             })
             if (res.ok) {
+                toast.success(PROFILE_COPY.docRequestSent[language])
                 setIsDocRequestFormOpen(false)
                 fetchDocumentRequests()
+            } else {
+                // Surface the failure instead of silently leaving the popup open.
+                const json = await res.json().catch(() => null)
+                const message = res.status === 403
+                    ? PROFILE_COPY.docRequestUpgrade[language]
+                    : (json?.error || PROFILE_COPY.sendFailed[language])
+                toast.error(message)
             }
-        } catch { /* silent */ } finally { setIsSendingDocRequest(false) }
+        } catch {
+            toast.error(PROFILE_COPY.sendFailed[language])
+        } finally { setIsSendingDocRequest(false) }
     }
 
     const handleSendProposal = async (data: {
@@ -161,77 +181,51 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                 }),
             })
             if (res.ok) {
+                toast.success(PROFILE_COPY.proposalSent[language])
                 setIsProposalFormOpen(false)
                 fetchProposals()
+            } else {
+                const json = await res.json().catch(() => null)
+                const message = res.status === 403
+                    ? PROFILE_COPY.proposalUpgrade[language]
+                    : (json?.error || PROFILE_COPY.sendFailed[language])
+                toast.error(message)
             }
-        } catch { /* silent */ } finally { setIsSendingProposal(false) }
+        } catch {
+            toast.error(PROFILE_COPY.sendFailed[language])
+        } finally { setIsSendingProposal(false) }
     }
 
     const customerFullName = `${initialCustomer.name} ${initialCustomer.surname}`
 
+    const fabActions: FABAction[] = [
+        { id: "doc-request", label: PROFILE_COPY.requestDocument[language], icon: <FileText className="w-5 h-5" />, onClick: () => setIsDocRequestFormOpen(true) },
+        { id: "proposal", label: PROFILE_COPY.createProposal[language], icon: <Send className="w-5 h-5" />, onClick: () => setIsProposalFormOpen(true) },
+        { id: "questionnaire", label: PROFILE_COPY.questionnaire[language], icon: <ClipboardList className="w-5 h-5" />, onClick: () => setIsQuestionnaireOpen(true) },
+        { id: "add-policy", label: PROFILE_COPY.addPolicy[language], icon: <Plus className="w-5 h-5" />, onClick: () => setIsPolicyModalOpen(true) },
+        { id: "create-task", label: PROFILE_COPY.createTask[language], icon: <Plus className="w-5 h-5" />, onClick: () => setIsTaskModalOpen(true) },
+    ]
+
     return (
         <>
-            {/* Floating Action Buttons */}
-            <div className="fixed bottom-8 right-8 z-[60]">
-                <div className="flex flex-col gap-4 items-end">
-                    {/* Request Document Button */}
-                    <button
-                        type="button"
-                        onClick={() => setIsDocRequestFormOpen(true)}
-                        className="bg-primary text-white dark:text-[#1A2420] rounded-full p-4 shadow-lg shadow-primary/20 hover:scale-105 transition-transform group flex items-center gap-3 pr-6"
-                    >
-                        <FileText className="w-5 h-5" />
-                        <span className="font-bold text-sm">
-                            {PROFILE_COPY.requestDocument[language]}
-                        </span>
-                    </button>
+            {/* Collapsible action speed-dial — one FAB that expands to the actions
+                and collapses on backdrop/toggle, so it no longer permanently covers
+                the corner. */}
+            <FloatingActionButton
+                mainLabel={PROFILE_COPY.actionsMenu[language]}
+                mainIcon={<Sparkles className="w-6 h-6" strokeWidth={2.5} />}
+                position="bottom-right"
+                actions={fabActions}
+            />
 
-                    {/* Create Proposal Button */}
-                    <button
-                        type="button"
-                        onClick={() => setIsProposalFormOpen(true)}
-                        className="bg-primary text-white dark:text-[#1A2420] rounded-full p-4 shadow-lg shadow-primary/20 hover:scale-105 transition-transform group flex items-center gap-3 pr-6"
-                    >
-                        <Send className="w-5 h-5" />
-                        <span className="font-bold text-sm">
-                            {PROFILE_COPY.createProposal[language]}
-                        </span>
-                    </button>
-
-                    {/* Add Policy Button */}
-                    <button
-                        type="button"
-                        onClick={() => setIsPolicyModalOpen(true)}
-                        className="bg-primary text-white dark:text-[#1A2420] rounded-full p-4 shadow-lg shadow-primary/20 hover:scale-105 transition-transform group flex items-center gap-3 pr-6"
-                    >
-                        <span className="w-6 h-6 flex items-center justify-center border-2 border-white/30 rounded-full">
-                            <Plus className="w-3 h-3" />
-                        </span>
-                        <span className="font-bold text-sm">
-                            {PROFILE_COPY.addPolicy[language]}
-                        </span>
-                    </button>
-
-                    {/* Create Task Button */}
-                    <button
-                        type="button"
-                        onClick={() => setIsTaskModalOpen(true)}
-                        className="bg-neutral-900 text-white rounded-full p-4 shadow-lg hover:scale-105 transition-transform group flex items-center gap-3 pr-6"
-                    >
-                        <span className="w-6 h-6 flex items-center justify-center border-2 border-white/30 rounded-full">
-                            <Plus className="w-3 h-3" />
-                        </span>
-                        <span className="font-bold text-sm">
-                            {PROFILE_COPY.createTask[language]}
-                        </span>
-                    </button>
-
-                    <QuestionnaireSender
-                        relationshipId={initialCustomer.relationshipId}
-                        customerName={customerFullName}
-                    />
-                </div>
-            </div>
+            {/* Questionnaire sender — opened from the FAB (controlled, trigger hidden) */}
+            <QuestionnaireSender
+                relationshipId={initialCustomer.relationshipId}
+                customerName={customerFullName}
+                open={isQuestionnaireOpen}
+                onOpenChange={setIsQuestionnaireOpen}
+                hideTrigger
+            />
 
             {/* Create Task Modal */}
             <CreateTaskModal
