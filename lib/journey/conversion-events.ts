@@ -18,6 +18,8 @@ export type ConversionEventType =
     | "free_ai_call_blocked"
     | "paid_ai_call_started"
     | "paid_ai_call_completed"
+    // Agent B2B — a client accepted an agent's proposal (a closed sale).
+    | "proposal_accepted"
 
 export interface ConversionEventDetails {
     /** Trigger surface, e.g. "upgrade_modal", "carried_plan", "token_topup". */
