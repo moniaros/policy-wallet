@@ -1,6 +1,6 @@
 import { db } from "./db"
 import { sendEmail } from "./email/email-service"
-import { templates } from "./mail-templates"
+import { buildNotificationEmail } from "./mail-templates"
 import { sendPushNotification } from "./services/push.service"
 
 export type NotificationChannel = 'email' | 'push' | 'whatsapp' | 'viber'
@@ -70,9 +70,16 @@ export async function sendNotification({
         try {
             if (channel === 'email' && user.email) {
                 const language = user.preferredLanguage === 'el' ? 'el' : 'en'
-                const template = (templates as any)[eventType.toUpperCase()]
-                const emailSubject = template ? template({ id: relatedObjectId, language }).subject : title
-                const emailHtml = template ? template({ id: relatedObjectId, language }).html : message
+                // Every notification email goes through the shared branded shell
+                // (title + message + deep-link CTA), replacing the old plain-text
+                // fallback and the per-event templates that rendered `undefined`.
+                const { subject: emailSubject, html: emailHtml } = buildNotificationEmail({
+                    title,
+                    message,
+                    relatedObjectType,
+                    relatedObjectId,
+                    language,
+                })
 
                 const result = await sendEmail({
                     to: user.email,
