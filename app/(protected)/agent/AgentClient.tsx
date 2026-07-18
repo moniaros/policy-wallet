@@ -11,7 +11,7 @@ import { redeemInviteCode } from "@/app/onboarding/actions"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { DocumentRequestRespond, DocumentRequestCard } from "@/components/collaboration/DocumentRequestFlow"
-import { ProposalView } from "@/components/collaboration/ProposalCard"
+import { ProposalView, type ProposalDeclineData } from "@/components/collaboration/ProposalCard"
 import { AgentInbox } from "@/components/collaboration/AgentInbox"
 import type { DocumentRequestData, ProposalData } from "@/components/collaboration/types"
 
@@ -282,6 +282,17 @@ export function AgentClient({ policies, user, agent, relationshipId }: AgentClie
         } catch { /* silent */ }
     }
 
+    const handleDeclineProposal = async (proposalId: string, data: ProposalDeclineData) => {
+        try {
+            await fetch(`/api/v1/collaboration/proposals/${proposalId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "declined", ...data }),
+            })
+            fetchProposals()
+        } catch { /* silent */ }
+    }
+
     const tabs: { id: Tab; label: string; icon: React.ElementType; count?: number }[] = [
         { id: "overview", label: pick(PAGE_COPY.tabOverview, language), icon: Building2 },
         { id: "messages", label: pick(PAGE_COPY.tabMessages, language), icon: MessageSquare },
@@ -367,6 +378,7 @@ export function AgentClient({ policies, user, agent, relationshipId }: AgentClie
                         proposals={proposals}
                         isLoading={isLoadingProposals}
                         onAccept={handleAcceptProposal}
+                        onDecline={handleDeclineProposal}
                         licenseNumber={agent.branding?.licenseNumber}
                         language={language}
                     />
@@ -519,12 +531,14 @@ function ProposalsTab({
     proposals,
     isLoading,
     onAccept,
+    onDecline,
     licenseNumber,
     language,
 }: {
     proposals: ProposalData[]
     isLoading: boolean
     onAccept: (proposalId: string) => void
+    onDecline: (proposalId: string, data: ProposalDeclineData) => void
     licenseNumber?: string | null
     language: string
 }) {
@@ -556,6 +570,7 @@ function ProposalsTab({
                     viewerRole="policyholder"
                     licenseNumber={licenseNumber}
                     onAccept={onAccept}
+                    onDecline={onDecline}
                 />
             ))}
         </div>

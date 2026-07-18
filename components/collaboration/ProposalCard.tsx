@@ -253,24 +253,60 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
 
 // ── Client: View Proposal ─────────────────────────────────────────────
 
+export type ProposalDeclineReason = "too_expensive" | "not_needed" | "prefer_different" | "other"
+
+export interface ProposalDeclineData {
+    declineReason?: ProposalDeclineReason
+    declineComment?: string
+    counterOfferNotes?: string
+}
+
 interface ProposalViewProps {
     proposal: ProposalData
     viewerRole: ViewerRole
     licenseNumber?: string | null
     onAccept?: (proposalId: string) => void
+    onDecline?: (proposalId: string, data: ProposalDeclineData) => void | Promise<void>
     onAskQuestion?: (proposalId: string) => void
     isPreview?: boolean
 }
+
+const DECLINE_REASONS: { value: ProposalDeclineReason; key: "reasonTooExpensive" | "reasonNotNeeded" | "reasonPreferDifferent" | "reasonOther" }[] = [
+    { value: "too_expensive", key: "reasonTooExpensive" },
+    { value: "not_needed", key: "reasonNotNeeded" },
+    { value: "prefer_different", key: "reasonPreferDifferent" },
+    { value: "other", key: "reasonOther" },
+]
 
 export function ProposalView({
     proposal,
     viewerRole,
     licenseNumber,
     onAccept,
+    onDecline,
     onAskQuestion,
     isPreview,
 }: ProposalViewProps) {
     const { language, t } = useLanguage()
+    const [isDeclining, setIsDeclining] = useState(false)
+    const [declineReason, setDeclineReason] = useState<ProposalDeclineReason | null>(null)
+    const [declineComment, setDeclineComment] = useState("")
+    const [counterOffer, setCounterOffer] = useState("")
+    const [isResponding, setIsResponding] = useState(false)
+
+    const submitDecline = async () => {
+        if (!onDecline) return
+        setIsResponding(true)
+        try {
+            await onDecline(proposal.id, {
+                declineReason: declineReason ?? undefined,
+                declineComment: declineComment.trim() || undefined,
+                counterOfferNotes: counterOffer.trim() || undefined,
+            })
+        } finally {
+            setIsResponding(false)
+        }
+    }
 
     const statusBadges: Record<string, { label: { en: string; el: string }; style: string }> = {
         pending: {
@@ -357,8 +393,8 @@ export function ProposalView({
             )}
 
             {/* CTAs (client view, pending only) */}
-            {viewerRole === "policyholder" && proposal.status === "pending" && !isPreview && (
-                <div className="flex gap-3 mt-4">
+            {viewerRole === "policyholder" && proposal.status === "pending" && !isPreview && !isDeclining && (
+                <div className="flex flex-wrap gap-3 mt-4">
                     {onAccept && (
                         <BrandActionButton
                             onClick={() => onAccept(proposal.id)}
@@ -366,6 +402,16 @@ export function ProposalView({
                         >
                             <CheckCircle2 className="h-4 w-4" />
                             {t.collaboration.proposals.accept}
+                        </BrandActionButton>
+                    )}
+                    {onDecline && (
+                        <BrandActionButton
+                            variant="secondary"
+                            onClick={() => setIsDeclining(true)}
+                            className="flex-1 text-sm"
+                        >
+                            <X className="h-4 w-4" />
+                            {t.collaboration.proposals.decline}
                         </BrandActionButton>
                     )}
                     {onAskQuestion && (
@@ -378,6 +424,66 @@ export function ProposalView({
                             {t.collaboration.proposals.askMe}
                         </BrandActionButton>
                     )}
+                </div>
+            )}
+
+            {/* Decline / counter-offer form */}
+            {viewerRole === "policyholder" && proposal.status === "pending" && !isPreview && isDeclining && onDecline && (
+                <div className="mt-4 rounded-xl border border-neutral-200/70 dark:border-neutral-700/70 p-4 space-y-4">
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                        {t.collaboration.proposals.declineHeading}
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                        {DECLINE_REASONS.map((r) => (
+                            <button
+                                key={r.value}
+                                type="button"
+                                onClick={() => setDeclineReason(r.value)}
+                                className={`rounded-full px-3 py-1.5 text-xs font-medium border transition ${
+                                    declineReason === r.value
+                                        ? "bg-primary text-white dark:text-[#1A2420] border-primary"
+                                        : "bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700 hover:border-neutral-300"
+                                }`}
+                            >
+                                {t.collaboration.proposals[r.key]}
+                            </button>
+                        ))}
+                    </div>
+                    <textarea
+                        value={declineComment}
+                        onChange={(e) => setDeclineComment(e.target.value)}
+                        rows={2}
+                        placeholder={t.collaboration.proposals.declineCommentPlaceholder}
+                        className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm resize-none placeholder:text-neutral-400"
+                    />
+                    <div>
+                        <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                            {t.collaboration.proposals.counterOfferLabel}
+                        </label>
+                        <textarea
+                            value={counterOffer}
+                            onChange={(e) => setCounterOffer(e.target.value)}
+                            rows={2}
+                            placeholder={t.collaboration.proposals.counterOfferPlaceholder}
+                            className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm resize-none placeholder:text-neutral-400"
+                        />
+                    </div>
+                    <div className="flex items-center justify-end gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setIsDeclining(false)}
+                            className="px-4 py-2 text-sm text-neutral-600 hover:text-neutral-900 dark:hover:text-neutral-200 transition cursor-pointer"
+                        >
+                            {t.collaboration.proposals.back}
+                        </button>
+                        <BrandActionButton
+                            onClick={submitDecline}
+                            disabled={isResponding || (!declineReason && !counterOffer.trim())}
+                            className="text-sm"
+                        >
+                            {isResponding ? t.collaboration.proposals.sending : t.collaboration.proposals.sendResponse}
+                        </BrandActionButton>
+                    </div>
                 </div>
             )}
 
