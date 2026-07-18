@@ -28,9 +28,19 @@ import type {
     RiskProfileInput,
 } from "./ai-service.interface"
 import { AcordDataSchema } from "@/lib/schemas/acord-data"
+import { WRITE_BRANCH_IDS } from "@/lib/insurance/taxonomy"
 import { enrichExtractionPayload } from "./extraction-enrichment"
-import { extractionCitationsEnabled, ExtractionSourcesSchema, CITATIONS_PROMPT_SECTION } from "./extraction-citations"
+import { extractionCitationsEnabled, ExtractionSourcesSchema } from "./extraction-citations"
 import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from "./shared-utils"
+import {
+    buildExtractionPrompt,
+    buildGapAnalysisPromptFromContext,
+    buildGapAnalysisPromptFromDocument,
+    buildClarityPromptFromContext,
+    buildClarityPromptFromDocument,
+    buildQaPrompt,
+    buildRiskProfilePrompt,
+} from "./prompts"
 import { wrapGapResultsBilingual, wrapClarityResultsBilingual } from "../translation/greek-to-bilingual"
 
 const ANTHROPIC_SUPPORTED_MIME_TYPES = [
@@ -125,7 +135,7 @@ export class AnthropicAIService implements IAIService {
         const ExtractionSchema = z.object({
             insurerName: z.string().optional().describe("Insurance company name"),
             policyNumber: z.string().optional().describe("Policy number"),
-            lineOfBusiness: z.string().optional().describe("One of: motor, health, home, life, travel, liability, pet, other"),
+            lineOfBusiness: z.string().optional().describe(`Exactly one of: ${WRITE_BRANCH_IDS.join(", ")}`),
             startDate: z.string().optional().describe("Policy start date YYYY-MM-DD"),
             endDate: z.string().optional().describe("Policy end date YYYY-MM-DD"),
             premiumAmount: z.number().optional().describe("Annual premium, numeric only"),
@@ -148,55 +158,10 @@ export class AnthropicAIService implements IAIService {
             acordData: AcordDataSchema.optional().describe("Type-specific structured data matching the detected lineOfBusiness"),
         })
 
-        const prompt = `You are an expert insurance analyst specializing in reading long policy documents.
-Your task is to carefully read the ENTIRE document and extract structured insurance data in ACORD format.
-IMPORTANT:
-Before producing the final JSON, internally:
-1. Identify all sections of the document
-2. Locate relevant insurance data across:
-   - Schedule
-   - General Terms (Γενικοί Όροι)
-   - Special Conditions (Ειδικοί Όροι)
-   - Appendices / endorsements
-Then extract.
-RULES:
-- Do NOT skip sections
-- Do NOT assume missing values
-- Preserve original wording (Greek/English)
-- If missing → null
-NORMALIZATION:
-- Dates → DD-MM-YYYY
-- Amounts → numeric only
-ADVANCED EXTRACTION:
-finePrintClauses:
-Identify clauses that:
-- limit coverage
-- impose obligations
-- introduce hidden exclusions
-For each:
-[text, category, severity, reason]
-perksAndBenefits:
-Extract all services and benefits:
-[name, description, phone, usageLimit, reminderRecommended]
-notableConditions:
-Extract:
-- waiting periods
-- renewal rules
-- deadlines
-- eligibility constraints
-OUTPUT:
-Return ONLY valid JSON in this structure:
-{
-  "lineOfBusiness": "...",
-  "acord": {...},
-  "finePrintClauses": [...],
-  "perksAndBenefits": [...],
-  "notableConditions": [...]
-}
-${extractionCitationsEnabled()
-    ? `Text should be in Greek (Primary and language of source) and English in different tags. This includes all text such as names,\n${CITATIONS_PROMPT_SECTION}`
-    : 'Do not include Citations, text should be in Greek (Primary and language of source) and English in different tags. This includes all text such as names,'}`
-
+        // Shared canonical extraction prompt (lib/services/ai/prompts.ts);
+        // the output contract is the schema-constrained ExtractionSchema.
+        // No temperature: current Claude models reject non-default sampling
+        // parameters with a 400.
         const result = await withTimeoutAndRetry(
             () =>
                 generateObject({
@@ -206,7 +171,7 @@ ${extractionCitationsEnabled()
                         {
                             role: "user",
                             content: [
-                                { type: "text", text: prompt },
+                                { type: "text", text: buildExtractionPrompt() },
                                 {
                                     type: "file",
                                     data: document.data,
@@ -216,7 +181,6 @@ ${extractionCitationsEnabled()
                             ],
                         },
                     ],
-                    temperature: 0.1,
                 }),
             "Anthropic extraction generateObject"
         )
@@ -297,29 +261,9 @@ ${extractionCitationsEnabled()
             acordData: AcordDataSchema.optional(),
         })
 
-        let prompt: string
-        if (hasStructuredContext && !document) {
-            const ctx = options!.structuredContext!
-            prompt = `Analyze pre-extracted insurance policy data and identify coverage gaps.
-Respond in Greek (Ελληνικά) only. All explanation and suggestion fields must be in Greek.
-Extracted Policy Data:
-- Insurer: ${ctx.insurerName} | Policy: ${ctx.policyNumber} | Type: ${ctx.lineOfBusiness}
-- Period: ${ctx.startDate} to ${ctx.endDate} | Premium: ${ctx.premiumAmount}
-- Summary: ${ctx.coverageSummary || "N/A"}
-- Exclusions: ${ctx.exclusions?.join(", ") || "None extracted"}
-${ctx.acordData ? `- ACORD Data: ${JSON.stringify(ctx.acordData)}` : ""}
-Gap definitions:
-${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
-        } else {
-            prompt = `Analyze insurance policy and identify coverage gaps.
-Respond in Greek (Ελληνικά) only. All explanation and suggestion fields must be in Greek.
-Current metadata:
-- Insurer: ${metadata.insurerName} | Policy: ${metadata.policyNumber} | Type: ${metadata.lineOfBusiness}
-- Dates: ${metadata.startDate.toISOString().split("T")[0]} to ${metadata.endDate.toISOString().split("T")[0]}
-- Premium: ${metadata.premiumAmount ?? "N/A"} | Summary: ${metadata.coverageSummary || "N/A"}
-Gap definitions:
-${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
-        }
+        const prompt = hasStructuredContext && !document
+            ? buildGapAnalysisPromptFromContext(options!.structuredContext!, gapDefinitions)
+            : buildGapAnalysisPromptFromDocument(metadata, gapDefinitions)
 
         const parts: any[] = [{ type: "text", text: prompt }]
         if (document) {
@@ -337,7 +281,6 @@ ${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
                     model: this.aiProvider!(modelName as string),
                     schema: GapAnalysisSchema,
                     messages: [{ role: "user", content: parts }],
-                    temperature: 0.2,
                 }),
             "Anthropic gap analysis"
         )
@@ -433,35 +376,9 @@ ${gapDefinitions.map((g) => `- ${g.slug}: ${g.checkCriteria}`).join("\n")}`
             acordData: AcordDataSchema.optional(),
         })
 
-        const checklistPrompt = checklist
-            .map((pillar) => `- ${pillar.key}: ${pillar.title.en}; checks: ${pillar.checks.join(", ")}`)
-            .join("\n")
-
-        let prompt: string
-        if (hasStructuredContext && !document) {
-            const ctx = options!.structuredContext!
-            prompt = `Create a plain-language policy clarity report with checklist scoring.
-Respond in Greek (Ελληνικά) only. All text fields must be in Greek.
-Use the extracted data below as source of truth.
-Extracted Policy Data:
-- Insurer: ${ctx.insurerName} | Policy: ${ctx.policyNumber} | Type: ${ctx.lineOfBusiness}
-- Period: ${ctx.startDate} to ${ctx.endDate} | Premium: ${ctx.premiumAmount}
-- Summary: ${ctx.coverageSummary || "N/A"}
-- Exclusions: ${ctx.exclusions?.join(", ") || "None extracted"}
-${ctx.acordData ? `- ACORD Data: ${JSON.stringify(ctx.acordData)}` : ""}
-Checklist:
-${checklistPrompt}`
-        } else {
-            prompt = `Create a plain-language policy clarity report with checklist scoring.
-Respond in Greek (Ελληνικά) only. All text fields must be in Greek.
-Use the document as source of truth when available.
-Checklist:
-${checklistPrompt}
-Metadata:
-- Insurer: ${metadata.insurerName} | Policy: ${metadata.policyNumber} | Type: ${metadata.lineOfBusiness}
-- Dates: ${metadata.startDate.toISOString().split("T")[0]} to ${metadata.endDate.toISOString().split("T")[0]}
-- Premium: ${metadata.premiumAmount ?? "N/A"}`
-        }
+        const prompt = hasStructuredContext && !document
+            ? buildClarityPromptFromContext(options!.structuredContext!, checklist)
+            : buildClarityPromptFromDocument(metadata, checklist)
 
         const parts: any[] = [{ type: "text", text: prompt }]
         if (document) {
@@ -479,7 +396,6 @@ Metadata:
                     model: this.aiProvider!(modelName as string),
                     schema: ClaritySchema,
                     messages: [{ role: "user", content: parts }],
-                    temperature: 0.2,
                 }),
             "Anthropic clarity analysis"
         )
@@ -511,20 +427,10 @@ Metadata:
         if (!this.aiProvider) throw new Error("Anthropic service not available")
         const modelName = options?.modelOverride || env.CLAUDE_MODEL_QA
 
-        const acordContext = options?.structuredContext?.acordData
-            ? `\nDetailed Policy Data (ACORD):\n${JSON.stringify(options.structuredContext.acordData, null, 2)}`
-            : ""
-
         const parts: any[] = [
             {
                 type: "text",
-                text: `You are an insurance advisor. Answer the user question based on policy data provided.
-Respond in the same language as the question.
-Policy:
-- Insurer: ${metadata.insurerName} | Policy: ${metadata.policyNumber} | Type: ${metadata.lineOfBusiness}
-- Dates: ${metadata.startDate.toISOString().split("T")[0]} to ${metadata.endDate.toISOString().split("T")[0]}
-- Premium: ${metadata.premiumAmount ?? "N/A"} | Summary: ${metadata.coverageSummary || "N/A"}${acordContext}
-Question: ${question}`,
+                text: buildQaPrompt(metadata, question, options?.structuredContext?.acordData),
             },
         ]
 
@@ -542,7 +448,6 @@ Question: ${question}`,
                 generateText({
                     model: this.aiProvider!(modelName as string),
                     messages: [{ role: "user", content: parts }],
-                    temperature: 0.3,
                 }),
             "Anthropic Q&A"
         )
@@ -596,50 +501,7 @@ Question: ${question}`,
             })).describe("Positive aspects of current coverage (max 3)"),
         })
 
-        const policySummary = existingPolicies.length > 0
-            ? existingPolicies.map(p =>
-                `- ${p.lineOfBusiness} (${p.insurerName}): premium ${p.premiumAmount ?? "unknown"}€, expires ${p.endDate.toISOString().split("T")[0]}`
-            ).join("\n")
-            : "No policies currently held."
-
-        const age = profile.dateOfBirth
-            ? Math.floor((Date.now() - new Date(profile.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
-            : null
-
-        const prompt = `You are an informational insurance-analysis assistant for the Greek market. Analyze this person's risk profile and current insurance portfolio for educational purposes.
-
-## Risk Profile
-- Age: ${age ?? "Unknown"}
-- Marital status: ${profile.maritalStatus || "Unknown"}
-- Dependents: ${profile.dependentsCount}
-- Employment: ${profile.employmentStatus || "Unknown"}
-- Occupation: ${profile.occupation || "Unknown"}
-- Annual income: ${profile.annualIncome ? `€${profile.annualIncome}` : "Unknown"}
-- Owns home: ${profile.ownsHome ? "Yes" : "No"}
-- Mortgage: ${profile.mortgageAmount ? `€${profile.mortgageAmount}` : "None"}
-- Vehicles: ${profile.vehiclesCount}
-- Has pets: ${profile.hasPets ? "Yes" : "No"}
-- Travels frequently: ${profile.travelsFrequently ? "Yes" : "No"}
-- Has loans: ${profile.hasLoans ? "Yes" : "No"}${profile.loanAmount ? ` (€${profile.loanAmount})` : ""}
-- Smoking status: ${profile.smokingStatus || "Unknown"}
-- Life events: ${profile.lifeEvents?.length ? profile.lifeEvents.map(e => `${e.type} (${e.date})`).join(", ") : "None reported"}
-- Gender: ${profile.gender || "Unknown"}
-- BMI: ${profile.heightCm && profile.weightKg ? (profile.weightKg / ((profile.heightCm / 100) ** 2)).toFixed(1) : "Unknown"}
-- Activity level: ${profile.activityLevel || "Unknown"}
-- Chronic conditions: ${profile.chronicConditions?.length ? profile.chronicConditions.join(", ") : "None reported"}
-- Family medical history: ${profile.familyMedicalHistory?.length ? profile.familyMedicalHistory.join(", ") : "None reported"}
-- Driving record: ${profile.drivingRecord || "Unknown"}
-
-## Current Insurance Portfolio
-${policySummary}
-
-## Instructions
-1. Consider the Greek insurance market context (mandatory motor, ENFIA property requirements, ESY public health)
-2. Identify the most critical coverage gaps given this person's specific situation
-3. Provide factual, informational observations about coverage gaps and overlaps; do not give personalized financial or insurance advice or tell the user what they "should" buy. Phrase findings as observations (e.g. "this profile appears to lack ...", "this policy may not cover ...").
-4. Be bilingual: provide both English and Greek for all text fields
-5. Consider life stage, income level, and family situation when assessing urgency
-6. Limit insights to max 5, prioritized gaps to max 5, strengths to max 3`
+        const prompt = buildRiskProfilePrompt(profile, existingPolicies)
 
         try {
             const result = await withTimeoutAndRetry(
@@ -647,7 +509,6 @@ ${policySummary}
                     model: this.aiProvider!(modelName),
                     schema: RiskProfileAnalysisSchema,
                     messages: [{ role: "user", content: prompt }],
-                    temperature: 0.3,
                 }),
                 "Anthropic risk profile analysis"
             )

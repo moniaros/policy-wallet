@@ -23,12 +23,24 @@ export const TOKEN_COSTS = {
         output: 0.01,
     },
     'gemini-3-flash-preview': {
-        input: 0.00007,
-        output: 0.00028,
+        input: 0.0005,  // €0.50 per 1M tokens
+        output: 0.003,  // €3.00 per 1M tokens
     },
     'gemini-3-pro-preview': {
-        input: 0.00035,
-        output: 0.0014,
+        input: 0.002,
+        output: 0.012,
+    },
+    'gemini-3.1-pro-preview': {
+        input: 0.002,
+        output: 0.012,
+    },
+    'gemini-3.5-flash': {
+        input: 0.0015,
+        output: 0.009,
+    },
+    'gemini-3.1-flash-lite': {
+        input: 0.00025,
+        output: 0.0015,
     },
     'gpt-4.1-mini': {
         input: 0.0004,
@@ -38,13 +50,22 @@ export const TOKEN_COSTS = {
         input: 0.00015,
         output: 0.0006,
     },
-    'claude-sonnet-4-20250514': {
-        input: 0.003,   // €3.00 per 1M tokens
+    'claude-sonnet-5': {
+        input: 0.003,   // €3.00 per 1M tokens (sticker; intro pricing is lower through 2026-08)
         output: 0.015,  // €15.00 per 1M tokens
     },
+    'claude-haiku-4-5': {
+        input: 0.001,   // €1.00 per 1M tokens
+        output: 0.005,  // €5.00 per 1M tokens
+    },
+    // Legacy keys — keep so historical usage rows still resolve exact prices.
+    'claude-sonnet-4-20250514': {
+        input: 0.003,
+        output: 0.015,
+    },
     'claude-haiku-4-20250414': {
-        input: 0.0008,  // €0.80 per 1M tokens
-        output: 0.004,  // €4.00 per 1M tokens
+        input: 0.0008,
+        output: 0.004,
     },
 } as const
 

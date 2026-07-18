@@ -103,7 +103,9 @@ async function translateBatch(texts: string[]): Promise<string[]> {
     const google = createGoogleGenerativeAI({ apiKey: env.GEMINI_API_KEY })
 
     const { object } = await generateObject({
-        model: google("gemini-2.0-flash"),
+        // Env-keyed: gemini-2.0-flash was hardcoded here and is marked for
+        // shutdown by Google — the model now follows GEMINI_MODEL_TRANSLATION.
+        model: google(env.GEMINI_MODEL_TRANSLATION),
         schema: z.object({
             translations: z.array(z.string()).describe(
                 "English translations in the same order as the input array"
