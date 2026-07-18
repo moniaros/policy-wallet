@@ -2,6 +2,7 @@ import { withApiGuard } from "@/lib/api-guard"
 import { db as prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { canAgentUseFeature } from "@/lib/subscription-entitlements"
+import { notifyCounterparty } from "@/lib/notifications"
 
 // POST — Create a document request
 export const POST = withApiGuard(
@@ -75,6 +76,22 @@ export const POST = withApiGuard(
             })
 
             return { thread, documentRequest }
+        })
+
+        // Break the silent handoff: tell the customer their advisor needs a document.
+        await notifyCounterparty({
+            userId: relationship.policyholderUserId,
+            eventType: "document_requested",
+            title: {
+                el: "Ο σύμβουλός σας ζήτησε ένα έγγραφο",
+                en: "Your advisor requested a document",
+            },
+            message: {
+                el: `Απαιτείται: ${documentType}. Ανεβάστε το για να συνεχίσει η ομάδα σας.`,
+                en: `Requested: ${documentType}. Upload it so your advisor can proceed.`,
+            },
+            relatedObjectType: "thread",
+            relatedObjectId: result.thread.id,
         })
 
         return NextResponse.json(result, { status: 201 })

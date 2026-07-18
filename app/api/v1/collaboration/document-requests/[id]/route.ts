@@ -1,6 +1,7 @@
 import { withApiGuard } from "@/lib/api-guard"
 import { db as prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
+import { notifyCounterparty } from "@/lib/notifications"
 
 // PATCH — Update document request (upload, expire)
 export const PATCH = withApiGuard(
@@ -72,6 +73,25 @@ export const PATCH = withApiGuard(
 
             return result
         })
+
+        // Break the silent handoff: when the customer uploads the requested
+        // document, tell the agent who asked for it (they may have moved on).
+        if (body.uploadedDocumentUrl && isClient) {
+            await notifyCounterparty({
+                userId: documentRequest.relationship.agentUserId,
+                eventType: "document_uploaded",
+                title: {
+                    el: "Ο πελάτης ανέβασε το έγγραφο που ζητήσατε",
+                    en: "Your client uploaded the requested document",
+                },
+                message: {
+                    el: `Παραλήφθηκε: ${documentRequest.documentType}.`,
+                    en: `Received: ${documentRequest.documentType}.`,
+                },
+                relatedObjectType: "thread",
+                relatedObjectId: documentRequest.threadId,
+            })
+        }
 
         return NextResponse.json(updated)
     }

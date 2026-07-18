@@ -2,6 +2,7 @@
 
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { notifyCounterparty } from "@/lib/notifications"
 
 export type RenewalView = {
     id: string
@@ -94,6 +95,9 @@ export async function updateRenewalOutcome(
 
     const renewal = await db.policyRenewal.findFirst({
         where: { id: renewalId, agentUserId: dbUser.id },
+        include: {
+            policy: { select: { id: true, ownerUserId: true, policyNumber: true, insurerName: true } },
+        },
     })
 
     if (!renewal) {
@@ -117,6 +121,41 @@ export async function updateRenewalOutcome(
         await db.userTask.updateMany({
             where: { id: renewal.taskId, userId: dbUser.id },
             data: { status: "completed", completedAt: new Date() },
+        })
+    }
+
+    // Break the silent handoff: tell the customer where their renewal landed.
+    // Skip when the agent is also the owner (self-managed policy) to avoid a
+    // self-notification.
+    if (renewal.policy && renewal.policy.ownerUserId !== dbUser.id) {
+        const outcomeMessage: Record<typeof data.outcome, { el: string; en: string }> = {
+            renewed_same_insurer: {
+                el: "Το συμβόλαιό σας ανανεώθηκε στον ίδιο ασφαλιστή.",
+                en: "Your policy was renewed with the same insurer.",
+            },
+            renewed_different_insurer: {
+                el: "Το συμβόλαιό σας ανανεώθηκε σε νέο ασφαλιστή.",
+                en: "Your policy was renewed with a new insurer.",
+            },
+            lapsed: {
+                el: "Το συμβόλαιό σας έληξε χωρίς ανανέωση.",
+                en: "Your policy lapsed without renewal.",
+            },
+            cancelled: {
+                el: "Το συμβόλαιό σας ακυρώθηκε.",
+                en: "Your policy was cancelled.",
+            },
+        }
+        await notifyCounterparty({
+            userId: renewal.policy.ownerUserId,
+            eventType: "renewal_outcome",
+            title: {
+                el: `Ενημέρωση ανανέωσης: ${renewal.policy.policyNumber}`,
+                en: `Renewal update: ${renewal.policy.policyNumber}`,
+            },
+            message: outcomeMessage[data.outcome],
+            relatedObjectType: "policy",
+            relatedObjectId: renewal.policy.id,
         })
     }
 

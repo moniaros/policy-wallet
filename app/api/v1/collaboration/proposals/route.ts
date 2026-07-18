@@ -2,6 +2,7 @@ import { withApiGuard } from "@/lib/api-guard"
 import { db as prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { canAgentUseFeature } from "@/lib/subscription-entitlements"
+import { notifyCounterparty } from "@/lib/notifications"
 
 // POST — Create a proposal
 export const POST = withApiGuard(
@@ -90,6 +91,22 @@ export const POST = withApiGuard(
             })
 
             return { thread, proposal }
+        })
+
+        // Break the silent handoff: tell the customer a proposal is waiting for them.
+        await notifyCounterparty({
+            userId: relationship.policyholderUserId,
+            eventType: "proposal_received",
+            title: {
+                el: "Νέα πρόταση από τον σύμβουλό σας",
+                en: "New proposal from your advisor",
+            },
+            message: {
+                el: `${insurerName} — ${lineOfBusiness}, ασφάλιστρο €${premiumAmount}. Δείτε τη και απαντήστε.`,
+                en: `${insurerName} — ${lineOfBusiness}, premium €${premiumAmount}. Review and respond.`,
+            },
+            relatedObjectType: "thread",
+            relatedObjectId: result.thread.id,
         })
 
         return NextResponse.json(result, { status: 201 })
