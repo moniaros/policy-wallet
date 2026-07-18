@@ -114,6 +114,8 @@ export function NotificationBell({ initialNotifications = [], initialUnreadCount
                 router.push(`/wallet/${notification.relatedObjectId}`)
             } else if (notification.relatedObjectType === 'customer') {
                 router.push(`/customers/${notification.relatedObjectId}`)
+            } else if (notification.relatedObjectType === 'thread') {
+                router.push(`/collaboration/threads/${notification.relatedObjectId}`)
             }
         }
     }

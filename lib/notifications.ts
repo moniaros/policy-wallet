@@ -6,13 +6,15 @@ import { sendPushNotification } from "./services/push.service"
 export type NotificationChannel = 'email' | 'push' | 'whatsapp' | 'viber'
 export type NotificationStatus = 'queued' | 'sent' | 'failed'
 
+export type RelatedObjectType = 'policy' | 'customer' | 'questionnaire' | 'thread'
+
 interface SendNotificationParams {
     userId: string
     eventType: string
     title: string
     message: string
     channels?: NotificationChannel[]
-    relatedObjectType?: 'policy' | 'customer' | 'questionnaire'
+    relatedObjectType?: RelatedObjectType
     relatedObjectId?: string
 }
 
@@ -114,4 +116,73 @@ export async function sendNotification({
 
     const events = await Promise.all(eventPromises)
     return events
+}
+
+type LocalizedText = string | { el: string; en: string }
+
+function resolveLocalized(text: LocalizedText, lang: 'el' | 'en'): string {
+    return typeof text === 'string' ? text : text[lang]
+}
+
+export interface NotifyCounterpartyParams {
+    /** Recipient user id (the counterparty of a cross-side collaboration action). */
+    userId: string
+    eventType: string
+    /** Pass `{ el, en }` to localise per the recipient's preferred language. */
+    title: LocalizedText
+    message: LocalizedText
+    relatedObjectType?: RelatedObjectType
+    relatedObjectId?: string
+    /** Also send email (default true). The in-app bell event is always written. */
+    email?: boolean
+}
+
+/**
+ * Notify the counterparty of a cross-side collaboration action: always writes an
+ * in-app notificationEvent (the bell) and, by default, also emails through
+ * sendNotification (which honours the recipient's per-event preferences). Content
+ * is resolved to the *recipient's* preferred language. Mirrors the pattern in
+ * collaboration.service.ts.
+ *
+ * Never throws — a notification failure must not roll back (or surface as a
+ * failure of) the action that triggered it. Call this AFTER the DB transaction
+ * that performed the action has committed.
+ */
+export async function notifyCounterparty(params: NotifyCounterpartyParams): Promise<void> {
+    try {
+        const recipient = await (db.user.findUnique as any)({
+            where: { id: params.userId },
+            select: { preferredLanguage: true },
+        })
+        const lang: 'el' | 'en' = recipient?.preferredLanguage === 'el' ? 'el' : 'en'
+        const title = resolveLocalized(params.title, lang)
+        const message = resolveLocalized(params.message, lang)
+
+        if (params.email !== false) {
+            await sendNotification({
+                userId: params.userId,
+                eventType: params.eventType,
+                title,
+                message,
+                channels: ['email'],
+                relatedObjectType: params.relatedObjectType,
+                relatedObjectId: params.relatedObjectId,
+            })
+        }
+
+        await db.notificationEvent.create({
+            data: {
+                userId: params.userId,
+                eventType: params.eventType,
+                channel: 'in_app',
+                title,
+                message,
+                relatedObjectType: params.relatedObjectType ?? null,
+                relatedObjectId: params.relatedObjectId ?? null,
+            },
+        })
+    } catch (err) {
+        // Swallow: a broken notification must never break the underlying action.
+        console.error('[notifyCounterparty] failed', params.eventType, err)
+    }
 }

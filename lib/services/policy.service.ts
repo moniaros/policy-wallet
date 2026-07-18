@@ -609,7 +609,12 @@ export class PolicyService extends BaseService {
             // Fetch updated details for the message
             const updatedPolicy = await this.db.policy.findUnique({
                 where: { id: policyId },
-                select: { policyNumber: true, insurerName: true }
+                select: {
+                    policyNumber: true,
+                    insurerName: true,
+                    ownerUserId: true,
+                    owner: { select: { preferredLanguage: true } },
+                }
             })
 
             await this.db.notificationEvent.create({
@@ -625,6 +630,26 @@ export class PolicyService extends BaseService {
                     relatedObjectId: policyId
                 }
             })
+
+            // Break the silent handoff: when someone other than the owner (e.g. an
+            // agent uploading on the client's behalf) triggered this analysis, the
+            // owner never hears about it. Notify them too, in their own language.
+            if (updatedPolicy?.ownerUserId && updatedPolicy.ownerUserId !== userId) {
+                const ownerLang = updatedPolicy.owner?.preferredLanguage === 'el' ? 'el' : 'en'
+                await this.db.notificationEvent.create({
+                    data: {
+                        userId: updatedPolicy.ownerUserId,
+                        eventType: 'policy_analyzed',
+                        channel: 'in_app',
+                        title: ownerLang === 'el' ? 'Η ανάλυση ολοκληρώθηκε' : 'Policy Analysis Complete',
+                        message: ownerLang === 'el'
+                            ? `Το ασφαλιστήριο συμβόλαιο ${updatedPolicy.policyNumber} (${updatedPolicy.insurerName}) αναλύθηκε από τον σύμβουλό σας.`
+                            : `Policy ${updatedPolicy.policyNumber} (${updatedPolicy.insurerName}) was analyzed by your advisor.`,
+                        relatedObjectType: 'policy',
+                        relatedObjectId: policyId
+                    }
+                })
+            }
 
             logger('info', 'Background policy analysis completed successfully', {
                 policyId,
