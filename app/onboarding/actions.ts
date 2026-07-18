@@ -224,6 +224,13 @@ export async function redeemInviteCode(code: string) {
     if (invite.expiresAt < new Date()) {
         return { success: false, error: "expired" as const }
     }
+    // Bind the invite to the addressed email. The token alone must not connect an
+    // arbitrary logged-in account to the agent (a forwarded/leaked link, or a code
+    // entered from the wrong account) — redemption is only valid for the person it
+    // was sent to.
+    if (invite.inviteeEmail.trim().toLowerCase() !== (dbUser.email ?? "").trim().toLowerCase()) {
+        return { success: false, error: "wrong_account" as const }
+    }
 
     // Redeem invite — create relationship
     await db.invite.update({
@@ -231,7 +238,10 @@ export async function redeemInviteCode(code: string) {
         data: { consumedAt: new Date(), inviteeUserId: dbUser.id },
     })
 
-    // Activate or create customer relationship
+    // Accepting the invite IS the customer's explicit consent to this agent, so
+    // set both status (UI/stats) and activationStatus (the identity-consent gate
+    // in lib/agent-consent.ts) — otherwise the agent still couldn't see the
+    // customer they were just connected to.
     const existingRelationship = await db.customerRelationship.findFirst({
         where: {
             agentUserId: invite.inviterUserId,
@@ -242,7 +252,7 @@ export async function redeemInviteCode(code: string) {
     if (existingRelationship) {
         await db.customerRelationship.update({
             where: { id: existingRelationship.id },
-            data: { status: "active" },
+            data: { status: "active", activationStatus: "activated" },
         })
     } else {
         await db.customerRelationship.create({
@@ -250,6 +260,7 @@ export async function redeemInviteCode(code: string) {
                 agentUserId: invite.inviterUserId,
                 policyholderUserId: dbUser.id,
                 status: "active",
+                activationStatus: "activated",
             },
         })
     }

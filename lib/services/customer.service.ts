@@ -293,18 +293,20 @@ export class CustomerService extends BaseService {
             throw AppError.conflict("Customer already exists in your list");
         }
 
-        // 3. Create relationship. Status must reflect the CUSTOMER's reality:
-        // a manually-added phantom (no password / never verified / never seen)
-        // has not activated anything, so calling the relationship 'active'
-        // ("activated" in the UI) inflates the activation rate and misrepresents
-        // the customer. Only an already-activated account is 'active'; everyone
-        // else is 'pending_activation' until they join.
-        const isActivatedAccount = Boolean(user.password || user.emailVerified || user.lastActiveAt);
+        // 3. Create relationship as PENDING — never unilaterally 'active'.
+        // An agent adding a customer (phantom or a real, already-activated
+        // account) is not consent from that person to THIS agent, so calling the
+        // relationship 'active' ("activated" in the UI, and counted in the
+        // agent's activation stats) misrepresents a real user who never agreed.
+        // It becomes 'active' only when the customer accepts (redeemInviteCode /
+        // invite signup). Identity consent is gated separately by
+        // activationStatus (see lib/agent-consent.ts), which stays at its default
+        // until the customer accepts.
         const relationship = await this.db.customerRelationship.create({
             data: {
                 agentUserId,
                 policyholderUserId: user.id,
-                status: isActivatedAccount ? 'active' : 'pending_activation',
+                status: 'pending_activation',
                 lastInteractionAt: new Date()
             }
         });

@@ -190,6 +190,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                     invalid: t("Μη έγκυρος κωδικός πρόσκλησης.", "Invalid invite code."),
                     already_used: t("Ο κωδικός έχει ήδη χρησιμοποιηθεί.", "This code has already been used."),
                     expired: t("Ο κωδικός έχει λήξει.", "This code has expired."),
+                    wrong_account: t("Η πρόσκληση στάλθηκε σε διαφορετική διεύθυνση email.", "This invite was sent to a different email address."),
                 }
                 setInviteError(errorMessages[err] || t("Σφάλμα.", "Error."))
             }
