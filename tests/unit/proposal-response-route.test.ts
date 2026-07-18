@@ -11,10 +11,10 @@ vi.mock('@/lib/api-guard', () => ({
 }))
 
 const tx = {
-    proposal: { update: vi.fn(async () => ({ id: 'p1', status: 'done' })) },
-    collaborationMessage: { create: vi.fn(async () => ({})) },
-    collaborationThread: { update: vi.fn(async () => ({})) },
-    opportunity: { create: vi.fn(async () => ({})) },
+    proposal: { update: vi.fn(async (_a?: any) => ({ id: 'p1', status: 'done' })) },
+    collaborationMessage: { create: vi.fn(async (_a?: any) => ({})) },
+    collaborationThread: { update: vi.fn(async (_a?: any) => ({})) },
+    opportunity: { create: vi.fn(async (_a?: any) => ({})) },
 }
 
 vi.mock('@/lib/db', () => ({

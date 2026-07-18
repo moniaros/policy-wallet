@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation"
 import { useIsMobile } from "@/hooks/useResponsive"
 import { useLanguage } from "@/contexts/LanguageContext"
 import type { Policy } from "@/components/wallet/types"
-import { Mail, Phone, Globe, ShieldCheck, Building2, MessageSquare, FileText, Send, Inbox, Handshake } from "lucide-react"
+import { Mail, Phone, Globe, ShieldCheck, ShieldOff, Building2, MessageSquare, FileText, Send, Inbox, Handshake } from "lucide-react"
 import { EmptyState as SharedEmptyState } from "@/components/ui/EmptyState"
 import { redeemInviteCode } from "@/app/onboarding/actions"
+import { revokeShare } from "@/app/(protected)/wallet/actions"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { DocumentRequestRespond, DocumentRequestCard } from "@/components/collaboration/DocumentRequestFlow"
@@ -22,6 +23,16 @@ interface AgentBranding {
     brandColor: string
     website?: string | null
     verified: boolean
+}
+
+export interface SharedPolicyLedgerItem {
+    grantId: string
+    policyId: string
+    policyNumber: string
+    insurerName: string
+    lineOfBusiness: string
+    addedByAdvisor: boolean
+    grantedAt: string
 }
 
 interface AgentClientProps {
@@ -42,6 +53,7 @@ interface AgentClientProps {
         branding?: AgentBranding
     }
     relationshipId: string | null
+    sharedPolicies?: SharedPolicyLedgerItem[]
 }
 
 type Tab = "overview" | "messages" | "documents" | "proposals"
@@ -57,6 +69,19 @@ const PAGE_COPY = {
     noDocumentRequests: { el: "Δεν υπάρχουν αιτήματα εγγράφων", en: "No document requests yet" },
     completedSection: { el: "Ολοκληρωμένα", en: "Completed" },
     noProposals: { el: "Δεν υπάρχουν προτάσεις ακόμα", en: "No proposals yet" },
+    sharedAccessTitle: { el: "Κοινή πρόσβαση", en: "Shared access" },
+    sharedAccessSubtitle: {
+        el: "Ελέγχετε τι βλέπει ο σύμβουλός σας. Ανακαλέστε ανά πάσα στιγμή.",
+        en: "You control what your advisor can see. Revoke any time.",
+    },
+    noShares: {
+        el: "Δεν έχετε μοιραστεί κανένα συμβόλαιο με τον σύμβουλό σας.",
+        en: "You haven't shared any policies with your advisor yet.",
+    },
+    addedByAdvisor: { el: "Προστέθηκε από τον σύμβουλο", en: "Added by your advisor" },
+    sharedByYou: { el: "Κοινοποιήθηκε από εσάς", en: "Shared by you" },
+    revoke: { el: "Ανάκληση", en: "Revoke" },
+    revoking: { el: "Ανάκληση…", en: "Revoking…" },
 } as const
 
 const pick = (pair: { el: string; en: string }, language: string) =>
@@ -168,7 +193,7 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
     )
 }
 
-export function AgentClient({ policies, user, agent, relationshipId }: AgentClientProps) {
+export function AgentClient({ policies, user, agent, relationshipId, sharedPolicies = [] }: AgentClientProps) {
     const isMobile = useIsMobile()
     const { language } = useLanguage()
     const router = useRouter()
@@ -293,6 +318,19 @@ export function AgentClient({ policies, user, agent, relationshipId }: AgentClie
         } catch { /* silent */ }
     }
 
+    const [revokingGrantId, setRevokingGrantId] = useState<string | null>(null)
+    const handleRevokeShare = async (grantId: string) => {
+        setRevokingGrantId(grantId)
+        try {
+            await revokeShare(grantId)
+            router.refresh()
+        } catch {
+            /* silent — the ledger reloads on refresh */
+        } finally {
+            setRevokingGrantId(null)
+        }
+    }
+
     const tabs: { id: Tab; label: string; icon: React.ElementType; count?: number }[] = [
         { id: "overview", label: pick(PAGE_COPY.tabOverview, language), icon: Building2 },
         { id: "messages", label: pick(PAGE_COPY.tabMessages, language), icon: MessageSquare },
@@ -349,14 +387,19 @@ export function AgentClient({ policies, user, agent, relationshipId }: AgentClie
 
                 {/* Tab content */}
                 {activeTab === "overview" && (
-                    <OverviewTab agent={agent} language={language} />
+                    <OverviewTab
+                        agent={agent}
+                        language={language}
+                        sharedPolicies={sharedPolicies}
+                        onRevoke={handleRevokeShare}
+                        revokingGrantId={revokingGrantId}
+                    />
                 )}
 
                 {activeTab === "messages" && relationshipId && (
                     <AgentInbox
                         relationshipId={relationshipId}
                         onSelectThread={(threadId) => {
-                            // For now, navigate could go to a thread detail — using alert as placeholder
                             router.push(`/collaboration/threads/${threadId}`)
                         }}
                     />
@@ -388,7 +431,19 @@ export function AgentClient({ policies, user, agent, relationshipId }: AgentClie
     )
 }
 
-function OverviewTab({ agent, language }: { agent: NonNullable<AgentClientProps['agent']>; language: string }) {
+function OverviewTab({
+    agent,
+    language,
+    sharedPolicies,
+    onRevoke,
+    revokingGrantId,
+}: {
+    agent: NonNullable<AgentClientProps['agent']>
+    language: string
+    sharedPolicies: SharedPolicyLedgerItem[]
+    onRevoke: (grantId: string) => void
+    revokingGrantId: string | null
+}) {
     return (
         <div className="space-y-6">
             {/* Agent branded card */}
@@ -454,6 +509,51 @@ function OverviewTab({ agent, language }: { agent: NonNullable<AgentClientProps[
                     >
                         <Globe className="h-4 w-4" /> Website
                     </a>
+                )}
+            </div>
+
+            {/* Shared-access ledger — real, revocable control over what the
+                advisor can see (backs the "revoke at any time" promise). */}
+            <div className="rounded-2xl border border-neutral-200 dark:border-neutral-700 p-5">
+                <div className="flex items-center gap-2 mb-1">
+                    <ShieldCheck className="h-4 w-4 text-primary dark:text-mint" />
+                    <h2 className="text-sm font-bold text-foreground">{pick(PAGE_COPY.sharedAccessTitle, language)}</h2>
+                </div>
+                <p className="text-xs text-muted-foreground mb-4">{pick(PAGE_COPY.sharedAccessSubtitle, language)}</p>
+
+                {sharedPolicies.length === 0 ? (
+                    <p className="text-sm text-muted-foreground py-2">{pick(PAGE_COPY.noShares, language)}</p>
+                ) : (
+                    <ul className="space-y-2">
+                        {sharedPolicies.map((sp) => (
+                            <li
+                                key={sp.grantId}
+                                className="flex items-center justify-between gap-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 px-4 py-3"
+                            >
+                                <div className="min-w-0">
+                                    <p className="truncate text-sm font-semibold text-foreground">
+                                        {sp.insurerName ? `${sp.insurerName} · ${sp.policyNumber}` : sp.policyNumber}
+                                    </p>
+                                    <p className="text-[11px] text-muted-foreground">
+                                        {sp.addedByAdvisor
+                                            ? pick(PAGE_COPY.addedByAdvisor, language)
+                                            : pick(PAGE_COPY.sharedByYou, language)}
+                                    </p>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => onRevoke(sp.grantId)}
+                                    disabled={revokingGrantId === sp.grantId}
+                                    className="inline-flex flex-shrink-0 items-center gap-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 px-3 py-1.5 text-xs font-bold text-red-600 dark:text-red-400 transition hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-50 min-h-[36px]"
+                                >
+                                    <ShieldOff className="h-3.5 w-3.5" />
+                                    {revokingGrantId === sp.grantId
+                                        ? pick(PAGE_COPY.revoking, language)
+                                        : pick(PAGE_COPY.revoke, language)}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
                 )}
             </div>
         </div>
