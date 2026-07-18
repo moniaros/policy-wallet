@@ -5,7 +5,7 @@ import Link from "next/link"
 import { submitQuestionnaireResponse } from "@/app/(protected)/tasks/actions"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
-import { CheckCircle2, Save } from "lucide-react"
+import { CheckCircle2, Save, AlertCircle } from "lucide-react"
 
 interface Question {
     id: string
@@ -22,11 +22,12 @@ interface QuestionnaireFormProps {
 }
 
 export function QuestionnaireForm({ instanceId, templateName, questions }: QuestionnaireFormProps) {
-    const { t, language } = useLanguage()
+    const { t } = useLanguage()
     const draftKey = `pw-questionnaire-draft-${instanceId}`
     const [answers, setAnswers] = useState<Record<string, any>>({})
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isSuccess, setIsSuccess] = useState(false)
+    const [submitError, setSubmitError] = useState(false)
     const [protectionScore, setProtectionScore] = useState<number | null>(null)
     const router = useRouter()
 
@@ -59,6 +60,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsSubmitting(true)
+        setSubmitError(false)
         try {
             const result = await submitQuestionnaireResponse(instanceId, answers)
             try {
@@ -70,6 +72,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
             setIsSuccess(true)
         } catch (error) {
             console.error(error)
+            setSubmitError(true)
         } finally {
             setIsSubmitting(false)
         }
@@ -77,104 +80,90 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
 
     if (isSuccess) {
         return (
-            <div className="flex flex-col items-center justify-center py-24 text-center animate-in fade-in zoom-in duration-500">
-                <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-8 relative">
-                    <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full scale-125 animate-pulse" />
-                    <CheckCircle2 className="w-12 h-12 text-primary dark:text-mint relative z-10" />
+            <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in zoom-in duration-500">
+                <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary-soft dark:bg-primary/15">
+                    <CheckCircle2 className="h-10 w-10 text-primary dark:text-mint" />
                 </div>
-                <h2 className="text-3xl font-black text-stone-900 dark:text-white mb-3 tracking-tight">
+                <h2 className="mb-2 text-2xl font-bold text-foreground">
                     {t.tasks.responsesSentToAdvisor}
                 </h2>
                 {protectionScore !== null ? (
-                    <p className="text-stone-500 dark:text-stone-400 font-medium mb-1">
+                    <p className="mb-1 text-muted-foreground">
                         {t.tasks.yourProtectionScore}:{" "}
-                        <span className="font-black text-stone-900 dark:text-white">{protectionScore}%</span>
+                        <span className="font-bold text-foreground">{protectionScore}%</span>
                     </p>
                 ) : (
-                    <p className="text-stone-500 dark:text-stone-400 font-medium mb-1">
-                        {t.agentUi.responsesSubmitted}
-                    </p>
+                    <p className="mb-1 text-muted-foreground">{t.agentUi.responsesSubmitted}</p>
                 )}
-                <p className="text-stone-400 dark:text-stone-500 text-sm mb-8 max-w-sm">
-                    {t.tasks.improveScoreHint}
-                </p>
+                <p className="mb-8 max-w-sm text-sm text-muted-foreground">{t.tasks.improveScoreHint}</p>
                 <Link
                     href="/coverage-insights"
-                    className="inline-flex items-center gap-2 rounded-2xl bg-primary px-8 py-4 text-sm font-black text-white dark:text-[#1A2420] transition-transform hover:scale-[1.02]"
+                    className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-semibold text-white dark:text-[#1A2420] transition-transform hover:-translate-y-0.5"
                 >
                     {t.tasks.viewCoverageInsights}
-                    <CheckCircle2 className="w-5 h-5" strokeWidth={2.5} />
+                    <CheckCircle2 className="h-4 w-4" />
                 </Link>
             </div>
         )
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {/* Progress Header */}
-            <div className="bg-white/50 dark:bg-stone-800/50 backdrop-blur-xl rounded-3xl p-6 border border-stone-200 dark:border-stone-700 shadow-sm flex items-center justify-between gap-6">
+        <div className="space-y-6">
+            {/* Progress header */}
+            <div className="flex items-center justify-between gap-6 rounded-2xl border border-border bg-background dark:bg-neutral-900 p-5">
                 <div className="flex-1">
-                    <div className="flex items-center justify-between mb-2">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-stone-400">{t.tasks.completion}</span>
-                        <span className="text-xs font-black text-stone-900 dark:text-white">{progress}%</span>
+                    <div className="mb-2 flex items-center justify-between">
+                        <span className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{t.tasks.completion}</span>
+                        <span className="text-xs font-bold text-foreground">{progress}%</span>
                     </div>
-                    <div className="h-2 bg-stone-100 dark:bg-stone-900 rounded-full overflow-hidden">
+                    <div className="h-2 overflow-hidden rounded-full bg-muted">
                         <div
-                            className="h-full bg-primary transition-all duration-700 ease-out shadow-[0_0_12px_rgba(41,104,91,0.5)]"
+                            className="h-full rounded-full bg-primary transition-all duration-500 ease-out"
                             style={{ width: `${progress}%` }}
                         />
                     </div>
                 </div>
                 <div className="text-right">
-                    <span className="block text-[10px] font-black uppercase tracking-widest text-stone-400">{t.tasks.questions}</span>
-                    <span className="text-lg font-black text-stone-900 dark:text-white">{answeredCount}/{totalCount}</span>
+                    <span className="block text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{t.tasks.questions}</span>
+                    <span className="text-lg font-bold text-foreground">{answeredCount}/{totalCount}</span>
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="bg-white dark:bg-stone-800 rounded-[40px] p-8 md:p-16 border border-stone-200 dark:border-stone-700 shadow-2xl shadow-stone-200/50 dark:shadow-none relative overflow-hidden">
-                {/* Decorative background element */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[120px] rounded-full -mr-32 -mt-32 pointer-events-none" />
-
-                <h2 className="text-4xl font-black text-stone-900 dark:text-white mb-12 tracking-tight flex items-center gap-4">
+            <form onSubmit={handleSubmit} className="rounded-2xl border border-border bg-background dark:bg-neutral-900 p-6 md:p-8">
+                <h2 className="mb-8 flex items-center gap-2 text-2xl font-bold text-foreground">
                     {templateName}
-                    <span className="w-2 h-2 rounded-full bg-primary dark:bg-mint" />
+                    <span className="h-2 w-2 rounded-full bg-primary dark:bg-mint" />
                 </h2>
 
-                <div className="space-y-16">
+                <div className="space-y-10">
                     {questions.map((q, idx) => (
-                        <div key={q.id} className="group space-y-6 relative">
-                            <div className="flex items-start gap-6">
-                                <span className="flex-shrink-0 w-10 h-10 rounded-2xl bg-stone-50 dark:bg-stone-900 border border-stone-100 dark:border-stone-800 flex items-center justify-center text-xs font-black text-stone-400 group-hover:border-primary group-hover:text-primary dark:group-hover:border-mint dark:group-hover:text-mint transition-all duration-300 mt-1">
+                        <div key={q.id} className="group space-y-4">
+                            <div className="flex items-start gap-4">
+                                <span className="mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg border border-border bg-muted text-xs font-semibold text-muted-foreground transition-colors group-focus-within:border-primary group-focus-within:text-primary dark:group-focus-within:text-mint">
                                     {String(idx + 1).padStart(2, '0')}
                                 </span>
-                                <div className="flex-1 space-y-6">
-                                    <label className="block text-xl font-bold text-stone-800 dark:text-stone-200 leading-tight tracking-tight">
+                                <div className="flex-1 space-y-4">
+                                    <label className="block text-base font-semibold text-foreground">
                                         {q.label}
-                                        {q.required && <span className="text-primary dark:text-mint ml-1.5">*</span>}
+                                        {q.required && <span className="ml-1 text-primary dark:text-mint">*</span>}
                                     </label>
 
                                     {q.type === 'boolean' && (
-                                        <div className="flex gap-4 max-w-sm">
-                                            <button
-                                                type="button"
-                                                onClick={() => setAnswers({ ...answers, [q.id]: true })}
-                                                className={`flex-1 py-5 rounded-2xl font-black text-sm border-2 transition-all duration-300 ${answers[q.id] === true
-                                                    ? 'bg-stone-900 dark:bg-white text-white dark:text-stone-900 border-stone-900 dark:border-white shadow-lg'
-                                                    : 'bg-white dark:bg-stone-900 text-stone-400 border-stone-100 dark:border-stone-800 hover:border-stone-200 dark:hover:border-stone-700'
+                                        <div className="flex max-w-sm gap-3">
+                                            {[true, false].map((val) => (
+                                                <button
+                                                    key={String(val)}
+                                                    type="button"
+                                                    onClick={() => setAnswers({ ...answers, [q.id]: val })}
+                                                    className={`flex-1 rounded-xl border py-3.5 text-sm font-semibold transition-colors ${
+                                                        answers[q.id] === val
+                                                            ? 'border-primary bg-primary text-white dark:text-[#1A2420]'
+                                                            : 'border-border bg-background text-muted-foreground hover:border-primary/40'
                                                     }`}
-                                            >
-                                                {t.common.yes.toUpperCase()}
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => setAnswers({ ...answers, [q.id]: false })}
-                                                className={`flex-1 py-5 rounded-2xl font-black text-sm border-2 transition-all duration-300 ${answers[q.id] === false
-                                                    ? 'bg-stone-900 dark:bg-white text-white dark:text-stone-900 border-stone-900 dark:border-white shadow-lg'
-                                                    : 'bg-white dark:bg-stone-900 text-stone-400 border-stone-100 dark:border-stone-800 hover:border-stone-200 dark:hover:border-stone-700'
-                                                    }`}
-                                            >
-                                                {t.common.no.toUpperCase()}
-                                            </button>
+                                                >
+                                                    {val ? t.common.yes : t.common.no}
+                                                </button>
+                                            ))}
                                         </div>
                                     )}
 
@@ -182,8 +171,9 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                                         <input
                                             type="text"
                                             required={q.required}
+                                            value={answers[q.id] ?? ''}
                                             onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value })}
-                                            className="w-full bg-stone-50/50 dark:bg-stone-900 border-2 border-stone-100 dark:border-stone-800 rounded-2xl px-8 py-5 focus:border-primary dark:focus:border-mint focus:bg-white dark:focus:bg-stone-900 outline-none transition-all text-stone-900 dark:text-white font-medium placeholder:text-stone-300"
+                                            className="w-full rounded-xl border border-border bg-muted px-4 py-3 text-foreground outline-none transition-colors focus:border-primary focus:bg-background placeholder:text-muted-foreground/60"
                                             placeholder={t.tasks.typeAnswer}
                                         />
                                     )}
@@ -192,25 +182,27 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                                         <input
                                             type="number"
                                             required={q.required}
-                                            onChange={(e) => setAnswers({ ...answers, [q.id]: parseInt(e.target.value) })}
-                                            className="w-full max-w-xs bg-stone-50/50 dark:bg-stone-900 border-2 border-stone-100 dark:border-stone-800 rounded-2xl px-8 py-5 focus:border-primary dark:focus:border-mint focus:bg-white dark:focus:bg-stone-900 outline-none transition-all text-stone-900 dark:text-white font-medium placeholder:text-stone-300"
+                                            value={answers[q.id] ?? ''}
+                                            onChange={(e) => setAnswers({ ...answers, [q.id]: e.target.value === '' ? '' : Number(e.target.value) })}
+                                            className="w-full max-w-xs rounded-xl border border-border bg-muted px-4 py-3 text-foreground outline-none transition-colors focus:border-primary focus:bg-background placeholder:text-muted-foreground/60"
                                             placeholder="0"
                                         />
                                     )}
 
                                     {q.type === 'select' && (
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3">
                                             {q.options?.map((opt) => (
                                                 <button
                                                     key={opt}
                                                     type="button"
                                                     onClick={() => setAnswers({ ...answers, [q.id]: opt })}
-                                                    className={`py-4 px-6 rounded-2xl text-xs font-black border-2 transition-all duration-300 ${answers[q.id] === opt
-                                                        ? 'bg-primary border-primary text-white dark:text-[#1A2420] shadow-lg shadow-primary/20'
-                                                        : 'bg-stone-50/50 dark:bg-stone-900 border-stone-100 dark:border-stone-800 text-stone-500 hover:border-stone-200 dark:hover:border-stone-700'
-                                                        }`}
+                                                    className={`rounded-xl border px-4 py-3 text-sm font-medium transition-colors ${
+                                                        answers[q.id] === opt
+                                                            ? 'border-primary bg-primary text-white dark:text-[#1A2420]'
+                                                            : 'border-border bg-muted text-muted-foreground hover:border-primary/40'
+                                                    }`}
                                                 >
-                                                    {opt.toUpperCase()}
+                                                    {opt}
                                                 </button>
                                             ))}
                                         </div>
@@ -221,23 +213,30 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                     ))}
                 </div>
 
-                <div className="mt-20 pt-10 border-t border-stone-100 dark:border-stone-700 flex flex-col md:flex-row items-center justify-between gap-8">
+                {submitError && (
+                    <div className="mt-8 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-300">
+                        <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                        {t.tasks.submitError}
+                    </div>
+                )}
+
+                <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 md:flex-row">
                     <button
                         type="button"
                         onClick={() => router.back()}
-                        className="text-stone-400 font-bold hover:text-stone-600 dark:hover:text-stone-300 transition-colors flex items-center gap-2 group"
+                        className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
                     >
-                        <Save className="w-5 h-5 group-hover:-translate-y-1 transition-transform" strokeWidth={2.5} />
+                        <Save className="h-4 w-4 transition-transform group-hover:-translate-y-0.5" />
                         {t.tasks.saveForLater}
                     </button>
                     <button
                         type="submit"
                         disabled={isSubmitting || progress < 50}
-                        className="w-full md:w-auto bg-stone-900 dark:bg-white text-white dark:text-stone-900 px-16 py-6 rounded-[24px] text-lg font-black hover:scale-[1.02] active:scale-95 transition-all shadow-2xl shadow-stone-900/20 dark:shadow-none disabled:opacity-50 disabled:scale-100 group flex items-center justify-center gap-3"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3.5 text-sm font-semibold text-white transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 dark:text-[#1A2420] md:w-auto"
                     >
                         {isSubmitting ? (
                             <>
-                                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                                <svg className="h-4 w-4 animate-spin" viewBox="0 0 24 24">
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
@@ -246,7 +245,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                         ) : (
                             <>
                                 {t.tasks.completeSubmission}
-                                <CheckCircle2 className="w-6 h-6 group-hover:scale-110 transition-transform" strokeWidth={2.5} />
+                                <CheckCircle2 className="h-4 w-4" />
                             </>
                         )}
                     </button>

@@ -2,12 +2,13 @@
 
 import { RouteError } from "@/components/ui/RouteError"
 
-// Scoped agent-route boundary: a failure here is contained to this screen and
-// retryable in place, and recovery returns to the agent dashboard (the app-wide
-// boundary sends everyone to /home).
-export default function AgentRouteError(props: {
+// Scoped boundary for the (role-shared) action center: a failure here is
+// contained to this screen and retryable in place. Recovery returns to /home —
+// the universal landing that routes by role — since /tasks is reached by
+// policyholders too, and sending them to the agent dashboard would 403.
+export default function TasksRouteError(props: {
     error: Error & { digest?: string }
     reset: () => void
 }) {
-    return <RouteError {...props} homeHref="/dashboard/agent" />
+    return <RouteError {...props} homeHref="/home" />
 }

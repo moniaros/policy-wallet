@@ -928,6 +928,7 @@ export const en: TranslationKeys = {
         saveForLater: 'Save for later',
         completeSubmission: 'COMPLETE SUBMISSION',
         submitting: 'SUBMITTING...',
+        submitError: 'Submission failed. Please try again.',
         typeAnswer: 'Type your answer here...',
         everythingPerfect: 'Everything is Perfect!',
         completedAllTasks: "You've completed all outstanding requests. We'll notify you when new insights are available.",
