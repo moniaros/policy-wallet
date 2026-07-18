@@ -20,7 +20,7 @@ const LOB_ICONS: Record<string, typeof Car> = {
 
 const copy = {
     en: {
-        sendRequest: "Send Request",
+        sendRequest: "Questionnaire",
         gatherInsights: "Gather Insights",
         requestInfo: "Request structured information from",
         identifyGaps: "to identify potential coverage gaps.",
@@ -29,13 +29,13 @@ const copy = {
         followUpWhatsApp: "Follow up via WhatsApp",
         sendFailed: "Failed to send. Please try again.",
         cancel: "Cancel",
-        sendInsightsRequest: "Send Insights Request",
+        sendInsightsRequest: "Send questionnaire",
         sending: "Sending...",
         questions: "questions",
         whatsappMessage: 'Hi {name}, I\'ve sent you a questionnaire on PolicyWallet so we can check for any gaps in your coverage. You\'ll find it under "Tasks". Thank you!',
     },
     el: {
-        sendRequest: "Αποστολή Αιτήματος",
+        sendRequest: "Ερωτηματολόγιο",
         gatherInsights: "Συλλογή Πληροφοριών",
         requestInfo: "Ζητήστε δομημένες πληροφορίες από",
         identifyGaps: "για τον εντοπισμό κενών κάλυψης.",
@@ -44,7 +44,7 @@ const copy = {
         followUpWhatsApp: "Παρακολούθηση μέσω WhatsApp",
         sendFailed: "Αποτυχία αποστολής. Δοκιμάστε ξανά.",
         cancel: "Ακύρωση",
-        sendInsightsRequest: "Αποστολή Αιτήματος",
+        sendInsightsRequest: "Αποστολή ερωτηματολογίου",
         sending: "Αποστολή...",
         questions: "ερωτήσεις",
         whatsappMessage: 'Γεια σας {name}, σας έστειλα ένα ερωτηματολόγιο στο PolicyWallet για να δούμε αν υπάρχουν κενά στην κάλυψή σας. Θα το βρείτε στην ενότητα «Εκκρεμότητες». Ευχαριστώ!',
@@ -66,6 +66,17 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
             getQuestionnaireTemplates().then(setTemplates)
         }
     }, [isOpen])
+
+    // Close on Escape (the modal previously only closed via the backdrop, which
+    // was off-screen when the card overflowed the viewport).
+    useEffect(() => {
+        if (!isOpen) return
+        const onKey = (e: KeyboardEvent) => {
+            if (e.key === "Escape" && !isSending) setIsOpen(false)
+        }
+        window.addEventListener("keydown", onKey)
+        return () => window.removeEventListener("keydown", onKey)
+    }, [isOpen, isSending])
 
     const handleSend = async () => {
         if (!selectedTemplate) return
@@ -105,8 +116,8 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
                         onClick={() => !isSending && setIsOpen(false)}
                     />
 
-                    <div className="relative bg-white dark:bg-neutral-800 rounded-[32px] w-full max-w-md overflow-hidden shadow-2xl border border-neutral-200 dark:border-neutral-700 animate-in zoom-in-95 slide-in-from-bottom-8 duration-500">
-                        <div className="p-10">
+                    <div className="relative bg-white dark:bg-neutral-800 rounded-[32px] w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-neutral-200 dark:border-neutral-700 animate-in zoom-in-95 slide-in-from-bottom-8 duration-500">
+                        <div className="p-10 overflow-y-auto flex-1 min-h-0">
                             <div className="w-12 h-12 bg-primary-soft dark:bg-primary/15 rounded-2xl flex items-center justify-center text-primary dark:text-mint mb-6">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
@@ -188,7 +199,7 @@ export function QuestionnaireSender({ relationshipId, customerName }: Questionna
                             )}
                         </div>
 
-                        <div className="p-8 bg-neutral-50 dark:bg-neutral-900/50 flex gap-4 border-t border-neutral-100 dark:border-neutral-700">
+                        <div className="p-8 bg-neutral-50 dark:bg-neutral-900/50 flex gap-4 border-t border-neutral-100 dark:border-neutral-700 flex-shrink-0">
                             <button
                                 onClick={() => setIsOpen(false)}
                                 disabled={isSending}

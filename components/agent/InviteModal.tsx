@@ -33,7 +33,7 @@ export function InviteModal({
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-neutral-900/60 backdrop-blur-sm" onClick={onClose} />
 
-            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="invite-title" tabIndex={-1} className="relative w-full max-w-lg bg-white dark:bg-neutral-900 rounded-[48px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="invite-title" tabIndex={-1} className="relative w-full max-w-lg bg-white dark:bg-neutral-900 rounded-[48px] shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-300">
                 <div className="p-12">
                     <header className="mb-10">
                         <div className="flex items-center gap-3 mb-4 text-primary dark:text-mint">

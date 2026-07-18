@@ -254,7 +254,7 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
             {isDocRequestFormOpen && (
                 <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center">
                     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsDocRequestFormOpen(false)} />
-                    <div className="relative z-10 w-full max-w-lg mx-4 mb-4 sm:mb-0">
+                    <div className="relative z-10 w-full max-w-lg mx-4 mb-4 sm:mb-0 max-h-[90vh] overflow-y-auto">
                         <DocumentRequestCreate
                             clientName={customerFullName}
                             onSend={handleSendDocRequest}
