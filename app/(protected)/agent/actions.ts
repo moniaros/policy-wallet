@@ -2,6 +2,7 @@
 
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
+import { notifyCounterparty } from "@/lib/notifications"
 import { revalidatePath } from "next/cache"
 import { after } from "next/server"
 import { redirect } from "next/navigation"
@@ -992,6 +993,25 @@ export async function sendQuestionnaire(relationshipId: string, templateId: stri
     await db.customerRelationship.update({
         where: { id: relationshipId },
         data: { lastInteractionAt: new Date() }
+    })
+
+    // Tell the customer a questionnaire is waiting — previously sending one
+    // notified nobody (no bell, no email), so it was invisible unless they
+    // guessed the /tasks/[id] URL. Deep-links to the answer page (email via
+    // notificationActionPath, bell via NotificationBell's questionnaire case).
+    await notifyCounterparty({
+        userId: relationship.policyholderUserId,
+        eventType: "questionnaire_received",
+        title: {
+            el: "Νέο ερωτηματολόγιο από τον σύμβουλό σας",
+            en: "New questionnaire from your advisor",
+        },
+        message: {
+            el: "Ο σύμβουλός σας σάς έστειλε ένα ερωτηματολόγιο. Απαντήστε το για να εντοπίσουμε κενά στην κάλυψή σας.",
+            en: "Your advisor sent you a questionnaire. Answer it so we can spot gaps in your coverage.",
+        },
+        relatedObjectType: "questionnaire",
+        relatedObjectId: instance.id,
     })
 
     revalidatePath(`/customers/${relationship.policyholderUserId}`)
