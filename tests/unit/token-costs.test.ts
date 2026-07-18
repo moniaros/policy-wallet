@@ -18,9 +18,15 @@ describe('resolveTokenCosts', () => {
     // (GEMINI_MODEL_* etc.); every lib/env default MUST have an exact price
     // entry so metering never silently falls back for the standard fleet.
     it.each([
-        'gemini-2.5-pro', // GEMINI_MODEL_EXTRACTION / GAP_ANALYSIS default
-        'gemini-2.5-flash', // GEMINI_MODEL_CLARITY / QA / FALLBACK default
+        'gemini-3-flash-preview', // GEMINI_MODEL_EXTRACTION / GAP_ANALYSIS default
+        'gemini-3.1-flash-lite', // GEMINI_MODEL_CLARITY / QA / TRANSLATION default
+        'gemini-3.5-flash', // GEMINI_MODEL_FALLBACK default
         'gpt-4.1-mini',
+        'claude-sonnet-5',
+        'claude-haiku-4-5',
+        // Pre-migration model strings still present on historical usage rows
+        'gemini-2.5-pro',
+        'gemini-2.5-flash',
         'claude-sonnet-4-20250514',
         'claude-haiku-4-20250414',
         'gemini-2.0-flash',
@@ -39,6 +45,23 @@ describe('resolveTokenCosts', () => {
         const costs = resolveTokenCosts('some-future-model')
         expect(costs.input).toBeGreaterThan(0)
         expect(costs.output).toBeGreaterThan(0)
+    })
+
+    // Regression: the table stored per-1K prices against trackTokenUsage's
+    // per-1M divisor, under-metering every cost_eur row by 1000x. Values are
+    // EUR per 1M tokens — 1M input tokens of claude-sonnet-5 must cost ~€3.
+    it('prices are EUR per 1M tokens (magnitude guard)', () => {
+        const oneMillionTokensCost = (1_000_000 / 1_000_000) * TOKEN_COSTS['claude-sonnet-5'].input
+        expect(oneMillionTokensCost).toBe(3)
+        expect(TOKEN_COSTS['gemini-3-flash-preview'].input).toBe(0.5)
+    })
+
+    it('unknown-model fallback over-meters relative to every known model', () => {
+        const unknown = resolveTokenCosts('totally-unknown-model')
+        for (const costs of Object.values(TOKEN_COSTS)) {
+            expect(unknown.input).toBeGreaterThanOrEqual(costs.input)
+            expect(unknown.output).toBeGreaterThanOrEqual(costs.output)
+        }
     })
 })
 

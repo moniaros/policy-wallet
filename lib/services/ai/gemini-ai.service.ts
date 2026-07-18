@@ -28,9 +28,16 @@ import type {
 } from './ai-service.interface'
 import { trackTokenUsage } from '@/lib/token-tracking'
 import { enrichExtractionPayload } from './extraction-enrichment'
-import { extractionCitationsEnabled, ExtractionSourcesSchema, CITATIONS_PROMPT_SECTION } from './extraction-citations'
+import { extractionCitationsEnabled, ExtractionSourcesSchema } from './extraction-citations'
 import { schemaPromptBlock, validateJsonModeObject, coercedGreekString, normalizeClarityShape } from './json-mode-schema'
 import { WRITE_BRANCH_IDS } from '@/lib/insurance/taxonomy'
+import {
+  buildExtractionPrompt,
+  buildGapAnalysisPrompt,
+  buildClarityPrompt,
+  buildQaPrompt,
+  buildRiskProfilePrompt,
+} from './prompts'
 import { AcordDataSchema } from '../../schemas/acord-data'
 import { matchesAnyPattern, withTimeoutAndRetry, parseUsage as parseUsageShared } from './shared-utils'
 import { wrapGapResultsBilingual, wrapClarityResultsBilingual } from '../translation/greek-to-bilingual'
@@ -136,7 +143,7 @@ export class GeminiAIService implements IAIService {
   }
 
   /**
-   * Extracts policy data from a document using Gemini 2.0 Flash
+   * Extracts policy data from a document (model from GEMINI_MODEL_EXTRACTION)
    * Supports both PDF and image formats with advanced multimodal analysis
    */
   async extractPolicyData(document: AIDocument, options?: AITrackingOptions): Promise<AIPolicyExtractionResponse> {
@@ -147,50 +154,11 @@ export class GeminiAIService implements IAIService {
     try {
       const modelName = options?.modelOverride || env.GEMINI_MODEL_EXTRACTION
 
-      // Optimized prompt: field-level instructions moved to Zod .describe() annotations
-      // Reduced from ~600 tokens to ~200 tokens (~65% prompt savings)
-      const prompt = `You are an insurance document parser.
-TASK:
-Extract ALL insurance data from this PDF into structured JSON using ACORD format.
-IMPORTANT:
-- Read ALL pages, including:
-  - General Terms
-  - Special Conditions
-  - Appendices
-- Do NOT summarize
-- Do NOT skip sections
-STRICT RULES:
-- Output JSON only
-- No text outside JSON
-- If value not found → null
-DATA NORMALIZATION:
-- Dates: DD-MM-YYYY
-- Amounts: numbers only
-- Keep original language (Greek or English)
-DETECT:
-lineOfBusiness = Motor | Property | Health | Life | Travel
-ONLY populate the matching ACORD section.
-EXTRACTION SECTIONS:
-finePrintClauses:
-Extract limiting clauses:
-[text, category, severity, reason]
-perksAndBenefits:
-[name, description, phone, usageLimit, reminderRecommended]
-notableConditions:
-[condition, type, userActionRequired, deadline]
-FINAL OUTPUT:
-{
-  "lineOfBusiness": "...",
-  "acord": {...},
-  "finePrintClauses": [...],
-  "perksAndBenefits": [...],
-  "notableConditions": [...]
-}
-${extractionCitationsEnabled()
-    ? `Text should be in Greek (Primary and language of source) and English in different tags. This includes all text such as names, descriptions, types, usage limits etc.\n${CITATIONS_PROMPT_SECTION}`
-    : 'Do not include Citations, text should be in Greek (Primary and language of source) and English in different tags. This includes all text such as names, descriptions, types, usage limits etc.'}`
+      // Shared canonical extraction prompt (lib/services/ai/prompts.ts) —
+      // the output contract is the schema block appended below.
+      const prompt = buildExtractionPrompt()
 
-      logger('info', 'Starting Gemini 2.0 Flash extraction with UI Zod Schema', {
+      logger('info', 'Starting Gemini extraction', {
         fileName: document.fileName,
         mimeType: document.mimeType,
         model: modelName
@@ -200,7 +168,7 @@ ${extractionCitationsEnabled()
       const ExtractionSchema = z.object({
         insurerName: z.string().optional().describe("Insurance company name from logo, letterhead, or header"),
         policyNumber: z.string().optional().describe("Policy number from headers, footers, or labeled fields"),
-        lineOfBusiness: z.string().optional().describe("One of: motor, health, home, life, travel, liability, pet, other"),
+        lineOfBusiness: z.string().optional().describe(`Exactly one of: ${WRITE_BRANCH_IDS.join(', ')}`),
         startDate: z.string().optional().describe("Policy start date in YYYY-MM-DD (look for Ισχύς, Period, Validity)"),
         endDate: z.string().optional().describe("Policy end date in YYYY-MM-DD"),
         premiumAmount: z.number().optional().describe("Annual premium amount, numeric only (look for Ασφάλιστρο, Premium)"),
@@ -228,7 +196,6 @@ ${extractionCitationsEnabled()
       // locally — Gemini rejects AcordDataSchema-sized response_schemas with
       // "too many states for serving" (see json-mode-schema.ts).
       const extractionGuidance = `
-lineOfBusiness MUST be exactly one of: ${WRITE_BRANCH_IDS.join(', ')}.
 extractionConfidence.fields MUST include a 0-100 score for every extracted field among: insurerName, policyNumber, lineOfBusiness, startDate, endDate, premiumAmount, issueDate, premiumFrequency, renewalDate.
 ${schemaPromptBlock(ExtractionSchema)}`
 
@@ -273,7 +240,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
         }
       }
 
-      logger('info', 'Gemini 2.0 Flash Zod extraction successful', {
+      logger('info', 'Gemini extraction successful', {
         fileName: document.fileName,
         insurerName: extracted.insurerName,
         policyNumber: extracted.policyNumber,
@@ -312,7 +279,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
   }
 
   /**
-   * Analyzes policy for gaps using Gemini 2.0 Flash
+   * Analyzes policy for gaps (model from GEMINI_MODEL_GAP_ANALYSIS)
    */
   async analyzeGaps(
     document: AIDocument | null,
@@ -331,39 +298,7 @@ ${schemaPromptBlock(ExtractionSchema)}`
 
       // When structured context is available, use compact JSON instead of re-sending the PDF
       // This saves ~50-100K input tokens per call
-      let prompt: string
-      if (hasStructuredContext && !hasDocument) {
-        const ctx = options!.structuredContext!
-        prompt = `You are an expert insurance analyst. Analyze the following pre-extracted policy data to identify coverage gaps.
-Respond in Greek (Ελληνικά) only. All explanation and suggestion fields must be in Greek.
-
-Extracted Policy Data:
-- Insurer: ${ctx.insurerName}
-- Policy Number: ${ctx.policyNumber}
-- Line of Business: ${ctx.lineOfBusiness}
-- Period: ${ctx.startDate} to ${ctx.endDate}
-- Premium: ${ctx.premiumAmount}
-- Summary: ${ctx.coverageSummary || 'N/A'}
-- Exclusions: ${ctx.exclusions?.join(', ') || 'None extracted'}
-${ctx.acordData ? `- ACORD Data: ${JSON.stringify(ctx.acordData)}` : ''}
-
-Potential Gaps to Check:
-${gapDefinitions.map(g => `- ${g.slug}: ${g.checkCriteria}`).join('\n')}`
-      } else {
-        prompt = `You are an expert insurance analyst with deep knowledge of ACORD standards and European insurance policies.
-TASK: Analyze the provided policy document and metadata to identify coverage gaps.
-CRITICAL: The DOCUMENT is the SOURCE OF TRUTH. Current metadata may be incomplete or incorrect - verify against the document.
-Step 1: Verify Insurer, Policy Number, Dates, and Premium from the DOCUMENT. If document is missing, use Current Metadata.
-Step 2: Check for gaps. Respond in Greek (Ελληνικά) only. All explanation and suggestion fields must be in Greek.
-
-Current Metadata (Reference Only):
-Insurer: ${metadata.insurerName} | Policy: ${metadata.policyNumber} | Type: ${metadata.lineOfBusiness}
-Dates: ${metadata.startDate.toISOString().split('T')[0]} to ${metadata.endDate.toISOString().split('T')[0]}
-Premium: ${metadata.premiumAmount} | Summary: ${metadata.coverageSummary || 'N/A'}
-
-Potential Gaps to Check:
-${gapDefinitions.map(g => `- ${g.slug}: ${g.checkCriteria}`).join('\n')}`
-      }
+      const prompt = buildGapAnalysisPrompt(metadata, gapDefinitions, options?.structuredContext, hasDocument)
 
       const parts: any[] = [{ type: 'text', text: prompt }]
       if (document) {
@@ -375,7 +310,7 @@ ${gapDefinitions.map(g => `- ${g.slug}: ${g.checkCriteria}`).join('\n')}`
         })
       }
 
-      logger('info', 'Starting Gemini Zod Flash gap analysis', {
+      logger('info', 'Starting Gemini gap analysis', {
         policyNumber: metadata.policyNumber,
         gapsToCheck: gapDefinitions.length,
         hasDocument,
@@ -495,58 +430,9 @@ ${gapDefinitions.map(g => `- ${g.slug}: ${g.checkCriteria}`).join('\n')}`
     }
 
     const modelName = options?.modelOverride || env.GEMINI_MODEL_CLARITY_ANALYSIS
-    const hasStructuredContext = !!options?.structuredContext
-    const hasDocument = !!document
-
-    const checklistPrompt = checklist
-      .map((pillar) => `- ${pillar.key}: ${pillar.title.en} | checks: ${pillar.checks.join(', ')}`)
-      .join('\n')
 
     // When structured context is available, use compact JSON instead of re-sending the PDF
-    let prompt: string
-    if (hasStructuredContext && !hasDocument) {
-      const ctx = options!.structuredContext!
-      prompt = `You are an insurance clarity analyst for policyholders.
-Goal: 1) Plain-language insights 2) Savings opportunities 3) Coverage gaps 4) Checklist scoring
-5) Fine print warnings 6) Hidden perks and free services.
-Respond in Greek (Ελληνικά) only. All text fields must be in Greek.
-Use the extracted data below as source of truth. If details are missing, say so and lower confidence.
-
-SPECIAL FOCUS — Fine Print & Hidden Value:
-- Identify clauses, restrictions, and conditions that most consumers would be SURPRISED by.
-- Highlight ALL free prevention services, assistance phone numbers, and gifts.
-- Flag auto-renewal traps, claim filing deadlines, and notification obligations.
-- Populate finePrintClauses, perksAndBenefits, and notableConditions arrays in acordData.
-
-Extracted Policy Data:
-- Insurer: ${ctx.insurerName} | Policy: ${ctx.policyNumber} | Type: ${ctx.lineOfBusiness}
-- Period: ${ctx.startDate} to ${ctx.endDate} | Premium: ${ctx.premiumAmount}
-- Summary: ${ctx.coverageSummary || 'N/A'}
-- Exclusions: ${ctx.exclusions?.join(', ') || 'None extracted'}
-${ctx.acordData ? `- ACORD Data: ${JSON.stringify(ctx.acordData)}` : ''}
-
-Checklist pillars:
-${checklistPrompt}`
-    } else {
-      prompt = `You are an insurance clarity analyst for policyholders.
-Goal: 1) Plain-language insights 2) Savings opportunities 3) Coverage gaps 4) Checklist scoring
-5) Fine print warnings 6) Hidden perks and free services.
-Respond in Greek (Ελληνικά) only. All text fields must be in Greek.
-Use the document as source of truth. If details are missing, say so and lower confidence.
-
-SPECIAL FOCUS — Fine Print & Hidden Value:
-- Identify clauses, restrictions, and conditions that most consumers would be SURPRISED by.
-- Highlight ALL free prevention services, assistance phone numbers, and gifts.
-- Flag auto-renewal traps, claim filing deadlines, and notification obligations.
-
-Current metadata:
-- Insurer: ${metadata.insurerName} | Policy: ${metadata.policyNumber} | Type: ${metadata.lineOfBusiness}
-- Period: ${metadata.startDate.toISOString().split('T')[0]} to ${metadata.endDate.toISOString().split('T')[0]}
-- Premium: ${metadata.premiumAmount ?? 'N/A'} | Summary: ${metadata.coverageSummary || 'N/A'}
-
-Checklist pillars:
-${checklistPrompt}`
-    }
+    const prompt = buildClarityPrompt(metadata, checklist, options?.structuredContext, !!document)
 
     const ClaritySchema = z.object({
       plainLanguageSummary: z.string().describe("Plain-language summary in Greek"),
@@ -679,43 +565,9 @@ ${checklistPrompt}`
 
       const model = this.aiProvider(env.GEMINI_MODEL_QA as string)
 
-      // Prepare context from policy data
-      const context = `
-Policy Information:
-      - Insurer: ${metadata.insurerName}
-      - Policy Number: ${metadata.policyNumber}
-      - Type: ${metadata.lineOfBusiness}
-      - Start Date: ${metadata.startDate.toISOString().split('T')[0]}
-      - End Date: ${metadata.endDate.toISOString().split('T')[0]}
-      - Premium: ${metadata.premiumAmount || 'N/A'}
-      - Coverage Summary: ${metadata.coverageSummary || 'N/A'}
-      `
-
-      // Build detailed context from structuredContext (ACORD data) when available
-      const acordContext = options?.structuredContext?.acordData
-        ? `\n\nDetailed Policy Data (ACORD):\n${JSON.stringify(options.structuredContext.acordData, null, 2)}`
-        : ''
-
-      const parts: any[] = []
-
-      const prompt = `
-You are an expert insurance advisor helping a policyholder understand their insurance policy.
-
-        ${context}${acordContext}
-
-User Question: ${question}
-
-      Instructions:
-      1. Answer the question based on the policy data provided
-      2. Be clear, concise, and helpful
-      3. If the information is not available, say so
-      4. Use simple language that a non-expert can understand
-      5. If the question is about coverage, explain what IS and IS NOT covered
-      6. For Greek policies, you may respond in Greek if the question is in Greek
-
-Answer the user's question:
-        `
-      parts.push({ type: 'text', text: prompt })
+      const parts: any[] = [
+        { type: 'text', text: buildQaPrompt(metadata, question, options?.structuredContext?.acordData) },
+      ]
       if (document) {
         parts.push({
           type: 'file',
@@ -752,7 +604,7 @@ Answer the user's question:
 
       return answer
     } catch (error) {
-      logger('error', 'Gemini 2.0 Flash Q&A failed', {
+      logger('error', 'Gemini Q&A failed', {
         policyNumber: metadata.policyNumber,
         error: error instanceof Error ? error.message : String(error)
       })
@@ -802,50 +654,7 @@ Answer the user's question:
       })).describe('Positive aspects of current coverage (max 3)'),
     })
 
-    const policySummary = existingPolicies.length > 0
-      ? existingPolicies.map(p =>
-          `- ${p.lineOfBusiness} (${p.insurerName}): premium ${p.premiumAmount ?? 'unknown'}€, expires ${p.endDate.toISOString().split('T')[0]}`
-        ).join('\n')
-      : 'No policies currently held.'
-
-    const age = profile.dateOfBirth
-      ? Math.floor((Date.now() - new Date(profile.dateOfBirth).getTime()) / (365.25 * 24 * 60 * 60 * 1000))
-      : null
-
-    const prompt = `You are an informational insurance-analysis assistant for the Greek market. Analyze this person's risk profile and current insurance portfolio for educational purposes.
-
-## Risk Profile
-- Age: ${age ?? 'Unknown'}
-- Marital status: ${profile.maritalStatus || 'Unknown'}
-- Dependents: ${profile.dependentsCount}
-- Employment: ${profile.employmentStatus || 'Unknown'}
-- Occupation: ${profile.occupation || 'Unknown'}
-- Annual income: ${profile.annualIncome ? `€${profile.annualIncome}` : 'Unknown'}
-- Owns home: ${profile.ownsHome ? 'Yes' : 'No'}
-- Mortgage: ${profile.mortgageAmount ? `€${profile.mortgageAmount}` : 'None'}
-- Vehicles: ${profile.vehiclesCount}
-- Has pets: ${profile.hasPets ? 'Yes' : 'No'}
-- Travels frequently: ${profile.travelsFrequently ? 'Yes' : 'No'}
-- Has loans: ${profile.hasLoans ? 'Yes' : 'No'}${profile.loanAmount ? ` (€${profile.loanAmount})` : ''}
-- Smoking status: ${profile.smokingStatus || 'Unknown'}
-- Life events: ${profile.lifeEvents?.length ? profile.lifeEvents.map(e => `${e.type} (${e.date})`).join(', ') : 'None reported'}
-- Gender: ${profile.gender || 'Unknown'}
-- BMI: ${profile.heightCm && profile.weightKg ? (profile.weightKg / ((profile.heightCm / 100) ** 2)).toFixed(1) : 'Unknown'}
-- Activity level: ${profile.activityLevel || 'Unknown'}
-- Chronic conditions: ${profile.chronicConditions?.length ? profile.chronicConditions.join(', ') : 'None reported'}
-- Family medical history: ${profile.familyMedicalHistory?.length ? profile.familyMedicalHistory.join(', ') : 'None reported'}
-- Driving record: ${profile.drivingRecord || 'Unknown'}
-
-## Current Insurance Portfolio
-${policySummary}
-
-## Instructions
-1. Consider the Greek insurance market context (mandatory motor, ENFIA property requirements, ESY public health)
-2. Identify the most critical coverage gaps given this person's specific situation
-3. Provide factual, informational observations about coverage gaps and overlaps; do not give personalized financial or insurance advice or tell the user what they "should" buy. Phrase findings as observations (e.g. "this profile appears to lack ...", "this policy may not cover ...").
-4. Be bilingual: provide both English and Greek for all text fields
-5. Consider life stage, income level, and family situation when assessing urgency
-6. Limit insights to max 5, prioritized gaps to max 5, strengths to max 3`
+    const prompt = buildRiskProfilePrompt(profile, existingPolicies)
 
     try {
       const result = await withTimeoutAndRetry(

@@ -8,27 +8,31 @@ const envSchema = z.object({
     AUTH_SECRET: z.string().min(1),
     NEXTAUTH_URL: z.string().optional(),
 
-    // AI / Gemini
+    // AI / Gemini — the 2.5 family retires 2026-10-16; defaults live on the
+    // 3-family. Extraction + gap run on gemini-3-flash-preview (Pro-grade
+    // reasoning at ~40% of 2.5-pro cost); the retry fallback is the STABLE
+    // GA gemini-3.5-flash so a preview-model hiccup lands on solid ground.
     GEMINI_API_KEY: z.string().optional(),
-    GEMINI_MODEL_EXTRACTION: z.string().default("gemini-2.5-pro"),
-    GEMINI_MODEL_GAP_ANALYSIS: z.string().default("gemini-2.5-pro"),
-    // Clarity/translation/savings/checklist steps are language work — Flash is
-    // sufficient and ~4x cheaper blended than 2.5 Pro. Extraction and gap
-    // detection stay on Pro for accuracy (see docs/planning/TOKEN_ECONOMICS_2026-07.md).
-    GEMINI_MODEL_CLARITY_ANALYSIS: z.string().default("gemini-2.5-flash"),
-    GEMINI_MODEL_QA: z.string().default("gemini-2.5-flash"),
-    GEMINI_MODEL_FALLBACK: z.string().default("gemini-2.5-flash"),
+    GEMINI_MODEL_EXTRACTION: z.string().default("gemini-3-flash-preview"),
+    GEMINI_MODEL_GAP_ANALYSIS: z.string().default("gemini-3-flash-preview"),
+    // Clarity/QA/translation are language work — flash-lite is sufficient.
+    GEMINI_MODEL_CLARITY_ANALYSIS: z.string().default("gemini-3.1-flash-lite"),
+    GEMINI_MODEL_QA: z.string().default("gemini-3.1-flash-lite"),
+    GEMINI_MODEL_FALLBACK: z.string().default("gemini-3.5-flash"),
+    GEMINI_MODEL_TRANSLATION: z.string().default("gemini-3.1-flash-lite"),
     OPENAI_API_KEY: z.string().optional(),
     OPENAI_MODEL_EXTRACTION: z.string().default("gpt-4.1-mini"),
     OPENAI_MODEL_GAP_ANALYSIS: z.string().default("gpt-4.1-mini"),
     OPENAI_MODEL_CLARITY_ANALYSIS: z.string().default("gpt-4.1-mini"),
     OPENAI_MODEL_QA: z.string().default("gpt-4.1-mini"),
-    // Anthropic / Claude (premium failover)
+    // Anthropic / Claude (premium failover). claude-sonnet-4-20250514 is
+    // deprecated (retirement announced for 2026) and claude-haiku-4-20250414
+    // never existed — both 404 exactly when the failover chain is needed.
     ANTHROPIC_API_KEY: z.string().optional(),
-    CLAUDE_MODEL_EXTRACTION: z.string().default("claude-sonnet-4-20250514"),
-    CLAUDE_MODEL_GAP_ANALYSIS: z.string().default("claude-sonnet-4-20250514"),
-    CLAUDE_MODEL_CLARITY_ANALYSIS: z.string().default("claude-sonnet-4-20250514"),
-    CLAUDE_MODEL_QA: z.string().default("claude-haiku-4-20250414"),
+    CLAUDE_MODEL_EXTRACTION: z.string().default("claude-sonnet-5"),
+    CLAUDE_MODEL_GAP_ANALYSIS: z.string().default("claude-sonnet-5"),
+    CLAUDE_MODEL_CLARITY_ANALYSIS: z.string().default("claude-sonnet-5"),
+    CLAUDE_MODEL_QA: z.string().default("claude-haiku-4-5"),
     FF_AI_FAILOVER_OPENAI: z.string().default("false"),
     FF_AI_DEGRADED_COMPLETION: z.string().default("true"),
     FF_AI_REMEDIATION_ALERTS: z.string().default("false"),

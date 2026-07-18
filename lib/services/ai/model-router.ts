@@ -21,12 +21,9 @@ interface ModelRouteResult {
     isPremium: boolean
 }
 
-// Cost per 1M tokens (EUR) for quick reference:
-// gemini-2.0-flash:        input €0.07,  output €0.28
-// gemini-2.0-flash-exp:    input €0.07,  output €0.28
-// gpt-4.1-mini:            input €0.40,  output €1.60
-// claude-sonnet-4:         input €3.00,  output €15.00
-// claude-haiku-4:          input €0.80,  output €4.00
+// Per-model prices live in ONE place: TOKEN_COSTS (lib/token-utils.ts).
+// Routing order of magnitude: gemini flash-lite < gemini flash < gpt-4.1-mini
+// < claude — check the table there before reasoning about cost here.
 
 const ROUTING_TABLE: Record<
     AICapabilityOperation,

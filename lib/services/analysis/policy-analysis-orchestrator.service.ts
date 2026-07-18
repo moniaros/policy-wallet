@@ -177,7 +177,8 @@ function normalizeLineOfBusiness(value: string | null | undefined): string {
     return lob
 }
 
-// Extracted dates arrive as DD-MM-YYYY (prompt normalization), Greek month
+// Extracted dates arrive as ISO yyyy-MM-dd (prompt normalization — see
+// lib/services/ai/prompts.ts; legacy runs emitted DD-MM-YYYY), Greek month
 // phrases, or ISO — parseDocumentDate handles all three. When nothing parses
 // the existing column value stays (it may be the upload placeholder, which
 // the extraction.dateParse flags mark as unusable for display/status).
