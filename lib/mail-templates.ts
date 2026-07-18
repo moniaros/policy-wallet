@@ -1,3 +1,5 @@
+import { absoluteUrl } from "./seo/site"
+
 export type Language = "el" | "en"
 
 export type EmailTemplateData = {
@@ -49,6 +51,74 @@ export function getBaseTemplate({ title, description, actionUrl, actionLabel, fo
 </body>
 </html>
     `;
+}
+
+// ── Shared transactional-notification email ──────────────────────────────────
+
+function escapeHtml(value: string): string {
+    return value
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;")
+}
+
+const NOTIF_EMAIL_COPY: Record<Language, { view: string; footer: string }> = {
+    el: {
+        view: "Προβολή λεπτομερειών",
+        footer: "Λαμβάνετε αυτό το μήνυμα επειδή έχετε λογαριασμό στο PolicyWallet.",
+    },
+    en: {
+        view: "View details",
+        footer: "You're receiving this because you have a PolicyWallet account.",
+    },
+}
+
+function notificationActionPath(relatedObjectType?: string, relatedObjectId?: string): string | undefined {
+    if (!relatedObjectType || !relatedObjectId) return undefined
+    switch (relatedObjectType) {
+        case "policy":
+            return `/wallet/${relatedObjectId}`
+        case "customer":
+            return `/customers/${relatedObjectId}`
+        case "thread":
+            return `/collaboration/threads/${relatedObjectId}`
+        case "questionnaire":
+            return `/tasks/${relatedObjectId}`
+        default:
+            return undefined
+    }
+}
+
+/**
+ * Branded HTML for a transactional notification email. EVERY notification email
+ * (collaboration hand-offs, proposals, questionnaires, renewals, …) is rendered
+ * through the shared PolicyWallet shell with the recipient-language title/message
+ * and a deep-link CTA. Replaces both the old plain-text fallback (a bare sentence
+ * as the whole body) and the per-event `templates` below, which rendered
+ * `undefined` because sendNotification only ever passed them { id, language }.
+ * Title/message are HTML-escaped — they interpolate user content (customer names,
+ * proposal counter-offer notes).
+ */
+export function buildNotificationEmail(params: {
+    title: string
+    message: string
+    relatedObjectType?: string
+    relatedObjectId?: string
+    language: string
+}): { subject: string; html: string } {
+    const lang: Language = params.language === "el" ? "el" : "en"
+    const copy = NOTIF_EMAIL_COPY[lang]
+    const path = notificationActionPath(params.relatedObjectType, params.relatedObjectId)
+    const html = getBaseTemplate({
+        title: escapeHtml(params.title),
+        description: escapeHtml(params.message),
+        actionUrl: path ? absoluteUrl(path) : undefined,
+        actionLabel: path ? copy.view : undefined,
+        footerText: `${copy.footer}<br/>© ${new Date().getFullYear()} PolicyWallet`,
+    })
+    return { subject: params.title, html }
 }
 
 export const templates = {
