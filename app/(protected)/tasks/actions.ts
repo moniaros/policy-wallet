@@ -3,6 +3,9 @@
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { revalidatePath } from "next/cache"
+import { getTranslations } from "@/lib/i18n"
+import { notifyCounterparty } from "@/lib/notifications"
+import { refreshProtectionScore } from "@/lib/services/gap-engine"
 import type { QuestionnaireAnswers } from "@/types/questionnaire"
 
 export type ActionItem = {
@@ -25,6 +28,8 @@ export async function getPendingActionItems(): Promise<ActionItem[]> {
     if (!authResult) return []
 
     const userId = authResult.dbUser.id
+    // Named `tr` (not `t`) because the generic-task loop below binds `t` to the task row.
+    const tr = getTranslations((authResult.dbUser.preferredLanguage as 'en' | 'el') || 'el')
 
     // 1. Fetch Pending Questionnaires
     const questionnaires = await db.questionnaireInstance.findMany({
@@ -74,11 +79,11 @@ export async function getPendingActionItems(): Promise<ActionItem[]> {
             source: 'questionnaire',
             type: 'questionnaire',
             title: q.template.name,
-            description: `Questionnaire from ${q.sender.name}`,
+            description: tr.tasks.questionnaireFrom.replace('{name}', q.sender.name),
             priority: 'high', // Questionnaires are always important
             status: 'pending',
             createdAt: q.sentAt,
-            actionLabel: "Start Assessment",
+            actionLabel: tr.tasks.startAssessment,
             actionUrl: `/tasks/${q.id}`,
             metadata: {
                 senderName: q.sender.name,
@@ -100,7 +105,7 @@ export async function getPendingActionItems(): Promise<ActionItem[]> {
             status: 'pending',
             createdAt: t.createdAt,
             dueDate: t.dueDate || undefined,
-            actionLabel: t.actionLabel || "Mark as Done",
+            actionLabel: t.actionLabel || tr.tasks.markAsDone,
             actionUrl: t.actionUrl || undefined,
             metadata: {
                 creatorName: t.creator?.name,
@@ -123,40 +128,68 @@ export async function getPendingActionItems(): Promise<ActionItem[]> {
 export async function submitQuestionnaireResponse(instanceId: string, answers: QuestionnaireAnswers) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) throw new Error("Unauthorized")
+    const userId = authResult.dbUser.id
 
     // Only the instance's intended recipient may answer it — an instance id
     // alone must not let any authenticated user submit/complete someone else's
     // questionnaire.
     const instance = await db.questionnaireInstance.findUnique({
         where: { id: instanceId },
-        select: { sentToUserId: true },
+        select: {
+            sentToUserId: true,
+            sentByUserId: true,
+            template: { select: { name: true } },
+        },
     })
     if (!instance) throw new Error("Questionnaire not found")
-    if (instance.sentToUserId !== authResult.dbUser.id) throw new Error("Unauthorized")
+    if (instance.sentToUserId !== userId) throw new Error("Unauthorized")
 
-    // Start a transaction to ensure atomic update and response creation
-    return await db.$transaction(async (tx) => {
-        // Create the response
+    // Atomically record the response and complete the instance.
+    const { responseId } = await db.$transaction(async (tx) => {
         const response = await tx.questionnaireResponse.create({
-            data: {
-                instanceId,
-                userId: authResult.dbUser.id,
-                answers
-            }
+            data: { instanceId, userId, answers },
         })
-
-        // Update instance status
         await tx.questionnaireInstance.update({
             where: { id: instanceId },
-            data: {
-                status: 'completed',
-                completedAt: new Date()
-            }
+            data: { status: 'completed', completedAt: new Date() },
         })
-
-        revalidatePath("/tasks")
-        revalidatePath("/wallet")
-
-        return { success: true, responseId: response.id }
+        return { responseId: response.id }
     })
+
+    revalidatePath("/tasks")
+    revalidatePath("/wallet")
+
+    // Break the silent handoff: tell the agent who sent it that it was answered
+    // (they had no way to know their questionnaire came back).
+    const customerName = authResult.dbUser.name || authResult.dbUser.email || 'A client'
+    await notifyCounterparty({
+        userId: instance.sentByUserId,
+        eventType: "questionnaire_completed",
+        title: {
+            el: "Ο πελάτης συμπλήρωσε το ερωτηματολόγιο",
+            en: "Your client completed the questionnaire",
+        },
+        message: {
+            el: `${customerName} απάντησε στο «${instance.template.name}».`,
+            en: `${customerName} answered "${instance.template.name}".`,
+        },
+        relatedObjectType: "customer",
+        relatedObjectId: instance.sentToUserId,
+    })
+
+    // Refresh the customer's protection score so /home and /coverage-insights
+    // reflect the latest picture. Questionnaire answers are free-form for the
+    // agent to read and do not map to profile fields, so the score won't move on
+    // their own — but this keeps the cached score fresh and returns it so the
+    // form can show the customer where they stand and point them to the profile
+    // wizard that *does* move it. Non-fatal: the submission already succeeded.
+    let protectionScore: number | null = null
+    try {
+        const refreshed = await refreshProtectionScore(userId)
+        protectionScore = refreshed.protectionScore.overallScore
+    } catch {
+        // ignore — score refresh must not fail the submission
+    }
+
+    return { success: true, responseId, protectionScore }
 }

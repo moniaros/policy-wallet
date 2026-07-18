@@ -11,9 +11,15 @@ vi.mock('@/lib/db', () => ({
     },
 }))
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
+// Mock the cross-side notification + score-refresh seams so the submit path
+// under test doesn't pull in the real notification/email/gap-engine modules.
+vi.mock('@/lib/notifications', () => ({ notifyCounterparty: vi.fn() }))
+vi.mock('@/lib/services/gap-engine', () => ({ refreshProtectionScore: vi.fn() }))
 
 import { getAuthenticatedUserOrNull } from '@/lib/auth-helpers'
 import { db } from '@/lib/db'
+import { notifyCounterparty } from '@/lib/notifications'
+import { refreshProtectionScore } from '@/lib/services/gap-engine'
 import { createUserTask } from '@/app/(protected)/tasks/taskActions'
 import { submitQuestionnaireResponse } from '@/app/(protected)/tasks/actions'
 
@@ -21,6 +27,8 @@ const mockAuth = vi.mocked(getAuthenticatedUserOrNull)
 const mockTaskCreate = vi.mocked(db.userTask.create)
 const mockRelFind = vi.mocked(db.customerRelationship.findFirst)
 const mockInstanceFind = vi.mocked(db.questionnaireInstance.findUnique)
+const mockNotify = vi.mocked(notifyCounterparty)
+const mockRefreshScore = vi.mocked(refreshProtectionScore)
 
 const AGENT = { dbUser: { id: 'agent-1', roles: 'agent' } } as any
 
@@ -69,13 +77,44 @@ describe('submitQuestionnaireResponse — only the recipient may answer', () => 
         expect(db.$transaction).not.toHaveBeenCalled()
     })
 
-    it('proceeds for the intended recipient', async () => {
-        mockAuth.mockResolvedValue({ dbUser: { id: 'user-1' } } as any)
-        mockInstanceFind.mockResolvedValue({ sentToUserId: 'user-1' } as any)
-        vi.mocked(db.$transaction).mockResolvedValue({ success: true, responseId: 'r-1' } as any)
+    it('proceeds for the intended recipient, notifies the sending agent, and refreshes the score', async () => {
+        mockAuth.mockResolvedValue({ dbUser: { id: 'user-1', name: 'Maria K.' } } as any)
+        mockInstanceFind.mockResolvedValue({
+            sentToUserId: 'user-1',
+            sentByUserId: 'agent-9',
+            template: { name: 'Motor Review' },
+        } as any)
+        vi.mocked(db.$transaction).mockResolvedValue({ responseId: 'r-1' } as any)
+        mockRefreshScore.mockResolvedValue({ protectionScore: { overallScore: 72 } } as any)
 
         const res = await submitQuestionnaireResponse('inst-1', {} as any)
-        expect(res).toEqual({ success: true, responseId: 'r-1' })
+
+        expect(res).toEqual({ success: true, responseId: 'r-1', protectionScore: 72 })
+        // The agent who sent it is notified (no longer a silent handoff), deep-linked
+        // to the customer via the customer's userId.
+        expect(mockNotify).toHaveBeenCalledWith(
+            expect.objectContaining({
+                userId: 'agent-9',
+                eventType: 'questionnaire_completed',
+                relatedObjectType: 'customer',
+                relatedObjectId: 'user-1',
+            })
+        )
+        expect(mockRefreshScore).toHaveBeenCalledWith('user-1')
+    })
+
+    it('still succeeds when the score refresh fails — it must not fail the submission', async () => {
+        mockAuth.mockResolvedValue({ dbUser: { id: 'user-1' } } as any)
+        mockInstanceFind.mockResolvedValue({
+            sentToUserId: 'user-1',
+            sentByUserId: 'agent-9',
+            template: { name: 'Motor Review' },
+        } as any)
+        vi.mocked(db.$transaction).mockResolvedValue({ responseId: 'r-1' } as any)
+        mockRefreshScore.mockRejectedValue(new Error('engine down'))
+
+        const res = await submitQuestionnaireResponse('inst-1', {} as any)
+        expect(res).toEqual({ success: true, responseId: 'r-1', protectionScore: null })
     })
 
     it('throws when the instance does not exist', async () => {

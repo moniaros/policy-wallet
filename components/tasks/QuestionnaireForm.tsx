@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import Link from "next/link"
 import { submitQuestionnaireResponse } from "@/app/(protected)/tasks/actions"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -22,10 +23,34 @@ interface QuestionnaireFormProps {
 
 export function QuestionnaireForm({ instanceId, templateName, questions }: QuestionnaireFormProps) {
     const { t, language } = useLanguage()
+    const draftKey = `pw-questionnaire-draft-${instanceId}`
     const [answers, setAnswers] = useState<Record<string, any>>({})
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [isSuccess, setIsSuccess] = useState(false)
+    const [protectionScore, setProtectionScore] = useState<number | null>(null)
     const router = useRouter()
+
+    // Restore any autosaved progress so "Save for later" (and an accidental
+    // navigation away) no longer discards what the customer already typed.
+    useEffect(() => {
+        try {
+            const saved = localStorage.getItem(draftKey)
+            if (saved) setAnswers(JSON.parse(saved))
+        } catch {
+            // ignore malformed/unavailable storage
+        }
+    }, [draftKey])
+
+    // Autosave progress on every change.
+    useEffect(() => {
+        try {
+            if (Object.keys(answers).length > 0) {
+                localStorage.setItem(draftKey, JSON.stringify(answers))
+            }
+        } catch {
+            // ignore storage failures (private mode, quota)
+        }
+    }, [answers, draftKey])
 
     const answeredCount = Object.keys(answers).length
     const totalCount = questions.length
@@ -35,12 +60,14 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
         e.preventDefault()
         setIsSubmitting(true)
         try {
-            await submitQuestionnaireResponse(instanceId, answers)
+            const result = await submitQuestionnaireResponse(instanceId, answers)
+            try {
+                localStorage.removeItem(draftKey)
+            } catch {
+                // ignore
+            }
+            setProtectionScore(result?.protectionScore ?? null)
             setIsSuccess(true)
-            setTimeout(() => {
-                router.push("/tasks")
-                router.refresh()
-            }, 2000)
         } catch (error) {
             console.error(error)
         } finally {
@@ -50,17 +77,34 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
 
     if (isSuccess) {
         return (
-            <div className="flex flex-col items-center justify-center py-24 animate-in fade-in zoom-in duration-500">
+            <div className="flex flex-col items-center justify-center py-24 text-center animate-in fade-in zoom-in duration-500">
                 <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mb-8 relative">
                     <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full scale-125 animate-pulse" />
                     <CheckCircle2 className="w-12 h-12 text-primary dark:text-mint relative z-10" />
                 </div>
-                <h2 className="text-3xl font-black text-stone-900 dark:text-white mb-2 tracking-tight">
-                    {t.agentUi.thankYou}
+                <h2 className="text-3xl font-black text-stone-900 dark:text-white mb-3 tracking-tight">
+                    {t.tasks.responsesSentToAdvisor}
                 </h2>
-                <p className="text-stone-500 dark:text-stone-400 font-medium">
-                    {t.agentUi.responsesSubmitted}
+                {protectionScore !== null ? (
+                    <p className="text-stone-500 dark:text-stone-400 font-medium mb-1">
+                        {t.tasks.yourProtectionScore}:{" "}
+                        <span className="font-black text-stone-900 dark:text-white">{protectionScore}%</span>
+                    </p>
+                ) : (
+                    <p className="text-stone-500 dark:text-stone-400 font-medium mb-1">
+                        {t.agentUi.responsesSubmitted}
+                    </p>
+                )}
+                <p className="text-stone-400 dark:text-stone-500 text-sm mb-8 max-w-sm">
+                    {t.tasks.improveScoreHint}
                 </p>
+                <Link
+                    href="/coverage-insights"
+                    className="inline-flex items-center gap-2 rounded-2xl bg-primary px-8 py-4 text-sm font-black text-white dark:text-[#1A2420] transition-transform hover:scale-[1.02]"
+                >
+                    {t.tasks.viewCoverageInsights}
+                    <CheckCircle2 className="w-5 h-5" strokeWidth={2.5} />
+                </Link>
             </div>
         )
     }

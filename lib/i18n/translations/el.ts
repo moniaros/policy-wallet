@@ -930,6 +930,12 @@ export const el = {
         completedAllTasks: 'Έχετε ολοκληρώσει όλες τις εκκρεμείς αιτήσεις. Θα σας ειδοποιήσουμε όταν υπάρχουν νέες πληροφορίες.',
         startAssessment: 'Έναρξη Αξιολόγησης',
         markAsDone: 'Σήμανση ως Ολοκληρωμένο',
+        questionnaireFrom: 'Ερωτηματολόγιο από {name}',
+        responsesSentToAdvisor: 'Ο σύμβουλός σας έλαβε τις απαντήσεις σας',
+        yourProtectionScore: 'Το σκορ προστασίας σας',
+        improveScoreHint: 'Θέλετε υψηλότερο σκορ; Συμπληρώστε το προφίλ κινδύνου σας.',
+        viewCoverageInsights: 'Δείτε τις αναλύσεις κάλυψης',
+        draftSaved: 'Η πρόοδος αποθηκεύτηκε',
         review: 'Αξιολόγηση',
         daily: 'Καθημερινή'
     },
