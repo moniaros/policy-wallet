@@ -11,7 +11,6 @@ import {
     Flag,
     Info,
     Pencil,
-    RefreshCw,
     ShieldCheck,
     Sparkles,
     X,
@@ -49,7 +48,6 @@ interface PolicyReviewScreenProps {
     /** Called after a successful confirm (and by "skip for now"). */
     onDone: () => void
     /** Re-run analysis after a flag — shown only when provided. */
-    onRetry?: () => void
 }
 
 const CHIP_FIELDS: EditableField[] = [
@@ -65,7 +63,7 @@ const CHIP_FIELDS: EditableField[] = [
 ]
 
 
-export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: PolicyReviewScreenProps) {
+export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyReviewScreenProps) {
     const { t, language } = useLanguage()
     const reviewCopy = t.wallet.review
     const [isPending, startTransition] = useTransition()
@@ -597,16 +595,6 @@ export function PolicyReviewScreen({ data, insurers, types, onDone, onRetry }: P
                         <Flag className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" />
                         {reviewCopy.flagSubmitted}
                     </p>
-                    {onRetry && (
-                        <button
-                            type="button"
-                            onClick={onRetry}
-                            className="mt-2 ml-5 inline-flex items-center gap-1.5 text-xs font-bold text-[#B45309] underline dark:text-amber-400"
-                        >
-                            <RefreshCw className="h-3 w-3" />
-                            {reviewCopy.tryAgain}
-                        </button>
-                    )}
                 </div>
             )}
 

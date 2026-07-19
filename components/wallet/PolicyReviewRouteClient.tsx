@@ -10,14 +10,15 @@ interface PolicyReviewRouteClientProps {
     data: PolicyReviewData
     insurers: { id: string; name: string }[]
     types: { id: string; name: string; slug: string }[]
+    /** Same-origin path to return to when done (sanitized server-side). */
+    returnTo?: string | null
 }
 
 /**
- * Standalone "review later" entry point for /wallet/[id]/review — reached
- * from the wallet chip / detail-page banner after the user skipped the
- * post-upload review.
+ * Agent-only entry point for /wallet/[id]/review — reached from the
+ * policy-detail banner or the agent customer-policy page.
  */
-export function PolicyReviewRouteClient({ data, insurers, types }: PolicyReviewRouteClientProps) {
+export function PolicyReviewRouteClient({ data, insurers, types, returnTo }: PolicyReviewRouteClientProps) {
     const { t } = useLanguage()
     const router = useRouter()
     const reviewCopy = t.wallet.review
@@ -46,7 +47,7 @@ export function PolicyReviewRouteClient({ data, insurers, types }: PolicyReviewR
                         data={data}
                         insurers={insurers}
                         types={types}
-                        onDone={() => router.push("/wallet")}
+                        onDone={() => router.push(returnTo || `/wallet/${data.id}`)}
                     />
                 </div>
             </div>

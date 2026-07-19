@@ -37,6 +37,25 @@ export const POST = withApiGuard(
                 return createApiError("NOT_FOUND", "Policy not found", 404)
             }
 
+            // Manual re-analysis is paying-only for agent-role users. A
+            // dual-role owner bypasses the orchestrator's b2c pro gate
+            // (createRun skips it for agent initiators), so the shared gate —
+            // paid plan + monthly cap — must run here.
+            const { canAgentTriggerManualAnalysis } = await import("@/lib/subscription-entitlements")
+            const manualGate = await canAgentTriggerManualAnalysis(
+                authResult.dbUser.id,
+                authResult.dbUser.roles
+            )
+            if (!manualGate.allowed) {
+                return createApiError(
+                    manualGate.code,
+                    manualGate.code === "AGENT_UPGRADE_REQUIRED"
+                        ? "Manual re-analysis requires a paid agent plan"
+                        : "Monthly analysis limit reached for the agent plan",
+                    402
+                )
+            }
+
             const orchestrator = new PolicyAnalysisOrchestratorService()
             const run = await orchestrator.createRun(policy.id, authResult.dbUser.id)
 

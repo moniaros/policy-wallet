@@ -8,6 +8,7 @@ import { getPolicyShares } from "../actions"
 import { getTranslations } from "@/lib/i18n"
 import { getAIUsageStats } from "../actions"
 import { PolicyDetailsClient } from "./PolicyDetailsClient"
+import { isAgentRole } from "@/lib/auth/require-agent"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { normalizeRemindersSent } from "@/lib/wallet/policy-detail"
 import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
@@ -81,7 +82,10 @@ export default async function PolicyDetailPage({
     // UI can advertise them before use and nudge the upgrade after.
     let trialAnalysisAvailable: boolean | null = null
     let freeQuestionsRemaining: number | null = null
-    if (isOwner && entitlements.tier === "free") {
+    // The complimentary trial is a b2c concept — an agent-role viewer is
+    // gated on their agent plan for manual runs, so advertising the trial
+    // to a dual-role agent_free owner would contradict the paywall.
+    if (isOwner && entitlements.tier === "free" && !isAgentRole(dbUser.roles)) {
         const [owner, questionsAsked] = await Promise.all([
             db.user.findUnique({
                 where: { id: dbUser.id },
@@ -266,6 +270,7 @@ export default async function PolicyDetailPage({
             statusColor={statusColor}
             daysLeft={daysLeft}
             isOwner={isOwner}
+            canReviewExtraction={isAgentRole(dbUser.roles) && access.canWrite}
             relationshipId={relationshipId}
             t={t}
             tier={entitlements.tier}

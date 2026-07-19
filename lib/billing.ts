@@ -7,8 +7,11 @@ import { logger } from "@/lib/logger"
 import { getSiteOrigin } from "@/lib/seo/site"
 import { TRIAL_DAYS_BY_PLAN } from "@/lib/billing/trial-plans"
 import { vatInclusiveBreakdown, type VATBreakdown } from "@/lib/billing/vat"
+// Only same-origin app paths may be used as post-checkout return targets —
+// shared open-redirect guard (re-exported for existing callers).
+import { sanitizeReturnPath } from "@/lib/navigation/return-to"
 
-export { vatInclusiveBreakdown, type VATBreakdown }
+export { vatInclusiveBreakdown, type VATBreakdown, sanitizeReturnPath }
 
 /**
  * Annual price lookup.
@@ -24,15 +27,6 @@ export const ANNUAL_PRICE_BY_PLAN: Record<string, number> = {
     "agent-agency": 999,  // UI: €999/yr (monthly €99.99 × 12 = €1199.88)
 }
 
-/**
- * Only same-origin app paths may be used as post-checkout return targets —
- * never absolute URLs (open-redirect guard).
- */
-export function sanitizeReturnPath(returnTo: string | null | undefined): string | null {
-    if (!returnTo) return null
-    if (!returnTo.startsWith("/") || returnTo.startsWith("//")) return null
-    return returnTo
-}
 
 /**
  * Create a real Stripe Checkout Session.

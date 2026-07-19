@@ -146,7 +146,7 @@ describe('duplicate_coverage', () => {
 })
 
 describe('unclear_exclusions', () => {
-    it('fires for analyzed policies with no extracted exclusions and links to the review screen', () => {
+    it('fires for analyzed policies with no extracted exclusions and links to the policy page', () => {
         const gaps = evaluatePortfolioRules(
             [policy({ acordData: { extraction: { source: 'gemini' }, exclusions: [] } })],
             ctx()
@@ -154,7 +154,7 @@ describe('unclear_exclusions', () => {
         const gap = gaps.find((g) => g.ruleId === 'unclear_exclusions')
         expect(gap).toBeDefined()
         expect(gap!.severity).toBe('low')
-        expect(gap!.reviewHref).toBe('/wallet/pol-1/review')
+        expect(gap!.reviewHref).toBe('/wallet/pol-1')
     })
 
     it('does not fire for unanalyzed policies or ones with exclusions', () => {

@@ -24,26 +24,37 @@ export const POST = withApiGuard(
         const authResult = auth!
         const { id: policyId, runId } = params
 
-        const policy = await db.policy.findUnique({
-            where: { id: policyId },
-            select: { id: true, ownerUserId: true },
+        // Central per-policy rule (owner, write/manage grant on THIS policy,
+        // or managing agent) — the previous check accepted ANY active grant
+        // from the owner regardless of scope.
+        const { getPolicyAccess } = await import("@/lib/policy-access")
+        const access = await getPolicyAccess(policyId, {
+            id: authResult.dbUser.id,
+            roles: authResult.dbUser.roles,
         })
-        if (!policy) {
+        if (!access.exists) {
             return createApiError("NOT_FOUND", "Policy not found", 404)
         }
+        if (!access.canAnalyze) {
+            return createApiError("FORBIDDEN", "Access denied", 403)
+        }
 
-        const isOwner = policy.ownerUserId === authResult.dbUser.id
-        if (!isOwner) {
-            const grant = await db.accessGrant.findFirst({
-                where: {
-                    granterUserId: policy.ownerUserId,
-                    granteeUserId: authResult.dbUser.id,
-                    status: "active",
-                },
-            })
-            if (!grant) {
-                return createApiError("FORBIDDEN", "Access denied", 403)
-            }
+        // Manual re-analysis is paying-only for agent-role users (upload-time
+        // auto-analysis is unaffected — this route is only ever a manual
+        // trigger). The shared gate enforces paid plan + monthly cap.
+        const { canAgentTriggerManualAnalysis } = await import("@/lib/subscription-entitlements")
+        const manualGate = await canAgentTriggerManualAnalysis(
+            authResult.dbUser.id,
+            authResult.dbUser.roles
+        )
+        if (!manualGate.allowed) {
+            return createApiError(
+                manualGate.code,
+                manualGate.code === "AGENT_UPGRADE_REQUIRED"
+                    ? "Manual re-analysis requires a paid agent plan"
+                    : "Monthly analysis limit reached for the agent plan",
+                402
+            )
         }
 
         const sourceRun = await db.policyAnalysisRun.findFirst({

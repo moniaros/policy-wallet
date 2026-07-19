@@ -1,4 +1,12 @@
 import { db as prisma } from "@/lib/db"
+
+// Pure local copy of the agent-role check — this module is imported by
+// client components, so it must not pull in lib/api-auth (whose import
+// chain reaches next/headers via the Supabase server client).
+function rolesIncludeAgent(rolesRaw: string | null | undefined): boolean {
+    if (!rolesRaw) return false
+    return rolesRaw.split(",").some((role) => role.trim() === "agent")
+}
 import type {
     AgentEntitlementLimits,
     AgentEntitlements,
@@ -422,4 +430,46 @@ export async function canAgentRunAnalysis(userId: string): Promise<{
     }
 
     return { allowed: true, used: analysisCount, limit }
+}
+
+/**
+ * Gate for MANUAL analysis triggers (the "Run analysis" / retry buttons and
+ * their API routes) — the ONE place the paying-only re-analysis rule lives.
+ * Upload-time auto-analysis is a different path and is not gated here.
+ *
+ * Non-agent users pass through (their gate is the orchestrator's b2c
+ * pro-tier check). Deliberately keyed on the AGENT role only — a pure-admin
+ * operator is not an agent and must not be blocked by an agent-plan paywall.
+ * Agent-role users need a paid agent plan AND headroom in their monthly
+ * analysis cap.
+ */
+export async function canAgentTriggerManualAnalysis(
+    userId: string,
+    roles: string | null | undefined
+): Promise<
+    | { allowed: true }
+    | { allowed: false; code: "AGENT_UPGRADE_REQUIRED" }
+    | { allowed: false; code: "AGENT_ANALYSIS_LIMIT"; used?: number; limit?: number | null }
+> {
+    if (!rolesIncludeAgent(roles)) return { allowed: true }
+
+    // "Paying" is satisfied by EITHER a paid agent plan OR a b2c pro plan —
+    // a dual-role user who pays for b2c Pro must not be paywalled on their
+    // own wallet just because their agent plan is free.
+    const [agentEntitlements, userEntitlements] = await Promise.all([
+        resolveAgentEntitlements(userId),
+        resolveUserEntitlements(userId),
+    ])
+    if (!agentEntitlements.isPaid && userEntitlements.tier !== "pro") {
+        return { allowed: false, code: "AGENT_UPGRADE_REQUIRED" }
+    }
+
+    // The per-plan monthly cap always applies to agent-role users — their
+    // runs draw the agent-plan analysis count and token budget.
+    const cap = await canAgentRunAnalysis(userId)
+    if (!cap.allowed) {
+        return { allowed: false, code: "AGENT_ANALYSIS_LIMIT", used: cap.used, limit: cap.limit }
+    }
+
+    return { allowed: true }
 }

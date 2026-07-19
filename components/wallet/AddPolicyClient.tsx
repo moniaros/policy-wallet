@@ -11,9 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
 import { UploadDropzone } from "@/components/ui/UploadDropzone"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
-import { PolicyReviewScreen } from "@/components/wallet/PolicyReviewScreen"
 import type { PolicyReviewData } from "@/lib/wallet/policy-review"
-import { formatDocumentDate } from "@/lib/dates/document-date"
 import {
     UploadCloud,
     FileText,
@@ -24,8 +22,6 @@ import {
     Loader2,
     ArrowLeft,
     BadgeCheck,
-    Calendar,
-    Banknote,
     Pencil,
     Sparkles,
     AlertTriangle,
@@ -205,18 +201,11 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
         return () => clearTimeout(timeout)
     }, [phase, createdPolicyId, reviewData, pollReviewData])
 
-    const locale = language === 'el' ? 'el-GR' : 'en-US'
     const reviewCopy = (t.wallet as any)?.review || {}
 
-    const formatCurrency = (amount: number, currency: string) =>
-        new Intl.NumberFormat(locale, { style: 'currency', currency }).format(amount)
-
-    const formatDate = (iso: string) => formatDocumentDate(iso, locale) || '-'
-
-    // ────────────────────────────── REVIEW SCREEN ──────────────────────────────
+    // ─────────────────── POST-UPLOAD PROCESSING SCREEN ───────────────────
     if (phase === 'reviewing') {
         const elapsedSecs = (Date.now() - pollingStartRef.current) / 1000
-        const localizedLob = t.policyTypes?.[reviewData?.lineOfBusiness as keyof typeof t.policyTypes] || reviewData?.lineOfBusiness
 
         return (
             <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
@@ -224,7 +213,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                 <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30">
                     <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-center">
                         <span className="font-bold text-slate-900 dark:text-white">
-                            {reviewCopy.title || 'Policy Review'}
+                            {t.wallet.addPolicy}
                         </span>
                     </div>
                 </div>
@@ -260,7 +249,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                             if (!createdPolicyId) return
                                             const result = await retryPolicyAnalysis(createdPolicyId)
                                             if ('error' in result) {
-                                                toast.error(result.error)
+                                                toast.error(mapWalletErrorToMessage(result.error, t, 'analysis'))
                                                 return
                                             }
                                             setReviewData(null)
@@ -287,7 +276,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
 
                                     <button
                                         type="button"
-                                        onClick={() => router.push('/wallet')}
+                                        onClick={() => router.push(createdPolicyId ? `/wallet/${createdPolicyId}` : '/wallet')}
                                         className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 underline transition-colors mt-2"
                                     >
                                         {reviewCopy.skipForNow}
@@ -329,7 +318,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                 <div className="pt-4 text-center">
                                     <button
                                         type="button"
-                                        onClick={() => router.push('/wallet')}
+                                        onClick={() => router.push(createdPolicyId ? `/wallet/${createdPolicyId}` : '/wallet')}
                                         className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 underline transition-colors"
                                     >
                                         {reviewCopy.skipForNow || 'Skip and review later'}
@@ -337,23 +326,31 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                 </div>
                             </div>
                         ) : (
-                            /* ── Full extraction review (edit / confirm / flag) ── */
-                            <PolicyReviewScreen
-                                data={reviewData}
-                                insurers={insurers}
-                                types={types}
-                                onDone={() => router.push('/wallet')}
-                                onRetry={async () => {
-                                    if (!createdPolicyId) return
-                                    const result = await retryPolicyAnalysis(createdPolicyId)
-                                    if ('error' in result) {
-                                        toast.error(mapWalletErrorToMessage(result.error, t, 'analysis'))
-                                        return
-                                    }
-                                    setReviewData(null)
-                                    pollingStartRef.current = Date.now()
-                                }}
-                            />
+                            /* ── Analysis complete — the extraction review is an
+                                agent-only step, so the policyholder goes straight
+                                to their policy page ── */
+                            <div className="space-y-6">
+                                <div className="flex flex-col items-center gap-4 py-4">
+                                    <div className="w-16 h-16 rounded-full bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
+                                        <BadgeCheck className="w-7 h-7 text-primary dark:text-mint" />
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                            {reviewCopy.success}
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => router.push(`/wallet/${createdPolicyId}`)}
+                                    className="w-full bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-2xl py-4 font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-primary/25"
+                                >
+                                    <span className="flex items-center justify-center gap-2">
+                                        <Check className="w-5 h-5" />
+                                        {reviewCopy.viewPolicy}
+                                    </span>
+                                </button>
+                            </div>
                         )}
                     </div>
                 </div>

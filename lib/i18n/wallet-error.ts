@@ -42,6 +42,16 @@ export function mapWalletErrorToMessage(
         return t?.common?.aiConsentRequired || byContext(context, t)
     }
 
+    // Check before the generic UPGRADE_REQUIRED — "AGENT_UPGRADE_REQUIRED"
+    // contains that substring but needs the agent-plan message.
+    if (upper.includes("AGENT_UPGRADE_REQUIRED")) {
+        return t?.analysis?.errors?.agentUpgradeRequired || byContext(context, t)
+    }
+
+    if (upper.includes("AGENT_ANALYSIS_LIMIT")) {
+        return t?.wallet?.errors?.limitReached || byContext(context, t)
+    }
+
     if (upper.includes("UPGRADE_REQUIRED")) {
         return t?.wallet?.errors?.upgradeRequired || byContext(context, t)
     }

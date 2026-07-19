@@ -26,8 +26,6 @@ export interface Policy {
     userId?: string
     acordData?: any
     verified?: boolean
-    /** Extraction review state; null/undefined = pre-feature policy (never nagged). */
-    reviewState?: 'unconfirmed' | 'confirmed' | 'flagged' | null
     premiumAmount?: number
     premiumCurrency?: string
     aiInsights?: {
