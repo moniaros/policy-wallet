@@ -16,170 +16,28 @@ import type {
     UserEntitlements,
 } from "@/types/subscription-entitlements"
 
-// ── B2C Policyholder Limits ──────────────────────────────────────────
+// ── Tier limits ──────────────────────────────────────────────────────
+// The tables moved to lib/pricing/plan-defaults.ts (client-safe) as the CODE
+// FALLBACK of the admin-managed plan catalog. Live limits come from the DB
+// plan row's entitlements JSON (validated below); these defaults apply when
+// the row is missing or not in canonical shape. Re-exported under the old
+// names so existing imports keep working.
 
-export const ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> = {
-    // Free = organizer only. One policy, its basic parsed summary, and basic
-    // renewal reminders — NO paid AI at all (parse/extraction is the entry,
-    // deep analysis/Q&A/gaps require Plus). There is no complimentary deep
-    // "trial analysis"; the paid-aha-loop model gates all deep AI to Plus.
-    free: {
-        policies: 1,
-        aiAnalysisPerMonth: 0,
-        questionsPerDay: 0,
-        gapAnalysisPerDay: 0,
-        notifications: false,
-        advancedAnalytics: false,
-        agentCollaboration: false,
-        interactiveQA: false,
-        analysisComparison: false,
-        portfolioGapView: false,
-        priorityQueue: false,
-        savingsReportExport: false,
-    },
-    // "Starter" (displayed) = €2.99 organizer + basic renewal reminders, still
-    // NO deep AI. More policies than Free, but every AI-cost feature stays off
-    // so it can't cannibalise Plus. (Code key stays `plus`; see PLAN_PRICING /
-    // public-pricing-content for the display name.)
-    plus: {
-        policies: 5,
-        aiAnalysisPerMonth: 0,
-        questionsPerDay: 0,
-        gapAnalysisPerDay: 0,
-        notifications: true,
-        advancedAnalytics: false,
-        agentCollaboration: false,
-        interactiveQA: false,
-        analysisComparison: false,
-        portfolioGapView: false,
-        priorityQueue: false,
-        savingsReportExport: false,
-    },
-    // "Plus" (displayed) = €7.99, the AI tier: unlimited everything.
-    pro: {
-        policies: null,
-        aiAnalysisPerMonth: null,
-        questionsPerDay: null,
-        gapAnalysisPerDay: null,
-        notifications: true,
-        advancedAnalytics: true,
-        agentCollaboration: true,
-        interactiveQA: true,
-        analysisComparison: true,
-        portfolioGapView: true,
-        priorityQueue: true,
-        savingsReportExport: true,
-    },
-}
+import {
+    DEFAULT_AGENT_ENTITLEMENT_LIMITS,
+    DEFAULT_ENTITLEMENT_LIMITS,
+    isAgentTierKey,
+    isB2cTierKey,
+} from "@/lib/pricing/plan-defaults"
+import {
+    AgentEntitlementLimitsSchema,
+    EntitlementLimitsSchema,
+} from "@/lib/pricing/entitlement-schema"
 
-// ── B2B Agent Limits ─────────────────────────────────────────────────
-
-export const AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlementLimits> = {
-    agent_free: {
-        maxCustomers: 10,
-        maxPoliciesPerCustomer: 5,
-        aiAnalysesPerMonth: 5,
-        monthlyTokenBudget: 500_000,
-        collaborationThreads: true,
-        questionnaireTemplates: 0,
-        brandedPortal: false,
-        pipelineAnalytics: false,
-        renewalAutomation: false,
-        commissionTracking: false,
-        bulkImportLimit: 10,
-        apiAccess: false,
-        teamMembers: 1,
-        portfolioGapView: false,
-        analysisComparison: false,
-        savingsReportExport: false,
-        brandedReport: false,
-        priorityQueue: false,
-        crossSellIntelligence: false,
-        proposalFlow: false,
-        documentRequestFlow: false,
-        sharedPolicyRoom: false,
-        asyncMessaging: true,
-        privateNotes: false,
-    },
-    agent_starter: {
-        maxCustomers: 100,
-        maxPoliciesPerCustomer: 20,
-        aiAnalysesPerMonth: 50,
-        monthlyTokenBudget: 2_000_000,
-        collaborationThreads: true,
-        questionnaireTemplates: 5,
-        brandedPortal: true,
-        pipelineAnalytics: true,
-        renewalAutomation: false,
-        commissionTracking: false,
-        bulkImportLimit: 100,
-        apiAccess: false,
-        teamMembers: 1,
-        portfolioGapView: true,
-        analysisComparison: true,
-        savingsReportExport: false,
-        brandedReport: false,
-        priorityQueue: false,
-        crossSellIntelligence: false,
-        proposalFlow: true,
-        documentRequestFlow: true,
-        sharedPolicyRoom: true,
-        asyncMessaging: true,
-        privateNotes: false,
-    },
-    agent_pro: {
-        maxCustomers: 500,
-        maxPoliciesPerCustomer: null,
-        aiAnalysesPerMonth: 200,
-        monthlyTokenBudget: 10_000_000,
-        collaborationThreads: true,
-        questionnaireTemplates: null,
-        brandedPortal: true,
-        pipelineAnalytics: true,
-        renewalAutomation: true,
-        commissionTracking: true,
-        bulkImportLimit: 500,
-        apiAccess: false, // de-listed: sold with zero implementation. Re-enable when a real API + keys ship.
-        teamMembers: 3,
-        portfolioGapView: true,
-        analysisComparison: true,
-        savingsReportExport: true,
-        brandedReport: true,
-        priorityQueue: true,
-        crossSellIntelligence: true,
-        proposalFlow: true,
-        documentRequestFlow: true,
-        sharedPolicyRoom: true,
-        asyncMessaging: true,
-        privateNotes: true,
-    },
-    agency: {
-        maxCustomers: null,
-        maxPoliciesPerCustomer: null,
-        aiAnalysesPerMonth: null,
-        monthlyTokenBudget: 25_000_000,
-        collaborationThreads: true,
-        questionnaireTemplates: null,
-        brandedPortal: true,
-        pipelineAnalytics: true,
-        renewalAutomation: true,
-        commissionTracking: true,
-        bulkImportLimit: null,
-        apiAccess: false, // de-listed: sold with zero implementation. Re-enable when a real API + keys ship.
-        teamMembers: null,
-        portfolioGapView: true,
-        analysisComparison: true,
-        savingsReportExport: true,
-        brandedReport: true,
-        priorityQueue: true,
-        crossSellIntelligence: true,
-        proposalFlow: true,
-        documentRequestFlow: true,
-        sharedPolicyRoom: true,
-        asyncMessaging: true,
-        privateNotes: true,
-    },
-}
+export const ENTITLEMENT_LIMITS: Record<PlanTier, EntitlementLimits> =
+    DEFAULT_ENTITLEMENT_LIMITS
+export const AGENT_ENTITLEMENT_LIMITS: Record<AgentTier, AgentEntitlementLimits> =
+    DEFAULT_AGENT_ENTITLEMENT_LIMITS
 
 // ── Agent Tier Hierarchy (for plan gating) ─────────────────────────
 
@@ -228,7 +86,7 @@ export const AGENT_PRICING: Record<AgentTier, {
 
 // ── Tier Resolution ──────────────────────────────────────────────────
 
-function normalizeTier(raw?: string | null): PlanTier {
+export function normalizeTier(raw?: string | null): PlanTier {
     const tierRaw = (raw || "free").toLowerCase()
     if (tierRaw === "essential") return "plus"
     if (tierRaw === "professional") return "pro"
@@ -239,7 +97,7 @@ function normalizeTier(raw?: string | null): PlanTier {
     return "free"
 }
 
-function normalizeAgentTier(raw?: string | null): AgentTier {
+export function normalizeAgentTier(raw?: string | null): AgentTier {
     const tierRaw = (raw || "agent_free").toLowerCase()
     if (tierRaw === "agent_starter" || tierRaw === "starter") return "agent_starter"
     if (tierRaw === "agent_pro" || tierRaw === "professional") return "agent_pro"
@@ -270,6 +128,29 @@ export function isSubscriptionLive(subscription: {
     return subscription.currentPeriodEnd.getTime() > Date.now()
 }
 
+/**
+ * Live limits for a B2C plan row: explicit tier_key wins over name routing
+ * when it is a known B2C key; the row's entitlements JSON applies when it
+ * parses as the canonical shape, else the code defaults for the tier. Rows
+ * still carrying the legacy informational entitlements shape therefore
+ * behave exactly as before the admin-managed catalog.
+ */
+function resolveB2cPlanLimits(
+    plan: { tierKey?: string | null; name?: string | null; entitlements?: unknown } | null | undefined
+): { tier: PlanTier; limits: EntitlementLimits } {
+    const tier = isB2cTierKey(plan?.tierKey) ? plan!.tierKey as PlanTier : normalizeTier(plan?.name)
+    const parsed = EntitlementLimitsSchema.safeParse(plan?.entitlements)
+    return { tier, limits: parsed.success ? parsed.data : ENTITLEMENT_LIMITS[tier] }
+}
+
+function resolveAgentPlanLimits(
+    plan: { tierKey?: string | null; name?: string | null; entitlements?: unknown } | null | undefined
+): { tier: AgentTier; limits: AgentEntitlementLimits } {
+    const tier = isAgentTierKey(plan?.tierKey) ? plan!.tierKey as AgentTier : normalizeAgentTier(plan?.name)
+    const parsed = AgentEntitlementLimitsSchema.safeParse(plan?.entitlements)
+    return { tier, limits: parsed.success ? parsed.data : AGENT_ENTITLEMENT_LIMITS[tier] }
+}
+
 export async function resolveUserEntitlements(userId: string): Promise<UserEntitlements> {
     // Scoped to non-agent plans + active rows: a user can hold BOTH a
     // policyholder and an agent subscription — the raw latest row let each
@@ -282,12 +163,20 @@ export async function resolveUserEntitlements(userId: string): Promise<UserEntit
     })
 
     const live = isSubscriptionLive(subscription)
-    const tier = live ? normalizeTier(subscription?.plan?.name) : "free"
+    if (!live) {
+        return {
+            tier: "free",
+            status: "active",
+            isPaid: false,
+            limits: ENTITLEMENT_LIMITS.free,
+        }
+    }
+    const { tier, limits } = resolveB2cPlanLimits(subscription?.plan)
     return {
         tier,
-        status: live ? (subscription?.status || "active") : "active",
+        status: subscription?.status || "active",
         isPaid: tier !== "free",
-        limits: ENTITLEMENT_LIMITS[tier],
+        limits,
     }
 }
 
@@ -301,15 +190,20 @@ export async function resolveAgentEntitlements(userId: string): Promise<AgentEnt
 
     // Agent plans have planType = "agent"; same liveness rules as B2C.
     const isAgentPlan = subscription?.plan?.planType === "agent" && isSubscriptionLive(subscription)
-    const tier = isAgentPlan
-        ? normalizeAgentTier(subscription?.plan?.name)
-        : "agent_free"
-
+    if (!isAgentPlan) {
+        return {
+            tier: "agent_free",
+            status: subscription?.status || "active",
+            isPaid: false,
+            limits: AGENT_ENTITLEMENT_LIMITS.agent_free,
+        }
+    }
+    const { tier, limits } = resolveAgentPlanLimits(subscription?.plan)
     return {
         tier,
         status: subscription?.status || "active",
         isPaid: tier !== "agent_free",
-        limits: AGENT_ENTITLEMENT_LIMITS[tier],
+        limits,
     }
 }
 

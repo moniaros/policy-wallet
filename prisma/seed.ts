@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
 import { INSURANCE_BRANCHES } from '../lib/insurance/taxonomy'
 import { PRODUCT_CATALOG } from './product-catalog'
+import { PLAN_SEED } from './plan-seed-data'
 const prisma = new PrismaClient()
 
 async function main() {
@@ -227,128 +228,18 @@ async function main() {
     // 5. Plans & Subscriptions
     console.log('Seeding plans...')
 
-    const plans = [
-        // Policyholder Plans
-        // Paid Aha Loop v1 relabel-in-place: `name` drives tier resolution
-        // (normalizeTier), so it stays Free/Plus/Pro; `displayName` + `price`
-        // carry the new Free / Starter (€2.99) / Plus (€7.99) model. The
-        // entitlements JSON here is informational — real limits live in
-        // lib/subscription-entitlements ENTITLEMENT_LIMITS.
-        {
-            id: 'ph-free',
-            planType: 'policyholder',
-            name: 'Free',
-            displayName: 'Free',
-            price: 0,
-            billingPeriod: 'monthly',
-            entitlements: {
-                policy_storage: 1,
-                ai_analyses_per_month: 0,
-                notifications: 'none',
-                priority_processing: false
-            }
-        },
-        {
-            // name "Plus" → code tier `plus` → displayed "Starter" (€2.99, no AI)
-            id: 'ph-plus',
-            planType: 'policyholder',
-            name: 'Plus',
-            displayName: 'Starter',
-            price: 2.99,
-            billingPeriod: 'monthly',
-            entitlements: {
-                policy_storage: 5,
-                ai_analyses_per_month: 0,
-                notifications: 'basic',
-                priority_processing: false,
-                full_history: true
-            }
-        },
-        {
-            // name "Pro" → code tier `pro` → displayed "Plus" (€7.99, all AI)
-            id: 'ph-pro',
-            planType: 'policyholder',
-            name: 'Pro',
-            displayName: 'PolicyWallet Plus',
-            price: 7.99,
-            billingPeriod: 'monthly',
-            entitlements: {
-                policy_storage: 'unlimited',
-                ai_analyses_per_month: 50,
-                notifications: 'advanced',
-                priority_processing: true,
-                full_history: true
-            }
-        },
-        // Agent Plans — MUST mirror prisma/migrations/20260321160000_agent_plan_seed
-        // (ids, names, prices). The old ag-free/ag-starter/ag-pro rows here used
-        // different ids and prices (€49/€199), creating orphan mis-priced plans
-        // on fresh seeds; normalizeAgentTier only recognizes the names below.
-        // NOTE: no stripePriceId here — prod carries real price ids that a
-        // seed upsert must never clobber.
-        {
-            id: 'agent-free',
-            planType: 'agent',
-            name: 'agent_free',
-            displayName: 'Agent Free',
-            price: 0,
-            billingPeriod: 'monthly',
-            entitlements: {
-                customer_limit: 10,
-                ai_analyses_per_month: 5,
-                crm_features: 'basic'
-            }
-        },
-        {
-            id: 'agent-starter',
-            planType: 'agent',
-            name: 'agent_starter',
-            displayName: 'Agent Starter',
-            price: 19.99,
-            billingPeriod: 'monthly',
-            entitlements: {
-                customer_limit: 100,
-                ai_analyses_per_month: 50,
-                crm_features: 'advanced',
-                opportunity_tracking: true
-            }
-        },
-        {
-            id: 'agent-pro',
-            planType: 'agent',
-            name: 'agent_pro',
-            displayName: 'Agent Pro',
-            price: 49.99,
-            billingPeriod: 'monthly',
-            entitlements: {
-                customer_limit: 500,
-                ai_analyses_per_month: 200,
-                crm_features: 'advanced',
-                opportunity_tracking: true,
-                analytics: true
-            }
-        },
-        {
-            id: 'agent-agency',
-            planType: 'agent',
-            name: 'agency',
-            displayName: 'Agency',
-            price: 99.99,
-            billingPeriod: 'monthly',
-            entitlements: {
-                customer_limit: 'unlimited',
-                ai_analyses_per_month: 'unlimited',
-                crm_features: 'advanced',
-                opportunity_tracking: true,
-                analytics: true
-            }
-        }
-    ]
-
-    for (const plan of plans) {
+    // Canonical rows live in prisma/plan-seed-data.ts, derived from
+    // lib/pricing/plan-defaults.ts (the admin-managed catalog's code
+    // fallback) so seed and fallback can never drift. `name` still drives
+    // legacy tier resolution (normalizeTier); tierKey is the explicit
+    // identity; entitlements is the canonical Zod shape the resolvers read.
+    // Agent ids/names MUST keep mirroring 20260321160000_agent_plan_seed.
+    // NOTE: dev-only upsert — it may clobber admin edits on a dev DB. Prod
+    // uses scripts/gen-plan-seed-sql.ts (ON CONFLICT DO NOTHING) instead.
+    for (const plan of PLAN_SEED) {
         await prisma.plan.upsert({
             where: { id: plan.id },
-            update: plan,
+            update: plan as any,
             create: plan as any
         })
     }

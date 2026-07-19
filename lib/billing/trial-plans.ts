@@ -1,14 +1,14 @@
 /**
  * Which plans start with a free trial, and for how many days.
  *
- * Single source of truth, kept in a client-safe module (no server imports) so
- * both the checkout server code (`lib/billing.ts`) and pricing UI can gate the
- * "free trial" badge/CTA on the SAME data — never a display-name heuristic.
- * A plan absent here has NO trial and is charged on the first day.
+ * FALLBACK of the admin-managed plan catalog: the live value is the plan
+ * row's trial_days column (edited via /admin/plans; checkout reads it first).
+ * This client-safe map covers rows that predate the column and keeps the
+ * pricing UI's trial badge working without a server fetch — never a
+ * display-name heuristic. A plan absent here has NO trial.
  */
-export const TRIAL_DAYS_BY_PLAN: Record<string, number> = {
-    "ph-pro": 14,
-}
+import { DEFAULT_TRIAL_DAYS_BY_PLAN } from "@/lib/pricing/plan-defaults"
+export const TRIAL_DAYS_BY_PLAN: Record<string, number> = DEFAULT_TRIAL_DAYS_BY_PLAN
 
 /** True when the given plan id starts with a free trial. */
 export function planHasTrial(planId: string | null | undefined): boolean {

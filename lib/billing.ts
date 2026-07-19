@@ -14,18 +14,15 @@ import { sanitizeReturnPath } from "@/lib/navigation/return-to"
 export { vatInclusiveBreakdown, type VATBreakdown, sanitizeReturnPath }
 
 /**
- * Annual price lookup.
- * These must match the prices shown on the public pricing page so that the
- * amount charged equals what the visitor was offered.  If a plan has no
- * explicit annual price, fall back to 12 × monthly (no discount).
+ * Annual price fallback.
+ * The LIVE annual price is the plan row's annual_price column (admin-managed
+ * via /admin/plans); this table only covers rows that predate the column.
+ * If neither exists, fall back to 12 × monthly (no discount). Values must
+ * match the public pricing page so the amount charged equals what the visitor
+ * was offered.
  */
-export const ANNUAL_PRICE_BY_PLAN: Record<string, number> = {
-    "ph-plus": 29,        // Starter — UI: €29/yr  (monthly €2.99 × 12 = €35.88)
-    "ph-pro": 79,         // Plus    — UI: €79/yr  (monthly €7.99 × 12 = €95.88)
-    "agent-starter": 199, // UI: €199/yr (monthly €19.99 × 12 = €239.88)
-    "agent-pro": 499,     // UI: €499/yr (monthly €49.99 × 12 = €599.88)
-    "agent-agency": 999,  // UI: €999/yr (monthly €99.99 × 12 = €1199.88)
-}
+import { DEFAULT_ANNUAL_PRICE_BY_PLAN } from "@/lib/pricing/plan-defaults"
+export const ANNUAL_PRICE_BY_PLAN: Record<string, number> = DEFAULT_ANNUAL_PRICE_BY_PLAN
 
 
 /**
@@ -48,12 +45,21 @@ export async function createCheckoutSession(
 
     if (!plan || !user) throw new Error("Plan or User not found")
 
+    // Deactivated plans take no NEW checkouts (existing subscriptions keep
+    // billing — they own their Stripe price). `=== false` so legacy rows /
+    // mocks without the column pass through.
+    if (plan.isActive === false) throw new Error("Plan is not purchasable")
+
     const monthlyPrice = Number(plan.price)
     const isAnnual = billingPeriod === "annual"
     // Advertised prices are VAT-inclusive, so periodPrice IS the amount charged.
-    const periodPrice = isAnnual
-        ? (ANNUAL_PRICE_BY_PLAN[planId] ?? monthlyPrice * 12)
-        : monthlyPrice
+    // Annual: the admin-managed annual_price column wins; the code fallback
+    // covers rows that predate it. NOTE: a price edit affects NEW checkouts
+    // only — live Stripe subscriptions keep their original inline price.
+    const annualPrice = plan.annualPrice != null
+        ? Number(plan.annualPrice)
+        : (ANNUAL_PRICE_BY_PLAN[planId] ?? monthlyPrice * 12)
+    const periodPrice = isAnnual ? annualPrice : monthlyPrice
     const vat = vatInclusiveBreakdown(periodPrice)
 
     // Return targets must land on the canonical public site (policywallet.gr),
@@ -66,7 +72,10 @@ export async function createCheckoutSession(
         (safeReturn ? `&return=${encodeURIComponent(safeReturn)}` : "") +
         (feature ? `&feature=${encodeURIComponent(feature)}` : "")
     const cancelUrl = `${base}${safeReturn || "/account"}`
-    const trialDays = TRIAL_DAYS_BY_PLAN[planId]
+    // The admin-managed trial_days column wins; the code map only covers rows
+    // that predate it (`?? undefined` keeps mocks without the column working).
+    // An admin setting 0 genuinely removes the trial.
+    const trialDays = plan.trialDays ?? TRIAL_DAYS_BY_PLAN[planId]
 
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],

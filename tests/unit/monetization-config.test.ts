@@ -1,5 +1,3 @@
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
 import { describe, it, expect, vi } from 'vitest'
 
 // subscription-entitlements imports the db singleton — stub it out
@@ -52,23 +50,12 @@ describe('monetization config parity (client snapshot vs server truth)', () => {
         }
     })
 
-    it('the Stripe catalog script charges PLAN_PRICING amounts', () => {
-        // The script self-executes on import, so pin its plan table as source text.
-        const source = readFileSync(
-            resolve(process.cwd(), 'scripts/setup-billing-catalog.ts'),
-            'utf8'
-        )
-        for (const pricing of Object.values(PLAN_PRICING)) {
-            const line = source
-                .split('\n')
-                .find((l) => l.includes(`pwKey: "${pricing.planId}"`))
-            expect(line, `catalog entry for ${pricing.planId}`).toBeTruthy()
-            expect(line).toContain(`monthlyEur: ${pricing.monthlyEur}`)
-            expect(line).toContain(`annualEur: ${pricing.annualEur}`)
-        }
-    })
+    // (The setup-billing-catalog.ts source-grep assertion was retired with the
+    // admin-managed plan catalog: that script's Stripe prices were never read
+    // by the live checkout, which builds inline price_data from the DB plan
+    // row — see the deprecation header in scripts/setup-billing-catalog.ts.)
 
-    it('checkout charges the advertised annual price', () => {
+    it('checkout charges the advertised annual price (code fallback)', () => {
         for (const pricing of Object.values(PLAN_PRICING)) {
             expect(ANNUAL_PRICE_BY_PLAN[pricing.planId]).toBe(pricing.annualEur)
         }

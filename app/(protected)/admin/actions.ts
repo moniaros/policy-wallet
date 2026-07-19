@@ -14,67 +14,9 @@ import { Prisma } from "@prisma/client"
 const EXPORT_DOWNLOAD_TTL_MS = 7 * 24 * 60 * 60 * 1000
 const OPEN_DELETION_STATUSES = ["requested", "in_review", "approved", "processing"] as const
 
-/**
- * ROLE VERIFICATION HELPER
- */
-async function verifyAdminRole() {
-    const auth = await getAuthenticatedUserOrNull()
-
-    if (!auth) {
-        throw new Error("Unauthorized: Not authenticated")
-    }
-
-    const { dbUser } = auth
-
-    // Check if user has admin role
-    if (!dbUser.roles.includes("admin")) {
-        Sentry.captureMessage(`Unauthorized admin access attempt by user ${dbUser.id}`, "warning")
-        throw new Error("Unauthorized: Admin role required")
-    }
-
-    return dbUser
-}
-
-/**
- * LOG ADMIN ACTION
- * L2: always captures requestorId (adminUserId), timestamp, and client IP for auditability.
- */
-async function logAdminAction(
-    adminUserId: string,
-    adminEmail: string,
-    actionType: string,
-    description: string,
-    metadata?: any
-) {
-    try {
-        const reqHeaders = await headers()
-        const ip =
-            reqHeaders.get("x-forwarded-for")?.split(",")[0].trim() ||
-            reqHeaders.get("x-real-ip") ||
-            "unknown"
-
-        await db.activityLog.create({
-            data: {
-                adminUserId,
-                adminEmail,
-                actionType,
-                description,
-                metadata: {
-                    ...(metadata || {}),
-                    _audit: {
-                        requestorId: adminUserId,
-                        ip,
-                        at: new Date().toISOString(),
-                    },
-                },
-                timestamp: new Date()
-            }
-        })
-    } catch (error) {
-        Sentry.captureException(error)
-        console.error("Failed to log admin action:", error)
-    }
-}
+// verifyAdminRole + logAdminAction moved to lib/admin/admin-guard.ts (shared
+// with the /admin/plans and /admin/partners action files).
+import { logAdminAction, verifyAdminRole } from "@/lib/admin/admin-guard"
 
 /**
  * DASHBOARD METRICS
