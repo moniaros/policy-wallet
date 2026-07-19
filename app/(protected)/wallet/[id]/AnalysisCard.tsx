@@ -231,6 +231,7 @@ export function AnalysisCard({
         setAnalysisWarning(null)
         setMissingArtifacts([])
         setLastCompletedRunId(null)
+        setAgentUpgradeRequired(false)
         setAnalyzing(true)
         setRunId(null)
         setRunStatus("queued")
@@ -305,6 +306,7 @@ export function AnalysisCard({
         setRetryingMissing(true)
         setAnalysisError(null)
         setAnalysisWarning(null)
+        setAgentUpgradeRequired(false)
 
         try {
             const response = await fetch(

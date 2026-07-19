@@ -213,7 +213,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                 <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30">
                     <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-center">
                         <span className="font-bold text-slate-900 dark:text-white">
-                            {reviewCopy.title || 'Policy Review'}
+                            {t.wallet.addPolicy}
                         </span>
                     </div>
                 </div>
@@ -249,7 +249,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                             if (!createdPolicyId) return
                                             const result = await retryPolicyAnalysis(createdPolicyId)
                                             if ('error' in result) {
-                                                toast.error(result.error)
+                                                toast.error(mapWalletErrorToMessage(result.error, t, 'analysis'))
                                                 return
                                             }
                                             setReviewData(null)

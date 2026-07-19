@@ -48,6 +48,10 @@ export function mapWalletErrorToMessage(
         return t?.analysis?.errors?.agentUpgradeRequired || byContext(context, t)
     }
 
+    if (upper.includes("AGENT_ANALYSIS_LIMIT")) {
+        return t?.wallet?.errors?.limitReached || byContext(context, t)
+    }
+
     if (upper.includes("UPGRADE_REQUIRED")) {
         return t?.wallet?.errors?.upgradeRequired || byContext(context, t)
     }

@@ -249,13 +249,15 @@ export async function confirmPolicyReview(policyId: string, edits: ConfirmReview
 
     const { getPolicyAccess } = await import("@/lib/policy-access")
     const { isAgentRole } = await import("@/lib/auth/require-agent")
-    const access = await getPolicyAccess(policyId, { id: dbUser.id, roles: dbUser.roles })
+    // The policy fetch depends only on the id — run it alongside the access
+    // check and discard it on denial.
+    const [access, policy] = await Promise.all([
+        getPolicyAccess(policyId, { id: dbUser.id, roles: dbUser.roles }),
+        db.policy.findUnique({ where: { id: policyId } }),
+    ])
     // "Not found" for anyone who can't read the policy — no existence leak.
-    if (!access.canRead) return { error: "Not found" }
+    if (!access.canRead || !policy) return { error: "Not found" }
     if (!isAgentRole(dbUser.roles) || !access.canWrite) return { error: "Unauthorized" }
-
-    const policy = await db.policy.findUnique({ where: { id: policyId } })
-    if (!policy) return { error: "Not found" }
     if (policy.status === 'analyzing') return { error: "ANALYSIS_IN_PROGRESS" }
 
     const effectiveStart = input.startDate ? new Date(input.startDate) : policy.startDate
@@ -353,12 +355,12 @@ export async function flagPolicyExtraction(policyId: string, reason?: string) {
 
     const { getPolicyAccess } = await import("@/lib/policy-access")
     const { isAgentRole } = await import("@/lib/auth/require-agent")
-    const access = await getPolicyAccess(policyId, { id: dbUser.id, roles: dbUser.roles })
-    if (!access.canRead) return { error: "Not found" }
+    const [access, policy] = await Promise.all([
+        getPolicyAccess(policyId, { id: dbUser.id, roles: dbUser.roles }),
+        db.policy.findUnique({ where: { id: policyId } }),
+    ])
+    if (!access.canRead || !policy) return { error: "Not found" }
     if (!isAgentRole(dbUser.roles) || !access.canWrite) return { error: "Unauthorized" }
-
-    const policy = await db.policy.findUnique({ where: { id: policyId } })
-    if (!policy) return { error: "Not found" }
 
     const trimmedReason = (reason || '').trim().slice(0, 500) || null
     const acord = (policy.acordData as Record<string, any> | null) || {}
@@ -513,6 +515,15 @@ export async function retryPolicyAnalysis(policyId: string) {
 
     if (!policy) return { error: "Policy not found" }
     if (policy.documents.length === 0) return { error: "No documents to analyze" }
+
+    // Same manual-trigger gate as runPolicyAnalysis — without it, this retry
+    // was a free re-analysis loophole for agent-role users (the orchestrator
+    // skips the b2c pro gate for agent initiators).
+    const { canAgentTriggerManualAnalysis } = await import("@/lib/subscription-entitlements")
+    const manualGate = await canAgentTriggerManualAnalysis(dbUser.id, dbUser.roles)
+    if (!manualGate.allowed) {
+        return { error: manualGate.code }
+    }
 
     // Reset policy status to analyzing
     await db.policy.update({
@@ -1228,23 +1239,19 @@ export async function runPolicyAnalysis(policyId: string) {
 
     const language = (authResult.dbUser.preferredLanguage as 'en' | 'el') || 'en'
 
-    // Agent-specific gates: MANUAL re-analysis is a paid-plan feature
-    // (upload-time auto-analysis stays available to agent_free within its
-    // monthly cap — this action is only ever a manual trigger), then the
-    // per-plan monthly analysis cap applies as before.
-    if (authResult.dbUser.roles?.includes("agent")) {
-        const { canAgentRunAnalysis, resolveAgentEntitlements } = await import("@/lib/subscription-entitlements")
-        const agentEntitlements = await resolveAgentEntitlements(authResult.dbUser.id)
-        if (!agentEntitlements.isPaid) {
+    // MANUAL re-analysis is a paid-plan feature for agent-role users
+    // (upload-time auto-analysis is a different path); the shared gate also
+    // enforces the per-plan monthly analysis cap.
+    const { canAgentTriggerManualAnalysis } = await import("@/lib/subscription-entitlements")
+    const manualGate = await canAgentTriggerManualAnalysis(authResult.dbUser.id, authResult.dbUser.roles)
+    if (!manualGate.allowed) {
+        if (manualGate.code === "AGENT_UPGRADE_REQUIRED") {
             return { error: "AGENT_UPGRADE_REQUIRED" }
         }
-        const analysisCheck = await canAgentRunAnalysis(authResult.dbUser.id)
-        if (!analysisCheck.allowed) {
-            return {
-                error: language === "el"
-                    ? `Φτάσατε το μηνιαίο όριο αναλύσεων (${analysisCheck.used}/${analysisCheck.limit}). Αναβαθμίστε το πλάνο σας.`
-                    : `Monthly analysis limit reached (${analysisCheck.used}/${analysisCheck.limit}). Upgrade your plan.`,
-            }
+        return {
+            error: language === "el"
+                ? `Φτάσατε το μηνιαίο όριο αναλύσεων (${manualGate.used}/${manualGate.limit}). Αναβαθμίστε το πλάνο σας.`
+                : `Monthly analysis limit reached (${manualGate.used}/${manualGate.limit}). Upgrade your plan.`,
         }
     }
 

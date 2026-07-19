@@ -3,6 +3,7 @@ export const runtime = 'nodejs'
 import { db } from "@/lib/db"
 import { notFound, redirect } from "next/navigation"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
+import { sanitizeReturnPath } from "@/lib/navigation/return-to"
 import { EditPolicyForm } from "@/components/wallet/EditPolicyForm"
 import { getTranslations } from "@/lib/i18n"
 import { ChevronLeft } from "lucide-react"
@@ -36,10 +37,8 @@ export default async function EditPolicyPage({ params, searchParams }: Props) {
         redirect("/wallet")
     }
 
-    // Only allow same-origin relative return targets.
-    const safeReturnTo = returnTo && returnTo.startsWith("/") && !returnTo.startsWith("//")
-        ? returnTo
-        : undefined
+    // Only allow same-origin relative return targets (shared guard).
+    const safeReturnTo = sanitizeReturnPath(returnTo) ?? undefined
 
     const preferredLanguage = (authResult.dbUser.preferredLanguage as "en" | "el") || "en"
     const t = getTranslations(preferredLanguage)

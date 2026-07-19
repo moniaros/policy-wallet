@@ -39,20 +39,22 @@ export const POST = withApiGuard(
             return createApiError("FORBIDDEN", "Access denied", 403)
         }
 
-        // Manual re-analysis is a paid feature for agent-role users
-        // (upload-time auto-analysis is unaffected — this route is only ever
-        // a manual trigger).
-        const { isAgentRole } = await import("@/lib/auth/require-agent")
-        if (isAgentRole(authResult.dbUser.roles)) {
-            const { resolveAgentEntitlements } = await import("@/lib/subscription-entitlements")
-            const agentEntitlements = await resolveAgentEntitlements(authResult.dbUser.id)
-            if (!agentEntitlements.isPaid) {
-                return createApiError(
-                    "AGENT_UPGRADE_REQUIRED",
-                    "Manual re-analysis requires a paid agent plan",
-                    402
-                )
-            }
+        // Manual re-analysis is paying-only for agent-role users (upload-time
+        // auto-analysis is unaffected — this route is only ever a manual
+        // trigger). The shared gate enforces paid plan + monthly cap.
+        const { canAgentTriggerManualAnalysis } = await import("@/lib/subscription-entitlements")
+        const manualGate = await canAgentTriggerManualAnalysis(
+            authResult.dbUser.id,
+            authResult.dbUser.roles
+        )
+        if (!manualGate.allowed) {
+            return createApiError(
+                manualGate.code,
+                manualGate.code === "AGENT_UPGRADE_REQUIRED"
+                    ? "Manual re-analysis requires a paid agent plan"
+                    : "Monthly analysis limit reached for the agent plan",
+                402
+            )
         }
 
         const sourceRun = await db.policyAnalysisRun.findFirst({

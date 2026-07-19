@@ -96,10 +96,6 @@ export function PolicyCard({ policy, onView, id }: PolicyCardProps) {
                         {expiryInline && <> · {expiryInline}</>}
                     </p>
 
-                    {/* The needs-review chip that sat here was removed with the
-                        b2c review flow — extraction review is now an agent-only
-                        step. (The old "coverage %" bar was removed earlier for
-                        being invented from the status alone.) */}
                 </div>
             </div>
         </button>

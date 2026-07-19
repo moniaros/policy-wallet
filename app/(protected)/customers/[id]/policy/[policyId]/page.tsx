@@ -72,9 +72,13 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
     const returnHere = encodeURIComponent(`/customers/${customerId}/policy/${policyId}`)
     const editHref = `/wallet/${policyId}/edit?returnTo=${returnHere}`
     // Agent-only extraction review: offered while the AI-extracted data is
-    // unconfirmed or flagged, to agents who can write to this policy.
+    // unconfirmed or flagged, to agents who can write to this policy. The
+    // role check mirrors the review page's own gate — a non-agent write
+    // grantee must not see a link that 404s.
+    const { isAgentRole } = await import("@/lib/auth/require-agent")
     const reviewState = (policy.acordData as any)?.extraction?.reviewState
     const showReviewLink =
+        isAgentRole(dbUser.roles) &&
         access.canWrite &&
         (reviewState === 'unconfirmed' || reviewState === 'flagged') &&
         policy.status !== 'analyzing'
