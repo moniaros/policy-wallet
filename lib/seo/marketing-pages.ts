@@ -28,6 +28,9 @@ export type MarketingPageKey =
     | "product-pension"
     | "product-boat"
     | "product-business"
+    | "product-liability"
+    | "product-legal-expenses"
+    | "product-group-life"
     | "guides"
     | "privacy"
     | "terms"
@@ -293,6 +296,48 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             description:
                 "Premises, equipment, stock, business interruption and liability in one picture. AI maps your company's policies and shows where the gaps are.",
             breadcrumb: "Business",
+        },
+    },
+    "product-liability": {
+        path: "/product/liability",
+        title: "Αστική ευθύνη: η κάλυψη που ίσως έχετε ήδη",
+        description:
+            "Ζημιές σε τρίτους από εσάς, το παιδί ή τον σκύλο σας. Η αστική ευθύνη συχνά υπάρχει ήδη μέσα στο συμβόλαιο κατοικίας — δείτε το πριν την ξαναπληρώσετε.",
+        keywords: ["αστική ευθύνη", "ασφάλεια αστικής ευθύνης", "οικογενειακή αστική ευθύνη"],
+        breadcrumb: "Αστική Ευθύνη",
+        en: {
+            title: "Personal liability: cover you may own",
+            description:
+                "Damage to third parties caused by you, your child or your dog. Liability cover often already sits inside your home policy — check before paying for it twice.",
+            breadcrumb: "Liability",
+        },
+    },
+    "product-legal-expenses": {
+        path: "/product/legal-expenses",
+        title: "Νομική προστασία: τι καλύπτει πραγματικά",
+        description:
+            "Δικηγόροι, δικαστήρια, εξωδικαστικές διαφορές: τροχαία, εργασιακά, καταναλωτικά. Δείτε τι καλύπτει το συμβόλαιο νομικής προστασίας και τι εξαιρεί.",
+        keywords: ["νομική προστασία", "ασφάλεια νομικής προστασίας", "νομική προστασία οδηγού"],
+        breadcrumb: "Νομική Προστασία",
+        en: {
+            title: "Legal expenses insurance, made clear",
+            description:
+                "Lawyer fees, court costs and out-of-court disputes: traffic, employment, consumer. See what your legal expenses policy actually covers and what it excludes.",
+            breadcrumb: "Legal Expenses",
+        },
+    },
+    "product-group-life": {
+        path: "/product/group-life",
+        title: "Ομαδική ασφάλιση ζωής για το προσωπικό",
+        description:
+            "Κεφάλαιο ζωής και ανικανότητας για κάθε εργαζόμενο, δίπλα στην ομαδική υγεία και σύνταξη. Δείτε τις παροχές του προγράμματός σας σε μία καθαρή εικόνα.",
+        keywords: ["ομαδική ασφάλιση ζωής", "ομαδικό συμβόλαιο ζωής", "παροχές προσωπικού"],
+        breadcrumb: "Ομαδική Ζωή",
+        en: {
+            title: "Group life insurance for your team",
+            description:
+                "A life and disability benefit for every employee, alongside group health and pension. See your plan benefits per person in one clear, organized picture.",
+            breadcrumb: "Group Life",
         },
     },
     guides: {

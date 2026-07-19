@@ -136,13 +136,13 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
         id: 'liability', segment: 'b2c',
         label: { el: 'Αστική Ευθύνη', en: 'Liability' }, genitiveEl: 'αστικής ευθύνης',
         aliases: ['public_liability', 'private_liability'],
-        scoreCategory: 'liability', writeEnabled: true, contentTier: 'basic',
+        scoreCategory: 'liability', writeEnabled: true, contentTier: 'basic', marketingSlug: 'liability',
     },
     {
         id: 'legal_expenses', segment: 'b2c',
         label: { el: 'Νομική Προστασία', en: 'Legal Expenses' }, genitiveEl: 'νομικής προστασίας',
         aliases: ['legal'],
-        scoreCategory: 'liability', writeEnabled: true, contentTier: 'basic',
+        scoreCategory: 'liability', writeEnabled: true, contentTier: 'basic', marketingSlug: 'legal-expenses',
     },
     {
         id: 'boat', segment: 'b2c',
@@ -246,7 +246,7 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
         id: 'group_life', segment: 'b2b',
         label: { el: 'Ομαδική Ζωή', en: 'Group Life' }, genitiveEl: 'ομαδικής ζωής',
         aliases: [],
-        scoreCategory: 'life', writeEnabled: true, contentTier: 'basic',
+        scoreCategory: 'life', writeEnabled: true, contentTier: 'basic', marketingSlug: 'group-life',
     },
     {
         id: 'group_pension', segment: 'b2b',
