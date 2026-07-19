@@ -244,6 +244,51 @@ async function main() {
         })
     }
 
+    // 5b. Partner vendors/offers — DEV DEMO ONLY (this whole seed is dev-only;
+    // prod's partner catalog starts EMPTY per the honesty rule and is filled
+    // exclusively via /admin/partners for real, signed vendors).
+    console.log('Seeding demo partner vendor...')
+    const demoVendor = await prisma.partnerVendor.upsert({
+        where: { slug: 'demo-diagnostics' },
+        update: {},
+        create: {
+            slug: 'demo-diagnostics',
+            name: 'DEMO Διαγνωστικό Κέντρο',
+            description: {
+                el: 'Δίκτυο διαγνωστικών κέντρων (δείγμα για ανάπτυξη — όχι πραγματικός συνεργάτης).',
+                en: 'Diagnostics network (dev sample — not a real partner).',
+            },
+            websiteUrl: 'https://example.com',
+            category: 'health',
+            isActive: true,
+            sortOrder: 0,
+        },
+    })
+    await prisma.partnerOffer.upsert({
+        where: { slug: 'demo-annual-checkup' },
+        update: {},
+        create: {
+            vendorId: demoVendor.id,
+            slug: 'demo-annual-checkup',
+            title: {
+                el: 'Δωρεάν ετήσιο check-up',
+                en: 'Free annual check-up',
+            },
+            description: {
+                el: 'Ένα βασικό ετήσιο check-up χωρίς χρέωση για συνδρομητές Plus (δείγμα).',
+                en: 'One basic annual check-up free of charge for Plus subscribers (sample).',
+            },
+            offerType: 'free_service',
+            redemptionMethod: 'link',
+            redemptionUrl: 'https://example.com/redeem',
+            includedInTiers: ['pro'],
+            profileTags: [],
+            linesOfBusiness: ['health'],
+            isActive: true,
+            sortOrder: 0,
+        },
+    })
+
     // Assign subscriptions to seeded users
     await prisma.subscription.create({
         data: {

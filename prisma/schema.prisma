@@ -1435,3 +1435,60 @@ model FormSubmission {
   @@index([formType, createdAt])
   @@map("form_submissions")
 }
+
+/// Third-party partner offering benefits bundled into paid tiers (the
+/// "partner offers" program — distinct from a policy's OWN embedded
+/// perksAndBenefits). Admin-managed via /admin/partners; isActive defaults
+/// FALSE so nothing renders anywhere until an admin deliberately activates a
+/// real, signed partner (repo honesty rule: never market what isn't live).
+model PartnerVendor {
+  id          String         @id @default(cuid()) @map("vendor_id")
+  slug        String         @unique
+  name        String
+  description Json // { el, en }
+  logoUrl     String?        @map("logo_url")
+  websiteUrl  String?        @map("website_url")
+  category    String         @default("lifestyle") // health|motor|home|pet|travel|digital|lifestyle
+  isActive    Boolean        @default(false) @map("is_active")
+  sortOrder   Int            @default(0) @map("sort_order")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+  offers      PartnerOffer[]
+
+  @@index([isActive, sortOrder])
+  @@map("partner_vendors")
+}
+
+/// A concrete redeemable offer from a partner vendor. Tier-gated via
+/// includedInTiers (plan-catalog tierKeys) and targeted via profileTags
+/// (deriveProfileTags vocabulary) / linesOfBusiness (taxonomy branch ids).
+/// Slugs are stable so a future PartnerOfferRedemption log can reference
+/// offers across edits. An offer renders only while BOTH it and its vendor
+/// are active and now is inside the validity window.
+model PartnerOffer {
+  id               String        @id @default(cuid()) @map("offer_id")
+  vendorId         String        @map("vendor_id")
+  slug             String        @unique
+  title            Json // { el, en }
+  description      Json // { el, en }
+  offerType        String        @map("offer_type") // free_service|discount|gift
+  redemptionMethod String        @map("redemption_method") // link|code|phone
+  redemptionUrl    String?       @map("redemption_url")
+  redemptionCode   String?       @map("redemption_code")
+  redemptionPhone  String?       @map("redemption_phone")
+  includedInTiers  String[]      @map("included_in_tiers")
+  profileTags      String[]      @map("profile_tags")
+  linesOfBusiness  String[]      @map("lines_of_business")
+  validFrom        DateTime?     @map("valid_from")
+  validUntil       DateTime?     @map("valid_until")
+  termsUrl         String?       @map("terms_url")
+  isActive         Boolean       @default(false) @map("is_active")
+  sortOrder        Int           @default(0) @map("sort_order")
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+  vendor           PartnerVendor @relation(fields: [vendorId], references: [id])
+
+  @@index([isActive, sortOrder])
+  @@index([vendorId])
+  @@map("partner_offers")
+}
