@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Check, X, Star, Shield, Zap } from 'lucide-react'
 import { subscriptionCopy } from '@/lib/subscription-copy'
-import { FREE_POLICY_LIMIT, PLUS_POLICY_LIMIT } from '@/lib/monetization/feature-gates'
+import { usePlanFacts } from '@/components/monetization/PlanFactsProvider'
+import { formatEur } from '@/lib/pricing/pricing-view-model'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { trackJourneyEvent } from '@/lib/journey/funnel'
 
@@ -37,6 +38,14 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
     const copy = subscriptionCopy
     const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'annual'>('monthly')
 
+    // Live admin-managed prices/caps (PlanFactsProvider); the subscription-copy
+    // literals below act only as the render fallback inside usePlanFacts.
+    const { tierPricing, freePolicyLimit, plusPolicyLimit } = usePlanFacts()
+    const starterFacts = tierPricing('plus')
+    const plusFacts = tierPricing('pro')
+    const asCount = (limit: number | null) => (limit == null ? '∞' : String(limit))
+    const bothLangs = (value: string) => ({ el: value, en: value })
+
     const selectBillingPeriod = (period: 'monthly' | 'annual') => {
         setBillingPeriod(period)
         trackJourneyEvent('billing_period_selected', {
@@ -60,7 +69,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
             ...copy.tiers.free,
             icon: Shield,
             features: [
-                { name: copy.features.policyLimit[language].replace('{count}', String(FREE_POLICY_LIMIT)), included: true },
+                { name: copy.features.policyLimit[language].replace('{count}', asCount(freePolicyLimit)), included: true },
                 { name: copy.features.basicAI[language], included: true },
                 { name: copy.features.documentStorage[language], included: true },
                 { name: copy.features.advancedAI[language], included: false },
@@ -72,10 +81,14 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
             // reminders, NO deep AI (that unlocks at Plus / code `pro`).
             id: 'ph-plus',
             ...copy.tiers.plus,
+            price: bothLangs(formatEur(starterFacts.monthlyEur)),
+            annual: copy.tiers.plus.annual
+                ? { ...copy.tiers.plus.annual, price: bothLangs(formatEur(starterFacts.annualEur)) }
+                : undefined,
             icon: Zap,
             popular: true,
             features: [
-                { name: copy.features.policyLimit[language].replace('{count}', String(PLUS_POLICY_LIMIT)), included: true },
+                { name: copy.features.policyLimit[language].replace('{count}', asCount(plusPolicyLimit)), included: true },
                 { name: copy.features.documentStorage[language], included: true },
                 { name: copy.features.emailNotifications[language], included: true },
                 { name: copy.features.basicInsights[language], included: true },
@@ -86,6 +99,10 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
         {
             id: 'ph-pro',
             ...copy.tiers.pro,
+            price: bothLangs(formatEur(plusFacts.monthlyEur)),
+            annual: copy.tiers.pro.annual
+                ? { ...copy.tiers.pro.annual, price: bothLangs(formatEur(plusFacts.annualEur)) }
+                : undefined,
             icon: Star,
             features: [
                 { name: copy.features.unlimitedPolicies[language], included: true },
@@ -98,7 +115,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
     ]
 
     const comparisonFeatures = [
-        { name: copy.features.policyLimitLabel[language], free: String(FREE_POLICY_LIMIT), plus: String(PLUS_POLICY_LIMIT), pro: "∞" },
+        { name: copy.features.policyLimitLabel[language], free: asCount(freePolicyLimit), plus: asCount(plusPolicyLimit), pro: "∞" },
         { name: copy.features.advancedAI[language], free: false, plus: false, pro: true },
         { name: copy.features.automaticGapDetection[language], free: false, plus: false, pro: true },
         { name: copy.features.interactiveQA[language], free: false, plus: false, pro: true },
@@ -314,7 +331,11 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                     {copy.faq.map((item, i) => (
                         <div key={i}>
                             <h4 className="font-bold text-slate-900 dark:text-white mb-2">{item.question[language]}</h4>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{item.answer[language]}</p>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                                {item.answer[language]
+                                    .replace('{starterAnnual}', formatEur(starterFacts.annualEur))
+                                    .replace('{plusAnnual}', formatEur(plusFacts.annualEur))}
+                            </p>
                         </div>
                     ))}
                 </div>

@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import PricingPageClient from "../../pricing/PricingPageClient"
-import { publicPricingContent } from "@/lib/pricing/public-pricing-content"
 import { buildMarketingMetadata } from "@/lib/seo/marketing-pages"
 import { StaticLanguageProvider } from "@/contexts/LanguageContext"
 import {
@@ -9,15 +8,21 @@ import {
     faqPageJsonLd,
     softwareApplicationJsonLd,
 } from "@/lib/seo/jsonld"
+import { getPlanCatalog } from "@/lib/pricing/plan-catalog"
+import { buildPublicPricingContent } from "@/lib/pricing/pricing-view-model"
 
 export const metadata: Metadata = buildMarketingMetadata("pricing", "en")
 
-export default function PricingPageEnglish() {
-    const { plans, faqItems } = publicPricingContent.policyholder
+// ISR backstop for the admin-managed prices (see /pricing).
+export const revalidate = 300
+
+export default async function PricingPageEnglish() {
+    const pricingContent = buildPublicPricingContent(await getPlanCatalog())
+    const { plans, faqItems } = pricingContent.policyholder
 
     return (
         <StaticLanguageProvider language="en" counterpartPath="/pricing">
-            <PricingPageClient />
+            <PricingPageClient pricingContent={pricingContent} />
             <JsonLd
                 data={[
                     breadcrumbEnJsonLd(["pricing"]),

@@ -7,18 +7,25 @@ import {
     faqPageJsonLd,
     softwareApplicationJsonLd,
 } from "@/lib/seo/jsonld"
-import { publicPricingContent } from "@/lib/pricing/public-pricing-content"
+import { getPlanCatalog } from "@/lib/pricing/plan-catalog"
+import { buildPublicPricingContent } from "@/lib/pricing/pricing-view-model"
 
 export const metadata: Metadata = buildMarketingMetadata("pricing")
 
-export default function PricingPage() {
+// ISR backstop for the admin-managed prices; /admin/plans saves revalidate
+// this path (and the plan-catalog tag) immediately.
+export const revalidate = 300
+
+export default async function PricingPage() {
+    // Live catalog prices (admin-managed) over the bilingual template.
+    const pricingContent = buildPublicPricingContent(await getPlanCatalog())
     // The policyholder audience is the server-rendered default view, so its
     // FAQ and plans are what crawlers see — the JSON-LD mirrors exactly that.
-    const { plans, faqItems } = publicPricingContent.policyholder
+    const { plans, faqItems } = pricingContent.policyholder
 
     return (
         <>
-            <PricingPageClient />
+            <PricingPageClient pricingContent={pricingContent} />
             <JsonLd
                 data={[
                     breadcrumbJsonLd(["pricing"]),

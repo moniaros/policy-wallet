@@ -156,11 +156,21 @@ const copy = {
     },
 }
 
-export function AgentPricingClient({ currentTier }: { currentTier: string }) {
+export function AgentPricingClient({
+    currentTier,
+    // Live admin-managed prices by plan id (from the server page's catalog
+    // fetch); the in-file priceEur literals are only the render fallback.
+    prices,
+}: {
+    currentTier: string
+    prices?: Record<string, number>
+}) {
     const router = useRouter()
     const { language } = useLanguage()
     const t = copy[language === "el" ? "el" : "en"]
     const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null)
+    const priceFor = (plan: { id: string; priceEur: number }) =>
+        prices?.[plan.id] ?? plan.priceEur
 
     const handleUpgrade = async (planId: string) => {
         // Agency is a contact plan: the button says "Contact Sales" and must
@@ -254,9 +264,9 @@ export function AgentPricingClient({ currentTier }: { currentTier: string }) {
 
                                 <div className="mb-6">
                                     <span className="text-3xl font-black text-foreground">
-                                        {plan.priceEur === 0 ? t.free : `€${plan.priceEur}`}
+                                        {priceFor(plan) === 0 ? t.free : `€${priceFor(plan)}`}
                                     </span>
-                                    {plan.priceEur > 0 && (
+                                    {priceFor(plan) > 0 && (
                                         <span className="text-muted-foreground text-sm">
                                             {t.month} <span className="text-neutral-400 dark:text-neutral-500">{t.vatIncluded}</span>
                                         </span>
@@ -280,7 +290,7 @@ export function AgentPricingClient({ currentTier }: { currentTier: string }) {
                                             ? "bg-muted text-muted-foreground cursor-default"
                                             : plan.popular
                                                 ? "bg-primary text-white dark:text-[#1A2420] hover:bg-primary-hover shadow-lg shadow-primary/20"
-                                                : plan.priceEur === 0
+                                                : priceFor(plan) === 0
                                                     ? "bg-muted text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700"
                                                     : "bg-neutral-900 dark:bg-white text-white dark:text-neutral-900 hover:bg-neutral-800 dark:hover:bg-neutral-100"
                                     }`}
@@ -289,7 +299,7 @@ export function AgentPricingClient({ currentTier }: { currentTier: string }) {
                                         t.currentPlan
                                     ) : loadingPlanId === plan.id ? (
                                         <Loader2 className="w-4 h-4 animate-spin mx-auto" />
-                                    ) : plan.priceEur === 0 ? (
+                                    ) : priceFor(plan) === 0 ? (
                                         t.getStarted
                                     ) : plan.tier === "agency" ? (
                                         t.contact

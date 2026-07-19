@@ -275,9 +275,11 @@ export const subscriptionCopy = {
                 el: 'Υπάρχει έκπτωση για ετήσια συνδρομή;',
                 en: 'Is there a discount for annual subscription?'
             },
+            // {starterAnnual}/{plusAnnual} are interpolated at render time from
+            // the live plan catalog (PricingComparison) — never hardcode € here.
             answer: {
-                el: 'Ναι — το Starter κοστίζει €29/έτος και το Plus €79/έτος, με 2 μήνες δωρεάν σε σχέση με τη μηνιαία χρέωση.',
-                en: 'Yes — Starter is €29/year and Plus is €79/year, both giving you 2 months free versus paying monthly.'
+                el: 'Ναι — το Starter κοστίζει {starterAnnual}/έτος και το Plus {plusAnnual}/έτος, με έκπτωση σε σχέση με τη μηνιαία χρέωση.',
+                en: 'Yes — Starter is {starterAnnual}/year and Plus is {plusAnnual}/year, both discounted versus paying monthly.'
             },
         },
         {
