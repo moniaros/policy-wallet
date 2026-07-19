@@ -1,0 +1,113 @@
+export const runtime = 'nodejs'
+
+import Link from "next/link"
+import { db } from "@/lib/db"
+import { createVendor } from "./actions"
+import { VENDOR_CATEGORIES } from "@/lib/partner-offers/validation"
+
+const inputClass =
+    "w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-primary text-sm"
+const labelClass = "block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1"
+
+export default async function AdminPartnersPage() {
+    const vendors = await db.partnerVendor.findMany({
+        orderBy: [{ isActive: "desc" }, { sortOrder: "asc" }, { createdAt: "asc" }],
+        include: { _count: { select: { offers: true } } },
+    })
+
+    return (
+        <div className="max-w-5xl mx-auto px-4 py-8">
+            <h1 className="text-3xl font-bold mb-2 text-stone-900 dark:text-stone-100">Partner Vendors</h1>
+            <p className="text-sm text-stone-500 dark:text-stone-400 mb-8">
+                Third-party benefits bundled into paid plans. Vendors and offers start{" "}
+                <strong>inactive</strong> — nothing renders to users or on the marketing site until
+                you activate a signed partner. Slugs are permanent identifiers.
+            </p>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="bg-white dark:bg-stone-800 p-6 rounded-xl shadow-sm border border-stone-200 dark:border-stone-700">
+                    <h2 className="text-lg font-semibold mb-4 text-stone-800 dark:text-stone-200">Add Vendor</h2>
+                    <form action={createVendor} className="space-y-3">
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className={labelClass}>Name</label>
+                                <input name="name" required maxLength={80} className={inputClass} />
+                            </div>
+                            <div>
+                                <label className={labelClass}>Slug</label>
+                                <input name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="affidea" className={inputClass} />
+                            </div>
+                        </div>
+                        <div>
+                            <label className={labelClass}>Description (EL)</label>
+                            <input name="descriptionEl" required className={inputClass} />
+                        </div>
+                        <div>
+                            <label className={labelClass}>Description (EN)</label>
+                            <input name="descriptionEn" required className={inputClass} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className={labelClass}>Category</label>
+                                <select name="category" className={inputClass} defaultValue="health">
+                                    {VENDOR_CATEGORIES.map((c) => (
+                                        <option key={c} value={c}>{c}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className={labelClass}>Sort order</label>
+                                <input name="sortOrder" type="number" min="0" max="99" defaultValue={0} className={inputClass} />
+                            </div>
+                        </div>
+                        <div>
+                            <label className={labelClass}>Website URL (https)</label>
+                            <input name="websiteUrl" type="url" placeholder="https://…" className={inputClass} />
+                        </div>
+                        <div>
+                            <label className={labelClass}>Logo URL (https)</label>
+                            <input name="logoUrl" type="url" placeholder="https://…" className={inputClass} />
+                        </div>
+                        <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-300">
+                            <input name="isActive" type="checkbox" className="h-4 w-4" />
+                            Active immediately (only for a signed, live partner)
+                        </label>
+                        <button type="submit" className="w-full bg-primary text-white dark:text-[#1A2420] py-2 rounded-lg font-medium hover:bg-primary-hover transition-colors">
+                            Create Vendor
+                        </button>
+                    </form>
+                </div>
+
+                <div className="bg-white dark:bg-stone-800 p-6 rounded-xl shadow-sm border border-stone-200 dark:border-stone-700">
+                    <h2 className="text-lg font-semibold mb-4 text-stone-800 dark:text-stone-200">Vendors</h2>
+                    {vendors.length === 0 ? (
+                        <p className="text-sm text-stone-500 dark:text-stone-400">
+                            No vendors yet. The perks program is dark until the first one is created and activated.
+                        </p>
+                    ) : (
+                        <ul className="divide-y divide-stone-100 dark:divide-stone-700">
+                            {vendors.map((vendor) => (
+                                <li key={vendor.id} className="py-3 flex justify-between items-center gap-3">
+                                    <div>
+                                        <span className="text-stone-900 dark:text-stone-100 font-medium">{vendor.name}</span>
+                                        <span className="ml-2 text-xs text-stone-500 dark:text-stone-400">
+                                            {vendor.category} · {vendor._count.offers} offer{vendor._count.offers === 1 ? "" : "s"}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className={`text-xs px-2 py-0.5 rounded-full ${vendor.isActive ? 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint' : 'bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300'}`}>
+                                            {vendor.isActive ? 'Active' : 'Inactive'}
+                                        </span>
+                                        <Link href={`/admin/partners/${vendor.id}`} className="text-primary hover:underline text-sm font-medium">
+                                            Manage
+                                        </Link>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
+            </div>
+        </div>
+    )
+}

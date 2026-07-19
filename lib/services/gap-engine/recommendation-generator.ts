@@ -318,6 +318,22 @@ export async function matchProductsToRecommendations(
 }
 
 /**
+ * The complete profile-tag vocabulary deriveProfileTags can emit. The partner-
+ * offer admin validates offer targeting against this list so a typo'd tag can
+ * never silently match nothing.
+ */
+export const PROFILE_TAG_VALUES = [
+    "homeowner",
+    "has_pets",
+    "has_vehicles",
+    "has_dependents",
+    "self_employed",
+    "travels_frequently",
+    "has_loans",
+    "has_mortgage",
+] as const
+
+/**
  * Derive profile tags from profile fields for product matching.
  */
 export function deriveProfileTags(profile: {

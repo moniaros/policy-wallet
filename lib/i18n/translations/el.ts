@@ -70,6 +70,7 @@ export const el = {
         insurers: 'Ασφαλιστικές Εταιρείες',
         insuranceTypes: 'Τύποι Ασφάλισης',
         plans: 'Πλάνα & Τιμολόγηση',
+        partners: 'Παροχές Συνεργατών',
     },
 
     // Auth

@@ -73,6 +73,7 @@ export const en: TranslationKeys = {
         insurers: 'Insurers',
         insuranceTypes: 'Insurance Types',
         plans: 'Plans & Pricing',
+        partners: 'Partner Offers',
     },
 
     // Auth
