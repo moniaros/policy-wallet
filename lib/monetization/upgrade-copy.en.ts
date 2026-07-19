@@ -203,4 +203,19 @@ export const UPGRADE_COPY_EN: Record<FeatureKey, UpgradeTriggerCopy> = {
         successMessage: "Upgrade complete. Family portfolio is available.",
         successCta: "Set up portfolio",
     },
+    partner_offers: {
+        headline: "Partner benefits with Plus",
+        body: "Plus includes benefits from selected partners — prevention services and discounts worth more than the subscription itself.",
+        primaryCta: "Unlock benefits with Plus",
+        secondaryCta: "Not now",
+        benefits: [
+            "Free or discounted prevention services",
+            "Offers matched to your profile",
+            "New benefits added at no extra cost",
+            "Alongside the full Plus AI analysis",
+        ],
+        trust: TRUST,
+        successMessage: "Upgrade complete. Partner benefits are available.",
+        successCta: "See your benefits",
+    },
 }

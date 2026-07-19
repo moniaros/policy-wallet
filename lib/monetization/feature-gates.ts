@@ -26,6 +26,7 @@ export type FeatureKey =
     | "duplicate_coverage_detection"
     | "claims_preparation_assistant"
     | "family_portfolio"
+    | "partner_offers"
 
 /** Reasons understood by UpgradePrompt/LimitReachedModal (superset). */
 export type UpgradeTriggerReason =
@@ -124,6 +125,15 @@ export const FEATURE_GATES: Record<FeatureKey, FeatureGate> = {
     },
     family_portfolio: {
         featureKey: "family_portfolio",
+        requiredPlan: "pro",
+        upgradeReason: "feature_locked",
+        lockedViewedEvent: "feature_locked_viewed",
+    },
+    // Partner-benefits program: the full active catalog unlocks at Plus (code
+    // `pro`); Starter may carry admin-assigned entries via each offer's
+    // includedInTiers — this gate drives only the locked-teaser upsell.
+    partner_offers: {
+        featureKey: "partner_offers",
         requiredPlan: "pro",
         upgradeReason: "feature_locked",
         lockedViewedEvent: "feature_locked_viewed",
