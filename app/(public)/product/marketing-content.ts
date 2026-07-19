@@ -71,7 +71,7 @@ export const PRODUCT_FAQS = [
     {
         qEl: "Υπάρχει δωρεάν πρόσβαση;",
         qEn: "Is there a free tier?",
-        aEl: "Ναι, μπορείτε να ξεκινήσετε δωρεάν. Ανεβάστε έως 3 ασφαλιστήρια και δοκιμάστε την AI ανάλυση χωρίς πιστωτική κάρτα.",
-        aEn: "Yes, you can start for free. Upload up to 3 policies and try the AI analysis without a credit card.",
+        aEl: "Ναι, μπορείτε να ξεκινήσετε δωρεάν. Ανεβάστε 1 ασφαλιστήριο με βασική AI σύνοψη, χωρίς πιστωτική κάρτα.",
+        aEn: "Yes, you can start for free. Upload 1 policy with a basic AI summary, no credit card required.",
     },
 ] as const

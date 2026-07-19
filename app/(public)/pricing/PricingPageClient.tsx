@@ -93,6 +93,8 @@ export default function PricingPage({
         pricing: { el: "Τιμολόγηση", en: "Pricing" },
         products: { el: "Προϊόντα", en: "Products" },
         company: { el: "Εταιρεία", en: "Company" },
+        openMenu: { el: "Άνοιγμα μενού", en: "Open menu" },
+        closeMenu: { el: "Κλείσιμο μενού", en: "Close menu" },
     } as const
 
     // Prevent scrolling when mobile menu is open
@@ -255,6 +257,7 @@ export default function PricingPage({
                         <button
                             className="p-2 -mr-2 text-[#0F172A] dark:text-white"
                             onClick={() => setIsMobileMenuOpen(true)}
+                            aria-label={labels.openMenu[language]}
                         >
                             <Menu className="h-5 w-5" />
                         </button>
@@ -279,6 +282,7 @@ export default function PricingPage({
                     <button
                         className="rounded-full p-2 -mr-2 text-white transition-colors hover:bg-white/10"
                         onClick={() => setIsMobileMenuOpen(false)}
+                        aria-label={labels.closeMenu[language]}
                     >
                         <X className="h-6 w-6" />
                     </button>

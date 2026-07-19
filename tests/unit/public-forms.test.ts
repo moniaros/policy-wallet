@@ -96,7 +96,7 @@ describe('POST /api/contact', () => {
 
     it('silently drops a honeypot hit without persisting or emailing', async () => {
         const response = await contactPOST(
-            postRequest('http://localhost/api/contact', { ...VALID_CONTACT, company: 'AcmeBot' })
+            postRequest('http://localhost/api/contact', { ...VALID_CONTACT, website_url: 'AcmeBot' })
         )
         const payload = await response.json()
 

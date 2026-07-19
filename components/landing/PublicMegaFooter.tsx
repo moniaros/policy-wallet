@@ -42,7 +42,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
     const solutionLinks = [
         { href: "/product", label: t("Για Ιδιώτες", "For Individuals") },
         { href: "/solutions/agents", label: t("Για Ασφαλιστές", "For Insurance Agents") },
-        { href: "/pricing?audience=agent", label: t("Business Τιμολόγηση", "Business Pricing") },
+        { href: "/pricing?audience=agent", label: t("Πλάνα Ασφαλιστών", "Agent Plans") },
         { href: "/pricing#pricing-faq", label: t("FAQ Τιμολόγησης", "Pricing FAQ") },
         { href: "/product#product-faq", label: t("FAQ Προϊόντος", "Product FAQ") },
     ]

@@ -39,14 +39,14 @@ export default function AgentSolutionsPage() {
                                 href="/auth/signup?role=agent"
                                 className="inline-flex items-center gap-2 rounded-full bg-[#29685B] px-8 py-3.5 text-[16px] font-bold text-white transition-colors hover:bg-[#1C4E44]"
                             >
-                                {t("Ξεκινήστε δωρεάν για 30 μέρες", "Start free for 30 days")}
+                                {t("Ξεκινήστε δωρεάν", "Start free")}
                                 <ArrowRight className="h-4 w-4" />
                             </Link>
                             <Link
                                 href="/pricing?audience=agent"
                                 className="inline-flex items-center rounded-full border border-[#D0D7DE] bg-white px-8 py-3.5 text-[16px] font-bold text-[#0F172A] transition-colors hover:bg-[#F8FAFC]"
                             >
-                                {t("Δείτε Business τιμολόγηση", "View Business pricing")}
+                                {t("Δείτε τα πλάνα ασφαλιστών", "View agent plans")}
                             </Link>
                         </div>
                     </div>
@@ -168,10 +168,10 @@ export default function AgentSolutionsPage() {
                     <div className="rounded-2xl border border-[#DCEBDA] bg-[#EAF6F1] p-8">
                         <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-semibold uppercase tracking-widest text-[#1E293B]">
                             <Sparkles className="h-3.5 w-3.5 text-[#29685B]" />
-                            {t("Business Pricing", "Business Pricing")}
+                            {t("Τιμολόγηση Ασφαλιστών", "Agent Pricing")}
                         </div>
                         <h3 className="mb-3 text-[30px] font-medium leading-tight text-[#0F172A]">
-                            {t("PolicyWallet Business για ασφαλιστικά γραφεία", "PolicyWallet Business for advisor teams")}
+                            {t("PolicyWallet Agency για ασφαλιστικά γραφεία", "PolicyWallet Agency for advisor teams")}
                         </h3>
                         <p className="mb-6 text-[16px] leading-relaxed text-[#475569]">
                             {t(
@@ -180,7 +180,7 @@ export default function AgentSolutionsPage() {
                             )}
                         </p>
                         <Link href="/pricing?audience=agent" className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-[#0F172A] hover:underline">
-                            {t("Μετάβαση στο Business tier", "Go to Business tier")} <ArrowRight className="h-4 w-4" />
+                            {t("Μετάβαση στα πλάνα ασφαλιστών", "Go to agent plans")} <ArrowRight className="h-4 w-4" />
                         </Link>
                     </div>
 
@@ -208,7 +208,7 @@ export default function AgentSolutionsPage() {
                         {t("Agent Onboarding", "Agent Onboarding")}
                     </div>
                     <h3 className="mb-4 text-[34px] font-medium leading-tight tracking-[-0.03em] text-[#0F172A]">
-                        {t("Ξεκινήστε δωρεάν για 30 μέρες", "Start free for 30 days")}
+                        {t("Ξεκινήστε δωρεάν σήμερα", "Start free today")}
                     </h3>
                     <Link
                         href="/auth/signup?role=agent"

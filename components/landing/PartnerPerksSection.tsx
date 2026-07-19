@@ -66,7 +66,7 @@ export function PartnerPerksSection({
                         </div>
                     ))}
                 </div>
-                <p className="mt-6 text-center text-xs text-[#94A3B8]">
+                <p className="mt-6 text-center text-xs text-[#64748B] dark:text-slate-400">
                     {t(
                         "Οι παροχές προσφέρονται από τρίτους συνεργάτες και ενδέχεται να αλλάξουν.",
                         "Benefits are provided by third-party partners and may change."

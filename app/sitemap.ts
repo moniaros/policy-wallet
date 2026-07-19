@@ -33,7 +33,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
         product: 0.9,
         pricing: 0.9,
         "solutions-agents": 0.8,
-        "for-agents": 0.7,
         guides: 0.7,
         company: 0.6,
         contact: 0.6,

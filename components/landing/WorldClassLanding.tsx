@@ -91,7 +91,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                     <div className="hidden items-center gap-5 md:flex">
                         <div className="flex items-center gap-2">
                             <Link
-                                href="/el"
+                                href="/"
                                 className={`text-xs font-semibold transition-colors ${
                                     locale === "el"
                                         ? "text-[#0F172A]"
@@ -131,7 +131,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                         type="button"
                         className="-mr-2 p-2 text-[#0F172A] md:hidden"
                         onClick={() => setIsMobileMenuOpen(true)}
-                        aria-label="Open menu"
+                        aria-label={t("Άνοιγμα μενού", "Open menu")}
                     >
                         <Menu className="h-5 w-5" />
                     </button>
@@ -157,7 +157,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                         type="button"
                         className="-mr-2 rounded-full p-2 transition-colors hover:bg-white/10"
                         onClick={() => setIsMobileMenuOpen(false)}
-                        aria-label="Close menu"
+                        aria-label={t("Κλείσιμο μενού", "Close menu")}
                     >
                         <X className="h-6 w-6" />
                     </button>
@@ -279,8 +279,8 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                                         {t("ασφαλιστικοί κλάδοι", "insurance branches")}
                                     </span>{" "}
                                     {t(
-                                        "— δωρεάν έως 3 συμβόλαια, χωρίς κάρτα",
-                                        "— free for up to 3 policies, no card required"
+                                        "— δωρεάν 1 συμβόλαιο με βασική AI σύνοψη, χωρίς κάρτα",
+                                        "— 1 policy free with a basic AI summary, no card required"
                                     )}
                                 </p>
                             </div>
@@ -294,7 +294,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                 {/* ── 2. TRUST BAR ─────────────────────────────────── */}
                 <div className="border-y border-[#E2E8F0] bg-[#F8FAFC] px-6 py-10 lg:px-12">
                     <div className="mx-auto max-w-[1240px] space-y-6 text-center">
-                        <p className="text-[12px] font-semibold uppercase tracking-widest text-[#94A3B8]">
+                        <p className="text-[12px] font-semibold uppercase tracking-widest text-[#64748B]">
                             {t(
                                 "Αναγνωρίζει συμβόλαια από όλες τις ασφαλιστικές",
                                 "Works with every Greek insurer"
@@ -369,9 +369,9 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                                 labelEn: "Insurance branches",
                             },
                             {
-                                value: "3+1",
-                                labelEl: "Δωρεάν συμβόλαια + 1 AI ανάλυση",
-                                labelEn: "Free policies + 1 AI analysis",
+                                value: "€0",
+                                labelEl: "Δωρεάν συμβόλαιο με βασική AI σύνοψη",
+                                labelEn: "Free policy with basic AI summary",
                             },
                             {
                                 value: "<30s",
@@ -493,8 +493,8 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                             </h2>
                             <p className="mx-auto mb-10 max-w-[440px] text-[17px] text-white/65">
                                 {t(
-                                    "Δωρεάν έως 3 συμβόλαια. Χωρίς πιστωτική κάρτα.",
-                                    "Free for up to 3 policies. No credit card required."
+                                    "Δωρεάν για 1 συμβόλαιο με βασική AI σύνοψη. Χωρίς πιστωτική κάρτα.",
+                                    "Free for 1 policy with a basic AI summary. No credit card required."
                                 )}
                             </p>
                             <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center">

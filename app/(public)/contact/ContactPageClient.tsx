@@ -105,7 +105,7 @@ export default function ContactPage() {
                     phone: form.phone.trim(),
                     subject: form.subject,
                     message: form.message.trim(),
-                    company: honeypot,
+                    website_url: honeypot,
                 }),
             })
 
@@ -149,9 +149,13 @@ export default function ContactPage() {
 
                     <div className="grid gap-8 lg:grid-cols-[1.6fr_1fr]">
                         <form onSubmit={onSubmit} className="rounded-[14px] border border-[#E2E8F0] bg-white p-6 shadow-sm md:p-8">
+                            {/* Honeypot: "website_url" is not a browser-autofill
+                                token (unlike the old name="company", which
+                                autofill profiles silently filled, getting real
+                                messages dropped as bot traffic). */}
                             <input
                                 type="text"
-                                name="company"
+                                name="website_url"
                                 value={honeypot}
                                 onChange={(event) => setHoneypot(event.target.value)}
                                 tabIndex={-1}

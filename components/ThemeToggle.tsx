@@ -2,9 +2,12 @@
 
 import React from "react"
 import { useTheme } from "next-themes"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 export function ThemeToggle() {
     const { resolvedTheme, setTheme } = useTheme()
+    const { language } = useLanguage()
+    const t = (el: string, en: string) => (language === "el" ? el : en)
     const [mounted, setMounted] = React.useState(false)
 
     React.useEffect(() => {
@@ -19,7 +22,7 @@ export function ThemeToggle() {
         <button
             onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
             className="p-2 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-700 text-stone-600 dark:text-stone-400 transition-colors"
-            aria-label="Toggle theme"
+            aria-label={t("Εναλλαγή θέματος", "Toggle theme")}
         >
             {resolvedTheme === "dark" ? (
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

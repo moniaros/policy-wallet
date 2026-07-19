@@ -71,7 +71,7 @@ export function LoBPageShell({ children, activeNav = "none" }: LoBPageShellProps
                         <div className="flex items-center gap-1.5">
                             <button
                                 onClick={() => setLanguage("el")}
-                                className={`cursor-pointer text-xs font-semibold transition-colors duration-150 ${language === "el" ? "text-[#0F172A]" : "text-[#64748B] hover:text-[#0F172A]"}`}
+                                className={`cursor-pointer text-xs font-semibold transition-colors duration-150 ${language === "el" ? "text-[#0F172A]" : "text-[#64748B] hover:text-[#0F172A]"}`} // i18n-hardcoded-ignore: CSS classes, not copy
                             >
                                 EL
                             </button>
@@ -98,7 +98,7 @@ export function LoBPageShell({ children, activeNav = "none" }: LoBPageShellProps
                     <button
                         className="cursor-pointer rounded-full p-2 -mr-2 text-[#0F172A] transition-colors duration-150 hover:bg-gray-100 md:hidden"
                         onClick={() => setIsMobileMenuOpen(true)}
-                        aria-label="Open menu"
+                        aria-label={t("Άνοιγμα μενού", "Open menu")}
                     >
                         <Menu className="h-5 w-5" />
                     </button>
@@ -118,7 +118,7 @@ export function LoBPageShell({ children, activeNav = "none" }: LoBPageShellProps
                         <button
                             className="cursor-pointer rounded-full p-2 -mr-2 text-white transition-colors duration-150 hover:bg-white/10"
                             onClick={() => setIsMobileMenuOpen(false)}
-                            aria-label="Close menu"
+                            aria-label={t("Κλείσιμο μενού", "Close menu")}
                         >
                             <X className="h-6 w-6" />
                         </button>
@@ -144,7 +144,7 @@ export function LoBPageShell({ children, activeNav = "none" }: LoBPageShellProps
                                     setLanguage("el")
                                     setIsMobileMenuOpen(false)
                                 }}
-                                className={`cursor-pointer transition-colors duration-150 ${language === "el" ? "text-white" : "text-white/50"}`}
+                                className={`cursor-pointer transition-colors duration-150 ${language === "el" ? "text-white" : "text-white/50"}`} // i18n-hardcoded-ignore: CSS classes, not copy
                             >
                                 EL
                             </button>
