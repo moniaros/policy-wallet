@@ -1,8 +1,7 @@
-"use client"
-
 /**
  * Trust badges for Greek insurers used on the landing page hero section.
  * Each badge uses the insurer's brand color and a distinctive icon shape.
+ * No "use client": purely static markup, server-rendered on the landing.
  */
 
 interface InsurerBadge {

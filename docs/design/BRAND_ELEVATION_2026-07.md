@@ -94,13 +94,23 @@ analysis, GDPR/AES-256, €0 entry — all checkable claims), insurer row labele
 Παπαδόπουλος", "Μαρία Π.") are an EU consumer-law risk per the July audit — replace with a
 named, consented customer or remove (Stage B, with the copy pass).
 
-## Landing first-load JS (measured, `npm run build`, 18 script chunks)
+## Landing first-load JS (measured, `npm run build`, script chunks of `/`)
 
-- Before sweep: **1,456,443 B raw / 448,293 B gzip**
+- Before sweep: **1,456,443 B raw / 448,293 B gzip** (18 chunks)
 - After sweep: **1,455,291 B raw / 448,176 B gzip** (−1.1 KB — class-level changes only;
   framer-motion was verified absent from this bundle before the sweep, so deleting the dead
   components changes hygiene, not weight. The real reduction is the Stage-B Server-Components
   refactor of `WorldClassLanding`, tracked in the perf batch)
+- After Stage-B Server-Components split: **1,408,960 B raw / 433,918 B gzip** (17 chunks) —
+  **−46.3 KB raw / −13.9 KB gzip** vs post-sweep. `WorldClassLanding` is now a server
+  component (hero, trust bar, services, stats, how-it-works, final CTA all server-rendered);
+  the only client islands are `LandingHeader` (nav/mobile-menu state + analytics),
+  `LandingCtaLink` (tracked signup CTAs), `PolicyWalletWidget`, `AudienceTabs` and
+  `PublicMegaFooter` (newsletter form). `TrustBadges`/`ServicesGrid` lost their needless
+  `"use client"`. The remaining ~434 KB gzip is framework + shared chunks — the honest next
+  lever is shared-chunk dieting, not this page's markup. `ProductPageClient` was NOT split:
+  its EL/EN toggle is client context state (`useLanguage`), so server-rendering its copy
+  would freeze the language switch — its decorative JS count-up was dropped instead (§6).
 
 ## Checklist
 
@@ -110,6 +120,12 @@ named, consented customer or remove (Stage B, with the copy pass).
 - [x] 24 CTAs → the pw pair (+ sm/lg/inverse utilities in globals.css)
 - [x] One spacing rhythm on landing/pricing/LoB shell/product/agents
 - [x] Dead framer-motion components deleted
-- [ ] Stage B: copy/tone rewrite (banned phrases above), testimonial policy, `font-medium`
-      headings, LoB PageClients + guides/company/contact ladder pass, category-pastel decision,
-      Server-Components refactor for landing bundle size
+- [x] Stage B: copy/tone rewrite — all banned-phrase occurrences above are gone (grep-clean),
+      invented testimonials removed from product + agents pages (§7), generic "Learn more" /
+      "Ξεκινήστε τώρα" CTAs replaced with specific verb phrases, cloned hero/heading skeletons
+      de-cloned across the LoB PageClients
+- [x] Stage B: Server-Components refactor of `WorldClassLanding` (numbers above); product-page
+      count-up animation dropped (§6)
+- [ ] Still open (stage C candidates): `font-medium` display headings → 600 on product/agents,
+      LoB PageClients + guides/company/contact type-ladder pass (68px heroes, `rounded-[4px]`
+      CTAs → pw pair), category-pastel decision (§2)

@@ -1,5 +1,4 @@
-"use client"
-
+// No "use client": purely static markup, server-rendered on the landing.
 import { FolderOpen, ScanSearch, Bell, MessageCircle, Users } from "lucide-react"
 
 interface ServicesGridProps {

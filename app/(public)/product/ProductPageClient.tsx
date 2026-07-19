@@ -50,45 +50,13 @@ function FAQItem({ q, a }: { q: string; a: string }) {
     )
 }
 
-function useCountUp(target: string, isVisible: boolean): string {
-    // Initialized to the real value so server-rendered HTML (what crawlers
-    // and no-JS clients see) shows the actual stat; the 0→target animation
-    // only takes over client-side once the section scrolls into view.
-    const [count, setCount] = useState(target)
-
-    useEffect(() => {
-        if (!isVisible) return
-
-        const num = parseFloat(target.replace(/[^0-9.]/g, ""))
-        if (Number.isNaN(num)) {
-            setCount(target)
-            return
-        }
-
-        const step = num / 40
-        let current = 0
-        const timer = window.setInterval(() => {
-            current = Math.min(current + step, num)
-            const formatted = target.replace(/[0-9.]+/, Math.round(current).toString())
-            setCount(formatted)
-            if (current >= num) {
-                window.clearInterval(timer)
-            }
-        }, 30)
-
-        return () => window.clearInterval(timer)
-    }, [isVisible, target])
-
-    return count
-}
-
-function StatItem({ value, label, visible }: { value: string; label: string; visible: boolean }) {
-    const animated = useCountUp(value, visible)
-
+// Static stat tile — the JS count-up animation was dropped per the brand
+// doc's motion-restraint rules (decorative, 30ms interval).
+function StatItem({ value, label }: { value: string; label: string }) {
     return (
         <div className="text-center">
             <div className="mb-2 text-[32px] font-medium leading-none tracking-tight text-[#0F172A] lg:text-[44px]">
-                {animated}
+                {value}
             </div>
             <div className="mx-auto max-w-[180px] text-[14px] leading-snug text-[#475569]">{label}</div>
         </div>
@@ -100,32 +68,12 @@ export default function ProductPage() {
     const isGreek = language === "el"
     const t = (el: string, en: string) => (isGreek ? el : en)
 
-    const statsRef = useRef<HTMLDivElement>(null)
     const categoriesHeadingRef = useRef<HTMLHeadingElement>(null)
     const howItWorksHeadingRef = useRef<HTMLHeadingElement>(null)
-    const [statsVisible, setStatsVisible] = useState(false)
 
     useEffect(() => {
         trackLandingEvent("page_view_product", { locale: language as any })
     }, [language])
-
-    useEffect(() => {
-        const el = statsRef.current
-        if (!el) return
-
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setStatsVisible(true)
-                    observer.disconnect()
-                }
-            },
-            { threshold: 0.3 }
-        )
-
-        observer.observe(el)
-        return () => observer.disconnect()
-    }, [])
 
     const scrollToSection = (
         sectionId: string,
@@ -316,14 +264,13 @@ export default function ProductPage() {
                 </div>
             </section>
 
-            <section ref={statsRef} className="border-y border-[#E2E8F0] bg-white px-6 py-16 md:px-12">
+            <section className="border-y border-[#E2E8F0] bg-white px-6 py-16 md:px-12">
                 <div className="mx-auto grid max-w-[1040px] gap-10 md:grid-cols-3">
                     {STATS.map((stat) => (
                         <StatItem
                             key={stat.labelEn}
                             value={t(stat.valueEl, stat.valueEn)}
                             label={t(stat.labelEl, stat.labelEn)}
-                            visible={statsVisible}
                         />
                     ))}
                 </div>
