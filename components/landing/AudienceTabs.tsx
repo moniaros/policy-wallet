@@ -258,8 +258,8 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                 </h3>
                 <p className="mb-7 text-[16px] leading-relaxed text-[#475569]">
                     {t(
-                        "Αναπτύξτε το χαρτοφυλάκιό σας χωρίς να αυξήσετε την ομάδα σας. Η AI κάνει τη δουλειά.",
-                        "Scale your portfolio without growing your team. AI does the heavy lifting."
+                        "Αναπτύξτε το χαρτοφυλάκιό σας χωρίς να μεγαλώσετε την ομάδα: κάθε συμβόλαιο αναλύεται αυτόματα μόλις ανέβει.",
+                        "Grow your book without growing your team: every policy is analyzed automatically the moment it's uploaded."
                     )}
                 </p>
                 <ul className="mb-8 space-y-3.5">

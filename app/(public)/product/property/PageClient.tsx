@@ -22,7 +22,7 @@ export default function PropertyProductPage() {
                         {t("Λύσεις Ακινήτων", "Property Solutions")}
                     </span>
                     <h1 className="text-[46px] lg:text-[68px] leading-[1.05] tracking-[-0.04em] font-medium text-[#0F172A] mb-8">
-                        {t("Έξυπνη διαχείριση περιουσίας.", "Intelligent home & property management.")}
+                        {t("Το σπίτι σας, ασφαλισμένο στη σωστή αξία.", "Your home, insured at the right value.")}
                     </h1>
                     <p className="mx-auto max-w-[680px] text-[20px] lg:text-[22px] leading-[1.5] text-[#475569] mb-10">
                         {t("Διασφαλίστε το Rebuild Cost, αναλύστε καλύψεις φυσικών καταστροφών και ελέγξτε τη συμμόρφωση σας για μείωση ΕΝΦΙΑ σε μία πλατφόρμα.", "Ensure adequate Rebuild Costs, analyze strictly natural disaster coverages, and automate ENFIA tax deduction compliance checks.")}
@@ -108,7 +108,7 @@ export default function PropertyProductPage() {
                     {t("Ασφαλίστε την περιουσία σας σωστά.", "Protect your equity correctly.")}
                 </h2>
                 <Link href="/auth/signup" className="inline-flex rounded-[4px] bg-[#89D9B2] px-8 py-4 text-[16px] font-bold text-[#1A1A1A] transition-opacity duration-150 hover:opacity-90">
-                    {t("Ξεκινήστε τώρα", "Start organizing today")}
+                    {t("Ανεβάστε το συμβόλαιο κατοικίας", "Upload your home policy")}
                 </Link>
             </section>
 

@@ -81,8 +81,8 @@ export const publicPricingContent: Record<PricingAudience, PublicPricingAudience
             en: "Plans for individuals",
         },
         subtitle: {
-            el: "Από απλή οργάνωση συμβολαίων μέχρι πλήρη AI ανάλυση κάλυψης.",
-            en: "From simple policy organization to full AI-powered coverage intelligence.",
+            el: "Από απλή οργάνωση συμβολαίων μέχρι πλήρη ανάλυση κάλυψης: κενά, λήξεις, απαντήσεις.",
+            en: "From simple policy organization to full coverage analysis: gaps, renewals, answers.",
         },
         plans: [
             {

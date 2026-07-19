@@ -22,7 +22,7 @@ export default function CyberProductPage() {
                         {t("Κυβερνοασφάλεια", "Cyber Risk Solutions")}
                     </span>
                     <h1 className="text-[46px] lg:text-[68px] leading-[1.05] tracking-[-0.04em] font-medium text-[#0F172A] mb-8">
-                        {t("Προστασία δεδομένων από κυβερνοεπιθέσεις.", "Intelligent cyber coverage management.")}
+                        {t("Ransomware, διακοπή λειτουργίας, ευθύνη: τι σας καλύπτει;", "Ransomware, downtime, liability: what covers you?")}
                     </h1>
                     <p className="mx-auto max-w-[680px] text-[20px] lg:text-[22px] leading-[1.5] text-[#475569] mb-10">
                         {t("Ελέγξτε τις καλύψεις σας για ransomware, ενημερωθείτε για τα όρια άμεσης ανταπόκρισης και παρακολουθήστε την ασφάλεια των συστημάτων σας.", "Validate ransomware protection, track incident response limits, and document downtime coverage precisely.")}
@@ -93,10 +93,10 @@ export default function CyberProductPage() {
             {/* CTA */}
             <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">
                 <h2 className="text-[36px] lg:text-[48px] font-medium tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
-                    {t("Προστατεύστε τα δεδομένα σας έξυπνα.", "Intelligent cyber security in your pocket.")}
+                    {t("Μάθετε τι ισχύει πριν το συμβάν.", "Know what applies before the incident.")}
                 </h2>
                 <Link href="/auth/signup" className="inline-flex rounded-[4px] bg-[#89D9B2] px-8 py-4 text-[16px] font-bold text-[#1A1A1A] transition-opacity duration-150 hover:opacity-90">
-                    {t("Ξεκινήστε τώρα", "Start organizing today")}
+                    {t("Ανεβάστε το cyber συμβόλαιο", "Upload your cyber policy")}
                 </Link>
             </section>
 
