@@ -107,6 +107,11 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         // support black hole.
         description: `Στείλτε μας μήνυμα για υποστήριξη, τιμολόγηση ή συνεργασία. Απαντάμε Δευτέρα–Παρασκευή 09:00–18:00 στο ${siteConfig.contactEmail}. Θα χαρούμε να βοηθήσουμε.`,
         breadcrumb: "Επικοινωνία",
+        en: {
+            title: "Contact us: support and partnerships",
+            description: `Send us a message about support, pricing or partnerships. We reply Monday–Friday 09:00–18:00 at ${siteConfig.contactEmail}. We will be happy to help.`,
+            breadcrumb: "Contact",
+        },
     },
     "solutions-agents": {
         path: "/solutions/agents",
@@ -129,6 +134,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             "Παρακολουθήστε την εμπορική αξία του οχήματος, συγκρίνετε καλύψεις και εντοπίστε κενά όπως η οδική βοήθεια. Η AI διαβάζει το συμβόλαιό σας σε δευτερόλεπτα.",
         keywords: ["ασφάλεια αυτοκινήτου", "καλύψεις ασφάλειας αυτοκινήτου"],
         breadcrumb: "Αυτοκίνητο",
+        en: {
+            title: "Car insurance in Greece: AI coverage analysis",
+            description:
+                "Track your vehicle's market value, compare coverages and spot gaps like missing roadside assistance. AI reads your motor policy in under 30 seconds.",
+            breadcrumb: "Motor",
+        },
     },
     "product-property": {
         path: "/product/property",
@@ -137,6 +148,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             "Ελέγξτε αν το σπίτι σας είναι υπασφαλισμένο, αν δικαιούστε έκπτωση ΕΝΦΙΑ (σεισμός–φωτιά–πλημμύρα) και αν το κόστος ανακατασκευής είναι ενημερωμένο.",
         keywords: ["ασφάλεια κατοικίας", "έκπτωση ΕΝΦΙΑ ασφάλιση", "υπασφάλιση"],
         breadcrumb: "Κατοικία",
+        en: {
+            title: "Home insurance: gaps, ENFIA, rebuild cost",
+            description:
+                "Check whether your home is underinsured, if you qualify for Greece's ENFIA tax discount (earthquake-fire-flood) and if your rebuild cost is current.",
+            breadcrumb: "Property",
+        },
     },
     "product-health": {
         path: "/product/health",
@@ -145,6 +162,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             "Κατανοήστε απαλλαγές, ανώτατα όρια και απευθείας κάλυψη νοσηλείας. Η AI εξηγεί το συμβόλαιο υγείας σας σε απλά ελληνικά και εντοπίζει τι σας λείπει.",
         keywords: ["ασφάλεια υγείας", "απαλλαγή ασφάλειας υγείας"],
         breadcrumb: "Υγεία",
+        en: {
+            title: "Health insurance: deductibles and limits",
+            description:
+                "Understand deductibles, coverage caps and direct hospital billing. AI explains your health policy in plain language and shows what you are missing.",
+            breadcrumb: "Health",
+        },
     },
     "product-cyber": {
         path: "/product/cyber",
@@ -153,6 +176,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             "Καλύψεις για ransomware, παραβιάσεις δεδομένων και διακοπή επιχειρηματικής λειτουργίας. Δείτε τι περιλαμβάνει η κυβερνοασφάλισή σας και πού έχετε κενά.",
         keywords: ["κυβερνοασφάλεια", "ασφάλιση cyber"],
         breadcrumb: "Κυβερνοασφάλεια",
+        en: {
+            title: "Cyber insurance: ransomware, interruption",
+            description:
+                "Coverage for ransomware, data breaches and business interruption. See exactly what your cyber policy includes, what it excludes and where your gaps are.",
+            breadcrumb: "Cyber",
+        },
     },
     "product-group-health": {
         path: "/product/group-health",
@@ -161,6 +190,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             "Συντονισμός παροχών με ατομικά συμβόλαια, καθαρή εικόνα καλύψεων για κάθε εργαζόμενο και εντοπισμός επικαλύψεων με AI. Για HR και εργαζομένους.",
         keywords: ["ομαδική ασφάλιση υγείας", "ομαδικό συμβόλαιο επιχείρησης"],
         breadcrumb: "Ομαδική Υγεία",
+        en: {
+            title: "Group health insurance for businesses",
+            description:
+                "Coordinate employer benefits with personal policies, get a clear coverage picture per employee and detect overlaps with AI. For HR and employees.",
+            breadcrumb: "Group Health",
+        },
     },
     "product-group-pension": {
         path: "/product/group-pension",
@@ -169,6 +204,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             "Παρακολουθήστε το ομαδικό συνταξιοδοτικό σας πρόγραμμα: εισφορές, φορολογικά οφέλη και προβολή σύνταξης. Όλα σε ένα ασφαλές ψηφιακό πορτοφόλι.",
         keywords: ["ομαδικό συνταξιοδοτικό πρόγραμμα", "φοροαπαλλαγή σύνταξης"],
         breadcrumb: "Ομαδική Σύνταξη",
+        en: {
+            title: "Group pension: tax benefits and projections",
+            description:
+                "Track your employer pension plan: contributions, tax advantages and retirement projections. Everything organized in one secure digital insurance wallet.",
+            breadcrumb: "Group Pension",
+        },
     },
     "product-pet": {
         path: "/product/pet",
@@ -177,6 +218,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             "Καλύψεις υγείας για σκύλους και γάτες, έλεγχος κάλυψης για λεϊσμανίαση (καλαζάρ) και εξαιρέσεις φυλών. Η AI διαβάζει το συμβόλαιο του κατοικιδίου σας.",
         keywords: ["ασφάλεια κατοικιδίων", "ασφάλεια σκύλου", "λεϊσμανίαση κάλυψη"],
         breadcrumb: "Κατοικίδια",
+        en: {
+            title: "Pet insurance for dogs and cats in Greece",
+            description:
+                "Health coverage for dogs and cats, leishmaniasis (kala-azar) coverage checks and breed exclusions. AI reads your pet's policy and shows what is covered.",
+            breadcrumb: "Pet",
+        },
     },
     "product-life": {
         path: "/product/life",
@@ -185,6 +232,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             "Παροχή θανάτου, μόνιμη αναπηρία, σοβαρές ασθένειες και προστασία στεγαστικού. Η AI διαβάζει το συμβόλαιο ζωής σας και δείχνει τι λείπει για τους δικούς σας.",
         keywords: ["ασφάλεια ζωής", "προστασία στεγαστικού δανείου", "κάλυψη σοβαρών ασθενειών"],
         breadcrumb: "Ζωή",
+        en: {
+            title: "Life insurance: family & mortgage protection",
+            description:
+                "Death benefit, permanent disability, critical illness and mortgage protection. AI reads your life policy and shows what is missing for your family.",
+            breadcrumb: "Life",
+        },
     },
     "product-travel": {
         path: "/product/travel",
@@ -193,6 +246,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             "Ιατρικά έκτακτα στο εξωτερικό, ακύρωση ταξιδιού, αποσκευές και επαναπατρισμός. Ελέγξτε αν η κάλυψή σας αρκεί και για βίζα Σένγκεν πριν κλείσετε εισιτήρια.",
         keywords: ["ταξιδιωτική ασφάλεια", "ασφάλεια ταξιδιού Σένγκεν", "ακύρωση ταξιδιού"],
         breadcrumb: "Ταξιδιωτική",
+        en: {
+            title: "Travel insurance: Schengen and cancellations",
+            description:
+                "Medical emergencies abroad, trip cancellation, baggage and repatriation. Check whether your coverage also meets Schengen visa rules before booking.",
+            breadcrumb: "Travel",
+        },
     },
     "product-pension": {
         path: "/product/pension",
@@ -201,6 +260,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             "Εισφορές, επιλογές ωρίμανσης (εφάπαξ ή σύνταξη) και όροι εξαγοράς σε απλά ελληνικά. Η AI αναλύει το αποταμιευτικό σας πρόγραμμα και εντοπίζει τα κενά.",
         keywords: ["συνταξιοδοτικό πρόγραμμα", "αποταμιευτικό πρόγραμμα", "ιδιωτική σύνταξη"],
         breadcrumb: "Σύνταξη & Αποταμίευση",
+        en: {
+            title: "Pension plans: contributions and terms",
+            description:
+                "Contributions, maturity options (lump sum or annuity) and surrender terms in plain language. AI analyzes your savings plan and finds the gaps.",
+            breadcrumb: "Pension & Savings",
+        },
     },
     "product-boat": {
         path: "/product/boat",
@@ -209,6 +274,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             "Η αστική ευθύνη σκάφους αναψυχής είναι υποχρεωτική στα ελληνικά ύδατα. Δείτε κάλυψη σκάφους και μηχανής, επιθαλάσσια αρωγή και όρια πριν σαλπάρετε.",
         keywords: ["ασφάλεια σκάφους", "αστική ευθύνη σκάφους", "ασφάλιση σκάφους αναψυχής"],
         breadcrumb: "Σκάφος",
+        en: {
+            title: "Boat insurance: liability in Greek waters",
+            description:
+                "Liability insurance is mandatory for pleasure craft in Greek waters. Review hull and engine cover, sea assistance and limits before you set sail.",
+            breadcrumb: "Boat",
+        },
     },
     "product-business": {
         path: "/product/business",
@@ -217,6 +288,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             "Στέγη, εξοπλισμός, εμπορεύματα, διακοπή εργασιών και αστική ευθύνη σε μία εικόνα. Η AI χαρτογραφεί τα συμβόλαια της επιχείρησής σας και δείχνει τα κενά.",
         keywords: ["ασφάλεια επιχείρησης", "πολυασφαλιστήριο επιχείρησης", "ασφάλιση καταστήματος"],
         breadcrumb: "Επιχείρηση",
+        en: {
+            title: "Business insurance: multi-cover for SMEs",
+            description:
+                "Premises, equipment, stock, business interruption and liability in one picture. AI maps your company's policies and shows where the gaps are.",
+            breadcrumb: "Business",
+        },
     },
     guides: {
         path: "/guides",
@@ -225,6 +302,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             "Πρακτικοί οδηγοί για την ελληνική ασφαλιστική αγορά: πώς παίρνετε έκπτωση ΕΝΦΙΑ, πώς εντοπίζετε κενά κάλυψης και τι ελέγχετε πριν από κάθε ανανέωση.",
         keywords: ["οδηγοί ασφάλισης", "έκπτωση ΕΝΦΙΑ", "κενά κάλυψης"],
         breadcrumb: "Οδηγοί",
+        en: {
+            title: "Insurance guides: ENFIA, gaps, renewals",
+            description:
+                "Practical guides to the Greek insurance market: how the ENFIA tax discount works, how to spot coverage gaps and what to check before every renewal.",
+            breadcrumb: "Guides",
+        },
     },
     privacy: {
         path: "/privacy",

@@ -11,6 +11,7 @@ import {
     TrendingUp,
 } from "lucide-react"
 import Link from "next/link"
+import { localizeHref } from "@/lib/seo/locale-links"
 
 interface AudienceTabsProps {
     isGreek: boolean
@@ -270,7 +271,7 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                     ))}
                 </ul>
                 <Link
-                    href="/solutions/agents"
+                    href={localizeHref("/solutions/agents", isGreek ? "el" : "en")}
                     className="inline-flex items-center gap-2 rounded-full bg-[#29685B] px-6 py-3 text-[14px] font-bold text-white transition-colors hover:bg-[#1C4E44]"
                 >
                     {t("Δείτε το agent dashboard", "See agent dashboard")}

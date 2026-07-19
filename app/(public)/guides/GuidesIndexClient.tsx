@@ -5,6 +5,7 @@ import { ArrowRight, BookOpen, Clock3 } from "lucide-react"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { guides } from "@/lib/guides/content"
+import { localizeHref } from "@/lib/seo/locale-links"
 
 function formatDate(iso: string, language: string): string {
     return new Date(`${iso}T00:00:00Z`).toLocaleDateString(
@@ -44,7 +45,7 @@ export default function GuidesIndexClient() {
                     {guides.map((guide) => (
                         <Link
                             key={guide.slug}
-                            href={`/guides/${guide.slug}`}
+                            href={localizeHref(`/guides/${guide.slug}`, language)}
                             className="group rounded-[20px] border border-[#E5E7EB] bg-white p-8 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] md:p-10"
                         >
                             <div className="mb-4 flex flex-wrap items-center gap-4 text-[13px] text-[#64748B]">

@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, CalendarDays, Clock3, ExternalLink } from "lucid
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { useLanguage } from "@/contexts/LanguageContext"
 import type { Guide } from "@/lib/guides/content"
+import { localizeHref } from "@/lib/seo/locale-links"
 
 function formatDate(iso: string, language: string): string {
     return new Date(`${iso}T00:00:00Z`).toLocaleDateString(
@@ -24,7 +25,7 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
             <article className="mx-auto max-w-[760px] px-6 pb-24 md:px-0">
                 <nav className="mb-8">
                     <Link
-                        href="/guides"
+                        href={localizeHref("/guides", language)}
                         className="inline-flex items-center gap-1.5 text-[14px] font-medium text-[#29685B] transition-colors duration-150 hover:text-[#1C4E44]"
                     >
                         <ArrowLeft className="h-4 w-4" />
@@ -141,7 +142,7 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                             {guide.related.map((item) => (
                                 <li key={item.href}>
                                     <Link
-                                        href={item.href}
+                                        href={localizeHref(item.href, language)}
                                         className="inline-flex items-center gap-1.5 text-[15px] text-[#29685B] underline-offset-4 transition-colors duration-150 hover:text-[#1C4E44] hover:underline"
                                     >
                                         {item.label[lang]}

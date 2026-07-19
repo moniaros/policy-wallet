@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Inter } from "next/font/google"
 import { ArrowRight, Menu, X } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { localizeHref } from "@/lib/seo/locale-links"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { SolutionsDropdown, SolutionsMobileGroup } from "@/components/landing/SolutionsDropdown"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
@@ -22,6 +23,8 @@ export function LoBPageShell({ children, activeNav = "none" }: LoBPageShellProps
     const [scrolled, setScrolled] = useState(false)
     const isGreek = language === "el"
     const t = (el: string, en: string) => (isGreek ? el : en)
+    // EN context navigates within the /en tree (unmirrored targets stay Greek).
+    const l = (href: string) => localizeHref(href, language)
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 24)
@@ -49,20 +52,20 @@ export function LoBPageShell({ children, activeNav = "none" }: LoBPageShellProps
                         scrolled ? "border border-gray-200/60 bg-white/90 shadow-sm backdrop-blur-xl" : "border border-gray-200/50 bg-white/80 shadow-sm backdrop-blur-xl"
                     }`}
                 >
-                    <Link href="/" className="inline-flex items-center text-[20px] font-bold tracking-tight">
+                    <Link href={l("/")} className="inline-flex items-center text-[20px] font-bold tracking-tight">
                         <span className="text-[#0F172A]">Policy</span>
                         <span className="text-[#64748B]">Wallet</span>
                     </Link>
 
                     <nav className="hidden items-center gap-8 text-[14px] font-medium md:flex">
-                        <Link href="/product" className={`transition-colors duration-150 ${navLinkClass("product")}`}>
+                        <Link href={l("/product")} className={`transition-colors duration-150 ${navLinkClass("product")}`}>
                             {t("Προϊόντα", "Products")}
                         </Link>
                         <SolutionsDropdown language={language} className="text-[#475569]" />
-                        <Link href="/company" className={`transition-colors duration-150 ${navLinkClass("company")}`}>
+                        <Link href={l("/company")} className={`transition-colors duration-150 ${navLinkClass("company")}`}>
                             {t("Εταιρεία", "Company")}
                         </Link>
-                        <Link href="/pricing" className={`transition-colors duration-150 ${navLinkClass("pricing")}`}>
+                        <Link href={l("/pricing")} className={`transition-colors duration-150 ${navLinkClass("pricing")}`}>
                             {t("Τιμολόγηση", "Pricing")}
                         </Link>
                     </nav>
@@ -109,7 +112,7 @@ export function LoBPageShell({ children, activeNav = "none" }: LoBPageShellProps
                 className={`fixed inset-0 z-[100] flex flex-col bg-[#29685B] text-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isMobileMenuOpen ? "translate-y-0" : "-translate-y-full"}`}
             >
                 <div className="mx-auto flex h-16 w-full max-w-[1400px] items-center justify-between px-6 pt-4">
-                    <Link href="/" className="inline-flex items-center text-[20px] font-bold tracking-tight" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Link href={l("/")} className="inline-flex items-center text-[20px] font-bold tracking-tight" onClick={() => setIsMobileMenuOpen(false)}>
                         <span className="text-white">Policy</span>
                         <span className="text-white/80">Wallet</span>
                     </Link>
@@ -127,14 +130,14 @@ export function LoBPageShell({ children, activeNav = "none" }: LoBPageShellProps
 
                 <div className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-center px-8 pb-24 sm:px-12">
                     <nav className="mb-12 flex flex-col gap-6 text-[44px] font-medium leading-tight tracking-tight sm:text-[56px]">
-                        <Link href="/product" className="text-white transition-colors duration-150 hover:text-white/80" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Link href={l("/product")} className="text-white transition-colors duration-150 hover:text-white/80" onClick={() => setIsMobileMenuOpen(false)}>
                             {t("Προϊόντα", "Products")}
                         </Link>
                         <SolutionsMobileGroup language={language} onNavigate={() => setIsMobileMenuOpen(false)} className="text-[20px] sm:text-[22px]" />
-                        <Link href="/company" className="text-white transition-colors duration-150 hover:text-white/80" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Link href={l("/company")} className="text-white transition-colors duration-150 hover:text-white/80" onClick={() => setIsMobileMenuOpen(false)}>
                             {t("Εταιρεία", "Company")}
                         </Link>
-                        <Link href="/pricing" className="text-white transition-colors duration-150 hover:text-white/80" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Link href={l("/pricing")} className="text-white transition-colors duration-150 hover:text-white/80" onClick={() => setIsMobileMenuOpen(false)}>
                             {t("Τιμολόγηση", "Pricing")}
                         </Link>
 
@@ -199,7 +202,7 @@ export function LoBPageShell({ children, activeNav = "none" }: LoBPageShellProps
                             )}
                         </p>
                         <Link
-                            href="/pricing"
+                            href={l("/pricing")}
                             className="inline-flex items-center gap-2 rounded-[4px] border border-[#29685B] px-8 py-3.5 text-[16px] font-bold text-[#29685B] transition-colors duration-150 hover:bg-[#29685B] hover:text-white"
                         >
                             {t("Δείτε την τιμολόγηση", "See pricing")}

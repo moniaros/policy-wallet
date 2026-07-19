@@ -4,6 +4,7 @@ import Link from "next/link"
 import { ArrowRight, CheckCircle2, Sparkles } from "lucide-react"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { localizeHref } from "@/lib/seo/locale-links"
 import {
     ClientPortfolioDashboardWidget,
     GapAnalysisWidget,
@@ -43,7 +44,7 @@ export default function AgentSolutionsPage() {
                                 <ArrowRight className="h-4 w-4" />
                             </Link>
                             <Link
-                                href="/pricing?audience=agent"
+                                href={localizeHref("/pricing?audience=agent", language)}
                                 className="inline-flex items-center rounded-full border border-[#D0D7DE] bg-white px-8 py-3.5 text-[16px] font-bold text-[#0F172A] transition-colors hover:bg-[#F8FAFC]"
                             >
                                 {t("Δείτε τα πλάνα ασφαλιστών", "View agent plans")}
@@ -179,7 +180,7 @@ export default function AgentSolutionsPage() {
                                 "Unlimited clients, role-based access, renewal pipeline, and branded reports."
                             )}
                         </p>
-                        <Link href="/pricing?audience=agent" className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-[#0F172A] hover:underline">
+                        <Link href={localizeHref("/pricing?audience=agent", language)} className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-[#0F172A] hover:underline">
                             {t("Μετάβαση στα πλάνα ασφαλιστών", "Go to agent plans")} <ArrowRight className="h-4 w-4" />
                         </Link>
                     </div>

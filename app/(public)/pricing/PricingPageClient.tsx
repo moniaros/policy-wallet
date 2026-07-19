@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { localizeHref } from "@/lib/seo/locale-links"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { SolutionsDropdown, SolutionsMobileGroup } from "@/components/landing/SolutionsDropdown"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
@@ -42,6 +43,8 @@ export default function PricingPage({
     const [loadingPlanKey, setLoadingPlanKey] = useState<string | null>(null)
 
     const content = useMemo(() => pricingContent[audience], [pricingContent, audience])
+    // EN context navigates within the /en tree (unmirrored targets stay Greek).
+    const l = (href: string) => localizeHref(href, language)
 
     const labels = {
         heading: {
@@ -134,7 +137,7 @@ export default function PricingPage({
 
     const handleSelectPlan = async (plan: PublicPricingPlan) => {
         if (plan.isContactPlan) {
-            router.push("/contact")
+            router.push(l("/contact"))
             return
         }
 
@@ -184,20 +187,20 @@ export default function PricingPage({
         <div className="min-h-screen bg-gradient-to-br from-[#F0FDF4] via-white to-[#ECFDF5] selection:bg-[#64748B]/20 selection:text-[#0F172A] dark:from-slate-950 dark:via-slate-900 dark:to-[#0B1F1A]">
             <header className="fixed left-4 right-4 top-4 z-50">
                 <div className="mx-auto flex h-14 max-w-[1400px] items-center justify-between rounded-full border border-gray-200/50 bg-white/80 px-6 shadow-sm backdrop-blur-xl transition-all duration-300 dark:border-slate-700/50 dark:bg-slate-900/80">
-                    <Link href="/" className="inline-flex items-center text-[20px] font-bold tracking-tight">
+                    <Link href={l("/")} className="inline-flex items-center text-[20px] font-bold tracking-tight">
                         <span className="text-[#0F172A] dark:text-white">Policy</span>
                         <span className="text-[#64748B] dark:text-slate-400">Wallet</span>
                     </Link>
 
                     <nav className="hidden items-center gap-8 text-[14px] font-medium text-[#475569] dark:text-slate-300 md:flex">
-                        <Link href="/product" className="transition-colors hover:text-[#0F172A] dark:hover:text-white">
+                        <Link href={l("/product")} className="transition-colors hover:text-[#0F172A] dark:hover:text-white">
                             {labels.products[language]}
                         </Link>
                         <SolutionsDropdown language={language} />
-                        <Link href="/company" className="transition-colors hover:text-[#0F172A] dark:hover:text-white">
+                        <Link href={l("/company")} className="transition-colors hover:text-[#0F172A] dark:hover:text-white">
                             {labels.company[language]}
                         </Link>
-                        <Link href="/pricing" className="text-[#0F172A] transition-colors dark:text-white">
+                        <Link href={l("/pricing")} className="text-[#0F172A] transition-colors dark:text-white">
                             {labels.pricing[language]}
                         </Link>
                     </nav>
@@ -272,7 +275,7 @@ export default function PricingPage({
             >
                 <div className="mx-auto flex h-16 w-full max-w-[1400px] items-center justify-between px-6 pt-4">
                     <Link
-                        href="/"
+                        href={l("/")}
                         className="inline-flex items-center text-[20px] font-bold tracking-tight"
                         onClick={() => setIsMobileMenuOpen(false)}
                     >
@@ -291,7 +294,7 @@ export default function PricingPage({
                 <div className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-center px-8 pb-24 sm:px-12">
                     <nav className="mb-12 flex flex-col gap-6 text-[44px] font-medium leading-tight tracking-tight sm:text-[56px]">
                         <Link
-                            href="/product"
+                            href={l("/product")}
                             className="text-white transition-colors hover:text-white/80"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
@@ -299,14 +302,14 @@ export default function PricingPage({
                         </Link>
                         <SolutionsMobileGroup language={language} onNavigate={() => setIsMobileMenuOpen(false)} className="text-[20px] sm:text-[22px]" />
                         <Link
-                            href="/company"
+                            href={l("/company")}
                             className="text-white transition-colors hover:text-white/80"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
                             {labels.company[language]}
                         </Link>
                         <Link
-                            href="/pricing"
+                            href={l("/pricing")}
                             className="text-white transition-colors hover:text-white/80"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >

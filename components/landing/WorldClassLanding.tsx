@@ -5,6 +5,7 @@ import Link from "next/link"
 import { Inter } from "next/font/google"
 import { ArrowRight, Menu, X, Upload, Sparkles, CheckCircle } from "lucide-react"
 import { trackLandingEvent } from "@/lib/landing/analytics"
+import { localizeHref } from "@/lib/seo/locale-links"
 import type { LandingLocale } from "@/types/landing-content"
 import { SolutionsDropdown, SolutionsMobileGroup } from "@/components/landing/SolutionsDropdown"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
@@ -29,6 +30,8 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
     const isGreek = locale === "el"
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const t = (el: string, en: string) => (isGreek ? el : en)
+    // EN context navigates within the /en tree (unmirrored targets stay Greek).
+    const l = (href: string) => localizeHref(href, locale)
 
     useEffect(() => {
         trackLandingEvent("page_view_landing", {
@@ -60,7 +63,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
             <header className="fixed left-4 right-4 top-4 z-50">
                 <div className="mx-auto flex h-14 max-w-[1400px] items-center justify-between rounded-full border border-gray-200/50 bg-white/80 px-6 shadow-sm backdrop-blur-xl transition-all duration-300">
                     <Link
-                        href="/"
+                        href={l("/")}
                         className="inline-flex items-center text-[20px] font-bold tracking-tight"
                     >
                         <span className="text-[#0F172A]">Policy</span>
@@ -68,7 +71,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                     </Link>
 
                     <nav className="hidden items-center gap-8 text-[14px] font-medium text-[#475569] md:flex">
-                        <Link href="/product" className="transition-colors hover:text-[#0F172A]">
+                        <Link href={l("/product")} className="transition-colors hover:text-[#0F172A]">
                             {t("Προϊόντα", "Products")}
                         </Link>
                         <SolutionsDropdown language={locale} />
@@ -80,10 +83,10 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                                 {t("Παροχές", "Benefits")}
                             </Link>
                         )}
-                        <Link href="/company" className="transition-colors hover:text-[#0F172A]">
+                        <Link href={l("/company")} className="transition-colors hover:text-[#0F172A]">
                             {t("Εταιρεία", "Company")}
                         </Link>
-                        <Link href="/pricing" className="transition-colors hover:text-[#0F172A]">
+                        <Link href={l("/pricing")} className="transition-colors hover:text-[#0F172A]">
                             {t("Τιμολόγηση", "Pricing")}
                         </Link>
                     </nav>
@@ -146,7 +149,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
             >
                 <div className="mx-auto flex h-16 w-full max-w-[1400px] items-center justify-between px-6 pt-4">
                     <Link
-                        href="/"
+                        href={l("/")}
                         className="inline-flex items-center text-[20px] font-bold tracking-tight"
                         onClick={() => setIsMobileMenuOpen(false)}
                     >
@@ -166,7 +169,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                 <div className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-center px-8 pb-24 sm:px-12">
                     <nav className="mb-12 flex flex-col gap-6 text-[44px] font-medium leading-tight tracking-tight sm:text-[56px]">
                         <Link
-                            href="/product"
+                            href={l("/product")}
                             className="text-white transition-colors hover:text-white/80"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
@@ -178,14 +181,14 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                             className="text-[20px] sm:text-[22px]"
                         />
                         <Link
-                            href="/company"
+                            href={l("/company")}
                             className="text-white transition-colors hover:text-white/80"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
                             {t("Εταιρεία", "Company")}
                         </Link>
                         <Link
-                            href="/pricing"
+                            href={l("/pricing")}
                             className="text-white transition-colors hover:text-white/80"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
@@ -506,7 +509,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                                     {t("Ξεκινήστε Δωρεάν", "Start Free")}
                                 </Link>
                                 <Link
-                                    href="/solutions/agents"
+                                    href={l("/solutions/agents")}
                                     className="rounded-full border border-white/20 px-8 py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-white/10"
                                 >
                                     {t("Είστε ασφαλιστής;", "Are you an agent?")}

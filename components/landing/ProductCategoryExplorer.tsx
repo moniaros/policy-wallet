@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { ArrowRight } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { localizeHref } from "@/lib/seo/locale-links"
 import {
     getProductCategory,
     productCategories,
@@ -49,7 +50,7 @@ export function ProductCategoryExplorer({
                     </div>
 
                     <Link
-                        href="/product"
+                        href={localizeHref("/product", language)}
                         className="inline-flex items-center gap-2 self-start rounded-full border border-[#D5DEE8] bg-white px-5 py-3 text-[15px] font-medium text-[#0F172A] transition-colors duration-150 hover:border-[#CBD5E1] hover:bg-[#F8FAFC]"
                     >
                         {t("Όλες οι κατηγορίες", "All categories")}
@@ -100,7 +101,7 @@ export function ProductCategoryExplorer({
                         return (
                             <Link
                                 key={category.id}
-                                href={category.href}
+                                href={localizeHref(category.href, language)}
                                 className={`group flex min-h-[220px] flex-col rounded-[20px] border p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(15,23,42,0.08)] ${category.surface} ${category.border}`}
                             >
                                 <div className="mb-5 flex items-start justify-between gap-3">
