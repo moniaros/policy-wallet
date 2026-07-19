@@ -88,6 +88,13 @@ export default function PropertyProductPage() {
                                     <p className="text-[#475569]">{t("Οπτικός έλεγχος αν έχετε την απαραίτητη τριάδα Σεισμού-Πυρκαγιάς-Πλημμύρας για την έκπτωση ΕΝΦΙΑ έως 20%.", "Visual checks parsing for the required trio of Earthquake, Fire, and Flood for the ENFIA tax discount of up to 20%.")}</p>
                                 </div>
                             </li>
+                            <li className="flex gap-4">
+                                <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
+                                <div>
+                                    <h4 className="text-[18px] font-medium text-[#1A1A1A]">{t("Μένετε με ενοίκιο;", "Renting your home?")}</h4>
+                                    <p className="text-[#475569]">{t("Η ασφάλεια κατοικίας δεν αφορά μόνο ιδιοκτήτες: το περιεχόμενο και η ευθύνη ενοικιαστή αναλύονται με τον ίδιο τρόπο, ώστε να ξέρετε τι σας προστατεύει μέσα στο σπίτι που νοικιάζετε.", "Home insurance isn't only for owners: contents and tenant liability are analyzed the same way, so you know what protects you inside the home you rent.")}</p>
+                                </div>
+                            </li>
                         </ul>
                     </div>
                 </div>

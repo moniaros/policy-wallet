@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react"
 import Link from "next/link"
 import { Inter } from "next/font/google"
-import { Menu, X } from "lucide-react"
+import { ArrowRight, Menu, X } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { SolutionsDropdown, SolutionsMobileGroup } from "@/components/landing/SolutionsDropdown"
@@ -180,7 +180,34 @@ export function LoBPageShell({ children, activeNav = "none" }: LoBPageShellProps
                 </div>
             </div>
 
-            <main className="pt-32 lg:pt-40">{children}</main>
+            <main className="pt-32 lg:pt-40">
+                {children}
+
+                {/* Pricing funnel — every LoB page routes to /pricing from the body, not only the nav */}
+                <section className="border-t border-[#E2E8F0] bg-white px-6 py-16 text-center lg:px-12 dark:border-slate-800 dark:bg-slate-950">
+                    <div className="mx-auto max-w-[760px]">
+                        <p className="mb-3 text-[13px] font-semibold uppercase tracking-widest text-[#29685B]">
+                            {t("Τιμολόγηση", "Pricing")}
+                        </p>
+                        <h2 className="mb-4 text-[28px] font-medium leading-[1.15] tracking-[-0.03em] text-[#0F172A] lg:text-[34px] dark:text-white">
+                            {t("Δωρεάν για 1 συμβόλαιο. Αναβάθμιση όποτε τη χρειαστείτε.", "Free for 1 policy. Upgrade whenever you need it.")}
+                        </h2>
+                        <p className="mb-8 text-[16px] leading-relaxed text-[#475569] dark:text-slate-400">
+                            {t(
+                                "Starter 2,99€/μήνα για οργάνωση, Plus 7,99€/μήνα με πλήρη ανάλυση AI. Ακύρωση όποτε θέλετε.",
+                                "Starter at €2.99/month for organization, Plus at €7.99/month with full AI analysis. Cancel anytime."
+                            )}
+                        </p>
+                        <Link
+                            href="/pricing"
+                            className="inline-flex items-center gap-2 rounded-[4px] border border-[#29685B] px-8 py-3.5 text-[16px] font-bold text-[#29685B] transition-colors duration-150 hover:bg-[#29685B] hover:text-white"
+                        >
+                            {t("Δείτε την τιμολόγηση", "See pricing")}
+                            <ArrowRight className="h-4 w-4" />
+                        </Link>
+                    </div>
+                </section>
+            </main>
 
             <PublicMegaFooter locale={language} />
         </div>
