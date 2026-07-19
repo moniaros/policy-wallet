@@ -15,7 +15,7 @@ function BrowserChrome({ url, children }: { url: string; children: React.ReactNo
                     <span className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
                     <span className="h-3 w-3 rounded-full bg-[#28CA41]" />
                 </div>
-                <div className="ml-3 flex-1 rounded-md border border-[#E2E8F0] bg-white px-3 py-1 font-mono text-[11px] text-[#94A3B8]">
+                <div className="ml-3 flex-1 rounded-md border border-[#E2E8F0] bg-white px-3 py-1 font-mono text-[11px] text-[#64748B]">
                     {url}
                 </div>
             </div>
@@ -134,7 +134,7 @@ export function ClientPortfolioDashboardWidget({ isGreek }: { isGreek: boolean }
                                             }}
                                         />
                                     </div>
-                                    <span className="text-[10px] font-medium text-[#94A3B8]">{c.score}%</span>
+                                    <span className="text-[10px] font-medium text-[#64748B]">{c.score}%</span>
                                 </div>
                             </div>
                         </div>
@@ -411,7 +411,7 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                         }`}
                         style={{ transitionDelay: "600ms" }}
                     >
-                        <p className="text-[10px] uppercase tracking-wider text-[#94A3B8]">{t("Πελάτης", "Client")}</p>
+                        <p className="text-[10px] uppercase tracking-wider text-[#64748B]">{t("Πελάτης", "Client")}</p>
                         <p className="text-[14px] font-semibold text-[#0F172A]">Νικολαΐδης Γεώργιος</p>
                     </div>
 
@@ -427,7 +427,7 @@ export function BrandedReportWidget({ isGreek }: { isGreek: boolean }) {
                             >
                                 <div>
                                     <p className="text-[12px] font-semibold text-[#0F172A]">{r.type}</p>
-                                    <p className="text-[11px] text-[#94A3B8]">{r.insurer}</p>
+                                    <p className="text-[11px] text-[#64748B]">{r.insurer}</p>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-[11px] font-semibold text-[#29685B]">{r.premium}</p>

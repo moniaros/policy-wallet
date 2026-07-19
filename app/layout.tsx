@@ -16,6 +16,7 @@ import { OfflineProvider } from "@/components/providers/OfflineProvider";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { GoogleAnalyticsWebVitals } from "@/components/analytics/GoogleAnalyticsWebVitals";
 import { CookieConsentBanner } from "@/components/compliance/CookieConsentBanner";
+import { HtmlLang } from "@/components/HtmlLang";
 import { getSiteUrl, isIndexableDeployment, OG_IMAGES, siteConfig, TWITTER_IMAGES } from "@/lib/seo/site";
 
 import { Analytics } from "@vercel/analytics/react"
@@ -88,6 +89,10 @@ export default function RootLayout({
         <GoogleAnalyticsWebVitals />
         <Analytics />
         <SpeedInsights />
+        {/* Must stay the last child of <body>: see components/HtmlLang.tsx. */}
+        <Suspense fallback={null}>
+          <HtmlLang />
+        </Suspense>
       </body>
     </html>
   );

@@ -235,7 +235,7 @@ export default function ProductPage() {
                         <div className="rounded-[20px] border border-[#E5E7EB] bg-white p-6 shadow-[0_24px_48px_rgba(0,0,0,0.08)] lg:p-8">
                             <div className="mb-6 flex items-center justify-between border-b border-[#F0F0F0] pb-4">
                                 <div>
-                                    <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-[#94A3B8]">
+                                    <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">
                                         {t("Πύλη Ασφάλισης", "Insurance Hub")}
                                     </p>
                                     <p className="text-[18px] font-semibold text-[#0F172A]">

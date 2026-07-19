@@ -31,7 +31,9 @@ const contactSchema = z.object({
     subject: z.enum(SUBJECT_OPTIONS),
     message: z.string().trim().min(20).max(4000),
     // Honeypot: real users never see this field, so a filled value means a bot.
-    company: z.string().max(200).optional().default(""),
+    // Named so browser autofill never touches it ("company" is an autofill
+    // token and silently got legitimate submissions rejected).
+    website_url: z.string().max(200).optional().default(""),
 })
 
 type ContactPayload = z.infer<typeof contactSchema>
@@ -94,7 +96,7 @@ export async function POST(req: Request) {
     const payload: ContactPayload = parsed.data
 
     // Bot: answer exactly like a success so it learns nothing, but persist and send nothing.
-    if (payload.company.trim().length > 0) {
+    if (payload.website_url.trim().length > 0) {
         return NextResponse.json({
             success: true,
             message: "Το μήνυμά σας στάλθηκε με επιτυχία.",

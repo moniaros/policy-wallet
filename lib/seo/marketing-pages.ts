@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { OG_IMAGES, TWITTER_IMAGES } from "@/lib/seo/site"
+import { OG_IMAGES, siteConfig, TWITTER_IMAGES } from "@/lib/seo/site"
 
 /**
  * Registry of unique metadata for every public marketing page.
@@ -16,7 +16,6 @@ export type MarketingPageKey =
     | "company"
     | "contact"
     | "solutions-agents"
-    | "for-agents"
     | "product-motor"
     | "product-property"
     | "product-health"
@@ -53,7 +52,7 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         path: "/product",
         title: "Ψηφιακό πορτοφόλι ασφαλίσεων με ανάλυση AI",
         description:
-            "Ανεβάστε τα ασφαλιστήριά σας σε PDF και η AI τα αναλύει σε λιγότερο από 30 δευτερόλεπτα: καλύψεις, κενά, υπενθυμίσεις ανανέωσης. Δωρεάν έως 3 συμβόλαια.",
+            "Ανεβάστε τα ασφαλιστήριά σας σε PDF και η AI τα αναλύει σε λιγότερο από 30 δευτερόλεπτα: καλύψεις, κενά, υπενθυμίσεις ανανέωσης. Δωρεάν για 1 συμβόλαιο.",
         keywords: [
             "διαχείριση ασφαλιστηρίων",
             "ανάλυση ασφαλιστηρίου AI",
@@ -64,7 +63,7 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         en: {
             title: "Digital insurance wallet with AI analysis",
             description:
-                "Upload your insurance policies as PDFs and AI analyzes them in under 30 seconds: coverages, gaps and renewal reminders. Free for up to 3 policies.",
+                "Upload your insurance policies as PDFs and AI analyzes them in under 30 seconds: coverages, gaps and renewal reminders. Free for 1 policy, no card needed.",
             breadcrumb: "Product",
         },
     },
@@ -98,8 +97,10 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
     contact: {
         path: "/contact",
         title: "Επικοινωνία: υποστήριξη και συνεργασίες",
-        description:
-            "Στείλτε μας μήνυμα για υποστήριξη, τιμολόγηση ή συνεργασία. Απαντάμε Δευτέρα–Παρασκευή 09:00–18:00 στο hello@policywallet.com. Θα χαρούμε να βοηθήσουμε.",
+        // The mailbox must match the one shown on the page and in the
+        // Organization JSON-LD — a SERP snippet advertising a dead inbox is a
+        // support black hole.
+        description: `Στείλτε μας μήνυμα για υποστήριξη, τιμολόγηση ή συνεργασία. Απαντάμε Δευτέρα–Παρασκευή 09:00–18:00 στο ${siteConfig.contactEmail}. Θα χαρούμε να βοηθήσουμε.`,
         breadcrumb: "Επικοινωνία",
     },
     "solutions-agents": {
@@ -115,13 +116,6 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
                 "Client portfolio oversight, AI coverage-gap analysis, renewal reminders and branded reports for insurance agents and agencies. See how PolicyWallet works.",
             breadcrumb: "For Agents",
         },
-    },
-    "for-agents": {
-        path: "/for-agents",
-        title: "Εργαλεία AI για ασφαλιστές και πρακτορεία",
-        description:
-            "KPIs χαρτοφυλακίου, AI ανάλυση καλύψεων και διαχείριση πελατών 360° για επαγγελματίες ασφαλιστές. Απλοποιήστε ανανεώσεις και cross-selling με το PolicyWallet.",
-        breadcrumb: "Για Ασφαλιστές",
     },
     "product-motor": {
         path: "/product/motor",

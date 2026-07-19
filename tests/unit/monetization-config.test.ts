@@ -1,4 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 
 // subscription-entitlements imports the db singleton — stub it out
 vi.mock('@/lib/db', () => ({ db: {} }))
@@ -16,6 +18,7 @@ import {
 import { UPGRADE_COPY_EL } from '@/lib/monetization/upgrade-copy.el'
 import { UPGRADE_COPY_EN } from '@/lib/monetization/upgrade-copy.en'
 import { ENTITLEMENT_LIMITS } from '@/lib/subscription-entitlements'
+import { DEFAULT_ENTITLEMENT_LIMITS } from '@/lib/pricing/plan-defaults'
 import { publicPricingContent } from '@/lib/pricing/public-pricing-content'
 import { subscriptionCopy } from '@/lib/subscription-copy'
 import { ANNUAL_PRICE_BY_PLAN } from '@/lib/billing'
@@ -148,6 +151,39 @@ describe('monetization config parity (client snapshot vs server truth)', () => {
         // Plus (€7.99) is priced above Starter (€2.99)
         expect(PLAN_PRICING.pro.monthlyEur).toBe(7.99)
         expect(PLAN_PRICING.plus.monthlyEur).toBe(2.99)
+    })
+
+    // Source-grep guard (same technique as the retired setup-billing-catalog
+    // assertion): the landing page once advertised "3 free policies + 1 AI
+    // analysis" while the enforced free entitlement was 1 policy / 0 analyses.
+    // Pin the landing copy to the catalog truth so the false claim can't return.
+    it('landing free-tier copy matches the enforced free entitlement', () => {
+        const source = readFileSync(
+            join(process.cwd(), 'components/landing/WorldClassLanding.tsx'),
+            'utf8'
+        )
+
+        // The retired false claims, in either language and either word order.
+        const falseClaims = [
+            '3 συμβόλαια',
+            '3 δωρεάν',
+            'δωρεάν έως 3',
+            '3 policies',
+            '3 free',
+            '3+1',
+        ]
+        for (const claim of falseClaims) {
+            expect(source, `landing must not claim "${claim}"`).not.toContain(claim)
+        }
+
+        // The advertised limit is the one the product actually enforces.
+        const freeLimit = DEFAULT_ENTITLEMENT_LIMITS.free.policies
+        expect(freeLimit, 'free tier stores exactly 1 policy').toBe(1)
+        expect(source).toContain(`${freeLimit} συμβόλαιο`)
+        expect(source).toContain(`${freeLimit} policy`)
+        // Free has zero deep-AI analyses, so the landing may not sell one.
+        expect(DEFAULT_ENTITLEMENT_LIMITS.free.aiAnalysisPerMonth).toBe(0)
+        expect(source).not.toMatch(/1 AI ανάλυση|1 AI analysis/i)
     })
 
     it('recommendedPlan escalates sensibly', () => {

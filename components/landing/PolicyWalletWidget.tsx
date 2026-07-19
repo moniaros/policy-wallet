@@ -56,7 +56,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                         <span className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
                         <span className="h-3 w-3 rounded-full bg-[#28CA41]" />
                     </div>
-                    <div className="ml-3 flex-1 rounded-md border border-[#E2E8F0] bg-white px-3 py-1 font-mono text-[11px] text-[#94A3B8]">
+                    <div className="ml-3 flex-1 rounded-md border border-[#E2E8F0] bg-white px-3 py-1 font-mono text-[11px] text-[#64748B]">
                         {`${PRODUCT_DISPLAY_HOST}/wallet`}
                     </div>
                 </div>
@@ -116,7 +116,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                             {p.status}
                                         </span>
                                     </div>
-                                    <p className="mb-1.5 text-[11px] text-[#94A3B8]">{p.insurer}</p>
+                                    <p className="mb-1.5 text-[11px] text-[#64748B]">{p.insurer}</p>
                                     <div className="flex items-center gap-2">
                                         <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#F1F5F9]">
                                             <div
@@ -129,7 +129,7 @@ export function PolicyWalletWidget({ isGreek }: PolicyWalletWidgetProps) {
                                                 }}
                                             />
                                         </div>
-                                        <span className="text-[10px] font-medium text-[#94A3B8]">
+                                        <span className="text-[10px] font-medium text-[#64748B]">
                                             {p.coverage}%
                                         </span>
                                     </div>
