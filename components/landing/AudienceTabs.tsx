@@ -131,7 +131,7 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                 <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-[#29685B]">
                     {t("Για Ιδιώτες", "For Individuals")}
                 </p>
-                <h3 className="mb-4 text-[28px] font-semibold leading-[1.15] tracking-[-0.03em] text-[#0F172A] lg:text-[32px]">
+                <h3 className="mb-4 text-[24px] font-semibold leading-[1.15] tracking-[-0.03em] text-[#0F172A] lg:text-[32px]">
                     {t(
                         "Για ανθρώπους που θέλουν ηρεμία, όχι εκπλήξεις.",
                         "For people who want peace of mind, not surprises."
@@ -147,13 +147,13 @@ function PolicyholderPanel({ isGreek }: { isGreek: boolean }) {
                     {benefits.map((b, i) => (
                         <li key={i} className="flex items-start gap-3">
                             <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#29685B]" />
-                            <span className="text-[15px] text-[#334155]">{t(b.el, b.en)}</span>
+                            <span className="text-[14px] text-[#334155]">{t(b.el, b.en)}</span>
                         </li>
                     ))}
                 </ul>
                 <Link
                     href="/auth/signup?role=policyholder&source=landing_audience"
-                    className="inline-flex items-center gap-2 rounded-full bg-[#29685B] px-6 py-3 text-[14px] font-bold text-white transition-colors hover:bg-[#1C4E44]"
+                    className="pw-primary-button"
                 >
                     {t("Δείτε το χαρτοφυλάκιό σας", "See your portfolio")}
                     <ArrowRight className="h-4 w-4" />
@@ -253,7 +253,7 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                 <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-[#29685B]">
                     {t("Για Ασφαλιστές", "For Insurance Agents")}
                 </p>
-                <h3 className="mb-4 text-[28px] font-semibold leading-[1.15] tracking-[-0.03em] text-[#0F172A] lg:text-[32px]">
+                <h3 className="mb-4 text-[24px] font-semibold leading-[1.15] tracking-[-0.03em] text-[#0F172A] lg:text-[32px]">
                     {t("Λιγότερο χάος. Περισσότερες πωλήσεις.", "Less chaos. More sales.")}
                 </h3>
                 <p className="mb-7 text-[16px] leading-relaxed text-[#475569]">
@@ -266,13 +266,13 @@ function AgentPanel({ isGreek }: { isGreek: boolean }) {
                     {benefits.map((b, i) => (
                         <li key={i} className="flex items-start gap-3">
                             <CheckCircle2 className="mt-0.5 h-5 w-5 flex-shrink-0 text-[#29685B]" />
-                            <span className="text-[15px] text-[#334155]">{t(b.el, b.en)}</span>
+                            <span className="text-[14px] text-[#334155]">{t(b.el, b.en)}</span>
                         </li>
                     ))}
                 </ul>
                 <Link
                     href={localizeHref("/solutions/agents", isGreek ? "el" : "en")}
-                    className="inline-flex items-center gap-2 rounded-full bg-[#29685B] px-6 py-3 text-[14px] font-bold text-white transition-colors hover:bg-[#1C4E44]"
+                    className="pw-primary-button"
                 >
                     {t("Δείτε το agent dashboard", "See agent dashboard")}
                     <ArrowRight className="h-4 w-4" />

@@ -34,7 +34,7 @@ export function FeatureComparison({ language, plans, rows, className = "" }: Fea
                                 }`}
                             >
                                 <div className="flex items-center justify-center gap-2">
-                                    <span className={`${plan.isHighlighted ? "font-black text-[#29685B] dark:text-[#A7F3D0]" : "text-slate-900 dark:text-white"}`}>
+                                    <span className={`${plan.isHighlighted ? "font-bold text-[#29685B] dark:text-[#A7F3D0]" : "text-slate-900 dark:text-white"}`}>
                                         {plan.name[language]}
                                     </span>
                                     {plan.badge && (

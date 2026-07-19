@@ -8,6 +8,8 @@ import type {
     PublicPricingPlan,
 } from "@/lib/pricing/public-pricing-content"
 
+const WAIT_LABEL: LocalizedText = { el: "Παρακαλώ περιμένετε...", en: "Please wait..." }
+
 export interface PricingCardProps {
     plan: PublicPricingPlan
     language: "el" | "en"
@@ -35,8 +37,8 @@ export function PricingCard({
         <div
             className={`relative rounded-2xl p-8 transition-all duration-300 ${
                 plan.isHighlighted
-                    ? "scale-105 border-2 border-[#D9D0C1] bg-[#EBE5D9] shadow-2xl shadow-[#D9D0C1]/50 dark:border-slate-700 dark:bg-slate-900"
-                    : "border-2 border-slate-200 bg-white hover:border-[#29685B] hover:shadow-xl dark:border-slate-700 dark:bg-slate-900 dark:hover:border-[#29685B]"
+                    ? "scale-105 border-2 border-[#29685B] bg-[#F0FDF4] shadow-xl shadow-[#29685B]/10 dark:border-[#89D9B2]/60 dark:bg-slate-900"
+                    : "border border-slate-200 bg-white hover:border-[#A7F3D0] hover:shadow-lg dark:border-slate-700 dark:bg-slate-900 dark:hover:border-[#89D9B2]/50"
             } ${className}`}
         >
             {plan.badge && !isLoading && (
@@ -47,13 +49,13 @@ export function PricingCard({
             )}
 
             <div className="mb-6 text-center">
-                <h3 className="mb-2 text-2xl font-black text-slate-900 dark:text-white">{plan.name[language]}</h3>
+                <h3 className="mb-2 text-2xl font-bold text-slate-900 dark:text-white">{plan.name[language]}</h3>
                 <p className="text-sm text-slate-600 dark:text-slate-400">{plan.description[language]}</p>
             </div>
 
             <div className="mb-8 text-center">
                 <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-5xl font-black text-slate-900 dark:text-white">{pricing.amount}</span>
+                    <span className="text-5xl font-bold text-slate-900 dark:text-white">{pricing.amount}</span>
                     <span className="text-lg text-slate-600 dark:text-slate-400">{pricing.period[language]}</span>
                 </div>
                 {displayAnnual && plan.pricing.annual?.savings && (
@@ -92,13 +94,11 @@ export function PricingCard({
             <button
                 onClick={() => onSelectPlan(plan)}
                 disabled={isLoading}
-                className={`w-full rounded-xl px-6 py-3.5 text-base font-bold transition-all duration-200 ${
-                    plan.isHighlighted
-                        ? "bg-[#29685B] text-white shadow-lg shadow-[#29685B]/30 hover:bg-[#1C4E44]"
-                        : "border-2 border-slate-300 bg-white text-slate-900 hover:border-[#29685B] hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:hover:border-[#89D9B2] dark:hover:bg-slate-700"
-                } ${isLoading ? "cursor-not-allowed opacity-60" : ""}`}
+                className={`w-full cursor-pointer ${
+                    plan.isHighlighted ? "pw-primary-button" : "pw-secondary-button"
+                } pw-btn-lg ${isLoading ? "cursor-not-allowed opacity-60" : ""}`}
             >
-                {isLoading ? (language === "el" ? "Παρακαλώ περιμένετε..." : "Please wait...") : actionLabel[language]}
+                {isLoading ? WAIT_LABEL[language] : actionLabel[language]}
             </button>
         </div>
     )

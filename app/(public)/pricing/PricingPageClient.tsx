@@ -184,7 +184,7 @@ export default function PricingPage({
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#F0FDF4] via-white to-[#ECFDF5] selection:bg-[#64748B]/20 selection:text-[#0F172A] dark:from-slate-950 dark:via-slate-900 dark:to-[#0B1F1A]">
+        <div className="min-h-screen bg-gradient-to-br from-[#F0FDF4] via-white to-[#ECFDF5] selection:bg-[#29685B]/20 selection:text-[#0F172A] dark:from-slate-950 dark:via-slate-900 dark:to-[#0B1F1A]">
             <header className="fixed left-4 right-4 top-4 z-50">
                 <div className="mx-auto flex h-14 max-w-[1400px] items-center justify-between rounded-full border border-gray-200/50 bg-white/80 px-6 shadow-sm backdrop-blur-xl transition-all duration-300 dark:border-slate-700/50 dark:bg-slate-900/80">
                     <Link href={l("/")} className="inline-flex items-center text-[20px] font-bold tracking-tight">
@@ -245,10 +245,7 @@ export default function PricingPage({
                                 >
                                     {labels.signin[language]}
                                 </Link>
-                                <Link
-                                    href="/auth/signup"
-                                    className="rounded-full bg-[#29685B] px-5 py-2 text-[14px] font-bold text-white transition-colors hover:bg-[#1C4E44]"
-                                >
+                                <Link href="/auth/signup" className="pw-primary-button pw-btn-sm">
                                     {labels.getStarted[language]}
                                 </Link>
                             </>
@@ -300,7 +297,7 @@ export default function PricingPage({
                         >
                             {labels.products[language]}
                         </Link>
-                        <SolutionsMobileGroup language={language} onNavigate={() => setIsMobileMenuOpen(false)} className="text-[20px] sm:text-[22px]" />
+                        <SolutionsMobileGroup language={language} onNavigate={() => setIsMobileMenuOpen(false)} className="text-[20px]" />
                         <Link
                             href={l("/company")}
                             className="text-white transition-colors hover:text-white/80"
@@ -319,9 +316,10 @@ export default function PricingPage({
                 </div>
             </div>
 
-            <section className="px-4 pb-12 pt-20 sm:px-6 lg:px-8">
+            <main>
+            <section className="px-4 pb-12 pt-28 sm:px-6 lg:px-8 lg:pt-36">
                 <div className="mx-auto max-w-7xl text-center">
-                    <h1 className="mb-4 text-4xl font-black leading-tight text-slate-900 dark:text-white md:text-5xl lg:text-6xl">
+                    <h1 className="mb-4 text-4xl font-bold leading-tight text-slate-900 dark:text-white md:text-5xl">
                         {labels.heading[language]}
                     </h1>
                     <p className="mx-auto mb-12 max-w-3xl text-xl text-slate-600 dark:text-slate-300">
@@ -329,10 +327,10 @@ export default function PricingPage({
                     </p>
 
                     <div className="mb-10 flex justify-center">
-                        <div className="inline-flex rounded-2xl border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-900">
+                        <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-900">
                             <button
                                 onClick={() => setAudience("policyholder")}
-                                className={`rounded-xl px-5 py-2 text-sm font-bold transition-colors ${
+                                className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
                                     audience === "policyholder"
                                         ? "bg-[#29685B] text-white"
                                         : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
@@ -342,7 +340,7 @@ export default function PricingPage({
                             </button>
                             <button
                                 onClick={() => setAudience("agent")}
-                                className={`rounded-xl px-5 py-2 text-sm font-bold transition-colors ${
+                                className={`rounded-full px-5 py-2 text-sm font-semibold transition-colors ${
                                     audience === "agent"
                                         ? "bg-[#29685B] text-white"
                                         : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
@@ -353,16 +351,16 @@ export default function PricingPage({
                         </div>
                     </div>
 
-                    <h2 className="mb-3 text-2xl font-black text-slate-900 dark:text-white">{content.heading[language]}</h2>
+                    <h2 className="mb-3 text-2xl font-bold text-slate-900 dark:text-white">{content.heading[language]}</h2>
                     <p className="mx-auto mb-12 max-w-3xl text-base text-slate-600 dark:text-slate-300">
                         {content.subtitle[language]}
                     </p>
 
                     <div className="mb-12 flex justify-center">
-                        <div className="inline-flex rounded-2xl border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-900">
+                        <div className="inline-flex rounded-full border border-slate-200 bg-white p-1 dark:border-slate-700 dark:bg-slate-900">
                             <button
                                 onClick={() => setBillingPeriod("monthly")}
-                                className={`rounded-xl px-6 py-2.5 text-sm font-bold transition-colors ${
+                                className={`rounded-full px-6 py-2.5 text-sm font-semibold transition-colors ${
                                     billingPeriod === "monthly"
                                         ? "bg-[#29685B] text-white"
                                         : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
@@ -372,14 +370,14 @@ export default function PricingPage({
                             </button>
                             <button
                                 onClick={() => setBillingPeriod("annual")}
-                                className={`relative rounded-xl px-6 py-2.5 text-sm font-bold transition-colors ${
+                                className={`relative rounded-full px-6 py-2.5 text-sm font-semibold transition-colors ${
                                     billingPeriod === "annual"
                                         ? "bg-[#29685B] text-white"
                                         : "text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
                                 }`}
                             >
                                 {labels.annual[language]}
-                                <span className="absolute -right-2 -top-3 rounded-full bg-[#89D9B2] px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-[#0F172A]">
+                                <span className="absolute -right-2 -top-3 rounded-full bg-[#89D9B2] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#0F172A]">
                                     {labels.annualSavings[language]}
                                 </span>
                             </button>
@@ -426,7 +424,7 @@ export default function PricingPage({
 
             <section className="bg-white px-4 py-20 dark:bg-slate-900/50 sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-6xl">
-                    <h2 className="mb-12 text-center text-3xl font-black text-slate-900 dark:text-white md:text-4xl">
+                    <h2 className="mb-12 text-center text-3xl font-bold text-slate-900 dark:text-white md:text-4xl">
                         {content.comparisonTitle[language]}
                     </h2>
                     <FeatureComparison language={language} plans={content.plans} rows={content.comparisonRows} />
@@ -435,12 +433,13 @@ export default function PricingPage({
 
             <section id="pricing-faq" className="scroll-mt-32 px-4 py-20 sm:px-6 lg:scroll-mt-40 lg:px-8">
                 <div className="mx-auto max-w-6xl">
-                    <h2 className="mb-12 text-center text-3xl font-black text-slate-900 dark:text-white md:text-4xl">
+                    <h2 className="mb-12 text-center text-3xl font-bold text-slate-900 dark:text-white md:text-4xl">
                         {content.faqTitle[language]}
                     </h2>
                     <PricingFAQ language={language} items={content.faqItems} />
                 </div>
             </section>
+            </main>
 
             <PublicMegaFooter locale={language} />
         </div>

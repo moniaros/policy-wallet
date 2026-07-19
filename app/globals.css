@@ -305,6 +305,40 @@ pre {
     border-color: rgba(255, 255, 255, 0.18);
   }
 
+  /* Size modifiers for the CTA pair — nav/footer (sm) and hero/final (lg).
+     Declared after the button bases so they win within the layer. */
+  .pw-btn-sm {
+    @apply px-5 py-2.5 text-sm;
+  }
+
+  .pw-btn-lg {
+    @apply px-8 py-3.5 text-base;
+  }
+
+  /* Inverse pair for dark/brand panels (navy final-CTA, green mobile menu):
+     white-fill primary, white-outline secondary. Same shape, same weight. */
+  .pw-primary-button-inverse {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold transition-colors;
+    border-radius: var(--pw-radius-button);
+    background: #ffffff;
+    color: #0f172a;
+  }
+
+  .pw-primary-button-inverse:hover {
+    background: #f1f5f9;
+  }
+
+  .pw-secondary-button-inverse {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold text-white transition-colors;
+    border-radius: var(--pw-radius-button);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: transparent;
+  }
+
+  .pw-secondary-button-inverse:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
   .pw-kicker {
     @apply text-[10px] font-bold uppercase tracking-[0.24em];
     color: var(--pw-text-muted);

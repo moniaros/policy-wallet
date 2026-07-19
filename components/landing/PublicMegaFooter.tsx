@@ -123,13 +123,13 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
     return (
         <footer className="border-t border-[#E2E8F0] bg-white">
             <div className="px-6 pb-14 pt-12 lg:px-12">
-                <div className="mx-auto max-w-[1400px] rounded-[24px] border border-[#CFE3DA] bg-[#EAF6F1] px-6 py-7 md:px-8">
+                <div className="mx-auto max-w-[1400px] rounded-[24px] border border-[#DCEBDA] bg-[#F0FDF4] px-6 py-7 md:px-8">
                     <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
                         <div>
                             <p className="mb-1 text-[12px] font-semibold uppercase tracking-widest text-[#29685B]">
                                 {t("Επιλέξτε λύση", "Choose your path")}
                             </p>
-                            <h3 className="text-[28px] font-medium leading-tight tracking-tight text-[#0F172A]">
+                            <h3 className="text-[24px] font-medium leading-tight tracking-tight text-[#0F172A]">
                                 {t(
                                     "Ξεκινήστε από τη λύση που ταιριάζει στο προφίλ σας.",
                                     "Start with the solution that fits your profile."
@@ -137,16 +137,10 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                             </h3>
                         </div>
                         <div className="flex flex-col gap-3 sm:flex-row">
-                            <Link
-                                href={l("/product")}
-                                className="inline-flex items-center justify-center rounded-full border border-[#BBD6CA] bg-white px-5 py-2.5 text-[14px] font-semibold text-[#0F172A] transition-colors hover:bg-[#F8FAFC]"
-                            >
+                            <Link href={l("/product")} className="pw-secondary-button pw-btn-sm">
                                 {t("Για Ιδιώτες", "For Individuals")}
                             </Link>
-                            <Link
-                                href={l("/solutions/agents")}
-                                className="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#29685B] px-5 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#1C4E44]"
-                            >
+                            <Link href={l("/solutions/agents")} className="pw-primary-button pw-btn-sm">
                                 {t("Για Ασφαλιστές", "For Insurance Agents")}
                                 <ArrowRight className="h-4 w-4" />
                             </Link>
@@ -158,7 +152,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
             <div className="px-6 pb-12 lg:px-12">
                 <div className="mx-auto grid max-w-[1400px] gap-10 lg:grid-cols-[1.2fr_1fr_1fr_1fr_1.25fr]">
                     <div>
-                        <Link href={l("/")} className="inline-flex items-center text-[22px] font-bold tracking-tight">
+                        <Link href={l("/")} className="inline-flex items-center text-[20px] font-bold tracking-tight">
                             <span className="text-[#0F172A]">Policy</span>
                             <span className="text-[#64748B]">Wallet</span>
                         </Link>
