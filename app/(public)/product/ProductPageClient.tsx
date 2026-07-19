@@ -14,6 +14,7 @@ import {
 } from "lucide-react"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { localizeHref } from "@/lib/seo/locale-links"
 import { trackLandingEvent } from "@/lib/landing/analytics"
 import { productCategories } from "@/lib/product/catalog"
 import {
@@ -370,7 +371,7 @@ export default function ProductPage() {
                             return (
                                 <Link
                                     key={category.id}
-                                    href={category.href}
+                                    href={localizeHref(category.href, language)}
                                     className={`group flex flex-col rounded-[20px] border p-8 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] ${category.surface} ${category.border}`}
                                 >
                                     <div className="mb-6 flex items-start justify-between">
@@ -516,7 +517,7 @@ export default function ProductPage() {
                             <ArrowRight className="h-4 w-4" />
                         </Link>
                         <Link
-                            href="/pricing"
+                            href={localizeHref("/pricing", language)}
                             className="inline-flex w-full items-center justify-center rounded-[4px] border border-white/20 bg-white/5 px-8 py-4 text-[16px] font-medium text-white/80 transition-colors duration-150 hover:bg-white/10 hover:text-white sm:w-auto"
                         >
                             {t("Δείτε τις τιμές", "View pricing")}

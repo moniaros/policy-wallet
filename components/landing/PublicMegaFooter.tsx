@@ -4,6 +4,7 @@ import Link from "next/link"
 import { FormEvent, useMemo, useState } from "react"
 import { ArrowRight, Facebook, Instagram, Linkedin, Mail, ShieldCheck, Twitter, type LucideIcon } from "lucide-react"
 import { productCategories } from "@/lib/product/catalog"
+import { localizeHref } from "@/lib/seo/locale-links"
 import { getSocialProfiles, siteConfig } from "@/lib/seo/site"
 
 interface PublicMegaFooterProps {
@@ -23,6 +24,8 @@ const SOCIAL_ICONS: Record<string, LucideIcon> = {
 export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
     const isGreek = locale === "el"
     const t = (el: string, en: string) => (isGreek ? el : en)
+    // EN context navigates within the /en tree (unmirrored targets stay Greek).
+    const l = (href: string) => localizeHref(href, locale)
 
     const [email, setEmail] = useState("")
     const [status, setStatus] = useState<NewsletterStatus>("idle")
@@ -33,26 +36,26 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
     const productLinks = useMemo(
         () =>
             productCategories.map((category) => ({
-                href: category.href,
+                href: l(category.href),
                 label: t(category.labelEl, category.labelEn),
             })),
         [isGreek]
     )
 
     const solutionLinks = [
-        { href: "/product", label: t("Για Ιδιώτες", "For Individuals") },
-        { href: "/solutions/agents", label: t("Για Ασφαλιστές", "For Insurance Agents") },
-        { href: "/pricing?audience=agent", label: t("Πλάνα Ασφαλιστών", "Agent Plans") },
-        { href: "/pricing#pricing-faq", label: t("FAQ Τιμολόγησης", "Pricing FAQ") },
-        { href: "/product#product-faq", label: t("FAQ Προϊόντος", "Product FAQ") },
+        { href: l("/product"), label: t("Για Ιδιώτες", "For Individuals") },
+        { href: l("/solutions/agents"), label: t("Για Ασφαλιστές", "For Insurance Agents") },
+        { href: l("/pricing?audience=agent"), label: t("Πλάνα Ασφαλιστών", "Agent Plans") },
+        { href: l("/pricing#pricing-faq"), label: t("FAQ Τιμολόγησης", "Pricing FAQ") },
+        { href: l("/product#product-faq"), label: t("FAQ Προϊόντος", "Product FAQ") },
     ]
 
     const companyLinks = [
-        { href: "/company", label: t("Εταιρεία", "Company") },
-        { href: "/guides", label: t("Οδηγοί Ασφάλισης", "Insurance Guides") },
-        { href: "/contact", label: t("Επικοινωνία", "Contact") },
-        { href: "/privacy", label: t("Πολιτική Απορρήτου", "Privacy Policy") },
-        { href: "/terms", label: t("Όροι Χρήσης", "Terms of Service") },
+        { href: l("/company"), label: t("Εταιρεία", "Company") },
+        { href: l("/guides"), label: t("Οδηγοί Ασφάλισης", "Insurance Guides") },
+        { href: l("/contact"), label: t("Επικοινωνία", "Contact") },
+        { href: l("/privacy"), label: t("Πολιτική Απορρήτου", "Privacy Policy") },
+        { href: l("/terms"), label: t("Όροι Χρήσης", "Terms of Service") },
     ]
 
     // Real profiles only (from NEXT_PUBLIC_SOCIAL_*) — no placeholder links.
@@ -135,13 +138,13 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                         </div>
                         <div className="flex flex-col gap-3 sm:flex-row">
                             <Link
-                                href="/product"
+                                href={l("/product")}
                                 className="inline-flex items-center justify-center rounded-full border border-[#BBD6CA] bg-white px-5 py-2.5 text-[14px] font-semibold text-[#0F172A] transition-colors hover:bg-[#F8FAFC]"
                             >
                                 {t("Για Ιδιώτες", "For Individuals")}
                             </Link>
                             <Link
-                                href="/solutions/agents"
+                                href={l("/solutions/agents")}
                                 className="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#29685B] px-5 py-2.5 text-[14px] font-semibold text-white transition-colors hover:bg-[#1C4E44]"
                             >
                                 {t("Για Ασφαλιστές", "For Insurance Agents")}
@@ -155,7 +158,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
             <div className="px-6 pb-12 lg:px-12">
                 <div className="mx-auto grid max-w-[1400px] gap-10 lg:grid-cols-[1.2fr_1fr_1fr_1fr_1.25fr]">
                     <div>
-                        <Link href="/" className="inline-flex items-center text-[22px] font-bold tracking-tight">
+                        <Link href={l("/")} className="inline-flex items-center text-[22px] font-bold tracking-tight">
                             <span className="text-[#0F172A]">Policy</span>
                             <span className="text-[#64748B]">Wallet</span>
                         </Link>
@@ -308,13 +311,13 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                                 </a>
                             )
                         })}
-                        <Link href="/privacy" className="transition-colors hover:text-[#0F172A]">
+                        <Link href={l("/privacy")} className="transition-colors hover:text-[#0F172A]">
                             {t("Privacy", "Privacy")}
                         </Link>
-                        <Link href="/terms" className="transition-colors hover:text-[#0F172A]">
+                        <Link href={l("/terms")} className="transition-colors hover:text-[#0F172A]">
                             {t("Terms", "Terms")}
                         </Link>
-                        <Link href="/contact" className="transition-colors hover:text-[#0F172A]">
+                        <Link href={l("/contact")} className="transition-colors hover:text-[#0F172A]">
                             {t("Επικοινωνία", "Contact")}
                         </Link>
                         <span className="inline-flex items-center gap-1.5 text-[#29685B]">
