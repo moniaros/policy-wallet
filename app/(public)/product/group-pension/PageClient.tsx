@@ -22,7 +22,7 @@ export default function GroupPensionProductPage() {
                         {t("Ομαδικά Συνταξιοδοτικά", "Group Pension")}
                     </span>
                     <h1 className="text-[46px] lg:text-[68px] leading-[1.05] tracking-[-0.04em] font-medium text-[#0F172A] mb-8">
-                        {t("Χτίστε το μέλλον σας με σιγουριά.", "Build your financial future effortlessly.")}
+                        {t("Εισφορές, εργοδοτική συμμετοχή, φόροι: όλα μετρημένα.", "Contributions, employer match, tax relief: all accounted for.")}
                     </h1>
                     <p className="mx-auto max-w-[680px] text-[20px] lg:text-[22px] leading-[1.5] text-[#475569] mb-10">
                         {t("Παρακολουθήστε την απόδοση των επενδυτικών σας κεφαλαίων και υπολογίστε με ακρίβεια τις φορολογικές σας ελαφρύνσεις.", "Track your investment fund growth and accurately calculate your tax deductions in real-time.")}
@@ -94,10 +94,10 @@ export default function GroupPensionProductPage() {
             {/* CTA */}
             <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">
                 <h2 className="text-[36px] lg:text-[48px] font-medium tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
-                    {t("Κάντε τον προγραμματισμό εύκολο.", "Make financial planning effortless")}
+                    {t("Δείτε τι χτίζει το ομαδικό σας πρόγραμμα.", "See what your group plan is building.")}
                 </h2>
                 <Link href="/auth/signup" className="inline-flex rounded-[4px] bg-[#89D9B2] px-8 py-4 text-[16px] font-bold text-[#1A1A1A] transition-opacity duration-150 hover:opacity-90">
-                    {t("Ξεκινήστε τώρα", "Start organizing today")}
+                    {t("Ανεβάστε το ομαδικό συνταξιοδοτικό", "Upload your group pension plan")}
                 </Link>
             </section>
 

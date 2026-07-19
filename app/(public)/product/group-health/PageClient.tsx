@@ -22,7 +22,7 @@ export default function GroupHealthProductPage() {
                         {t("Ομαδική Υγεία", "Group Health Coverage")}
                     </span>
                     <h1 className="text-[46px] lg:text-[68px] leading-[1.05] tracking-[-0.04em] font-medium text-[#0F172A] mb-8">
-                        {t("Ενοποιημένες παροχές εταιρικής ασφάλισης.", "Unified corporate health benefits.")}
+                        {t("Ομαδικό και ατομικό: μία εικόνα, χωρίς διπλοπληρωμές.", "Group and personal cover: one picture, no double-paying.")}
                     </h1>
                     <p className="mx-auto max-w-[680px] text-[20px] lg:text-[22px] leading-[1.5] text-[#475569] mb-10">
                         {t("Οργανώστε τις παροχές του ομαδικού, συνδυάστε τις με την ατομική σας ασφάλιση και καλύψτε πλήρως τα εξαρτώμενα μέλη της οικογένειάς σας.", "Organize your group benefits, coordinate deeply with your personal insurance, and fully cover your family dependents.")}
@@ -94,10 +94,10 @@ export default function GroupHealthProductPage() {
             {/* CTA */}
             <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">
                 <h2 className="text-[36px] lg:text-[48px] font-medium tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
-                    {t("Αξιοποιήστε τα προνόμια σας.", "Utilize your corporate benefits.")}
+                    {t("Δείτε τι σας καλύπτει ήδη ο εργοδότης σας.", "See what your employer already covers.")}
                 </h2>
                 <Link href="/auth/signup" className="inline-flex rounded-[4px] bg-[#89D9B2] px-8 py-4 text-[16px] font-bold text-[#1A1A1A] transition-opacity duration-150 hover:opacity-90">
-                    {t("Ξεκινήστε τώρα", "Start organizing today")}
+                    {t("Ανεβάστε το ομαδικό σας", "Upload your group policy")}
                 </Link>
             </section>
 

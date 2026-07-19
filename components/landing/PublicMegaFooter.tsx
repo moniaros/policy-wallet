@@ -158,8 +158,8 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                         </Link>
                         <p className="mt-4 max-w-[320px] text-[14px] leading-relaxed text-[#475569]">
                             {t(
-                                "Οργανώστε όλα τα ασφαλιστήριά σας, εντοπίστε κενά κάλυψης και δράστε έγκαιρα με AI insights.",
-                                "Organize all your policies, detect coverage gaps, and act early with AI insights."
+                                "Οργανώστε όλα τα ασφαλιστήριά σας, δείτε τι καλύπτει το καθένα, εντοπίστε κενά και προλάβετε τις λήξεις.",
+                                "Organize all your policies, see what each one covers, spot the gaps, and act before renewals."
                             )}
                         </p>
                     </div>

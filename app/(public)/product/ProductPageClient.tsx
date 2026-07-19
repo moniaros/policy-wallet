@@ -50,45 +50,13 @@ function FAQItem({ q, a }: { q: string; a: string }) {
     )
 }
 
-function useCountUp(target: string, isVisible: boolean): string {
-    // Initialized to the real value so server-rendered HTML (what crawlers
-    // and no-JS clients see) shows the actual stat; the 0→target animation
-    // only takes over client-side once the section scrolls into view.
-    const [count, setCount] = useState(target)
-
-    useEffect(() => {
-        if (!isVisible) return
-
-        const num = parseFloat(target.replace(/[^0-9.]/g, ""))
-        if (Number.isNaN(num)) {
-            setCount(target)
-            return
-        }
-
-        const step = num / 40
-        let current = 0
-        const timer = window.setInterval(() => {
-            current = Math.min(current + step, num)
-            const formatted = target.replace(/[0-9.]+/, Math.round(current).toString())
-            setCount(formatted)
-            if (current >= num) {
-                window.clearInterval(timer)
-            }
-        }, 30)
-
-        return () => window.clearInterval(timer)
-    }, [isVisible, target])
-
-    return count
-}
-
-function StatItem({ value, label, visible }: { value: string; label: string; visible: boolean }) {
-    const animated = useCountUp(value, visible)
-
+// Static stat tile — the JS count-up animation was dropped per the brand
+// doc's motion-restraint rules (decorative, 30ms interval).
+function StatItem({ value, label }: { value: string; label: string }) {
     return (
         <div className="text-center">
             <div className="mb-2 text-[32px] font-medium leading-none tracking-tight text-[#0F172A] lg:text-[44px]">
-                {animated}
+                {value}
             </div>
             <div className="mx-auto max-w-[180px] text-[14px] leading-snug text-[#475569]">{label}</div>
         </div>
@@ -100,32 +68,12 @@ export default function ProductPage() {
     const isGreek = language === "el"
     const t = (el: string, en: string) => (isGreek ? el : en)
 
-    const statsRef = useRef<HTMLDivElement>(null)
     const categoriesHeadingRef = useRef<HTMLHeadingElement>(null)
     const howItWorksHeadingRef = useRef<HTMLHeadingElement>(null)
-    const [statsVisible, setStatsVisible] = useState(false)
 
     useEffect(() => {
         trackLandingEvent("page_view_product", { locale: language as any })
     }, [language])
-
-    useEffect(() => {
-        const el = statsRef.current
-        if (!el) return
-
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    setStatsVisible(true)
-                    observer.disconnect()
-                }
-            },
-            { threshold: 0.3 }
-        )
-
-        observer.observe(el)
-        return () => observer.disconnect()
-    }, [])
 
     const scrollToSection = (
         sectionId: string,
@@ -165,8 +113,8 @@ export default function ProductPage() {
 
                     <p className="mx-auto mb-10 max-w-[640px] text-[18px] leading-[1.55] text-[#475569] md:text-[20px]">
                         {t(
-                            "Μεγιστοποιήστε τα ασφαλιστικά σας οφέλη με έξυπνες αναλύσεις, εντοπισμό κενών και υπενθυμίσεις πρόληψης, όλα σε ένα μέρος.",
-                            "Maximize your insurance benefits with intelligent insights, gap detection, and preventive care reminders, all in one place."
+                            "Δείτε τι καλύπτει κάθε συμβόλαιο, τι δεν καλύπτει — και τι να κάνετε γι' αυτό.",
+                            "See what every policy covers, what it doesn't, and what to do about it."
                         )}
                     </p>
 
@@ -312,21 +260,17 @@ export default function ProductPage() {
                             </div>
                         </div>
 
-                        <div className="absolute -right-4 -top-4 rounded-full bg-[#29685B] px-3 py-1.5 text-[12px] font-bold text-white shadow-lg">
-                            AI Powered
-                        </div>
                     </div>
                 </div>
             </section>
 
-            <section ref={statsRef} className="border-y border-[#E2E8F0] bg-white px-6 py-16 md:px-12">
+            <section className="border-y border-[#E2E8F0] bg-white px-6 py-16 md:px-12">
                 <div className="mx-auto grid max-w-[1040px] gap-10 md:grid-cols-3">
                     {STATS.map((stat) => (
                         <StatItem
                             key={stat.labelEn}
                             value={t(stat.valueEl, stat.valueEn)}
                             label={t(stat.labelEl, stat.labelEn)}
-                            visible={statsVisible}
                         />
                     ))}
                 </div>
@@ -391,7 +335,7 @@ export default function ProductPage() {
                                     </p>
 
                                     <div className="flex items-center gap-1.5 text-[14px] font-semibold text-[#0F172A] transition-all duration-150 group-hover:gap-2.5">
-                                        {t("Μάθετε περισσότερα", "Learn more")}
+                                        {t("Δείτε τι αναλύουμε", "See what we analyze")}
                                         <ArrowRight className="h-4 w-4" />
                                     </div>
                                 </Link>
@@ -412,8 +356,8 @@ export default function ProductPage() {
                         className="mx-auto max-w-[560px] text-[32px] font-medium leading-[1.1] tracking-[-0.03em] text-[#0F172A] focus:outline-none lg:text-[44px]"
                     >
                         {t(
-                            "Τρία βήματα για τον πλήρη έλεγχο των ασφαλίσεών σας.",
-                            "Three steps to full control of your insurance."
+                            "Από το PDF σε καθαρή εικόνα, χωρίς διάβασμα ψιλών γραμμάτων.",
+                            "From PDF to a clear picture, without reading the fine print."
                         )}
                     </h2>
                 </div>
@@ -445,34 +389,8 @@ export default function ProductPage() {
                 </div>
             </section>
 
-            <section className="bg-[#F8FAFC] px-6 py-20 md:px-12 lg:py-28">
-                <div className="mx-auto max-w-[780px] text-center">
-                    <div className="mb-8 flex items-center justify-center gap-1">
-                        {[...Array(5)].map((_, index) => (
-                            <svg key={index} className="h-5 w-5 fill-[#29685B] text-[#29685B]" viewBox="0 0 24 24">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                        ))}
-                    </div>
-                    <blockquote className="mb-8 text-[20px] font-medium leading-[1.4] tracking-[-0.02em] text-[#0F172A] md:text-[24px]">
-                        {t(
-                            "«Ανακάλυψα ότι το σπίτι μου ήταν ανασφάλιστο κατά €40.000 σε rebuild cost. Η πλατφόρμα το εντόπισε σε 2 λεπτά.»",
-                            '"I discovered my home was under-insured by €40,000 in rebuild cost. The platform caught it in 2 minutes."'
-                        )}
-                    </blockquote>
-                    <div className="flex items-center justify-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#29685B] text-[14px] font-bold text-white">
-                            Μ
-                        </div>
-                        <div className="text-left">
-                            <p className="text-[14px] font-semibold text-[#0F172A]">{t("Μαρία Π.", "Maria P.")}</p>
-                            <p className="text-[13px] text-[#64748B]">
-                                {t("Ιδιοκτήτρια κατοικίας, Αθήνα", "Homeowner, Athens")}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            {/* Invented testimonial removed (brand doc §7): only named, consented
+                customers may appear here — verifiable facts carry the page until then. */}
 
             <section id="product-faq" className="mx-auto max-w-[860px] scroll-mt-32 px-6 py-20 md:px-12 lg:scroll-mt-40 lg:py-28">
                 <div className="mb-12 text-center">

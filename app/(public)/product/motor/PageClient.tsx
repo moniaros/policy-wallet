@@ -22,7 +22,7 @@ export default function MotorProductPage() {
                         {t("Λύσεις Οχημάτων", "Motor Solutions")}
                     </span>
                     <h1 className="text-[46px] lg:text-[68px] leading-[1.05] tracking-[-0.04em] font-medium text-[#0F172A] mb-8">
-                        {t("Έξυπνη διαχείριση ασφάλισης οχημάτων.", "Intelligent motor and liability management.")}
+                        {t("Αυτοκίνητο, μηχανή, οδική βοήθεια: μία καθαρή εικόνα.", "Car, motorbike, roadside assistance: one clear picture.")}
                     </h1>
                     <p className="mx-auto max-w-[680px] text-[20px] lg:text-[22px] leading-[1.5] text-[#475569] mb-10">
                         {t("Παρακολουθήστε την αξία αγοράς του οχήματος σας, εντοπίστε κενά στην οδική βοήθεια και αυτοματοποιήστε τις ανανεώσεις.", "Track real-time market values, identify critical gaps in roadside assistance, and fully automate your renewal workflows.")}
@@ -40,7 +40,7 @@ export default function MotorProductPage() {
                 <div className="mx-auto max-w-[1240px] grid md:grid-cols-2 gap-16 items-center">
                     <div>
                         <h2 className="text-[36px] font-medium tracking-[-0.03em] mb-6 leading-[1.1] text-[#1A1A1A]">
-                            {t("Τι καλύπτει η ασφάλεια αυτοκινήτου σας;", "What does your motor insurance actually cover?")}
+                            {t("Η κάλυψη ακολουθεί ακόμη την αξία του οχήματός σας;", "Does your cover still match your car's value?")}
                         </h2>
                         <p className="text-[#475569] text-[18px] leading-relaxed mb-8">
                             {t("Το AI μας διαβάζει το ασφαλιστήριό σας και μετατρέπει τα δεδομένα σε δυναμικούς πίνακες ελέγχου.", "Our AI engine extracts complex policy details into highly visual, trackable market value meters and gap detectors.")}
@@ -137,7 +137,7 @@ export default function MotorProductPage() {
                     {t("Αποκτήστε τον έλεγχο των οχημάτων σας.", "Take full control of your motor policies.")}
                 </h2>
                 <Link href="/auth/signup" className="inline-flex rounded-[4px] bg-[#89D9B2] px-8 py-4 text-[16px] font-bold text-[#1A1A1A] transition-opacity duration-150 hover:opacity-90">
-                    {t("Ξεκινήστε τώρα", "Start organizing today")}
+                    {t("Ανεβάστε το συμβόλαιο του οχήματος", "Upload your motor policy")}
                 </Link>
             </section>
 

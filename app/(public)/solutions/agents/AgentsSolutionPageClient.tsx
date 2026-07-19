@@ -26,12 +26,12 @@ export default function AgentSolutionsPage() {
                             {t("Λύσεις για Ασφαλιστές", "Solutions for Insurance Agents")}
                         </p>
                         <h1 className="mx-auto mb-6 max-w-[920px] text-[40px] font-medium leading-[1.05] tracking-[-0.035em] text-[#0F172A] lg:text-[56px]">
-                            {t("Διαχειρίσου 10x περισσότερους πελάτες με το ίδιο χρόνο.", "Manage 10x more clients in the same time.")}
+                            {t("Όλο το χαρτοφυλάκιο πελατών σας, οργανωμένο σε έναν πίνακα.", "Your entire client book, organized in one dashboard.")}
                         </h1>
                         <p className="mx-auto max-w-[760px] text-[18px] leading-relaxed text-[#475569]">
                             {t(
-                                "AI-powered client portfolio management για ασφαλιστικούς συμβούλους που θέλουν ταχύτητα, ακρίβεια και επαγγελματική εμπειρία πελάτη.",
-                                "AI-powered client portfolio management for advisors who want speed, accuracy, and a premium client experience."
+                                "Ανεβάζετε τα συμβόλαια των πελατών σας· βλέπετε κενά, λήξεις και ευκαιρίες — πριν σας τα ζητήσουν.",
+                                "Upload your clients' policies; see gaps, renewals and opportunities — before they ask for them."
                             )}
                         </p>
 
@@ -124,7 +124,7 @@ export default function AgentSolutionsPage() {
             <section className="bg-[#F8FAFC] px-6 py-20 lg:px-12 lg:py-28">
                 <div className="mx-auto max-w-[1040px]">
                     <h2 className="mb-10 text-center text-[32px] font-medium tracking-[-0.03em] text-[#0F172A] lg:text-[44px]">
-                        {t("Πώς λειτουργεί", "How it works")}
+                        {t("Από το συμβόλαιο στην αναφορά, σε τρία βήματα.", "From policy to report, in three steps.")}
                     </h2>
 
                     <div className="grid gap-4 md:grid-cols-3">
@@ -182,21 +182,23 @@ export default function AgentSolutionsPage() {
                         </Link>
                     </div>
 
+                    {/* Verifiable-fact tile — no invented testimonials (EU consumer-law risk). */}
                     <div className="rounded-2xl border border-[#E2E8F0] bg-white p-8">
-                        <div className="mb-4 flex items-center gap-1 text-[#29685B]">
-                            {Array.from({ length: 5 }).map((_, index) => (
-                                <span key={index}>★</span>
+                        <p className="mb-5 text-xs font-semibold uppercase tracking-[0.15em] text-[#29685B]">
+                            {t("Τι παίρνετε από την πρώτη μέρα", "What you get from day one")}
+                        </p>
+                        <ul className="space-y-4">
+                            {[
+                                t("Ανάλυση κάθε συμβολαίου σε λιγότερο από 30 δευτερόλεπτα", "Every policy analyzed in under 30 seconds"),
+                                t("20 ασφαλιστικοί κλάδοι, όλες οι ελληνικές ασφαλιστικές", "20 insurance branches, every Greek insurer"),
+                                t("Δεδομένα πελατών σε servers ΕΕ, με GDPR & AES-256", "Client data on EU servers, GDPR & AES-256"),
+                            ].map((fact) => (
+                                <li key={fact} className="flex items-start gap-3 text-[16px] leading-relaxed text-[#0F172A]">
+                                    <CheckCircle2 className="mt-1 h-4 w-4 flex-shrink-0 text-[#29685B]" />
+                                    {fact}
+                                </li>
                             ))}
-                        </div>
-                        <p className="mb-4 text-[18px] leading-relaxed text-[#0F172A]">
-                            {t(
-                                "“Με το PolicyWallet έκλεισα renewals 3x πιο γρήγορα και έχω πλέον καθαρή εικόνα για όλο το χαρτοφυλάκιο.”",
-                                '"With PolicyWallet, I closed renewals 3x faster and now have full visibility across my portfolio."'
-                            )}
-                        </p>
-                        <p className="text-[14px] font-semibold text-[#475569]">
-                            {t("Γιώργος Παπαδόπουλος, Ασφαλιστικός Σύμβουλος", "Giorgos Papadopoulos, Insurance Advisor")}
-                        </p>
+                        </ul>
                     </div>
                 </div>
 

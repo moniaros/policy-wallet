@@ -22,7 +22,7 @@ export default function PetProductPage() {
                         {t("Λύσεις Ζώων Συντροφιάς", "Pet Solutions")}
                     </span>
                     <h1 className="text-[46px] lg:text-[68px] leading-[1.05] tracking-[-0.04em] font-medium text-[#0F172A] mb-8">
-                        {t("Μηδενίστε τα κρυφά παραθυράκια συμβολαίων.", "Nullify hidden contract loopholes.")}
+                        {t("Οι εξαιρέσεις του κατοικιδίου σας, στο φως.", "Your pet policy's exclusions, out in the open.")}
                     </h1>
                     <p className="mx-auto max-w-[680px] text-[20px] lg:text-[22px] leading-[1.5] text-[#475569] mb-10">
                         {t("Διαγνώστε εξαιρούμενες προϋπάρχουσες παθήσεις, συγκρίνετε ετήσια όρια και ελέγξτε κάλυψη Leishmania (Καλαζάρ) πριν υπογράψετε.", "Diagnose excluded pre-existing conditions, cross-check annual limits, and verify specialized Mediterranean coverages (Leishmaniasis) proactively.")}
@@ -94,10 +94,10 @@ export default function PetProductPage() {
             {/* CTA */}
             <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">
                 <h2 className="text-[36px] lg:text-[48px] font-medium tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
-                    {t("Κερδίστε πλεονέκτημα στην ιατρική περίθαλψη.", "Gain the upper hand in veterinary care.")}
+                    {t("Μάθετε τι καλύπτεται πριν τον κτηνίατρο.", "Know what's covered before the vet visit.")}
                 </h2>
                 <Link href="/auth/signup" className="inline-flex rounded-[4px] bg-[#89D9B2] px-8 py-4 text-[16px] font-bold text-[#1A1A1A] transition-opacity duration-150 hover:opacity-90">
-                    {t("Ξεκινήστε τώρα", "Start organizing today")}
+                    {t("Ανεβάστε το συμβόλαιο του κατοικιδίου", "Upload your pet policy")}
                 </Link>
             </section>
 
