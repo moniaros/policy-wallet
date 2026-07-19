@@ -5,7 +5,7 @@ import { useLanguage } from '@/contexts/LanguageContext'
 import { resolvePolicyLifecycle, type PolicyLifecycle } from '@/lib/policy-status'
 import { getPolicyStatusView } from '@/lib/wallet/policy-status-view'
 import { StatusPill } from '@/components/ui/StatusPill'
-import { AlertTriangle, BadgeCheck, Sparkles } from 'lucide-react'
+import { BadgeCheck, Sparkles } from 'lucide-react'
 import { normalizeBranch } from '@/lib/insurance/taxonomy'
 import { getBranchIcon } from '@/lib/insurance/branch-icons'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -96,18 +96,10 @@ export function PolicyCard({ policy, onView, id }: PolicyCardProps) {
                         {expiryInline && <> · {expiryInline}</>}
                     </p>
 
-                    {/* Needs-review chip — only for explicitly unconfirmed/flagged extractions.
-                        The old "coverage %" bar that used to sit here was invented: it was
-                        looked up from the status alone (active → 88%, expiring → 68%), so it
-                        described nothing about the actual policy. Removed, not restyled. */}
-                    {!isAnalyzing && (policy.reviewState === 'unconfirmed' || policy.reviewState === 'flagged') && (
-                        <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-[#FEF3C7] px-2 py-0.5 text-[10px] font-semibold text-[#B45309] dark:bg-amber-900/30 dark:text-amber-400">
-                            <AlertTriangle className="h-3 w-3" />
-                            {policy.reviewState === 'flagged'
-                                ? (t.wallet as any)?.review?.flaggedChip
-                                : (t.wallet as any)?.review?.needsReviewChip}
-                        </span>
-                    )}
+                    {/* The needs-review chip that sat here was removed with the
+                        b2c review flow — extraction review is now an agent-only
+                        step. (The old "coverage %" bar was removed earlier for
+                        being invented from the status alone.) */}
                 </div>
             </div>
         </button>

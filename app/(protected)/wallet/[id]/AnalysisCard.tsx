@@ -1,5 +1,6 @@
 "use client"
 import { useEffect, useMemo, useState } from "react"
+import Link from "next/link"
 import { runPolicyAnalysis, ignoreGap, notifyAgentAboutGap } from "../actions"
 import { requestAiConsent } from "@/app/(protected)/agent/actions"
 import { toast } from "sonner"
@@ -89,6 +90,7 @@ export function AnalysisCard({
     const [notifying, setNotifying] = useState<string | null>(null)
     const [gapLimitReached, setGapLimitReached] = useState(false)
     const [limitReason, setLimitReason] = useState<"gap_limit" | "token_limit" | "feature_locked">("gap_limit")
+    const [agentUpgradeRequired, setAgentUpgradeRequired] = useState(false)
     const [consentModalOpen, setConsentModalOpen] = useState(false)
     const [showConsentRequest, setShowConsentRequest] = useState(false)
     const [requestingConsent, setRequestingConsent] = useState(false)
@@ -259,6 +261,16 @@ export function AnalysisCard({
                 return
             }
 
+            if (res.error === "AGENT_UPGRADE_REQUIRED") {
+                // Agent on the free plan: manual re-analysis is a paid-plan
+                // feature. Not the b2c UpgradeModal — that checkout targets
+                // b2c plans; agents go to /agent/pricing.
+                toast.dismiss(toastId)
+                setRunStatus("idle")
+                setAgentUpgradeRequired(true)
+                return
+            }
+
             if (res.error === "TOKEN_LIMIT_BLOCKED" || res.error === "LIMIT_REACHED" || res.error === "UPGRADE_REQUIRED") {
                 setLimitReason(
                     res.error === "TOKEN_LIMIT_BLOCKED" ? "token_limit"
@@ -303,6 +315,10 @@ export function AnalysisCard({
             )
             const payload = await response.json()
             if (!response.ok) {
+                if (payload?.error?.code === "AGENT_UPGRADE_REQUIRED") {
+                    setAgentUpgradeRequired(true)
+                    return
+                }
                 const message = payload?.error?.message || payload?.message || null
                 const friendly = resolveErrorMessage("RETRY_MISSING_FAILED", message) || statusCopy.retryFailed
                 setAnalysisError(friendly)
@@ -530,6 +546,31 @@ export function AnalysisCard({
                     {analysisInProgress ? statusCopy.inProgress : t.analysis.runAnalysis}
                 </button>
             </div>
+            {/* Agent on the free plan hit the paid-only manual re-analysis
+                gate — upsell the AGENT plans (not the b2c UpgradeModal). */}
+            {agentUpgradeRequired && !analysisInProgress && (
+                <div className="px-6 pt-5">
+                    <div className="rounded-xl border border-amber-200 bg-[#FEF3C7]/60 p-4 dark:border-amber-900/40 dark:bg-amber-950/20">
+                        <div className="flex items-start gap-3">
+                            <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#B45309] dark:text-amber-400" />
+                            <div className="min-w-0 flex-1">
+                                <p className="text-sm font-bold text-[#B45309] dark:text-amber-400">
+                                    {t.analysis.errors.agentUpgradeRequired}
+                                </p>
+                                <p className="mt-1 text-xs text-[#B45309]/80 dark:text-amber-400/80">
+                                    {t.analysis.errors.agentUpgradeRequiredHint}
+                                </p>
+                                <Link
+                                    href="/agent/pricing"
+                                    className="mt-3 inline-flex rounded-full bg-primary px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
+                                >
+                                    {t.analysis.actions.viewAgentPlans}
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
             {/* The complimentary deep analysis exists server-side but was never
                 advertised — say it before use, nudge the upgrade after. */}
             {tier === "free" && trialAnalysisAvailable === true && !analysisInProgress && (

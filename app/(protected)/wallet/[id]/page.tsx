@@ -8,6 +8,7 @@ import { getPolicyShares } from "../actions"
 import { getTranslations } from "@/lib/i18n"
 import { getAIUsageStats } from "../actions"
 import { PolicyDetailsClient } from "./PolicyDetailsClient"
+import { isAgentRole } from "@/lib/auth/require-agent"
 import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { normalizeRemindersSent } from "@/lib/wallet/policy-detail"
 import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
@@ -266,6 +267,7 @@ export default async function PolicyDetailPage({
             statusColor={statusColor}
             daysLeft={daysLeft}
             isOwner={isOwner}
+            canReviewExtraction={isAgentRole(dbUser.roles) && access.canWrite}
             relationshipId={relationshipId}
             t={t}
             tier={entitlements.tier}

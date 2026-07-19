@@ -263,10 +263,12 @@ function unclearExclusionsRule(
             el: `Η ανάλυση AI για ${cited} δεν εντόπισε αναγνώσιμη ενότητα εξαιρέσεων${unclear.length > 2 ? ` (και ${unclear.length - 2} ακόμα)` : ""}.`,
         },
         nextAction: {
-            en: "Open the extraction review and check the document's exclusions section — or upload a clearer copy.",
-            el: "Ανοίξτε τον έλεγχο εξαγωγής και δείτε την ενότητα εξαιρέσεων στο έγγραφο — ή ανεβάστε ένα πιο ευανάγνωστο αντίγραφο.",
+            en: "Open the policy and check the document's exclusions section — or upload a clearer copy.",
+            el: "Ανοίξτε το ασφαλιστήριο και δείτε την ενότητα εξαιρέσεων στο έγγραφο — ή ανεβάστε ένα πιο ευανάγνωστο αντίγραφο.",
         },
-        reviewHref: `/wallet/${first.id}/review`,
+        // The extraction review is agent-only now — the policyholder deep
+        // link goes to the policy detail page instead.
+        reviewHref: `/wallet/${first.id}`,
     }
 }
 

@@ -91,6 +91,8 @@ interface PolicyDetailsClientProps {
     reportUnlocked?: boolean
     /** Pending "same policy uploaded twice" merge awaiting this viewer's consent. */
     mergeRequest?: { id: string; requestedByLabel: string; policyLabel: string } | null
+    /** Agent-only: viewer may open the extraction review for this policy. */
+    canReviewExtraction?: boolean
 }
 
 export function PolicyDetailsClient({
@@ -112,6 +114,7 @@ export function PolicyDetailsClient({
     gapReportItems = [],
     reportUnlocked = true,
     mergeRequest = null,
+    canReviewExtraction = false,
 }: PolicyDetailsClientProps) {
     const locale = t.common?.locale || "en-US"
     const lang: "el" | "en" = locale.startsWith("el") ? "el" : "en"
@@ -342,15 +345,16 @@ export function PolicyDetailsClient({
                     <span className="font-semibold text-black dark:text-white">{displayPolicyNumber || localizedType}</span>
                 </nav>
 
-                {/* Extraction review banner — shown until the owner confirms the AI-extracted data */}
-                {isOwner && (policy.reviewState === 'unconfirmed' || policy.reviewState === 'flagged') && (
+                {/* Extraction review banner — agent-only verification step,
+                    shown until a reviewing agent confirms the AI-extracted data */}
+                {canReviewExtraction && (policy.reviewState === 'unconfirmed' || policy.reviewState === 'flagged') && (
                     <div className="mb-5 flex flex-wrap items-center gap-3 rounded-2xl border border-amber-200 bg-[#FEF3C7]/60 p-4 dark:border-amber-900/40 dark:bg-amber-950/20">
                         <AlertTriangle className="h-5 w-5 flex-shrink-0 text-[#B45309] dark:text-amber-400" />
                         <p className="min-w-0 flex-1 text-sm font-medium text-[#B45309] dark:text-amber-400">
-                            {t.wallet.review.reviewBannerCta}
+                            {t.wallet.review.agentBannerCta}
                         </p>
                         <Link
-                            href={`/wallet/${policy.id}/review`}
+                            href={`/wallet/${policy.id}/review?returnTo=${encodeURIComponent(`/wallet/${policy.id}`)}`}
                             className="flex-shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
                         >
                             {t.wallet.review.reviewNow}

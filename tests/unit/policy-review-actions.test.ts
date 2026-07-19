@@ -22,6 +22,13 @@ vi.mock('@/lib/db', () => ({
     },
 }))
 
+// The actions resolve per-policy authorization through this — the matrix
+// below drives it directly. isAgentRole stays REAL (pure role parsing).
+const mockGetPolicyAccess = vi.fn()
+vi.mock('@/lib/policy-access', () => ({
+    getPolicyAccess: (...args: unknown[]) => mockGetPolicyAccess(...args),
+}))
+
 vi.mock('@/lib/supabase/server', () => ({
     createClient: vi.fn(() => ({ auth: { getUser: vi.fn() } })),
 }))
@@ -57,13 +64,23 @@ vi.mock('@/lib/subscription-limits', () => ({
     getUserSubscription: vi.fn(),
     SUBSCRIPTION_LIMITS: {},
 }))
-vi.mock('@/lib/subscription-entitlements', () => ({ resolveUserEntitlements: vi.fn() }))
+vi.mock('@/lib/subscription-entitlements', () => ({
+    resolveUserEntitlements: vi.fn(),
+    resolveAgentEntitlements: vi.fn(),
+    canAgentRunAnalysis: vi.fn(),
+}))
 vi.mock('@google/generative-ai', () => ({ GoogleGenerativeAI: vi.fn() }))
 
 import { confirmPolicyReview, flagPolicyExtraction } from '@/app/(protected)/wallet/actions'
 import { db } from '@/lib/db'
 
-const OWNER = { id: 'owner-1', email: 'owner@example.com', name: 'Owner', preferredLanguage: 'en' }
+const OWNER = { id: 'owner-1', email: 'owner@example.com', name: 'Owner', roles: 'policyholder', preferredLanguage: 'en' }
+const AGENT = { id: 'agent-1', email: 'agent@example.com', name: 'Agent', roles: 'agent,policyholder', preferredLanguage: 'en' }
+const DUAL_OWNER_AGENT = { ...OWNER, roles: 'policyholder,agent' }
+
+const WRITE_ACCESS = { exists: true, canRead: true, canWrite: true }
+const READ_ONLY_ACCESS = { exists: true, canRead: true, canWrite: false }
+const NO_ACCESS = { exists: true, canRead: false, canWrite: false }
 
 function policyRow(overrides: Record<string, unknown> = {}) {
     return {
@@ -89,12 +106,14 @@ function policyRow(overrides: Record<string, unknown> = {}) {
 
 beforeEach(() => {
     vi.clearAllMocks()
-    mockGetAuthenticatedUserOrNull.mockResolvedValue({ dbUser: OWNER })
+    // Default happy path: a managing agent with write access.
+    mockGetAuthenticatedUserOrNull.mockResolvedValue({ dbUser: AGENT })
+    mockGetPolicyAccess.mockResolvedValue(WRITE_ACCESS)
 })
 
 describe('confirmPolicyReview', () => {
     it('applies column + envelope edits and stamps reviewState=confirmed in one transaction', async () => {
-        ;(db.policy.findFirst as any).mockResolvedValue(policyRow())
+        ;(db.policy.findUnique as any).mockResolvedValue(policyRow())
 
         const result = await confirmPolicyReview('pol-1', {
             insurerName: 'Interamerican',
@@ -127,7 +146,7 @@ describe('confirmPolicyReview', () => {
     })
 
     it('confirms with no edits (stamp only)', async () => {
-        ;(db.policy.findFirst as any).mockResolvedValue(policyRow())
+        ;(db.policy.findUnique as any).mockResolvedValue(policyRow())
 
         const result = await confirmPolicyReview('pol-1', {})
         expect(result).toEqual({ success: true })
@@ -138,7 +157,7 @@ describe('confirmPolicyReview', () => {
     })
 
     it('derives the sum-insured target from the post-edit line of business', async () => {
-        ;(db.policy.findFirst as any).mockResolvedValue(policyRow())
+        ;(db.policy.findUnique as any).mockResolvedValue(policyRow())
 
         await confirmPolicyReview('pol-1', { lineOfBusiness: 'home', sumInsured: 200000 })
 
@@ -147,21 +166,47 @@ describe('confirmPolicyReview', () => {
         expect(acord.vehicle).toBeUndefined()
     })
 
-    it('rejects a non-owner', async () => {
-        ;(db.policy.findFirst as any).mockResolvedValue(null)
+    // ── Authorization matrix: the review is an agent-only step ──
+
+    it('rejects a b2c owner without the agent role', async () => {
+        mockGetAuthenticatedUserOrNull.mockResolvedValue({ dbUser: OWNER })
+        // The owner can read AND write their own policy — role is what denies.
+        mockGetPolicyAccess.mockResolvedValue({ exists: true, canRead: true, canWrite: true, isOwner: true })
+        const result = await confirmPolicyReview('pol-1', {})
+        expect(result).toEqual({ error: 'Unauthorized' })
+        expect(db.$transaction).not.toHaveBeenCalled()
+    })
+
+    it('allows a dual-role owner-agent on their own policy', async () => {
+        mockGetAuthenticatedUserOrNull.mockResolvedValue({ dbUser: DUAL_OWNER_AGENT })
+        mockGetPolicyAccess.mockResolvedValue({ exists: true, canRead: true, canWrite: true, isOwner: true })
+        ;(db.policy.findUnique as any).mockResolvedValue(policyRow({ ownerUserId: DUAL_OWNER_AGENT.id }))
+        const result = await confirmPolicyReview('pol-1', {})
+        expect(result).toEqual({ success: true })
+    })
+
+    it('rejects an agent with only a read grant', async () => {
+        mockGetPolicyAccess.mockResolvedValue(READ_ONLY_ACCESS)
+        const result = await confirmPolicyReview('pol-1', {})
+        expect(result).toEqual({ error: 'Unauthorized' })
+        expect(db.$transaction).not.toHaveBeenCalled()
+    })
+
+    it('returns Not found for a stranger (no existence leak)', async () => {
+        mockGetPolicyAccess.mockResolvedValue(NO_ACCESS)
         const result = await confirmPolicyReview('pol-1', {})
         expect(result).toEqual({ error: 'Not found' })
         expect(db.$transaction).not.toHaveBeenCalled()
     })
 
     it('rejects while analysis is running', async () => {
-        ;(db.policy.findFirst as any).mockResolvedValue(policyRow({ status: 'analyzing' }))
+        ;(db.policy.findUnique as any).mockResolvedValue(policyRow({ status: 'analyzing' }))
         const result = await confirmPolicyReview('pol-1', {})
         expect(result).toEqual({ error: 'ANALYSIS_IN_PROGRESS' })
     })
 
     it('rejects endDate before startDate against effective values', async () => {
-        ;(db.policy.findFirst as any).mockResolvedValue(policyRow())
+        ;(db.policy.findUnique as any).mockResolvedValue(policyRow())
         const result = await confirmPolicyReview('pol-1', { endDate: '2025-01-01' })
         expect(result).toEqual({ error: 'END_DATE_BEFORE_START' })
         expect(db.$transaction).not.toHaveBeenCalled()
@@ -175,7 +220,7 @@ describe('confirmPolicyReview', () => {
 
 describe('flagPolicyExtraction', () => {
     it('stamps reviewState=flagged and records notificationEvent + activityLog', async () => {
-        ;(db.policy.findFirst as any).mockResolvedValue(policyRow())
+        ;(db.policy.findUnique as any).mockResolvedValue(policyRow())
 
         const result = await flagPolicyExtraction('pol-1', 'The premium is wrong')
         expect(result).toEqual({ success: true })
@@ -201,15 +246,16 @@ describe('flagPolicyExtraction', () => {
     })
 
     it('truncates the reason to 500 chars and tolerates an empty reason', async () => {
-        ;(db.policy.findFirst as any).mockResolvedValue(policyRow())
+        ;(db.policy.findUnique as any).mockResolvedValue(policyRow())
 
         await flagPolicyExtraction('pol-1', 'x'.repeat(600))
         const first = (db.policy.update as any).mock.calls[0][0]
         expect(first.data.acordData.extraction.flagReason).toHaveLength(500)
 
         vi.clearAllMocks()
-        mockGetAuthenticatedUserOrNull.mockResolvedValue({ dbUser: OWNER })
-        ;(db.policy.findFirst as any).mockResolvedValue(policyRow())
+        mockGetAuthenticatedUserOrNull.mockResolvedValue({ dbUser: AGENT })
+        mockGetPolicyAccess.mockResolvedValue(WRITE_ACCESS)
+        ;(db.policy.findUnique as any).mockResolvedValue(policyRow())
 
         const result = await flagPolicyExtraction('pol-1')
         expect(result).toEqual({ success: true })
@@ -217,8 +263,16 @@ describe('flagPolicyExtraction', () => {
         expect(second.data.acordData.extraction.flagReason).toBeNull()
     })
 
-    it('rejects a non-owner', async () => {
-        ;(db.policy.findFirst as any).mockResolvedValue(null)
+    it('rejects a b2c owner without the agent role', async () => {
+        mockGetAuthenticatedUserOrNull.mockResolvedValue({ dbUser: OWNER })
+        mockGetPolicyAccess.mockResolvedValue({ exists: true, canRead: true, canWrite: true, isOwner: true })
+        const result = await flagPolicyExtraction('pol-1', 'nope')
+        expect(result).toEqual({ error: 'Unauthorized' })
+        expect(db.$transaction).not.toHaveBeenCalled()
+    })
+
+    it('returns Not found for a stranger (no existence leak)', async () => {
+        mockGetPolicyAccess.mockResolvedValue(NO_ACCESS)
         const result = await flagPolicyExtraction('pol-1', 'nope')
         expect(result).toEqual({ error: 'Not found' })
         expect(db.$transaction).not.toHaveBeenCalled()
