@@ -74,6 +74,7 @@ export const en: TranslationKeys = {
         insuranceTypes: 'Insurance Types',
         plans: 'Plans & Pricing',
         partners: 'Partner Offers',
+        benefits: 'Benefits',
     },
 
     // Auth
@@ -2263,6 +2264,25 @@ export const en: TranslationKeys = {
             documents: 'Documents',
             noFiles: 'No files attached',
             contract: 'Contract',
+        },
+    },
+    benefits: {
+        title: 'Partner Benefits',
+        subtitle: 'Prevention services and privileges from selected partners, included with your subscription.',
+        includedBadge: 'Included in your plan',
+        lockedTitle: 'Available with an upgrade',
+        lockedSubtitle: 'These benefits are included in a higher plan.',
+        visitPartner: 'Go to partner',
+        useCode: 'Redemption code',
+        callToRedeem: 'Call to redeem',
+        terms: 'Offer terms',
+        partnerDisclosure: 'Benefits are provided by third-party partners. Redemption happens directly with them.',
+        emptyTitle: 'No benefits available right now',
+        emptyBody: 'New partnerships are added gradually — you will find them here as soon as they go live.',
+        offerTypes: {
+            free_service: 'Free service',
+            discount: 'Discount',
+            gift: 'Gift',
         },
     },
 }
