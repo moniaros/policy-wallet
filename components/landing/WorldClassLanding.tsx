@@ -57,7 +57,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
 
     return (
         <div
-            className={`${inter.className} min-h-screen bg-white text-[#0F172A] selection:bg-[#206756]/20 selection:text-[#0F172A]`}
+            className={`${inter.className} min-h-screen bg-white text-[#0F172A] selection:bg-[#29685B]/20 selection:text-[#0F172A]`}
         >
             {/* ── NAV ──────────────────────────────────────────────── */}
             <header className="fixed left-4 right-4 top-4 z-50">
@@ -124,7 +124,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                         <Link
                             href="/auth/signup?role=policyholder&source=landing_nav"
                             onClick={() => trackCta("nav")}
-                            className="rounded-full bg-[#29685B] px-5 py-2 text-[14px] font-bold text-white transition-colors hover:bg-[#1C4E44]"
+                            className="pw-primary-button pw-btn-sm"
                         >
                             {t("Ξεκινήστε", "Get started")}
                         </Link>
@@ -178,7 +178,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                         <SolutionsMobileGroup
                             language={locale}
                             onNavigate={() => setIsMobileMenuOpen(false)}
-                            className="text-[20px] sm:text-[22px]"
+                            className="text-[20px]"
                         />
                         <Link
                             href={l("/company")}
@@ -199,14 +199,14 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                     <div className="mt-auto flex flex-col gap-4">
                         <Link
                             href="/auth/signin?source=landing_nav_login"
-                            className="w-full rounded-2xl border border-transparent bg-[#1C4E44] px-6 py-4 text-center text-[18px] font-bold text-white transition-colors hover:bg-[#143B33]"
+                            className="pw-secondary-button-inverse pw-btn-lg w-full"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
                             {t("Σύνδεση", "Log in")}
                         </Link>
                         <Link
                             href="/auth/signup?role=policyholder&source=landing_nav"
-                            className="w-full rounded-2xl bg-[#337D6F] px-6 py-4 text-center text-[18px] font-bold text-white transition-colors hover:bg-[#2C6E61]"
+                            className="pw-primary-button-inverse pw-btn-lg w-full"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
                             {t("Ξεκινήστε", "Get started")}
@@ -224,7 +224,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                             {/* Badge */}
                             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-3.5 py-1.5">
                                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#29685B]" />
-                                <span className="text-[13px] font-medium text-[#065F46]">
+                                <span className="text-[13px] font-medium text-[#166534]">
                                     {t(
                                         "Gap Engine — AI ανάλυση κενών κάλυψης",
                                         "Gap Engine — AI coverage gap analysis"
@@ -233,7 +233,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                             </div>
 
                             {/* Headline */}
-                            <h1 className="mb-6 text-[40px] font-semibold leading-[1.05] tracking-[-0.04em] text-[#0F172A] lg:text-[58px]">
+                            <h1 className="mb-6 text-[40px] font-semibold leading-[1.05] tracking-[-0.04em] text-[#0F172A] lg:text-[56px]">
                                 {isGreek ? (
                                     <>
                                         Ξέρετε τι σας καλύπτει{" "}
@@ -260,14 +260,11 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                                 <Link
                                     href="/auth/signup?role=policyholder&source=landing_hero"
                                     onClick={() => trackCta("hero")}
-                                    className="rounded-full bg-[#29685B] px-7 py-3.5 text-center text-[15px] font-bold text-white transition-colors hover:bg-[#1C4E44]"
+                                    className="pw-primary-button pw-btn-lg"
                                 >
                                     {t("Ξεκινήστε Δωρεάν", "Start Free")}
                                 </Link>
-                                <Link
-                                    href="#how-it-works"
-                                    className="rounded-full border border-[#E2E8F0] bg-white px-7 py-3.5 text-center text-[15px] font-bold text-[#0F172A] transition-colors hover:bg-[#F8FAFC]"
-                                >
+                                <Link href="#how-it-works" className="pw-secondary-button pw-btn-lg">
                                     {t("Πώς λειτουργεί", "How it works")}
                                 </Link>
                             </div>
@@ -321,13 +318,13 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                             <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-[#29685B]">
                                 {t("Υπηρεσίες", "Services")}
                             </p>
-                            <h2 className="mb-4 text-[32px] font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-[42px]">
+                            <h2 className="mb-4 text-[32px] font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-[44px]">
                                 {t(
                                     "Ό,τι χρειάζεστε για τα ασφαλιστήριά σας",
                                     "Everything you need for your policies"
                                 )}
                             </h2>
-                            <p className="text-[17px] leading-relaxed text-[#475569]">
+                            <p className="text-[18px] leading-relaxed text-[#475569]">
                                 {t(
                                     "Από το upload μέχρι την ανάλυση AI — το PolicyWallet αυτοματοποιεί κάθε βήμα.",
                                     "From upload to AI analysis — PolicyWallet automates every step."
@@ -345,10 +342,10 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                             <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-[#29685B]">
                                 {t("Για εσάς", "For you")}
                             </p>
-                            <h2 className="mb-4 text-[32px] font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-[42px]">
+                            <h2 className="mb-4 text-[32px] font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-[44px]">
                                 {t("Ιδιώτης ή ασφαλιστής;", "Individual or insurance agent?")}
                             </h2>
-                            <p className="mx-auto max-w-[500px] text-[17px] leading-relaxed text-[#475569]">
+                            <p className="mx-auto max-w-[500px] text-[18px] leading-relaxed text-[#475569]">
                                 {t(
                                     "Δύο διαφορετικές εμπειρίες, σχεδιασμένες για τις ανάγκες σας.",
                                     "Two distinct experiences, built around your needs."
@@ -388,7 +385,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                             },
                         ].map((stat) => (
                             <div key={stat.value}>
-                                <p className="text-[36px] font-bold tracking-tight text-[#29685B] lg:text-[44px]">
+                                <p className="text-[32px] font-bold tracking-tight text-[#29685B] lg:text-[44px]">
                                     {stat.value}
                                 </p>
                                 <p className="mt-1 text-[14px] text-[#64748B]">
@@ -406,7 +403,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                             <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-[#29685B]">
                                 {t("Πώς λειτουργεί", "How it works")}
                             </p>
-                            <h2 className="text-[32px] font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-[42px]">
+                            <h2 className="text-[32px] font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-[44px]">
                                 {t("Τρία βήματα. Πλήρης έλεγχος.", "Three steps. Full control.")}
                             </h2>
                         </div>
@@ -476,10 +473,10 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_50%,rgba(41,104,91,0.30),transparent)]" />
 
                         <div className="relative">
-                            <p className="mb-4 text-[12px] font-semibold uppercase tracking-widest text-[#4ADE80]">
+                            <p className="mb-4 text-[12px] font-semibold uppercase tracking-widest text-[#89D9B2]">
                                 PolicyWallet
                             </p>
-                            <h2 className="mb-4 text-[32px] font-semibold leading-tight tracking-[-0.03em] text-white lg:text-[48px]">
+                            <h2 className="mb-4 text-[32px] font-semibold leading-tight tracking-[-0.03em] text-white lg:text-[44px]">
                                 {isGreek ? (
                                     <>
                                         Αρκεί ένα συμβόλαιο
@@ -494,7 +491,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                                     </>
                                 )}
                             </h2>
-                            <p className="mx-auto mb-10 max-w-[440px] text-[17px] text-white/65">
+                            <p className="mx-auto mb-10 max-w-[440px] text-[18px] text-white/80">
                                 {t(
                                     "Δωρεάν για 1 συμβόλαιο με βασική AI σύνοψη. Χωρίς πιστωτική κάρτα.",
                                     "Free for 1 policy with a basic AI summary. No credit card required."
@@ -504,13 +501,13 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
                                 <Link
                                     href="/auth/signup?role=policyholder&source=landing_cta"
                                     onClick={() => trackCta("final_cta")}
-                                    className="rounded-full bg-white px-8 py-3.5 text-[15px] font-bold text-[#0F172A] transition-colors hover:bg-[#F1F5F9]"
+                                    className="pw-primary-button-inverse pw-btn-lg"
                                 >
                                     {t("Ξεκινήστε Δωρεάν", "Start Free")}
                                 </Link>
                                 <Link
                                     href={l("/solutions/agents")}
-                                    className="rounded-full border border-white/20 px-8 py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-white/10"
+                                    className="pw-secondary-button-inverse pw-btn-lg"
                                 >
                                     {t("Είστε ασφαλιστής;", "Are you an agent?")}
                                 </Link>

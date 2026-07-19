@@ -27,14 +27,14 @@ function FAQItem({ q, a }: { q: string; a: string }) {
     const [open, setOpen] = useState(false)
 
     return (
-        <div className={`border-b border-[#E5E7EB] transition-colors duration-150 ${open ? "bg-white" : ""}`}>
+        <div className={`border-b border-[#E2E8F0] transition-colors duration-150 ${open ? "bg-white" : ""}`}>
             <button
                 type="button"
                 className="group flex w-full items-center justify-between px-1 py-5 text-left"
                 onClick={() => setOpen((value) => !value)}
                 aria-expanded={open}
             >
-                <span className="text-[17px] font-medium text-[#0F172A] transition-colors duration-150 group-hover:text-[#29685B]">
+                <span className="text-[16px] font-medium text-[#0F172A] transition-colors duration-150 group-hover:text-[#29685B]">
                     {q}
                 </span>
                 {open ? (
@@ -87,10 +87,10 @@ function StatItem({ value, label, visible }: { value: string; label: string; vis
 
     return (
         <div className="text-center">
-            <div className="mb-2 text-[42px] font-medium leading-none tracking-tight text-[#0F172A] lg:text-[52px]">
+            <div className="mb-2 text-[32px] font-medium leading-none tracking-tight text-[#0F172A] lg:text-[44px]">
                 {animated}
             </div>
-            <div className="mx-auto max-w-[180px] text-[15px] leading-snug text-[#475569]">{label}</div>
+            <div className="mx-auto max-w-[180px] text-[14px] leading-snug text-[#475569]">{label}</div>
         </div>
     )
 }
@@ -151,19 +151,19 @@ export default function ProductPage() {
         <LoBPageShell activeNav="product">
             <section className="px-6 text-center md:px-12">
                 <div className="mx-auto max-w-[860px]">
-                    <div className="mb-8 inline-flex select-none items-center gap-2 rounded-full bg-[#DCEBDA] px-3 py-1.5 text-[12px] font-semibold uppercase tracking-wide text-[#1A4A1A]">
+                    <div className="mb-8 inline-flex select-none items-center gap-2 rounded-full bg-[#DCEBDA] px-3 py-1.5 text-[12px] font-semibold uppercase tracking-wide text-[#166534]">
                         <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0" />
                         {t("Διαθέσιμο τώρα", "Available now")}
                     </div>
 
-                    <h1 className="mb-6 text-[48px] font-medium leading-[1.02] tracking-[-0.045em] text-[#0F172A] md:text-[68px] lg:text-[78px]">
+                    <h1 className="mb-6 text-[44px] font-medium leading-[1.02] tracking-[-0.045em] text-[#0F172A] md:text-[56px]">
                         {t(
                             "Όλες οι ασφαλίσεις σας. Ένα έξυπνο πορτοφόλι.",
                             "All your insurance. One intelligent wallet."
                         )}
                     </h1>
 
-                    <p className="mx-auto mb-10 max-w-[640px] text-[19px] leading-[1.55] text-[#475569] md:text-[23px]">
+                    <p className="mx-auto mb-10 max-w-[640px] text-[18px] leading-[1.55] text-[#475569] md:text-[20px]">
                         {t(
                             "Μεγιστοποιήστε τα ασφαλιστικά σας οφέλη με έξυπνες αναλύσεις, εντοπισμό κενών και υπενθυμίσεις πρόληψης, όλα σε ένα μέρος.",
                             "Maximize your insurance benefits with intelligent insights, gap detection, and preventive care reminders, all in one place."
@@ -171,10 +171,7 @@ export default function ProductPage() {
                     </p>
 
                     <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
-                        <Link
-                            href="/auth/signup"
-                            className="inline-flex w-full items-center justify-center gap-2 rounded-[4px] bg-[#29685B] px-8 py-3.5 text-[16px] font-bold text-white transition-colors duration-150 hover:bg-[#1C4E44] sm:w-auto"
-                        >
+                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε δωρεάν", "Get started free")}
                             <ArrowRight className="h-4 w-4" />
                         </Link>
@@ -182,7 +179,7 @@ export default function ProductPage() {
                             type="button"
                             aria-controls="how-it-works"
                             onClick={() => scrollToSection("how-it-works", howItWorksHeadingRef)}
-                            className="inline-flex w-full items-center justify-center gap-2 rounded-[4px] border border-[#E2E8F0] bg-white px-8 py-3.5 text-[16px] font-medium text-[#0F172A] transition-colors duration-150 hover:border-[#CBD5E1] hover:bg-[#F8FAFC] sm:w-auto"
+                            className="pw-secondary-button pw-btn-lg w-full cursor-pointer sm:w-auto"
                         >
                             <ChevronDown className="h-4 w-4 text-[#29685B]" />
                             {t("Πώς λειτουργεί", "See how it works")}
@@ -199,13 +196,13 @@ export default function ProductPage() {
                 </div>
             </section>
 
-            <section className="mx-auto max-w-[1240px] px-6 py-20 md:px-12">
+            <section className="mx-auto max-w-[1240px] px-6 py-20 md:px-12 lg:py-28">
                 <div className="grid items-center gap-16 md:grid-cols-2 lg:gap-24">
                     <div>
-                        <p className="mb-4 text-[13px] font-semibold uppercase tracking-widest text-[#29685B]">
+                        <p className="mb-4 text-[12px] font-semibold uppercase tracking-widest text-[#29685B]">
                             {t("Το Πορτοφόλι σας", "Your wallet")}
                         </p>
-                        <h2 className="mb-6 text-[36px] font-medium leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-[44px]">
+                        <h2 className="mb-6 text-[32px] font-medium leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-[44px]">
                             {t(
                                 "Τα απαραίτητα για να διαχειρίζεστε τις ασφαλίσεις σας αβίαστα.",
                                 "The essentials to manage your insurance effortlessly."
@@ -233,8 +230,8 @@ export default function ProductPage() {
                     </div>
 
                     <div className="relative">
-                        <div className="rounded-[20px] border border-[#E5E7EB] bg-white p-6 shadow-[0_24px_48px_rgba(0,0,0,0.08)] lg:p-8">
-                            <div className="mb-6 flex items-center justify-between border-b border-[#F0F0F0] pb-4">
+                        <div className="rounded-[20px] border border-[#E2E8F0] bg-white p-6 shadow-[0_24px_48px_rgba(0,0,0,0.08)] lg:p-8">
+                            <div className="mb-6 flex items-center justify-between border-b border-[#E2E8F0] pb-4">
                                 <div>
                                     <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">
                                         {t("Πύλη Ασφάλισης", "Insurance Hub")}
@@ -322,7 +319,7 @@ export default function ProductPage() {
                 </div>
             </section>
 
-            <section ref={statsRef} className="border-y border-[#E5E7EB] bg-white px-6 py-16 md:px-12">
+            <section ref={statsRef} className="border-y border-[#E2E8F0] bg-white px-6 py-16 md:px-12">
                 <div className="mx-auto grid max-w-[1040px] gap-10 md:grid-cols-3">
                     {STATS.map((stat) => (
                         <StatItem
@@ -335,17 +332,17 @@ export default function ProductPage() {
                 </div>
             </section>
 
-            <section id="product-categories" className="scroll-mt-32 bg-[#F8FAFC] px-6 py-24 md:px-12 lg:scroll-mt-40">
+            <section id="product-categories" className="scroll-mt-32 bg-[#F8FAFC] px-6 py-20 md:px-12 lg:scroll-mt-40 lg:py-28">
                 <div className="mx-auto max-w-[1240px]">
                     <div className="mb-14">
-                        <p className="mb-3 text-[13px] font-semibold uppercase tracking-widest text-[#29685B]">
+                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-[#29685B]">
                             {t("Κατηγορίες", "Categories")}
                         </p>
                         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                             <h2
                                 ref={categoriesHeadingRef}
                                 tabIndex={-1}
-                                className="max-w-[500px] text-[36px] font-medium leading-[1.1] tracking-[-0.03em] text-[#0F172A] focus:outline-none lg:text-[44px]"
+                                className="max-w-[500px] text-[32px] font-medium leading-[1.1] tracking-[-0.03em] text-[#0F172A] focus:outline-none lg:text-[44px]"
                             >
                                 {t(
                                     "Κάθε ασφάλεια που χρειάζεστε, αναλυμένη για εσάς.",
@@ -356,7 +353,7 @@ export default function ProductPage() {
                                 type="button"
                                 aria-controls="product-categories"
                                 onClick={() => scrollToSection("product-categories", categoriesHeadingRef)}
-                                className="inline-flex flex-shrink-0 items-center gap-1.5 self-start text-[15px] font-medium text-[#29685B] transition-colors duration-150 hover:text-[#1C4E44] md:self-auto"
+                                className="inline-flex flex-shrink-0 items-center gap-1.5 self-start text-[14px] font-medium text-[#29685B] transition-colors duration-150 hover:text-[#1C4E44] md:self-auto"
                             >
                                 {t("Δείτε όλα", "Explore all")}
                                 <ChevronDown className="h-4 w-4" />
@@ -383,7 +380,7 @@ export default function ProductPage() {
                                         </span>
                                     </div>
 
-                                    <h3 className="mb-3 text-[22px] font-medium leading-[1.2] tracking-tight text-[#0F172A]">
+                                    <h3 className="mb-3 text-[20px] font-medium leading-[1.2] tracking-tight text-[#0F172A]">
                                         {t(category.labelEl, category.labelEn)}
                                     </h3>
                                     <p className="mb-3 text-[14px] font-semibold leading-snug text-[#0F172A]">
@@ -404,15 +401,15 @@ export default function ProductPage() {
                 </div>
             </section>
 
-            <section id="how-it-works" className="mx-auto max-w-[1240px] scroll-mt-32 px-6 py-24 md:px-12 lg:scroll-mt-40">
+            <section id="how-it-works" className="mx-auto max-w-[1240px] scroll-mt-32 px-6 py-20 md:px-12 lg:scroll-mt-40 lg:py-28">
                 <div className="mb-16 text-center">
-                    <p className="mb-3 text-[13px] font-semibold uppercase tracking-widest text-[#29685B]">
+                    <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-[#29685B]">
                         {t("Η Διαδικασία", "The process")}
                     </p>
                     <h2
                         ref={howItWorksHeadingRef}
                         tabIndex={-1}
-                        className="mx-auto max-w-[560px] text-[36px] font-medium leading-[1.1] tracking-[-0.03em] text-[#0F172A] focus:outline-none lg:text-[44px]"
+                        className="mx-auto max-w-[560px] text-[32px] font-medium leading-[1.1] tracking-[-0.03em] text-[#0F172A] focus:outline-none lg:text-[44px]"
                     >
                         {t(
                             "Τρία βήματα για τον πλήρη έλεγχο των ασφαλίσεών σας.",
@@ -431,15 +428,15 @@ export default function ProductPage() {
                                     <span className="rounded-full bg-[#DCEBDA] px-2.5 py-1 text-[11px] font-bold tracking-widest text-[#29685B]">
                                         {step.n}
                                     </span>
-                                    <div className="h-px flex-1 bg-[#E5E7EB]" />
+                                    <div className="h-px flex-1 bg-[#E2E8F0]" />
                                 </div>
-                                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-[14px] border border-[#E5E7EB] bg-[#F8FAFC] shadow-sm">
+                                <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-[14px] border border-[#E2E8F0] bg-[#F8FAFC] shadow-sm">
                                     <Icon className="h-5 w-5 text-[#29685B]" />
                                 </div>
                                 <h3 className="mb-3 text-[20px] font-semibold leading-snug tracking-tight text-[#0F172A]">
                                     {t(step.titleEl, step.titleEn)}
                                 </h3>
-                                <p className="text-[15px] leading-relaxed text-[#475569]">
+                                <p className="text-[14px] leading-relaxed text-[#475569]">
                                     {t(step.descEl, step.descEn)}
                                 </p>
                             </div>
@@ -448,7 +445,7 @@ export default function ProductPage() {
                 </div>
             </section>
 
-            <section className="bg-[#F8FAFC] px-6 py-24 md:px-12">
+            <section className="bg-[#F8FAFC] px-6 py-20 md:px-12 lg:py-28">
                 <div className="mx-auto max-w-[780px] text-center">
                     <div className="mb-8 flex items-center justify-center gap-1">
                         {[...Array(5)].map((_, index) => (
@@ -457,7 +454,7 @@ export default function ProductPage() {
                             </svg>
                         ))}
                     </div>
-                    <blockquote className="mb-8 text-[22px] font-medium leading-[1.4] tracking-[-0.02em] text-[#0F172A] md:text-[28px]">
+                    <blockquote className="mb-8 text-[20px] font-medium leading-[1.4] tracking-[-0.02em] text-[#0F172A] md:text-[24px]">
                         {t(
                             "«Ανακάλυψα ότι το σπίτι μου ήταν ανασφάλιστο κατά €40.000 σε rebuild cost. Η πλατφόρμα το εντόπισε σε 2 λεπτά.»",
                             '"I discovered my home was under-insured by €40,000 in rebuild cost. The platform caught it in 2 minutes."'
@@ -468,7 +465,7 @@ export default function ProductPage() {
                             Μ
                         </div>
                         <div className="text-left">
-                            <p className="text-[15px] font-semibold text-[#0F172A]">{t("Μαρία Π.", "Maria P.")}</p>
+                            <p className="text-[14px] font-semibold text-[#0F172A]">{t("Μαρία Π.", "Maria P.")}</p>
                             <p className="text-[13px] text-[#64748B]">
                                 {t("Ιδιοκτήτρια κατοικίας, Αθήνα", "Homeowner, Athens")}
                             </p>
@@ -477,9 +474,9 @@ export default function ProductPage() {
                 </div>
             </section>
 
-            <section id="product-faq" className="mx-auto max-w-[860px] scroll-mt-32 px-6 py-24 md:px-12 lg:scroll-mt-40">
+            <section id="product-faq" className="mx-auto max-w-[860px] scroll-mt-32 px-6 py-20 md:px-12 lg:scroll-mt-40 lg:py-28">
                 <div className="mb-12 text-center">
-                    <p className="mb-3 text-[13px] font-semibold uppercase tracking-widest text-[#29685B]">
+                    <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-[#29685B]">
                         {t("Ερωτήσεις", "FAQs")}
                     </p>
                     <h2 className="text-[32px] font-medium leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-[40px]">
@@ -487,16 +484,16 @@ export default function ProductPage() {
                     </h2>
                 </div>
 
-                <div className="border-t border-[#E5E7EB]">
+                <div className="border-t border-[#E2E8F0]">
                     {FAQS.map((faq) => (
                         <FAQItem key={faq.qEn} q={t(faq.qEl, faq.qEn)} a={t(faq.aEl, faq.aEn)} />
                     ))}
                 </div>
             </section>
 
-            <section className="bg-[#1A2420] px-6 py-28 text-white md:px-12">
+            <section className="bg-[#1A2420] px-6 py-20 text-white md:px-12 lg:py-28">
                 <div className="mx-auto max-w-[860px] text-center">
-                    <h2 className="mb-6 text-[36px] font-medium leading-[1.05] tracking-[-0.04em] text-white md:text-[52px] lg:text-[60px]">
+                    <h2 className="mb-6 text-[32px] font-medium leading-[1.05] tracking-[-0.04em] text-white md:text-[44px] lg:text-[56px]">
                         {t(
                             "Αποκτήστε πρόσβαση στο PolicyWallet για ιδιώτες, ομάδες και επαγγελματίες.",
                             "Get access to the PolicyWallet platform for individuals, teams, and professionals."
@@ -511,14 +508,14 @@ export default function ProductPage() {
                     <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
                         <Link
                             href="/auth/signup"
-                            className="inline-flex w-full items-center justify-center gap-2 rounded-[4px] bg-[#89D9B2] px-8 py-4 text-[16px] font-bold text-[#0F172A] transition-opacity duration-150 hover:opacity-90 sm:w-auto"
+                            className="pw-btn-lg inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#89D9B2] font-semibold text-[#0F172A] transition-opacity duration-150 hover:opacity-90 sm:w-auto"
                         >
                             {t("Ξεκινήστε δωρεάν", "Get started free")}
                             <ArrowRight className="h-4 w-4" />
                         </Link>
                         <Link
                             href={localizeHref("/pricing", language)}
-                            className="inline-flex w-full items-center justify-center rounded-[4px] border border-white/20 bg-white/5 px-8 py-4 text-[16px] font-medium text-white/80 transition-colors duration-150 hover:bg-white/10 hover:text-white sm:w-auto"
+                            className="pw-secondary-button-inverse pw-btn-lg w-full sm:w-auto"
                         >
                             {t("Δείτε τις τιμές", "View pricing")}
                         </Link>

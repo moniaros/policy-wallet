@@ -45,7 +45,7 @@ export function LoBPageShell({ children, activeNav = "none" }: LoBPageShellProps
             : "text-[#475569] hover:text-[#0F172A]"
 
     return (
-        <div className={`${inter.className} min-h-screen bg-white text-[#0F172A] selection:bg-[#206756]/20 selection:text-[#0F172A] dark:bg-slate-950 dark:text-white`}>
+        <div className={`${inter.className} min-h-screen bg-white text-[#0F172A] selection:bg-[#29685B]/20 selection:text-[#0F172A] dark:bg-slate-950 dark:text-white`}>
             <header className="fixed left-4 right-4 top-4 z-50">
                 <div
                     className={`mx-auto flex h-14 max-w-[1400px] items-center justify-between rounded-full px-6 transition-all duration-300 ${
@@ -87,13 +87,10 @@ export function LoBPageShell({ children, activeNav = "none" }: LoBPageShellProps
                             </button>
                         </div>
                         <ThemeToggle />
-                        <Link href="/auth/signin" className="text-[14px] font-medium text-[#0F172A] transition-colors duration-150 hover:text-[#206756]">
+                        <Link href="/auth/signin" className="text-[14px] font-medium text-[#0F172A] transition-colors duration-150 hover:text-[#29685B]">
                             {t("Σύνδεση", "Log in")}
                         </Link>
-                        <Link
-                            href="/auth/signup?role=policyholder"
-                            className="rounded-full bg-[#29685B] px-5 py-2 text-[14px] font-bold text-white transition-colors duration-150 hover:bg-[#1C4E44]"
-                        >
+                        <Link href="/auth/signup?role=policyholder" className="pw-primary-button pw-btn-sm">
                             {t("Ξεκινήστε", "Get started")}
                         </Link>
                     </div>
@@ -133,7 +130,7 @@ export function LoBPageShell({ children, activeNav = "none" }: LoBPageShellProps
                         <Link href={l("/product")} className="text-white transition-colors duration-150 hover:text-white/80" onClick={() => setIsMobileMenuOpen(false)}>
                             {t("Προϊόντα", "Products")}
                         </Link>
-                        <SolutionsMobileGroup language={language} onNavigate={() => setIsMobileMenuOpen(false)} className="text-[20px] sm:text-[22px]" />
+                        <SolutionsMobileGroup language={language} onNavigate={() => setIsMobileMenuOpen(false)} className="text-[20px]" />
                         <Link href={l("/company")} className="text-white transition-colors duration-150 hover:text-white/80" onClick={() => setIsMobileMenuOpen(false)}>
                             {t("Εταιρεία", "Company")}
                         </Link>
@@ -167,14 +164,14 @@ export function LoBPageShell({ children, activeNav = "none" }: LoBPageShellProps
                     <div className="mt-auto flex flex-col gap-4">
                         <Link
                             href="/auth/signin"
-                            className="w-full rounded-2xl border border-transparent bg-[#1C4E44] px-6 py-4 text-center text-[18px] font-bold text-white transition-colors duration-150 hover:bg-[#143B33]"
+                            className="pw-secondary-button-inverse pw-btn-lg w-full"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
                             {t("Σύνδεση", "Log in")}
                         </Link>
                         <Link
                             href="/auth/signup?role=policyholder"
-                            className="w-full rounded-2xl bg-[#337D6F] px-6 py-4 text-center text-[18px] font-bold text-white transition-colors duration-150 hover:bg-[#2C6E61]"
+                            className="pw-primary-button-inverse pw-btn-lg w-full"
                             onClick={() => setIsMobileMenuOpen(false)}
                         >
                             {t("Ξεκινήστε δωρεάν", "Get started free")}
@@ -183,16 +180,16 @@ export function LoBPageShell({ children, activeNav = "none" }: LoBPageShellProps
                 </div>
             </div>
 
-            <main className="pt-32 lg:pt-40">
+            <main className="pt-28 lg:pt-36">
                 {children}
 
                 {/* Pricing funnel — every LoB page routes to /pricing from the body, not only the nav */}
                 <section className="border-t border-[#E2E8F0] bg-white px-6 py-16 text-center lg:px-12 dark:border-slate-800 dark:bg-slate-950">
                     <div className="mx-auto max-w-[760px]">
-                        <p className="mb-3 text-[13px] font-semibold uppercase tracking-widest text-[#29685B]">
+                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-[#29685B]">
                             {t("Τιμολόγηση", "Pricing")}
                         </p>
-                        <h2 className="mb-4 text-[28px] font-medium leading-[1.15] tracking-[-0.03em] text-[#0F172A] lg:text-[34px] dark:text-white">
+                        <h2 className="mb-4 text-[32px] font-medium leading-[1.15] tracking-[-0.03em] text-[#0F172A] lg:text-[40px] dark:text-white">
                             {t("Δωρεάν για 1 συμβόλαιο. Αναβάθμιση όποτε τη χρειαστείτε.", "Free for 1 policy. Upgrade whenever you need it.")}
                         </h2>
                         <p className="mb-8 text-[16px] leading-relaxed text-[#475569] dark:text-slate-400">
@@ -201,10 +198,7 @@ export function LoBPageShell({ children, activeNav = "none" }: LoBPageShellProps
                                 "Starter at €2.99/month for organization, Plus at €7.99/month with full AI analysis. Cancel anytime."
                             )}
                         </p>
-                        <Link
-                            href={l("/pricing")}
-                            className="inline-flex items-center gap-2 rounded-[4px] border border-[#29685B] px-8 py-3.5 text-[16px] font-bold text-[#29685B] transition-colors duration-150 hover:bg-[#29685B] hover:text-white"
-                        >
+                        <Link href={l("/pricing")} className="pw-secondary-button pw-btn-lg">
                             {t("Δείτε την τιμολόγηση", "See pricing")}
                             <ArrowRight className="h-4 w-4" />
                         </Link>
