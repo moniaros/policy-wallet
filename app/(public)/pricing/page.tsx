@@ -9,6 +9,7 @@ import {
 } from "@/lib/seo/jsonld"
 import { getPlanCatalog } from "@/lib/pricing/plan-catalog"
 import { buildPublicPricingContent } from "@/lib/pricing/pricing-view-model"
+import { getPublicPartnerOffers } from "@/lib/partner-offers/catalog"
 
 export const metadata: Metadata = buildMarketingMetadata("pricing")
 
@@ -19,13 +20,14 @@ export const revalidate = 300
 export default async function PricingPage() {
     // Live catalog prices (admin-managed) over the bilingual template.
     const pricingContent = buildPublicPricingContent(await getPlanCatalog())
+    const partnerOffers = await getPublicPartnerOffers()
     // The policyholder audience is the server-rendered default view, so its
     // FAQ and plans are what crawlers see — the JSON-LD mirrors exactly that.
     const { plans, faqItems } = pricingContent.policyholder
 
     return (
         <>
-            <PricingPageClient pricingContent={pricingContent} />
+            <PricingPageClient pricingContent={pricingContent} partnerOffers={partnerOffers} />
             <JsonLd
                 data={[
                     breadcrumbJsonLd(["pricing"]),

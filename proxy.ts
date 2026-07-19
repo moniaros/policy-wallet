@@ -110,6 +110,8 @@ export async function proxy(request: NextRequest) {
         "/company",
         "/contact",
         "/for-agents",
+        // Partner-benefits marketing page (404s until the first live partner).
+        "/perks",
         "/landing",
         "/api/contact",
         "/api/v1/contact",

@@ -10,6 +10,8 @@ import { SolutionsDropdown, SolutionsMobileGroup } from "@/components/landing/So
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
 import { TrustBadges } from "@/components/landing/TrustBadges"
 import { TrustStrip } from "@/components/ui/TrustStrip"
+import { PartnerPerksSection } from "@/components/landing/PartnerPerksSection"
+import type { PartnerOfferView } from "@/lib/partner-offers/matching"
 import { PolicyWalletWidget } from "@/components/landing/PolicyWalletWidget"
 import { ServicesGrid } from "@/components/landing/ServicesGrid"
 import { AudienceTabs } from "@/components/landing/AudienceTabs"
@@ -18,9 +20,12 @@ const inter = Inter({ subsets: ["latin", "greek"], weight: ["400", "500", "600",
 
 interface WorldClassLandingProps {
     locale: LandingLocale
+    /** Live partner offers from getPublicPartnerOffers(); empty/omitted ⇒ the
+     *  #perks section and its nav link render nothing (honesty rule). */
+    partnerOffers?: PartnerOfferView[]
 }
 
-export function WorldClassLanding({ locale }: WorldClassLandingProps) {
+export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLandingProps) {
     const isGreek = locale === "el"
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const t = (el: string, en: string) => (isGreek ? el : en)
@@ -70,6 +75,11 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
                         <Link href="#services" className="transition-colors hover:text-[#0F172A]">
                             {t("Υπηρεσίες", "Services")}
                         </Link>
+                        {partnerOffers.length > 0 && (
+                            <Link href="#perks" className="transition-colors hover:text-[#0F172A]">
+                                {t("Παροχές", "Benefits")}
+                            </Link>
+                        )}
                         <Link href="/company" className="transition-colors hover:text-[#0F172A]">
                             {t("Εταιρεία", "Company")}
                         </Link>
@@ -345,6 +355,9 @@ export function WorldClassLanding({ locale }: WorldClassLandingProps) {
                         <AudienceTabs isGreek={isGreek} />
                     </div>
                 </section>
+
+                {/* ── 4b. PARTNER PERKS (renders only with live partners) ── */}
+                <PartnerPerksSection offers={partnerOffers} isGreek={isGreek} />
 
                 {/* ── 5. STATS ─────────────────────────────────────── */}
                 <section className="border-y border-[#E2E8F0] px-6 py-16 lg:px-12">
