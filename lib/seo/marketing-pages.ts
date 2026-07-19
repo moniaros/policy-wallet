@@ -302,6 +302,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             "Πρακτικοί οδηγοί για την ελληνική ασφαλιστική αγορά: πώς παίρνετε έκπτωση ΕΝΦΙΑ, πώς εντοπίζετε κενά κάλυψης και τι ελέγχετε πριν από κάθε ανανέωση.",
         keywords: ["οδηγοί ασφάλισης", "έκπτωση ΕΝΦΙΑ", "κενά κάλυψης"],
         breadcrumb: "Οδηγοί",
+        en: {
+            title: "Insurance guides: ENFIA, gaps, renewals",
+            description:
+                "Practical guides to the Greek insurance market: how the ENFIA tax discount works, how to spot coverage gaps and what to check before every renewal.",
+            breadcrumb: "Guides",
+        },
     },
     privacy: {
         path: "/privacy",

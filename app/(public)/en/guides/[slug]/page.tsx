@@ -1,8 +1,9 @@
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
-import GuideArticleClient from "./GuideArticleClient"
+import GuideArticleClient from "../../../guides/[slug]/GuideArticleClient"
 import { getGuide, guides } from "@/lib/guides/content"
-import { marketingPages } from "@/lib/seo/marketing-pages"
+import { StaticLanguageProvider } from "@/contexts/LanguageContext"
+import { marketingPages, enPathFor } from "@/lib/seo/marketing-pages"
 import { OG_IMAGES, TWITTER_IMAGES } from "@/lib/seo/site"
 import {
     JsonLd,
@@ -28,55 +29,57 @@ export async function generateMetadata({ params }: GuidePageProps): Promise<Meta
     const path = `/guides/${guide.slug}`
     const enPath = `/en/guides/${guide.slug}`
     return {
-        title: guide.metaTitle.el,
-        description: guide.metaDescription.el,
+        title: guide.metaTitle.en,
+        description: guide.metaDescription.en,
         alternates: {
-            canonical: path,
+            canonical: enPath,
+            // x-default → the Greek article (primary market).
             languages: { el: path, en: enPath, "x-default": path },
         },
         openGraph: {
             type: "article",
-            locale: "el_GR",
-            url: path,
+            locale: "en_US",
+            url: enPath,
             siteName: "PolicyWallet",
-            title: guide.metaTitle.el,
-            description: guide.metaDescription.el,
+            title: guide.metaTitle.en,
+            description: guide.metaDescription.en,
             publishedTime: guide.datePublished,
             modifiedTime: guide.dateModified,
             images: OG_IMAGES,
         },
         twitter: {
             card: "summary_large_image",
-            title: guide.metaTitle.el,
-            description: guide.metaDescription.el,
+            title: guide.metaTitle.en,
+            description: guide.metaDescription.en,
             images: TWITTER_IMAGES,
         },
     }
 }
 
-export default async function GuidePage({ params }: GuidePageProps) {
+export default async function GuidePageEnglish({ params }: GuidePageProps) {
     const { slug } = await params
     const guide = getGuide(slug)
     if (!guide) notFound()
 
-    const path = `/guides/${guide.slug}`
+    const enPath = `/en/guides/${guide.slug}`
 
     return (
-        <>
+        <StaticLanguageProvider language="en" counterpartPath={`/guides/${guide.slug}`}>
             <GuideArticleClient guide={guide} />
             <JsonLd
                 data={[
                     articleJsonLd({
-                        path,
-                        headline: guide.title.el,
-                        description: guide.metaDescription.el,
+                        path: enPath,
+                        headline: guide.title.en,
+                        description: guide.metaDescription.en,
                         datePublished: guide.datePublished,
                         dateModified: guide.dateModified,
+                        inLanguage: "en",
                         ...(guide.author
                             ? {
                                   author: {
                                       name: guide.author.name,
-                                      jobTitle: guide.author.role.el,
+                                      jobTitle: guide.author.role.en,
                                       profileUrl: guide.author.profileUrl,
                                   },
                               }
@@ -85,30 +88,35 @@ export default async function GuidePage({ params }: GuidePageProps) {
                     ...(guide.howToSteps
                         ? [
                               howToJsonLd({
-                                  name: guide.title.el,
-                                  description: guide.metaDescription.el,
+                                  name: guide.title.en,
+                                  description: guide.metaDescription.en,
                                   steps: guide.howToSteps.map((step) => ({
-                                      name: step.name.el,
-                                      text: step.text.el,
+                                      name: step.name.en,
+                                      text: step.text.en,
                                   })),
                               }),
                           ]
                         : []),
                     faqPageJsonLd(
                         guide.faq.map((item) => ({
-                            question: item.question.el,
-                            answer: item.answer.el,
+                            question: item.question.en,
+                            answer: item.answer.en,
                         }))
                     ),
-                    breadcrumbTrailJsonLd([
-                        {
-                            name: marketingPages.guides.breadcrumb,
-                            path: marketingPages.guides.path,
-                        },
-                        { name: guide.title.el, path },
-                    ]),
+                    breadcrumbTrailJsonLd(
+                        [
+                            {
+                                name:
+                                    marketingPages.guides.en?.breadcrumb ??
+                                    marketingPages.guides.breadcrumb,
+                                path: enPathFor(marketingPages.guides.path),
+                            },
+                            { name: guide.title.en, path: enPath },
+                        ],
+                        { name: "Home", path: "/en" }
+                    ),
                 ]}
             />
-        </>
+        </StaticLanguageProvider>
     )
 }

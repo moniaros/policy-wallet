@@ -73,11 +73,28 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }
 
     for (const guide of guides) {
+        const guideUrl = `${origin}/guides/${guide.slug}`
+        const guideEnUrl = `${origin}/en/guides/${guide.slug}`
+        // Guide articles are fully bilingual: every /guides/<slug> has a real
+        // /en/guides/<slug> mirror, so each entry carries the hreflang pair.
+        const guideLanguages = {
+            el: guideUrl,
+            en: guideEnUrl,
+            "x-default": guideUrl,
+        }
         entries.push({
-            url: `${origin}/guides/${guide.slug}`,
+            url: guideUrl,
             lastModified: new Date(guide.dateModified),
             changeFrequency: "monthly",
             priority: 0.7,
+            alternates: { languages: guideLanguages },
+        })
+        entries.push({
+            url: guideEnUrl,
+            lastModified: new Date(guide.dateModified),
+            changeFrequency: "monthly",
+            priority: 0.6,
+            alternates: { languages: guideLanguages },
         })
     }
 

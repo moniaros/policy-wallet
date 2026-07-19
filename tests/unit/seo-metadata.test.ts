@@ -39,17 +39,19 @@ describe('marketing page metadata', () => {
 
 describe('guide metadata + AEO template invariants', () => {
     for (const guide of guides) {
-        it(`${guide.slug}: metaTitle fits the 60-char rendered budget`, () => {
-            expect(
-                guide.metaTitle.length + TEMPLATE_SUFFIX.length,
-                `"${guide.metaTitle}" renders at ${guide.metaTitle.length + TEMPLATE_SUFFIX.length} chars`
-            ).toBeLessThanOrEqual(MAX_TITLE)
-        })
+        for (const lang of ['el', 'en'] as const) {
+            it(`${guide.slug}: ${lang} metaTitle fits the 60-char rendered budget`, () => {
+                expect(
+                    guide.metaTitle[lang].length + TEMPLATE_SUFFIX.length,
+                    `"${guide.metaTitle[lang]}" renders at ${guide.metaTitle[lang].length + TEMPLATE_SUFFIX.length} chars`
+                ).toBeLessThanOrEqual(MAX_TITLE)
+            })
 
-        it(`${guide.slug}: metaDescription is 140-160 chars`, () => {
-            expect(guide.metaDescription.length).toBeGreaterThanOrEqual(DESCRIPTION_RANGE[0])
-            expect(guide.metaDescription.length).toBeLessThanOrEqual(DESCRIPTION_RANGE[1])
-        })
+            it(`${guide.slug}: ${lang} metaDescription is 140-160 chars`, () => {
+                expect(guide.metaDescription[lang].length).toBeGreaterThanOrEqual(DESCRIPTION_RANGE[0])
+                expect(guide.metaDescription[lang].length).toBeLessThanOrEqual(DESCRIPTION_RANGE[1])
+            })
+        }
 
         it(`${guide.slug}: keeps the guide template shape`, () => {
             // Direct-answer summary in featured-snippet range (words, Greek).
