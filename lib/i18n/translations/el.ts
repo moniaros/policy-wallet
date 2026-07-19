@@ -69,6 +69,7 @@ export const el = {
         launchReadiness: 'Ετοιμότητα Έναρξης',
         insurers: 'Ασφαλιστικές Εταιρείες',
         insuranceTypes: 'Τύποι Ασφάλισης',
+        plans: 'Πλάνα & Τιμολόγηση',
     },
 
     // Auth

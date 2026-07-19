@@ -13,6 +13,8 @@ import {
     MessageSquare,
 } from "lucide-react"
 import { buildMarketingMetadata } from "@/lib/seo/marketing-pages"
+import { getPlanCatalog } from "@/lib/pricing/plan-catalog"
+import { formatEur } from "@/lib/pricing/pricing-view-model"
 
 export const metadata: Metadata = buildMarketingMetadata("for-agents")
 
@@ -61,41 +63,99 @@ const FEATURES = [
     },
 ]
 
-// Kept truthful against AGENT_PRICING + AGENT_ENTITLEMENT_LIMITS in
-// lib/subscription-entitlements.ts. The old preview showed stale prices
-// (€19/€49), only three tiers, and a false "unlimited" on Pro.
-const TIERS = [
+// Tier cards are built from the admin-managed plan catalog: prices AND the
+// numeric caps come from each plan's live entitlements, so an /admin/plans
+// edit reaches this page without a deploy (the old hardcoded TIERS array had
+// already drifted from the pricing page). Prose stays here as the template.
+type AgentLimitsView = {
+    maxCustomers: number | null
+    aiAnalysesPerMonth: number | null
+    teamMembers: number | null
+}
+
+const TIER_TEMPLATE: Array<{
+    planId: string
+    nameEl: string
+    nameEn: string
+    highlighted?: boolean
+    desc: (l: AgentLimitsView) => { el: string; en: string }
+    features: (l: AgentLimitsView) => string[]
+}> = [
     {
+        planId: "agent-free",
         nameEl: "Free", nameEn: "Free",
-        priceEl: "€0/μήνα", priceEn: "€0/month",
-        descEl: "Έως 10 πελάτες", descEn: "Up to 10 clients",
-        features: ["10 clients", "5 AI analyses/mo", "Basic CRM", "Email notifications"],
+        desc: (l) => ({ el: `Έως ${l.maxCustomers ?? "απεριόριστους"} πελάτες`, en: `Up to ${l.maxCustomers ?? "unlimited"} clients` }),
+        features: (l) => [
+            `${l.maxCustomers ?? "Unlimited"} clients`,
+            `${l.aiAnalysesPerMonth ?? "Unlimited"} AI analyses/mo`,
+            "Basic CRM",
+            "Email notifications",
+        ],
     },
     {
+        planId: "agent-starter",
         nameEl: "Starter", nameEn: "Starter",
-        priceEl: "€19,99/μήνα", priceEn: "€19.99/month",
-        descEl: "Έως 100 πελάτες", descEn: "Up to 100 clients",
-        features: ["100 clients", "50 AI analyses/mo", "Proposals & document requests", "Renewal pipeline"],
         highlighted: true,
+        desc: (l) => ({ el: `Έως ${l.maxCustomers ?? "απεριόριστους"} πελάτες`, en: `Up to ${l.maxCustomers ?? "unlimited"} clients` }),
+        features: (l) => [
+            `${l.maxCustomers ?? "Unlimited"} clients`,
+            `${l.aiAnalysesPerMonth ?? "Unlimited"} AI analyses/mo`,
+            "Proposals & document requests",
+            "Renewal pipeline",
+        ],
     },
     {
+        planId: "agent-pro",
         nameEl: "Pro", nameEn: "Pro",
-        priceEl: "€49,99/μήνα", priceEn: "€49.99/month",
-        descEl: "Έως 500 πελάτες", descEn: "Up to 500 clients",
-        features: ["500 clients", "Cross-sell intelligence", "Commission tracking", "Team (3 agents)"],
+        desc: (l) => ({ el: `Έως ${l.maxCustomers ?? "απεριόριστους"} πελάτες`, en: `Up to ${l.maxCustomers ?? "unlimited"} clients` }),
+        features: (l) => [
+            `${l.maxCustomers ?? "Unlimited"} clients`,
+            "Cross-sell intelligence",
+            "Commission tracking",
+            `Team (${l.teamMembers ?? "unlimited"} agents)`,
+        ],
     },
     {
+        planId: "agent-agency",
         nameEl: "Πρακτορείο", nameEn: "Agency",
-        priceEl: "€99,99/μήνα", priceEn: "€99.99/month",
-        descEl: "Απεριόριστοι πελάτες", descEn: "Unlimited clients",
-        features: ["Unlimited clients & agents", "Unlimited AI", "Agency management", "Priority support"],
+        desc: () => ({ el: "Απεριόριστοι πελάτες", en: "Unlimited clients" }),
+        features: () => ["Unlimited clients & agents", "Unlimited AI", "Agency management", "Priority support"],
     },
 ]
 
-export default function ForAgentsPage() {
+// ISR backstop for the admin-managed prices; /admin/plans saves revalidate
+// this path immediately.
+export const revalidate = 300
+
+export default async function ForAgentsPage() {
     // Server component — defaulting to EN for SEO, client toggles language
     const isGreek = false
     const t = (el: string, en: string) => (isGreek ? el : en)
+
+    const catalog = await getPlanCatalog()
+    const byId = new Map(catalog.map((p) => [p.id, p]))
+    const TIERS = TIER_TEMPLATE.flatMap((template) => {
+        const cat = byId.get(template.planId)
+        if (cat && !cat.isPublic) return []
+        const limits: AgentLimitsView = (cat?.entitlements as AgentLimitsView) ?? {
+            maxCustomers: null,
+            aiAnalysesPerMonth: null,
+            teamMembers: null,
+        }
+        const monthly = cat ? formatEur(cat.monthlyEur) : "—"
+        const desc = template.desc(limits)
+        return [{
+            nameEl: template.nameEl,
+            nameEn: template.nameEn,
+            highlighted: template.highlighted,
+            // Greek price formatting keeps the comma decimal of the old copy.
+            priceEl: `${monthly.replace(".", ",")}/μήνα`,
+            priceEn: `${monthly}/month`,
+            descEl: desc.el,
+            descEn: desc.en,
+            features: template.features(limits),
+        }]
+    })
 
     return (
         <div className="min-h-screen bg-[#F9FAFB] dark:bg-black">

@@ -14,13 +14,20 @@ import { PricingFAQ } from "@/components/pricing/PricingFAQ"
 import {
     BillingPeriod,
     PricingAudience,
+    PublicPricingAudienceContent,
     PublicPricingPlan,
     publicPricingContent,
 } from "@/lib/pricing/public-pricing-content"
 import { CreditCard, Lock, Menu, Shield, X } from "lucide-react"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 
-export default function PricingPage() {
+export default function PricingPage({
+    // Server pages pass the catalog-built content (live admin-managed prices);
+    // the static template is only the fallback for stray direct renders.
+    pricingContent = publicPricingContent,
+}: {
+    pricingContent?: Record<PricingAudience, PublicPricingAudienceContent>
+}) {
     const router = useRouter()
     const [session, setSession] = useState<any>(null)
     const { language, setLanguage } = useLanguage()
@@ -30,7 +37,7 @@ export default function PricingPage() {
     const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly")
     const [loadingPlanKey, setLoadingPlanKey] = useState<string | null>(null)
 
-    const content = useMemo(() => publicPricingContent[audience], [audience])
+    const content = useMemo(() => pricingContent[audience], [pricingContent, audience])
 
     const labels = {
         heading: {

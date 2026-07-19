@@ -72,6 +72,7 @@ export const en: TranslationKeys = {
         launchReadiness: 'Launch Readiness',
         insurers: 'Insurers',
         insuranceTypes: 'Insurance Types',
+        plans: 'Plans & Pricing',
     },
 
     // Auth

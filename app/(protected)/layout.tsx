@@ -4,6 +4,8 @@ import { getAuthenticatedUser, getIsPayingUser, emailVerificationRequired } from
 import { redirect } from "next/navigation"
 import { AppShell } from "@/components/shell"
 import { NotificationWatcher } from "@/components/notifications/NotificationWatcher"
+import { PlanFactsProvider } from "@/components/monetization/PlanFactsProvider"
+import { getClientPlanFacts } from "@/lib/pricing/plan-catalog"
 import { getTranslations } from "@/lib/i18n"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { signOut } from "@/app/auth/actions"
@@ -25,6 +27,11 @@ export default async function ProtectedLayout({
     }
 
     const isPayingUser = await getIsPayingUser(dbUser)
+
+    // Live admin-managed plan facts for client price displays (UpgradeModal,
+    // pricing comparison, meters). Cached under the plan-catalog tag — this
+    // does not add a per-request DB round-trip.
+    const planFacts = await getClientPlanFacts()
 
     // Query unread notification count
     const unreadNotificationCount = await db.notificationEvent.count({
@@ -85,6 +92,7 @@ export default async function ProtectedLayout({
                 { label: t.nav.billingReconciliation, href: "/admin/billing-reconciliation", icon: <ReceiptText className="w-5 h-5" /> },
                 { label: t.nav.launchReadiness, href: "/admin/launch-readiness", icon: <Shield className="w-5 h-5" /> },
                 { label: t.nav.extractionFlags, href: "/admin/extraction-flags", icon: <Flag className="w-5 h-5" /> },
+                { label: t.nav.plans, href: "/admin/plans", icon: <Euro className="w-5 h-5" /> },
                 { label: t.nav.insurers, href: "/admin/insurers", icon: <Building2 className="w-5 h-5" /> },
                 { label: t.nav.insuranceTypes, href: "/admin/types", icon: <Gavel className="w-5 h-5" /> },
             ]
@@ -118,7 +126,7 @@ export default async function ProtectedLayout({
             {/* Live analysis-completion toasts for agents (b2c uses the wallet
                 page's own analyzing poller). */}
             {currentRole === "agent" && <NotificationWatcher userId={dbUser.id} />}
-            {children}
+            <PlanFactsProvider facts={planFacts}>{children}</PlanFactsProvider>
         </AppShell>
     )
 }

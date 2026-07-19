@@ -19,13 +19,13 @@ import { Modal } from "@/components/ui/Modal"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import {
-    PLAN_PRICING,
     getUpgradeCopy,
     type FeatureKey,
 } from "@/lib/monetization"
 import type { PlanTier } from "@/types/subscription-entitlements"
 import { BillingTrustBox } from "./BillingTrustBox"
 import { PlanBadge } from "./PlanBadge"
+import { usePlanFacts } from "./PlanFactsProvider"
 
 const MODAL_COPY = {
     monthly: { el: "Μηνιαία", en: "Monthly" },
@@ -47,8 +47,8 @@ const pick = (pair: { el: string; en: string }, language: string) =>
 
 // Plus (code key "pro") is the recommended AI tier; Starter (code key "plus")
 // is the cheaper organizer entry.
-const PLUS = PLAN_PRICING.pro
-const STARTER = PLAN_PRICING.plus
+// PLUS/STARTER are resolved inside the component via usePlanFacts() — live
+// admin-managed prices with the PLAN_PRICING snapshot as fallback.
 
 export interface UpgradeModalProps {
     isOpen: boolean
@@ -62,6 +62,10 @@ export interface UpgradeModalProps {
 
 export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSource }: UpgradeModalProps) {
     const { language } = useLanguage()
+    // Live admin-managed prices (PlanFactsProvider), PLAN_PRICING as fallback.
+    const { tierPricing } = usePlanFacts()
+    const PLUS = tierPricing("pro")
+    const STARTER = tierPricing("plus")
     const pathname = usePathname()
     const copy = getUpgradeCopy(featureKey, language)
 
@@ -235,7 +239,7 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                     {redirectingPlan === PLUS.planId && <Loader2 className="h-4 w-4 animate-spin" />}
                     {pick(MODAL_COPY.plusPrefix, language)} €{plusPrice}{suffix}
                 </button>
-                {PLUS.trialDays && (
+                {PLUS.trialDays > 0 && (
                     <p className="mt-1.5 text-center text-xs font-semibold text-primary dark:text-mint">
                         {pick(MODAL_COPY.trial, language)}
                     </p>
