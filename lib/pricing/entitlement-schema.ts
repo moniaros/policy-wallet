@@ -66,6 +66,27 @@ export const AgentEntitlementLimitsSchema = z
     })
     .strict()
 
+// ── Schema introspection (drives the generated /admin/plans editor) ──
+
+export type EntitlementFieldKind = "boolean" | "limit"
+
+/**
+ * Field list + kind for an audience's entitlement schema, in declaration
+ * order. "limit" = nullable non-negative integer (null = unlimited).
+ * The admin form renders checkboxes for booleans and number+Unlimited
+ * controls for limits — generated, so a schema field can never be missed.
+ */
+export function entitlementFieldKinds(
+    planType: "policyholder" | "agent"
+): Array<{ key: string; kind: EntitlementFieldKind }> {
+    const schema =
+        planType === "agent" ? AgentEntitlementLimitsSchema : EntitlementLimitsSchema
+    return Object.entries(schema.shape).map(([key, field]) => ({
+        key,
+        kind: field instanceof z.ZodBoolean ? "boolean" : "limit",
+    }))
+}
+
 // ── Compile-time parity: schema output ≡ TS interface (both directions).
 // A field added to one side without the other fails type-check here.
 type _B2cFromSchema = z.infer<typeof EntitlementLimitsSchema>

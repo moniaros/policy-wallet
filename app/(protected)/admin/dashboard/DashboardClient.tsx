@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { Users, FileText, TrendingUp, UserCheck, AlertCircle, Activity } from "lucide-react"
 
 interface DashboardMetrics {
@@ -73,12 +74,20 @@ export default function DashboardClient({ metrics, activityLogs, pendingAgentsCo
                         Platform overview and system metrics
                     </p>
                 </div>
-                <a
-                    href="/admin/submissions"
-                    className="rounded-lg border border-stone-200 dark:border-stone-700 px-4 py-2 text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800"
-                >
-                    Form submissions →
-                </a>
+                <div className="flex flex-wrap gap-2">
+                    <Link
+                        href="/admin/plans"
+                        className="rounded-lg border border-stone-200 dark:border-stone-700 px-4 py-2 text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800"
+                    >
+                        Plans & pricing →
+                    </Link>
+                    <a
+                        href="/admin/submissions"
+                        className="rounded-lg border border-stone-200 dark:border-stone-700 px-4 py-2 text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800"
+                    >
+                        Form submissions →
+                    </a>
+                </div>
             </div>
 
             {/* Pending Agents Alert */}
