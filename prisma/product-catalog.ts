@@ -331,4 +331,22 @@ export const PRODUCT_CATALOG: CatalogProduct[] = [
             greekMarketPopularity: 20,
             sortOrder: 17,
         },
+        {
+            lineOfBusiness: 'group_life',
+            name: { en: 'Group Life', el: 'Ομαδική Ζωή' },
+            description: { en: 'Employer-paid life cover for staff: a lump-sum benefit for each employee in case of death or permanent disability.', el: 'Ομαδική ασφάλιση ζωής προσωπικού με έξοδα εργοδότη: εφάπαξ κεφάλαιο ανά εργαζόμενο σε περίπτωση θανάτου ή μόνιμης ανικανότητας.' },
+            category: 'business',
+            estimatedAnnualPremium: 150,
+            premiumRangeLow: 50,
+            premiumRangeHigh: 600,
+            keyBenefits: [
+                { en: 'Death benefit per employee', el: 'Κεφάλαιο ζωής ανά εργαζόμενο' },
+                { en: 'Permanent disability benefit', el: 'Παροχή μόνιμης ανικανότητας' },
+                { en: 'Optional accident riders', el: 'Προαιρετικές καλύψεις ατυχήματος' },
+            ],
+            idealProfileTags: [],
+            urgencyForProfiles: 'low',
+            greekMarketPopularity: 25,
+            sortOrder: 18,
+        },
 ]

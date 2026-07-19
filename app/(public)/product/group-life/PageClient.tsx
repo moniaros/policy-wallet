@@ -1,0 +1,156 @@
+"use client"
+
+import React from "react"
+import Link from "next/link"
+import { Umbrella, Users, TrendingUp, ArrowRight } from "lucide-react"
+import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
+import { useLanguage } from "@/contexts/LanguageContext"
+import { LoBPageShell } from "@/components/landing/LoBPageShell"
+
+export default function GroupLifeProductPage() {
+    const { language } = useLanguage()
+    const isGreek = language === "el"
+    const t = (el: string, en: string) => (isGreek ? el : en)
+
+    const triad = [
+        {
+            icon: Umbrella,
+            current: true,
+            titleEl: "Ομαδική Ζωή",
+            titleEn: "Group Life",
+            descEl: "Εφάπαξ κεφάλαιο στην οικογένεια του εργαζομένου σε περίπτωση θανάτου ή μόνιμης ανικανότητας. Η παροχή που κανείς δεν θέλει να χρειαστεί — και που μετράει περισσότερο απ' όλες όταν χρειαστεί.",
+            descEn: "A lump-sum benefit to an employee's family in case of death or permanent disability. The benefit nobody wants to need — and the one that matters most when it is needed.",
+        },
+        {
+            icon: Users,
+            current: false,
+            href: "/product/group-health",
+            titleEl: "Ομαδική Υγεία",
+            titleEn: "Group Health",
+            descEl: "Νοσοκομειακή και εξωνοσοκομειακή περίθαλψη για το προσωπικό — η πιο ορατή παροχή στην καθημερινότητα της ομάδας.",
+            descEn: "Hospital and outpatient care for staff — the benefit your team feels most in everyday life.",
+        },
+        {
+            icon: TrendingUp,
+            current: false,
+            href: "/product/group-pension",
+            titleEl: "Ομαδική Σύνταξη",
+            titleEn: "Group Pension",
+            descEl: "Συνταξιοδοτική αποταμίευση με εισφορές εργοδότη ανά εργαζόμενο — η παροχή που χτίζει το μέλλον της ομάδας.",
+            descEn: "Pension savings with employer contributions per employee — the benefit that builds your team's future.",
+        },
+    ]
+
+    return (
+        <LoBPageShell activeNav="product">
+
+            {/* HERO */}
+            <section className="px-6 lg:px-12">
+                <div className="mx-auto max-w-[900px] text-center">
+                    <span className="inline-flex bg-[#F2E3DF] text-[#1A1A1A] px-3 py-1 rounded-[4px] text-[11px] font-semibold tracking-wider uppercase mb-6">
+                        {t("Ομαδική Ζωή", "Group Life Insurance")}
+                    </span>
+                    <h1 className="text-[46px] lg:text-[68px] leading-[1.05] tracking-[-0.04em] font-medium text-[#0F172A] mb-8">
+                        {t("Η παροχή που λέει «σε καλύπτουμε» στην πράξη.", "The benefit that says “we've got you” — and means it.")}
+                    </h1>
+                    <p className="mx-auto max-w-[680px] text-[20px] lg:text-[22px] leading-[1.5] text-[#475569] mb-10">
+                        {t("Η ομαδική ασφάλιση ζωής δίνει σε κάθε εργαζόμενο κεφάλαιο ζωής και ανικανότητας με έξοδα εργοδότη. Οργανώστε το συμβόλαιο, δείτε ποιος καλύπτεται και με πόσα — χωρίς να ψάχνετε πίνακες σε PDF.", "Group life insurance gives every employee life and disability capital at the employer's expense. Organize the policy and see who is covered and for how much — without digging through PDF tables.")}
+                    </p>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <Link href="/auth/signup" className="w-full sm:w-auto rounded-[4px] bg-[#29685B] px-8 py-3.5 text-[16px] font-bold text-white transition-colors duration-150 hover:bg-[#1C4E44]">
+                            {t("Ξεκινήστε δωρεάν", "Get Started Free")}
+                        </Link>
+                        <Link href="/solutions/agents" className="w-full sm:w-auto rounded-[4px] border border-[#CBD5E1] px-8 py-3.5 text-[16px] font-bold text-[#0F172A] transition-colors duration-150 hover:bg-[#F8FAFC]">
+                            {t("Είστε πράκτορας ομαδικών;", "Do you broker group plans?")}
+                        </Link>
+                    </div>
+                </div>
+            </section>
+
+            {/* BENEFITS TRIAD */}
+            <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
+                <div className="mx-auto max-w-[1240px]">
+                    <div className="max-w-[720px] mb-14">
+                        <h2 className="text-[36px] font-medium tracking-[-0.03em] mb-5 leading-[1.1] text-[#1A1A1A]">
+                            {t("Το ένα τρίτο του πακέτου παροχών που ξεχνιέται.", "The forgotten third of the benefits package.")}
+                        </h2>
+                        <p className="text-[#475569] text-[18px] leading-relaxed">
+                            {t("Υγεία, σύνταξη, ζωή: τα ομαδικά προγράμματα συνήθως έρχονται πακέτο, αλλά μόνο τα δύο πρώτα συζητιούνται. Δείτε και τα τρία μαζί, ανά εργαζόμενο.", "Health, pension, life: group plans usually arrive as a package, but only the first two get discussed. See all three together, per employee.")}
+                        </p>
+                    </div>
+
+                    <div className="grid gap-6 lg:grid-cols-3">
+                        {triad.map((pillar) => {
+                            const Icon = pillar.icon
+                            const card = (
+                                <div className={`h-full rounded-[16px] border p-7 ${pillar.current ? "border-[#29685B]/30 bg-white shadow-[0_20px_40px_rgba(0,0,0,0.04)]" : "border-[#E2E8F0] bg-white"}`}>
+                                    <div className="mb-5 flex items-center justify-between">
+                                        <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#F2E3DF]">
+                                            <Icon className="h-5 w-5 text-[#0F172A]" />
+                                        </div>
+                                        {pillar.current ? (
+                                            <span className="rounded-[4px] bg-[#F0FDF4] px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#166534]">
+                                                {t("Αυτή η σελίδα", "This page")}
+                                            </span>
+                                        ) : (
+                                            <ArrowRight className="h-4 w-4 text-[#94A3B8]" />
+                                        )}
+                                    </div>
+                                    <h3 className="text-[19px] font-medium text-[#1A1A1A] mb-3">{t(pillar.titleEl, pillar.titleEn)}</h3>
+                                    <p className="text-[15px] leading-relaxed text-[#475569]">{t(pillar.descEl, pillar.descEn)}</p>
+                                </div>
+                            )
+                            return pillar.href ? (
+                                <Link key={pillar.titleEn} href={pillar.href} className="block h-full">
+                                    {card}
+                                </Link>
+                            ) : (
+                                <div key={pillar.titleEn} className="h-full">{card}</div>
+                            )
+                        })}
+                    </div>
+                </div>
+            </section>
+
+            {/* TWO AUDIENCES */}
+            <section className="px-6 lg:px-12 py-24">
+                <div className="mx-auto max-w-[1240px] grid gap-16 md:grid-cols-2">
+                    <div>
+                        <h2 className="text-[28px] font-medium tracking-[-0.03em] mb-5 leading-[1.15] text-[#1A1A1A]">
+                            {t("Για HR και ιδιοκτήτες επιχειρήσεων", "For HR and business owners")}
+                        </h2>
+                        <p className="text-[#475569] text-[17px] leading-relaxed">
+                            {t("Ανεβάστε το ομαδικό συμβόλαιο και δείτε τις παροχές του χαρτογραφημένες: κεφάλαια ανά εργαζόμενο, συμπληρωματικές καλύψεις, ημερομηνία ανανέωσης. Όταν έρθει η στιγμή της διαπραγμάτευσης, ξέρετε τι ακριβώς πληρώνετε.", "Upload the group policy and see its benefits mapped: capital per employee, supplementary covers, renewal date. When negotiation time comes, you know exactly what you are paying for.")}
+                        </p>
+                    </div>
+                    <div>
+                        <h2 className="text-[28px] font-medium tracking-[-0.03em] mb-5 leading-[1.15] text-[#1A1A1A]">
+                            {t("Για εργαζομένους", "For employees")}
+                        </h2>
+                        <p className="text-[#475569] text-[17px] leading-relaxed">
+                            {t("Το ομαδικό κεφάλαιο ζωής μετράει στον οικογενειακό σας σχεδιασμό: αν το ατομικό σας συμβόλαιο το αγνοεί, ίσως πληρώνετε για κάλυψη που ήδη έχετε — ή στηρίζεστε σε κεφάλαιο μικρότερο απ' όσο νομίζετε.", "Your group life capital counts in your family planning: if your personal policy ignores it, you may be paying for cover you already have — or relying on a smaller sum than you think.")}
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <ProductCategoryExplorer currentCategoryId="group-life" />
+
+            {/* CTA */}
+            <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">
+                <h2 className="text-[36px] lg:text-[48px] font-medium tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
+                    {t("Μια παροχή που κανείς δεν διαβάζει αξίζει να τη βλέπουν όλοι.", "A benefit nobody reads deserves to be seen by everyone.")}
+                </h2>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <Link href="/auth/signup" className="inline-flex rounded-[4px] bg-[#89D9B2] px-8 py-4 text-[16px] font-bold text-[#1A1A1A] transition-opacity duration-150 hover:opacity-90">
+                        {t("Ανεβάστε το ομαδικό σας", "Upload your group policy")}
+                    </Link>
+                    <Link href="/solutions/agents" className="inline-flex rounded-[4px] border border-white/30 px-8 py-4 text-[16px] font-bold text-white transition-colors duration-150 hover:bg-white/10">
+                        {t("Λύσεις για πράκτορες", "Solutions for agents")}
+                    </Link>
+                </div>
+            </section>
+
+        </LoBPageShell>
+    )
+}
