@@ -88,7 +88,7 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
         id: 'life', segment: 'b2c',
         label: { el: 'Ζωή', en: 'Life' }, genitiveEl: 'ζωής',
         aliases: [],
-        scoreCategory: 'life', writeEnabled: true, contentTier: 'rich',
+        scoreCategory: 'life', writeEnabled: true, contentTier: 'rich', marketingSlug: 'life',
     },
     {
         id: 'income_protection', segment: 'b2c', parentId: 'life',
@@ -112,13 +112,13 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
         id: 'pension', segment: 'b2c',
         label: { el: 'Σύνταξη & Αποταμίευση', en: 'Pension & Savings' }, genitiveEl: 'σύνταξης',
         aliases: ['retirement', 'savings'],
-        scoreCategory: 'income', writeEnabled: true, contentTier: 'rich',
+        scoreCategory: 'income', writeEnabled: true, contentTier: 'rich', marketingSlug: 'pension',
     },
     {
         id: 'travel', segment: 'b2c',
         label: { el: 'Ταξιδιωτική', en: 'Travel' }, genitiveEl: 'ταξιδιού',
         aliases: ['trip'],
-        scoreCategory: 'other', writeEnabled: true, contentTier: 'rich',
+        scoreCategory: 'other', writeEnabled: true, contentTier: 'rich', marketingSlug: 'travel',
     },
     {
         id: 'pet', segment: 'b2c',
@@ -148,7 +148,7 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
         id: 'boat', segment: 'b2c',
         label: { el: 'Σκάφος', en: 'Boat' }, genitiveEl: 'σκάφους',
         aliases: ['marine', 'yacht'],
-        scoreCategory: 'property', writeEnabled: true, contentTier: 'basic',
+        scoreCategory: 'property', writeEnabled: true, contentTier: 'basic', marketingSlug: 'boat',
     },
     {
         id: 'gadget', segment: 'b2c',
@@ -168,7 +168,7 @@ export const INSURANCE_BRANCHES: InsuranceBranch[] = [
         id: 'business', segment: 'b2b',
         label: { el: 'Επιχείρηση', en: 'Business' }, genitiveEl: 'επιχείρησης',
         aliases: ['commercial', 'sme'],
-        scoreCategory: null, writeEnabled: true, contentTier: 'rich',
+        scoreCategory: null, writeEnabled: true, contentTier: 'rich', marketingSlug: 'business',
     },
     {
         id: 'business_property', segment: 'b2b', parentId: 'business',

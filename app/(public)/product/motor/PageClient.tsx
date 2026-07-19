@@ -2,7 +2,7 @@
 
 import React from "react"
 import Link from "next/link"
-import { Car, CheckCircle2 } from "lucide-react"
+import { Bike, Car, CheckCircle2, Wrench } from "lucide-react"
 import { ProductCategoryExplorer } from "@/components/landing/ProductCategoryExplorer"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
@@ -90,6 +90,40 @@ export default function MotorProductPage() {
                                     <Car className="w-4 h-4" /> Roadside Assistance Included
                                 </span>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* MOTORBIKE & ROADSIDE — sub-branches that live under the motor umbrella */}
+            <section className="px-6 lg:px-12 py-24">
+                <div className="mx-auto max-w-[1240px]">
+                    <div className="max-w-[720px] mb-12">
+                        <h2 className="text-[36px] font-medium tracking-[-0.03em] mb-5 leading-[1.1] text-[#1A1A1A]">
+                            {t("Μοτοσικλέτα & Οδική Βοήθεια", "Motorbike & Roadside Assistance")}
+                        </h2>
+                        <p className="text-[#475569] text-[18px] leading-relaxed">
+                            {t("Δεν οδηγείτε μόνο αυτοκίνητο; Το ίδιο πορτοφόλι οργανώνει και τα υπόλοιπα συμβόλαια των οχημάτων σας.", "Not only driving a car? The same wallet organizes the rest of your vehicle policies too.")}
+                        </p>
+                    </div>
+                    <div className="grid gap-6 md:grid-cols-2">
+                        <div className="rounded-[16px] border border-[#E2E8F0] bg-white p-7">
+                            <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#D7E4ED]">
+                                <Bike className="h-5 w-5 text-[#0F172A]" />
+                            </div>
+                            <h3 className="text-[19px] font-medium text-[#1A1A1A] mb-3">{t("Μοτοσικλέτα", "Motorbike")}</h3>
+                            <p className="text-[15px] leading-relaxed text-[#475569]">
+                                {t("Το συμβόλαιο της μοτοσικλέτας αναλύεται όπως και του αυτοκινήτου: αστική ευθύνη, ίδιες ζημιές, εξαιρέσεις — και κοινές ημερομηνίες ανανέωσης σε ένα ημερολόγιο.", "Your motorbike policy is analyzed just like your car's: liability, own damage, exclusions — with all renewal dates in one calendar.")}
+                            </p>
+                        </div>
+                        <div className="rounded-[16px] border border-[#E2E8F0] bg-white p-7">
+                            <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#D7E4ED]">
+                                <Wrench className="h-5 w-5 text-[#0F172A]" />
+                            </div>
+                            <h3 className="text-[19px] font-medium text-[#1A1A1A] mb-3">{t("Οδική Βοήθεια", "Roadside Assistance")}</h3>
+                            <p className="text-[15px] leading-relaxed text-[#475569]">
+                                {t("Αυτόνομο συμβόλαιο ή παροχή μέσα στο ασφαλιστήριο; Δείτε αν πληρώνετε δύο φορές για επιτόπου επισκευή και μεταφορά σε συνεργείο — ή αν δεν την έχετε καθόλου.", "Standalone contract or a benefit inside your motor policy? See if you're paying twice for on-the-spot repair and towing — or don't have it at all.")}
+                            </p>
                         </div>
                     </div>
                 </div>
