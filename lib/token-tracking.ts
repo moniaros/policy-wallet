@@ -25,11 +25,13 @@ export { formatTokens, formatCost, TOKEN_COSTS, type AIModel, type OperationType
 // exempt from this gate (policy-count-capped instead). Pro is capped at 3M so
 // worst-case provider cost stays under the plan price
 // (see docs/planning/TOKEN_ECONOMICS_2026-07.md).
-export const TOKEN_LIMITS: Record<'free' | 'plus' | 'pro', number | null> = {
-    free: 0,
-    plus: 0,
-    pro: 3_000_000,
-}
+//
+// These are now the CODE FALLBACK of the admin-managed plan catalog: the live
+// budget comes from the plan row's entitlements.monthlyTokenBudget (see
+// resolveTokenBudget below); this table applies when the row has no canonical
+// entitlements yet.
+import { DEFAULT_TOKEN_LIMITS } from '@/lib/pricing/plan-defaults'
+export const TOKEN_LIMITS: Record<'free' | 'plus' | 'pro', number | null> = DEFAULT_TOKEN_LIMITS
 
 function normalizeTokenTier(rawTier: string): 'free' | 'plus' | 'pro' {
     const tier = (rawTier || 'free').toLowerCase()
@@ -69,9 +71,15 @@ async function resolveTokenBudget(
         return { tier: agent.tier, limit: agent.limits.monthlyTokenBudget ?? null }
     }
 
-    const { tier: rawTier } = await getUserSubscription(userId)
-    const tier = normalizeTokenTier(rawTier)
-    return { tier, limit: TOKEN_LIMITS[tier] }
+    // B2C mirrors the agent path: the resolved entitlements carry the live
+    // (admin-editable) monthlyTokenBudget, falling back to TOKEN_LIMITS for
+    // rows without canonical entitlements. `?? TOKEN_LIMITS[tier]` guards the
+    // window where a legacy-shape row resolved through code defaults predating
+    // the monthlyTokenBudget field (belt and braces — the defaults include it).
+    const { resolveUserEntitlements } = await import('@/lib/subscription-entitlements')
+    const entitlements = await resolveUserEntitlements(userId)
+    const tier = normalizeTokenTier(entitlements.tier)
+    return { tier, limit: entitlements.limits.monthlyTokenBudget ?? TOKEN_LIMITS[tier] }
 }
 
 /**

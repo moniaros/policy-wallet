@@ -1,6 +1,13 @@
 /**
  * setup-billing-catalog.ts — idempotent Stripe product/price catalog for PolicyWallet.
  *
+ * ⚠️ DEPRECATED (2026-07): the live checkout (lib/billing.ts) builds inline
+ * price_data from the DB plan row on every session and never reads the
+ * pre-created Stripe prices or lib/billing-catalog.json this script emits.
+ * Plan prices are admin-managed via /admin/plans. Kept only for reference /
+ * a possible future move to managed Stripe Price ids — do not treat its
+ * price table as a source of truth.
+ *
  * Creates (or finds, via price lookup_keys) every product and price the app
  * sells, and writes the resulting price-ID map to lib/billing-catalog.json so
  * checkout code can reference stable IDs per environment.

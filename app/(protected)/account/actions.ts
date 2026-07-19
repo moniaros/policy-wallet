@@ -347,6 +347,9 @@ export async function upgradeSubscription(
     const plan = await db.plan.findUnique({ where: { id: planId } })
     if (!plan) return { error: "Plan not found" }
     if (Number(plan.price) <= 0) return { error: "Plan is not purchasable" }
+    // Admin-deactivated plans take no new checkouts (createCheckoutSession
+    // enforces this too — this is the friendlier server-action error path).
+    if (plan.isActive === false) return { error: "Plan is not purchasable" }
 
     // Don't start a redundant checkout for the plan the user is already on
     // (the pricing UI disables that button; this is the server-side backstop).

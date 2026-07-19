@@ -23,6 +23,9 @@ export interface EntitlementLimits {
     aiAnalysisPerMonth: number | null
     questionsPerDay: number | null
     gapAnalysisPerDay: number | null
+    /** Monthly AI token budget (null = unlimited). Mirrors the agent field so
+     *  the B2C cap is admin-editable too; fallback lives in DEFAULT_TOKEN_LIMITS. */
+    monthlyTokenBudget: number | null
     notifications: boolean
     advancedAnalytics: boolean
     agentCollaboration: boolean

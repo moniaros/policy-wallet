@@ -579,12 +579,52 @@ model Plan {
   price         Decimal
   currency      String         @default("EUR")
   billingPeriod String         @map("billing_period")
+  // Canonical entitlement limits (EntitlementLimits / AgentEntitlementLimits
+  // shape, Zod-validated at read time). Rows still carrying the legacy
+  // informational shape fail validation and resolve to the code defaults in
+  // lib/pricing/plan-defaults.ts — a bad row can never brick gating.
   entitlements  Json
   stripePriceId String?        @map("stripe_price_id")
+  // Admin-managed catalog fields (/admin/plans). tierKey is the explicit tier
+  // identity (free|plus|pro|agent_free|agent_starter|agent_pro|agency);
+  // nullable and deliberately NOT unique — grandfathered legacy rows (e.g.
+  // ph-premium) share a tier with a canonical plan and resolve via
+  // normalizeTier(name) while tier_key stays NULL.
+  tierKey       String?        @map("tier_key")
+  // VAT-inclusive advertised annual price (EUR); null = 12 × monthly.
+  annualPrice   Decimal?       @map("annual_price")
+  trialDays     Int            @default(0) @map("trial_days")
+  // isActive=false blocks NEW checkouts only — existing subscriptions keep
+  // billing (they own their Stripe price). isPublic=false hides the plan from
+  // pricing surfaces without blocking direct checkout links.
+  isActive      Boolean        @default(true) @map("is_active")
+  isPublic      Boolean        @default(true) @map("is_public")
+  sortOrder     Int            @default(0) @map("sort_order")
+  version       Int            @default(1)
+  updatedAt     DateTime       @default(now()) @updatedAt @map("updated_at")
   createdAt     DateTime       @default(now()) @map("created_at")
   subscriptions Subscription[]
+  revisions     PlanRevision[]
 
+  @@index([planType, isActive, sortOrder])
   @@map("plans")
+}
+
+// Append-only audit trail for /admin/plans edits: full post-change snapshot +
+// per-field diff, so any bad edit can be reverted by reference.
+model PlanRevision {
+  id             String   @id @default(cuid()) @map("revision_id")
+  planId         String   @map("plan_id")
+  version        Int
+  snapshot       Json
+  changes        Json
+  changedBy      String   @map("changed_by")
+  changedByEmail String   @map("changed_by_email")
+  createdAt      DateTime @default(now()) @map("created_at")
+  plan           Plan     @relation(fields: [planId], references: [id])
+
+  @@index([planId, createdAt])
+  @@map("plan_revisions")
 }
 
 model Subscription {
