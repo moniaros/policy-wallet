@@ -10,6 +10,7 @@ import {
 } from "@/lib/seo/jsonld"
 import { getPlanCatalog } from "@/lib/pricing/plan-catalog"
 import { buildPublicPricingContent } from "@/lib/pricing/pricing-view-model"
+import { getPublicPartnerOffers } from "@/lib/partner-offers/catalog"
 
 export const metadata: Metadata = buildMarketingMetadata("pricing", "en")
 
@@ -18,11 +19,12 @@ export const revalidate = 300
 
 export default async function PricingPageEnglish() {
     const pricingContent = buildPublicPricingContent(await getPlanCatalog())
+    const partnerOffers = await getPublicPartnerOffers()
     const { plans, faqItems } = pricingContent.policyholder
 
     return (
         <StaticLanguageProvider language="en" counterpartPath="/pricing">
-            <PricingPageClient pricingContent={pricingContent} />
+            <PricingPageClient pricingContent={pricingContent} partnerOffers={partnerOffers} />
             <JsonLd
                 data={[
                     breadcrumbEnJsonLd(["pricing"]),

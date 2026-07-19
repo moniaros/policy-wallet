@@ -29,16 +29,16 @@ export function FeatureComparison({ language, plans, rows, className = "" }: Fea
                                 key={plan.key}
                                 className={`px-6 py-4 text-center font-bold ${
                                     plan.isHighlighted
-                                        ? "rounded-t-xl bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/30 dark:to-cyan-950/30"
+                                        ? "rounded-t-xl bg-gradient-to-br from-[#F0FDF4] to-[#ECFDF5] dark:from-[#29685B]/15 dark:to-[#29685B]/10"
                                         : ""
                                 }`}
                             >
                                 <div className="flex items-center justify-center gap-2">
-                                    <span className={`${plan.isHighlighted ? "font-black text-blue-600 dark:text-blue-400" : "text-slate-900 dark:text-white"}`}>
+                                    <span className={`${plan.isHighlighted ? "font-black text-[#29685B] dark:text-[#A7F3D0]" : "text-slate-900 dark:text-white"}`}>
                                         {plan.name[language]}
                                     </span>
                                     {plan.badge && (
-                                        <span className="rounded-full bg-blue-600 px-2 py-0.5 text-center text-xs font-bold text-white">
+                                        <span className="rounded-full bg-[#29685B] px-2 py-0.5 text-center text-xs font-bold text-white">
                                             {plan.badge[language]}
                                         </span>
                                     )}
@@ -72,7 +72,7 @@ export function FeatureComparison({ language, plans, rows, className = "" }: Fea
                                             key={`${row.name.en}-${plan.key}`}
                                             className={`px-6 py-4 text-center ${
                                                 plan.isHighlighted
-                                                    ? "bg-gradient-to-br from-blue-50/50 to-cyan-50/50 dark:from-blue-950/10 dark:to-cyan-950/10"
+                                                    ? "bg-gradient-to-br from-[#F0FDF4]/60 to-[#ECFDF5]/60 dark:from-[#29685B]/10 dark:to-[#29685B]/5"
                                                     : ""
                                             }`}
                                         >

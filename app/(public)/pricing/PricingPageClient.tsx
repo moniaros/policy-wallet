@@ -20,13 +20,17 @@ import {
 } from "@/lib/pricing/public-pricing-content"
 import { CreditCard, Lock, Menu, Shield, X } from "lucide-react"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
+import { PartnerPerksSection } from "@/components/landing/PartnerPerksSection"
+import type { PartnerOfferView } from "@/lib/partner-offers/matching"
 
 export default function PricingPage({
     // Server pages pass the catalog-built content (live admin-managed prices);
     // the static template is only the fallback for stray direct renders.
     pricingContent = publicPricingContent,
+    partnerOffers = [],
 }: {
     pricingContent?: Record<PricingAudience, PublicPricingAudienceContent>
+    partnerOffers?: PartnerOfferView[]
 }) {
     const router = useRouter()
     const [session, setSession] = useState<any>(null)
@@ -175,7 +179,7 @@ export default function PricingPage({
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 selection:bg-[#64748B]/20 selection:text-[#0F172A] dark:from-slate-950 dark:via-slate-900 dark:to-blue-950">
+        <div className="min-h-screen bg-gradient-to-br from-[#F0FDF4] via-white to-[#ECFDF5] selection:bg-[#64748B]/20 selection:text-[#0F172A] dark:from-slate-950 dark:via-slate-900 dark:to-[#0B1F1A]">
             <header className="fixed left-4 right-4 top-4 z-50">
                 <div className="mx-auto flex h-14 max-w-[1400px] items-center justify-between rounded-full border border-gray-200/50 bg-white/80 px-6 shadow-sm backdrop-blur-xl transition-all duration-300 dark:border-slate-700/50 dark:bg-slate-900/80">
                     <Link href="/" className="inline-flex items-center text-[20px] font-bold tracking-tight">
@@ -377,15 +381,15 @@ export default function PricingPage({
 
                     <div className="mb-12 flex flex-wrap items-center justify-center gap-6 text-sm text-slate-600 dark:text-slate-400">
                         <div className="flex items-center gap-2">
-                            <Shield className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                            <Shield className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
                             <span>{labels.secure[language]}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <CreditCard className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                            <CreditCard className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
                             <span>{labels.noHiddenFees[language]}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                            <Lock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                            <Lock className="h-5 w-5 text-[#29685B] dark:text-[#A7F3D0]" />
                             <span>{labels.cancelAnytime[language]}</span>
                         </div>
                     </div>
@@ -409,6 +413,9 @@ export default function PricingPage({
                     </div>
                 </div>
             </section>
+
+            {/* Partner benefits — renders only with live partners (honesty rule). */}
+            <PartnerPerksSection offers={partnerOffers} isGreek={language === "el"} id="partner-perks" />
 
             <section className="bg-white px-4 py-20 dark:bg-slate-900/50 sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-6xl">
