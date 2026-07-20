@@ -85,10 +85,18 @@ nav/hero/mobile/final (7), AudienceTabs (2), footer band (2), pricing nav + Pric
 pages: 15 hero primaries + 1 hero secondary → `pw-primary/secondary-button pw-btn-lg`, 15
 dark final-panel CTAs + 1 dark secondary → the `-inverse` pair. The 15 square hero eyebrows
 became pills at the kicker size, as did the one square status chip. `/product`'s own bespoke
-mint pill folded into `pw-primary-button-inverse` too, so the whole product family — index
-and all 15 line-of-business pages — is one CTA system. Note this retires mint-on-dark as a
-CTA fill; `#89D9B2` stays a dark-surface accent elsewhere. Revert that one line if the mint
-button is wanted back.
+mint pill folded in too, so the whole product family — index and all 15 line-of-business
+pages — is one CTA system.
+
+**Owner decision (2026-07-20): mint-on-dark is restored.** Stage C had folded the product
+family's dark-panel primaries into the white `-inverse` primary on a literal reading of this
+rule; the mint fill is deliberate brand signature, so it returns as a **named third variant**,
+`.pw-primary-button-mint` (mint `#89D9B2` on `#0F172A` text, same shape/size/weight, pairs
+with `.pw-secondary-button-inverse`) — not as ad-hoc per-page classes. The discipline wins
+stand: pill radius, one size scale, no `rounded-[4px]`, `#1A1A1A` still retired. Scope is the
+product family only (16 CTAs: index + 15 LoB); **the landing final CTA was always white and
+stays `-inverse`**. So the rule is now: one CTA pair, plus one sanctioned dark-panel fill
+variant — any further variant needs the same explicit justification.
 
 ## 5. Microcopy & tone (rules now, rewrites in Stage B)
 
@@ -187,6 +195,8 @@ in place.
       `font-medium` headings → 600 across all 15 `app/(public)/product/*/PageClient.tsx` (§1)
 - [x] **Stage C: CTA pass** — 33 CTAs → the pw pair/inverse pair; `rounded-[4px]` no longer
       appears anywhere in the tree; `/product`'s bespoke mint pill folded in too (§4)
+- [x] **Post-C: mint-on-dark restored** as `.pw-primary-button-mint` across the 16
+      product-family dark CTAs, per owner decision — landing stays white (§4)
 - [x] **Stage C: category-pastel decision settled** — 6 hues collapsed to a green/neutral
       two-tier system in `lib/product/catalog.tsx`, plus 96 off-palette neutrals retired on
       the LoB pages (§2)

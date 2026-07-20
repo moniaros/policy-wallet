@@ -377,7 +377,7 @@ export function ProductSections({ language }: { language: Language }) {
                         )}
                     </p>
                     <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-                        <Link href="/auth/signup" className="pw-primary-button-inverse pw-btn-lg w-full sm:w-auto">
+                        <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε δωρεάν", "Get started free")}
                             <ArrowRight className="h-4 w-4" />
                         </Link>

@@ -148,7 +148,7 @@ export default function LiabilityProductPage() {
                 <h2 className="text-[32px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
                     {t("Μία κάλυψη αρκεί. Δύο είναι σπατάλη.", "One cover is enough. Two is a waste.")}
                 </h2>
-                <Link href="/auth/signup" className="pw-primary-button-inverse pw-btn-lg">
+                <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
                     {t("Ελέγξτε τι έχετε ήδη", "Check what you already hold")}
                 </Link>
             </section>
