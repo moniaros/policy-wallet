@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { getLegalContent, LEGAL_CONTENT_VERSION, type LegalDocumentKind } from "@/lib/legal/legal-content"
 import { LEGAL_POLICY_VERSIONS } from "@/lib/compliance/consent"
+import { LEGAL_ENTITY } from "@/lib/legal/entity-placeholders"
 
 const DOCUMENT_KINDS: LegalDocumentKind[] = ["terms", "privacy", "cookies", "subprocessors"]
 
@@ -74,16 +75,69 @@ describe("legal content parity", () => {
         expect(LEGAL_POLICY_VERSIONS.privacy).toBe(LEGAL_CONTENT_VERSION)
     })
 
-    it("ships the new legal pages free of unresolved entity placeholders", () => {
-        // /cookies and /subprocessors ship as FINAL: unlike the parked
-        // privacy/terms rewrite, they must contain no bracketed TODO markers.
+    it("ships every legal page free of unresolved entity placeholders", () => {
+        // The whole legal set is now GA: no document may carry a bracketed TODO
+        // marker, and no page may re-introduce a DRAFT version string.
         for (const language of ["el", "en"] as const) {
-            for (const kind of ["cookies", "subprocessors"] as const) {
+            for (const kind of DOCUMENT_KINDS) {
                 const serialized = JSON.stringify(getLegalContent(language)[kind])
                 expect(serialized).not.toContain("ΣΥΜΠΛΗΡΩΣΤΕ")
                 expect(serialized).not.toContain("TO BE COMPLETED")
                 expect(serialized).not.toContain("TO BE SET BY")
+                expect(serialized).not.toContain("νομικό σύμβουλο")
+                expect(serialized).not.toContain("legal counsel")
             }
         }
+        expect(LEGAL_CONTENT_VERSION).not.toContain("DRAFT")
+    })
+
+    it("states the real corporate identity in the controller and provider sections", () => {
+        const el = getLegalContent("el")
+        const en = getLegalContent("en")
+
+        const elController = el.privacy.sections.find((s) => s.id === "controller")?.paragraphs.join(" ") ?? ""
+        const elProvider = el.terms.sections.find((s) => s.id === "provider")?.paragraphs.join(" ") ?? ""
+        const enController = en.privacy.sections.find((s) => s.id === "controller")?.paragraphs.join(" ") ?? ""
+        const enProvider = en.terms.sections.find((s) => s.id === "provider")?.paragraphs.join(" ") ?? ""
+
+        for (const text of [elController, elProvider]) {
+            expect(text).toContain("Insurance Martech Ι.Κ.Ε.")
+            expect(text).toContain(LEGAL_ENTITY.el.gemi)
+        }
+        for (const text of [enController, enProvider]) {
+            expect(text).toContain("Insurance Martech IKE")
+            expect(text).toContain(LEGAL_ENTITY.en.gemi)
+        }
+
+        // The DPO mailbox must be reachable from the privacy policy in both languages.
+        expect(elController).toContain(LEGAL_ENTITY.el.dpoEmail)
+        expect(enController).toContain(LEGAL_ENTITY.en.dpoEmail)
+    })
+
+    it("caps liability at 12 months of fees and preserves the mandatory carve-outs", () => {
+        const elLiability = getLegalContent("el").terms.sections.find((s) => s.id === "liability")
+        const enLiability = getLegalContent("en").terms.sections.find((s) => s.id === "liability")
+        const elText = elLiability?.paragraphs.join(" ") ?? ""
+        const enText = enLiability?.paragraphs.join(" ") ?? ""
+
+        expect(elText).toContain("δώδεκα (12) μήνες")
+        expect(enText).toContain("twelve (12) months")
+
+        // Carve-outs that cannot be excluded under Greek/EU law.
+        for (const carveOut of ["απάτη", "δόλο", "βαριά αμέλεια", "θάνατο ή σωματική βλάβη"]) {
+            expect(elText).toContain(carveOut)
+        }
+        for (const carveOut of ["fraud", "wilful misconduct", "gross negligence", "death or personal injury"]) {
+            expect(enText).toContain(carveOut)
+        }
+    })
+
+    it("names the courts of Chios as the competent venue", () => {
+        expect(getLegalContent("el").terms.sections.find((s) => s.id === "law_venue")?.paragraphs.join(" ")).toContain(
+            "Δικαστήρια Χίου"
+        )
+        expect(getLegalContent("en").terms.sections.find((s) => s.id === "law_venue")?.paragraphs.join(" ")).toContain(
+            "Chios"
+        )
     })
 })

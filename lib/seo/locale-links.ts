@@ -3,9 +3,9 @@ import { marketingPages } from "@/lib/seo/marketing-pages"
 /**
  * Marketing paths with a real English mirror at /en<path> — derived from the
  * registry's `en` fields so this helper can never emit a link to a 404.
- * "/" pairs with "/en" (the English home). Paths WITHOUT a mirror (/privacy
- * and /terms, until real /en routes exist for them) intentionally stay Greek:
- * a Greek page beats a 404.
+ * "/" pairs with "/en" (the English home). The full legal set (/privacy,
+ * /terms, /cookies, /subprocessors) now has real /en mirrors. Paths WITHOUT a
+ * mirror intentionally stay Greek: a Greek page beats a 404.
  */
 const EN_MIRRORED_EXACT: ReadonlySet<string> = new Set([
     "/",

@@ -4,6 +4,9 @@ export const CONSENT_COOKIE_NAME = "pw_cookie_consent"
 export const DEFAULT_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365
 
 export const LEGAL_POLICY_VERSIONS = {
+    // Deliberately NOT bumped alongside the 2026.07 cookie-policy revision:
+    // the wording changed, the cookies set did not, so re-prompting every
+    // visitor would be noise. Bump only when a new cookie category appears.
     cookie: "2026-03",
     terms: LEGAL_CONTENT_VERSION,
     privacy: LEGAL_CONTENT_VERSION,

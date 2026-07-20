@@ -362,6 +362,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         description:
             "Πώς το PolicyWallet συλλέγει, αποθηκεύει και προστατεύει τα δεδομένα σας: κρυπτογράφηση, ευρωπαϊκοί servers και πλήρης συμμόρφωση με τον GDPR.",
         breadcrumb: "Πολιτική Απορρήτου",
+        en: {
+            title: "Privacy Policy",
+            description:
+                "How PolicyWallet collects, stores and protects your data: encryption, European servers, full GDPR compliance and how to exercise your rights.",
+            breadcrumb: "Privacy Policy",
+        },
     },
     terms: {
         path: "/terms",
@@ -369,6 +375,12 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         description:
             "Οι όροι χρήσης της πλατφόρμας PolicyWallet: λογαριασμοί, συνδρομές, δικαιώματα και υποχρεώσεις για ιδιώτες, ασφαλιστικούς πράκτορες και πρακτορεία.",
         breadcrumb: "Όροι Χρήσης",
+        en: {
+            title: "Terms of Service",
+            description:
+                "The terms governing the PolicyWallet platform: accounts, subscriptions, rights and obligations for individuals, insurance agents and agencies.",
+            breadcrumb: "Terms of Service",
+        },
     },
     cookies: {
         path: "/cookies",
