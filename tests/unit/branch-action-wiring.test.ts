@@ -35,7 +35,7 @@ vi.mock('@/lib/db', () => ({
         policy: { findUnique: (...a: any[]) => policyFindUnique(...(a as [])) },
         accessGrant: { findFirst: (...a: any[]) => accessGrantFindFirst(...(a as [])) },
         customerRelationship: { findFirst: (...a: any[]) => relationshipFindFirst(...(a as [])) },
-        userTask: { create: (...a: any[]) => userTaskCreate(...(a as [])) },
+        userTask: { create: (...a: any[]) => (userTaskCreate as any)(...a) },
     },
 }))
 
@@ -65,7 +65,7 @@ const ensureAutomationThread = vi.fn(async (_userId: string, input: any) => {
 })
 vi.mock('@/lib/services/collaboration.service', () => ({
     collaborationService: {
-        ensureAutomationThread: (...a: any[]) => ensureAutomationThread(...(a as [])),
+        ensureAutomationThread: (...a: any[]) => (ensureAutomationThread as any)(...a),
     },
 }))
 
