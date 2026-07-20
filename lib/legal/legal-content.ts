@@ -234,7 +234,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "cookies_we_use",
                     title: "2. Ποια cookies χρησιμοποιούμε",
                     paragraphs: [
-                        "Σήμερα η πλατφόρμα χρησιμοποιεί μόνο τα εξής:",
+                        "Σήμερα η πλατφόρμα χρησιμοποιεί τα εξής:",
                     ],
                     table: {
                         headers: ["Όνομα", "Σκοπός", "Διάρκεια", "Κατηγορία"],
@@ -257,6 +257,12 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                                 "Μέχρι να διαγραφεί από εσάς",
                                 "Λειτουργικό",
                             ],
+                            [
+                                "_ga, _ga_<αναγνωριστικό ιδιότητας> (Google Analytics)",
+                                "Διακρίνει επισκέπτες και συνεδρίες για συγκεντρωτικά στατιστικά χρήσης — τοποθετούνται μόνο εφόσον αποδεχθείτε την κατηγορία «Ανάλυση»",
+                                "Έως 2 έτη (προεπιλογή Google Analytics 4)",
+                                "Ανάλυση — με τη συγκατάθεσή σας",
+                            ],
                         ],
                     },
                 },
@@ -264,8 +270,14 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "analytics_marketing",
                     title: "3. Cookies ανάλυσης και marketing",
                     paragraphs: [
-                        "Δεν χρησιμοποιούμε σήμερα cookies ανάλυσης ή marketing τρίτων. Οι αντίστοιχες κατηγορίες εμφανίζονται στο banner ώστε, αν προστεθούν στο μέλλον, να ενεργοποιηθούν μόνο με τη δική σας συγκατάθεση και αφού πρώτα ενημερωθεί η παρούσα σελίδα.",
+                        "Για συγκεντρωτικά στατιστικά χρήσης χρησιμοποιούμε το Google Analytics 4, ώστε να κατανοούμε ποιες σελίδες αξιοποιούνται και πού δυσκολεύονται οι χρήστες. Το Google Analytics τοποθετεί τα cookies _ga και _ga_<αναγνωριστικό ιδιότητας>, με τυπική διάρκεια έως 2 έτη σύμφωνα με τις προεπιλογές του Google Analytics 4.",
+                        "Τα cookies αυτά τοποθετούνται αποκλειστικά αφού αποδεχθείτε την κατηγορία «Ανάλυση» στο banner συγκατάθεσης. Πριν από τη συγκατάθεσή σας δεν φορτώνεται καθόλου ο κώδικας του Google Analytics και δεν αποστέλλεται κανένα δεδομένο στη Google.",
+                        "Η υπηρεσία είναι ρυθμισμένη με ανωνυμοποίηση διεύθυνσης IP (anonymize_ip) και με απενεργοποιημένα τα Google Signals (allow_google_signals: false), ώστε να μην πραγματοποιείται διαφημιστική στόχευση ή δημιουργία προφίλ μεταξύ συσκευών.",
+                        "Δεν χρησιμοποιούμε cookies marketing ή διαφημιστικής στόχευσης τρίτων. Η κατηγορία «Marketing» παραμένει στο banner ώστε, αν προστεθούν στο μέλλον, να ενεργοποιηθούν μόνο με τη δική σας συγκατάθεση και αφού πρώτα ενημερωθεί η παρούσα σελίδα.",
+                        "Μπορείτε να ανακαλέσετε τη συγκατάθεσή σας οποιαδήποτε στιγμή, διαγράφοντας το cookie pw_cookie_consent από τον φυλλομετρητή σας ώστε να επανεμφανιστεί το banner και να επιλέξετε εκ νέου. Με την ανάκληση σταματά η αποστολή δεδομένων στο Google Analytics και τα cookies _ga διαγράφονται.",
+                        "Η Google ενεργεί ως εκτελούσα την επεξεργασία για λογαριασμό μας· οι τυχόν διαβιβάσεις εκτός ΕΟΧ καλύπτονται από τις εγγυήσεις που περιγράφονται στη σελίδα Υπο-εκτελούντων Επεξεργασίας.",
                     ],
+                    link: { href: "/subprocessors", label: "Δείτε τον κατάλογο υπο-εκτελούντων" },
                 },
                 {
                     id: "managing_cookies",
@@ -327,6 +339,12 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                                 "Google (Gemini API)",
                                 "Ανάλυση εγγράφων με AI — κύριος πάροχος",
                                 "Περιεχόμενο ασφαλιστηρίων προς ανάλυση, μόνο με τη συγκατάθεσή σας",
+                                "ΕΕ/ΗΠΑ",
+                            ],
+                            [
+                                "Google (Google Analytics)",
+                                "Στατιστικά χρήσης",
+                                "Συγκεντρωτικά συμβάντα χρήσης με ανωνυμοποιημένη διεύθυνση IP — μόνο εφόσον αποδεχθείτε την κατηγορία «Ανάλυση»",
                                 "ΕΕ/ΗΠΑ",
                             ],
                             [
@@ -538,7 +556,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "cookies_we_use",
                     title: "2. Which cookies we use",
                     paragraphs: [
-                        "Today the platform uses only the following:",
+                        "Today the platform uses the following:",
                     ],
                     table: {
                         headers: ["Name", "Purpose", "Duration", "Category"],
@@ -561,6 +579,12 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                                 "Until you delete it",
                                 "Functional",
                             ],
+                            [
+                                "_ga, _ga_<container-id> (Google Analytics)",
+                                "Distinguishes visitors and sessions for aggregate usage statistics — set only if you accept the \"Analytics\" category",
+                                "Up to 2 years (Google Analytics 4 default)",
+                                "Analytics — with your consent",
+                            ],
                         ],
                     },
                 },
@@ -568,8 +592,14 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "analytics_marketing",
                     title: "3. Analytics and marketing cookies",
                     paragraphs: [
-                        "We do not currently use third-party analytics or marketing cookies. The corresponding categories appear in the banner so that, if they are added in the future, they are activated only with your consent and after this page is updated first.",
+                        "We use Google Analytics 4 to produce aggregate usage statistics, so that we can understand which pages are used and where users run into difficulty. Google Analytics sets the _ga and _ga_<container-id> cookies, with a typical lifetime of up to 2 years under the Google Analytics 4 defaults.",
+                        "These cookies are set only after you accept the \"Analytics\" category in the consent banner. Before you consent, the Google Analytics code is not loaded at all and no data is sent to Google.",
+                        "The service is configured with IP anonymisation (anonymize_ip) and with Google Signals disabled (allow_google_signals: false), so no advertising targeting or cross-device profiling takes place.",
+                        "We do not use third-party marketing or advertising-targeting cookies. The \"Marketing\" category remains in the banner so that, if such cookies are added in the future, they are activated only with your consent and after this page is updated first.",
+                        "You can withdraw your consent at any time by deleting the pw_cookie_consent cookie in your browser, which brings the banner back so you can choose again. On withdrawal we stop sending data to Google Analytics and the _ga cookies are deleted.",
+                        "Google acts as a processor on our behalf; any transfers outside the EEA are covered by the safeguards described on our Subprocessors page.",
                     ],
+                    link: { href: "/subprocessors", label: "See the subprocessors list" },
                 },
                 {
                     id: "managing_cookies",
@@ -631,6 +661,12 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                                 "Google (Gemini API)",
                                 "AI document analysis — primary provider",
                                 "Policy content submitted for analysis, only with your consent",
+                                "EU/US",
+                            ],
+                            [
+                                "Google (Google Analytics)",
+                                "Usage analytics",
+                                "Aggregate usage events with IP anonymisation — only if you accept the \"Analytics\" category",
                                 "EU/US",
                             ],
                             [
