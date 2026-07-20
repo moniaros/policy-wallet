@@ -15,18 +15,35 @@ import { travelContent } from './travel'
 import { cyberContent } from './cyber'
 import { petContent } from './pet'
 import { businessContent } from './business'
+import { motorbikeContent } from './motorbike'
+import { incomeProtectionContent } from './income-protection'
+import { personalAccidentContent } from './personal-accident'
+import { boatContent } from './boat'
+import { roadsideContent } from './roadside'
 
 export type { Bilingual, BranchAction, BranchCommonGap, BranchContent } from './types'
 
+/**
+ * The registry key is the canonical taxonomy branch id — NOT `contentTier`.
+ * `contentTier` is marketing prominence and doubles as the `/branches` listing
+ * switch (lib/insurance/branch-page.ts), so a branch can have a hand-written
+ * bundle here while staying `basic` in the taxonomy. See the registry
+ * invariants in tests/unit/branch-content.test.ts.
+ */
 export const RICH_BRANCH_CONTENT: Record<string, BranchContent> = {
     motor: motorContent,
+    motorbike: motorbikeContent,
+    roadside: roadsideContent,
     home: homeContent,
     health: healthContent,
     life: lifeContent,
+    income_protection: incomeProtectionContent,
+    personal_accident: personalAccidentContent,
     pension: pensionContent,
     travel: travelContent,
     cyber: cyberContent,
     pet: petContent,
+    boat: boatContent,
     business: businessContent,
 }
 

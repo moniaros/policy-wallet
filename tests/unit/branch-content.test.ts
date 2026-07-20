@@ -94,10 +94,58 @@ function assertBilingualLeaves(value: unknown, path: string) {
     for (const key of keys) assertBilingualLeaves(record[key], `${path}.${key}`)
 }
 
+/**
+ * `other` is the documented unknown-line fallback: `normalizeBranch` sends
+ * every unrecognised `lineOfBusiness` value here, so its content must stay
+ * deliberately generic. It is the one writeEnabled branch exempted from the
+ * own-bundle invariant below.
+ */
+const GENERIC_BY_DESIGN = new Set(['other'])
+
 describe('branch content — registry completeness', () => {
-    it('every rich-tier taxonomy branch has a rich bundle and vice versa', () => {
-        const richTaxonomyIds = INSURANCE_BRANCHES.filter((b) => b.contentTier === 'rich').map((b) => b.id).sort()
-        expect(Object.keys(RICH_BRANCH_CONTENT).sort()).toEqual(richTaxonomyIds)
+    /**
+     * NOTE: `contentTier` is NOT the registry key.
+     *
+     * This assertion used to demand exact set equality between
+     * `RICH_BRANCH_CONTENT` keys and the taxonomy ids marked
+     * `contentTier === 'rich'`. That coupling is wrong: `contentTier` also
+     * drives the public `/branches` listing (lib/insurance/branch-page.ts), so
+     * flipping a branch to 'rich' just to register a bundle would publish it —
+     * including the B2B `group_*` lines — to every consumer.
+     *
+     * The tier therefore stays a MARKETING PROMINENCE flag, and the registry is
+     * keyed by taxonomy id. Two invariants replace the equality:
+     *   (a) every rich-tier branch still has a bundle (subset, not equality);
+     *   (b) every writeEnabled branch resolves to a bundle that is actually
+     *       ABOUT that branch — i.e. `branchId` equals its own id — so a child
+     *       line can never quietly inherit its parent's copy.
+     */
+    it('every rich-tier taxonomy branch has a bundle', () => {
+        const richTaxonomyIds = INSURANCE_BRANCHES.filter((b) => b.contentTier === 'rich').map((b) => b.id)
+        const registered = new Set(Object.keys(RICH_BRANCH_CONTENT))
+        for (const id of richTaxonomyIds) {
+            expect(registered.has(id), `rich-tier branch "${id}" has no bundle in RICH_BRANCH_CONTENT`).toBe(true)
+        }
+    })
+
+    it('every writeEnabled branch resolves to content about itself', () => {
+        const writeEnabled = INSURANCE_BRANCHES.filter((branch) => branch.writeEnabled)
+        expect(writeEnabled.length).toBeGreaterThan(0)
+
+        for (const branch of writeEnabled) {
+            if (GENERIC_BY_DESIGN.has(branch.id)) continue
+            expect(
+                getBranchContent(branch.id).branchId,
+                `"${branch.id}" resolves to another branch's content — author a bundle or exempt it deliberately`
+            ).toBe(branch.id)
+        }
+    })
+
+    it('the unknown-line fallback stays generic', () => {
+        for (const id of GENERIC_BY_DESIGN) {
+            expect(RICH_BRANCH_CONTENT[id], `"${id}" must not have a hand-written bundle`).toBeUndefined()
+            expect(getBranchContent(id).branchId).toBe(id)
+        }
     })
 
     it('bundle branchIds match their registry keys', () => {
@@ -116,6 +164,42 @@ describe('branch content — registry completeness', () => {
             expect(content.suggestedQuestions.length, content.branchId).toBeGreaterThanOrEqual(4)
             expect(content.claimsSteps.length, content.branchId).toBeGreaterThanOrEqual(3)
         }
+    })
+})
+
+/**
+ * Anti-filler guard. A child branch that merely restates its parent is worse
+ * than the generic fallback: it looks hand-written while carrying none of the
+ * branch-specific substance the bundle exists to provide. Duplicate Greek copy
+ * across two bundles is the signature of that failure, so it fails CI.
+ *
+ * If this trips, rewrite the CONTENT — do not weaken the assertion.
+ */
+describe('branch content — anti-filler guard', () => {
+    const duplicatesOf = (pick: (content: BranchContent) => string[]) => {
+        const seen = new Map<string, string>()
+        const collisions: string[] = []
+        for (const content of Object.values(RICH_BRANCH_CONTENT)) {
+            for (const text of pick(content)) {
+                const key = text.trim().toLowerCase()
+                const owner = seen.get(key)
+                if (owner) collisions.push(`"${text}" shared by ${owner} and ${content.branchId}`)
+                else seen.set(key, content.branchId)
+            }
+        }
+        return collisions
+    }
+
+    it('no two bundles share a tagline', () => {
+        expect(duplicatesOf((c) => [c.tagline.el])).toEqual([])
+    })
+
+    it('no two bundles share a short description', () => {
+        expect(duplicatesOf((c) => [c.shortDescription.el])).toEqual([])
+    })
+
+    it('no two bundles share a whyItMatters point', () => {
+        expect(duplicatesOf((c) => c.whyItMatters.map((point) => point.el))).toEqual([])
     })
 })
 
@@ -140,7 +224,7 @@ describe('branch content — compliance tone guard', () => {
     })
 
     it('generic fallback copy is also clean', () => {
-        const generic = buildGenericContent(getBranch('boat')!)
+        const generic = buildGenericContent(getBranch('legal_expenses')!)
         for (const text of collectStrings(generic)) {
             const lower = text.toLowerCase()
             for (const banned of BANNED_PHRASES) {
@@ -182,15 +266,22 @@ describe('branch content — resolution', () => {
         expect(getBranchContent('property').branchId).toBe('home')
     })
 
-    it('child branches fall back to the parent rich bundle', () => {
-        expect(getBranchContent('motorbike').branchId).toBe('motor')
-        expect(getBranchContent('business_interruption').branchId).toBe('business')
+    it('child branches with their own bundle keep it instead of the parent’s', () => {
+        expect(getBranchContent('motorbike').branchId).toBe('motorbike')
+        expect(getBranchContent('income_protection').branchId).toBe('income_protection')
+        expect(getBranchContent('personal_accident').branchId).toBe('personal_accident')
     })
 
-    it('basic-tier branches without a rich parent get generic content', () => {
-        const boat = getBranchContent('boat')
-        expect(boat.branchId).toBe('boat')
-        expect(boat.suggestedQuestions.length).toBeGreaterThanOrEqual(4)
+    it('child branches without their own bundle still fall back to the parent', () => {
+        expect(getBranchContent('business_interruption').branchId).toBe('business')
+        expect(getBranchContent('truck').branchId).toBe('motor')
+    })
+
+    it('branches without a bundle or a rich parent get generic content', () => {
+        const legal = getBranchContent('legal_expenses')
+        expect(legal.branchId).toBe('legal_expenses')
+        expect(RICH_BRANCH_CONTENT.legal_expenses).toBeUndefined()
+        expect(legal.suggestedQuestions.length).toBeGreaterThanOrEqual(4)
     })
 
     it('unknown values resolve to the other fallback', () => {
