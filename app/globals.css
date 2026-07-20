@@ -339,6 +339,24 @@ pre {
     background: rgba(255, 255, 255, 0.1);
   }
 
+  /* Mint-fill primary for the PRODUCT-FAMILY dark panels (owner decision,
+     2026-07-20). Stage C had folded these into the white -inverse primary on a
+     literal reading of the one-CTA-pair rule; mint-on-dark is deliberate brand
+     signature, so it returns as a named variant instead of ad-hoc per-page
+     classes — same shape/size/weight as the pair, pairs with
+     .pw-secondary-button-inverse. Dark panels only; the landing final CTA is
+     white by design and is NOT this variant. */
+  .pw-primary-button-mint {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold transition-opacity;
+    border-radius: var(--pw-radius-button);
+    background: #89d9b2;
+    color: #0f172a;
+  }
+
+  .pw-primary-button-mint:hover {
+    opacity: 0.9;
+  }
+
   .pw-kicker {
     @apply text-[10px] font-bold uppercase tracking-[0.24em];
     color: var(--pw-text-muted);

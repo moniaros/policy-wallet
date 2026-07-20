@@ -136,7 +136,7 @@ export default function MotorProductPage() {
                 <h2 className="text-[32px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
                     {t("Αποκτήστε τον έλεγχο των οχημάτων σας.", "Take full control of your motor policies.")}
                 </h2>
-                <Link href="/auth/signup" className="pw-primary-button-inverse pw-btn-lg">
+                <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε το συμβόλαιο του οχήματος", "Upload your motor policy")}
                 </Link>
             </section>

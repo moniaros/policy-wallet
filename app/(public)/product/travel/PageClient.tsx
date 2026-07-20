@@ -86,7 +86,7 @@ export default function TravelProductPage() {
                 <h2 className="text-[32px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
                     {t("Ταξιδέψτε ξέροντας τι ισχύει.", "Travel knowing exactly what applies.")}
                 </h2>
-                <Link href="/auth/signup" className="pw-primary-button-inverse pw-btn-lg">
+                <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
                     <Plane className="h-5 w-5" />
                     {t("Ανεβάστε την ταξιδιωτική σας", "Upload your travel policy")}
                 </Link>

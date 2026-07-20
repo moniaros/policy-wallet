@@ -111,7 +111,7 @@ export default function BoatProductPage() {
                 <h2 className="text-[32px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
                     {t("Στη θάλασσα με σιγουριά, όχι με υποθέσεις.", "At sea with certainty, not assumptions.")}
                 </h2>
-                <Link href="/auth/signup" className="pw-primary-button-inverse pw-btn-lg">
+                <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε το συμβόλαιο του σκάφους", "Upload your boat policy")}
                 </Link>
             </section>

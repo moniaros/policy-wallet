@@ -107,7 +107,7 @@ export default function PropertyProductPage() {
                 <h2 className="text-[32px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
                     {t("Ασφαλίστε την περιουσία σας σωστά.", "Protect your equity correctly.")}
                 </h2>
-                <Link href="/auth/signup" className="pw-primary-button-inverse pw-btn-lg">
+                <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
                     {t("Ανεβάστε το συμβόλαιο κατοικίας", "Upload your home policy")}
                 </Link>
             </section>

@@ -142,7 +142,7 @@ export default function GroupLifeProductPage() {
                     {t("Μια παροχή που κανείς δεν διαβάζει αξίζει να τη βλέπουν όλοι.", "A benefit nobody reads deserves to be seen by everyone.")}
                 </h2>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Link href="/auth/signup" className="pw-primary-button-inverse pw-btn-lg">
+                    <Link href="/auth/signup" className="pw-primary-button-mint pw-btn-lg">
                         {t("Ανεβάστε το ομαδικό σας", "Upload your group policy")}
                     </Link>
                     <Link href="/solutions/agents" className="pw-secondary-button-inverse pw-btn-lg">
