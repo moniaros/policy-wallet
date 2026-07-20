@@ -383,8 +383,10 @@ export function PolicyDetailsClient({
         { id: "exclusions", label: detailsCopy.navExclusions },
         { id: "perks", label: detailsCopy.navPerks },
         { id: "analysis", label: detailsCopy.navAnalysis },
-        ...(showRecommendations ? [{ id: "recommendations", label: detailsCopy.navRecommendations }] : []),
+        // Order must mirror the DOM below: #branch-guide renders directly after
+        // #analysis, before #premium-insights and #recommendations.
         { id: "branch-guide", label: detailsCopy.navGuide },
+        ...(showRecommendations ? [{ id: "recommendations", label: detailsCopy.navRecommendations }] : []),
         { id: "policy-qa", label: detailsCopy.navAskAi },
         { id: "claims", label: detailsCopy.navClaims },
         ...(showAgentSection ? [{ id: "agent", label: detailsCopy.navAgent }] : []),
