@@ -237,10 +237,68 @@ marketing surface: landing, pricing, product index + 15 LoB pages, guides index 
 company, contact, solutions/agents. `rounded-[4px]`, `font-black` and off-ladder `text-[Npx]`
 are all grep-clean tree-wide.
 
+## Shared-chunk dieting (done — measured, same method: script chunks of the prerendered HTML)
+
+Baseline at `307f04f`. "Shared" = the chunk set common to `/`, `/pricing`, `/product`,
+`/en/product` and `/solutions/agents`.
+
+| Surface | Before | After | Delta |
+| --- | --- | --- | --- |
+| `/` | 1,415,146 B raw / 433,939 gzip | 1,291,850 B raw / 395,263 gzip | **−123,296 / −38,676** |
+| `/product` (= `/en/product`) | 1,403,103 B raw / 431,298 gzip | 1,279,807 B raw / 392,622 gzip | **−123,296 / −38,676** |
+| `/pricing` | 1,630,953 B raw / 492,691 gzip (18 chunks) | 1,305,528 B raw / 399,460 gzip (17) | **−325,425 / −93,231** |
+| `/solutions/agents` | 1,427,525 B raw / 436,298 gzip | 1,304,229 B raw / 397,622 gzip | −123,296 / −38,676 |
+| shared by all marketing | 1,381,040 B raw / 423,784 gzip (16 chunks) | 1,257,744 B raw / 385,108 gzip (16) | **−123,296 / −38,676** |
+
+**What was actually in the shared chunk.** Turbopack emits no source maps for vendor chunks
+and the Sentry plugin deletes the rest, so attribution was done by content fingerprinting plus
+differential builds rather than a bundle analyzer. The three offenders, with evidence:
+
+1. **Sentry Session Replay — 125,367 B raw / 39,494 B gzip**, inside the 560,351 B / 173,187
+   gzip framework chunk. Measured by a differential build with `replayIntegration()` removed.
+   It was statically listed in `instrumentation-client.ts`, so *every* route paid it.
+2. **EL+EN translation dictionaries — 194,016 B raw / 60,053 B gzip** (`018af4ct-iid8.js`),
+   fingerprinted by content (40,093 Greek characters + the English strings). Pulled in by the
+   root layout's `LanguageProvider` → `lib/i18n` → both `translations/el.ts` (147 KB) and
+   `en.ts` (100 KB). **Not fixed — see "Still open".**
+3. **supabase-js — 178,362 B raw / 46,814 B gzip** (`GoTrueClient` + `RealtimeClient` +
+   Postgrest), on `/pricing` only.
+
+**The two changes.**
+
+- `instrumentation-client.ts`: Session Replay is no longer bundled. It is attached after
+  `requestIdleCallback` via `Sentry.lazyLoadIntegration("replayIntegration")`, which fetches
+  it from `browser.sentry-cdn.com` — already allowed by the `script-src` CSP in
+  `next.config.ts`. Replay still records at the same sample rates; it just starts a beat after
+  load, so the `replaysOnErrorSampleRate` buffer misses anything thrown before it attaches.
+  That is the one deliberate behaviour trade-off in this batch, and it is a one-line revert.
+- `PricingPageClient.tsx`: `createClient()` moved out of the module's static import graph and
+  into a dynamic `import()` inside the session effect. **The session-aware CTA is unchanged** —
+  `session` already started as `null`, so the server always rendered the anonymous CTA and only
+  swapped it after `getSession()` resolved; deferring the import changes the timing, not the
+  logic. Verified in the built HTML: `/pricing` still ships the anonymous "Ξεκινήστε" CTA ×5
+  and never leaks the signed-in "Διαχείριση λογαριασμού" label.
+
+All three routes still render their full content server-side after the change (`/` 5,395,
+`/pricing` 3,988, `/product` 7,472 characters of visible text in the prerendered HTML).
+
+**Tried and rejected.** Bypassing the `withSentryConfig` build wrapper: **0 B** (the SDK comes
+from app code, not the plugin) — reverted. `productionBrowserSourceMaps` for attribution:
+Turbopack emits no maps for the vendor chunks, so it bought nothing — reverted.
+framer-motion: confirmed still absent from every marketing route (zero importers under
+`app/(public)` and `components/landing`) — no lever, as §6 already recorded. lucide-react is
+already imported per-icon, not through the barrel — no lever.
+
 Still open:
 
-- [ ] Shared-chunk dieting — at ~431 KB gzip both `/` and `/product` are dominated by
-      framework + shared chunks, not their own markup. That is the only remaining perf lever,
-      and it is a build/dependency question rather than a brand one.
+- [ ] **The 60 KB gzip i18n dictionary is the next and largest single lever** — and it is dead
+      weight on marketing specifically: all 22 marketing consumers of `useLanguage()` read only
+      `language`/`setLanguage`, **not one reads `t`**. The fix is to split the context so the
+      dictionary lives in a `TranslationsProvider` mounted by the protected/auth layouts rather
+      than by the root layout. Not attempted here because the blast radius is the whole app:
+      `useLanguage()` has 137 consumers, 78 of which read `t`, and `CookieConsentBanner` sits in
+      the *root* layout and reads `t.compliance?.cookieBanner` — so it renders on marketing and
+      would silently fall back to `DEFAULT_COOKIE_COPY`. Worth its own batch with its own
+      verification pass, not a rider on a perf cleanup.
 - [ ] Card radius is not unified (`rounded-2xl` vs `rounded-[20px]`) — deliberately left as a
       design decision rather than folded into a discipline pass.

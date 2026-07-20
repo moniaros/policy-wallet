@@ -3,7 +3,6 @@
 import React, { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { createClient } from "@/lib/supabase/client"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { localizeHref } from "@/lib/seo/locale-links"
 import { ThemeToggle } from "@/components/ThemeToggle"
@@ -36,7 +35,6 @@ export default function PricingPage({
     const router = useRouter()
     const [session, setSession] = useState<any>(null)
     const { language, setLanguage } = useLanguage()
-    const supabase = createClient()
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [audience, setAudience] = useState<PricingAudience>("policyholder")
     const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly")
@@ -108,13 +106,33 @@ export default function PricingPage({
         }
     }, [isMobileMenuOpen])
 
+    // supabase-js is ~47 KB gzip and is only needed to resolve the session-aware
+    // CTA *after* mount — the server already renders the anonymous CTA, since
+    // `session` starts as null. Importing it lazily therefore keeps this page's
+    // behaviour identical while dropping the SDK out of its first-load JS.
     useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => setSession(session))
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, authSession) => setSession(authSession))
-        return () => subscription.unsubscribe()
-    }, [supabase])
+        let cancelled = false
+        let unsubscribe: (() => void) | undefined
+
+        import("@/lib/supabase/client").then(({ createClient }) => {
+            if (cancelled) return
+            const supabase = createClient()
+            supabase.auth.getSession().then(({ data: { session } }) => {
+                if (!cancelled) setSession(session)
+            })
+            const {
+                data: { subscription },
+            } = supabase.auth.onAuthStateChange((_event, authSession) => {
+                if (!cancelled) setSession(authSession)
+            })
+            unsubscribe = () => subscription.unsubscribe()
+        })
+
+        return () => {
+            cancelled = true
+            unsubscribe?.()
+        }
+    }, [])
 
     useEffect(() => {
         if (typeof window === "undefined") return
