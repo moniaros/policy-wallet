@@ -63,7 +63,7 @@ export default function BusinessProductPage() {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-[900px] text-center">
-                    <span className="inline-flex bg-[#E8E4F0] text-[#1A1A1A] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] text-[#166534] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
                         {t("Ασφάλεια Επιχείρησης", "Business Insurance")}
                     </span>
                     <h1 className="text-[44px] lg:text-[56px] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
@@ -84,7 +84,7 @@ export default function BusinessProductPage() {
             <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
                 <div className="mx-auto max-w-[1240px]">
                     <div className="max-w-[720px] mb-14">
-                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#1A1A1A]">
+                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A]">
                             {t("Τα σκέλη που πρέπει να ξέρει κάθε ΜμΕ.", "The sections every SME should know.")}
                         </h2>
                         <p className="text-[#475569] text-[18px] leading-relaxed">
@@ -97,10 +97,10 @@ export default function BusinessProductPage() {
                             const Icon = section.icon
                             return (
                                 <div key={section.titleEn} className="rounded-[16px] border border-[#E2E8F0] bg-white p-7">
-                                    <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#E8E4F0]">
+                                    <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#DCEBDA]">
                                         <Icon className="h-5 w-5 text-[#0F172A]" />
                                     </div>
-                                    <h3 className="text-[20px] font-semibold text-[#1A1A1A] mb-3">{t(section.titleEl, section.titleEn)}</h3>
+                                    <h3 className="text-[20px] font-semibold text-[#0F172A] mb-3">{t(section.titleEl, section.titleEn)}</h3>
                                     <p className="text-[14px] leading-relaxed text-[#475569]">{t(section.descEl, section.descEn)}</p>
                                 </div>
                             )
@@ -112,7 +112,7 @@ export default function BusinessProductPage() {
             <ProductCategoryExplorer currentCategoryId="business" />
 
             {/* CTA */}
-            <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">
+            <section className="bg-[#1A2420] text-white py-24 text-center px-6">
                 <h2 className="text-[32px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
                     {t("Η επιχείρησή σας δεν χωράει «μάλλον καλυπτόμαστε».", "Your business can't run on “we're probably covered”.")}
                 </h2>

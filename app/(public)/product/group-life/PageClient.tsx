@@ -47,7 +47,7 @@ export default function GroupLifeProductPage() {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-[900px] text-center">
-                    <span className="inline-flex bg-[#F2E3DF] text-[#1A1A1A] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] text-[#166534] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
                         {t("Ομαδική Ζωή", "Group Life Insurance")}
                     </span>
                     <h1 className="text-[44px] lg:text-[56px] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
@@ -71,7 +71,7 @@ export default function GroupLifeProductPage() {
             <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
                 <div className="mx-auto max-w-[1240px]">
                     <div className="max-w-[720px] mb-14">
-                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#1A1A1A]">
+                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A]">
                             {t("Το ένα τρίτο του πακέτου παροχών που ξεχνιέται.", "The forgotten third of the benefits package.")}
                         </h2>
                         <p className="text-[#475569] text-[18px] leading-relaxed">
@@ -85,7 +85,7 @@ export default function GroupLifeProductPage() {
                             const card = (
                                 <div className={`h-full rounded-[16px] border p-7 ${pillar.current ? "border-[#29685B]/30 bg-white shadow-[0_20px_40px_rgba(0,0,0,0.04)]" : "border-[#E2E8F0] bg-white"}`}>
                                     <div className="mb-5 flex items-center justify-between">
-                                        <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#F2E3DF]">
+                                        <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#DCEBDA]">
                                             <Icon className="h-5 w-5 text-[#0F172A]" />
                                         </div>
                                         {pillar.current ? (
@@ -96,7 +96,7 @@ export default function GroupLifeProductPage() {
                                             <ArrowRight className="h-4 w-4 text-[#94A3B8]" />
                                         )}
                                     </div>
-                                    <h3 className="text-[20px] font-semibold text-[#1A1A1A] mb-3">{t(pillar.titleEl, pillar.titleEn)}</h3>
+                                    <h3 className="text-[20px] font-semibold text-[#0F172A] mb-3">{t(pillar.titleEl, pillar.titleEn)}</h3>
                                     <p className="text-[14px] leading-relaxed text-[#475569]">{t(pillar.descEl, pillar.descEn)}</p>
                                 </div>
                             )
@@ -116,7 +116,7 @@ export default function GroupLifeProductPage() {
             <section className="px-6 lg:px-12 py-24">
                 <div className="mx-auto max-w-[1240px] grid gap-16 md:grid-cols-2">
                     <div>
-                        <h2 className="text-[24px] font-semibold tracking-[-0.03em] mb-5 leading-[1.15] text-[#1A1A1A]">
+                        <h2 className="text-[24px] font-semibold tracking-[-0.03em] mb-5 leading-[1.15] text-[#0F172A]">
                             {t("Για HR και ιδιοκτήτες επιχειρήσεων", "For HR and business owners")}
                         </h2>
                         <p className="text-[#475569] text-[18px] leading-relaxed">
@@ -124,7 +124,7 @@ export default function GroupLifeProductPage() {
                         </p>
                     </div>
                     <div>
-                        <h2 className="text-[24px] font-semibold tracking-[-0.03em] mb-5 leading-[1.15] text-[#1A1A1A]">
+                        <h2 className="text-[24px] font-semibold tracking-[-0.03em] mb-5 leading-[1.15] text-[#0F172A]">
                             {t("Για εργαζομένους", "For employees")}
                         </h2>
                         <p className="text-[#475569] text-[18px] leading-relaxed">
@@ -137,7 +137,7 @@ export default function GroupLifeProductPage() {
             <ProductCategoryExplorer currentCategoryId="group-life" />
 
             {/* CTA */}
-            <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">
+            <section className="bg-[#1A2420] text-white py-24 text-center px-6">
                 <h2 className="text-[32px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
                     {t("Μια παροχή που κανείς δεν διαβάζει αξίζει να τη βλέπουν όλοι.", "A benefit nobody reads deserves to be seen by everyone.")}
                 </h2>

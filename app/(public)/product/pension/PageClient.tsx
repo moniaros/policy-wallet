@@ -18,7 +18,7 @@ export default function PensionProductPage() {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-[900px] text-center">
-                    <span className="inline-flex bg-[#E7EDD7] text-[#1A1A1A] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] text-[#166534] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
                         {t("Σύνταξη & Αποταμίευση", "Pension & Savings")}
                     </span>
                     <h1 className="text-[44px] lg:text-[56px] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
@@ -39,10 +39,10 @@ export default function PensionProductPage() {
             <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
                 <div className="mx-auto max-w-[1240px] grid md:grid-cols-2 gap-16 items-center">
                     {/* Mock UI — left on desktop */}
-                    <div className="order-last md:order-first bg-white p-8 rounded-[12px] border border-[#E5E5E5] shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
+                    <div className="order-last md:order-first bg-white p-8 rounded-[12px] border border-[#E2E8F0] shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
                             <div>
-                                <h3 className="text-[14px] font-bold text-[#1A1A1A] uppercase tracking-wider">Savings Plan</h3>
+                                <h3 className="text-[14px] font-bold text-[#0F172A] uppercase tracking-wider">Savings Plan</h3>
                                 <p className="text-[13px] text-gray-500">Monthly Contributions · Year 8 of 25</p>
                             </div>
                             <PiggyBank className="w-6 h-6 text-[#29685B]" />
@@ -71,7 +71,7 @@ export default function PensionProductPage() {
                     </div>
 
                     <div>
-                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#1A1A1A]">
+                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A]">
                             {t("Η δημόσια σύνταξη είναι το ένα σκέλος. Το δικό σας πρόγραμμα είναι το άλλο.", "The state pension is one leg. Your own plan is the other.")}
                         </h2>
                         <p className="text-[#475569] text-[18px] leading-relaxed mb-8">
@@ -81,21 +81,21 @@ export default function PensionProductPage() {
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
                                 <div>
-                                    <h4 className="text-[18px] font-semibold text-[#1A1A1A]">{t("Εφάπαξ ή σύνταξη;", "Lump sum or annuity?")}</h4>
+                                    <h4 className="text-[18px] font-semibold text-[#0F172A]">{t("Εφάπαξ ή σύνταξη;", "Lump sum or annuity?")}</h4>
                                     <p className="text-[#475569]">{t("Οι επιλογές ωρίμανσης καθορίζουν αν στη λήξη παίρνετε ένα ποσό ή μηνιαίο εισόδημα. Δείτε τις δικές σας πριν πλησιάσει η ημερομηνία.", "Maturity options decide whether you receive a single amount or monthly income at term. See yours long before the date approaches.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
                                 <div>
-                                    <h4 className="text-[18px] font-semibold text-[#1A1A1A]">{t("Όροι εξαγοράς στο φως", "Surrender terms in the open")}</h4>
+                                    <h4 className="text-[18px] font-semibold text-[#0F172A]">{t("Όροι εξαγοράς στο φως", "Surrender terms in the open")}</h4>
                                     <p className="text-[#475569]">{t("Η πρόωρη διακοπή έχει κόστος που ελάχιστοι έχουν διαβάσει. Η AI εντοπίζει τη ρήτρα εξαγοράς και σας δείχνει τι σημαίνει στην πράξη.", "Stopping early has a cost that few people have actually read. The AI locates the surrender clause and shows what it means in practice.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
                                 <div>
-                                    <h4 className="text-[18px] font-semibold text-[#1A1A1A]">{t("Εγγυημένο ή επενδυτικό σκέλος", "Guaranteed vs investment component")}</h4>
+                                    <h4 className="text-[18px] font-semibold text-[#0F172A]">{t("Εγγυημένο ή επενδυτικό σκέλος", "Guaranteed vs investment component")}</h4>
                                     <p className="text-[#475569]">{t("Ποιο μέρος της αποταμίευσής σας είναι εγγυημένο και ποιο ακολουθεί την αγορά; Η διάκριση είναι κρίσιμη — και συχνά ασαφής στο συμβόλαιο.", "Which part of your savings is guaranteed and which follows the market? The distinction is critical — and often unclear in the contract.")}</p>
                                 </div>
                             </li>
@@ -107,7 +107,7 @@ export default function PensionProductPage() {
             <ProductCategoryExplorer currentCategoryId="pension" />
 
             {/* CTA */}
-            <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">
+            <section className="bg-[#1A2420] text-white py-24 text-center px-6">
                 <h2 className="text-[32px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
                     {t("Δεκαετίες αποταμίευσης αξίζουν πέντε λεπτά ανάλυσης.", "Decades of saving deserve five minutes of analysis.")}
                 </h2>

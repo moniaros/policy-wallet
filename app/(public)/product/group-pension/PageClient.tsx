@@ -18,7 +18,7 @@ export default function GroupPensionProductPage() {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-[900px] text-center">
-                    <span className="inline-flex bg-[#E7EDD7] text-[#1A1A1A] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] text-[#166534] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
                         {t("Ομαδικά Συνταξιοδοτικά", "Group Pension")}
                     </span>
                     <h1 className="text-[44px] lg:text-[56px] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
@@ -39,7 +39,7 @@ export default function GroupPensionProductPage() {
             <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
                 <div className="mx-auto max-w-[1240px] grid md:grid-cols-2 gap-16 items-center">
                     <div>
-                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#1A1A1A]">
+                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A]">
                             {t("Πόση σύνταξη χτίζει το ομαδικό σας πρόγραμμα;", "How much pension is your group plan building?")}
                         </h2>
                         <p className="text-[#475569] text-[18px] leading-relaxed mb-8">
@@ -49,14 +49,14 @@ export default function GroupPensionProductPage() {
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
                                 <div>
-                                    <h4 className="text-[18px] font-semibold text-[#1A1A1A]">{t("Φορολογικές Ελαφρύνσεις", "Tax Benefits")}</h4>
+                                    <h4 className="text-[18px] font-semibold text-[#0F172A]">{t("Φορολογικές Ελαφρύνσεις", "Tax Benefits")}</h4>
                                     <p className="text-[#475569]">{t("Κρατήστε άμεσα στοιχεία για την εφορία. Δείτε πόσες κρατήσεις δικαιούστε από τα ομαδικά προγράμματα.", "Export exact premium contributions perfectly formulated for maximizing your income tax deductions.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
                                 <div>
-                                    <h4 className="text-[18px] font-semibold text-[#1A1A1A]">{t("Προβολές Συνταξιοδότησης", "Retirement Projections")}</h4>
+                                    <h4 className="text-[18px] font-semibold text-[#0F172A]">{t("Προβολές Συνταξιοδότησης", "Retirement Projections")}</h4>
                                     <p className="text-[#475569]">{t("Δείτε πότε είναι η καλύτερη στιγμή εξόδου, βάσει ηλικίας και του συνολικού εταιρικού σωρευτικού λογαριασμού σας.", "Forecast your retirement runway and understand the exact vesting age and withdrawal penalties instantly.")}</p>
                                 </div>
                             </li>
@@ -64,14 +64,14 @@ export default function GroupPensionProductPage() {
                     </div>
 
                     {/* Mock UI */}
-                    <div className="bg-white p-8 rounded-[12px] border border-[#E5E5E5] shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
+                    <div className="bg-white p-8 rounded-[12px] border border-[#E2E8F0] shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
                             <div>
-                                <h3 className="text-[14px] font-bold text-[#1A1A1A] uppercase tracking-wider">Growth Fund Acct</h3>
+                                <h3 className="text-[14px] font-bold text-[#0F172A] uppercase tracking-wider">Growth Fund Acct</h3>
                                 <p className="text-[13px] text-[#166534] font-medium mt-1">Matched 50%</p>
                             </div>
                             <div className="text-right">
-                                <div className="text-[20px] font-medium text-[#1A1A1A]">€64,210</div>
+                                <div className="text-[20px] font-medium text-[#0F172A]">€64,210</div>
                                 <p className="text-[13px] text-gray-500">Total Vested</p>
                             </div>
                         </div>
@@ -92,7 +92,7 @@ export default function GroupPensionProductPage() {
             <ProductCategoryExplorer currentCategoryId="group-pension" />
 
             {/* CTA */}
-            <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">
+            <section className="bg-[#1A2420] text-white py-24 text-center px-6">
                 <h2 className="text-[32px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
                     {t("Δείτε τι χτίζει το ομαδικό σας πρόγραμμα.", "See what your group plan is building.")}
                 </h2>

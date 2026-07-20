@@ -18,7 +18,7 @@ export default function PropertyProductPage() {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-[900px] text-center">
-                    <span className="inline-flex bg-[#DCEBDA] text-[#1A1A1A] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] text-[#166534] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
                         {t("Λύσεις Ακινήτων", "Property Solutions")}
                     </span>
                     <h1 className="text-[44px] lg:text-[56px] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
@@ -39,10 +39,10 @@ export default function PropertyProductPage() {
             <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
                 <div className="mx-auto max-w-[1240px] grid md:grid-cols-2 gap-16 items-center">
                     {/* Mock UI — left on desktop */}
-                    <div className="order-last md:order-first bg-white p-8 rounded-[12px] border border-[#E5E5E5] shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
+                    <div className="order-last md:order-first bg-white p-8 rounded-[12px] border border-[#E2E8F0] shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
                             <div>
-                                <h3 className="text-[14px] font-bold text-[#1A1A1A] uppercase tracking-wider">Primary Residence</h3>
+                                <h3 className="text-[14px] font-bold text-[#0F172A] uppercase tracking-wider">Primary Residence</h3>
                                 <p className="text-[13px] text-gray-500">120 sq.m — Athens</p>
                             </div>
                         </div>
@@ -67,7 +67,7 @@ export default function PropertyProductPage() {
                     </div>
 
                     <div>
-                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#1A1A1A]">
+                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A]">
                             {t("Είναι το σπίτι σας πραγματικά ασφαλισμένο;", "Is your home actually covered?")}
                         </h2>
                         <p className="text-[#475569] text-[18px] leading-relaxed mb-8">
@@ -77,21 +77,21 @@ export default function PropertyProductPage() {
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
                                 <div>
-                                    <h4 className="text-[18px] font-semibold text-[#1A1A1A]">{t("Κλείδωμα Κόστους Ανακατασκευής", "Rebuild Cost Guard")}</h4>
+                                    <h4 className="text-[18px] font-semibold text-[#0F172A]">{t("Κλείδωμα Κόστους Ανακατασκευής", "Rebuild Cost Guard")}</h4>
                                     <p className="text-[#475569]">{t("Σύγκριση της αξίας σας απέναντι στον πραγματικό πληθωρισμό υλικών πριν η ασφαλιστική πληρώσει λιγότερα.", "Pinpoint gaps where inflation outpaced your total rebuild coverage before catastrophe strikes.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
                                 <div>
-                                    <h4 className="text-[18px] font-semibold text-[#1A1A1A]">{t("Συμμόρφωση ΕΝΦΙΑ (Ελλάδα)", "ENFIA Tax Deduction (GR)")}</h4>
+                                    <h4 className="text-[18px] font-semibold text-[#0F172A]">{t("Συμμόρφωση ΕΝΦΙΑ (Ελλάδα)", "ENFIA Tax Deduction (GR)")}</h4>
                                     <p className="text-[#475569]">{t("Οπτικός έλεγχος αν έχετε την απαραίτητη τριάδα Σεισμού-Πυρκαγιάς-Πλημμύρας για την έκπτωση ΕΝΦΙΑ έως 20%.", "Visual checks parsing for the required trio of Earthquake, Fire, and Flood for the ENFIA tax discount of up to 20%.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
                                 <div>
-                                    <h4 className="text-[18px] font-semibold text-[#1A1A1A]">{t("Μένετε με ενοίκιο;", "Renting your home?")}</h4>
+                                    <h4 className="text-[18px] font-semibold text-[#0F172A]">{t("Μένετε με ενοίκιο;", "Renting your home?")}</h4>
                                     <p className="text-[#475569]">{t("Η ασφάλεια κατοικίας δεν αφορά μόνο ιδιοκτήτες: το περιεχόμενο και η ευθύνη ενοικιαστή αναλύονται με τον ίδιο τρόπο, ώστε να ξέρετε τι σας προστατεύει μέσα στο σπίτι που νοικιάζετε.", "Home insurance isn't only for owners: contents and tenant liability are analyzed the same way, so you know what protects you inside the home you rent.")}</p>
                                 </div>
                             </li>
@@ -103,7 +103,7 @@ export default function PropertyProductPage() {
             <ProductCategoryExplorer currentCategoryId="property" />
 
             {/* CTA */}
-            <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">
+            <section className="bg-[#1A2420] text-white py-24 text-center px-6">
                 <h2 className="text-[32px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
                     {t("Ασφαλίστε την περιουσία σας σωστά.", "Protect your equity correctly.")}
                 </h2>

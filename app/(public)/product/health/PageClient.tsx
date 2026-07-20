@@ -18,7 +18,7 @@ export default function HealthProductPage() {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-[900px] text-center">
-                    <span className="inline-flex bg-[#EBE5D9] text-[#1A1A1A] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] text-[#166534] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
                         {t("Λύσεις Ζωής & Υγείας", "Life & Health Solutions")}
                     </span>
                     <h1 className="text-[44px] lg:text-[56px] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
@@ -39,7 +39,7 @@ export default function HealthProductPage() {
             <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
                 <div className="mx-auto max-w-[1240px] grid md:grid-cols-2 gap-16 items-center">
                     <div>
-                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#1A1A1A]">
+                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A]">
                             {t("Τι καλύπτει το συμβόλαιο υγείας σας;", "What does your health policy cover?")}
                         </h2>
                         <p className="text-[#475569] text-[18px] leading-relaxed mb-8">
@@ -49,14 +49,14 @@ export default function HealthProductPage() {
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
                                 <div>
-                                    <h4 className="text-[18px] font-semibold text-[#1A1A1A]">{t("Κέντρα Συντονισμού", "Coordination Centers")}</h4>
+                                    <h4 className="text-[18px] font-semibold text-[#0F172A]">{t("Κέντρα Συντονισμού", "Coordination Centers")}</h4>
                                     <p className="text-[#475569]">{t("Άμεση πρόσβαση στο δίκτυο απευθείας χρέωσης (Direct Billing) για το νοσοκομείο σας. Τέλος τα τηλέφωνα έκτακτης ανάγκης.", "Instant access links to your specific hospital direct-billing networks so your admission triggers no out-of-pocket holds.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
                                 <div>
-                                    <h4 className="text-[18px] font-semibold text-[#1A1A1A]">{t("Μέγιστο Ποσό Ιδίας Συμμετοχής", "Out-of-Pocket Trackers")}</h4>
+                                    <h4 className="text-[18px] font-semibold text-[#0F172A]">{t("Μέγιστο Ποσό Ιδίας Συμμετοχής", "Out-of-Pocket Trackers")}</h4>
                                     <p className="text-[#475569]">{t("Οπτικοποιήστε το Max Out-of-Pocket του πακέτου σας για να ελέγχετε με ακρίβεια τον προϋπολογισμό των δαπανών υγείας σας.", "Visualize your Max Out-of-Pocket boundaries cleanly so you know exactly when 100% network coverage initiates.")}</p>
                                 </div>
                             </li>
@@ -64,14 +64,14 @@ export default function HealthProductPage() {
                     </div>
 
                     {/* Mock UI */}
-                    <div className="bg-white p-8 rounded-[12px] border border-[#E5E5E5] shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
+                    <div className="bg-white p-8 rounded-[12px] border border-[#E2E8F0] shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
                             <div>
-                                <h3 className="text-[14px] font-bold text-[#1A1A1A] uppercase tracking-wider">Premium Health</h3>
+                                <h3 className="text-[14px] font-bold text-[#0F172A] uppercase tracking-wider">Premium Health</h3>
                                 <p className="text-[13px] text-[#166534] font-medium mt-1">Active</p>
                             </div>
                             <div className="text-right">
-                                <div className="text-[20px] font-medium text-[#1A1A1A]">€1M</div>
+                                <div className="text-[20px] font-medium text-[#0F172A]">€1M</div>
                                 <p className="text-[13px] text-gray-500">Annual Limit</p>
                             </div>
                         </div>
@@ -91,7 +91,7 @@ export default function HealthProductPage() {
             <ProductCategoryExplorer currentCategoryId="health" />
 
             {/* CTA */}
-            <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">
+            <section className="bg-[#1A2420] text-white py-24 text-center px-6">
                 <h2 className="text-[32px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
                     {t("Μάθετε τι πληρώνει το συμβόλαιο υγείας σας.", "Know what your health policy pays.")}
                 </h2>
