@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { FormEvent, useMemo, useState } from "react"
 import { ArrowRight, Facebook, Instagram, Linkedin, Mail, ShieldCheck, Twitter, type LucideIcon } from "lucide-react"
+import { LEGAL_ENTITY } from "@/lib/legal/entity-placeholders"
 import { productCategories } from "@/lib/product/catalog"
 import { localizeHref } from "@/lib/seo/locale-links"
 import { getSocialProfiles, siteConfig } from "@/lib/seo/site"
@@ -59,6 +60,11 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
         { href: l("/cookies"), label: t("Πολιτική Cookies", "Cookie Policy") },
         { href: l("/subprocessors"), label: t("Υπο-εκτελούντες Επεξεργασίας", "Subprocessors") },
     ]
+
+    // Legal-identity block (Greek corporate sites must display ΓΕΜΗ — ν. 3419/2005).
+    // Shares one source of truth with the terms/privacy documents so the footer
+    // and the legal pages can never drift apart on the corporate details.
+    const entity = LEGAL_ENTITY[locale]
 
     // Real profiles only (from NEXT_PUBLIC_SOCIAL_*) — no placeholder links.
     const socialProfiles = getSocialProfiles()
@@ -285,6 +291,21 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
             </div>
 
             <div className="border-t border-[#E2E8F0] px-6 py-5 lg:px-12">
+                <div className="mx-auto max-w-[1400px] pb-4 text-[13px] leading-relaxed text-[#64748B]">
+                    <p>
+                        {t(
+                            "Η πλατφόρμα PolicyWallet λειτουργεί από την εταιρεία",
+                            "The PolicyWallet platform is operated by"
+                        )}{" "}
+                        <span className="font-semibold">{entity.company}</span>
+                        {" · "}
+                        {t("ΓΕΜΗ", "GEMI No.")} {entity.gemi}
+                        {" · "}
+                        {entity.vat}
+                        {" · "}
+                        {t("Έδρα:", "Registered seat:")} {entity.address}
+                    </p>
+                </div>
                 <div className="mx-auto flex max-w-[1400px] flex-col gap-3 text-[13px] text-[#64748B] sm:flex-row sm:items-center sm:justify-between">
                     <p>
                         (c) {new Date().getFullYear()} PolicyWallet.{" "}

@@ -1,4 +1,5 @@
 import { fixMojibakeObject } from "@/lib/i18n/fix-mojibake"
+import { LEGAL_ENTITY } from "@/lib/legal/entity-placeholders"
 
 export type LegalLanguage = "el" | "en"
 export type LegalDocumentKind = "terms" | "privacy" | "cookies" | "subprocessors"
@@ -47,17 +48,24 @@ export const LEGAL_CONTENT_VERSION = "GR-GA-2026.03"
 export const LEGAL_LAST_UPDATED = "March 2, 2026"
 
 /**
- * Per-document header-meta overrides. Terms and Privacy deliberately keep the
- * shared GA constants above (their rendered header must not shift); the cookie
- * policy and subprocessors list ship on their own 2026.07 revision and carry an
- * ISO date that the renderer formats per locale.
+ * Per-document header-meta overrides: each legal document carries its own
+ * revision + ISO date, which the renderer formats per locale. The shared
+ * LEGAL_CONTENT_VERSION above is deliberately NOT bumped when a document's
+ * text changes — it is what every terms/privacy consent row is stamped with
+ * (lib/compliance/consent.ts), so moving it would rewrite the meaning of
+ * already-recorded consents.
  */
 export const LEGAL_DOC_META: Partial<
     Record<LegalDocumentKind, { version: string; lastUpdatedIso: string }>
 > = {
+    terms: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-20" },
+    privacy: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-20" },
     cookies: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-19" },
     subprocessors: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-19" },
 }
+
+const EL = LEGAL_ENTITY.el
+const EN = LEGAL_ENTITY.en
 
 const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
     el: {
@@ -74,72 +82,119 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
         terms: {
             title: "Όροι Χρήσης",
             intro: [
-                "Καλωσορίσατε στο PolicyWallet. Με τη χρήση της πλατφόρμας αποδέχεστε τους παρόντες όρους.",
-                "Οι όροι ισχύουν για policyholder, agent και admin επιφάνειες της υπηρεσίας.",
+                "Οι παρόντες Όροι Χρήσης διέπουν τη χρήση της πλατφόρμας PolicyWallet από ιδιώτες ασφαλισμένους, ασφαλιστικούς διαμεσολαβητές και επισκέπτες. Διαβάστε τους προσεκτικά πριν δημιουργήσετε λογαριασμό — η δημιουργία λογαριασμού ή η χρήση οποιασδήποτε λειτουργίας σημαίνει ότι τους αποδέχεστε.",
+                "Αν δεν συμφωνείτε με τους όρους, μη χρησιμοποιείτε την υπηρεσία.",
             ],
             sections: [
                 {
-                    id: "acceptance",
-                    title: "1. Αποδοχή Όρων",
+                    id: "provider",
+                    title: "1. Πάροχος της υπηρεσίας",
                     paragraphs: [
-                        "Η δημιουργία λογαριασμού ή η χρήση οποιασδήποτε λειτουργίας σημαίνει αποδοχή των όρων.",
-                        "Αν δεν συμφωνείτε με τους όρους, δεν πρέπει να χρησιμοποιείτε την υπηρεσία.",
+                        `Την πλατφόρμα PolicyWallet (policywallet.gr) λειτουργεί η εταιρεία ${EL.company}, με αριθμό ΓΕΜΗ ${EL.gemi}, ${EL.vat}, και έδρα ${EL.address}.`,
+                        "Για κάθε θέμα σχετικό με τους παρόντες όρους μπορείτε να επικοινωνείτε στο info@policywallet.gr.",
                     ],
                 },
                 {
                     id: "service_scope",
-                    title: "2. Πεδίο Υπηρεσίας",
+                    title: "2. Τι είναι — και τι δεν είναι — το PolicyWallet",
                     paragraphs: [
-                        "Το PolicyWallet παρέχει ψηφιακή οργάνωση συμβολαίων, εργαλεία ανάλυσης και συνεργατικές ροές.",
-                        "Το PolicyWallet δεν είναι ασφαλιστική εταιρεία και δεν εκδίδει ασφαλιστικά προϊόντα.",
+                        "Το PolicyWallet είναι εργαλείο οργάνωσης και πληροφόρησης: αποθηκεύετε τα ασφαλιστήριά σας σε ένα μέρος, τα αναλύετε με τεχνητή νοημοσύνη, βλέπετε καλύψεις, πιθανά κενά κάλυψης και υπενθυμίσεις ανανέωσης, και — εφόσον το επιλέξετε — μοιράζεστε στοιχεία με τον ασφαλιστικό σας διαμεσολαβητή.",
+                        "Το PolicyWallet ΔΕΝ είναι ασφαλιστική επιχείρηση και ΔΕΝ ασκεί διανομή ασφαλιστικών προϊόντων: δεν παρέχει ασφαλιστικές συμβουλές, δεν προτείνει ούτε προωθεί συγκεκριμένα ασφαλιστικά προϊόντα και δεν διαμεσολαβεί στη σύναψη ή τη διαχείριση ασφαλιστικών συμβάσεων κατά την έννοια της Οδηγίας (ΕΕ) 2016/97 (IDD) και του ν. 4583/2018.",
+                        "Οι πληροφορίες που εμφανίζει η πλατφόρμα δεν υποκαθιστούν το ασφαλιστήριό σας ούτε τη συμβουλή αδειοδοτημένου διαμεσολαβητή ή της ασφαλιστικής σας εταιρείας.",
                     ],
                 },
                 {
-                    id: "account_security",
-                    title: "3. Λογαριασμός και Ασφάλεια",
+                    id: "accounts",
+                    title: "3. Λογαριασμοί και ρόλοι",
                     paragraphs: [
-                        "Είστε υπεύθυνοι για την προστασία των διαπιστευτηρίων πρόσβασης.",
-                        "Οφείλετε να ενημερώνετε άμεσα για μη εξουσιοδοτημένη χρήση ή παραβίαση λογαριασμού.",
+                        "Η υπηρεσία απευθύνεται σε ενήλικες. Κατά την εγγραφή οφείλετε να δίνετε ακριβή στοιχεία και να τα διατηρείτε ενημερωμένα.",
+                        "Είστε υπεύθυνοι για την προστασία των διαπιστευτηρίων σας και οφείλετε να μας ενημερώνετε άμεσα για κάθε μη εξουσιοδοτημένη χρήση του λογαριασμού σας.",
+                        "Η πλατφόρμα υποστηρίζει διακριτούς ρόλους (ασφαλισμένος, διαμεσολαβητής, διαχειριστής). Οι διαμεσολαβητές αποκτούν πρόσβαση σε στοιχεία πελατών αποκλειστικά μέσω ρητής συγκατάθεσης του πελάτη μέσα στην πλατφόρμα, την οποία ο πελάτης μπορεί να ανακαλέσει οποτεδήποτε.",
                     ],
                 },
                 {
-                    id: "user_obligations",
-                    title: "4. Υποχρεώσεις Χρήστη",
+                    id: "subscriptions",
+                    title: "4. Συνδρομές, χρεώσεις, ανανέωση και ακύρωση",
                     paragraphs: [
-                        "Τα δεδομένα που ανεβάζετε πρέπει να είναι ακριβή και να σας ανήκουν ή να έχετε δικαίωμα χρήσης.",
-                        "Απαγορεύεται χρήση της πλατφόρμας για παράνομη δραστηριότητα ή κακόβουλη αυτοματοποίηση.",
+                        "Η βασική χρήση είναι δωρεάν για ένα συμβόλαιο. Τα επί πληρωμή πλάνα για ιδιώτες (Starter 2,99 €/μήνα, PolicyWallet Plus 7,99 €/μήνα) και τα πλάνα διαμεσολαβητών χρεώνονται μέσω του παρόχου πληρωμών Stripe, στην τιμή που εμφανίζεται πριν από την ολοκλήρωση της αγοράς, συμπεριλαμβανομένου ΦΠΑ όπου εφαρμόζεται.",
+                        "Οι συνδρομές ανανεώνονται αυτόματα στο τέλος κάθε περιόδου χρέωσης (μηνιαίας ή ετήσιας) μέχρι να τις ακυρώσετε.",
+                        "Μπορείτε να ακυρώσετε οποτεδήποτε από τις ρυθμίσεις του λογαριασμού σας. Η ακύρωση ισχύει από το τέλος της τρέχουσας περιόδου χρέωσης — μέχρι τότε διατηρείτε πλήρη πρόσβαση στο πλάνο σας. Δεν χρεώνεστε για επόμενες περιόδους μετά την ακύρωση.",
+                        "Αν αλλάξουν οι τιμές των πλάνων, θα ενημερωθείτε εκ των προτέρων και η νέα τιμή θα ισχύσει από την επόμενη περίοδο χρέωσης.",
                     ],
                 },
                 {
-                    id: "fees_billing",
-                    title: "5. Χρεώσεις και Συνδρομές",
+                    id: "withdrawal",
+                    title: "5. Δικαίωμα υπαναχώρησης (καταναλωτές)",
                     paragraphs: [
-                        "Οι χρεώσεις και τα διαθέσιμα πλάνα εμφανίζονται πριν την ολοκλήρωση αγοράς.",
-                        "Η τιμολόγηση εφαρμόζεται σύμφωνα με το ενεργό πλάνο και τους ισχύοντες φόρους.",
+                        "Αν είστε καταναλωτής, έχετε δικαίωμα να υπαναχωρήσετε από τη συνδρομή σας εντός 14 ημερολογιακών ημερών από την έναρξή της, χωρίς αιτιολογία, σύμφωνα με τον ν. 2251/1994 και την Οδηγία 2011/83/ΕΕ.",
+                        "Ξεκινώντας συνδρομή, ζητάτε την άμεση παροχή της ψηφιακής υπηρεσίας εντός της περιόδου υπαναχώρησης και συναινείτε στην άμεση εκτέλεση της σύμβασης. Αν υπαναχωρήσετε εντός των 14 ημερών, θα σας επιστραφεί το τίμημα μειωμένο αναλογικά κατά το μέρος της υπηρεσίας που είχε ήδη παρασχεθεί μέχρι τη δήλωση υπαναχώρησης.",
+                        "Για να ασκήσετε το δικαίωμα, στείλτε σχετική δήλωση στο info@policywallet.gr πριν από τη λήξη της προθεσμίας των 14 ημερών.",
+                    ],
+                },
+                {
+                    id: "acceptable_use",
+                    title: "6. Αποδεκτή χρήση",
+                    paragraphs: [
+                        "Ανεβάζετε μόνο έγγραφα που σας ανήκουν ή που έχετε νόμιμο δικαίωμα να διαχειρίζεστε — για τους διαμεσολαβητές, μόνο έγγραφα πελατών που έχουν συναινέσει μέσω της πλατφόρμας.",
+                        "Απαγορεύεται: η χρήση της υπηρεσίας για παράνομο σκοπό· το ανέβασμα κακόβουλων αρχείων· η μαζική εξαγωγή δεδομένων (scraping) και η κακόβουλη αυτοματοποίηση· οι απόπειρες παράκαμψης των μηχανισμών ασφάλειας ή των ορίων χρήσης· και η καταχώριση προσωπικών δεδομένων τρίτων χωρίς νόμιμη βάση.",
+                        "Σε περίπτωση παραβίασης μπορούμε να αναστείλουμε ή να τερματίσουμε την πρόσβασή σας, με προηγούμενη ειδοποίηση όπου αυτό είναι εφικτό.",
                     ],
                 },
                 {
                     id: "ai_disclaimer",
-                    title: "6. AI Ανάλυση και Αποποίηση",
+                    title: "7. Αναλύσεις τεχνητής νοημοσύνης — αποποίηση",
                     paragraphs: [
-                        "Οι αναλύσεις AI παρέχουν υποστηρικτική πληροφόρηση και δεν αποτελούν νομική ή ασφαλιστική συμβουλή.",
-                        "Συνιστάται επιβεβαίωση κρίσιμων αποφάσεων με εξουσιοδοτημένο επαγγελματία.",
+                        "Οι αναλύσεις συμβολαίων, ο εντοπισμός κενών κάλυψης, οι βαθμολογίες προστασίας και οι σχετικές επισημάνσεις παράγονται από μοντέλα τεχνητής νοημοσύνης. Είναι αποκλειστικά πληροφοριακές, ενδέχεται να περιέχουν ανακρίβειες ή παραλείψεις και δεν αποτελούν ασφαλιστική, νομική ή χρηματοοικονομική συμβουλή.",
+                        "Πριν από κάθε απόφαση με ασφαλιστικές ή οικονομικές συνέπειες — όπως αλλαγή, ακύρωση ή αγορά κάλυψης — επιβεβαιώστε τα στοιχεία με το πρωτότυπο ασφαλιστήριο, την ασφαλιστική σας εταιρεία ή αδειοδοτημένο διαμεσολαβητή. Την ίδια υπενθύμιση εμφανίζουμε και μέσα στην εφαρμογή: η τεχνητή νοημοσύνη μπορεί να κάνει λάθη.",
+                    ],
+                },
+                {
+                    id: "content_ip",
+                    title: "8. Περιεχόμενο και πνευματική ιδιοκτησία",
+                    paragraphs: [
+                        "Τα έγγραφα που ανεβάζετε παραμένουν δικά σας. Μας παραχωρείτε μόνο την άδεια που είναι απαραίτητη για την αποθήκευση, την επεξεργασία και την ανάλυσή τους με σκοπό την παροχή της υπηρεσίας.",
+                        "Η πλατφόρμα, το λογισμικό, τα σήματα και το περιεχόμενο του PolicyWallet προστατεύονται από δικαιώματα πνευματικής και βιομηχανικής ιδιοκτησίας και δεν επιτρέπεται η αναπαραγωγή τους χωρίς άδεια.",
+                    ],
+                },
+                {
+                    id: "availability",
+                    title: "9. Διαθεσιμότητα και μεταβολές της υπηρεσίας",
+                    paragraphs: [
+                        "Καταβάλλουμε εύλογες προσπάθειες για συνεχή διαθεσιμότητα, χωρίς να εγγυόμαστε αδιάλειπτη λειτουργία — προγραμματισμένες συντηρήσεις ή τεχνικά περιστατικά ενδέχεται να προκαλέσουν προσωρινές διακοπές.",
+                        "Η υπηρεσία εξελίσσεται: λειτουργίες μπορεί να προστίθενται, να τροποποιούνται ή να αποσύρονται. Για ουσιώδεις αλλαγές που επηρεάζουν πληρωμένα πλάνα θα ενημερώνεστε εκ των προτέρων.",
                     ],
                 },
                 {
                     id: "liability",
-                    title: "7. Περιορισμός Ευθύνης",
+                    title: "10. Περιορισμός ευθύνης",
                     paragraphs: [
-                        "Η υπηρεσία παρέχεται \"ως έχει\" στο μέτρο που επιτρέπει η ισχύουσα νομοθεσία.",
-                        "Το PolicyWallet δεν ευθύνεται για έμμεσες ή παρεπόμενες ζημίες από χρήση της πλατφόρμας.",
+                        "Η υπηρεσία παρέχεται «ως έχει» και «ως διατίθεται», στον βαθμό που το επιτρέπει η ισχύουσα νομοθεσία.",
+                        "Δεν ευθυνόμαστε για αποφάσεις που λαμβάνετε με βάση τα πληροφοριακά αποτελέσματα της πλατφόρμας (βλ. ενότητα 7), ούτε για έμμεσες ή παρεπόμενες ζημίες από τη χρήση της, στον βαθμό που ο περιορισμός αυτός επιτρέπεται από τον νόμο.",
+                        `Η συνολική ευθύνη του παρόχου από ή σε σχέση με τους παρόντες όρους περιορίζεται σε ${EL.liabilityCap}.`,
+                        "Κανένας όρος δεν αποκλείει ούτε περιορίζει την ευθύνη μας για απάτη, δόλο, βαριά αμέλεια, θάνατο ή σωματική βλάβη, καθώς και για κάθε ευθύνη ή δικαίωμα καταναλωτή που, κατά το ελληνικό ή το ενωσιακό δίκαιο, δεν επιδέχεται συμβατικό αποκλεισμό ή περιορισμό.",
                     ],
                 },
                 {
-                    id: "governing_law",
-                    title: "8. Εφαρμοστέο Δίκαιο και Επικοινωνία",
+                    id: "termination",
+                    title: "11. Καταγγελία και διαγραφή λογαριασμού",
                     paragraphs: [
-                        "Οι όροι διέπονται από το Ελληνικό δίκαιο και το εφαρμοστέο δίκαιο της ΕΕ.",
-                        "Για νομικά ή κανονιστικά θέματα μπορείτε να επικοινωνείτε στο support@policywallet.gr.",
+                        "Μπορείτε να διαγράψετε τον λογαριασμό σας οποτεδήποτε μέσα από την εφαρμογή. Τυχόν ενεργή συνδρομή παραμένει σε ισχύ μέχρι το τέλος της τρέχουσας περιόδου χρέωσης, σύμφωνα με την ενότητα 4.",
+                        "Μπορούμε να αναστείλουμε ή να τερματίσουμε την πρόσβαση σε περίπτωση σοβαρής ή επανειλημμένης παραβίασης των όρων. Μετά τον τερματισμό, τα δεδομένα σας αντιμετωπίζονται σύμφωνα με την Πολιτική Απορρήτου.",
+                    ],
+                },
+                {
+                    id: "law_venue",
+                    title: "12. Εφαρμοστέο δίκαιο, δωσιδικία και εξωδικαστική επίλυση",
+                    paragraphs: [
+                        `Οι παρόντες όροι διέπονται από το ελληνικό δίκαιο και το εφαρμοστέο δίκαιο της ΕΕ. Για κάθε διαφορά αρμόδια ορίζονται τα Δικαστήρια ${EL.venue}, με την επιφύλαξη των αναγκαστικού δικαίου διατάξεων περί δωσιδικίας των καταναλωτών.`,
+                        "Αν είστε καταναλωτής, μπορείτε επίσης να απευθυνθείτε στον Συνήγορο του Καταναλωτή (www.synigoroskatanaloti.gr) για εξωδικαστική επίλυση διαφορών.",
+                    ],
+                },
+                {
+                    id: "contact",
+                    title: "13. Επικοινωνία",
+                    paragraphs: [
+                        `Για κάθε ερώτημα σχετικά με τους όρους: info@policywallet.gr ή ταχυδρομικά στη διεύθυνση ${EL.address}.`,
                     ],
                 },
             ],
@@ -147,72 +202,165 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
         privacy: {
             title: "Πολιτική Απορρήτου",
             intro: [
-                "Το PolicyWallet επεξεργάζεται προσωπικά δεδομένα με βάση τον GDPR και την ελληνική νομοθεσία.",
-                "Η παρούσα πολιτική περιγράφει τι συλλέγουμε, γιατί το συλλέγουμε και ποια δικαιώματα έχετε.",
+                "Η παρούσα Πολιτική Απορρήτου εξηγεί πώς το PolicyWallet επεξεργάζεται τα προσωπικά σας δεδομένα — είτε χρησιμοποιείτε την πλατφόρμα ως ιδιώτης ασφαλισμένος, είτε ως ασφαλιστικός διαμεσολαβητής, είτε απλώς επισκέπτεστε τον ιστότοπό μας.",
+                "Έχει συνταχθεί σύμφωνα με τον Γενικό Κανονισμό Προστασίας Δεδομένων (ΕΕ) 2016/679 (GDPR) και τον ν. 4624/2019. Όταν αλλάζει ο τρόπος επεξεργασίας, ενημερώνουμε το κείμενο και την ημερομηνία στην κορυφή της σελίδας.",
             ],
             sections: [
                 {
                     id: "controller",
-                    title: "1. Υπεύθυνος Επεξεργασίας",
+                    title: "1. Υπεύθυνος επεξεργασίας",
                     paragraphs: [
-                        "Υπεύθυνος επεξεργασίας είναι το PolicyWallet για τις λειτουργίες της πλατφόρμας.",
-                        "Για ζητήματα απορρήτου μπορείτε να επικοινωνείτε στο support@policywallet.gr.",
+                        `Υπεύθυνος επεξεργασίας των δεδομένων σας είναι η εταιρεία ${EL.company}, με αριθμό ΓΕΜΗ ${EL.gemi} και έδρα ${EL.address}, η οποία λειτουργεί την πλατφόρμα PolicyWallet (policywallet.gr).`,
+                        `Για κάθε θέμα προστασίας δεδομένων μπορείτε να επικοινωνείτε με τον υπεύθυνο απορρήτου στο ${EL.dpoEmail} ή στο info@policywallet.gr.`,
                     ],
                 },
                 {
                     id: "data_categories",
-                    title: "2. Κατηγορίες Δεδομένων",
+                    title: "2. Ποια δεδομένα επεξεργαζόμαστε",
                     paragraphs: [
-                        "Συλλέγουμε δεδομένα λογαριασμού, στοιχεία συμβολαίων, μεταδεδομένα εγγράφων και τεχνικά logs.",
-                        "Οι κατηγορίες δεδομένων διαφέρουν ανά ρόλο χρήστη και λειτουργία υπηρεσίας.",
+                        "Δεδομένα λογαριασμού: όνομα, διεύθυνση email, τηλέφωνο (προαιρετικά), ρόλος (ασφαλισμένος ή διαμεσολαβητής), γλώσσα και ρυθμίσεις.",
+                        "Ασφαλιστήρια έγγραφα: τα PDF που ανεβάζετε και τα στοιχεία που εξάγονται από αυτά — ασφαλιστική εταιρεία, καλύψεις, ασφάλιστρα, ημερομηνίες, στοιχεία οχήματος ή ακινήτου. Τα συμβόλαια υγείας ενδέχεται να περιέχουν δεδομένα υγείας, δηλαδή ειδική κατηγορία δεδομένων κατά το άρθρο 9 GDPR, τα οποία επεξεργαζόμαστε μόνο με τη ρητή συγκατάθεσή σας.",
+                        "Δεδομένα πληρωμών: το πλάνο συνδρομής σας και το ιστορικό χρεώσεων. Τα στοιχεία της κάρτας σας τα διαχειρίζεται αποκλειστικά η Stripe — δεν φτάνουν ποτέ στα συστήματα του PolicyWallet.",
+                        "Δεδομένα χρήσης: τεχνικά αρχεία καταγραφής (διεύθυνση IP, τύπος συσκευής, ενέργειες στην πλατφόρμα) που είναι απαραίτητα για την ασφάλεια και την αξιοπιστία της υπηρεσίας.",
+                        "Δεδομένα συνεργασίας με διαμεσολαβητή: αν συνδεθείτε με ασφαλιστικό διαμεσολαβητή, καταγράφουμε τη συγκατάθεσή σας, το εύρος πρόσβασης που παραχωρήσατε και το πλήρες ιστορικό χορήγησης και ανάκλησής της.",
                     ],
                 },
                 {
-                    id: "legal_bases",
-                    title: "3. Νομικές Βάσεις Επεξεργασίας",
+                    id: "purposes_bases",
+                    title: "3. Σκοποί και νομικές βάσεις επεξεργασίας",
                     paragraphs: [
-                        "Η επεξεργασία βασίζεται σε εκτέλεση σύμβασης, έννομο συμφέρον, νομική υποχρέωση ή συγκατάθεση.",
-                        "Όπου απαιτείται συγκατάθεση (π.χ. cookies), μπορείτε να την ανακαλέσετε ανά πάσα στιγμή.",
+                        "Κάθε επεξεργασία στηρίζεται σε συγκεκριμένη νομική βάση του GDPR:",
+                    ],
+                    table: {
+                        headers: ["Σκοπός", "Νομική βάση"],
+                        rows: [
+                            [
+                                "Παροχή της υπηρεσίας: λογαριασμός, αποθήκευση συμβολαίων, υπενθυμίσεις ανανέωσης",
+                                "Εκτέλεση σύμβασης — άρθρο 6(1)(β)",
+                            ],
+                            [
+                                "Ανάλυση ασφαλιστηρίων με τεχνητή νοημοσύνη",
+                                "Συγκατάθεση — άρθρο 6(1)(α)· για τυχόν δεδομένα υγείας, ρητή συγκατάθεση — άρθρο 9(2)(α)",
+                            ],
+                            [
+                                "Χρεώσεις και τιμολόγηση συνδρομών",
+                                "Εκτέλεση σύμβασης — άρθρο 6(1)(β)· τήρηση παραστατικών: νομική υποχρέωση — άρθρο 6(1)(γ)",
+                            ],
+                            [
+                                "Ασφάλεια, πρόληψη κατάχρησης, όρια ρυθμού αιτημάτων",
+                                "Έννομο συμφέρον — άρθρο 6(1)(στ)",
+                            ],
+                            [
+                                "Κοινοποίηση στοιχείων στον διαμεσολαβητή που επιλέγετε",
+                                "Συγκατάθεση — άρθρο 6(1)(α), ανακλητή οποτεδήποτε",
+                            ],
+                            [
+                                "Ενημερωτικά emails (newsletter)",
+                                "Συγκατάθεση, με δυνατότητα απεγγραφής σε κάθε μήνυμα",
+                            ],
+                            [
+                                "Τήρηση αρχείων συγκαταθέσεων και αιτημάτων GDPR",
+                                "Νομική υποχρέωση και λογοδοσία — άρθρα 6(1)(γ) και 5(2)",
+                            ],
+                        ],
+                    },
+                },
+                {
+                    id: "no_automated_decisions",
+                    title: "4. Τι δεν κάνουμε",
+                    paragraphs: [
+                        "Δεν πωλούμε προσωπικά δεδομένα σε τρίτους και δεν τα χρησιμοποιούμε για διαφημιστικό profiling.",
+                        "Δεν λαμβάνουμε αποφάσεις αποκλειστικά με αυτοματοποιημένα μέσα που παράγουν έννομα αποτελέσματα για εσάς, κατά την έννοια του άρθρου 22 GDPR — οι αναλύσεις της πλατφόρμας είναι πληροφοριακές.",
                     ],
                 },
                 {
-                    id: "processing_purposes",
-                    title: "4. Σκοποί Επεξεργασίας",
+                    id: "ai_processing",
+                    title: "5. Ανάλυση με τεχνητή νοημοσύνη",
                     paragraphs: [
-                        "Χρησιμοποιούμε δεδομένα για παροχή υπηρεσίας, ασφάλεια, ανάλυση συμβολαίων και υποστήριξη.",
-                        "Δεν πωλούμε προσωπικά δεδομένα σε τρίτους για ανεξάρτητη εμπορική χρήση.",
+                        "Η ανάλυση συμβολαίων εκτελείται μόνο εφόσον δώσετε ρητή συγκατάθεση μέσα στην εφαρμογή, με ξεχωριστή, καταγεγραμμένη ενέργεια. Μπορείτε να την ανακαλέσετε οποτεδήποτε· η ανάκληση σταματά μελλοντικές αναλύσεις και δεν επηρεάζει την αποθήκευση των εγγράφων σας.",
+                        "Για την ανάλυση, το περιεχόμενο του συμβολαίου διαβιβάζεται σε πάροχο μοντέλων τεχνητής νοημοσύνης που ενεργεί ως εκτελών την επεξεργασία για λογαριασμό μας: κατά κύριο λόγο στην Google (μοντέλα Gemini), με τις Anthropic και OpenAI διαθέσιμες ως εναλλακτικούς παρόχους. Οι όροι επεξεργασίας δεδομένων (API data processing terms) των παρόχων δεν επιτρέπουν τη χρήση των δεδομένων σας για εκπαίδευση των μοντέλων τους.",
+                        "Τα αποτελέσματα της ανάλυσης είναι πληροφοριακά, ενδέχεται να περιέχουν σφάλματα και δεν αποτελούν ασφαλιστική συμβουλή — δείτε αναλυτικά τους Όρους Χρήσης.",
                     ],
                 },
                 {
-                    id: "sharing_processors",
-                    title: "5. Διαβίβαση και Εκτελούντες Επεξεργασία",
+                    id: "recipients",
+                    title: "6. Αποδέκτες και εκτελούντες την επεξεργασία",
                     paragraphs: [
-                        "Χρησιμοποιούμε τεχνικούς παρόχους για υποδομή, πληρωμές και επικοινωνία με συμβατικές εγγυήσεις.",
-                        "Η διαβίβαση γίνεται μόνο στο αναγκαίο πλαίσιο και με κατάλληλα μέτρα προστασίας.",
+                        "Χρησιμοποιούμε περιορισμένο αριθμό τεχνικών παρόχων (υπο-εκτελούντων) για τη φιλοξενία, τη βάση δεδομένων, τις πληρωμές, την αποστολή email και την ανάλυση AI. Όλοι δεσμεύονται με συμβάσεις επεξεργασίας δεδομένων κατά το άρθρο 28 GDPR και επεξεργάζονται μόνο ό,τι απαιτείται για τον ρόλο τους.",
+                        "Ο πλήρης κατάλογος — με τον ρόλο, τα δεδομένα και την τοποθεσία επεξεργασίας κάθε παρόχου — δημοσιεύεται και ενημερώνεται στη σελίδα των υπο-εκτελούντων.",
+                        "Αν συνδεθείτε με ασφαλιστικό διαμεσολαβητή μέσω της πλατφόρμας, αυτός αποκτά πρόσβαση μόνο στα στοιχεία που καλύπτει η συγκατάθεσή σας. Μπορείτε να την ανακαλέσετε οποτεδήποτε από τον λογαριασμό σας — η ανάκληση καταγράφεται και ισχύει άμεσα.",
+                    ],
+                    link: { href: "/subprocessors", label: "Κατάλογος υπο-εκτελούντων επεξεργασίας" },
+                },
+                {
+                    id: "transfers",
+                    title: "7. Πού αποθηκεύονται τα δεδομένα — διαβιβάσεις εκτός ΕΟΧ",
+                    paragraphs: [
+                        "Η κύρια υποδομή μας βρίσκεται στην Ευρωπαϊκή Ένωση: η βάση δεδομένων, η αυθεντικοποίηση και τα αρχεία σας φιλοξενούνται σε υποδομή Supabase στην περιφέρεια eu-west-3 (Παρίσι, Γαλλία).",
+                        "Ορισμένοι πάροχοι — ιδίως οι πάροχοι AI, η Stripe και η Vercel — ενδέχεται να επεξεργάζονται δεδομένα εκτός Ευρωπαϊκού Οικονομικού Χώρου, κυρίως στις ΗΠΑ. Οι διαβιβάσεις αυτές καλύπτονται από απόφαση επάρκειας (EU-U.S. Data Privacy Framework) ή/και από τις Τυποποιημένες Συμβατικές Ρήτρες της Ευρωπαϊκής Επιτροπής.",
                     ],
                 },
                 {
                     id: "retention",
-                    title: "6. Χρόνος Τήρησης",
+                    title: "8. Για πόσο διατηρούμε τα δεδομένα",
                     paragraphs: [
-                        "Τηρούμε δεδομένα για όσο απαιτείται για την παροχή υπηρεσίας, νομικές υποχρεώσεις και ασφάλεια.",
-                        "Μετά τη λήξη περιόδων τήρησης εφαρμόζεται διαγραφή ή ανωνυμοποίηση όπου επιτρέπεται.",
+                        "Οι χρόνοι τήρησης ανά κατηγορία:",
                     ],
+                    table: {
+                        headers: ["Κατηγορία δεδομένων", "Χρόνος τήρησης"],
+                        rows: [
+                            [
+                                "Ασφαλιστήρια έγγραφα και αναλύσεις τους",
+                                "Μέχρι να τα διαγράψετε εσείς ή μέχρι τη διαγραφή του λογαριασμού σας",
+                            ],
+                            [
+                                "Δεδομένα λογαριασμού",
+                                "Για όσο διατηρείτε λογαριασμό· διαγράφονται με την ολοκλήρωση αιτήματος διαγραφής",
+                            ],
+                            [
+                                "Παραστατικά και στοιχεία χρεώσεων",
+                                "5 έτη μετά τη λήξη του οικείου φορολογικού έτους (φορολογική νομοθεσία)",
+                            ],
+                            [
+                                "Αρχεία συγκαταθέσεων και αιτημάτων GDPR",
+                                "5 έτη από την ανάκληση ή την ολοκλήρωση του αιτήματος, για λόγους λογοδοσίας",
+                            ],
+                            ["Τεχνικά αρχεία καταγραφής (logs)", "Έως 12 μήνες"],
+                            ["Εγγραφή στο newsletter", "Μέχρι την απεγγραφή σας"],
+                        ],
+                    },
                 },
                 {
                     id: "gdpr_rights",
-                    title: "7. Δικαιώματα Υποκειμένου",
+                    title: "9. Τα δικαιώματά σας και πώς τα ασκείτε",
                     paragraphs: [
-                        "Μπορείτε να ζητήσετε πρόσβαση, διόρθωση, φορητότητα, περιορισμό ή διαγραφή δεδομένων.",
-                        "Υποστηρίζονται ροές αιτημάτων export και deletion μέσω των διαθέσιμων GDPR endpoints.",
+                        "Έχετε δικαίωμα πρόσβασης, διόρθωσης, διαγραφής, περιορισμού της επεξεργασίας, φορητότητας και εναντίωσης, καθώς και δικαίωμα να ανακαλέσετε οποιαδήποτε συγκατάθεση — χωρίς η ανάκληση να επηρεάζει τη νομιμότητα της προηγούμενης επεξεργασίας.",
+                        "Μέσα από την εφαρμογή: μπορείτε να υποβάλετε αίτημα εξαγωγής των δεδομένων σας (πλήρες αντίγραφο σε μηχαναγνώσιμη μορφή) και αίτημα διαγραφής λογαριασμού. Κάθε αίτημα διεκπεραιώνεται μέσω εσωτερικής διαδικασίας GDPR με πλήρες ιστορικό ενεργειών.",
+                        `Με email: στο ${EL.dpoEmail} ή στο info@policywallet.gr. Απαντάμε το αργότερο εντός ενός μηνός, όπως προβλέπει το άρθρο 12 GDPR.`,
+                        "Αν θεωρείτε ότι η επεξεργασία παραβιάζει τη νομοθεσία, έχετε δικαίωμα να υποβάλετε καταγγελία στην Αρχή Προστασίας Δεδομένων Προσωπικού Χαρακτήρα (ΑΠΔΠΧ), Κηφισίας 1-3, 115 23 Αθήνα — www.dpa.gr.",
                     ],
                 },
                 {
-                    id: "security_transfers",
-                    title: "8. Ασφάλεια και Διαβιβάσεις",
+                    id: "security",
+                    title: "10. Ασφάλεια",
                     paragraphs: [
-                        "Εφαρμόζουμε τεχνικά και οργανωτικά μέτρα ασφάλειας για προστασία δεδομένων.",
-                        "Διασυνοριακές διαβιβάσεις, όπου υπάρχουν, καλύπτονται από κατάλληλες νομικές εγγυήσεις.",
+                        "Τα δεδομένα κρυπτογραφούνται κατά τη μεταφορά (TLS) και κατά την αποθήκευση. Η πρόσβαση στα συστήματα περιορίζεται βάσει ρόλου και καταγράφεται, ενώ εφαρμόζονται όρια ρυθμού αιτημάτων και λοιπά τεχνικά και οργανωτικά μέτρα.",
+                        "Κανένα σύστημα δεν είναι απολύτως ασφαλές. Αν συμβεί περιστατικό παραβίασης που ενδέχεται να σας θίξει, θα ενημερώσουμε εσάς και την ΑΠΔΠΧ σύμφωνα με τα άρθρα 33 και 34 GDPR.",
+                    ],
+                },
+                {
+                    id: "cookies_summary",
+                    title: "11. Cookies",
+                    paragraphs: [
+                        "Χρησιμοποιούμε cookies απολύτως απαραίτητα για τη λειτουργία της πλατφόρμας (σύνδεση, αποθήκευση των προτιμήσεων συγκατάθεσης). Cookies ανάλυσης ή marketing ενεργοποιούνται μόνο αν τα αποδεχθείτε από το σχετικό banner.",
+                    ],
+                    link: { href: "/cookies", label: "Δείτε αναλυτικά την Πολιτική Cookies" },
+                },
+                {
+                    id: "changes",
+                    title: "12. Αλλαγές στην παρούσα πολιτική",
+                    paragraphs: [
+                        "Όταν η πολιτική αλλάζει ουσιωδώς, ενημερώνουμε την ημερομηνία στην κορυφή και, για σημαντικές αλλαγές, σας ειδοποιούμε μέσα από την εφαρμογή ή με email πριν την έναρξη ισχύος.",
                     ],
                 },
             ],
@@ -396,72 +544,119 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
         terms: {
             title: "Terms of Service",
             intro: [
-                "Welcome to PolicyWallet. By using the platform you agree to these terms.",
-                "These terms apply to policyholder, agent, and admin surfaces of the service.",
+                "These Terms of Service govern the use of the PolicyWallet platform by individual policyholders, insurance intermediaries, and visitors. Please read them carefully before creating an account — creating an account or using any feature means you accept them.",
+                "If you do not agree with these terms, do not use the service.",
             ],
             sections: [
                 {
-                    id: "acceptance",
-                    title: "1. Acceptance of Terms",
+                    id: "provider",
+                    title: "1. Service provider",
                     paragraphs: [
-                        "Creating an account or using any feature means you accept these terms.",
-                        "If you do not agree, you must not use the service.",
+                        `The PolicyWallet platform (policywallet.gr) is operated by ${EN.company}, GEMI registration number ${EN.gemi}, ${EN.vat}, with registered seat at ${EN.address}.`,
+                        "For any matter relating to these terms you can contact us at info@policywallet.gr.",
                     ],
                 },
                 {
                     id: "service_scope",
-                    title: "2. Service Scope",
+                    title: "2. What PolicyWallet is — and what it is not",
                     paragraphs: [
-                        "PolicyWallet provides digital policy organization, analysis tooling, and collaboration workflows.",
-                        "PolicyWallet is not an insurance carrier and does not underwrite insurance products.",
+                        "PolicyWallet is an organization and information tool: you store your insurance policies in one place, analyze them with artificial intelligence, see coverages, potential coverage gaps and renewal reminders, and — if you choose to — share information with your insurance intermediary.",
+                        "PolicyWallet is NOT an insurance undertaking and does NOT carry out insurance distribution: it does not provide insurance advice, does not recommend or promote specific insurance products, and does not mediate in the conclusion or administration of insurance contracts within the meaning of Directive (EU) 2016/97 (IDD) and Greek Law 4583/2018.",
+                        "The information displayed by the platform does not replace your policy document or the advice of a licensed intermediary or your insurer.",
                     ],
                 },
                 {
-                    id: "account_security",
-                    title: "3. Account and Security",
+                    id: "accounts",
+                    title: "3. Accounts and roles",
                     paragraphs: [
-                        "You are responsible for safeguarding your account credentials.",
-                        "You must promptly report unauthorized use or account compromise.",
+                        "The service is intended for adults. When registering you must provide accurate information and keep it up to date.",
+                        "You are responsible for safeguarding your credentials and must promptly notify us of any unauthorized use of your account.",
+                        "The platform supports distinct roles (policyholder, intermediary, administrator). Intermediaries gain access to client information exclusively through the client's explicit in-platform consent, which the client may revoke at any time.",
                     ],
                 },
                 {
-                    id: "user_obligations",
-                    title: "4. User Obligations",
+                    id: "subscriptions",
+                    title: "4. Subscriptions, billing, renewal and cancellation",
                     paragraphs: [
-                        "Data you upload must be accurate and owned by you, or lawfully controlled by you.",
-                        "Using the platform for unlawful activity or abusive automation is prohibited.",
+                        "Basic use is free for one policy. Paid plans for individuals (Starter €2.99/month, PolicyWallet Plus €7.99/month) and intermediary plans are billed through the payment provider Stripe, at the price displayed before you complete the purchase, including VAT where applicable.",
+                        "Subscriptions renew automatically at the end of each billing period (monthly or annual) until you cancel.",
+                        "You can cancel at any time from your account settings. Cancellation takes effect at the end of the current billing period — until then you keep full access to your plan. You will not be charged for subsequent periods after cancelling.",
+                        "If plan prices change, you will be notified in advance and the new price will apply from your next billing period.",
                     ],
                 },
                 {
-                    id: "fees_billing",
-                    title: "5. Fees and Billing",
+                    id: "withdrawal",
+                    title: "5. Right of withdrawal (consumers)",
                     paragraphs: [
-                        "Applicable fees and plans are presented before purchase confirmation.",
-                        "Billing is applied according to your active plan and applicable taxes.",
+                        "If you are a consumer, you have the right to withdraw from your subscription within 14 calendar days of its start, without giving any reason, under Greek Law 2251/1994 and Directive 2011/83/EU.",
+                        "By starting a subscription, you request immediate performance of the digital service within the withdrawal period and consent to the immediate execution of the contract. If you withdraw within the 14 days, you will be refunded the price reduced proportionally by the part of the service already provided up to your withdrawal notice.",
+                        "To exercise this right, send a withdrawal statement to info@policywallet.gr before the 14-day period expires.",
+                    ],
+                },
+                {
+                    id: "acceptable_use",
+                    title: "6. Acceptable use",
+                    paragraphs: [
+                        "Upload only documents that belong to you or that you are lawfully entitled to manage — for intermediaries, only documents of clients who have consented through the platform.",
+                        "The following are prohibited: using the service for any unlawful purpose; uploading malicious files; scraping and abusive automation; attempting to circumvent security mechanisms or usage limits; and entering third parties' personal data without a lawful basis.",
+                        "In case of violation we may suspend or terminate your access, with prior notice where feasible.",
                     ],
                 },
                 {
                     id: "ai_disclaimer",
-                    title: "6. AI Analysis Disclaimer",
+                    title: "7. AI analysis — disclaimer",
                     paragraphs: [
-                        "AI outputs are informational support and are not legal or insurance advice.",
-                        "You should verify critical decisions with a licensed professional.",
+                        "Policy analyses, coverage-gap detection, protection scores and related highlights are produced by artificial-intelligence models. They are informational only, may contain inaccuracies or omissions, and do not constitute insurance, legal or financial advice.",
+                        "Before any decision with insurance or financial consequences — such as changing, cancelling or purchasing coverage — verify the details against your original policy document, your insurer, or a licensed intermediary. We show the same reminder inside the app: AI can make mistakes.",
+                    ],
+                },
+                {
+                    id: "content_ip",
+                    title: "8. Content and intellectual property",
+                    paragraphs: [
+                        "The documents you upload remain yours. You grant us only the license necessary to store, process and analyze them for the purpose of providing the service.",
+                        "The PolicyWallet platform, software, trademarks and content are protected by intellectual and industrial property rights and may not be reproduced without permission.",
+                    ],
+                },
+                {
+                    id: "availability",
+                    title: "9. Availability and changes to the service",
+                    paragraphs: [
+                        "We make reasonable efforts to keep the service continuously available, without guaranteeing uninterrupted operation — scheduled maintenance or technical incidents may cause temporary outages.",
+                        "The service evolves: features may be added, modified or withdrawn. You will be notified in advance of material changes affecting paid plans.",
                     ],
                 },
                 {
                     id: "liability",
-                    title: "7. Limitation of Liability",
+                    title: "10. Limitation of liability",
                     paragraphs: [
-                        "The service is provided \"as is\" to the maximum extent permitted by law.",
-                        "PolicyWallet is not liable for indirect or consequential damages arising from platform use.",
+                        "The service is provided \"as is\" and \"as available\", to the maximum extent permitted by applicable law.",
+                        "We are not liable for decisions you make based on the platform's informational outputs (see section 7), nor for indirect or consequential damages arising from its use, to the extent such limitation is permitted by law.",
+                        `The provider's total liability arising out of or in connection with these terms is limited to ${EN.liabilityCap}.`,
+                        "Nothing in these terms excludes or limits our liability for fraud, wilful misconduct, gross negligence, death or personal injury, or any liability or consumer right that cannot be excluded or limited by contract under Greek or EU law.",
                     ],
                 },
                 {
-                    id: "governing_law",
-                    title: "8. Governing Law and Contact",
+                    id: "termination",
+                    title: "11. Termination and account deletion",
                     paragraphs: [
-                        "These terms are governed by Greek law and applicable EU law.",
-                        "For legal or regulatory matters, contact support@policywallet.gr.",
+                        "You can delete your account at any time from within the app. Any active subscription remains in force until the end of the current billing period, in accordance with section 4.",
+                        "We may suspend or terminate access in case of serious or repeated violation of these terms. After termination, your data is handled in accordance with the Privacy Policy.",
+                    ],
+                },
+                {
+                    id: "law_venue",
+                    title: "12. Governing law, jurisdiction and out-of-court resolution",
+                    paragraphs: [
+                        `These terms are governed by Greek law and applicable EU law. The courts of ${EN.venue} shall have jurisdiction over any dispute, without prejudice to mandatory consumer-jurisdiction provisions.`,
+                        "If you are a consumer, you may also contact the Greek Consumer Ombudsman (www.synigoroskatanaloti.gr) for out-of-court dispute resolution.",
+                    ],
+                },
+                {
+                    id: "contact",
+                    title: "13. Contact",
+                    paragraphs: [
+                        `For any question about these terms: info@policywallet.gr or by post at ${EN.address}.`,
                     ],
                 },
             ],
@@ -469,72 +664,165 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
         privacy: {
             title: "Privacy Policy",
             intro: [
-                "PolicyWallet processes personal data under GDPR and applicable Greek law.",
-                "This policy explains what we collect, why we collect it, and your rights.",
+                "This Privacy Policy explains how PolicyWallet processes your personal data — whether you use the platform as an individual policyholder, as an insurance intermediary, or simply visit our website.",
+                "It is drafted in accordance with the General Data Protection Regulation (EU) 2016/679 (GDPR) and Greek Law 4624/2019. When the way we process data changes, we update the text and the date at the top of the page.",
             ],
             sections: [
                 {
                     id: "controller",
-                    title: "1. Data Controller",
+                    title: "1. Data controller",
                     paragraphs: [
-                        "PolicyWallet acts as data controller for core platform operations.",
-                        "For privacy inquiries, contact support@policywallet.gr.",
+                        `The controller of your data is ${EN.company}, GEMI registration number ${EN.gemi}, with registered seat at ${EN.address}, which operates the PolicyWallet platform (policywallet.gr).`,
+                        `For any data-protection matter you can contact our privacy officer at ${EN.dpoEmail} or at info@policywallet.gr.`,
                     ],
                 },
                 {
                     id: "data_categories",
-                    title: "2. Data Categories",
+                    title: "2. What data we process",
                     paragraphs: [
-                        "We process account data, policy records, document metadata, and technical logs.",
-                        "Data categories vary by user role and enabled product functionality.",
+                        "Account data: name, email address, phone number (optional), role (policyholder or intermediary), language and settings.",
+                        "Insurance policy documents: the PDFs you upload and the details extracted from them — insurer, coverages, premiums, dates, vehicle or property details. Health policies may contain health data, a special category of data under Article 9 GDPR, which we process only with your explicit consent.",
+                        "Payment data: your subscription plan and billing history. Your card details are handled exclusively by Stripe — they never reach PolicyWallet's systems.",
+                        "Usage data: technical logs (IP address, device type, in-platform actions) necessary for the security and reliability of the service.",
+                        "Intermediary-collaboration data: if you connect with an insurance intermediary, we record your consent, the scope of access you granted, and the full history of granting and revoking it.",
                     ],
                 },
                 {
-                    id: "legal_bases",
-                    title: "3. Legal Bases",
+                    id: "purposes_bases",
+                    title: "3. Purposes and legal bases of processing",
                     paragraphs: [
-                        "Processing is based on contract performance, legitimate interest, legal obligation, or consent.",
-                        "Where consent is required (for example cookies), you can withdraw it at any time.",
+                        "Each processing activity rests on a specific GDPR legal basis:",
+                    ],
+                    table: {
+                        headers: ["Purpose", "Legal basis"],
+                        rows: [
+                            [
+                                "Providing the service: account, policy storage, renewal reminders",
+                                "Performance of a contract — Article 6(1)(b)",
+                            ],
+                            [
+                                "AI analysis of insurance policies",
+                                "Consent — Article 6(1)(a); for any health data, explicit consent — Article 9(2)(a)",
+                            ],
+                            [
+                                "Subscription billing and invoicing",
+                                "Performance of a contract — Article 6(1)(b); record-keeping: legal obligation — Article 6(1)(c)",
+                            ],
+                            [
+                                "Security, abuse prevention, request rate limiting",
+                                "Legitimate interest — Article 6(1)(f)",
+                            ],
+                            [
+                                "Sharing information with the intermediary you choose",
+                                "Consent — Article 6(1)(a), revocable at any time",
+                            ],
+                            [
+                                "Newsletter emails",
+                                "Consent, with an unsubscribe option in every message",
+                            ],
+                            [
+                                "Keeping records of consents and GDPR requests",
+                                "Legal obligation and accountability — Articles 6(1)(c) and 5(2)",
+                            ],
+                        ],
+                    },
+                },
+                {
+                    id: "no_automated_decisions",
+                    title: "4. What we do not do",
+                    paragraphs: [
+                        "We do not sell personal data to third parties and do not use it for advertising profiling.",
+                        "We do not make decisions based solely on automated means that produce legal effects concerning you, within the meaning of Article 22 GDPR — the platform's analyses are informational.",
                     ],
                 },
                 {
-                    id: "processing_purposes",
-                    title: "4. Processing Purposes",
+                    id: "ai_processing",
+                    title: "5. AI analysis",
                     paragraphs: [
-                        "We use data to deliver services, maintain security, analyze policies, and provide support.",
-                        "We do not sell personal data to third parties for independent commercial use.",
+                        "Policy analysis runs only after you give explicit consent inside the app, through a separate, recorded action. You can revoke it at any time; revocation stops future analyses and does not affect the storage of your documents.",
+                        "For the analysis, the policy content is transmitted to an AI model provider acting as a processor on our behalf: primarily Google (Gemini models), with Anthropic and OpenAI available as alternate providers. The providers' API data-processing terms do not permit the use of your data to train their models.",
+                        "Analysis results are informational, may contain errors, and do not constitute insurance advice — see the Terms of Service for details.",
                     ],
                 },
                 {
-                    id: "sharing_processors",
-                    title: "5. Sharing and Processors",
+                    id: "recipients",
+                    title: "6. Recipients and processors",
                     paragraphs: [
-                        "We use processors for infrastructure, payments, and communications under contractual safeguards.",
-                        "Data sharing is limited to what is required and protected by suitable controls.",
+                        "We use a limited number of technical providers (subprocessors) for hosting, the database, payments, email delivery and AI analysis. All are bound by data processing agreements under Article 28 GDPR and process only what their role requires.",
+                        "The full list — with each provider's role, data and processing location — is published and kept up to date on the subprocessors page.",
+                        "If you connect with an insurance intermediary through the platform, they gain access only to the information covered by your consent. You can revoke it at any time from your account — the revocation is recorded and takes effect immediately.",
+                    ],
+                    link: { href: "/subprocessors", label: "Subprocessors list" },
+                },
+                {
+                    id: "transfers",
+                    title: "7. Where data is stored — transfers outside the EEA",
+                    paragraphs: [
+                        "Our primary infrastructure is located in the European Union: the database, authentication and your files are hosted on Supabase infrastructure in the eu-west-3 region (Paris, France).",
+                        "Some providers — notably the AI providers, Stripe and Vercel — may process data outside the European Economic Area, mainly in the United States. These transfers are covered by an adequacy decision (EU-U.S. Data Privacy Framework) and/or the European Commission's Standard Contractual Clauses.",
                     ],
                 },
                 {
                     id: "retention",
-                    title: "6. Retention",
+                    title: "8. How long we keep data",
                     paragraphs: [
-                        "We retain data only as long as needed for service delivery, legal obligations, and security.",
-                        "After retention periods, data is deleted or anonymized where legally permitted.",
+                        "Retention periods per category:",
                     ],
+                    table: {
+                        headers: ["Data category", "Retention period"],
+                        rows: [
+                            [
+                                "Policy documents and their analyses",
+                                "Until you delete them or until your account is deleted",
+                            ],
+                            [
+                                "Account data",
+                                "For as long as you keep an account; deleted upon completion of a deletion request",
+                            ],
+                            [
+                                "Invoices and billing records",
+                                "5 years after the end of the relevant tax year (tax legislation)",
+                            ],
+                            [
+                                "Records of consents and GDPR requests",
+                                "5 years from revocation or request completion, for accountability purposes",
+                            ],
+                            ["Technical logs", "Up to 12 months"],
+                            ["Newsletter subscription", "Until you unsubscribe"],
+                        ],
+                    },
                 },
                 {
                     id: "gdpr_rights",
-                    title: "7. Data Subject Rights",
+                    title: "9. Your rights and how to exercise them",
                     paragraphs: [
-                        "You may request access, rectification, portability, restriction, or erasure of your data.",
-                        "Export and deletion request workflows are available through GDPR endpoints.",
+                        "You have the right of access, rectification, erasure, restriction of processing, portability and objection, as well as the right to withdraw any consent — without the withdrawal affecting the lawfulness of prior processing.",
+                        "From within the app: you can submit a data export request (a full copy in machine-readable form) and an account deletion request. Every request is handled through an internal GDPR workflow with a full action history.",
+                        `By email: at ${EN.dpoEmail} or info@policywallet.gr. We respond within one month at the latest, as provided by Article 12 GDPR.`,
+                        "If you believe the processing violates the law, you have the right to lodge a complaint with the Hellenic Data Protection Authority (HDPA), Kifisias 1-3, 115 23 Athens, Greece — www.dpa.gr.",
                     ],
                 },
                 {
-                    id: "security_transfers",
-                    title: "8. Security and Transfers",
+                    id: "security",
+                    title: "10. Security",
                     paragraphs: [
-                        "We apply technical and organizational safeguards to protect personal data.",
-                        "Where cross-border transfers occur, appropriate legal safeguards are applied.",
+                        "Data is encrypted in transit (TLS) and at rest. System access is role-restricted and logged, and request rate limits and other technical and organizational measures are applied.",
+                        "No system is absolutely secure. If a breach incident likely to affect you occurs, we will notify you and the HDPA in accordance with Articles 33 and 34 GDPR.",
+                    ],
+                },
+                {
+                    id: "cookies_summary",
+                    title: "11. Cookies",
+                    paragraphs: [
+                        "We use cookies strictly necessary for the platform to operate (sign-in, storing your consent preferences). Analytics or marketing cookies are activated only if you accept them via the cookie banner.",
+                    ],
+                    link: { href: "/cookies", label: "See the full Cookie Policy" },
+                },
+                {
+                    id: "changes",
+                    title: "12. Changes to this policy",
+                    paragraphs: [
+                        "When this policy changes materially, we update the date at the top and, for significant changes, notify you in the app or by email before they take effect.",
                     ],
                 },
             ],
