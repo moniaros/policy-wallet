@@ -28,6 +28,13 @@ off-ladder `lg:text-[22px]` step. 84 `font-medium` headings → `font-semibold` 
 mockup-chrome `font-medium` deliberately left — it is not a heading weight). The only
 `text-[Npx]` values left in these files are 11/12/13/14/16/18/20/24/32/44/56 — all on ladder.
 
+**Stage D — done, the last marketing surfaces** (guides index + article, company, contact,
+solutions/agents). 24 off-ladder sizes normalized (72→56, 48→44, 36/34→32, 26→24, 22→20,
+17→18, 15→14) and 3 `text-[24px] … md:text-[28px]` pairs collapsed to a flat 24 — 28 is off
+ladder and 24 is the heading cap, so the responsive step goes rather than the base shrinking.
+26 `font-medium` headings → `font-semibold`, which closes the "product/agents" item Stage C
+left open. Every `text-[Npx]` on these five files is now 12/13/14/16/18/20/24/32/40/44/56.
+
 ## 2. Color discipline
 
 **Green family (only these):** `#29685B` primary · `#1C4E44` hover/deep · `#143B33` ink-green
@@ -63,6 +70,14 @@ pass retired the off-palette neutrals those pages had inherited: 70 `text-[#1A1A
 ink `#0F172A`, 15 dark CTA panels `#1A1C1D` → ink-green `#1A2420`, 11 `border-[#E5E5E5]` →
 the one hairline `#E2E8F0`.
 
+**Stage D — the collapse reaches the last holdouts.** company's three "values" panels were
+still on the old blue/green/beige pastel triplet — now one green tint (`#F0FDF4` on
+`#DCEBDA`), matching the definitional panel above them. Plus 3 `border-[#E5E7EB]` → the one
+hairline `#E2E8F0`, 2 `bg-[#F4F9F3]` → the sanctioned green tint `#F0FDF4`, and company's
+dark band `#1A1C1D` → ink-green `#1A2420`. **Card radii were left alone on purpose** —
+`rounded-2xl` survives on company/contact/agents cards; §4 bans `rounded-xl` *buttons*, not
+cards, and unifying card radius is a visible design call, not discipline cleanup.
+
 ## 3. Spacing rhythm (one, not four)
 
 Found: landing `py-20 lg:py-28`, pricing `pt-20/py-20` flat, product index `py-24`/`py-28`
@@ -97,6 +112,15 @@ stand: pill radius, one size scale, no `rounded-[4px]`, `#1A1A1A` still retired.
 product family only (16 CTAs: index + 15 LoB); **the landing final CTA was always white and
 stays `-inverse`**. So the rule is now: one CTA pair, plus one sanctioned dark-panel fill
 variant — any further variant needs the same explicit justification.
+
+**Stage D — the last 3 CTAs, and `rounded-[4px]` stays extinct.** guides article aside (the
+final `rounded-[4px]` in the tree) → `.pw-primary-button-mint`; company careers CTA
+(`rounded-2xl` + `font-bold`, white on dark) → `pw-primary-button-inverse pw-btn-lg`; contact
+submit (already pill/green/600, just spelled by hand) → `pw-primary-button`, keeping its
+`disabled:` classes. **Note this extends the mint variant's scope by one CTA beyond the
+"product family only" line above** — the guides aside is a dark panel whose CTA was already
+mint, so naming it preserved the existing look rather than changing it. Flip that one class
+to `-inverse` if mint should stay strictly product-family.
 
 ## 5. Microcopy & tone (rules now, rewrites in Stage B)
 
@@ -204,11 +228,19 @@ in place.
       static sections server-rendered, four client islands left; −17.4 KB raw / −4.9 KB gzip
       first-load JS (numbers above)
 
-Still open (stage D candidates):
+- [x] **Stage D: guides/company/contact/agents type-ladder + CTA pass** — 24 off-ladder sizes
+      + 3 collapsed `md:` steps, 26 `font-medium` headings → 600, the last 3 non-pw CTAs
+      converted, company's pastel triplet folded into the green tint (§1, §2, §4)
 
-- [ ] guides/company/contact type-ladder + CTA pass — the last marketing surfaces the sweep
-      has not reached
-- [ ] `font-medium` display headings on `/solutions/agents` → 600 (the product family is
-      done; the agents page was not in the Stage-C scope)
-- [ ] Shared-chunk dieting — at ~431 KB gzip both `/` and `/product` are now dominated by
-      framework + shared chunks, not their own markup. That is the only remaining lever.
+With Stage D the type ladder, the colour family and the CTA system hold across **every**
+marketing surface: landing, pricing, product index + 15 LoB pages, guides index + articles,
+company, contact, solutions/agents. `rounded-[4px]`, `font-black` and off-ladder `text-[Npx]`
+are all grep-clean tree-wide.
+
+Still open:
+
+- [ ] Shared-chunk dieting — at ~431 KB gzip both `/` and `/product` are dominated by
+      framework + shared chunks, not their own markup. That is the only remaining perf lever,
+      and it is a build/dependency question rather than a brand one.
+- [ ] Card radius is not unified (`rounded-2xl` vs `rounded-[20px]`) — deliberately left as a
+      design decision rather than folded into a discipline pass.

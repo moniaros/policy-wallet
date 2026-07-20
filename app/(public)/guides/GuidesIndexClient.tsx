@@ -26,7 +26,7 @@ export default function GuidesIndexClient() {
                 <p className="mb-4 text-[13px] font-semibold uppercase tracking-widest text-[#29685B]">
                     {t("Οδηγοί", "Guides")}
                 </p>
-                <h1 className="mb-6 text-[40px] font-medium leading-[1.05] tracking-[-0.03em] text-[#0F172A] md:text-[56px]">
+                <h1 className="mb-6 text-[40px] font-semibold leading-[1.05] tracking-[-0.03em] text-[#0F172A] md:text-[56px]">
                     {t(
                         "Οδηγοί ασφάλισης για την ελληνική αγορά",
                         "Insurance guides for the Greek market"
@@ -46,7 +46,7 @@ export default function GuidesIndexClient() {
                         <Link
                             key={guide.slug}
                             href={localizeHref(`/guides/${guide.slug}`, language)}
-                            className="group rounded-[20px] border border-[#E5E7EB] bg-white p-8 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] md:p-10"
+                            className="group rounded-[20px] border border-[#E2E8F0] bg-white p-8 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] md:p-10"
                         >
                             <div className="mb-4 flex flex-wrap items-center gap-4 text-[13px] text-[#64748B]">
                                 <span className="inline-flex items-center gap-1.5">
@@ -58,13 +58,13 @@ export default function GuidesIndexClient() {
                                     {guide.readingMinutes} {t("λεπτά ανάγνωσης", "min read")}
                                 </span>
                             </div>
-                            <h2 className="mb-3 text-[24px] font-medium leading-snug tracking-tight text-[#0F172A] transition-colors duration-150 group-hover:text-[#29685B] md:text-[28px]">
+                            <h2 className="mb-3 text-[24px] font-semibold leading-snug tracking-tight text-[#0F172A] transition-colors duration-150 group-hover:text-[#29685B]">
                                 {guide.title[lang]}
                             </h2>
                             <p className="mb-5 max-w-[760px] text-[16px] leading-relaxed text-[#475569]">
                                 {guide.summary[lang]}
                             </p>
-                            <span className="inline-flex items-center gap-1.5 text-[15px] font-semibold text-[#29685B] transition-all duration-150 group-hover:gap-2.5">
+                            <span className="inline-flex items-center gap-1.5 text-[14px] font-semibold text-[#29685B] transition-all duration-150 group-hover:gap-2.5">
                                 {t("Διαβάστε τον οδηγό", "Read the guide")}
                                 <ArrowRight className="h-4 w-4" />
                             </span>
