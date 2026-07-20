@@ -34,10 +34,10 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                 </nav>
 
                 <header className="mb-10">
-                    <h1 className="mb-6 text-[34px] font-medium leading-[1.1] tracking-[-0.03em] text-[#0F172A] md:text-[44px]">
+                    <h1 className="mb-6 text-[32px] font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] md:text-[44px]">
                         {guide.title[lang]}
                     </h1>
-                    <div className="flex flex-wrap items-center gap-4 border-b border-[#E5E7EB] pb-6 text-[14px] text-[#64748B]">
+                    <div className="flex flex-wrap items-center gap-4 border-b border-[#E2E8F0] pb-6 text-[14px] text-[#64748B]">
                         {/* Byline: named author when one is published, editorial team otherwise. */}
                         <span className="inline-flex items-center gap-1.5 font-medium text-[#334155]">
                             {guide.author
@@ -61,13 +61,13 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                 </header>
 
                 {/* Direct-answer opening paragraph (featured-snippet shape). */}
-                <p className="mb-12 rounded-[14px] border border-[#DCEBDA] bg-[#F4F9F3] p-6 text-[17px] font-medium leading-relaxed text-[#0F172A]">
+                <p className="mb-12 rounded-[14px] border border-[#DCEBDA] bg-[#F0FDF4] p-6 text-[18px] font-medium leading-relaxed text-[#0F172A]">
                     {guide.summary[lang]}
                 </p>
 
                 {guide.sections.map((section) => (
                     <section key={section.heading.en} className="mb-12">
-                        <h2 className="mb-5 text-[24px] font-medium leading-snug tracking-tight text-[#0F172A] md:text-[28px]">
+                        <h2 className="mb-5 text-[24px] font-semibold leading-snug tracking-tight text-[#0F172A]">
                             {section.heading[lang]}
                         </h2>
                         {section.paragraphs.map((paragraph) => (
@@ -95,16 +95,16 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                 ))}
 
                 <section className="mb-12">
-                    <h2 className="mb-6 text-[24px] font-medium leading-snug tracking-tight text-[#0F172A] md:text-[28px]">
+                    <h2 className="mb-6 text-[24px] font-semibold leading-snug tracking-tight text-[#0F172A]">
                         {t("Συχνές ερωτήσεις", "Frequently asked questions")}
                     </h2>
                     <div className="space-y-6">
                         {guide.faq.map((item) => (
-                            <div key={item.question.en} className="rounded-[14px] border border-[#E5E7EB] bg-white p-6">
-                                <h3 className="mb-2 text-[17px] font-semibold text-[#0F172A]">
+                            <div key={item.question.en} className="rounded-[14px] border border-[#E2E8F0] bg-white p-6">
+                                <h3 className="mb-2 text-[18px] font-semibold text-[#0F172A]">
                                     {item.question[lang]}
                                 </h3>
-                                <p className="text-[15px] leading-relaxed text-[#475569]">
+                                <p className="text-[14px] leading-relaxed text-[#475569]">
                                     {item.answer[lang]}
                                 </p>
                             </div>
@@ -123,7 +123,7 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                                     href={source.url}
                                     target="_blank"
                                     rel="noreferrer noopener"
-                                    className="inline-flex items-center gap-1.5 text-[15px] text-[#29685B] underline-offset-4 transition-colors duration-150 hover:text-[#1C4E44] hover:underline"
+                                    className="inline-flex items-center gap-1.5 text-[14px] text-[#29685B] underline-offset-4 transition-colors duration-150 hover:text-[#1C4E44] hover:underline"
                                 >
                                     {source.label[lang]}
                                     <ExternalLink className="h-3.5 w-3.5" />
@@ -143,7 +143,7 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                                 <li key={item.href}>
                                     <Link
                                         href={localizeHref(item.href, language)}
-                                        className="inline-flex items-center gap-1.5 text-[15px] text-[#29685B] underline-offset-4 transition-colors duration-150 hover:text-[#1C4E44] hover:underline"
+                                        className="inline-flex items-center gap-1.5 text-[14px] text-[#29685B] underline-offset-4 transition-colors duration-150 hover:text-[#1C4E44] hover:underline"
                                     >
                                         {item.label[lang]}
                                         <ArrowRight className="h-3.5 w-3.5" />
@@ -155,13 +155,13 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                 )}
 
                 <aside className="rounded-[20px] bg-[#1A2420] p-8 text-white md:p-10">
-                    <h2 className="mb-3 text-[24px] font-medium tracking-tight">
+                    <h2 className="mb-3 text-[24px] font-semibold tracking-tight">
                         {t(
                             "Ελέγξτε τα δικά σας συμβόλαια σε 2 λεπτά",
                             "Check your own policies in 2 minutes"
                         )}
                     </h2>
-                    <p className="mb-6 text-[15px] leading-relaxed text-white/70">
+                    <p className="mb-6 text-[14px] leading-relaxed text-white/70">
                         {t(
                             "Ανεβάστε τα ασφαλιστήριά σας και η AI του PolicyWallet εντοπίζει κενά, επικαλύψεις και ευκαιρίες — δωρεάν, χωρίς πιστωτική κάρτα.",
                             "Upload your policies and PolicyWallet's AI detects gaps, overlaps, and opportunities — free, no credit card required."
@@ -169,7 +169,7 @@ export default function GuideArticleClient({ guide }: { guide: Guide }) {
                     </p>
                     <Link
                         href="/auth/signup"
-                        className="inline-flex items-center gap-2 rounded-[4px] bg-[#89D9B2] px-6 py-3 text-[15px] font-bold text-[#0F172A] transition-opacity duration-150 hover:opacity-90"
+                        className="pw-primary-button-mint"
                     >
                         {t("Ξεκινήστε δωρεάν", "Get started free")}
                         <ArrowRight className="h-4 w-4" />

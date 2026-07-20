@@ -139,7 +139,7 @@ export default function ContactPage() {
                 <div className="mx-auto max-w-[1200px]">
                     <div className="mb-10">
                         <p className="mb-3 text-[13px] font-semibold uppercase tracking-wider text-[#29685B]">Επικοινωνία</p>
-                        <h1 className="mb-4 text-[40px] font-medium leading-[1.05] tracking-[-0.03em] text-[#0F172A] md:text-[56px]">
+                        <h1 className="mb-4 text-[40px] font-semibold leading-[1.05] tracking-[-0.03em] text-[#0F172A] md:text-[56px]">
                             Πείτε μας πώς μπορούμε να βοηθήσουμε.
                         </h1>
                         <p className="max-w-[720px] text-[18px] text-[#475569]">
@@ -172,7 +172,7 @@ export default function ContactPage() {
                                         autoComplete="name"
                                         value={form.name}
                                         onChange={(event) => setField("name", event.target.value)}
-                                        className={`w-full rounded-[10px] border px-4 py-3 text-[15px] outline-none transition-colors ${
+                                        className={`w-full rounded-[10px] border px-4 py-3 text-[14px] outline-none transition-colors ${
                                             errors.name ? "border-[#DC2626]" : "border-[#CBD5E1] focus:border-[#29685B]"
                                         }`}
                                         aria-invalid={Boolean(errors.name)}
@@ -192,7 +192,7 @@ export default function ContactPage() {
                                         autoComplete="email"
                                         value={form.email}
                                         onChange={(event) => setField("email", event.target.value)}
-                                        className={`w-full rounded-[10px] border px-4 py-3 text-[15px] outline-none transition-colors ${
+                                        className={`w-full rounded-[10px] border px-4 py-3 text-[14px] outline-none transition-colors ${
                                             errors.email ? "border-[#DC2626]" : "border-[#CBD5E1] focus:border-[#29685B]"
                                         }`}
                                         aria-invalid={Boolean(errors.email)}
@@ -214,7 +214,7 @@ export default function ContactPage() {
                                         autoComplete="tel"
                                         value={form.phone}
                                         onChange={(event) => setField("phone", event.target.value)}
-                                        className={`w-full rounded-[10px] border px-4 py-3 text-[15px] outline-none transition-colors ${
+                                        className={`w-full rounded-[10px] border px-4 py-3 text-[14px] outline-none transition-colors ${
                                             errors.phone ? "border-[#DC2626]" : "border-[#CBD5E1] focus:border-[#29685B]"
                                         }`}
                                         aria-invalid={Boolean(errors.phone)}
@@ -232,7 +232,7 @@ export default function ContactPage() {
                                     <select
                                         value={form.subject}
                                         onChange={(event) => setField("subject", event.target.value as SubjectOption | "")}
-                                        className={`w-full rounded-[10px] border px-4 py-3 text-[15px] outline-none transition-colors ${
+                                        className={`w-full rounded-[10px] border px-4 py-3 text-[14px] outline-none transition-colors ${
                                             errors.subject ? "border-[#DC2626]" : "border-[#CBD5E1] focus:border-[#29685B]"
                                         }`}
                                         aria-invalid={Boolean(errors.subject)}
@@ -259,7 +259,7 @@ export default function ContactPage() {
                                     value={form.message}
                                     onChange={(event) => setField("message", event.target.value)}
                                     rows={7}
-                                    className={`w-full resize-y rounded-[10px] border px-4 py-3 text-[15px] outline-none transition-colors ${
+                                    className={`w-full resize-y rounded-[10px] border px-4 py-3 text-[14px] outline-none transition-colors ${
                                         errors.message ? "border-[#DC2626]" : "border-[#CBD5E1] focus:border-[#29685B]"
                                     }`}
                                     aria-invalid={Boolean(errors.message)}
@@ -276,7 +276,7 @@ export default function ContactPage() {
                                 <button
                                     type="submit"
                                     disabled={isSubmitting}
-                                    className="inline-flex items-center justify-center gap-2 rounded-full bg-[#29685B] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#1C4E44] disabled:cursor-not-allowed disabled:opacity-60"
+                                    className="pw-primary-button disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                     <Send className="h-4 w-4" />
                                     {isSubmitting ? "Αποστολή..." : "Αποστολή μηνύματος"}
@@ -291,7 +291,7 @@ export default function ContactPage() {
                         <aside className="rounded-[14px] border border-[#E2E8F0] bg-[#F8FAFC] p-6 shadow-sm md:p-8">
                             <h2 className="mb-6 text-[24px] font-semibold text-[#0F172A]">Στοιχεία εταιρείας</h2>
 
-                            <div className="space-y-5 text-[15px] text-[#334155]">
+                            <div className="space-y-5 text-[14px] text-[#334155]">
                                 <div className="flex items-start gap-3">
                                     <Mail className="mt-0.5 h-5 w-5 text-[#29685B]" />
                                     <div>

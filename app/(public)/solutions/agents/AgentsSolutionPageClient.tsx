@@ -25,7 +25,7 @@ export default function AgentSolutionsPage() {
                         <p className="mb-3 text-[12px] font-semibold uppercase tracking-[0.18em] text-[#29685B]">
                             {t("Λύσεις για Ασφαλιστές", "Solutions for Insurance Agents")}
                         </p>
-                        <h1 className="mx-auto mb-6 max-w-[920px] text-[40px] font-medium leading-[1.05] tracking-[-0.035em] text-[#0F172A] lg:text-[56px]">
+                        <h1 className="mx-auto mb-6 max-w-[920px] text-[40px] font-semibold leading-[1.05] tracking-[-0.035em] text-[#0F172A] lg:text-[56px]">
                             {t("Όλο το χαρτοφυλάκιο πελατών σας, οργανωμένο σε έναν πίνακα.", "Your entire client book, organized in one dashboard.")}
                         </h1>
                         <p className="mx-auto max-w-[760px] text-[18px] leading-relaxed text-[#475569]">
@@ -55,7 +55,7 @@ export default function AgentSolutionsPage() {
                                 <ClientPortfolioDashboardWidget isGreek={isGreek} />
                             </div>
                             <div className="p-6">
-                                <h3 className="mb-2 text-[24px] font-medium leading-tight text-[#0F172A]">
+                                <h3 className="mb-2 text-[24px] font-semibold leading-tight text-[#0F172A]">
                                     {t("Client Portfolio Dashboard", "Client Portfolio Dashboard")}
                                 </h3>
                                 <p className="text-[16px] leading-relaxed text-[#475569]">
@@ -72,7 +72,7 @@ export default function AgentSolutionsPage() {
                                 <GapAnalysisWidget isGreek={isGreek} />
                             </div>
                             <div className="p-6">
-                                <h3 className="mb-2 text-[24px] font-medium leading-tight text-[#0F172A]">
+                                <h3 className="mb-2 text-[24px] font-semibold leading-tight text-[#0F172A]">
                                     {t("Automated Gap Analysis ανά πελάτη", "Automated Gap Analysis per client")}
                                 </h3>
                                 <p className="text-[16px] leading-relaxed text-[#475569]">
@@ -89,7 +89,7 @@ export default function AgentSolutionsPage() {
                                 <RenewalReminderWidget isGreek={isGreek} />
                             </div>
                             <div className="p-6">
-                                <h3 className="mb-2 text-[24px] font-medium leading-tight text-[#0F172A]">
+                                <h3 className="mb-2 text-[24px] font-semibold leading-tight text-[#0F172A]">
                                     {t("One-click renewal reminders", "One-click renewal reminders")}
                                 </h3>
                                 <p className="text-[16px] leading-relaxed text-[#475569]">
@@ -106,7 +106,7 @@ export default function AgentSolutionsPage() {
                                 <BrandedReportWidget isGreek={isGreek} />
                             </div>
                             <div className="p-6">
-                                <h3 className="mb-2 text-[24px] font-medium leading-tight text-[#0F172A]">
+                                <h3 className="mb-2 text-[24px] font-semibold leading-tight text-[#0F172A]">
                                     {t("Shareable branded policy reports", "Shareable branded policy reports")}
                                 </h3>
                                 <p className="text-[16px] leading-relaxed text-[#475569]">
@@ -123,14 +123,14 @@ export default function AgentSolutionsPage() {
 
             <section className="bg-[#F8FAFC] px-6 py-20 lg:px-12 lg:py-28">
                 <div className="mx-auto max-w-[1040px]">
-                    <h2 className="mb-10 text-center text-[32px] font-medium tracking-[-0.03em] text-[#0F172A] lg:text-[44px]">
+                    <h2 className="mb-10 text-center text-[32px] font-semibold tracking-[-0.03em] text-[#0F172A] lg:text-[44px]">
                         {t("Από το συμβόλαιο στην αναφορά, σε τρία βήματα.", "From policy to report, in three steps.")}
                     </h2>
 
                     <div className="grid gap-4 md:grid-cols-3">
                         <div className="rounded-2xl border border-[#E2E8F0] bg-white p-6">
                             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.15em] text-[#29685B]">01</p>
-                            <h3 className="mb-2 text-[20px] font-medium text-[#0F172A]">
+                            <h3 className="mb-2 text-[20px] font-semibold text-[#0F172A]">
                                 {t("Upload client policy", "Upload client policy")}
                             </h3>
                             <p className="text-[14px] text-[#475569]">
@@ -140,7 +140,7 @@ export default function AgentSolutionsPage() {
 
                         <div className="rounded-2xl border border-[#E2E8F0] bg-white p-6">
                             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.15em] text-[#29685B]">02</p>
-                            <h3 className="mb-2 text-[20px] font-medium text-[#0F172A]">
+                            <h3 className="mb-2 text-[20px] font-semibold text-[#0F172A]">
                                 {t("AI analyzes", "AI analyzes")}
                             </h3>
                             <p className="text-[14px] text-[#475569]">
@@ -150,7 +150,7 @@ export default function AgentSolutionsPage() {
 
                         <div className="rounded-2xl border border-[#E2E8F0] bg-white p-6">
                             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.15em] text-[#29685B]">03</p>
-                            <h3 className="mb-2 text-[20px] font-medium text-[#0F172A]">
+                            <h3 className="mb-2 text-[20px] font-semibold text-[#0F172A]">
                                 {t("Δημιουργία branded αναφοράς", "Generate branded report")}
                             </h3>
                             <p className="text-[14px] text-[#475569]">
@@ -168,7 +168,7 @@ export default function AgentSolutionsPage() {
                             <Sparkles className="h-3.5 w-3.5 text-[#29685B]" />
                             {t("Τιμολόγηση Ασφαλιστών", "Agent Pricing")}
                         </div>
-                        <h3 className="mb-3 text-[32px] font-medium leading-tight text-[#0F172A]">
+                        <h3 className="mb-3 text-[32px] font-semibold leading-tight text-[#0F172A]">
                             {t("PolicyWallet Agency για ασφαλιστικά γραφεία", "PolicyWallet Agency for advisor teams")}
                         </h3>
                         <p className="mb-6 text-[16px] leading-relaxed text-[#475569]">
@@ -207,7 +207,7 @@ export default function AgentSolutionsPage() {
                         <CheckCircle2 className="h-3.5 w-3.5" />
                         {t("Agent Onboarding", "Agent Onboarding")}
                     </div>
-                    <h3 className="mb-4 text-[32px] font-medium leading-tight tracking-[-0.03em] text-[#0F172A]">
+                    <h3 className="mb-4 text-[32px] font-semibold leading-tight tracking-[-0.03em] text-[#0F172A]">
                         {t("Ξεκινήστε δωρεάν σήμερα", "Start free today")}
                     </h3>
                     <Link href="/auth/signup?role=agent" className="pw-primary-button pw-btn-lg">
