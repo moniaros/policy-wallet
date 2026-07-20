@@ -1,11 +1,13 @@
 "use client"
 
 import { useReportWebVitals } from "next/web-vitals"
-import { hasGoogleAnalytics, trackGoogleEvent } from "@/lib/analytics/google-analytics"
+import { googleAnalyticsAllowed, trackGoogleEvent } from "@/lib/analytics/google-analytics"
 
 export function GoogleAnalyticsWebVitals() {
     useReportWebVitals((metric) => {
-        if (!hasGoogleAnalytics()) return
+        // Web vitals go to GA, so they need the same prior consent as any other
+        // GA hit. Metrics measured before opt-in are dropped, not replayed.
+        if (!googleAnalyticsAllowed()) return
 
         trackGoogleEvent("web_vitals", {
             metric_name: metric.name,

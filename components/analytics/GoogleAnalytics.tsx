@@ -1,9 +1,15 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import Script from "next/script"
 import { usePathname, useSearchParams } from "next/navigation"
-import { flushQueuedGoogleEvents, hasGoogleAnalytics, trackGooglePageView } from "@/lib/analytics/google-analytics"
+import {
+    disableGoogleAnalytics,
+    flushQueuedGoogleEvents,
+    googleAnalyticsAllowed,
+    trackGooglePageView,
+} from "@/lib/analytics/google-analytics"
+import { CONSENT_CHANGED_EVENT } from "@/lib/compliance/consent"
 
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID
 const GA_DEBUG_MODE = process.env.NEXT_PUBLIC_GA_DEBUG_MODE === "true"
@@ -13,16 +19,42 @@ export function GoogleAnalytics() {
     const searchParams = useSearchParams()
     const queryString = searchParams.toString()
 
+    // Starts false on both server and client render: no consent is assumed
+    // until the cookie has actually been read in an effect. This doubles as the
+    // hydration-safe default, since `document.cookie` does not exist on the server.
+    const [consented, setConsented] = useState(false)
+
     useEffect(() => {
-        if (!hasGoogleAnalytics() || !pathname) return
+        const sync = () => {
+            setConsented((wasConsented) => {
+                const isConsented = googleAnalyticsAllowed()
+                // Withdrawal: stop sending immediately rather than waiting for
+                // the scripts to unmount on the next render.
+                if (wasConsented && !isConsented) {
+                    disableGoogleAnalytics()
+                }
+                return isConsented
+            })
+        }
+
+        sync()
+
+        // Reactivity: the banner dispatches this the moment a choice is saved,
+        // so GA starts (or stops) without a reload.
+        window.addEventListener(CONSENT_CHANGED_EVENT, sync)
+        return () => window.removeEventListener(CONSENT_CHANGED_EVENT, sync)
+    }, [])
+
+    useEffect(() => {
+        if (!consented || !pathname) return
 
         const url = queryString ? `${pathname}?${queryString}` : pathname
 
         trackGooglePageView(url)
         flushQueuedGoogleEvents()
-    }, [pathname, queryString])
+    }, [consented, pathname, queryString])
 
-    if (!GA_MEASUREMENT_ID) {
+    if (!GA_MEASUREMENT_ID || !consented) {
         return null
     }
 
