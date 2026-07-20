@@ -18,17 +18,17 @@ export default function GroupPensionProductPage() {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-[900px] text-center">
-                    <span className="inline-flex bg-[#E7EDD7] text-[#1A1A1A] px-3 py-1 rounded-[4px] text-[11px] font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#E7EDD7] text-[#1A1A1A] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
                         {t("Ομαδικά Συνταξιοδοτικά", "Group Pension")}
                     </span>
-                    <h1 className="text-[46px] lg:text-[68px] leading-[1.05] tracking-[-0.04em] font-medium text-[#0F172A] mb-8">
+                    <h1 className="text-[44px] lg:text-[56px] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
                         {t("Εισφορές, εργοδοτική συμμετοχή, φόροι: όλα μετρημένα.", "Contributions, employer match, tax relief: all accounted for.")}
                     </h1>
-                    <p className="mx-auto max-w-[680px] text-[20px] lg:text-[22px] leading-[1.5] text-[#475569] mb-10">
+                    <p className="mx-auto max-w-[680px] text-[20px] leading-[1.5] text-[#475569] mb-10">
                         {t("Παρακολουθήστε την απόδοση των επενδυτικών σας κεφαλαίων και υπολογίστε με ακρίβεια τις φορολογικές σας ελαφρύνσεις.", "Track your investment fund growth and accurately calculate your tax deductions in real-time.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="w-full sm:w-auto rounded-[4px] bg-[#29685B] px-8 py-3.5 text-[16px] font-bold text-white transition-colors duration-150 hover:bg-[#1C4E44]">
+                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε δωρεάν", "Get Started Free")}
                         </Link>
                     </div>
@@ -39,7 +39,7 @@ export default function GroupPensionProductPage() {
             <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
                 <div className="mx-auto max-w-[1240px] grid md:grid-cols-2 gap-16 items-center">
                     <div>
-                        <h2 className="text-[36px] font-medium tracking-[-0.03em] mb-6 leading-[1.1] text-[#1A1A1A]">
+                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#1A1A1A]">
                             {t("Πόση σύνταξη χτίζει το ομαδικό σας πρόγραμμα;", "How much pension is your group plan building?")}
                         </h2>
                         <p className="text-[#475569] text-[18px] leading-relaxed mb-8">
@@ -49,14 +49,14 @@ export default function GroupPensionProductPage() {
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
                                 <div>
-                                    <h4 className="text-[18px] font-medium text-[#1A1A1A]">{t("Φορολογικές Ελαφρύνσεις", "Tax Benefits")}</h4>
+                                    <h4 className="text-[18px] font-semibold text-[#1A1A1A]">{t("Φορολογικές Ελαφρύνσεις", "Tax Benefits")}</h4>
                                     <p className="text-[#475569]">{t("Κρατήστε άμεσα στοιχεία για την εφορία. Δείτε πόσες κρατήσεις δικαιούστε από τα ομαδικά προγράμματα.", "Export exact premium contributions perfectly formulated for maximizing your income tax deductions.")}</p>
                                 </div>
                             </li>
                             <li className="flex gap-4">
                                 <div className="flex-shrink-0 mt-1"><CheckCircle2 className="w-6 h-6 text-[#29685B]" /></div>
                                 <div>
-                                    <h4 className="text-[18px] font-medium text-[#1A1A1A]">{t("Προβολές Συνταξιοδότησης", "Retirement Projections")}</h4>
+                                    <h4 className="text-[18px] font-semibold text-[#1A1A1A]">{t("Προβολές Συνταξιοδότησης", "Retirement Projections")}</h4>
                                     <p className="text-[#475569]">{t("Δείτε πότε είναι η καλύτερη στιγμή εξόδου, βάσει ηλικίας και του συνολικού εταιρικού σωρευτικού λογαριασμού σας.", "Forecast your retirement runway and understand the exact vesting age and withdrawal penalties instantly.")}</p>
                                 </div>
                             </li>
@@ -93,10 +93,10 @@ export default function GroupPensionProductPage() {
 
             {/* CTA */}
             <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">
-                <h2 className="text-[36px] lg:text-[48px] font-medium tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
+                <h2 className="text-[32px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
                     {t("Δείτε τι χτίζει το ομαδικό σας πρόγραμμα.", "See what your group plan is building.")}
                 </h2>
-                <Link href="/auth/signup" className="inline-flex rounded-[4px] bg-[#89D9B2] px-8 py-4 text-[16px] font-bold text-[#1A1A1A] transition-opacity duration-150 hover:opacity-90">
+                <Link href="/auth/signup" className="pw-primary-button-inverse pw-btn-lg">
                     {t("Ανεβάστε το ομαδικό συνταξιοδοτικό", "Upload your group pension plan")}
                 </Link>
             </section>

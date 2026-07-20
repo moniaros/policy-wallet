@@ -47,20 +47,20 @@ export default function GroupLifeProductPage() {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-[900px] text-center">
-                    <span className="inline-flex bg-[#F2E3DF] text-[#1A1A1A] px-3 py-1 rounded-[4px] text-[11px] font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#F2E3DF] text-[#1A1A1A] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
                         {t("Ομαδική Ζωή", "Group Life Insurance")}
                     </span>
-                    <h1 className="text-[46px] lg:text-[68px] leading-[1.05] tracking-[-0.04em] font-medium text-[#0F172A] mb-8">
+                    <h1 className="text-[44px] lg:text-[56px] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
                         {t("Η παροχή που λέει «σε καλύπτουμε» στην πράξη.", "The benefit that says “we've got you” — and means it.")}
                     </h1>
-                    <p className="mx-auto max-w-[680px] text-[20px] lg:text-[22px] leading-[1.5] text-[#475569] mb-10">
+                    <p className="mx-auto max-w-[680px] text-[20px] leading-[1.5] text-[#475569] mb-10">
                         {t("Η ομαδική ασφάλιση ζωής δίνει σε κάθε εργαζόμενο κεφάλαιο ζωής και ανικανότητας με έξοδα εργοδότη. Οργανώστε το συμβόλαιο, δείτε ποιος καλύπτεται και με πόσα — χωρίς να ψάχνετε πίνακες σε PDF.", "Group life insurance gives every employee life and disability capital at the employer's expense. Organize the policy and see who is covered and for how much — without digging through PDF tables.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="w-full sm:w-auto rounded-[4px] bg-[#29685B] px-8 py-3.5 text-[16px] font-bold text-white transition-colors duration-150 hover:bg-[#1C4E44]">
+                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε δωρεάν", "Get Started Free")}
                         </Link>
-                        <Link href="/solutions/agents" className="w-full sm:w-auto rounded-[4px] border border-[#CBD5E1] px-8 py-3.5 text-[16px] font-bold text-[#0F172A] transition-colors duration-150 hover:bg-[#F8FAFC]">
+                        <Link href="/solutions/agents" className="pw-secondary-button pw-btn-lg w-full sm:w-auto">
                             {t("Είστε πράκτορας ομαδικών;", "Do you broker group plans?")}
                         </Link>
                     </div>
@@ -71,7 +71,7 @@ export default function GroupLifeProductPage() {
             <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
                 <div className="mx-auto max-w-[1240px]">
                     <div className="max-w-[720px] mb-14">
-                        <h2 className="text-[36px] font-medium tracking-[-0.03em] mb-5 leading-[1.1] text-[#1A1A1A]">
+                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#1A1A1A]">
                             {t("Το ένα τρίτο του πακέτου παροχών που ξεχνιέται.", "The forgotten third of the benefits package.")}
                         </h2>
                         <p className="text-[#475569] text-[18px] leading-relaxed">
@@ -89,15 +89,15 @@ export default function GroupLifeProductPage() {
                                             <Icon className="h-5 w-5 text-[#0F172A]" />
                                         </div>
                                         {pillar.current ? (
-                                            <span className="rounded-[4px] bg-[#F0FDF4] px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#166534]">
+                                            <span className="rounded-full bg-[#F0FDF4] px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-[#166534]">
                                                 {t("Αυτή η σελίδα", "This page")}
                                             </span>
                                         ) : (
                                             <ArrowRight className="h-4 w-4 text-[#94A3B8]" />
                                         )}
                                     </div>
-                                    <h3 className="text-[19px] font-medium text-[#1A1A1A] mb-3">{t(pillar.titleEl, pillar.titleEn)}</h3>
-                                    <p className="text-[15px] leading-relaxed text-[#475569]">{t(pillar.descEl, pillar.descEn)}</p>
+                                    <h3 className="text-[20px] font-semibold text-[#1A1A1A] mb-3">{t(pillar.titleEl, pillar.titleEn)}</h3>
+                                    <p className="text-[14px] leading-relaxed text-[#475569]">{t(pillar.descEl, pillar.descEn)}</p>
                                 </div>
                             )
                             return pillar.href ? (
@@ -116,18 +116,18 @@ export default function GroupLifeProductPage() {
             <section className="px-6 lg:px-12 py-24">
                 <div className="mx-auto max-w-[1240px] grid gap-16 md:grid-cols-2">
                     <div>
-                        <h2 className="text-[28px] font-medium tracking-[-0.03em] mb-5 leading-[1.15] text-[#1A1A1A]">
+                        <h2 className="text-[24px] font-semibold tracking-[-0.03em] mb-5 leading-[1.15] text-[#1A1A1A]">
                             {t("Για HR και ιδιοκτήτες επιχειρήσεων", "For HR and business owners")}
                         </h2>
-                        <p className="text-[#475569] text-[17px] leading-relaxed">
+                        <p className="text-[#475569] text-[18px] leading-relaxed">
                             {t("Ανεβάστε το ομαδικό συμβόλαιο και δείτε τις παροχές του χαρτογραφημένες: κεφάλαια ανά εργαζόμενο, συμπληρωματικές καλύψεις, ημερομηνία ανανέωσης. Όταν έρθει η στιγμή της διαπραγμάτευσης, ξέρετε τι ακριβώς πληρώνετε.", "Upload the group policy and see its benefits mapped: capital per employee, supplementary covers, renewal date. When negotiation time comes, you know exactly what you are paying for.")}
                         </p>
                     </div>
                     <div>
-                        <h2 className="text-[28px] font-medium tracking-[-0.03em] mb-5 leading-[1.15] text-[#1A1A1A]">
+                        <h2 className="text-[24px] font-semibold tracking-[-0.03em] mb-5 leading-[1.15] text-[#1A1A1A]">
                             {t("Για εργαζομένους", "For employees")}
                         </h2>
-                        <p className="text-[#475569] text-[17px] leading-relaxed">
+                        <p className="text-[#475569] text-[18px] leading-relaxed">
                             {t("Το ομαδικό κεφάλαιο ζωής μετράει στον οικογενειακό σας σχεδιασμό: αν το ατομικό σας συμβόλαιο το αγνοεί, ίσως πληρώνετε για κάλυψη που ήδη έχετε — ή στηρίζεστε σε κεφάλαιο μικρότερο απ' όσο νομίζετε.", "Your group life capital counts in your family planning: if your personal policy ignores it, you may be paying for cover you already have — or relying on a smaller sum than you think.")}
                         </p>
                     </div>
@@ -138,14 +138,14 @@ export default function GroupLifeProductPage() {
 
             {/* CTA */}
             <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">
-                <h2 className="text-[36px] lg:text-[48px] font-medium tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
+                <h2 className="text-[32px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
                     {t("Μια παροχή που κανείς δεν διαβάζει αξίζει να τη βλέπουν όλοι.", "A benefit nobody reads deserves to be seen by everyone.")}
                 </h2>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <Link href="/auth/signup" className="inline-flex rounded-[4px] bg-[#89D9B2] px-8 py-4 text-[16px] font-bold text-[#1A1A1A] transition-opacity duration-150 hover:opacity-90">
+                    <Link href="/auth/signup" className="pw-primary-button-inverse pw-btn-lg">
                         {t("Ανεβάστε το ομαδικό σας", "Upload your group policy")}
                     </Link>
-                    <Link href="/solutions/agents" className="inline-flex rounded-[4px] border border-white/30 px-8 py-4 text-[16px] font-bold text-white transition-colors duration-150 hover:bg-white/10">
+                    <Link href="/solutions/agents" className="pw-secondary-button-inverse pw-btn-lg">
                         {t("Λύσεις για πράκτορες", "Solutions for agents")}
                     </Link>
                 </div>
