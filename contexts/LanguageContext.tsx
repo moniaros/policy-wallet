@@ -2,16 +2,32 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import type { Language } from '@/lib/i18n'
-import { getTranslations } from '@/lib/i18n'
+// Type-only imports: erased at compile time, so this module never pulls the
+// ~194 KB EL+EN dictionary into the bundle. Keep it that way — see
+// docs/design/I18N_CONSUMER_MAP.md. The dictionary lives in
+// contexts/TranslationsProvider.tsx and is mounted only by the layouts whose
+// subtrees actually read `t`.
+import type { Language, getTranslations } from '@/lib/i18n'
 
-interface LanguageContextType {
+export type Translations = ReturnType<typeof getTranslations>
+
+interface LanguageStateContextType {
     language: Language
     setLanguage: (lang: Language) => void
-    t: ReturnType<typeof getTranslations>
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
+const LanguageStateContext = createContext<LanguageStateContextType | undefined>(undefined)
+
+/**
+ * Dictionary context. Deliberately declared here — next to the language state
+ * it depends on — but *populated* by TranslationsProvider, which is the module
+ * that imports the dictionary. Splitting the context object from its provider
+ * is what lets useLanguage() hand out `t` without every marketing page that
+ * imports useLanguage() paying for the dictionary.
+ */
+const TranslationsContext = createContext<Translations | undefined>(undefined)
+
+export { LanguageStateContext, TranslationsContext }
 
 /**
  * Fixed-language provider for locale-specific routes (/en/*): every
@@ -44,24 +60,21 @@ export function StaticLanguageProvider({
             setLanguage: (lang: Language) => {
                 if (lang !== language) router.push(counterpartPath)
             },
-            t: getTranslations(language),
         }),
         [language, counterpartPath, router]
     )
 
-    return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>
+    return <LanguageStateContext.Provider value={value}>{children}</LanguageStateContext.Provider>
 }
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
     const [language, setLanguageState] = useState<Language>('el')
-    const [translations, setTranslations] = useState(getTranslations('el'))
 
     useEffect(() => {
         // Load language preference from localStorage
         const savedLanguage = localStorage.getItem('language') as Language
         if (savedLanguage && (savedLanguage === 'el' || savedLanguage === 'en')) {
             setLanguageState(savedLanguage)
-            setTranslations(getTranslations(savedLanguage))
         }
     }, [])
 
@@ -77,7 +90,6 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     const router = useRouter()
     const setLanguage = (lang: Language) => {
         setLanguageState(lang)
-        setTranslations(getTranslations(lang))
         localStorage.setItem('language', lang)
 
         // Also update in database via API call
@@ -91,16 +103,53 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     }
 
     return (
-        <LanguageContext.Provider value={{ language, setLanguage, t: translations }}>
+        <LanguageStateContext.Provider value={{ language, setLanguage }}>
             {children}
-        </LanguageContext.Provider>
+        </LanguageStateContext.Provider>
     )
 }
 
+/**
+ * Reads language state, and — for subtrees under a TranslationsProvider — the
+ * dictionary as `t`.
+ *
+ * `t` is a lazy getter rather than a plain property: consumers that only read
+ * `language`/`setLanguage` (all 23 marketing ones) never touch it, and a
+ * consumer that reads `t` outside a TranslationsProvider gets a named error
+ * instead of a `Cannot read properties of undefined` further down the render.
+ */
 export function useLanguage() {
-    const context = useContext(LanguageContext)
-    if (!context) {
+    const state = useContext(LanguageStateContext)
+    if (!state) {
         throw new Error('useLanguage must be used within a LanguageProvider')
     }
-    return context
+    const translations = useContext(TranslationsContext)
+
+    return React.useMemo(
+        () => ({
+            language: state.language,
+            setLanguage: state.setLanguage,
+            get t(): Translations {
+                if (!translations) {
+                    throw new Error(
+                        'useLanguage().t requires a <TranslationsProvider>. The dictionary is ' +
+                        'mounted only by the (protected), auth and onboarding layouts — a ' +
+                        'component that needs `t` cannot render on a public/marketing route. ' +
+                        'See docs/design/I18N_CONSUMER_MAP.md.'
+                    )
+                }
+                return translations
+            },
+        }),
+        [state.language, state.setLanguage, translations]
+    )
+}
+
+/** Dictionary-only accessor, for consumers that never touch language state. */
+export function useTranslations(): Translations {
+    const translations = useContext(TranslationsContext)
+    if (!translations) {
+        throw new Error('useTranslations must be used within a <TranslationsProvider>')
+    }
+    return translations
 }

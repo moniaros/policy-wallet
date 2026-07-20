@@ -5,6 +5,7 @@ import { redirect } from "next/navigation"
 import { AppShell } from "@/components/shell"
 import { NotificationWatcher } from "@/components/notifications/NotificationWatcher"
 import { PlanFactsProvider } from "@/components/monetization/PlanFactsProvider"
+import { TranslationsProvider } from "@/contexts/TranslationsProvider"
 import { getClientPlanFacts } from "@/lib/pricing/plan-catalog"
 import { getPublicPartnerOffers } from "@/lib/partner-offers/catalog"
 import { getTranslations } from "@/lib/i18n"
@@ -120,6 +121,10 @@ export default async function ProtectedLayout({
     const userRoleObj = { role: currentRole, label: t.roles[currentRole] || currentRole }
 
     return (
+        // Mounts the EL+EN dictionary for the whole protected tree. It wraps
+        // AppShell rather than sitting inside it because the shell itself
+        // (AppShell/MainNav/UserMenu) reads `t`.
+        <TranslationsProvider>
         <AppShell
             user={{
                 name: dbUser.name || roleCopy.defaults.userName,
@@ -137,5 +142,6 @@ export default async function ProtectedLayout({
             {currentRole === "agent" && <NotificationWatcher userId={dbUser.id} />}
             <PlanFactsProvider facts={planFacts}>{children}</PlanFactsProvider>
         </AppShell>
+        </TranslationsProvider>
     )
 }
