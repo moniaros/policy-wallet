@@ -272,3 +272,58 @@ _A second session ran the same audit brief independently the same day (three swe
 - **Family**: §5 #15 proposes a separate ~€4.99 family plan; the second sweep argues for making **Pro the household plan** (members + shared dashboard + cross-member gap analysis) because Pro's current value story is thin at 3.3× Plus. Either works; pick one — don't build both.
 - **One-time price points**: §4 proposes €6.90/€9.90/€29; the second sweep (anchored on TOKEN_ECONOMICS) proposes €1.49/€4.90/€9.90/€19.90. Converge on one SKU table before the first fake-door test so the experiment measures the real offer.
 - **Wedge sequencing**: same strategy (agents are the customer, renewals are the engine), different fourth unlock — the main body's integrity week (cron + invite + fencing) plus the second sweep's **sponsorship attribution** on `createRun`. Recommend shipping attribution in the same sprint as the invite unblock: the loop only demonstrates ROI to agents when both ends are live.
+
+---
+
+## 9. Status ledger — what shipped in the six days after (19 Jul 2026)
+
+_Added 19 Jul 2026, verified against the working tree at `8949f5a` — code, not changelogs: every "fixed" below was re-checked at the cited file or route. §1–8 stand unchanged above as the historical record._
+
+### 9.1 The four headline defects (§1)
+
+- **Retention engine — FIXED, in two acts.** The integrity week (14 Jul) scheduled `renewal-check` + `protection-score-refresh` in `vercel.json` — and they *still* didn't fire: `proxy.ts` 307-redirected every cron to signin (Vercel counts a 307 as a successful ping), and the routes were POST-only while Vercel Cron issues GET. **#123 (17 Jul)** allowlisted `/api/v1/jobs/` and exported GET on all 8 cron routes; verified live (unauthenticated GET now 401s — handler reached, `CRON_SECRET` enforced; daily at 05:00/07:00 UTC). The free floor shipped *exactly as §2.8 recommended*: free tier gets the 30-day email only, the full 90/60/30/15/7 ladder is entitlement-gated (`lib/services/renewal.service.ts`).
+- **Cancellation — FIXED (14 Jul).** `cancelSubscription` now calls Stripe cancel-at-period-end and surfaces errors (`account/actions.ts:403`); `stripeCustomerId` persisted on *all* fulfillment paths so the billing portal works; `currentPeriodEnd` mirrors Stripe (annual/trial-aware); the v1 webhook gained lifecycle sync (`lib/services/billing/stripe-lifecycle.ts`: subscription updated/deleted, invoice paid/failed → dunning via `past_due`) — closing §8.1's two webhook findings in the same stroke; `scripts/backfill-stripe-billing.mjs` repairs pre-fix subscribers; the money-path E2E pins a cancel block. "Cancel anytime" is true now.
+- **Growth loops — FIXED where real, retired where theater.** `/invite/` is allowlisted in `proxy.ts:93` — the agent→client loop admits anonymous visitors, and #151 hardened it (redemption bound to the invited email; accepting an invite now sets `activationStatus` so the agent actually sees the customer). The newsletter was rebuilt rather than unblocked: the dead HubSpot waitlist route is deleted; the footer POSTs to `/api/v1/newsletter/subscribe` (Brevo sink, `FormSubmission` persisted before any network call, honeypot). The referral tab is deliberately not rendered (`AccountClientPage.tsx:56`) until a real earn/redeem exists — the false promise is gone; the program itself is still unbuilt (row 9 below).
+- **B2B tier matrix — PARTIAL, mostly true now.** #142 de-listed `apiAccess` and softened the branded-reports claim; #145 enforced `brandedPortal` + `pipelineAnalytics` server-side (the blur had been cosmetic); **#147 then built branded reports** — agent-branded report behind a real `brandedReport` entitlement (shipped Pro+, not the Starter marquee §4 proposed); the commissions page is tier-locked (`CommissionsLocked`); manual re-analysis is paying-only across all four triggers (#159); and #160/#161 moved the whole matrix into an admin-managed DB catalog (strict-Zod, fail-closed to code defaults) that *every* advertised figure renders from — pricing-page drift from enforcement is now impossible by construction. Still open: fencing proposals/doc-requests/rooms at Starter (§4 #5) remains a product call.
+
+### 9.2 Recommendations superseded by owner decisions
+
+- **§4's price header — SUPERSEDED (14 Jul, paid-aha-loop v1):** not "Free / Plus €2.99 / Pro €9.99" but Free **1 policy, zero paid AI**; **Starter €2.99/€29** (5 policies, organizer + basic reminders, no AI); **Plus €7.99/€79** (all AI, unlimited, 14-day trial). Code keys unchanged. Since #160 the tier matrix lives in the admin-managed `plans` catalog — price and capacity experiments are admin edits, not deploys.
+- **3 lifetime free Q&A (§2.6, row 8) — SUPERSEDED:** `FREE_LIFETIME_QUESTIONS = 0`. The owner chose a hard free/AI split — free converts via the basic parsed summary + locked-insight grid, not free tastes of AI.
+- **The one-meter problem (§2.5) — dissolved rather than fixed:** Plus is unlimited-AI and Starter/free are zero-AI (`aiAnalysisPerMonth: 0/0/null`), so the display-only "25/mo" counter no longer exists to disagree with the token budget.
+- **`ph-premium` orphan (§4 #3) — FIXED:** orphan seed removed; RevenueCat premium remapped to `ph-pro`; grandfathered rows keep resolving via nullable `tierKey` + `normalizeTier` (#160). A legacy subscriber lands on real Plus entitlements, not free.
+
+### 9.3 The §5 matrix, row by row
+
+| # | Opportunity | Status | Where it landed |
+|---|---|---|---|
+| 1 | Renewal + score crons | FIXED | Scheduled 14 Jul; actually firing since #123 (17 Jul) — see §9.1. |
+| 2 | Cancellation | FIXED | Integrity week + lifecycle webhooks + backfill script. |
+| 3 | Conversion P1 set | PARTIAL | Batch-upload cap now routes to the UpgradeModal (14 Jul). "Advertise the free analysis" is moot — the free deep analysis was removed with the tier restructure; `PremiumInsightCards` is the new post-parse conversion surface. |
+| 4 | Invite + waitlist unblock | FIXED | `proxy.ts` allowlists `/invite/`; newsletter rebuilt on Brevo (waitlist route deleted). |
+| 5 | Agent tier fencing | PARTIAL | #145/#147/#159 + DB-driven fail-closed entitlements (#160). Starter fence for collaboration objects still undecided. |
+| 6 | Branded agent report | BUILT | #147 — visibility-checked route, `brandedReport` entitlement (Pro+), marketing re-enabled honestly. |
+| 7 | Policy Check-Up €9.90 | PARTIAL | The €3 per-policy gap-report unlock (13 Jul, `report_unlock_purchases`, mode:payment) is the shipped cousin; the full SKU is unbuilt. |
+| 8 | Free floor decision | DECIDED | 30-day renewal email floor enforced as recommended; free Q&A rejected (§9.2). |
+| 9 | Real referral program | OPEN | Tab hidden 14 Jul (theater removed); nothing wired yet. |
+| 10 | Annual-first everywhere | PARTIAL | `annualPrice` is first-class in the catalog every surface renders (#160/#161); stale "20% coming soon" copy fixed. Annual-*default* presentation not re-audited. |
+| 11 | Renewal-prefs UI + policyholder renewals surface | OPEN | — |
+| 12 | Concierge €29 / book-import €99–299 | OPEN | — |
+| 13 | "Your Insurance Year" | OPEN | — |
+| 14 | Agency consolidated billing | OPEN | But Agency "Contact Sales" now routes to `/contact` instead of firing a live €99.99 checkout. |
+| 15 | Family plan | OPEN | Deliberately deferred, as recommended. |
+| 16 | Claim-pack / lead fees | OPEN | Deliberately post-GA, as recommended. |
+| 17 | `ph-premium` orphan | FIXED | §9.2. |
+| 18 | Fake social proof / stale copy | FIXED | Landing stats replaced with true facts (14 Jul); #166 continued the honesty sweep across marketing. |
+
+**§8 addendum items:** webhook single-event handling and the hardcoded `currentPeriodEnd` — FIXED (§9.1); conflicting agent plan seeds — FIXED (seeds aligned with the migration, orphans removed); agent token top-up shelf, sponsorship attribution, B2B2E pilot, Viber/WhatsApp channels, per-seat Agency pricing, the "constitutionally free" code comment, and the WTP experiments (§8.3) — all OPEN. The deprecated dual webhook is a tracked [LAUNCH] item in [agent-checkout-billing-audit-2026-07.md](agent-checkout-billing-audit-2026-07.md).
+
+### 9.4 Found after this audit (things §1–8 couldn't know)
+
+- **A checkout-integrity class this audit missed:** agent checkout charged **€61.99 for the advertised €49.99** — VAT-inclusive prices treated as net, +24% on top — plus a false "14-day free trial" badge on Agent Pro. Both fixed and deployed (#141); the Stripe-Tax compliance tail (itemized contained VAT, VAT-ID collection) is specced as [LAUNCH].
+- **The collaboration wedge got its plumbing (#149–#155):** five cross-side notifications that fired into the void now reach the counterparty in their language; the questionnaire loop was broken at three points (the customer literally couldn't open the form — `/tasks/[id]` ignored its param); proposals gained the missing decline/counter UI and accepted proposals now create WON opportunities; the customer "My Agent" page finally has the promised shared-access ledger with per-policy revoke. §2.12's wedge thesis holds; its trust story is materially stronger.
+- **Partner-offers program (#162–#164), a new retention/ARPU surface** in the §3 "perk concierge" direction: vendor/offer catalog, tier-partitioned `/benefits` with locked teasers behind a new `partner_offers` gate, marketing ships dark until the first vendor is signed (catalog seeds empty, per the honesty rule).
+- **Full English mirror (#168):** 24 `/en` routes with per-locale SEO — the diaspora audience §2.2 flagged now has a first-class funnel. Signup remains Greek-mobile-only, still no social login.
+- **Unit-economics caveat:** token metering under-reported `cost_eur` by **1000×** (per-1K prices against a per-1M divisor; fixed in #157). Historical rows carry the old scale — re-derive any COGS reading from post-fix data before leaning on §1's margin framing.
+
+**Net:** the integrity week did what §6 predicted — days of work closed all four headline defects, and the plumbing (crons, cancel, invites, webhooks) now matches the product's promises. What remains from this audit is the *build* list, not the repair list: the one-time SKUs, the referral program, the renewal-prefs surface, and the agent top-up shelf.
