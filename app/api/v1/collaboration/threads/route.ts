@@ -1,6 +1,7 @@
 import { z } from "zod"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { requireApiUser } from "@/lib/api-auth"
+import { requireCollaborationEntitlement } from "@/lib/api-entitlements"
 import { collaborationService } from "@/lib/services/collaboration.service"
 
 const listQuerySchema = z.object({
@@ -52,6 +53,9 @@ export async function POST(req: Request) {
     const authCheck = await requireApiUser()
     if ("error" in authCheck) return authCheck.error
     const { auth } = authCheck
+
+    const gate = await requireCollaborationEntitlement(auth)
+    if (gate) return gate
 
     const body = await req.json().catch(() => null)
     const parsed = createThreadSchema.safeParse(body)
