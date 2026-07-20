@@ -95,6 +95,22 @@ export const pensionContent: BranchContent = {
             question: { el: 'Τι κόστος έχει η πρόωρη εξαγορά;', en: 'What does early surrender cost?' },
         },
         {
+            id: 'pension_check_costs',
+            label: { el: 'Δες ποια κόστη επιβαρύνουν το πρόγραμμα', en: 'See which costs the plan carries' },
+            href: null,
+            ctaType: 'askAi',
+            question: {
+                el: 'Ποια κόστη διαχείρισης και επιβαρύνσεις αναφέρει το συμβόλαιό μου;',
+                en: 'Which management costs and charges does my contract state?',
+            },
+        },
+        {
+            id: 'pension_check_dates',
+            label: { el: 'Σημείωσε ημερομηνίες καταβολών και ωρίμανσης', en: 'Note contribution and maturity dates' },
+            href: '/renewals',
+            ctaType: 'renewals',
+        },
+        {
             id: 'pension_compare_goal',
             label: { el: 'Σύγκρινε εισφορές με τον στόχο αποταμίευσης', en: 'Compare contributions with your savings goal' },
             href: '/coverage-insights',

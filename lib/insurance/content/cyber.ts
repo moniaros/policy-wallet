@@ -101,10 +101,26 @@ export const cyberContent: BranchContent = {
             question: { el: 'Τι πρέπει να κάνω άμεσα σε cyber περιστατικό;', en: 'What must I do immediately in a cyber incident?' },
         },
         {
+            id: 'cyber_check_obligations',
+            label: { el: 'Δες ποιες υποχρεώσεις σου είναι προϋπόθεση κάλυψης', en: 'See which of your obligations are a condition of cover' },
+            href: null,
+            ctaType: 'askAi',
+            question: {
+                el: 'Ποιες υποχρεώσεις μου ως χρήστη αποτελούν προϋπόθεση για να ισχύσει η κάλυψη;',
+                en: 'Which of my obligations as a user are a precondition for the cover to apply?',
+            },
+        },
+        {
             id: 'cyber_ask_agent',
             label: { el: 'Ρώτησε τον σύμβουλό σου για την οικογενειακή κάλυψη', en: 'Ask your advisor about family-wide cover' },
             href: '/agent',
             ctaType: 'askAgent',
+        },
+        {
+            id: 'cyber_save_incident_plan',
+            label: { el: 'Κράτα πρόχειρα τα βήματα περιστατικού', en: 'Keep the incident steps at hand' },
+            href: null,
+            ctaType: 'task',
         },
     ],
     suggestedQuestions: [

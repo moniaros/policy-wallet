@@ -101,6 +101,28 @@ export const petContent: BranchContent = {
             ctaType: 'askAi',
             question: { el: 'Τι έγγραφα χρειάζομαι για αποζημίωση κτηνιάτρου;', en: 'What documents do I need for a vet claim?' },
         },
+        {
+            id: 'pet_check_liability',
+            label: { el: 'Δες τι ισχύει αν το κατοικίδιο προκαλέσει ζημιά', en: 'See what applies if your pet causes damage' },
+            href: null,
+            ctaType: 'askAi',
+            question: {
+                el: 'Καλύπτεται ζημιά ή τραυματισμός που θα προκαλέσει το κατοικίδιό μου σε τρίτο;',
+                en: 'Is damage or injury my pet causes to a third party covered?',
+            },
+        },
+        {
+            id: 'pet_renewal_age',
+            label: { el: 'Δες τι αλλάζει στην ανανέωση λόγω ηλικίας', en: 'See what changes at renewal because of age' },
+            href: '/renewals',
+            ctaType: 'renewals',
+        },
+        {
+            id: 'pet_ask_agent_leishmania',
+            label: { el: 'Ρώτησε τον σύμβουλό σου για κάλυψη λεϊσμανίασης', en: 'Ask your advisor about leishmaniasis cover' },
+            href: '/agent',
+            ctaType: 'askAgent',
+        },
     ],
     suggestedQuestions: [
         { el: 'Τι καλύπτεται στον κτηνίατρο;', en: 'What is covered at the vet?' },
