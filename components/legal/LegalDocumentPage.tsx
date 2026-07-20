@@ -1,6 +1,7 @@
 import Link from "next/link"
 import {
     LEGAL_CONTENT_VERSION,
+    LEGAL_DOC_META,
     LEGAL_LAST_UPDATED,
     getLegalContent,
     type LegalDocumentKind,
@@ -12,12 +13,41 @@ type LegalDocumentPageProps = {
     documentKind: LegalDocumentKind
 }
 
+/** Renders an ISO (yyyy-mm-dd) last-updated date in the reader's locale. */
+function formatLastUpdated(isoDate: string, language: LegalLanguage): string {
+    return new Intl.DateTimeFormat(language === "el" ? "el-GR" : "en-GB", {
+        dateStyle: "long",
+        timeZone: "UTC",
+    }).format(new Date(`${isoDate}T00:00:00Z`))
+}
+
 export function LegalDocumentPage({ language, documentKind }: LegalDocumentPageProps) {
     const content = getLegalContent(language)
     const document = content[documentKind]
     const alternateLanguage: LegalLanguage = language === "el" ? "en" : "el"
-    const termsHref = `/terms?lang=${language}`
-    const privacyHref = `/privacy?lang=${language}`
+
+    // Terms/Privacy fall through to the shared GA constants so their header
+    // renders exactly as before; only documents with their own revision in
+    // LEGAL_DOC_META get a locale-formatted date and a per-document version.
+    const documentMeta = LEGAL_DOC_META[documentKind]
+    const lastUpdatedDisplay = documentMeta
+        ? formatLastUpdated(documentMeta.lastUpdatedIso, language)
+        : LEGAL_LAST_UPDATED
+    const versionDisplay = documentMeta?.version ?? LEGAL_CONTENT_VERSION
+
+    // Rendered unfiltered (including the self-link) to match the pre-existing
+    // behaviour on /terms and /privacy — the only delta on those two pages is
+    // the two appended links.
+    const legalNavLinks: { href: string; label: string; kind: LegalDocumentKind }[] = [
+        { href: `/terms?lang=${language}`, label: content.ui.openTerms, kind: "terms" },
+        { href: `/privacy?lang=${language}`, label: content.ui.openPrivacy, kind: "privacy" },
+        { href: `/cookies?lang=${language}`, label: content.ui.openCookies, kind: "cookies" },
+        {
+            href: `/subprocessors?lang=${language}`,
+            label: content.ui.openSubprocessors,
+            kind: "subprocessors",
+        },
+    ]
 
     return (
         <div className="min-h-screen bg-stone-50 px-4 py-12 sm:px-6 lg:px-8">
@@ -36,8 +66,8 @@ export function LegalDocumentPage({ language, documentKind }: LegalDocumentPageP
                     </div>
                     <h1 className="mt-3 text-3xl font-bold text-stone-900">{document.title}</h1>
                     <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-stone-500">
-                        <span>{content.ui.lastUpdatedLabel}: {LEGAL_LAST_UPDATED}</span>
-                        <span>{content.ui.versionLabel}: {LEGAL_CONTENT_VERSION}</span>
+                        <span>{content.ui.lastUpdatedLabel}: {lastUpdatedDisplay}</span>
+                        <span>{content.ui.versionLabel}: {versionDisplay}</span>
                     </div>
                 </div>
 
@@ -52,17 +82,59 @@ export function LegalDocumentPage({ language, documentKind }: LegalDocumentPageP
                             {section.paragraphs.map((paragraph, index) => (
                                 <p key={`${section.id}-${index}`}>{paragraph}</p>
                             ))}
+                            {section.table ? (
+                                <div className="overflow-x-auto">
+                                    <table className="min-w-full text-sm">
+                                        <thead>
+                                            <tr>
+                                                {section.table.headers.map((header) => (
+                                                    <th key={header} className="text-left align-top">
+                                                        {header}
+                                                    </th>
+                                                ))}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {section.table.rows.map((row, rowIndex) => (
+                                                <tr key={`${section.id}-row-${rowIndex}`}>
+                                                    {row.map((cell, cellIndex) => (
+                                                        <td
+                                                            key={`${section.id}-row-${rowIndex}-cell-${cellIndex}`}
+                                                            className="align-top"
+                                                        >
+                                                            {cell}
+                                                        </td>
+                                                    ))}
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            ) : null}
+                            {section.link ? (
+                                <p>
+                                    <Link
+                                        href={`${section.link.href}?lang=${language}`}
+                                        className="font-semibold text-primary hover:text-primary-hover"
+                                    >
+                                        {section.link.label}
+                                    </Link>
+                                </p>
+                            ) : null}
                         </section>
                     ))}
                 </div>
 
                 <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-stone-100 pt-6">
-                    <Link href={termsHref} className="text-sm font-semibold text-primary hover:text-primary-hover">
-                        {content.ui.openTerms}
-                    </Link>
-                    <Link href={privacyHref} className="text-sm font-semibold text-primary hover:text-primary-hover">
-                        {content.ui.openPrivacy}
-                    </Link>
+                    {legalNavLinks.map((link) => (
+                        <Link
+                            key={link.kind}
+                            href={link.href}
+                            className="text-sm font-semibold text-primary hover:text-primary-hover"
+                        >
+                            {link.label}
+                        </Link>
+                    ))}
                     <span className="text-stone-300">|</span>
                     <Link href="/" className="text-sm font-medium text-stone-600 hover:text-stone-900">
                         {content.ui.backToHome}

@@ -106,6 +106,10 @@ export async function proxy(request: NextRequest) {
         "/en",
         "/terms",
         "/privacy",
+        // Legal set: cookie policy + subprocessors list must be reachable
+        // anonymously (linked from the privacy policy and the public footer).
+        "/cookies",
+        "/subprocessors",
         "/pricing",
         "/company",
         "/contact",

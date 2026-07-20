@@ -1,12 +1,21 @@
 import { fixMojibakeObject } from "@/lib/i18n/fix-mojibake"
 
 export type LegalLanguage = "el" | "en"
-export type LegalDocumentKind = "terms" | "privacy"
+export type LegalDocumentKind = "terms" | "privacy" | "cookies" | "subprocessors"
+
+export type LegalTable = {
+    headers: string[]
+    rows: string[][]
+}
 
 export type LegalSection = {
     id: string
     title: string
     paragraphs: string[]
+    /** Optional data table rendered after the paragraphs. */
+    table?: LegalTable
+    /** Optional internal link rendered after the paragraphs/table. */
+    link?: { href: string; label: string }
 }
 
 export type LegalDocument = {
@@ -22,16 +31,33 @@ type LegalUiCopy = {
     switchLanguage: string
     openTerms: string
     openPrivacy: string
+    openCookies: string
+    openSubprocessors: string
 }
 
 type LegalContent = {
     ui: LegalUiCopy
     terms: LegalDocument
     privacy: LegalDocument
+    cookies: LegalDocument
+    subprocessors: LegalDocument
 }
 
 export const LEGAL_CONTENT_VERSION = "GR-GA-2026.03"
 export const LEGAL_LAST_UPDATED = "March 2, 2026"
+
+/**
+ * Per-document header-meta overrides. Terms and Privacy deliberately keep the
+ * shared GA constants above (their rendered header must not shift); the cookie
+ * policy and subprocessors list ship on their own 2026.07 revision and carry an
+ * ISO date that the renderer formats per locale.
+ */
+export const LEGAL_DOC_META: Partial<
+    Record<LegalDocumentKind, { version: string; lastUpdatedIso: string }>
+> = {
+    cookies: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-19" },
+    subprocessors: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-19" },
+}
 
 const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
     el: {
@@ -42,6 +68,8 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
             switchLanguage: "English",
             openTerms: "Όροι Χρήσης",
             openPrivacy: "Πολιτική Απορρήτου",
+            openCookies: "Πολιτική Cookies",
+            openSubprocessors: "Υπο-εκτελούντες Επεξεργασίας",
         },
         terms: {
             title: "Όροι Χρήσης",
@@ -189,6 +217,152 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
             ],
         },
+        cookies: {
+            title: "Πολιτική Cookies",
+            intro: [
+                "Η σελίδα αυτή εξηγεί ποια cookies και συναφείς τεχνολογίες χρησιμοποιεί το PolicyWallet (policywallet.gr), για ποιον σκοπό και πώς μπορείτε να τα διαχειριστείτε.",
+            ],
+            sections: [
+                {
+                    id: "what_are_cookies",
+                    title: "1. Τι είναι τα cookies",
+                    paragraphs: [
+                        "Τα cookies είναι μικρά αρχεία που αποθηκεύονται στη συσκευή σας όταν επισκέπτεστε έναν ιστότοπο, ώστε να «θυμάται» πληροφορίες όπως τη σύνδεσή σας ή τις προτιμήσεις σας. Παρόμοιο ρόλο παίζει και η τοπική αποθήκευση του φυλλομετρητή (localStorage).",
+                    ],
+                },
+                {
+                    id: "cookies_we_use",
+                    title: "2. Ποια cookies χρησιμοποιούμε",
+                    paragraphs: [
+                        "Σήμερα η πλατφόρμα χρησιμοποιεί μόνο τα εξής:",
+                    ],
+                    table: {
+                        headers: ["Όνομα", "Σκοπός", "Διάρκεια", "Κατηγορία"],
+                        rows: [
+                            [
+                                "pw_cookie_consent",
+                                "Αποθηκεύει τις προτιμήσεις συγκατάθεσης cookies που δηλώσατε στο banner",
+                                "12 μήνες",
+                                "Απολύτως απαραίτητο",
+                            ],
+                            [
+                                "sb-*-auth-token (Supabase)",
+                                "Διατηρεί τη σύνδεσή σας στον λογαριασμό (αυθεντικοποίηση)",
+                                "Διάρκεια συνεδρίας, με ανανέωση",
+                                "Απολύτως απαραίτητο",
+                            ],
+                            [
+                                "language (localStorage)",
+                                "Θυμάται τη γλώσσα που επιλέξατε — τοπική αποθήκευση, όχι cookie",
+                                "Μέχρι να διαγραφεί από εσάς",
+                                "Λειτουργικό",
+                            ],
+                        ],
+                    },
+                },
+                {
+                    id: "analytics_marketing",
+                    title: "3. Cookies ανάλυσης και marketing",
+                    paragraphs: [
+                        "Δεν χρησιμοποιούμε σήμερα cookies ανάλυσης ή marketing τρίτων. Οι αντίστοιχες κατηγορίες εμφανίζονται στο banner ώστε, αν προστεθούν στο μέλλον, να ενεργοποιηθούν μόνο με τη δική σας συγκατάθεση και αφού πρώτα ενημερωθεί η παρούσα σελίδα.",
+                    ],
+                },
+                {
+                    id: "managing_cookies",
+                    title: "4. Πώς διαχειρίζεστε τα cookies",
+                    paragraphs: [
+                        "Κατά την πρώτη επίσκεψη επιλέγετε από το banner αν αποδέχεστε όλα τα cookies, μόνο τα απαραίτητα, ή προσαρμοσμένες προτιμήσεις ανά κατηγορία. Η επιλογή σας καταγράφεται με την έκδοση της πολιτικής που ίσχυε τη στιγμή της συγκατάθεσης.",
+                        "Για να αλλάξετε γνώμη, διαγράψτε το cookie pw_cookie_consent από τις ρυθμίσεις του φυλλομετρητή σας — το banner θα εμφανιστεί ξανά στην επόμενη επίσκεψη. Μπορείτε επίσης να αποκλείσετε cookies συνολικά από τον φυλλομετρητή· σημειώστε ότι χωρίς τα απολύτως απαραίτητα cookies η σύνδεση στην πλατφόρμα δεν λειτουργεί.",
+                    ],
+                    link: { href: "/privacy", label: "Δείτε και την Πολιτική Απορρήτου" },
+                },
+            ],
+        },
+        subprocessors: {
+            title: "Υπο-εκτελούντες Επεξεργασίας",
+            intro: [
+                "Για τη λειτουργία του PolicyWallet συνεργαζόμαστε με περιορισμένο αριθμό τεχνικών παρόχων που επεξεργάζονται προσωπικά δεδομένα για λογαριασμό μας (υπο-εκτελούντες την επεξεργασία). Η σελίδα αυτή απαριθμεί ποιοι είναι, τι ρόλο έχουν, ποια δεδομένα αγγίζουν και πού τα επεξεργάζονται.",
+            ],
+            sections: [
+                {
+                    id: "subprocessor_list",
+                    title: "1. Κατάλογος υπο-εκτελούντων",
+                    paragraphs: [
+                        "Ισχύει κατά την ημερομηνία τελευταίας ενημέρωσης που αναγράφεται στην κορυφή της σελίδας:",
+                    ],
+                    table: {
+                        headers: ["Πάροχος", "Ρόλος", "Δεδομένα", "Τοποθεσία επεξεργασίας"],
+                        rows: [
+                            [
+                                "Supabase",
+                                "Βάση δεδομένων, αυθεντικοποίηση, αποθήκευση αρχείων",
+                                "Δεδομένα λογαριασμού, ασφαλιστήρια έγγραφα, δεδομένα εφαρμογής",
+                                "ΕΕ — eu-west-3 (Παρίσι, Γαλλία)",
+                            ],
+                            [
+                                "Vercel",
+                                "Φιλοξενία εφαρμογής και δίκτυο διανομής (CDN)",
+                                "Δεδομένα κίνησης, τεχνικά αρχεία καταγραφής",
+                                "ΕΕ/ΗΠΑ (παγκόσμιο δίκτυο)",
+                            ],
+                            [
+                                "Stripe",
+                                "Επεξεργασία πληρωμών και συνδρομών",
+                                "Στοιχεία χρέωσης και συνδρομής· τα στοιχεία κάρτας τηρούνται αποκλειστικά από τη Stripe",
+                                "ΕΕ/ΗΠΑ",
+                            ],
+                            [
+                                "Brevo",
+                                "Αποστολή email (ειδοποιήσεις, newsletter)",
+                                "Διεύθυνση email, όνομα, περιεχόμενο ειδοποιήσεων",
+                                "ΕΕ (Γαλλία)",
+                            ],
+                            [
+                                "Upstash",
+                                "Όρια ρυθμού αιτημάτων (Redis)",
+                                "Μετρητές αιτημάτων ανά διεύθυνση IP — κανένα περιεχόμενο εγγράφων",
+                                "ΕΕ/ΗΠΑ",
+                            ],
+                            [
+                                "Google (Gemini API)",
+                                "Ανάλυση εγγράφων με AI — κύριος πάροχος",
+                                "Περιεχόμενο ασφαλιστηρίων προς ανάλυση, μόνο με τη συγκατάθεσή σας",
+                                "ΕΕ/ΗΠΑ",
+                            ],
+                            [
+                                "Anthropic",
+                                "Ανάλυση εγγράφων με AI — εναλλακτικός πάροχος",
+                                "Περιεχόμενο ασφαλιστηρίων προς ανάλυση, μόνο με τη συγκατάθεσή σας",
+                                "ΗΠΑ",
+                            ],
+                            [
+                                "OpenAI",
+                                "Ανάλυση εγγράφων με AI — εναλλακτικός πάροχος",
+                                "Περιεχόμενο ασφαλιστηρίων προς ανάλυση, μόνο με τη συγκατάθεσή σας",
+                                "ΗΠΑ",
+                            ],
+                        ],
+                    },
+                },
+                {
+                    id: "safeguards",
+                    title: "2. Εγγυήσεις",
+                    paragraphs: [
+                        "Κάθε υπο-εκτελών δεσμεύεται με σύμβαση επεξεργασίας δεδομένων κατά το άρθρο 28 GDPR και επεξεργάζεται μόνο τα δεδομένα που απαιτούνται για τον ρόλο του.",
+                        "Για παρόχους που επεξεργάζονται δεδομένα εκτός Ευρωπαϊκού Οικονομικού Χώρου, οι διαβιβάσεις καλύπτονται από το EU-U.S. Data Privacy Framework ή/και τις Τυποποιημένες Συμβατικές Ρήτρες της Ευρωπαϊκής Επιτροπής.",
+                        "Οι όροι επεξεργασίας δεδομένων των παρόχων AI δεν επιτρέπουν τη χρήση των δεδομένων σας για εκπαίδευση των μοντέλων τους.",
+                    ],
+                },
+                {
+                    id: "list_updates",
+                    title: "3. Ενημερώσεις του καταλόγου",
+                    paragraphs: [
+                        "Πριν προσθέσουμε νέο υπο-εκτελούντα ή αλλάξουμε ουσιωδώς τον ρόλο υφιστάμενου, ενημερώνουμε τη σελίδα αυτή και την ημερομηνία στην κορυφή της.",
+                    ],
+                    link: { href: "/privacy", label: "Δείτε και την Πολιτική Απορρήτου" },
+                },
+            ],
+        },
     },
     en: {
         ui: {
@@ -198,6 +372,8 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
             switchLanguage: "Ελληνικά",
             openTerms: "Terms of Service",
             openPrivacy: "Privacy Policy",
+            openCookies: "Cookie Policy",
+            openSubprocessors: "Subprocessors",
         },
         terms: {
             title: "Terms of Service",
@@ -345,22 +521,173 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                 },
             ],
         },
+        cookies: {
+            title: "Cookie Policy",
+            intro: [
+                "This page explains which cookies and related technologies PolicyWallet (policywallet.gr) uses, for what purpose, and how you can manage them.",
+            ],
+            sections: [
+                {
+                    id: "what_are_cookies",
+                    title: "1. What cookies are",
+                    paragraphs: [
+                        "Cookies are small files stored on your device when you visit a website, so that it can \"remember\" information such as your sign-in or your preferences. Browser local storage (localStorage) plays a similar role.",
+                    ],
+                },
+                {
+                    id: "cookies_we_use",
+                    title: "2. Which cookies we use",
+                    paragraphs: [
+                        "Today the platform uses only the following:",
+                    ],
+                    table: {
+                        headers: ["Name", "Purpose", "Duration", "Category"],
+                        rows: [
+                            [
+                                "pw_cookie_consent",
+                                "Stores the cookie-consent preferences you selected in the banner",
+                                "12 months",
+                                "Strictly necessary",
+                            ],
+                            [
+                                "sb-*-auth-token (Supabase)",
+                                "Keeps you signed in to your account (authentication)",
+                                "Session, with renewal",
+                                "Strictly necessary",
+                            ],
+                            [
+                                "language (localStorage)",
+                                "Remembers the language you selected — local storage, not a cookie",
+                                "Until you delete it",
+                                "Functional",
+                            ],
+                        ],
+                    },
+                },
+                {
+                    id: "analytics_marketing",
+                    title: "3. Analytics and marketing cookies",
+                    paragraphs: [
+                        "We do not currently use third-party analytics or marketing cookies. The corresponding categories appear in the banner so that, if they are added in the future, they are activated only with your consent and after this page is updated first.",
+                    ],
+                },
+                {
+                    id: "managing_cookies",
+                    title: "4. Managing cookies",
+                    paragraphs: [
+                        "On your first visit you choose via the banner whether to accept all cookies, only the necessary ones, or custom preferences per category. Your choice is recorded together with the policy version in force at the time of consent.",
+                        "To change your mind, delete the pw_cookie_consent cookie in your browser settings — the banner will reappear on your next visit. You can also block cookies entirely in your browser; note that without the strictly necessary cookies, signing in to the platform will not work.",
+                    ],
+                    link: { href: "/privacy", label: "See also the Privacy Policy" },
+                },
+            ],
+        },
+        subprocessors: {
+            title: "Subprocessors",
+            intro: [
+                "To operate PolicyWallet we work with a limited number of technical providers that process personal data on our behalf (subprocessors). This page lists who they are, what role they play, what data they touch, and where they process it.",
+            ],
+            sections: [
+                {
+                    id: "subprocessor_list",
+                    title: "1. Subprocessors list",
+                    paragraphs: [
+                        "Current as of the last-updated date shown at the top of this page:",
+                    ],
+                    table: {
+                        headers: ["Provider", "Role", "Data", "Processing location"],
+                        rows: [
+                            [
+                                "Supabase",
+                                "Database, authentication, file storage",
+                                "Account data, insurance policy documents, application data",
+                                "EU — eu-west-3 (Paris, France)",
+                            ],
+                            [
+                                "Vercel",
+                                "Application hosting and content delivery network (CDN)",
+                                "Traffic data, technical logs",
+                                "EU/US (global network)",
+                            ],
+                            [
+                                "Stripe",
+                                "Payment and subscription processing",
+                                "Billing and subscription details; card data is held exclusively by Stripe",
+                                "EU/US",
+                            ],
+                            [
+                                "Brevo",
+                                "Email delivery (notifications, newsletter)",
+                                "Email address, name, notification content",
+                                "EU (France)",
+                            ],
+                            [
+                                "Upstash",
+                                "Request rate limiting (Redis)",
+                                "Per-IP request counters — no document content",
+                                "EU/US",
+                            ],
+                            [
+                                "Google (Gemini API)",
+                                "AI document analysis — primary provider",
+                                "Policy content submitted for analysis, only with your consent",
+                                "EU/US",
+                            ],
+                            [
+                                "Anthropic",
+                                "AI document analysis — alternate provider",
+                                "Policy content submitted for analysis, only with your consent",
+                                "US",
+                            ],
+                            [
+                                "OpenAI",
+                                "AI document analysis — alternate provider",
+                                "Policy content submitted for analysis, only with your consent",
+                                "US",
+                            ],
+                        ],
+                    },
+                },
+                {
+                    id: "safeguards",
+                    title: "2. Safeguards",
+                    paragraphs: [
+                        "Every subprocessor is bound by a data processing agreement under Article 28 GDPR and processes only the data its role requires.",
+                        "For providers processing data outside the European Economic Area, transfers are covered by the EU-U.S. Data Privacy Framework and/or the European Commission's Standard Contractual Clauses.",
+                        "The AI providers' data-processing terms do not permit the use of your data to train their models.",
+                    ],
+                },
+                {
+                    id: "list_updates",
+                    title: "3. Updates to this list",
+                    paragraphs: [
+                        "Before adding a new subprocessor or materially changing an existing one's role, we update this page and the date at its top.",
+                    ],
+                    link: { href: "/privacy", label: "See also the Privacy Policy" },
+                },
+            ],
+        },
     },
 }
 
 const legalContentByLanguage = fixMojibakeObject(legalContentByLanguageRaw) as Record<LegalLanguage, LegalContent>
 
 function assertLegalParity() {
-    const documents: LegalDocumentKind[] = ["terms", "privacy"]
+    const documents: LegalDocumentKind[] = ["terms", "privacy", "cookies", "subprocessors"]
     for (const documentName of documents) {
-        const elSectionIds = legalContentByLanguage.el[documentName].sections.map((section) => section.id)
-        const enSectionIds = legalContentByLanguage.en[documentName].sections.map((section) => section.id)
-        if (elSectionIds.length !== enSectionIds.length) {
+        const elSections = legalContentByLanguage.el[documentName].sections
+        const enSections = legalContentByLanguage.en[documentName].sections
+        if (elSections.length !== enSections.length) {
             throw new Error(`Legal parity mismatch on ${documentName}: different section count`)
         }
-        for (let i = 0; i < elSectionIds.length; i += 1) {
-            if (elSectionIds[i] !== enSectionIds[i]) {
+        for (let i = 0; i < elSections.length; i += 1) {
+            if (elSections[i].id !== enSections[i].id) {
                 throw new Error(`Legal parity mismatch on ${documentName}: section id mismatch at index ${i}`)
+            }
+            if (Boolean(elSections[i].table) !== Boolean(enSections[i].table)) {
+                throw new Error(
+                    `Legal parity mismatch on ${documentName}: table presence mismatch in section ${elSections[i].id}`
+                )
             }
         }
     }

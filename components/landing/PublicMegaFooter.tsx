@@ -56,6 +56,8 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
         { href: l("/contact"), label: t("Επικοινωνία", "Contact") },
         { href: l("/privacy"), label: t("Πολιτική Απορρήτου", "Privacy Policy") },
         { href: l("/terms"), label: t("Όροι Χρήσης", "Terms of Service") },
+        { href: l("/cookies"), label: t("Πολιτική Cookies", "Cookie Policy") },
+        { href: l("/subprocessors"), label: t("Υπο-εκτελούντες Επεξεργασίας", "Subprocessors") },
     ]
 
     // Real profiles only (from NEXT_PUBLIC_SOCIAL_*) — no placeholder links.
