@@ -54,3 +54,35 @@ export function parseConsentCookie(rawCookieHeader: string | null): ConsentCooki
 export function serializeConsentCookie(payload: ConsentCookiePayload): string {
     return encodeURIComponent(JSON.stringify(payload))
 }
+
+/**
+ * Browser-side read of the stored consent. Reuses `parseConsentCookie` because
+ * `document.cookie` has the same `a=1; b=2` shape as the request Cookie header.
+ */
+export function readConsentFromDocument(): ConsentCookiePayload | null {
+    if (typeof document === "undefined") return null
+    return parseConsentCookie(document.cookie)
+}
+
+/**
+ * The single gating decision for every non-essential analytics tag.
+ *
+ * Deliberately fails CLOSED: no cookie stored, malformed payload, or a missing
+ * `categories` object all mean "no prior consent", so nothing loads. Under
+ * ePrivacy/GDPR analytics cookies require PRIOR opt-in, so absence of a signal
+ * is a refusal, not a default-allow.
+ */
+export function hasAnalyticsConsent(consent: ConsentCookiePayload | null): boolean {
+    return consent?.categories?.analytics === true
+}
+
+/**
+ * Dispatched on `window` whenever consent is (re)persisted, so already-mounted
+ * components can react without waiting for a page reload.
+ */
+export const CONSENT_CHANGED_EVENT = "pw:consent-changed"
+
+export function emitConsentChanged(categories: ConsentCategories) {
+    if (typeof window === "undefined") return
+    window.dispatchEvent(new CustomEvent<ConsentCategories>(CONSENT_CHANGED_EVENT, { detail: categories }))
+}

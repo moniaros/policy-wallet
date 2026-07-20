@@ -7,28 +7,11 @@ import {
     CONSENT_COOKIE_NAME,
     DEFAULT_CATEGORIES,
     LEGAL_POLICY_VERSIONS,
+    emitConsentChanged,
+    readConsentFromDocument,
     type ConsentCategories,
     type ConsentCookiePayload,
 } from "@/lib/compliance/consent"
-
-function readCookieConsent(): ConsentCookiePayload | null {
-    if (typeof document === "undefined") return null
-
-    const match = document.cookie
-        .split(";")
-        .map((entry) => entry.trim())
-        .find((entry) => entry.startsWith(`${CONSENT_COOKIE_NAME}=`))
-
-    if (!match) return null
-    const raw = match.split("=")[1]
-    if (!raw) return null
-
-    try {
-        return JSON.parse(decodeURIComponent(raw)) as ConsentCookiePayload
-    } catch {
-        return null
-    }
-}
 
 function writeCookieConsent(payload: ConsentCookiePayload) {
     const secureFlag = typeof window !== "undefined" && window.location.protocol === "https:" ? "; Secure" : ""
@@ -47,7 +30,7 @@ export function CookieConsentBanner() {
     const [categories, setCategories] = useState<ConsentCategories>(DEFAULT_CATEGORIES)
 
     useEffect(() => {
-        const existingConsent = readCookieConsent()
+        const existingConsent = readConsentFromDocument()
         if (!existingConsent) {
             setVisible(true)
             return
@@ -71,6 +54,9 @@ export function CookieConsentBanner() {
 
         // Persist immediately so navigation/reload does not redisplay the banner.
         writeCookieConsent(payload)
+        // Tell already-mounted listeners (notably GoogleAnalytics) right away, so
+        // opting in starts analytics — and opting out stops it — without a reload.
+        emitConsentChanged(nextCategories)
         try {
             const response = await fetch("/api/v1/consents", {
                 method: "POST",

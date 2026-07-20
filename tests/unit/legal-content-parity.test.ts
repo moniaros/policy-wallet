@@ -53,7 +53,7 @@ describe("legal content parity", () => {
             const list = getLegalContent(language).subprocessors.sections.find(
                 (section) => section.id === "subprocessor_list"
             )
-            expect(list?.table?.rows).toHaveLength(8)
+            expect(list?.table?.rows).toHaveLength(9)
             // Provider names are brand names — identical in both languages.
             expect(list?.table?.rows.map((row) => row[0])).toEqual([
                 "Supabase",
@@ -62,6 +62,7 @@ describe("legal content parity", () => {
                 "Brevo",
                 "Upstash",
                 "Google (Gemini API)",
+                "Google (Google Analytics)",
                 "Anthropic",
                 "OpenAI",
             ])
