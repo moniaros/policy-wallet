@@ -1,4 +1,4 @@
-# Brand Elevation — July 2026 (Stage A)
+# Brand Elevation — July 2026 (Stages A–C)
 
 Goal: the marketing site should read deliberate, not generated. Bar: Stripe/Notion — one type
 scale, one palette, one CTA pair, one rhythm, verifiable claims only. Grounded in
@@ -20,6 +20,13 @@ body `14 / 16 / 18` · heading `20 / 24` · display `32 / 40 / 44 / 56`. Nothing
 is banned. Rule of thumb: if you reach for `text-[Npx]`, N must be on the scale.
 Stage B: `font-medium` display headings (product/agents pages) move to 600; LoB PageClients
 (one 68px hero each) get the same ladder.
+
+**Stage C — done, the 15 LoB PageClients.** 101 off-ladder `text-[Npx]` normalized:
+68→56 and 46→44 (hero, now byte-identical to the swept `/product` index), 48→44 and 36→32
+(section + final-CTA h2), 28→24, 19→20, 17→18, 15→14; the 15 hero leads dropped their
+off-ladder `lg:text-[22px]` step. 84 `font-medium` headings → `font-semibold` (body and
+mockup-chrome `font-medium` deliberately left — it is not a heading weight). The only
+`text-[Npx]` values left in these files are 11/12/13/14/16/18/20/24/32/44/56 — all on ladder.
 
 ## 2. Color discipline
 
@@ -44,6 +51,18 @@ Off-palette found on sweep surfaces (all fixed in Stage A):
   (blue/beige/lilac/rose/olive card surfaces) — either bless as the one sanctioned
   category system or collapse to green/neutral. Untouched in Stage A.
 
+**Stage C — decided: collapsed.** The rainbow was the last place the marketing site used a
+palette the brand does not own. `lib/product/catalog.tsx` now carries a **two-tier** system,
+both tiers inside the family above: 10 household lines read **green**
+(`#DCEBDA` surface / `#A7F3D0` border / `#F0FDF4`+`#166534` tag) and 5 commercial lines
+(cyber, business, group health/life/pension) read **neutral** (white surface / `#E2E8F0`
+hairline / slate-100 tag). Two values still do the scanning work six hues did.
+The same pastels lived on the LoB pages as hero eyebrows (15) and 44px icon chips (16) —
+all now the one green soft tint, the eyebrow matching the `/product` index exactly. Same
+pass retired the off-palette neutrals those pages had inherited: 70 `text-[#1A1A1A]` → slate
+ink `#0F172A`, 15 dark CTA panels `#1A1C1D` → ink-green `#1A2420`, 11 `border-[#E5E5E5]` →
+the one hairline `#E2E8F0`.
+
 ## 3. Spacing rhythm (one, not four)
 
 Found: landing `py-20 lg:py-28`, pricing `pt-20/py-20` flat, product index `py-24`/`py-28`
@@ -61,6 +80,15 @@ buttons, no ghost-green outline variant. Non-conforming CTAs found & converted (
 nav/hero/mobile/final (7), AudienceTabs (2), footer band (2), pricing nav + PricingCard button
 (2), LoBPageShell nav/mobile/ghost pricing CTA (4), product index (4 incl. square
 `rounded-[4px]` pairs), solutions/agents (3).
+
+**Stage C — 33 more converted, and `rounded-[4px]` is now extinct in the tree.** The 15 LoB
+pages: 15 hero primaries + 1 hero secondary → `pw-primary/secondary-button pw-btn-lg`, 15
+dark final-panel CTAs + 1 dark secondary → the `-inverse` pair. The 15 square hero eyebrows
+became pills at the kicker size, as did the one square status chip. `/product`'s own bespoke
+mint pill folded into `pw-primary-button-inverse` too, so the whole product family — index
+and all 15 line-of-business pages — is one CTA system. Note this retires mint-on-dark as a
+CTA fill; `#89D9B2` stays a dark-surface accent elsewhere. Revert that one line if the mint
+button is wanted back.
 
 ## 5. Microcopy & tone (rules now, rewrites in Stage B)
 
@@ -111,6 +139,35 @@ named, consented customer or remove (Stage B, with the copy pass).
   lever is shared-chunk dieting, not this page's markup. `ProductPageClient` was NOT split:
   its EL/EN toggle is client context state (`useLanguage`), so server-rendering its copy
   would freeze the language switch — its decorative JS count-up was dropped instead (§6).
+  **Stage C revisited and reversed this** — see the next section.
+
+## /product first-load JS (Stage C, same method: script chunks of the prerendered HTML)
+
+- Before split: **1,420,503 B raw / 436,180 B gzip** (17 chunks)
+- After split: **1,403,103 B raw / 431,294 B gzip** (17 chunks) — **−17,400 B raw /
+  −4,886 B gzip**. `/en/product` measures identically; `/` is unchanged at 1,415,146 B raw /
+  433,935 B gzip, which confirms the delta is this page's own and not a shared-chunk shift.
+
+The Stage-B blocker ("its EL/EN toggle is client context state") stopped being true when #168
+gave `/product` and `/en/product` separate routes: the toggle no longer has to mutate state,
+it can navigate. So the toggle was converted first — `/product` now wraps itself in
+`StaticLanguageProvider language="el" counterpartPath="/en/product"`, the mirror of what
+`/en/product` already did, so EL/EN pushes the counterpart route and each route serves honest
+locale-correct HTML to crawlers. With the language fixed per route it travels as a prop, and
+`ProductPageClient.tsx` (445 lines, `"use client"`) became `ProductSections.tsx`, a server
+component. Server-rendered: hero, wallet feature + dashboard mockup, stats, all 15 category
+cards, how-it-works, FAQ headings, final CTA. Four client islands remain, each doing only the
+one thing that needs a browser: `LoBPageShell` (nav/mobile-menu state, unchanged),
+`ProductScrollButton` ×2, `ProductFaqList` (accordion), `ProductPageView` (analytics). The
+FAQ island receives pre-translated strings so `marketing-content.ts` never reaches the
+client, and the scroll buttons address their headings by DOM id instead of a React ref —
+which is precisely what lets those headings stay on the server.
+
+Verified against the production build (`npm start` + a scripted browser pass): both routes
+render their own locale, the 15 category cards, the accordion and both scroll buttons work,
+the how-it-works heading takes focus and lands at y≈302 (the `tests/product-friction.spec.ts`
+expectation is <400), and EL→EN→EL navigates `/product` ↔ `/en/product` instead of toggling
+in place.
 
 ## Checklist
 
@@ -126,6 +183,22 @@ named, consented customer or remove (Stage B, with the copy pass).
       de-cloned across the LoB PageClients
 - [x] Stage B: Server-Components refactor of `WorldClassLanding` (numbers above); product-page
       count-up animation dropped (§6)
-- [ ] Still open (stage C candidates): `font-medium` display headings → 600 on product/agents,
-      LoB PageClients + guides/company/contact type-ladder pass (68px heroes, `rounded-[4px]`
-      CTAs → pw pair), category-pastel decision (§2)
+- [x] **Stage C: LoB type-ladder pass** — 101 off-ladder sizes normalized and 84
+      `font-medium` headings → 600 across all 15 `app/(public)/product/*/PageClient.tsx` (§1)
+- [x] **Stage C: CTA pass** — 33 CTAs → the pw pair/inverse pair; `rounded-[4px]` no longer
+      appears anywhere in the tree; `/product`'s bespoke mint pill folded in too (§4)
+- [x] **Stage C: category-pastel decision settled** — 6 hues collapsed to a green/neutral
+      two-tier system in `lib/product/catalog.tsx`, plus 96 off-palette neutrals retired on
+      the LoB pages (§2)
+- [x] **Stage C: `/product` Server-Components split** — EL/EN toggle is now route navigation;
+      static sections server-rendered, four client islands left; −17.4 KB raw / −4.9 KB gzip
+      first-load JS (numbers above)
+
+Still open (stage D candidates):
+
+- [ ] guides/company/contact type-ladder + CTA pass — the last marketing surfaces the sweep
+      has not reached
+- [ ] `font-medium` display headings on `/solutions/agents` → 600 (the product family is
+      done; the agents page was not in the Stage-C scope)
+- [ ] Shared-chunk dieting — at ~431 KB gzip both `/` and `/product` are now dominated by
+      framework + shared chunks, not their own markup. That is the only remaining lever.
