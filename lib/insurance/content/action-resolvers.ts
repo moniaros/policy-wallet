@@ -118,10 +118,19 @@ function answered(value: Bilingual, phone?: string | null): ResolvedAction {
 export const ACTION_RESOLVERS: Record<string, ActionResolver> = {
     // ── motor ───────────────────────────────────────────────────────────────
     motor_check_roadside: (acord) => {
+        // The BOOLEAN is the only evidence of cover. A printed hotline is NOT:
+        // Greek motor policies routinely quote the insurer's 24h «φροντίδα
+        // ατυχήματος» (accident care) line, which is a different product from
+        // «οδική βοήθεια» (roadside assistance). Inferring cover from a phone
+        // number would tell a driver they are covered and let them discover
+        // otherwise at the roadside. The phone rides along only as a
+        // convenience once the boolean has already established the cover.
+        // Only the canonical `vehicle` section carries the flag; the legacy
+        // `motor` alias has the phone but no boolean, which is precisely why
+        // the phone alone must not stand in for it.
+        if (!isPositive(acord.vehicle?.hasRoadsideAssistance)) return null
         const phone =
             nonEmptyString(acord.vehicle?.roadsideAssistancePhone) ?? nonEmptyString(acord.motor?.roadsideAssistancePhone)
-        // A quoted assistance hotline is itself positive evidence of the cover.
-        if (!isPositive(acord.vehicle?.hasRoadsideAssistance) && !phone) return null
         return answered(YES_INCLUDED, phone)
     },
 

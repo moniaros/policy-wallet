@@ -23,10 +23,14 @@ describe('resolveBranchAction — answered/ask matrix', () => {
         expect(result.phone).toBe('210 123 4567')
     })
 
-    it('motor_check_roadside answers off a quoted hotline alone', () => {
+    it('motor_check_roadside does NOT infer cover from a quoted hotline alone', () => {
+        // Greek motor policies routinely print the insurer's 24h accident-care
+        // («φροντίδα ατυχήματος») line, which is not roadside assistance.
+        // Answering off the phone would tell a driver they are covered and let
+        // them discover otherwise at the roadside.
         const result = resolve('motor_check_roadside', { vehicle: { roadsideAssistancePhone: '1158' } })
-        expect(result.status).toBe('answered')
-        expect(result.phone).toBe('1158')
+        expect(result.status).toBe('ask')
+        expect(result.phone).toBeUndefined()
     })
 
     it('motor_check_glass answers on the canonical and the legacy alias', () => {
