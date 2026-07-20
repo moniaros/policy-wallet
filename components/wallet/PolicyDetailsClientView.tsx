@@ -22,10 +22,12 @@ import { ExclusionsCard } from "@/components/wallet/policy-detail/ExclusionsCard
 import { PerksCard } from "@/components/wallet/policy-detail/PerksCard"
 import { ClaimsGuidanceCard } from "@/components/wallet/policy-detail/ClaimsGuidanceCard"
 import { BranchGuideCard } from "@/components/wallet/policy-detail/BranchGuideCard"
+import { BranchActionsCard, type BranchActionItem } from "@/components/wallet/policy-detail/BranchActionsCard"
 import { PolicyQaPrefillProvider } from "@/components/wallet/policy-detail/PolicyQaPrefillContext"
 import { DocumentsCard } from "@/components/wallet/policy-detail/DocumentsCard"
 import { InsuredPeopleCard } from "@/components/wallet/policy-detail/InsuredPeopleCard"
 import { getBranchContent } from "@/lib/insurance/content"
+import { resolveBranchAction } from "@/lib/insurance/content/action-resolvers"
 import {
     calculatePolicyHealthScore,
     deriveClaimDeadlines,
@@ -375,10 +377,37 @@ export function PolicyDetailsClient({
         [branchContent, detectedRuleIds, lang]
     )
 
+    // Per-branch recommended actions, data-backed where acordData already holds
+    // the answer. resolveBranchAction asserts positives only (the honesty law
+    // in lib/insurance/content/action-resolvers.ts) — anything unknown stays an
+    // ask-the-AI CTA rather than claiming an absence we cannot observe.
+    const branchActionItems: BranchActionItem[] = useMemo(
+        () =>
+            branchContent.recommendedActions.map((action) => {
+                const resolved = resolveBranchAction(action, policy.acordData)
+                return {
+                    id: action.id,
+                    label: action.label[lang],
+                    ctaType: action.ctaType,
+                    href: action.href,
+                    question: action.question?.[lang],
+                    resolved: {
+                        status: resolved.status,
+                        value: resolved.value?.[lang],
+                        phone: resolved.phone,
+                    },
+                }
+            }),
+        [branchContent, policy.acordData, lang]
+    )
+
     // ── Section navigation (only sections that actually render) ──
     const navItems: PolicySectionNavItem[] = [
         { id: "summary", label: detailsCopy.navSummary },
         { id: "key-dates", label: detailsCopy.navDates },
+        // Order must mirror the DOM below: #branch-actions renders directly
+        // after #key-dates, before #coverage.
+        ...(branchActionItems.length > 0 ? [{ id: "branch-actions", label: detailsCopy.navActions }] : []),
         ...(hasCoverageDetails || shouldShowReanalyzeHint ? [{ id: "coverage", label: detailsCopy.navCoverage }] : []),
         { id: "exclusions", label: detailsCopy.navExclusions },
         { id: "perks", label: detailsCopy.navPerks },
@@ -585,6 +614,27 @@ export function PolicyDetailsClient({
                                         />
                                     </div>
                                 )}
+                            </section>
+                        )}
+
+                        {/* 2b ── Per-branch actions, data-backed where possible ── */}
+                        {!isAnalyzing && branchActionItems.length > 0 && (
+                            <section id="branch-actions" className="scroll-mt-24">
+                                <BranchActionsCard
+                                    actions={branchActionItems}
+                                    profileHref="/questionnaires"
+                                    uploadHref="/wallet/add"
+                                    onRequestQuote={isOwner ? handleRequestQuote : undefined}
+                                    isRequestingQuote={isRequestingQuote}
+                                    copy={{
+                                        actionsTitle: detailsCopy.actionsTitle,
+                                        actionsAnsweredHeading: detailsCopy.actionsAnsweredHeading,
+                                        actionsTodoHeading: detailsCopy.actionsTodoHeading,
+                                        actionsCall: detailsCopy.actionsCall,
+                                        actionsShowAll: detailsCopy.actionsShowAll,
+                                        actionsShowLess: detailsCopy.actionsShowLess,
+                                    }}
+                                />
                             </section>
                         )}
 
