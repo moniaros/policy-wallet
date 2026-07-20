@@ -151,6 +151,12 @@ export const personalAccidentContent: BranchContent = {
             href: '/agent',
             ctaType: 'askAgent',
         },
+        {
+            id: 'personal_accident_note_life_change',
+            label: { el: 'Σημείωσε αλλαγή ζωής', en: 'Note a life change' },
+            href: null,
+            ctaType: 'task',
+        },
     ],
     suggestedQuestions: [
         { el: 'Τι θεωρείται ατύχημα στο συμβόλαιό μου;', en: 'What counts as an accident in my policy?' },

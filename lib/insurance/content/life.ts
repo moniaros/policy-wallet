@@ -108,6 +108,12 @@ export const lifeContent: BranchContent = {
             href: '/coverage-insights',
             ctaType: 'profile',
         },
+        {
+            id: 'life_note_life_change',
+            label: { el: 'Σημείωσε αλλαγή ζωής', en: 'Note a life change' },
+            href: null,
+            ctaType: 'task',
+        },
     ],
     suggestedQuestions: [
         { el: 'Ποιοι είναι οι δικαιούχοι μου;', en: 'Who are my beneficiaries?' },

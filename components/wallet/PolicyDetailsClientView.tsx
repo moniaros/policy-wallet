@@ -28,6 +28,7 @@ import { DocumentsCard } from "@/components/wallet/policy-detail/DocumentsCard"
 import { InsuredPeopleCard } from "@/components/wallet/policy-detail/InsuredPeopleCard"
 import { getBranchContent } from "@/lib/insurance/content"
 import { resolveBranchAction } from "@/lib/insurance/content/action-resolvers"
+import { getSelfTaskSpec } from "@/lib/insurance/content/self-tasks"
 import {
     calculatePolicyHealthScore,
     deriveClaimDeadlines,
@@ -383,23 +384,95 @@ export function PolicyDetailsClient({
     // ask-the-AI CTA rather than claiming an absence we cannot observe.
     const branchActionItems: BranchActionItem[] = useMemo(
         () =>
-            branchContent.recommendedActions.map((action) => {
-                const resolved = resolveBranchAction(action, policy.acordData)
-                return {
-                    id: action.id,
-                    label: action.label[lang],
-                    ctaType: action.ctaType,
-                    href: action.href,
-                    question: action.question?.[lang],
-                    resolved: {
-                        status: resolved.status,
-                        value: resolved.value?.[lang],
-                        phone: resolved.phone,
-                    },
-                }
-            }),
+            branchContent.recommendedActions
+                .map((action): BranchActionItem | null => {
+                    const resolved = resolveBranchAction(action, policy.acordData)
+                    // `requiresPhone` actions (the "save the emergency line"
+                    // task) are dropped when this policy yielded no number —
+                    // saving a reminder that dials nothing is worse than not
+                    // offering it, and we may not invent one (the D7 honesty
+                    // law in action-resolvers.ts).
+                    if (action.requiresPhone && !resolved.phone) return null
+                    return {
+                        id: action.id,
+                        label: action.label[lang],
+                        ctaType: action.ctaType,
+                        href: action.href,
+                        question: action.question?.[lang],
+                        resolved: {
+                            status: resolved.status,
+                            value: resolved.value?.[lang],
+                            phone: resolved.phone,
+                        },
+                    }
+                })
+                .filter((item): item is BranchActionItem => item !== null),
         [branchContent, policy.acordData, lang]
     )
+
+    // Agent-thread + self-task handlers for the branch action card.
+    const [pendingActionId, setPendingActionId] = useState<string | null>(null)
+    const [branchAgentUpgradeOpen, setBranchAgentUpgradeOpen] = useState(false)
+
+    const handleAskAgentAction = async (item: BranchActionItem) => {
+        if (pendingActionId) return
+        // Free tier: the button rendered with a lock chip, so the click is a
+        // conversion moment rather than a failure. Never call the server.
+        if (!canUseCollaboration) {
+            setBranchAgentUpgradeOpen(true)
+            return
+        }
+        setPendingActionId(item.id)
+        try {
+            const { startBranchActionThread } = await import("@/app/(protected)/wallet/collaborationActions")
+            const result = await startBranchActionThread(policy.id, item.id)
+            if ("error" in result) {
+                if (result.error === "UPGRADE_REQUIRED") setBranchAgentUpgradeOpen(true)
+                else if (result.error === "NO_AGENT") toast.error(detailsCopy.actionsNoAgent)
+                else toast.error(detailsCopy.actionsAgentFailed)
+                return
+            }
+            toast.success(detailsCopy.actionsAgentSent)
+        } catch {
+            toast.error(detailsCopy.actionsAgentFailed)
+        } finally {
+            setPendingActionId(null)
+        }
+    }
+
+    const handleCreateTaskAction = async (item: BranchActionItem) => {
+        if (pendingActionId) return
+        const spec = getSelfTaskSpec(item.id)
+        if (!spec) return
+        const actionUrl =
+            spec.target === "phone"
+                ? item.resolved.phone
+                    ? `tel:${item.resolved.phone.replace(/\s+/g, "")}`
+                    : null
+                : `/wallet/${policy.id}`
+        if (!actionUrl) return
+        setPendingActionId(item.id)
+        try {
+            const { createSelfTask } = await import("@/app/(protected)/tasks/taskActions")
+            const result = await createSelfTask({
+                title: spec.title[lang],
+                description: spec.description[lang],
+                type: spec.type,
+                priority: spec.priority,
+                actionUrl,
+                actionLabel: spec.actionLabel[lang],
+            })
+            if (!result.success) {
+                toast.error(detailsCopy.actionsTaskFailed)
+                return
+            }
+            toast.success(detailsCopy.actionsTaskSaved)
+        } catch {
+            toast.error(detailsCopy.actionsTaskFailed)
+        } finally {
+            setPendingActionId(null)
+        }
+    }
 
     // ── Section navigation (only sections that actually render) ──
     const navItems: PolicySectionNavItem[] = [
@@ -626,6 +699,10 @@ export function PolicyDetailsClient({
                                     uploadHref="/wallet/add"
                                     onRequestQuote={isOwner ? handleRequestQuote : undefined}
                                     isRequestingQuote={isRequestingQuote}
+                                    onAskAgent={isOwner ? handleAskAgentAction : undefined}
+                                    onCreateTask={isOwner ? handleCreateTaskAction : undefined}
+                                    agentActionsLocked={!canUseCollaboration}
+                                    pendingActionId={pendingActionId}
                                     copy={{
                                         actionsTitle: detailsCopy.actionsTitle,
                                         actionsAnsweredHeading: detailsCopy.actionsAnsweredHeading,
@@ -633,6 +710,8 @@ export function PolicyDetailsClient({
                                         actionsCall: detailsCopy.actionsCall,
                                         actionsShowAll: detailsCopy.actionsShowAll,
                                         actionsShowLess: detailsCopy.actionsShowLess,
+                                        actionsLocked: detailsCopy.actionsLocked,
+                                        actionsWorking: detailsCopy.actionsWorking,
                                     }}
                                 />
                             </section>
@@ -992,6 +1071,15 @@ export function PolicyDetailsClient({
                 onClose={() => setExportUpgradeOpen(false)}
                 featureKey="export_report"
                 triggerSource="savings_report_export"
+                returnTo={pathname || undefined}
+            />
+
+            {/* Free-tier click on a locked askAgent branch action. */}
+            <UpgradeModal
+                isOpen={branchAgentUpgradeOpen}
+                onClose={() => setBranchAgentUpgradeOpen(false)}
+                featureKey="agent_collaboration"
+                triggerSource="policy_branch_action"
                 returnTo={pathname || undefined}
             />
 
