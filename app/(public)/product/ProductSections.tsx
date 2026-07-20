@@ -1,61 +1,33 @@
-"use client"
-
-import React, { useEffect, useRef, useState } from "react"
+import React from "react"
 import Link from "next/link"
 import {
     ArrowRight,
     Car,
     CheckCircle2,
     ChevronDown,
-    ChevronUp,
     Heart,
     Home,
     Sparkles,
 } from "lucide-react"
+import type { Language } from "@/lib/i18n"
 import { LoBPageShell } from "@/components/landing/LoBPageShell"
-import { useLanguage } from "@/contexts/LanguageContext"
 import { localizeHref } from "@/lib/seo/locale-links"
-import { trackLandingEvent } from "@/lib/landing/analytics"
 import { productCategories } from "@/lib/product/catalog"
 import {
     PRODUCT_FAQS as FAQS,
     PRODUCT_STATS as STATS,
     PRODUCT_STEPS as STEPS,
 } from "./marketing-content"
-
-function FAQItem({ q, a }: { q: string; a: string }) {
-    const [open, setOpen] = useState(false)
-
-    return (
-        <div className={`border-b border-[#E2E8F0] transition-colors duration-150 ${open ? "bg-white" : ""}`}>
-            <button
-                type="button"
-                className="group flex w-full items-center justify-between px-1 py-5 text-left"
-                onClick={() => setOpen((value) => !value)}
-                aria-expanded={open}
-            >
-                <span className="text-[16px] font-medium text-[#0F172A] transition-colors duration-150 group-hover:text-[#29685B]">
-                    {q}
-                </span>
-                {open ? (
-                    <ChevronUp className="h-5 w-5 flex-shrink-0 text-[#29685B]" />
-                ) : (
-                    <ChevronDown className="h-5 w-5 flex-shrink-0 text-[#64748B] transition-colors duration-150 group-hover:text-[#29685B]" />
-                )}
-            </button>
-            <div className={`overflow-hidden transition-all duration-300 ease-out ${open ? "max-h-[300px] pb-5" : "max-h-0"}`}>
-                <p className="px-1 text-[16px] leading-relaxed text-[#475569]">{a}</p>
-            </div>
-        </div>
-    )
-}
+import { ProductFaqList } from "./ProductFaqList"
+import { ProductPageView } from "./ProductPageView"
+import { ProductScrollButton } from "./ProductScrollButton"
 
 // Static stat tile — the JS count-up animation was dropped per the brand
 // doc's motion-restraint rules (decorative, 30ms interval).
 function StatItem({ value, label }: { value: string; label: string }) {
     return (
         <div className="text-center">
-            <div className="mb-2 text-[32px] font-medium leading-none tracking-tight text-[#0F172A] lg:text-[44px]">
+            <div className="mb-2 text-[32px] font-semibold leading-none tracking-tight text-[#0F172A] lg:text-[44px]">
                 {value}
             </div>
             <div className="mx-auto max-w-[180px] text-[14px] leading-snug text-[#475569]">{label}</div>
@@ -63,40 +35,25 @@ function StatItem({ value, label }: { value: string; label: string }) {
     )
 }
 
-export default function ProductPage() {
-    const { language } = useLanguage()
+/**
+ * The /product page body, server-rendered. `language` arrives as a prop
+ * instead of from useLanguage() so none of this copy ships as JS: /product and
+ * /en/product are separate routes, each fixing its own locale, and the EL/EN
+ * toggle navigates between them (see StaticLanguageProvider) rather than
+ * re-rendering translated strings on the client.
+ *
+ * Client islands, and nothing else: LoBPageShell (nav/mobile-menu state),
+ * ProductScrollButton ×2, ProductFaqList (accordion), ProductPageView
+ * (analytics).
+ */
+export function ProductSections({ language }: { language: Language }) {
     const isGreek = language === "el"
     const t = (el: string, en: string) => (isGreek ? el : en)
 
-    const categoriesHeadingRef = useRef<HTMLHeadingElement>(null)
-    const howItWorksHeadingRef = useRef<HTMLHeadingElement>(null)
-
-    useEffect(() => {
-        trackLandingEvent("page_view_product", { locale: language as any })
-    }, [language])
-
-    const scrollToSection = (
-        sectionId: string,
-        headingRef: React.RefObject<HTMLHeadingElement | null>
-    ) => {
-        const section = document.getElementById(sectionId)
-        if (!section) return
-
-        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        section.scrollIntoView({
-            behavior: prefersReducedMotion ? "auto" : "smooth",
-            block: "start",
-        })
-
-        if (headingRef.current) {
-            window.setTimeout(() => {
-                headingRef.current?.focus({ preventScroll: true })
-            }, prefersReducedMotion ? 0 : 450)
-        }
-    }
-
     return (
         <LoBPageShell activeNav="product">
+            <ProductPageView language={language} />
+
             <section className="px-6 text-center md:px-12">
                 <div className="mx-auto max-w-[860px]">
                     <div className="mb-8 inline-flex select-none items-center gap-2 rounded-full bg-[#DCEBDA] px-3 py-1.5 text-[12px] font-semibold uppercase tracking-wide text-[#166534]">
@@ -104,7 +61,7 @@ export default function ProductPage() {
                         {t("Διαθέσιμο τώρα", "Available now")}
                     </div>
 
-                    <h1 className="mb-6 text-[44px] font-medium leading-[1.02] tracking-[-0.045em] text-[#0F172A] md:text-[56px]">
+                    <h1 className="mb-6 text-[44px] font-semibold leading-[1.02] tracking-[-0.045em] text-[#0F172A] md:text-[56px]">
                         {t(
                             "Όλες οι ασφαλίσεις σας. Ένα έξυπνο πορτοφόλι.",
                             "All your insurance. One intelligent wallet."
@@ -123,15 +80,14 @@ export default function ProductPage() {
                             {t("Ξεκινήστε δωρεάν", "Get started free")}
                             <ArrowRight className="h-4 w-4" />
                         </Link>
-                        <button
-                            type="button"
-                            aria-controls="how-it-works"
-                            onClick={() => scrollToSection("how-it-works", howItWorksHeadingRef)}
+                        <ProductScrollButton
+                            targetId="how-it-works"
+                            headingId="how-it-works-heading"
                             className="pw-secondary-button pw-btn-lg w-full cursor-pointer sm:w-auto"
                         >
                             <ChevronDown className="h-4 w-4 text-[#29685B]" />
                             {t("Πώς λειτουργεί", "See how it works")}
-                        </button>
+                        </ProductScrollButton>
                     </div>
 
                     <p className="mt-4 flex items-center justify-center gap-2 text-[14px] text-[#64748B]">
@@ -150,7 +106,7 @@ export default function ProductPage() {
                         <p className="mb-4 text-[12px] font-semibold uppercase tracking-widest text-[#29685B]">
                             {t("Το Πορτοφόλι σας", "Your wallet")}
                         </p>
-                        <h2 className="mb-6 text-[32px] font-medium leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-[44px]">
+                        <h2 className="mb-6 text-[32px] font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-[44px]">
                             {t(
                                 "Τα απαραίτητα για να διαχειρίζεστε τις ασφαλίσεις σας αβίαστα.",
                                 "The essentials to manage your insurance effortlessly."
@@ -284,24 +240,23 @@ export default function ProductPage() {
                         </p>
                         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                             <h2
-                                ref={categoriesHeadingRef}
+                                id="product-categories-heading"
                                 tabIndex={-1}
-                                className="max-w-[500px] text-[32px] font-medium leading-[1.1] tracking-[-0.03em] text-[#0F172A] focus:outline-none lg:text-[44px]"
+                                className="max-w-[500px] text-[32px] font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] focus:outline-none lg:text-[44px]"
                             >
                                 {t(
                                     "Κάθε ασφάλεια που χρειάζεστε, αναλυμένη για εσάς.",
                                     "Every policy you need, analyzed for you."
                                 )}
                             </h2>
-                            <button
-                                type="button"
-                                aria-controls="product-categories"
-                                onClick={() => scrollToSection("product-categories", categoriesHeadingRef)}
-                                className="inline-flex flex-shrink-0 items-center gap-1.5 self-start text-[14px] font-medium text-[#29685B] transition-colors duration-150 hover:text-[#1C4E44] md:self-auto"
+                            <ProductScrollButton
+                                targetId="product-categories"
+                                headingId="product-categories-heading"
+                                className="inline-flex flex-shrink-0 cursor-pointer items-center gap-1.5 self-start text-[14px] font-semibold text-[#29685B] transition-colors duration-150 hover:text-[#1C4E44] md:self-auto"
                             >
                                 {t("Δείτε όλα", "Explore all")}
                                 <ChevronDown className="h-4 w-4" />
-                            </button>
+                            </ProductScrollButton>
                         </div>
                     </div>
 
@@ -324,7 +279,7 @@ export default function ProductPage() {
                                         </span>
                                     </div>
 
-                                    <h3 className="mb-3 text-[20px] font-medium leading-[1.2] tracking-tight text-[#0F172A]">
+                                    <h3 className="mb-3 text-[20px] font-semibold leading-[1.2] tracking-tight text-[#0F172A]">
                                         {t(category.labelEl, category.labelEn)}
                                     </h3>
                                     <p className="mb-3 text-[14px] font-semibold leading-snug text-[#0F172A]">
@@ -351,9 +306,9 @@ export default function ProductPage() {
                         {t("Η Διαδικασία", "The process")}
                     </p>
                     <h2
-                        ref={howItWorksHeadingRef}
+                        id="how-it-works-heading"
                         tabIndex={-1}
-                        className="mx-auto max-w-[560px] text-[32px] font-medium leading-[1.1] tracking-[-0.03em] text-[#0F172A] focus:outline-none lg:text-[44px]"
+                        className="mx-auto max-w-[560px] text-[32px] font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] focus:outline-none lg:text-[44px]"
                     >
                         {t(
                             "Από το PDF σε καθαρή εικόνα, χωρίς διάβασμα ψιλών γραμμάτων.",
@@ -397,21 +352,19 @@ export default function ProductPage() {
                     <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-[#29685B]">
                         {t("Ερωτήσεις", "FAQs")}
                     </p>
-                    <h2 className="text-[32px] font-medium leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-[40px]">
+                    <h2 className="text-[32px] font-semibold leading-[1.1] tracking-[-0.03em] text-[#0F172A] lg:text-[40px]">
                         {t("Συχνές ερωτήσεις", "Frequently asked questions")}
                     </h2>
                 </div>
 
-                <div className="border-t border-[#E2E8F0]">
-                    {FAQS.map((faq) => (
-                        <FAQItem key={faq.qEn} q={t(faq.qEl, faq.qEn)} a={t(faq.aEl, faq.aEn)} />
-                    ))}
-                </div>
+                <ProductFaqList
+                    entries={FAQS.map((faq) => ({ q: t(faq.qEl, faq.qEn), a: t(faq.aEl, faq.aEn) }))}
+                />
             </section>
 
             <section className="bg-[#1A2420] px-6 py-20 text-white md:px-12 lg:py-28">
                 <div className="mx-auto max-w-[860px] text-center">
-                    <h2 className="mb-6 text-[32px] font-medium leading-[1.05] tracking-[-0.04em] text-white md:text-[44px] lg:text-[56px]">
+                    <h2 className="mb-6 text-[32px] font-semibold leading-[1.05] tracking-[-0.04em] text-white md:text-[44px] lg:text-[56px]">
                         {t(
                             "Αποκτήστε πρόσβαση στο PolicyWallet για ιδιώτες, ομάδες και επαγγελματίες.",
                             "Get access to the PolicyWallet platform for individuals, teams, and professionals."
@@ -424,10 +377,7 @@ export default function ProductPage() {
                         )}
                     </p>
                     <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-                        <Link
-                            href="/auth/signup"
-                            className="pw-btn-lg inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#89D9B2] font-semibold text-[#0F172A] transition-opacity duration-150 hover:opacity-90 sm:w-auto"
-                        >
+                        <Link href="/auth/signup" className="pw-primary-button-inverse pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε δωρεάν", "Get started free")}
                             <ArrowRight className="h-4 w-4" />
                         </Link>

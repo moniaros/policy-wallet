@@ -27,10 +27,10 @@ export function ProductCategoryExplorer({
             <div className="mx-auto max-w-[1240px]">
                 <div className="mb-10 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                     <div className="max-w-[720px]">
-                        <p className="mb-3 text-[13px] font-semibold uppercase tracking-widest text-[#29685B]">
+                        <p className="mb-3 text-[12px] font-semibold uppercase tracking-widest text-[#29685B]">
                             {t("Εξερευνήστε κι άλλα", "Explore more")}
                         </p>
-                        <h2 className="text-[32px] lg:text-[40px] font-medium tracking-[-0.03em] leading-[1.1] text-[#0F172A]">
+                        <h2 className="text-[32px] lg:text-[40px] font-semibold tracking-[-0.03em] leading-[1.1] text-[#0F172A]">
                             {t(
                                 "Δείτε και τις υπόλοιπες ασφαλιστικές κατηγορίες.",
                                 "Browse the rest of the insurance categories."
@@ -51,7 +51,7 @@ export function ProductCategoryExplorer({
 
                     <Link
                         href={localizeHref("/product", language)}
-                        className="inline-flex items-center gap-2 self-start rounded-full border border-[#D5DEE8] bg-white px-5 py-3 text-[15px] font-medium text-[#0F172A] transition-colors duration-150 hover:border-[#CBD5E1] hover:bg-[#F8FAFC]"
+                        className="inline-flex items-center gap-2 self-start rounded-full border border-[#D5DEE8] bg-white px-5 py-3 text-[14px] font-semibold text-[#0F172A] transition-colors duration-150 hover:border-[#CBD5E1] hover:bg-[#F8FAFC]"
                     >
                         {t("Όλες οι κατηγορίες", "All categories")}
                         <ArrowRight className="h-4 w-4" />
@@ -82,7 +82,7 @@ export function ProductCategoryExplorer({
                                         </span>
                                     </div>
 
-                                    <h3 className="text-[20px] font-medium tracking-tight text-[#0F172A]">
+                                    <h3 className="text-[20px] font-semibold tracking-tight text-[#0F172A]">
                                         {t(category.labelEl, category.labelEn)}
                                     </h3>
                                     <p className="mt-3 text-[14px] font-semibold leading-snug text-[#0F172A]">
@@ -113,7 +113,7 @@ export function ProductCategoryExplorer({
                                     </span>
                                 </div>
 
-                                <h3 className="text-[20px] font-medium tracking-tight text-[#0F172A]">
+                                <h3 className="text-[20px] font-semibold tracking-tight text-[#0F172A]">
                                     {t(category.labelEl, category.labelEn)}
                                 </h3>
                                 <p className="mt-3 text-[14px] font-semibold leading-snug text-[#0F172A]">

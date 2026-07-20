@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
-import ProductPageClient from "./ProductPageClient"
+import { ProductSections } from "./ProductSections"
+import { StaticLanguageProvider } from "@/contexts/LanguageContext"
 import { buildMarketingMetadata } from "@/lib/seo/marketing-pages"
 import {
     JsonLd,
@@ -13,8 +14,8 @@ export const metadata: Metadata = buildMarketingMetadata("product")
 
 export default function ProductPage() {
     return (
-        <>
-            <ProductPageClient />
+        <StaticLanguageProvider language="el" counterpartPath="/en/product">
+            <ProductSections language="el" />
             <JsonLd
                 data={[
                     breadcrumbJsonLd(["product"]),
@@ -35,6 +36,6 @@ export default function ProductPage() {
                     }),
                 ]}
             />
-        </>
+        </StaticLanguageProvider>
     )
 }

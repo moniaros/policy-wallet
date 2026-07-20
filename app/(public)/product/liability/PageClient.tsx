@@ -42,17 +42,17 @@ export default function LiabilityProductPage() {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-[900px] text-center">
-                    <span className="inline-flex bg-[#EBE5D9] text-[#1A1A1A] px-3 py-1 rounded-[4px] text-[11px] font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] text-[#166534] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
                         {t("Αστική Ευθύνη", "Personal Liability")}
                     </span>
-                    <h1 className="text-[46px] lg:text-[68px] leading-[1.05] tracking-[-0.04em] font-medium text-[#0F172A] mb-8">
+                    <h1 className="text-[44px] lg:text-[56px] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
                         {t("Όταν η ζημιά είναι σε ξένη περιουσία, ποιος πληρώνει;", "When the damage is to someone else's property, who pays?")}
                     </h1>
-                    <p className="mx-auto max-w-[680px] text-[20px] lg:text-[22px] leading-[1.5] text-[#475569] mb-10">
+                    <p className="mx-auto max-w-[680px] text-[20px] leading-[1.5] text-[#475569] mb-10">
                         {t("Η αστική ευθύνη καλύπτει ζημιές που προκαλείτε εσείς, το παιδί ή ο σκύλος σας σε τρίτους. Συχνά όμως υπάρχει ήδη μέσα στο συμβόλαιο κατοικίας σας — και την ξαναγοράζετε χωρίς να το ξέρετε.", "Liability cover pays for damage you, your child or your dog cause to others. But it often already sits inside your home policy — and you buy it again without knowing.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="w-full sm:w-auto rounded-[4px] bg-[#29685B] px-8 py-3.5 text-[16px] font-bold text-white transition-colors duration-150 hover:bg-[#1C4E44]">
+                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε δωρεάν", "Get Started Free")}
                         </Link>
                     </div>
@@ -63,7 +63,7 @@ export default function LiabilityProductPage() {
             <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
                 <div className="mx-auto max-w-[1240px]">
                     <div className="max-w-[720px] mb-14">
-                        <h2 className="text-[36px] font-medium tracking-[-0.03em] mb-5 leading-[1.1] text-[#1A1A1A]">
+                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A]">
                             {t("Τρεις καθημερινές στιγμές που γίνονται λογαριασμός.", "Three everyday moments that turn into a bill.")}
                         </h2>
                         <p className="text-[#475569] text-[18px] leading-relaxed">
@@ -76,11 +76,11 @@ export default function LiabilityProductPage() {
                             const Icon = scenario.icon
                             return (
                                 <div key={scenario.titleEn} className="rounded-[16px] border border-[#E2E8F0] bg-white p-7">
-                                    <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#EBE5D9]">
+                                    <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#DCEBDA]">
                                         <Icon className="h-5 w-5 text-[#0F172A]" />
                                     </div>
-                                    <h3 className="text-[19px] font-medium text-[#1A1A1A] mb-3">{t(scenario.titleEl, scenario.titleEn)}</h3>
-                                    <p className="text-[15px] leading-relaxed text-[#475569]">{t(scenario.descEl, scenario.descEn)}</p>
+                                    <h3 className="text-[20px] font-semibold text-[#0F172A] mb-3">{t(scenario.titleEl, scenario.titleEn)}</h3>
+                                    <p className="text-[14px] leading-relaxed text-[#475569]">{t(scenario.descEl, scenario.descEn)}</p>
                                 </div>
                             )
                         })}
@@ -92,7 +92,7 @@ export default function LiabilityProductPage() {
             <section className="px-6 lg:px-12 py-24">
                 <div className="mx-auto max-w-[1240px] grid md:grid-cols-2 gap-16 items-center">
                     <div>
-                        <h2 className="text-[36px] font-medium tracking-[-0.03em] mb-6 leading-[1.1] text-[#1A1A1A]">
+                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-6 leading-[1.1] text-[#0F172A]">
                             {t("Πριν την αγοράσετε, δείτε αν την έχετε ήδη.", "Before you buy it, see if you already own it.")}
                         </h2>
                         <p className="text-[#475569] text-[18px] leading-relaxed mb-6">
@@ -104,10 +104,10 @@ export default function LiabilityProductPage() {
                     </div>
 
                     {/* Mock UI */}
-                    <div className="bg-white p-8 rounded-[12px] border border-[#E5E5E5] shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
+                    <div className="bg-white p-8 rounded-[12px] border border-[#E2E8F0] shadow-[0_20px_40px_rgba(0,0,0,0.04)]">
                         <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
                             <div>
-                                <h3 className="text-[14px] font-bold text-[#1A1A1A] uppercase tracking-wider">Liability Check</h3>
+                                <h3 className="text-[14px] font-bold text-[#0F172A] uppercase tracking-wider">Liability Check</h3>
                                 <p className="text-[13px] text-gray-500">2 policies scanned</p>
                             </div>
                         </div>
@@ -144,11 +144,11 @@ export default function LiabilityProductPage() {
             <ProductCategoryExplorer currentCategoryId="liability" />
 
             {/* CTA */}
-            <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">
-                <h2 className="text-[36px] lg:text-[48px] font-medium tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
+            <section className="bg-[#1A2420] text-white py-24 text-center px-6">
+                <h2 className="text-[32px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
                     {t("Μία κάλυψη αρκεί. Δύο είναι σπατάλη.", "One cover is enough. Two is a waste.")}
                 </h2>
-                <Link href="/auth/signup" className="inline-flex rounded-[4px] bg-[#89D9B2] px-8 py-4 text-[16px] font-bold text-[#1A1A1A] transition-opacity duration-150 hover:opacity-90">
+                <Link href="/auth/signup" className="pw-primary-button-inverse pw-btn-lg">
                     {t("Ελέγξτε τι έχετε ήδη", "Check what you already hold")}
                 </Link>
             </section>

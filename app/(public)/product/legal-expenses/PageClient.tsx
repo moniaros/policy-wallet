@@ -60,17 +60,17 @@ export default function LegalExpensesProductPage() {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-[900px] text-center">
-                    <span className="inline-flex bg-[#E8E4F0] text-[#1A1A1A] px-3 py-1 rounded-[4px] text-[11px] font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] text-[#166534] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
                         {t("Νομική Προστασία", "Legal Expenses Insurance")}
                     </span>
-                    <h1 className="text-[46px] lg:text-[68px] leading-[1.05] tracking-[-0.04em] font-medium text-[#0F172A] mb-8">
+                    <h1 className="text-[44px] lg:text-[56px] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
                         {t("«Έχω νομική προστασία.» Ξέρετε όμως για τι;", "“I have legal cover.” But do you know for what?")}
                     </h1>
-                    <p className="mx-auto max-w-[680px] text-[20px] lg:text-[22px] leading-[1.5] text-[#475569] mb-10">
+                    <p className="mx-auto max-w-[680px] text-[20px] leading-[1.5] text-[#475569] mb-10">
                         {t("Η νομική προστασία πληρώνει δικηγόρους, δικαστικά έξοδα και πραγματογνώμονες — αλλά μόνο για τις κατηγορίες διαφορών που γράφει το συμβόλαιο. Δείτε τις δικές σας, όχι τις υποθετικές.", "Legal expenses insurance pays for lawyers, court costs and expert witnesses — but only for the dispute categories written in your policy. See yours, not the hypothetical ones.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="w-full sm:w-auto rounded-[4px] bg-[#29685B] px-8 py-3.5 text-[16px] font-bold text-white transition-colors duration-150 hover:bg-[#1C4E44]">
+                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε δωρεάν", "Get Started Free")}
                         </Link>
                     </div>
@@ -81,7 +81,7 @@ export default function LegalExpensesProductPage() {
             <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
                 <div className="mx-auto max-w-[1240px]">
                     <div className="max-w-[720px] mb-14">
-                        <h2 className="text-[36px] font-medium tracking-[-0.03em] mb-5 leading-[1.1] text-[#1A1A1A]">
+                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A]">
                             {t("Ο πιο παρεξηγημένος κλάδος της ελληνικής αγοράς.", "The most misunderstood line in the Greek market.")}
                         </h2>
                         <p className="text-[#475569] text-[18px] leading-relaxed">
@@ -101,8 +101,8 @@ export default function LegalExpensesProductPage() {
                                             <Check className="w-4 h-4 text-[#29685B]" />
                                         </div>
                                         <div>
-                                            <h4 className="text-[17px] font-medium text-[#1A1A1A]">{t(item.titleEl, item.titleEn)}</h4>
-                                            <p className="text-[15px] leading-relaxed text-[#475569] mt-1">{t(item.descEl, item.descEn)}</p>
+                                            <h4 className="text-[18px] font-semibold text-[#0F172A]">{t(item.titleEl, item.titleEn)}</h4>
+                                            <p className="text-[14px] leading-relaxed text-[#475569] mt-1">{t(item.descEl, item.descEn)}</p>
                                         </div>
                                     </li>
                                 ))}
@@ -120,8 +120,8 @@ export default function LegalExpensesProductPage() {
                                             <X className="w-4 h-4 text-slate-500" />
                                         </div>
                                         <div>
-                                            <h4 className="text-[17px] font-medium text-[#1A1A1A]">{t(item.titleEl, item.titleEn)}</h4>
-                                            <p className="text-[15px] leading-relaxed text-[#475569] mt-1">{t(item.descEl, item.descEn)}</p>
+                                            <h4 className="text-[18px] font-semibold text-[#0F172A]">{t(item.titleEl, item.titleEn)}</h4>
+                                            <p className="text-[14px] leading-relaxed text-[#475569] mt-1">{t(item.descEl, item.descEn)}</p>
                                         </div>
                                     </li>
                                 ))}
@@ -138,11 +138,11 @@ export default function LegalExpensesProductPage() {
             <ProductCategoryExplorer currentCategoryId="legal-expenses" />
 
             {/* CTA */}
-            <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">
-                <h2 className="text-[36px] lg:text-[48px] font-medium tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
+            <section className="bg-[#1A2420] text-white py-24 text-center px-6">
+                <h2 className="text-[32px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
                     {t("Μάθετε τι πληρώνει το συμβόλαιο πριν χρειαστείτε δικηγόρο.", "Learn what your policy pays before you need a lawyer.")}
                 </h2>
-                <Link href="/auth/signup" className="inline-flex rounded-[4px] bg-[#89D9B2] px-8 py-4 text-[16px] font-bold text-[#1A1A1A] transition-opacity duration-150 hover:opacity-90">
+                <Link href="/auth/signup" className="pw-primary-button-inverse pw-btn-lg">
                     {t("Ανεβάστε τη νομική σας προστασία", "Upload your legal expenses policy")}
                 </Link>
             </section>

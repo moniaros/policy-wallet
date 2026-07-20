@@ -63,17 +63,17 @@ export default function BusinessProductPage() {
             {/* HERO */}
             <section className="px-6 lg:px-12">
                 <div className="mx-auto max-w-[900px] text-center">
-                    <span className="inline-flex bg-[#E8E4F0] text-[#1A1A1A] px-3 py-1 rounded-[4px] text-[11px] font-semibold tracking-wider uppercase mb-6">
+                    <span className="inline-flex bg-[#DCEBDA] text-[#166534] px-3 py-1 rounded-full text-[12px] font-semibold tracking-wider uppercase mb-6">
                         {t("Ασφάλεια Επιχείρησης", "Business Insurance")}
                     </span>
-                    <h1 className="text-[46px] lg:text-[68px] leading-[1.05] tracking-[-0.04em] font-medium text-[#0F172A] mb-8">
+                    <h1 className="text-[44px] lg:text-[56px] leading-[1.05] tracking-[-0.04em] font-semibold text-[#0F172A] mb-8">
                         {t("Έξι κίνδυνοι, ένα πολυασφαλιστήριο, μηδέν ασάφεια.", "Six risks, one multi-risk policy, zero ambiguity.")}
                     </h1>
-                    <p className="mx-auto max-w-[680px] text-[20px] lg:text-[22px] leading-[1.5] text-[#475569] mb-10">
+                    <p className="mx-auto max-w-[680px] text-[20px] leading-[1.5] text-[#475569] mb-10">
                         {t("Το πολυασφαλιστήριο μιας μικρής επιχείρησης καλύπτει στέγη, εξοπλισμό, εμπορεύματα, διακοπή εργασιών και ευθύνες — αλλά όχι πάντα όλα μαζί. Η AI δείχνει ποια σκέλη έχετε αγοράσει και ποια λείπουν.", "A small business multi-risk policy covers premises, equipment, stock, interruption and liabilities — but rarely all of them at once. Our AI shows which sections you actually bought and which are missing.")}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/auth/signup" className="w-full sm:w-auto rounded-[4px] bg-[#29685B] px-8 py-3.5 text-[16px] font-bold text-white transition-colors duration-150 hover:bg-[#1C4E44]">
+                        <Link href="/auth/signup" className="pw-primary-button pw-btn-lg w-full sm:w-auto">
                             {t("Ξεκινήστε δωρεάν", "Get Started Free")}
                         </Link>
                     </div>
@@ -84,7 +84,7 @@ export default function BusinessProductPage() {
             <section className="px-6 lg:px-12 py-24 mt-12 bg-[#F8FAFC]">
                 <div className="mx-auto max-w-[1240px]">
                     <div className="max-w-[720px] mb-14">
-                        <h2 className="text-[36px] font-medium tracking-[-0.03em] mb-5 leading-[1.1] text-[#1A1A1A]">
+                        <h2 className="text-[32px] font-semibold tracking-[-0.03em] mb-5 leading-[1.1] text-[#0F172A]">
                             {t("Τα σκέλη που πρέπει να ξέρει κάθε ΜμΕ.", "The sections every SME should know.")}
                         </h2>
                         <p className="text-[#475569] text-[18px] leading-relaxed">
@@ -97,11 +97,11 @@ export default function BusinessProductPage() {
                             const Icon = section.icon
                             return (
                                 <div key={section.titleEn} className="rounded-[16px] border border-[#E2E8F0] bg-white p-7">
-                                    <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#E8E4F0]">
+                                    <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-[12px] bg-[#DCEBDA]">
                                         <Icon className="h-5 w-5 text-[#0F172A]" />
                                     </div>
-                                    <h3 className="text-[19px] font-medium text-[#1A1A1A] mb-3">{t(section.titleEl, section.titleEn)}</h3>
-                                    <p className="text-[15px] leading-relaxed text-[#475569]">{t(section.descEl, section.descEn)}</p>
+                                    <h3 className="text-[20px] font-semibold text-[#0F172A] mb-3">{t(section.titleEl, section.titleEn)}</h3>
+                                    <p className="text-[14px] leading-relaxed text-[#475569]">{t(section.descEl, section.descEn)}</p>
                                 </div>
                             )
                         })}
@@ -112,11 +112,11 @@ export default function BusinessProductPage() {
             <ProductCategoryExplorer currentCategoryId="business" />
 
             {/* CTA */}
-            <section className="bg-[#1A1C1D] text-white py-24 text-center px-6">
-                <h2 className="text-[36px] lg:text-[48px] font-medium tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
+            <section className="bg-[#1A2420] text-white py-24 text-center px-6">
+                <h2 className="text-[32px] lg:text-[44px] font-semibold tracking-[-0.03em] leading-[1.1] mb-8 text-white max-w-2xl mx-auto">
                     {t("Η επιχείρησή σας δεν χωράει «μάλλον καλυπτόμαστε».", "Your business can't run on “we're probably covered”.")}
                 </h2>
-                <Link href="/auth/signup" className="inline-flex rounded-[4px] bg-[#89D9B2] px-8 py-4 text-[16px] font-bold text-[#1A1A1A] transition-opacity duration-150 hover:opacity-90">
+                <Link href="/auth/signup" className="pw-primary-button-inverse pw-btn-lg">
                     {t("Χαρτογραφήστε τις καλύψεις σας", "Map your coverages")}
                 </Link>
             </section>
