@@ -38,6 +38,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
         contact: 0.6,
         privacy: 0.3,
         terms: 0.3,
+        cookies: 0.3,
+        subprocessors: 0.3,
     }
 
     for (const [key, page] of Object.entries(marketingPages)) {

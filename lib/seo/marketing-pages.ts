@@ -34,6 +34,8 @@ export type MarketingPageKey =
     | "guides"
     | "privacy"
     | "terms"
+    | "cookies"
+    | "subprocessors"
 
 type MarketingPageEntry = {
     path: string
@@ -367,6 +369,32 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
         description:
             "Οι όροι χρήσης της πλατφόρμας PolicyWallet: λογαριασμοί, συνδρομές, δικαιώματα και υποχρεώσεις για ιδιώτες, ασφαλιστικούς πράκτορες και πρακτορεία.",
         breadcrumb: "Όροι Χρήσης",
+    },
+    cookies: {
+        path: "/cookies",
+        title: "Πολιτική Cookies",
+        description:
+            "Ποια cookies χρησιμοποιεί το PolicyWallet, για ποιον σκοπό και για πόσο: cookies σύνδεσης, προτιμήσεις συγκατάθεσης και πώς τα διαχειρίζεστε.",
+        breadcrumb: "Πολιτική Cookies",
+        en: {
+            title: "Cookie Policy",
+            description:
+                "Which cookies PolicyWallet uses, for what purpose and for how long: session cookies, consent preferences and how you can manage them at any time.",
+            breadcrumb: "Cookie Policy",
+        },
+    },
+    subprocessors: {
+        path: "/subprocessors",
+        title: "Υπο-εκτελούντες Επεξεργασίας",
+        description:
+            "Οι τεχνικοί πάροχοι που επεξεργάζονται δεδομένα για λογαριασμό του PolicyWallet: ρόλος, κατηγορίες δεδομένων και τοποθεσία επεξεργασίας για καθέναν.",
+        breadcrumb: "Υπο-εκτελούντες",
+        en: {
+            title: "Subprocessors",
+            description:
+                "The technical providers that process data on behalf of PolicyWallet: the role, data categories and processing location for each subprocessor.",
+            breadcrumb: "Subprocessors",
+        },
     },
 }
 
