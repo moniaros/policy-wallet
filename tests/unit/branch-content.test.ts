@@ -278,10 +278,14 @@ describe('branch content — resolution', () => {
     })
 
     it('branches without a bundle or a rich parent get generic content', () => {
-        const legal = getBranchContent('legal_expenses')
-        expect(legal.branchId).toBe('legal_expenses')
-        expect(RICH_BRANCH_CONTENT.legal_expenses).toBeUndefined()
-        expect(legal.suggestedQuestions.length).toBeGreaterThanOrEqual(4)
+        // `gadget` is writeEnabled:false with no parentId, so it has neither a
+        // hand-written bundle nor a rich parent to inherit from. (This example
+        // was `legal_expenses` until that branch was authored — pick a branch
+        // that genuinely has no bundle, not merely one that has none yet.)
+        const gadget = getBranchContent('gadget')
+        expect(gadget.branchId).toBe('gadget')
+        expect(RICH_BRANCH_CONTENT.gadget).toBeUndefined()
+        expect(gadget.suggestedQuestions.length).toBeGreaterThanOrEqual(4)
     })
 
     it('unknown values resolve to the other fallback', () => {
