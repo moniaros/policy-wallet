@@ -114,6 +114,13 @@ export const healthContent: BranchContent = {
             href: '/agent',
             ctaType: 'askAgent',
         },
+        {
+            id: 'health_save_emergency_line',
+            label: { el: 'Αποθήκευσε τη γραμμή επείγουσας βοήθειας', en: 'Save the emergency assistance line' },
+            href: null,
+            ctaType: 'task',
+            requiresPhone: true,
+        },
     ],
     suggestedQuestions: [
         { el: 'Τι πληρώνω εγώ σε νοσηλεία;', en: 'What do I pay in a hospitalisation?' },

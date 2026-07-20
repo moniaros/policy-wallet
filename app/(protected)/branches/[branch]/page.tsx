@@ -129,6 +129,10 @@ export default async function BranchPage({ params }: { params: Promise<{ branch:
             if (!firstPolicyId || !action.question) return null
             return questionHref(action.question)
         }
+        // `task` actions are policy-scoped — they need the hotline extracted
+        // from one specific document, or that policy's own page. They carry
+        // `href: null` and are therefore skipped here by construction; this
+        // listing has no single policy to bind them to.
         return action.href
     }
 

@@ -124,6 +124,19 @@ export const motorContent: BranchContent = {
             href: '/agent',
             ctaType: 'askAgent',
         },
+        {
+            id: 'motor_request_green_card',
+            label: { el: 'Ζήτησε πράσινη κάρτα', en: 'Request a green card' },
+            href: '/agent',
+            ctaType: 'askAgent',
+        },
+        {
+            id: 'motor_save_emergency_line',
+            label: { el: 'Αποθήκευσε τη γραμμή επείγουσας βοήθειας', en: 'Save the emergency assistance line' },
+            href: null,
+            ctaType: 'task',
+            requiresPhone: true,
+        },
     ],
     suggestedQuestions: [
         { el: 'Καλύπτομαι για φυσικά φαινόμενα;', en: 'Am I covered for natural events?' },

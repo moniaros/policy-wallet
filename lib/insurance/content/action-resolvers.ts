@@ -105,6 +105,23 @@ function answered(value: Bilingual, phone?: string | null): ResolvedAction {
     return dialable ? { status: 'answered', value, phone: dialable } : { status: 'answered', value }
 }
 
+/**
+ * A resolution that carries a dialable number but asserts NOTHING about cover.
+ * Returns null when no number was extracted, so the caller degrades to a plain
+ * `ask` and `requiresPhone` actions drop out of the list entirely.
+ */
+function askWithPhone(phone: string | null): ResolvedAction | null {
+    return phone ? { status: 'ask', phone } : null
+}
+
+/** Roadside/accident-care line off either the canonical or the legacy section. */
+function assistancePhone(acord: AcordData): string | null {
+    return (
+        nonEmptyString(acord.vehicle?.roadsideAssistancePhone) ??
+        nonEmptyString(acord.motor?.roadsideAssistancePhone)
+    )
+}
+
 // ── Resolvers, keyed by BranchAction.id ─────────────────────────────────────
 //
 // Keys MUST match a real `BranchAction.id` in one of the bundles under
@@ -191,6 +208,25 @@ export const ACTION_RESOLVERS: Record<string, ActionResolver> = {
         if (!maturity) return null
         return answered(maturity)
     },
+
+    // ── "save the emergency line" tasks ─────────────────────────────────────
+    //
+    // These resolve a PHONE ONLY — never an answer. They stay `status: 'ask'`
+    // so the action keeps rendering as a CTA (a button that creates a self-
+    // assigned task) rather than an answered chip, while `requiresPhone` on
+    // the authored action hides it entirely when nothing was extracted.
+    //
+    // Unlike `motor_check_roadside`, no cover claim is made here, so quoting
+    // whatever assistance line the document printed is honest: we say "here is
+    // the number your policy lists", not "you are covered".
+    motor_save_emergency_line: (acord) => askWithPhone(assistancePhone(acord)),
+    motorbike_save_emergency_line: (acord) => askWithPhone(assistancePhone(acord)),
+    home_save_emergency_line: (acord) =>
+        askWithPhone(
+            nonEmptyString(acord.property?.technicalAssistancePhone) ??
+                nonEmptyString(acord.home?.technicalAssistancePhone)
+        ),
+    health_save_emergency_line: (acord) => askWithPhone(nonEmptyString(acord.health?.coordinationCentre?.phone)),
 
     life_check_beneficiaries: (acord) => {
         const named = [

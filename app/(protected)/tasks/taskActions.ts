@@ -57,6 +57,25 @@ export async function createUserTask(data: CreateTaskData) {
     }
 }
 
+/**
+ * Create a task assigned to the caller themselves.
+ *
+ * `createUserTask` requires an explicit `data.userId`, which suits the agent
+ * flows that assign work to a named customer. Client components creating their
+ * OWN reminders (the `ctaType: 'task'` branch actions) do not reliably know
+ * their database user id — it is not the Supabase auth id — and letting the
+ * browser supply it would be handing the client a field the server is about to
+ * authorize against. Resolving it here removes both problems; the existing
+ * authorization logic in `createUserTask` is left exactly as it was and still
+ * runs (this path simply always satisfies its `isSelf` branch).
+ */
+export async function createSelfTask(data: Omit<CreateTaskData, "userId">) {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { success: false, error: "Unauthorized" }
+
+    return createUserTask({ ...data, userId: authResult.dbUser.id })
+}
+
 export async function updateTaskStatus(taskId: string, status: string) {
     const authResult = await getAuthenticatedUserOrNull()
     if (!authResult) return { success: false, error: "Unauthorized" }

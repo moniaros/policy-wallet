@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowUpRight, CheckCircle2, ListChecks, Phone, Sparkles } from "lucide-react"
+import { ArrowUpRight, CheckCircle2, ListChecks, Lock, MessageSquarePlus, Phone, Plus, Sparkles } from "lucide-react"
 
 import type { BranchActionType } from "@/lib/insurance/content/types"
 import { usePolicyQaPrefill } from "@/components/wallet/policy-detail/PolicyQaPrefillContext"
@@ -41,6 +41,18 @@ interface BranchActionsCardProps {
     /** Invoked by `renewals` CTAs — reuses the page's renewal-quote flow. */
     onRequestQuote?: () => void
     isRequestingQuote?: boolean
+    /** `askAgent` CTAs — opens (or reuses) the advisor thread for this action. */
+    onAskAgent?: (item: BranchActionItem) => void
+    /** `task` CTAs — creates the self-assigned reminder for this action. */
+    onCreateTask?: (item: BranchActionItem) => void
+    /**
+     * Free tier: agent-bound CTAs render with a lock chip and route the click
+     * to the upgrade modal instead of the flow. They are NOT hidden — a
+     * removed button converts nobody.
+     */
+    agentActionsLocked?: boolean
+    /** Action id currently mid-flight, so the row can show a pending state. */
+    pendingActionId?: string | null
     copy: {
         actionsTitle: string
         actionsAnsweredHeading: string
@@ -48,6 +60,8 @@ interface BranchActionsCardProps {
         actionsCall: string
         actionsShowAll: string
         actionsShowLess: string
+        actionsLocked: string
+        actionsWorking: string
     }
 }
 
@@ -91,6 +105,10 @@ export function BranchActionsCard({
     uploadHref,
     onRequestQuote,
     isRequestingQuote,
+    onAskAgent,
+    onCreateTask,
+    agentActionsLocked,
+    pendingActionId,
     copy,
 }: BranchActionsCardProps) {
     const { ask } = usePolicyQaPrefill()
@@ -105,14 +123,63 @@ export function BranchActionsCard({
     const hiddenAnsweredCount = answered.length - visibleAnswered.length
 
     function renderCta(item: BranchActionItem) {
+        const isPending = pendingActionId === item.id
         const icon =
             item.ctaType === "askAi" ? (
                 <Sparkles className="h-3.5 w-3.5 flex-shrink-0 text-primary dark:text-mint" aria-hidden />
+            ) : item.ctaType === "askAgent" ? (
+                <MessageSquarePlus className="h-3.5 w-3.5 flex-shrink-0 text-black/40 dark:text-white/45" aria-hidden />
+            ) : item.ctaType === "task" ? (
+                <Plus className="h-3.5 w-3.5 flex-shrink-0 text-black/40 dark:text-white/45" aria-hidden />
             ) : (
                 <ArrowUpRight className="h-3.5 w-3.5 flex-shrink-0 text-black/40 dark:text-white/45" aria-hidden />
             )
 
+        // askAgent — open (or reuse) the advisor thread. On the free tier the
+        // button stays, wearing a lock chip; the handler routes to the upgrade
+        // modal. Hiding it would delete the only place a free user learns the
+        // feature exists.
+        if (item.ctaType === "askAgent" && onAskAgent) {
+            return (
+                <button
+                    type="button"
+                    onClick={() => onAskAgent(item)}
+                    disabled={isPending}
+                    className={`${CTA_CLASS} cursor-pointer`}
+                >
+                    <span className="min-w-0">{isPending ? copy.actionsWorking : item.label}</span>
+                    {agentActionsLocked ? (
+                        <span className="inline-flex flex-shrink-0 items-center gap-1 rounded-full border border-black/10 bg-black/[0.04] px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-black/55 dark:border-white/15 dark:bg-white/10 dark:text-white/60">
+                            <Lock className="h-2.5 w-2.5" aria-hidden />
+                            {copy.actionsLocked}
+                        </span>
+                    ) : (
+                        icon
+                    )}
+                </button>
+            )
+        }
+
+        // task — a self-assigned reminder. Nothing paid is involved (no agent,
+        // no AI), so this is never gated.
+        if (item.ctaType === "task" && onCreateTask) {
+            return (
+                <button
+                    type="button"
+                    onClick={() => onCreateTask(item)}
+                    disabled={isPending}
+                    className={`${CTA_CLASS} cursor-pointer`}
+                >
+                    <span className="min-w-0">{isPending ? copy.actionsWorking : item.label}</span>
+                    {icon}
+                </button>
+            )
+        }
+
         // askAi — imperative prefill so repeat clicks on the same page refire.
+        // Deliberately NOT gated here: PolicyQA enforces its own free-question
+        // limit and renders its own UPGRADE_REQUIRED state, so double-gating
+        // would block users who still have free questions left.
         if (item.ctaType === "askAi" && item.question) {
             const question = item.question
             return (
@@ -139,7 +206,8 @@ export function BranchActionsCard({
         }
 
         // review — in-page anchor; upload / profile — fixed routes.
-        // askAgent stays a plain link until PR 5 wires the advisor thread.
+        // A `task` action reaching here has no handler wired; it has no href
+        // either, so it correctly renders nothing rather than a dead link.
         const href =
             item.ctaType === "review"
                 ? "#coverage"

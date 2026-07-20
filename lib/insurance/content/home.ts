@@ -125,6 +125,13 @@ export const homeContent: BranchContent = {
             href: '/agent',
             ctaType: 'askAgent',
         },
+        {
+            id: 'home_save_emergency_line',
+            label: { el: 'Αποθήκευσε τη γραμμή επείγουσας βοήθειας', en: 'Save the emergency assistance line' },
+            href: null,
+            ctaType: 'task',
+            requiresPhone: true,
+        },
     ],
     suggestedQuestions: [
         { el: 'Έχω κάλυψη σεισμού;', en: 'Do I have earthquake coverage?' },

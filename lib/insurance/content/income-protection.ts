@@ -152,6 +152,12 @@ export const incomeProtectionContent: BranchContent = {
             href: '/agent',
             ctaType: 'askAgent',
         },
+        {
+            id: 'income_protection_note_life_change',
+            label: { el: 'Σημείωσε αλλαγή ζωής', en: 'Note a life change' },
+            href: null,
+            ctaType: 'task',
+        },
     ],
     suggestedQuestions: [
         { el: 'Πόση είναι η περίοδος αναμονής;', en: 'How long is the waiting period?' },

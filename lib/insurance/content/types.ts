@@ -27,6 +27,7 @@ export type BranchActionType =
     | 'askAi'      // open policy Q&A (deep-links with a prefilled question)
     | 'profile'    // complete the risk profile
     | 'renewals'   // renewal timeline / reminders
+    | 'task'       // create a self-assigned UserTask (see ./self-tasks.ts)
 
 export interface BranchAction {
     id: string
@@ -36,6 +37,13 @@ export interface BranchAction {
     ctaType: BranchActionType
     /** For askAi actions: the question to prefill in PolicyQA */
     question?: Bilingual
+    /**
+     * Render this action ONLY when the action resolver produced a dialable
+     * `phone` for this policy. Used by the "save the emergency line" task —
+     * a button that would save nothing is worse than no button at all, and
+     * the D7 honesty law forbids inventing a number we did not extract.
+     */
+    requiresPhone?: boolean
 }
 
 export interface BranchCommonGap {

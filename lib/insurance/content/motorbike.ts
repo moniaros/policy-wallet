@@ -152,6 +152,19 @@ export const motorbikeContent: BranchContent = {
             href: '/agent',
             ctaType: 'askAgent',
         },
+        {
+            id: 'motorbike_request_green_card',
+            label: { el: 'Ζήτησε πράσινη κάρτα', en: 'Request a green card' },
+            href: '/agent',
+            ctaType: 'askAgent',
+        },
+        {
+            id: 'motorbike_save_emergency_line',
+            label: { el: 'Αποθήκευσε τη γραμμή επείγουσας βοήθειας', en: 'Save the emergency assistance line' },
+            href: null,
+            ctaType: 'task',
+            requiresPhone: true,
+        },
     ],
     suggestedQuestions: [
         { el: 'Καλύπτονται οι σωματικές βλάβες του αναβάτη;', en: 'Is the rider’s bodily injury covered?' },
