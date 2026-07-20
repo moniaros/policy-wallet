@@ -134,7 +134,7 @@ export function ProductSections({ language }: { language: Language }) {
                     </div>
 
                     <div className="relative">
-                        <div className="rounded-[20px] border border-[#E2E8F0] bg-white p-6 shadow-[0_24px_48px_rgba(0,0,0,0.08)] lg:p-8">
+                        <div className="rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0_24px_48px_rgba(0,0,0,0.08)] lg:p-8">
                             <div className="mb-6 flex items-center justify-between border-b border-[#E2E8F0] pb-4">
                                 <div>
                                     <p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-[#64748B]">
@@ -268,7 +268,7 @@ export function ProductSections({ language }: { language: Language }) {
                                 <Link
                                     key={category.id}
                                     href={localizeHref(category.href, language)}
-                                    className={`group flex flex-col rounded-[20px] border p-8 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] ${category.surface} ${category.border}`}
+                                    className={`group flex flex-col rounded-2xl border p-8 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] ${category.surface} ${category.border}`}
                                 >
                                     <div className="mb-6 flex items-start justify-between">
                                         <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-white/80 shadow-sm backdrop-blur-sm">

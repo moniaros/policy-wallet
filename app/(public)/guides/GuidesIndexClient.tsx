@@ -46,7 +46,7 @@ export default function GuidesIndexClient() {
                         <Link
                             key={guide.slug}
                             href={localizeHref(`/guides/${guide.slug}`, language)}
-                            className="group rounded-[20px] border border-[#E2E8F0] bg-white p-8 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] md:p-10"
+                            className="group rounded-2xl border border-[#E2E8F0] bg-white p-8 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(0,0,0,0.08)] md:p-10"
                         >
                             <div className="mb-4 flex flex-wrap items-center gap-4 text-[13px] text-[#64748B]">
                                 <span className="inline-flex items-center gap-1.5">

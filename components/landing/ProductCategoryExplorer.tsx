@@ -71,7 +71,7 @@ export function ProductCategoryExplorer({
                                 <div
                                     key={category.id}
                                     aria-current="page"
-                                    className={`flex min-h-[220px] flex-col rounded-[20px] border p-6 shadow-[0_12px_30px_rgba(15,23,42,0.06)] ${category.surface} ${category.border}`}
+                                    className={`flex min-h-[220px] flex-col rounded-2xl border p-6 shadow-[0_12px_30px_rgba(15,23,42,0.06)] ${category.surface} ${category.border}`}
                                 >
                                     <div className="mb-5 flex items-start justify-between gap-3">
                                         <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-white/85 shadow-sm">
@@ -102,7 +102,7 @@ export function ProductCategoryExplorer({
                             <Link
                                 key={category.id}
                                 href={localizeHref(category.href, language)}
-                                className={`group flex min-h-[220px] flex-col rounded-[20px] border p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(15,23,42,0.08)] ${category.surface} ${category.border}`}
+                                className={`group flex min-h-[220px] flex-col rounded-2xl border p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_32px_rgba(15,23,42,0.08)] ${category.surface} ${category.border}`}
                             >
                                 <div className="mb-5 flex items-start justify-between gap-3">
                                     <div className="flex h-11 w-11 items-center justify-center rounded-[12px] bg-white/85 shadow-sm">
