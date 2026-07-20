@@ -260,7 +260,7 @@ differential builds rather than a bundle analyzer. The three offenders, with evi
 2. **EL+EN translation dictionaries — 194,016 B raw / 60,053 B gzip** (`018af4ct-iid8.js`),
    fingerprinted by content (40,093 Greek characters + the English strings). Pulled in by the
    root layout's `LanguageProvider` → `lib/i18n` → both `translations/el.ts` (147 KB) and
-   `en.ts` (100 KB). **Not fixed — see "Still open".**
+   `en.ts` (100 KB). **Fixed** in `perf/i18n-dictionary-split` — see "Still open".
 3. **supabase-js — 178,362 B raw / 46,814 B gzip** (`GoTrueClient` + `RealtimeClient` +
    Postgrest), on `/pricing` only.
 
@@ -291,14 +291,35 @@ already imported per-icon, not through the barrel — no lever.
 
 Still open:
 
-- [ ] **The 60 KB gzip i18n dictionary is the next and largest single lever** — and it is dead
-      weight on marketing specifically: all 22 marketing consumers of `useLanguage()` read only
-      `language`/`setLanguage`, **not one reads `t`**. The fix is to split the context so the
-      dictionary lives in a `TranslationsProvider` mounted by the protected/auth layouts rather
-      than by the root layout. Not attempted here because the blast radius is the whole app:
-      `useLanguage()` has 137 consumers, 78 of which read `t`, and `CookieConsentBanner` sits in
-      the *root* layout and reads `t.compliance?.cookieBanner` — so it renders on marketing and
-      would silently fall back to `DEFAULT_COOKIE_COPY`. Worth its own batch with its own
-      verification pass, not a rider on a perf cleanup.
+- [x] **The 60 KB gzip i18n dictionary** — **done** in `perf/i18n-dictionary-split`. Marketing
+      now drops **57,873 B gzip (-14.5%)** on every route: `/` 399,476 → 341,603, `/pricing`
+      403,689 → 345,816, `/product` 396,842 → 338,969, `/en` 399,476 → 341,603. `/auth/signin`
+      goes *up* 1,459 B, which is correct — it reads `t` and must still get the dictionary.
+
+      The consumer map (`docs/design/I18N_CONSUMER_MAP.md`) confirmed this section's claim by
+      import-graph reachability rather than by directory: 136 consumer files, 74 binding `t`,
+      and walking from `app/layout.tsx` plus all 57 `app/(public)` pages reached exactly **one**
+      `t` reader — `CookieConsentBanner`. It also turned up a second, undocumented leak:
+      `StaticLanguageProvider` called `getTranslations` on 30 `/en` marketing pages for zero `t`
+      consumers.
+
+      `LanguageContext.tsx` keeps language state and imports `@/lib/i18n` type-only;
+      `contexts/TranslationsProvider.tsx` is now the sole client-side importer of
+      `getTranslations`, mounted by `(protected)`, `onboarding`, and a new pass-through
+      `app/auth/layout.tsx`. `useLanguage()` is unchanged for all 136 consumers — `t` became a
+      lazy getter that throws a named error rather than degrading silently.
+
+      The cookie banner got its own co-located bilingual copy module. Falling back to
+      `DEFAULT_COOKIE_COPY` would have been a regression, not a fix — it is English-only and its
+      wording differs from both dictionaries — so that constant was removed outright. Rendered
+      banner text (EL + EN, collapsed and expanded) and the visible text of `/`, `/pricing`,
+      `/product`, `/cookies`, `/en/cookies` and `/auth/signin` are byte-identical to mainline,
+      and dictionary-exclusive Greek strings appear in zero marketing chunks.
+
+      Caveat: `/dashboard` could not be driven end-to-end locally — the dev Supabase host no
+      longer resolves in DNS, so `getAuthenticatedUser` fails before any i18n code runs. The
+      protected tree is verified indirectly: `/auth/signin` renders full Greek dictionary copy
+      through the same new provider, and the dashboard's client-reference manifest still pulls
+      the dictionary chunk.
 - [ ] Card radius is not unified (`rounded-2xl` vs `rounded-[20px]`) — deliberately left as a
       design decision rather than folded into a discipline pass.

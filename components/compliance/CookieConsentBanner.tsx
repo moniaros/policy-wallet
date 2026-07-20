@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { getCookieBannerCopy } from "@/components/compliance/cookie-banner-copy"
 import {
     CONSENT_COOKIE_NAME,
     DEFAULT_CATEGORIES,
@@ -9,25 +10,6 @@ import {
     type ConsentCategories,
     type ConsentCookiePayload,
 } from "@/lib/compliance/consent"
-
-const DEFAULT_COOKIE_COPY = {
-    title: "Cookie Preferences",
-    description: "We use cookies to operate the service and improve reliability.",
-    managePreferences: "Manage Preferences",
-    hidePreferences: "Hide Preferences",
-    privacyLink: "Privacy Policy",
-    termsLink: "Terms of Service",
-    necessaryTitle: "Necessary",
-    necessaryDescription: "Required for security and core functionality.",
-    analyticsTitle: "Analytics",
-    analyticsDescription: "Helps us understand product usage and improve reliability.",
-    marketingTitle: "Marketing",
-    marketingDescription: "Enables personalization and campaign measurement.",
-    alwaysOn: "Always Active",
-    necessaryOnly: "Necessary Only",
-    acceptAll: "Accept All",
-    savePreferences: "Save Preferences",
-} as const
 
 function readCookieConsent(): ConsentCookiePayload | null {
     if (typeof document === "undefined") return null
@@ -54,8 +36,11 @@ function writeCookieConsent(payload: ConsentCookiePayload) {
 }
 
 export function CookieConsentBanner() {
-    const { language, t } = useLanguage()
-    const copy = t.compliance?.cookieBanner ?? DEFAULT_COOKIE_COPY
+    // Reads only `language`, never `t`: this banner is mounted in the ROOT
+    // layout, so it renders on marketing routes where the dictionary is not
+    // loaded. Its copy is co-located instead — see cookie-banner-copy.ts.
+    const { language } = useLanguage()
+    const copy = getCookieBannerCopy(language)
     const [visible, setVisible] = useState(false)
     const [expanded, setExpanded] = useState(false)
     const [saving, setSaving] = useState(false)
