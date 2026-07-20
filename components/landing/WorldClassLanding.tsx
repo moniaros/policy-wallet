@@ -296,7 +296,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
 
                 {/* ── 7. FINAL CTA ─────────────────────────────────── */}
                 <section className="px-6 pb-24 lg:px-12">
-                    <div className="relative mx-auto max-w-[1240px] overflow-hidden rounded-3xl bg-[#0F172A] px-8 py-20 text-center lg:py-28">
+                    <div className="relative mx-auto max-w-[1240px] overflow-hidden rounded-2xl bg-[#0F172A] px-8 py-20 text-center lg:py-28">
                         {/* Radial glow */}
                         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_60%_at_50%_50%,rgba(41,104,91,0.30),transparent)]" />
 

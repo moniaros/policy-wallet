@@ -31,7 +31,7 @@ export default function CompanyPage() {
                 {/* Definitional block — the "PolicyWallet is..." sentence answer
                     engines extract, followed by concrete company facts. */}
                 <section className="mx-auto mb-20 max-w-4xl px-6 lg:px-12">
-                    <div className="rounded-[20px] border border-[#DCEBDA] bg-[#F0FDF4] p-8 md:p-10">
+                    <div className="rounded-2xl border border-[#DCEBDA] bg-[#F0FDF4] p-8 md:p-10">
                         <h2 className="mb-4 text-[24px] font-semibold tracking-tight text-[#0F172A]">
                             {t("Τι είναι το PolicyWallet;", "What is PolicyWallet?")}
                         </h2>

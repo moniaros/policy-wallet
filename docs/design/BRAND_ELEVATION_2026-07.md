@@ -321,5 +321,9 @@ Still open:
       protected tree is verified indirectly: `/auth/signin` renders full Greek dictionary copy
       through the same new provider, and the dashboard's client-reference manifest still pulls
       the dictionary chunk.
-- [ ] Card radius is not unified (`rounded-2xl` vs `rounded-[20px]`) — deliberately left as a
-      design decision rather than folded into a discipline pass.
+- [x] **Card radius unified on `rounded-2xl`** (owner decision, 2026-07-20). The 7
+      `rounded-[20px]` and 1 `rounded-3xl` on marketing surfaces were converted; 26 uses of
+      `rounded-2xl` and nothing else across `app/(public)`, `components/landing`,
+      `components/pricing`, `components/legal`. Buttons keep the pill radius via
+      `--pw-radius-button` — this rule is about CARDS only. Any new card radius needs the same
+      explicit justification as a new CTA variant (§4).
