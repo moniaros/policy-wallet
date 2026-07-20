@@ -1,7 +1,14 @@
 /**
- * Branch content registry — rich hand-written bundles for the core branches,
- * a taxonomy-derived generic fallback for everything else. Rendered by branch
- * pages, PolicyQA suggested questions and branch empty states.
+ * Branch content registry — hand-written bundles for the branches we have
+ * authored, a taxonomy-derived generic fallback for everything else. Rendered
+ * by branch pages, PolicyQA suggested questions and branch empty states.
+ *
+ * NOTE ON `contentTier`: taxonomy `contentTier` is MARKETING PROMINENCE (it
+ * drives the `/branches` listing), not a claim about whether a bundle exists.
+ * A `basic`-tier branch may — and now does — carry a hand-written bundle:
+ * `liability`, `legal_expenses` and the three b2b `group_*` lines are authored
+ * here while deliberately staying off the consumer branch listing. Registering
+ * a bundle must never require flipping `contentTier`.
  */
 import { getBranch, normalizeBranch, type InsuranceBranch } from '@/lib/insurance/taxonomy'
 
@@ -20,6 +27,11 @@ import { incomeProtectionContent } from './income-protection'
 import { personalAccidentContent } from './personal-accident'
 import { boatContent } from './boat'
 import { roadsideContent } from './roadside'
+import { liabilityContent } from './liability'
+import { legalExpensesContent } from './legal-expenses'
+import { groupHealthContent } from './group-health'
+import { groupLifeContent } from './group-life'
+import { groupPensionContent } from './group-pension'
 
 export type { Bilingual, BranchAction, BranchCommonGap, BranchContent } from './types'
 
@@ -45,6 +57,11 @@ export const RICH_BRANCH_CONTENT: Record<string, BranchContent> = {
     pet: petContent,
     boat: boatContent,
     business: businessContent,
+    liability: liabilityContent,
+    legal_expenses: legalExpensesContent,
+    group_health: groupHealthContent,
+    group_life: groupLifeContent,
+    group_pension: groupPensionContent,
 }
 
 function genitive(branch: InsuranceBranch): string {
