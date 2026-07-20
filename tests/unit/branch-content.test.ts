@@ -198,6 +198,27 @@ describe('branch content — resolution', () => {
         expect(getBranchContent(null).branchId).toBe('other')
     })
 
+    /**
+     * The policy detail page renders claimsSteps as the ordered list in
+     * ClaimsGuidanceCard for ANY policy whose line is writeable. A branch that
+     * resolves to a bundle with no steps would silently fall back to the
+     * generic four — this asserts the surface is actually covered.
+     */
+    it('every writeEnabled branch resolves to a bundle with claims steps', () => {
+        const writeEnabled = INSURANCE_BRANCHES.filter((branch) => branch.writeEnabled)
+        expect(writeEnabled.length).toBeGreaterThan(0)
+
+        for (const branch of writeEnabled) {
+            const content = getBranchContent(branch.id)
+            expect(content, `${branch.id} resolved to nothing`).toBeDefined()
+            expect(content.claimsSteps.length, `${branch.id} has no claimsSteps`).toBeGreaterThan(0)
+            for (const [i, step] of content.claimsSteps.entries()) {
+                expect(step.el.trim().length, `${branch.id}.claimsSteps[${i}].el empty`).toBeGreaterThan(0)
+                expect(step.en.trim().length, `${branch.id}.claimsSteps[${i}].en empty`).toBeGreaterThan(0)
+            }
+        }
+    })
+
     it('getBranchQuestions returns language-resolved strings', () => {
         const el = getBranchQuestions('motor', 'el')
         const en = getBranchQuestions('motor', 'en')

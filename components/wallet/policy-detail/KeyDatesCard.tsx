@@ -33,6 +33,12 @@ interface KeyDatesCardProps {
         renewalDate?: { page?: number; snippet?: string }
     }
     sourceLabels?: { fromDocument: string; pageAbbrev: string }
+    /**
+     * Branch-specific renewal note from lib/insurance/content, already resolved
+     * to one language by the caller. Rendered as a hedged footnote under the
+     * renewal block — editorial context, not extracted data.
+     */
+    renewalNote?: string | null
     copy: {
         keyDatesTitle: string
         startedOn: string
@@ -76,6 +82,7 @@ export function KeyDatesCard({
     isRequestingQuote = false,
     dateSources,
     sourceLabels,
+    renewalNote,
     copy,
 }: KeyDatesCardProps) {
     const citedSource = dateSources?.renewalDate ?? dateSources?.endDate
@@ -161,6 +168,12 @@ export function KeyDatesCard({
                     <RefreshCw className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#B45309] dark:text-amber-400" />
                     <p className="text-xs font-medium leading-relaxed text-[#B45309] dark:text-amber-300">{copy.autoRenewalNote}</p>
                 </div>
+            )}
+
+            {/* Branch-specific renewal context — editorial, hedged, and kept
+                plain so it never reads as an extracted date. */}
+            {renewalNote && (
+                <p className="mt-4 text-xs leading-relaxed text-black/55 dark:text-white/60">{renewalNote}</p>
             )}
 
             <div className="mt-5 border-t border-black/10 pt-4 dark:border-white/10">

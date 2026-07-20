@@ -1,6 +1,7 @@
 import { z } from "zod"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { requireApiUser } from "@/lib/api-auth"
+import { requireCollaborationEntitlement } from "@/lib/api-entitlements"
 import { collaborationService } from "@/lib/services/collaboration.service"
 
 const createMessageSchema = z.object({
@@ -12,6 +13,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     if ("error" in authCheck) return authCheck.error
     const { auth } = authCheck
     const { id } = await params
+
+    const gate = await requireCollaborationEntitlement(auth)
+    if (gate) return gate
 
     const body = await req.json().catch(() => null)
     const parsed = createMessageSchema.safeParse(body)

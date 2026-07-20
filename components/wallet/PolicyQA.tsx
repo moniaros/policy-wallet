@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { MessageCircle, Send, Sparkles, Loader2, Minus, Plus } from "lucide-react"
 import { usePathname, useSearchParams } from "next/navigation"
 import { getBranchQuestions } from "@/lib/insurance/content"
+import { usePolicyQaPrefill } from "@/components/wallet/policy-detail/PolicyQaPrefillContext"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
@@ -34,6 +35,7 @@ export function PolicyQA({
     const { t, language } = useLanguage()
     const pathname = usePathname()
     const searchParams = useSearchParams()
+    const qaPrefill = usePolicyQaPrefill()
     const isFreeTier = tier === 'free'
     const [question, setQuestion] = useState("")
     const [messages, setMessages] = useState<Message[]>([])
@@ -57,6 +59,17 @@ export function PolicyQA({
             setShowChat(true)
         }
     }, [searchParams])
+
+    // Same-page prefill (suggestion clicks on this very page). The URL never
+    // changes there, so the searchParams effect above would never refire; the
+    // context value gets a fresh identity per ask(), including repeat clicks
+    // of the same question.
+    useEffect(() => {
+        if (qaPrefill.prefill) {
+            setQuestion(qaPrefill.prefill)
+            setShowChat(true)
+        }
+    }, [qaPrefill])
 
     const handleAsk = async (e: React.FormEvent) => {
         e.preventDefault()

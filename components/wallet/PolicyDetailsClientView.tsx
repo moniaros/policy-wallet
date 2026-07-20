@@ -21,8 +21,11 @@ import { KeyDatesCard } from "@/components/wallet/policy-detail/KeyDatesCard"
 import { ExclusionsCard } from "@/components/wallet/policy-detail/ExclusionsCard"
 import { PerksCard } from "@/components/wallet/policy-detail/PerksCard"
 import { ClaimsGuidanceCard } from "@/components/wallet/policy-detail/ClaimsGuidanceCard"
+import { BranchGuideCard } from "@/components/wallet/policy-detail/BranchGuideCard"
+import { PolicyQaPrefillProvider } from "@/components/wallet/policy-detail/PolicyQaPrefillContext"
 import { DocumentsCard } from "@/components/wallet/policy-detail/DocumentsCard"
 import { InsuredPeopleCard } from "@/components/wallet/policy-detail/InsuredPeopleCard"
+import { getBranchContent } from "@/lib/insurance/content"
 import {
     calculatePolicyHealthScore,
     deriveClaimDeadlines,
@@ -55,6 +58,23 @@ const EXPORT_COPY = {
 
 function pickCopy(pair: { el: string; en: string }, lang: "el" | "en") {
     return pair[lang]
+}
+
+/**
+ * lineOfBusiness → the acordData sections that carry its type-specific data.
+ *
+ * The canonical schema keys are `vehicle` and `property` (lib/schemas/acord-data.ts);
+ * `motor` / `home` exist only as legacy aliases for older stored payloads.
+ * Probing the line name directly — as this file used to — meant motor and home
+ * policies never matched, so they fell through to the coverages/exclusions
+ * check and could show the "re-analyze" hint despite having extracted data.
+ */
+const TYPE_SECTION_KEYS: Record<string, readonly string[]> = {
+    health: ["health"],
+    motor: ["vehicle", "motor"],
+    home: ["property", "home"],
+    life: ["life"],
+    pet: ["pet"],
 }
 
 interface PolicyDetailsClientProps {
@@ -228,9 +248,9 @@ export function PolicyDetailsClient({
 
     const hasCoverageDetails = (() => {
         const line = getCoverageType()
-        const typeSpecificFields = ["health", "motor", "home", "life", "pet"] as const
-        const hasTypeData = typeSpecificFields.some(
-            (field) => line === field && policy.acordData?.[field] && Object.keys(policy.acordData[field]).length > 0
+        const sectionKeys = TYPE_SECTION_KEYS[line as keyof typeof TYPE_SECTION_KEYS]
+        const hasTypeData = Boolean(
+            sectionKeys?.some((key) => policy.acordData?.[key] && Object.keys(policy.acordData[key]).length > 0)
         )
         const hasCoverageOrExclusion = (policy.acordData?.coverages?.length > 0) || (policy.acordData?.exclusions?.length > 0)
         return hasTypeData || hasCoverageOrExclusion
@@ -238,8 +258,7 @@ export function PolicyDetailsClient({
 
     const shouldShowReanalyzeHint = (() => {
         const line = getCoverageType()
-        const typeSpecificFields = ["health", "motor", "home", "life", "pet"] as const
-        return typeSpecificFields.includes(line as any) && !hasCoverageDetails
+        return Object.prototype.hasOwnProperty.call(TYPE_SECTION_KEYS, line) && !hasCoverageDetails
     })()
 
     const gapsForAnalysis = (policy.gapInstances || []).map((gap: any) => ({
@@ -316,6 +335,46 @@ export function PolicyDetailsClient({
     const showRecommendations = isOwner && relatedRecommendations.length > 0
     const showAgentSection = Boolean(relationshipId)
 
+    // ── Per-branch editorial content (lib/insurance/content) ──────────────
+    // Resolved once per line of business; child branches fall back to their
+    // parent's bundle and unknown lines to a generic one, so this is always
+    // defined. Strings are picked to one language here — the cards are
+    // presentational and carry no copy of their own.
+    const branchContent = useMemo(() => getBranchContent(coverageType), [coverageType])
+
+    /**
+     * Rule ids the gap engine actually flagged for this user, used to badge the
+     * editorial commonGaps. Two sources, because the policy page (unlike the
+     * branch page, which only has recommendations) carries both:
+     *  - relatedRecommendations[].ruleId — same field as the branch page
+     *  - gapInstances[].definition.ruleId / .slug — GapDefinition carries both,
+     *    and editorial relatedRuleIds reference engine rule ids AND seeded slugs.
+     */
+    const detectedRuleIds = useMemo(() => {
+        const ids = new Set<string>()
+        for (const rec of relatedRecommendations) {
+            const ruleId = (rec as any)?.ruleId
+            if (typeof ruleId === "string" && ruleId) ids.add(ruleId)
+        }
+        for (const gap of policy.gapInstances || []) {
+            const definition = gap?.definition
+            if (typeof definition?.ruleId === "string" && definition.ruleId) ids.add(definition.ruleId)
+            if (typeof definition?.slug === "string" && definition.slug) ids.add(definition.slug)
+        }
+        return ids
+    }, [relatedRecommendations, policy])
+
+    const branchGuideGaps = useMemo(
+        () =>
+            branchContent.commonGaps.map((gap) => ({
+                id: gap.id,
+                title: gap.title[lang],
+                description: gap.description[lang],
+                detected: Boolean(gap.relatedRuleId && detectedRuleIds.has(gap.relatedRuleId)),
+            })),
+        [branchContent, detectedRuleIds, lang]
+    )
+
     // ── Section navigation (only sections that actually render) ──
     const navItems: PolicySectionNavItem[] = [
         { id: "summary", label: detailsCopy.navSummary },
@@ -324,6 +383,9 @@ export function PolicyDetailsClient({
         { id: "exclusions", label: detailsCopy.navExclusions },
         { id: "perks", label: detailsCopy.navPerks },
         { id: "analysis", label: detailsCopy.navAnalysis },
+        // Order must mirror the DOM below: #branch-guide renders directly after
+        // #analysis, before #premium-insights and #recommendations.
+        { id: "branch-guide", label: detailsCopy.navGuide },
         ...(showRecommendations ? [{ id: "recommendations", label: detailsCopy.navRecommendations }] : []),
         { id: "policy-qa", label: detailsCopy.navAskAi },
         { id: "claims", label: detailsCopy.navClaims },
@@ -439,6 +501,7 @@ export function PolicyDetailsClient({
                 {/* ── Section navigation ─────────────────────────────────── */}
                 {!isAnalyzing && <PolicySectionNav items={navItems} ariaLabel={detailsCopy.onThisPage} />}
 
+                <PolicyQaPrefillProvider>
                 <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(320px,1fr)]">
                     <div className="space-y-6">
                         {/* 1 ── Plain-language AI summary ─────────────────── */}
@@ -491,6 +554,7 @@ export function PolicyDetailsClient({
                                         fromDocument: t.wallet.review.sourceFromDocument,
                                         pageAbbrev: t.wallet.review.sourcePageAbbrev,
                                     }}
+                                    renewalNote={branchContent.renewalNote[lang]}
                                     copy={{
                                         keyDatesTitle: detailsCopy.keyDatesTitle,
                                         startedOn: detailsCopy.startedOn,
@@ -620,6 +684,30 @@ export function PolicyDetailsClient({
                             />
                         </section>
 
+                        {/* 6a ── Per-branch editorial guide ──────────────── */}
+                        {!isAnalyzing && (
+                            <section id="branch-guide" className="scroll-mt-24">
+                                <BranchGuideCard
+                                    tagline={branchContent.tagline[lang]}
+                                    shortDescription={branchContent.shortDescription[lang]}
+                                    whyItMatters={branchContent.whyItMatters.map((item) => item[lang])}
+                                    whatWeAnalyze={branchContent.whatWeAnalyze.map((item) => item[lang])}
+                                    howToUseBetter={branchContent.howToUseBetter.map((item) => item[lang])}
+                                    commonGaps={branchGuideGaps}
+                                    copy={{
+                                        guideTitle: detailsCopy.guideTitle,
+                                        guideWhyItMatters: detailsCopy.guideWhyItMatters,
+                                        guideWhatWeAnalyze: detailsCopy.guideWhatWeAnalyze,
+                                        guideHowToUseBetter: detailsCopy.guideHowToUseBetter,
+                                        guideCommonGaps: detailsCopy.guideCommonGaps,
+                                        guideDetectedChip: detailsCopy.guideDetectedChip,
+                                        guideExpand: detailsCopy.guideExpand,
+                                        guideCollapse: detailsCopy.guideCollapse,
+                                    }}
+                                />
+                            </section>
+                        )}
+
                         {/* 6b ── Locked premium insights (free/Starter) ────── */}
                         {tier !== 'pro' && (
                             <section id="premium-insights" className="scroll-mt-24">
@@ -661,6 +749,7 @@ export function PolicyDetailsClient({
                                 insurerPhone={insurerPhone}
                                 deadlines={claimDeadlines}
                                 hasAgent={showAgentSection}
+                                branchSteps={branchContent.claimsSteps.map((step) => step[lang])}
                                 copy={{
                                     claimsTitle: detailsCopy.claimsTitle,
                                     claimsSubtitle: detailsCopy.claimsSubtitle,
@@ -673,6 +762,8 @@ export function PolicyDetailsClient({
                                     claimStep4Title: detailsCopy.claimStep4Title,
                                     claimStep4Desc: detailsCopy.claimStep4Desc,
                                     claimNoDeadlines: detailsCopy.claimNoDeadlines,
+                                    claimWhatYouNeedTitle: detailsCopy.claimWhatYouNeedTitle,
+                                    claimDeadlinesTitle: detailsCopy.claimDeadlinesTitle,
                                     claimNeedHelp: detailsCopy.claimNeedHelp,
                                     claimAskAiCta: detailsCopy.claimAskAiCta,
                                     claimAskAgentCta: detailsCopy.claimAskAgentCta,
@@ -843,6 +934,7 @@ export function PolicyDetailsClient({
 
                     </aside>
                 </div>
+                </PolicyQaPrefillProvider>
             </div>
 
             <UpgradeModal

@@ -12,6 +12,12 @@ interface ClaimsGuidanceCardProps {
     /** Deadline-type conditions extracted from the policy (claim_deadline / notification_obligation). */
     deadlines: NotableCondition[]
     hasAgent: boolean
+    /**
+     * Branch-specific claim steps from lib/insurance/content, already resolved
+     * to one language by the caller (keeps bilingual literals out of .tsx).
+     * Absent/empty → the four generic fallback steps below.
+     */
+    branchSteps?: string[]
     copy: {
         claimsTitle: string
         claimsSubtitle: string
@@ -24,6 +30,8 @@ interface ClaimsGuidanceCardProps {
         claimStep4Title: string
         claimStep4Desc: string
         claimNoDeadlines: string
+        claimWhatYouNeedTitle: string
+        claimDeadlinesTitle: string
         claimNeedHelp: string
         claimAskAiCta: string
         claimAskAgentCta: string
@@ -35,9 +43,14 @@ interface ClaimsGuidanceCardProps {
 }
 
 /**
- * Step-by-step claims guidance for non-experts. Data-aware: surfaces the
- * claim deadlines the AI extracted from this specific policy and wires the
- * insurer's phone number into the "call your insurer" step.
+ * Step-by-step claims guidance for non-experts.
+ *
+ * The ordered list is pure editorial text — either the branch-specific steps
+ * from lib/insurance/content or the four generic fallbacks. Everything
+ * data-backed (the insurer call button, the policy number, and the deadlines
+ * the AI extracted from THIS document) lives in the panels below the list, so
+ * the guidance works at any step count. Deadlines stay visually distinct from
+ * editorial copy because they are real extracted data, not advice.
  */
 export function ClaimsGuidanceCard({
     lang,
@@ -46,15 +59,20 @@ export function ClaimsGuidanceCard({
     insurerPhone,
     deadlines,
     hasAgent,
+    branchSteps,
     copy,
     onCallInsurer,
 }: ClaimsGuidanceCardProps) {
-    const steps = [
+    const fallbackSteps = [
         { title: copy.claimStep1Title, desc: copy.claimStep1Desc },
         { title: copy.claimStep2Title, desc: copy.claimStep2Desc },
         { title: copy.claimStep3Title, desc: copy.claimStep3Desc },
         { title: copy.claimStep4Title, desc: copy.claimStep4Desc },
     ]
+    const steps: { title: string; desc?: string }[] =
+        branchSteps && branchSteps.length > 0 ? branchSteps.map((text) => ({ title: text })) : fallbackSteps
+
+    const hasWhatYouNeed = Boolean(insurerPhone) || Boolean(policyNumber)
 
     return (
         <div className="pw-card p-6 sm:p-7">
@@ -72,55 +90,69 @@ export function ClaimsGuidanceCard({
                         </span>
                         <div className="min-w-0 flex-1">
                             <p className="text-sm font-semibold text-black dark:text-white">{step.title}</p>
-                            <p className="mt-0.5 text-xs leading-relaxed text-black/60 dark:text-white/65">{step.desc}</p>
-
-                            {/* Step 2 — call the insurer */}
-                            {i === 1 && insurerPhone && (
-                                <button
-                                    onClick={onCallInsurer}
-                                    className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-[11px] font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420] cursor-pointer"
-                                >
-                                    <Phone className="h-3 w-3" />
-                                    {copy.contactInsurer} — {insurerName}
-                                </button>
+                            {step.desc && (
+                                <p className="mt-0.5 text-xs leading-relaxed text-black/60 dark:text-white/65">{step.desc}</p>
                             )}
-
-                            {/* Step 3 — the details they'll be asked for */}
-                            {i === 2 && policyNumber && (
-                                <p className="mt-2 inline-flex items-center gap-2 rounded-xl border border-black/10 bg-black/[0.03] px-3 py-1.5 dark:border-white/15 dark:bg-white/5">
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">
-                                        {copy.policyNumberLabel}
-                                    </span>
-                                    <span className="font-mono text-xs font-bold text-black dark:text-white">{policyNumber}</span>
-                                </p>
-                            )}
-
-                            {/* Step 4 — deadlines extracted from this policy */}
-                            {i === 3 &&
-                                (deadlines.length > 0 ? (
-                                    <ul className="mt-2 space-y-1.5">
-                                        {deadlines.map((deadline, j) => (
-                                            <li
-                                                key={j}
-                                                className="flex items-start gap-2 rounded-xl border border-amber-200 bg-[#FEF3C7]/50 px-3 py-2 dark:border-amber-900/40 dark:bg-amber-950/15"
-                                            >
-                                                <CalendarClock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-[#B45309] dark:text-amber-400" />
-                                                <p className="text-xs leading-relaxed text-[#B45309] dark:text-amber-300">
-                                                    {deadline.value && (
-                                                        <span className="font-mono font-bold">{deadline.value} · </span>
-                                                    )}
-                                                    {pickLang(deadline.summary, lang)}
-                                                </p>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                ) : (
-                                    <p className="mt-2 text-xs italic text-black/50 dark:text-white/55">{copy.claimNoDeadlines}</p>
-                                ))}
                         </div>
                     </li>
                 ))}
             </ol>
+
+            {/* What you'll need — data-backed affordances, decoupled from the
+                step list so branch bundles of any length still get them. */}
+            {hasWhatYouNeed && (
+                <div className="mt-5 border-t border-black/10 pt-4 dark:border-white/10">
+                    <h3 className="mb-2.5 text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                        {copy.claimWhatYouNeedTitle}
+                    </h3>
+                    <div className="flex flex-wrap items-center gap-2">
+                        {insurerPhone && (
+                            <button
+                                onClick={onCallInsurer}
+                                className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-[11px] font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420] cursor-pointer"
+                            >
+                                <Phone className="h-3 w-3" />
+                                {copy.contactInsurer} — {insurerName}
+                            </button>
+                        )}
+                        {policyNumber && (
+                            <p className="inline-flex items-center gap-2 rounded-xl border border-black/10 bg-black/[0.03] px-3 py-1.5 dark:border-white/15 dark:bg-white/5">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                                    {copy.policyNumberLabel}
+                                </span>
+                                <span className="font-mono text-xs font-bold text-black dark:text-white">{policyNumber}</span>
+                            </p>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Deadlines extracted from THIS policy — amber, never styled like
+                the editorial steps above; this is data, not guidance. */}
+            <div className="mt-5 border-t border-black/10 pt-4 dark:border-white/10">
+                <h3 className="mb-2.5 flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-black/50 dark:text-white/55">
+                    <CalendarClock className="h-3.5 w-3.5 text-[#B45309] dark:text-amber-400" />
+                    {copy.claimDeadlinesTitle}
+                </h3>
+                {deadlines.length > 0 ? (
+                    <ul className="space-y-1.5">
+                        {deadlines.map((deadline, j) => (
+                            <li
+                                key={j}
+                                className="flex items-start gap-2 rounded-xl border border-amber-200 bg-[#FEF3C7]/50 px-3 py-2 dark:border-amber-900/40 dark:bg-amber-950/15"
+                            >
+                                <CalendarClock className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-[#B45309] dark:text-amber-400" />
+                                <p className="text-xs leading-relaxed text-[#B45309] dark:text-amber-300">
+                                    {deadline.value && <span className="font-mono font-bold">{deadline.value} · </span>}
+                                    {pickLang(deadline.summary, lang)}
+                                </p>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p className="text-xs italic text-black/50 dark:text-white/55">{copy.claimNoDeadlines}</p>
+                )}
+            </div>
 
             <div className="mt-5 border-t border-black/10 pt-4 dark:border-white/10">
                 <p className="mb-2.5 text-xs font-semibold text-black/60 dark:text-white/65">{copy.claimNeedHelp}</p>
