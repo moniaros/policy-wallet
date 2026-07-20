@@ -107,6 +107,17 @@ export const AGENT_REQUESTS: Record<string, AgentRequestSpec> = {
         },
     },
 
+    // ── roadside ────────────────────────────────────────────────────────────
+    roadside_ask_agent_scope: {
+        category: 'coverage_gap',
+        priority: 'medium',
+        subject: { el: 'Ερώτηση για την εμβέλεια της οδικής βοήθειας', en: 'Question about the assistance cover scope' },
+        message: {
+            el: 'Ο πελάτης ρωτά αν η γεωγραφική εμβέλεια, η ακτίνα ρυμούλκησης και ο αριθμός κλήσεων επαρκούν για τις διαδρομές που κάνει.',
+            en: 'The customer is asking whether the geographic scope, towing radius and call-out allowance are adequate for the routes they actually drive.',
+        },
+    },
+
     // ── health ──────────────────────────────────────────────────────────────
     health_ask_agent: {
         category: 'coverage_gap',
@@ -119,6 +130,15 @@ export const AGENT_REQUESTS: Record<string, AgentRequestSpec> = {
     },
 
     // ── life-adjacent ───────────────────────────────────────────────────────
+    life_ask_agent_income: {
+        category: 'coverage_gap',
+        priority: 'medium',
+        subject: { el: 'Ερώτηση για κάλυψη ανικανότητας και εισοδήματος', en: 'Question about disability and income cover' },
+        message: {
+            el: 'Ο πελάτης θέλει να συζητήσει τι θα άλλαζε αν προστίθετο κάλυψη ανικανότητας ή προστασίας εισοδήματος δίπλα στο συμβόλαιο ζωής.',
+            en: 'The customer would like to discuss what would change if disability or income-protection cover were added alongside the life policy.',
+        },
+    },
     pension_ask_agent: {
         category: 'general',
         priority: 'low',
@@ -155,6 +175,24 @@ export const AGENT_REQUESTS: Record<string, AgentRequestSpec> = {
         message: {
             el: 'Ο πελάτης ρωτά τι ισχύει στην περίοδο παροπλισμού του σκάφους και αν αλλάζει το ασφάλιστρο.',
             en: 'The customer is asking what applies during the vessel lay-up period and whether the premium changes.',
+        },
+    },
+    travel_ask_agent_scope: {
+        category: 'coverage_gap',
+        priority: 'medium',
+        subject: { el: 'Ερώτηση για προορισμό και δραστηριότητες', en: 'Question about destination and activities' },
+        message: {
+            el: 'Ο πελάτης ρωτά αν η ταξιδιωτική κάλυψη μπορεί να επεκταθεί ώστε να περιλαμβάνει τον προορισμό ή τις δραστηριότητες που σχεδιάζει.',
+            en: 'The customer is asking whether the travel cover can be extended to include the destination or the activities they are planning.',
+        },
+    },
+    pet_ask_agent_leishmania: {
+        category: 'coverage_gap',
+        priority: 'medium',
+        subject: { el: 'Ερώτηση για κάλυψη λεϊσμανίασης', en: 'Question about leishmaniasis cover' },
+        message: {
+            el: 'Ο πελάτης ρωτά αν η λεϊσμανίαση και οι χρόνιες παθήσεις του κατοικιδίου καλύπτονται, με ποιες αναμονές και με ποια όρια.',
+            en: 'The customer is asking whether leishmaniasis and chronic pet conditions are covered, with what waiting periods and what limits.',
         },
     },
     cyber_ask_agent: {

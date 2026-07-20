@@ -149,6 +149,18 @@ export const roadsideContent: BranchContent = {
             href: '/coverage-insights',
             ctaType: 'review',
         },
+        {
+            id: 'roadside_ask_agent_scope',
+            label: { el: 'Ρώτησε τον σύμβουλό σου για ευρύτερη εμβέλεια κάλυψης', en: 'Ask your advisor about wider cover scope' },
+            href: '/agent',
+            ctaType: 'askAgent',
+        },
+        {
+            id: 'roadside_save_assistance_details',
+            label: { el: 'Κράτα πρόχειρα τα στοιχεία του κέντρου βοήθειας', en: 'Keep the assistance centre details at hand' },
+            href: null,
+            ctaType: 'task',
+        },
     ],
     suggestedQuestions: [
         { el: 'Πόσες κλήσεις βοήθειας δικαιούμαι;', en: 'How many assistance call-outs am I entitled to?' },

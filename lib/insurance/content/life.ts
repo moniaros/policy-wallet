@@ -75,8 +75,8 @@ export const lifeContent: BranchContent = {
             id: 'life_income_gap',
             title: { el: 'Χωρίς προστασία εισοδήματος', en: 'No income protection' },
             description: {
-                el: 'Η ανικανότητα για εργασία είναι στατιστικά πιο πιθανή από τον θάνατο σε εργάσιμη ηλικία — και συχνά μένει ακάλυπτη.',
-                en: 'Working-age disability is statistically more likely than death — and often goes uncovered.',
+                el: 'Το συμβόλαιο ζωής πληρώνει σε άλλους μετά τον θάνατο· μια παρατεταμένη ανικανότητα για εργασία αφήνει εσένα χωρίς εισόδημα όσο ζεις. Είναι δύο διαφορετικές ανάγκες και συχνά η δεύτερη μένει ακάλυπτη.',
+                en: 'Life cover pays others after death; a prolonged inability to work leaves you without income while you are alive. They are two different needs, and the second often goes uncovered.',
             },
             relatedRuleId: 'income_no_protection',
         },
@@ -107,6 +107,12 @@ export const lifeContent: BranchContent = {
             label: { el: 'Σημείωσε σημαντικές αλλαγές ζωής στο προφίλ σου', en: 'Note major life changes in your profile' },
             href: '/coverage-insights',
             ctaType: 'profile',
+        },
+        {
+            id: 'life_ask_agent_income',
+            label: { el: 'Ρώτησε τον σύμβουλό σου για κάλυψη ανικανότητας και εισοδήματος', en: 'Ask your advisor about disability and income cover' },
+            href: '/agent',
+            ctaType: 'askAgent',
         },
         {
             id: 'life_note_life_change',

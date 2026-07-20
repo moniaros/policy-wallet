@@ -102,11 +102,33 @@ export const travelContent: BranchContent = {
             question: { el: 'Τι πρέπει να έχω μαζί μου από το συμβόλαιο στο ταξίδι;', en: 'What from my policy should I carry on the trip?' },
         },
         {
-            id: 'travel_save_hotline',
-            label: { el: 'Αποθήκευσε τη γραμμή επείγουσας βοήθειας', en: 'Save the emergency assistance line' },
+            id: 'travel_check_activities',
+            label: { el: 'Δες αν καλύπτονται τα σπορ που σχεδιάζεις', en: 'See whether the sports you plan are covered' },
+            href: null,
+            ctaType: 'askAi',
+            question: {
+                el: 'Καλύπτονται δραστηριότητες όπως σκι, καταδύσεις ή ενοικίαση δικύκλου;',
+                en: 'Are activities such as skiing, diving or renting a scooter covered?',
+            },
+        },
+        {
+            id: 'travel_find_hotline',
+            label: { el: 'Βρες τη γραμμή επείγουσας βοήθειας', en: 'Find the emergency assistance line' },
             href: null,
             ctaType: 'askAi',
             question: { el: 'Ποιος είναι ο αριθμός επείγουσας βοήθειας;', en: 'What is the emergency assistance number?' },
+        },
+        {
+            id: 'travel_ask_agent_scope',
+            label: { el: 'Ρώτησε τον σύμβουλό σου για επέκταση προορισμού ή δραστηριοτήτων', en: 'Ask your advisor about extending destination or activities' },
+            href: '/agent',
+            ctaType: 'askAgent',
+        },
+        {
+            id: 'travel_save_trip_note',
+            label: { el: 'Κράτα πρόχειρα τα στοιχεία του ταξιδιού', en: 'Keep your trip details at hand' },
+            href: null,
+            ctaType: 'task',
         },
     ],
     suggestedQuestions: [
