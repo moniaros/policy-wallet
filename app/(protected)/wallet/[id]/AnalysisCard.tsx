@@ -700,6 +700,18 @@ export function AnalysisCard({
                                         const res = await requestAiConsent(policyId)
                                         if ("error" in res && res.error) {
                                             toast.error(mapWalletErrorToMessage(res.error, t, "generic"))
+                                        } else if ("emailDelivered" in res && res.emailDelivered === false) {
+                                            // The invite/notification exists but the email never
+                                            // left — hand the agent the link instead of celebrating.
+                                            const link = "inviteLink" in res ? res.inviteLink : undefined
+                                            if (link) {
+                                                navigator.clipboard?.writeText(link).catch(() => {})
+                                                toast.warning(t.common.aiConsentEmailFailedLinkCopied)
+                                            } else {
+                                                toast.warning(t.common.aiConsentEmailFailed)
+                                            }
+                                            setShowConsentRequest(false)
+                                            setAnalysisError(null)
                                         } else {
                                             toast.success(t.common.aiConsentRequestSent)
                                             setShowConsentRequest(false)

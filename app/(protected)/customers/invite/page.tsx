@@ -26,6 +26,11 @@ export default function InviteCustomerPage() {
                 // surface the secure link so the agent can share it manually.
                 const emailFailed = 'emailDelivered' in result && result.emailDelivered === false
                 setFallbackLink(emailFailed && 'inviteLink' in result ? result.inviteLink || null : null)
+            } else {
+                // Rejections (rate limit, customer limit, auth) return
+                // {success:false, error} — previously the form just stopped
+                // spinning with no feedback at all.
+                setError(('error' in result && result.error) || inv_t.errorFallback)
             }
         } catch (err: any) {
             setError(err.message || inv_t.errorFallback)

@@ -1,6 +1,8 @@
+
 "use client"
 
 import React, { useState, useRef } from 'react'
+import { toast } from "sonner"
 import { useRouter } from 'next/navigation'
 import { scanPolicyForResolution, commitScannedPolicy, requestAiConsent } from '@/app/(protected)/agent/actions'
 import { useLanguage } from '@/contexts/LanguageContext'
@@ -185,8 +187,18 @@ export function UploadPolicyModal({ isOpen, onClose, onSuccess, presetCustomerId
     const handleRequestConsent = async () => {
         if (!result?.policyId) return
         setLoading(true)
-        await requestAiConsent(result.policyId)
+        const consentResult = await requestAiConsent(result.policyId).catch(() => null)
         setLoading(false)
+        if (!consentResult || ("error" in consentResult && consentResult.error)) {
+            // Rate limit / auth failure — do NOT render "consent sent".
+            toast.error((consentResult && "error" in consentResult && consentResult.error) || t.agentDashboard.consentRequestFailed)
+            return
+        }
+        if ("emailDelivered" in consentResult && consentResult.emailDelivered === false) {
+            const link = "inviteLink" in consentResult ? consentResult.inviteLink : undefined
+            if (link) navigator.clipboard?.writeText(link).catch(() => {})
+            toast.warning(link ? t.agentDashboard.consentEmailFailedLinkCopied : t.agentDashboard.consentEmailFailed)
+        }
         setConsentSent(true)
     }
 

@@ -60,6 +60,14 @@ const COPY = {
         el: "Το αίτημα συγκατάθεσης στάλθηκε",
         en: "Consent request sent",
     },
+    emailNotDeliveredLinkCopied: {
+        el: "Το email δεν παραδόθηκε — ο σύνδεσμος αντιγράφηκε, μοιραστείτε τον χειροκίνητα",
+        en: "Email not delivered — link copied, share it manually",
+    },
+    emailNotDelivered: {
+        el: "Το αίτημα καταχωρήθηκε, αλλά το email δεν παραδόθηκε",
+        en: "Request recorded, but the email could not be delivered",
+    },
     consentRequestFailed: {
         el: "Αποτυχία αποστολής αιτήματος συγκατάθεσης",
         en: "Failed to send consent request",
@@ -304,7 +312,17 @@ export function AddPolicyForCustomerModal({
             const result = await requestAiConsent(successResult.policyId)
             if (result && "success" in result && result.success) {
                 setConsentRequested(true)
-                toast.success(COPY.consentRequestSent[language])
+                if ("emailDelivered" in result && result.emailDelivered === false) {
+                    const link = "inviteLink" in result ? result.inviteLink : undefined
+                    if (link) {
+                        navigator.clipboard?.writeText(link).catch(() => {})
+                        toast.warning(COPY.emailNotDeliveredLinkCopied[language])
+                    } else {
+                        toast.warning(COPY.emailNotDelivered[language])
+                    }
+                } else {
+                    toast.success(COPY.consentRequestSent[language])
+                }
             } else {
                 toast.error((result as { error?: string }).error || COPY.consentRequestFailed[language])
             }
@@ -321,12 +339,18 @@ export function AddPolicyForCustomerModal({
         setIsInviting(true)
         try {
             const { createAgentInvite } = await import("@/app/(protected)/agent/actions")
-            const result = (await createAgentInvite(customerEmail, 'portfolio')) as { success: boolean; error?: string }
+            const result = await createAgentInvite(customerEmail, 'portfolio')
             if (result.success) {
                 setInviteSent(true)
-                toast.success(COPY.inviteSent[language])
+                if ("emailDelivered" in result && result.emailDelivered === false) {
+                    const link = "inviteLink" in result ? result.inviteLink : undefined
+                    if (link) navigator.clipboard?.writeText(link).catch(() => {})
+                    toast.warning(COPY.emailNotDeliveredLinkCopied[language])
+                } else {
+                    toast.success(COPY.inviteSent[language])
+                }
             } else {
-                toast.error(result.error || COPY.inviteFailed[language])
+                toast.error(("error" in result && result.error) || COPY.inviteFailed[language])
             }
         } catch (error) {
             console.error(error)

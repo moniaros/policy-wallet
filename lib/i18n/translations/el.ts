@@ -42,6 +42,9 @@ export const el = {
         aiConsentRequestTitle: 'Αίτημα συγκατάθεσης για ανάλυση AI',
         aiConsentRequestMessage: 'Ο ασφαλιστικός σας σύμβουλος ζητά τη συγκατάθεσή σας για ανάλυση των συμβολαίων σας με AI.',
         aiConsentRequestSent: 'Το αίτημα συγκατάθεσης εστάλη στον πελάτη.',
+        aiConsentEmailFailed: 'Το αίτημα καταχωρήθηκε, αλλά το email δεν παραδόθηκε.',
+        aiConsentInviteLinkCopied: 'Ο σύνδεσμος πρόσκλησης αντιγράφηκε — μοιραστείτε τον με τον κάτοχο.',
+        aiConsentEmailFailedLinkCopied: 'Το αίτημα καταχωρήθηκε, αλλά το email δεν παραδόθηκε — ο σύνδεσμος πρόσκλησης αντιγράφηκε, μοιραστείτε τον με τον κάτοχο.',
         aiConsentRequestAction: 'Ζητήστε συγκατάθεση πελάτη',
     },
     // Navigation
@@ -1994,6 +1997,10 @@ export const el = {
 
     // ── Agent Dashboard & Collaboration ──────────────────────────
     agentDashboard: {
+        inviteEmailFailed: 'Η πρόσκληση δημιουργήθηκε, αλλά το email δεν παραδόθηκε — ο σύνδεσμος αντιγράφηκε, μοιραστείτε τον χειροκίνητα.',
+        consentEmailFailed: 'Το αίτημα καταχωρήθηκε, αλλά το email δεν παραδόθηκε.',
+        consentEmailFailedLinkCopied: 'Το email δεν παραδόθηκε — ο σύνδεσμος πρόσκλησης αντιγράφηκε, μοιραστείτε τον χειροκίνητα.',
+        consentRequestFailed: 'Η αποστολή του αιτήματος συγκατάθεσης απέτυχε.',
         actionQueue: "Ουρά Ενεργειών",
         revenuePulse: "Παλμός Εσόδων",
         portfolioHealth: "Υγεία Χαρτοφυλακίου",
