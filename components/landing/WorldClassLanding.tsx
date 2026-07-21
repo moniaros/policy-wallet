@@ -42,7 +42,7 @@ export function WorldClassLanding({ locale, partnerOffers = [] }: WorldClassLand
         >
             <LandingHeader locale={locale} showPerksLink={partnerOffers.length > 0} />
 
-            <main className="pt-28 lg:pt-36">
+            <main id="main-content" tabIndex={-1} className="pt-28 lg:pt-36">
                 {/* ── 1. HERO ──────────────────────────────────────── */}
                 <section className="px-6 pb-20 lg:px-12 lg:pb-28">
                     <div className="mx-auto grid max-w-[1240px] grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16">
