@@ -29,7 +29,7 @@ interface DataExportQueueItem {
 
 interface DeletionQueueItem {
     id: string
-    userId: string
+    userId: string | null
     userName: string | null
     userEmail: string
     userRoles: string
