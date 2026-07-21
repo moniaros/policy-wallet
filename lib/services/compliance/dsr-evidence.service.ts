@@ -14,7 +14,7 @@ type StatusCount = {
 type FailedRequestSample = {
     kind: "data_export" | "deletion"
     requestId: string
-    userId: string
+    userId: string | null
     status: string
     requestedAt: string
     errorMessage: string | null
@@ -23,7 +23,7 @@ type FailedRequestSample = {
 type PendingRequestSample = {
     kind: "data_export" | "deletion"
     requestId: string
-    userId: string
+    userId: string | null
     status: string
     requestedAt: string
     ageHours: number

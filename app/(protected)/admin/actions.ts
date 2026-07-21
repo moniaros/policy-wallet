@@ -640,11 +640,11 @@ function toErrorMessage(error: unknown): string {
  * earlier partial run — nothing left to notify.
  */
 async function sendDsrLifecycleEmail(
-    recipient: { email: string; preferredLanguage?: string | null },
+    recipient: { email: string; preferredLanguage?: string | null } | null,
     build: (language: "el" | "en") => { subject: string; html: string; text: string }
 ) {
     try {
-        if (!recipient.email || isAnonymizedEmail(recipient.email)) return
+        if (!recipient || !recipient.email || isAnonymizedEmail(recipient.email)) return
         const language: "el" | "en" = recipient.preferredLanguage === "en" ? "en" : "el"
         const template = build(language)
         const { sendEmail } = await import("@/lib/email/email-service")
@@ -768,9 +768,9 @@ export async function getDsrQueue(options?: {
         deletionRequests: deletionRequests.map((request) => ({
             id: request.id,
             userId: request.userId,
-            userName: request.user.name,
-            userEmail: request.user.email,
-            userRoles: request.user.roles,
+            userName: request.user?.name ?? null,
+            userEmail: request.user?.email ?? "(erased)",
+            userRoles: request.user?.roles ?? "",
             status: request.status,
             legalBasis: request.legalBasis,
             retentionNotes: request.retentionNotes,
@@ -1074,6 +1074,12 @@ export async function executeDeletionRequest(requestId: string) {
     // engine is idempotent end to end).
     if (request.status !== "approved" && request.status !== "failed" && request.status !== "processing") {
         return { success: false, error: "Only approved, processing or failed requests can be executed" }
+    }
+
+    // userId is nullable since the SetNull hardening — a request whose user row
+    // is gone has nothing left to erase.
+    if (!request.userId) {
+        return { success: false, error: "Deletion request has no associated user" }
     }
 
     await db.deletionRequest.update({

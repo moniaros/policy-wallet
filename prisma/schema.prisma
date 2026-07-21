@@ -1163,7 +1163,10 @@ model DataExportRequest {
 
 model DeletionRequest {
   id             String                @id @default(cuid()) @map("deletion_request_id")
-  userId         String                @map("user_id")
+  // Nullable + SetNull (owner decision #8, 2026-07-21): the request row is the
+  // accountability record proving an erasure happened — it must survive even a
+  // hypothetical hard delete of the user row.
+  userId         String?               @map("user_id")
   status         DeletionRequestStatus @default(requested)
   requestedAt    DateTime              @default(now()) @map("requested_at")
   reviewedAt     DateTime?             @map("reviewed_at")
@@ -1175,7 +1178,7 @@ model DeletionRequest {
   createdAt      DateTime              @default(now()) @map("created_at")
   updatedAt      DateTime              @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([userId, requestedAt])
   @@index([status, requestedAt])
