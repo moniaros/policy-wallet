@@ -2,6 +2,9 @@ import { withApiGuard } from "@/lib/api-guard"
 import { db as prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { notifyCounterparty } from "@/lib/notifications"
+import { isOwnedStorageUrl } from "@/lib/supabase/storage-download"
+
+const ALLOWED_STATUSES = new Set(["pending", "uploaded", "expired", "cancelled"])
 
 // PATCH — Update document request (upload, expire)
 export const PATCH = withApiGuard(
@@ -37,8 +40,18 @@ export const PATCH = withApiGuard(
         }
 
         const updateData: Record<string, unknown> = {}
-        if (body.status) updateData.status = body.status
+        if (body.status) {
+            if (!ALLOWED_STATUSES.has(body.status)) {
+                return NextResponse.json({ error: "Invalid status" }, { status: 400 })
+            }
+            updateData.status = body.status
+        }
         if (body.uploadedDocumentUrl) {
+            // Only accept a reference to an object in OUR storage — never persist
+            // an arbitrary client-supplied URL into the collaboration record.
+            if (!isOwnedStorageUrl(body.uploadedDocumentUrl)) {
+                return NextResponse.json({ error: "Invalid document reference" }, { status: 400 })
+            }
             updateData.uploadedDocumentUrl = body.uploadedDocumentUrl
             updateData.status = "uploaded"
             updateData.completedAt = new Date()

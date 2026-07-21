@@ -2,7 +2,8 @@ import { NextResponse } from "next/server"
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { env } from "@/lib/env"
 import { enrichExtractionPayload } from "@/lib/services/ai/extraction-enrichment"
-import { ALLOWED_UPLOAD_MIME_TYPES, MAX_UPLOAD_SIZE_BYTES } from "@/lib/constants/time"
+import { MAX_UPLOAD_SIZE_BYTES } from "@/lib/constants/time"
+import { validateUploadFile, REJECTION_MESSAGES } from "@/lib/security/file-upload"
 import { withApiGuard } from "@/lib/api-guard"
 import { canUserAddPolicy } from "@/lib/subscription-limits"
 import { recordConversionEvent } from "@/lib/journey/conversion-events"
@@ -39,20 +40,17 @@ export const POST = withApiGuard(
 
     try {
         const formData = await req.formData()
-        const file = formData.get('file') as File
+        const file = formData.get('file')
 
-        if (!file) {
+        if (!(file instanceof File)) {
             return NextResponse.json({ error: "No file provided" }, { status: 400 })
         }
 
-        if (file.size > MAX_UPLOAD_SIZE_BYTES) {
-            return NextResponse.json({ error: `File too large. Maximum ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB.` }, { status: 400 })
-        }
-
-        if (!(ALLOWED_UPLOAD_MIME_TYPES as readonly string[]).includes(file.type)) {
-            return NextResponse.json({
-                error: `Invalid file type. Allowed: ${ALLOWED_UPLOAD_MIME_TYPES.join(', ')}`
-            }, { status: 400 })
+        // Validate size, extension allowlist, content-type, and magic bytes
+        // before spending a billable AI call on the (possibly disguised) file.
+        const validation = await validateUploadFile(file, { category: "policy", maxBytes: MAX_UPLOAD_SIZE_BYTES })
+        if (!validation.ok) {
+            return NextResponse.json({ error: REJECTION_MESSAGES[validation.reason] }, { status: 400 })
         }
 
         if (!process.env.GEMINI_API_KEY) {
@@ -144,9 +142,11 @@ export const POST = withApiGuard(
         })
 
     } catch (error) {
+        // Log the real error server-side; never echo internals (AI provider /
+        // parser detail) to the client.
         console.error("Policy extraction error:", error)
         return NextResponse.json({
-            error: error instanceof Error ? error.message : "Failed to extract policy data"
+            error: "Failed to extract policy data"
         }, { status: 500 })
     }
     }

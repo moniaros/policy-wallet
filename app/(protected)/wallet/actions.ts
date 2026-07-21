@@ -8,6 +8,8 @@ import { z } from "zod"
 import { createClient } from "@/lib/supabase/server"
 import { logger } from "@/lib/logger"
 import { uploadFile, deleteFile } from "@/lib/storage"
+import { sanitizeDisplayName } from "@/lib/security/file-upload"
+import { isOwnedStorageUrl } from "@/lib/supabase/storage-download"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import fs from "fs/promises"
 import path from "path"
@@ -112,11 +114,19 @@ export async function createPolicy(formData: FormData) {
     // Handle files
     for (let i = 0; i < documentUrls.length; i++) {
         const fileUrl = documentUrls[i]
-        const rawFileName = documentNames[i] || "Unknown Document"
-        const fileName = rawFileName.replace(/[^a-zA-Z0-9._-]/g, '_')
+        // Display metadata only — sanitized (Greek-safe), never used as a key.
+        const fileName = sanitizeDisplayName(documentNames[i] || "Unknown Document")
         const fileSize = parseInt(documentSizes[i] || "0")
 
-        // Security: validate extension
+        // The bytes were uploaded to storage client-side; only persist a
+        // reference that actually points at one of OUR storage objects — never
+        // an arbitrary client-supplied URL.
+        if (!fileUrl || !isOwnedStorageUrl(fileUrl)) {
+            logger('warn', 'Skipping policy document with untrusted URL')
+            continue
+        }
+
+        // Security: validate extension on the (original) display name.
         const lowerName = fileName.toLowerCase()
         const hasValidExt = lowerName.endsWith('.pdf') ||
             lowerName.endsWith('.jpg') ||
@@ -125,11 +135,11 @@ export async function createPolicy(formData: FormData) {
             lowerName.endsWith('.webp')
 
         if (!hasValidExt) {
-            console.warn(`Skipping policy document with invalid extension: ${fileName}`)
+            logger('warn', 'Skipping policy document with invalid extension')
             continue
         }
 
-        if (fileUrl) {
+        {
             await db.policyDocument.create({
                 data: {
                     policyId: policy.id,

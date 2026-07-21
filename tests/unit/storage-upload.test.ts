@@ -15,11 +15,21 @@ vi.mock('@/lib/supabase/admin', () => ({ createAdminClient: () => ({ storage: { 
 
 import { uploadFile, deleteFile } from '@/lib/storage'
 
-const fakeFile = (name = 'My Policy.pdf') => ({
-    name,
-    type: 'application/pdf',
-    arrayBuffer: async () => new ArrayBuffer(4),
-}) as unknown as File
+const PDF_MAGIC = [0x25, 0x50, 0x44, 0x46] // %PDF
+const PNG_MAGIC = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
+
+const fakeFile = (name = 'My Policy.pdf', magic: number[] = PDF_MAGIC, type = 'application/pdf') => {
+    const bytes = new Uint8Array(64)
+    bytes.set(magic, 0)
+    return {
+        name,
+        type,
+        size: bytes.length,
+        arrayBuffer: async () => bytes.buffer,
+    } as unknown as File
+}
+
+const UUID_RE = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
 
 beforeEach(() => {
     vi.stubEnv('NEXT_PUBLIC_SUPABASE_URL', 'https://x.supabase.co')
@@ -41,16 +51,42 @@ describe('uploadFile', () => {
         // Root object key (no "policies/" prefix) — matches the b2c upload shape.
         const objectKey = upload.mock.calls[0][0] as string
         expect(objectKey).not.toContain('/')
-        expect(objectKey).toMatch(/-My_Policy\.pdf$/)
         expect(url).toContain('/object/public/BUCKET/')
     })
 
+    it('renames to an OPAQUE key — the original filename never appears in storage', async () => {
+        await uploadFile(fakeFile('John Doe Motor AXA.pdf'), 'policies')
+        const objectKey = upload.mock.calls[0][0] as string
+        expect(objectKey).toMatch(new RegExp(`^${UUID_RE}\\.pdf$`))
+        expect(objectKey.toLowerCase()).not.toContain('john')
+        expect(objectKey.toLowerCase()).not.toContain('axa')
+        expect(objectKey.toLowerCase()).not.toContain('motor')
+    })
+
+    it('stores the content-type derived from content, not the client value', async () => {
+        // Client sends a vague octet-stream; we store the type proven by the magic bytes.
+        await uploadFile(fakeFile('doc.pdf', PDF_MAGIC, 'application/octet-stream'), 'policies')
+        const opts = upload.mock.calls[0][2] as { contentType: string }
+        expect(opts.contentType).toBe('application/pdf')
+    })
+
+    it('rejects a file whose content does not match its extension', async () => {
+        // .pdf name but PNG magic bytes → content_mismatch
+        await expect(uploadFile(fakeFile('fake.pdf', PNG_MAGIC), 'policies')).rejects.toThrow()
+        expect(upload).not.toHaveBeenCalled()
+    })
+
+    it('rejects a disallowed extension before touching storage', async () => {
+        await expect(uploadFile(fakeFile('malware.exe', PDF_MAGIC), 'policies')).rejects.toThrow()
+        expect(upload).not.toHaveBeenCalled()
+    })
+
     it('keeps non-policy uploads on the legacy "uploads" bucket with a folder prefix', async () => {
-        await uploadFile(fakeFile('avatar.png'), 'profile')
+        await uploadFile(fakeFile('avatar.png', PNG_MAGIC, 'image/png'), 'profile')
 
         expect(from).toHaveBeenCalledWith('uploads')
         expect(from).not.toHaveBeenCalledWith('policies')
-        expect(upload.mock.calls[0][0] as string).toMatch(/^profile\//)
+        expect(upload.mock.calls[0][0] as string).toMatch(new RegExp(`^profile/${UUID_RE}\\.png$`))
     })
 })
 

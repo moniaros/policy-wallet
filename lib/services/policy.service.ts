@@ -9,6 +9,7 @@
 import { BaseService } from './base.service'
 import { AppError } from '@/lib/errors'
 import { uploadFile, deleteFile } from '@/lib/storage'
+import { sanitizeDisplayName, validateUploadFile } from '@/lib/security/file-upload'
 import { logger } from '@/lib/logger'
 import { sendPolicyInviteEmail, sendPolicySharedAccessEmail } from '@/lib/email/invite-emails'
 import { refreshProtectionScore } from '@/lib/services/gap-engine'
@@ -22,7 +23,7 @@ import type {
     PolicyDetailView,
     UserSummary
 } from '@/types'
-import { ALLOWED_UPLOAD_MIME_TYPES, MAX_UPLOAD_SIZE_BYTES, daysFromNow, POLICY_SHARE_EXPIRY_DAYS, DEFAULT_POLICY_DURATION_DAYS } from '@/lib/constants/time'
+import { MAX_UPLOAD_SIZE_BYTES, daysFromNow, POLICY_SHARE_EXPIRY_DAYS, DEFAULT_POLICY_DURATION_DAYS } from '@/lib/constants/time'
 
 export interface UploadAndParseResult {
     policy: Policy
@@ -287,16 +288,18 @@ export class PolicyService extends BaseService {
         file: File,
         language: 'en' | 'el' = 'en'
     ): Promise<UploadAndParseResult> {
-        // 1. Initial Validation
-        if (file.size > MAX_UPLOAD_SIZE_BYTES) {
-            throw AppError.validation({
-                file: [language === 'el'
-                    ? `Το αρχείο είναι πολύ μεγάλο. Μέγιστο μέγεθος: ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`
-                    : `File too large. Maximum size is ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`]
-            })
-        }
-
-        if (!(ALLOWED_UPLOAD_MIME_TYPES as readonly string[]).includes(file.type)) {
+        // 1. Initial Validation — content-based (magic bytes + extension
+        // allowlist), never the client Content-Type header alone. This is the
+        // localized-error front door; uploadFile re-validates centrally.
+        const validation = await validateUploadFile(file, { category: 'policy' })
+        if (!validation.ok) {
+            if (validation.reason === 'too_large') {
+                throw AppError.validation({
+                    file: [language === 'el'
+                        ? `Το αρχείο είναι πολύ μεγάλο. Μέγιστο μέγεθος: ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`
+                        : `File too large. Maximum size is ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`]
+                })
+            }
             throw AppError.validation({
                 file: [language === 'el'
                     ? 'Μη έγκυρος τύπος αρχείου. Επιτρέπονται PDF, JPG, PNG, WEBP και HEIC'
@@ -309,28 +312,39 @@ export class PolicyService extends BaseService {
         try {
             fileUrl = await uploadFile(file, 'policies')
         } catch (error) {
-            logger('error', 'File upload failed', { userId, fileName: file.name, error })
+            // Never log the raw client filename (PII) — uploadFile already
+            // logged the safe rejection reason when validation failed.
+            logger('error', 'File upload failed', { userId, error })
             throw AppError.externalService('Storage', error instanceof Error ? error : new Error('Upload failed'))
         }
 
-        const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
+        // Display metadata only (Greek-safe) — never used as a storage key.
+        const sanitizedFileName = sanitizeDisplayName(file.name)
 
         // 3. Create 'Analyzing' record immediately
         // We use placeholders that the AI will soon replace
-        const policy = await this.create(userId, {
-            insurerName: 'AI Analyzing...',
-            policyNumber: `PENDING-${Math.random().toString(36).substring(7).toUpperCase()}`,
-            lineOfBusiness: 'other',
-            startDate: new Date().toISOString(),
-            endDate: daysFromNow(DEFAULT_POLICY_DURATION_DAYS).toISOString(),
-            premiumAmount: 0,
-            status: 'analyzing', // Marks it for background processing
-            documents: [{
-                url: fileUrl,
-                name: sanitizedFileName,
-                size: file.size
-            }]
-        }, language)
+        let policy
+        try {
+            policy = await this.create(userId, {
+                insurerName: 'AI Analyzing...',
+                policyNumber: `PENDING-${Math.random().toString(36).substring(7).toUpperCase()}`,
+                lineOfBusiness: 'other',
+                startDate: new Date().toISOString(),
+                endDate: daysFromNow(DEFAULT_POLICY_DURATION_DAYS).toISOString(),
+                premiumAmount: 0,
+                status: 'analyzing', // Marks it for background processing
+                documents: [{
+                    url: fileUrl,
+                    name: sanitizedFileName,
+                    size: file.size
+                }]
+            }, language)
+        } catch (createError) {
+            // The object landed but no record references it — clean it up
+            // rather than leaving an orphan in the bucket.
+            await deleteFile(fileUrl).catch(() => {})
+            throw createError
+        }
 
         logger('info', 'Policy upload initiated - analysis deferred to background', {
             userId,

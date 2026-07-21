@@ -5,7 +5,8 @@ import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
 import { daysFromNow, INVITE_EXPIRY_DAYS } from "@/lib/constants/time"
-import { uploadFile } from "@/lib/storage"
+import { uploadFile, deleteFile } from "@/lib/storage"
+import { sanitizeDisplayName, validateUploadFile, REJECTION_MESSAGES } from "@/lib/security/file-upload"
 import { sendPolicyInviteEmail } from "@/lib/email/invite-emails"
 
 const AgentProfileSchema = z.object({
@@ -68,31 +69,54 @@ export async function completeOnboarding() {
 }
 
 export async function uploadAgentAsset(formData: FormData) {
-    const file = formData.get('file') as File
-    const type = formData.get('type') as string // 'logo' or 'license'
+    const file = formData.get('file')
+    const type = formData.get('type')?.toString() // 'logo' or 'license'
 
-    if (!file) return { success: false, error: "No file provided" }
+    if (!(file instanceof File)) return { success: false, error: "No file provided" }
+    // Constrain the type — it flows into the storage path prefix, so it must
+    // not be caller-controlled free text.
+    if (type !== 'logo' && type !== 'license') {
+        return { success: false, error: "Invalid asset type" }
+    }
 
     try {
         const dbUser = await requireAgent()
+
+        // Per-surface allowlist: a logo must be a browser-renderable image; a
+        // license may also be a PDF. uploadFile re-validates centrally (broader
+        // 'document' category) as the defense-in-depth backstop.
+        const validation = await validateUploadFile(file, {
+            category: type === 'logo' ? 'image' : 'policy',
+        })
+        if (!validation.ok) {
+            return { success: false, error: REJECTION_MESSAGES[validation.reason] }
+        }
+
         const publicUrl = await uploadFile(file, `agent/${dbUser.id}/${type}`)
 
-        if (type === 'logo') {
-            await db.agentProfile.update({
-                where: { userId: dbUser.id },
-                data: { logoUrl: publicUrl }
-            })
-        } else if (type === 'license') {
-            // Append to documents JSON
-            // This is a simplified update, concurrent updates might overwrite
-            const profile = await db.agentProfile.findUnique({ where: { userId: dbUser.id }, select: { documents: true } })
-            const docs = (profile?.documents as any[]) || []
-            docs.push({ type: 'license', url: publicUrl, name: file.name, uploadedAt: new Date() })
+        try {
+            if (type === 'logo') {
+                await db.agentProfile.update({
+                    where: { userId: dbUser.id },
+                    data: { logoUrl: publicUrl }
+                })
+            } else if (type === 'license') {
+                // Append to documents JSON
+                // This is a simplified update, concurrent updates might overwrite
+                const profile = await db.agentProfile.findUnique({ where: { userId: dbUser.id }, select: { documents: true } })
+                const docs = (profile?.documents as any[]) || []
+                docs.push({ type: 'license', url: publicUrl, name: sanitizeDisplayName(file.name), uploadedAt: new Date() })
 
-            await db.agentProfile.update({
-                where: { userId: dbUser.id },
-                data: { documents: docs }
-            })
+                await db.agentProfile.update({
+                    where: { userId: dbUser.id },
+                    data: { documents: docs }
+                })
+            }
+        } catch (dbError) {
+            // Profile write failed — remove the just-stored object rather than
+            // orphaning it in the bucket.
+            await deleteFile(publicUrl).catch(() => {})
+            throw dbError
         }
 
         return { success: true, url: publicUrl }

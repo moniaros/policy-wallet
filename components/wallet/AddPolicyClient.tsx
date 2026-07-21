@@ -117,8 +117,15 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
         startTransition(async () => {
             try {
                 const uploadPromises = selectedFiles.map(async (file) => {
-                    const fileExt = file.name.split('.').pop()
-                    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+                    // Opaque, server-unguessable storage name — the original
+                    // filename is never used as the storage key (it leaks the
+                    // user/policy/insurer). crypto UUID is collision-safe, so
+                    // upsert can't silently overwrite another object.
+                    const fileExt = (file.name.split('.').pop() || 'pdf')
+                        .toLowerCase()
+                        .replace(/[^a-z0-9]/g, '')
+                        .slice(0, 5) || 'pdf'
+                    const fileName = `${crypto.randomUUID()}.${fileExt}`
 
                     const { error: uploadError } = await supabase.storage
                         .from('policies')

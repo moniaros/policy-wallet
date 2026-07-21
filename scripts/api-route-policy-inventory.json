@@ -1066,6 +1066,7 @@
     {
       "route": "v1/policies/[id]/documents/[docId]/route.ts",
       "methods": [
+        "GET",
         "DELETE"
       ],
       "policy": {
