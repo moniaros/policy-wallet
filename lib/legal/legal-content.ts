@@ -59,7 +59,7 @@ export const LEGAL_DOC_META: Partial<
     Record<LegalDocumentKind, { version: string; lastUpdatedIso: string }>
 > = {
     terms: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-20" },
-    privacy: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-20" },
+    privacy: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-21" },
     cookies: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-19" },
     subprocessors: { version: "GR-GA-2026.07", lastUpdatedIso: "2026-07-19" },
 }
@@ -278,7 +278,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "5. Ανάλυση με τεχνητή νοημοσύνη",
                     paragraphs: [
                         "Η ανάλυση συμβολαίων εκτελείται μόνο εφόσον δώσετε ρητή συγκατάθεση μέσα στην εφαρμογή, με ξεχωριστή, καταγεγραμμένη ενέργεια. Μπορείτε να την ανακαλέσετε οποτεδήποτε· η ανάκληση σταματά μελλοντικές αναλύσεις και δεν επηρεάζει την αποθήκευση των εγγράφων σας.",
-                        "Για την ανάλυση, το περιεχόμενο του συμβολαίου διαβιβάζεται σε πάροχο μοντέλων τεχνητής νοημοσύνης που ενεργεί ως εκτελών την επεξεργασία για λογαριασμό μας: κατά κύριο λόγο στην Google (μοντέλα Gemini), με τις Anthropic και OpenAI διαθέσιμες ως εναλλακτικούς παρόχους. Οι όροι επεξεργασίας δεδομένων (API data processing terms) των παρόχων δεν επιτρέπουν τη χρήση των δεδομένων σας για εκπαίδευση των μοντέλων τους.",
+                        "Για την ανάλυση, το περιεχόμενο του συμβολαίου διαβιβάζεται σε πάροχο μοντέλων τεχνητής νοημοσύνης που ενεργεί ως εκτελών την επεξεργασία για λογαριασμό μας: κατά κύριο λόγο στην Google (μοντέλα Gemini), με τις Anthropic και OpenAI διαθέσιμες ως εναλλακτικούς παρόχους. Οι όροι επεξεργασίας δεδομένων (API data processing terms) των παρόχων δεν επιτρέπουν τη χρήση των δεδομένων σας για εκπαίδευση των μοντέλων τους. Το περιεχόμενο που υποβάλλεται μέσω API διατηρείται από τον πάροχο μόνο για περιορισμένο χρονικό διάστημα (τυπικά έως 30–55 ημέρες, ανάλογα με τον πάροχο), αποκλειστικά για λόγους ασφάλειας και αποτροπής κατάχρησης, και στη συνέχεια διαγράφεται — δεν αποθηκεύεται μόνιμα από τον πάροχο.",
                         "Τα αποτελέσματα της ανάλυσης είναι πληροφοριακά, ενδέχεται να περιέχουν σφάλματα και δεν αποτελούν ασφαλιστική συμβουλή — δείτε αναλυτικά τους Όρους Χρήσης.",
                     ],
                 },
@@ -326,6 +326,10 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                                 "5 έτη από την ανάκληση ή την ολοκλήρωση του αιτήματος, για λόγους λογοδοσίας",
                             ],
                             ["Τεχνικά αρχεία καταγραφής (logs)", "Έως 12 μήνες"],
+                            [
+                                "Αναγνωριστικά ανάλυσης επισκεψιμότητας (Google Analytics, μόνο με τη συγκατάθεσή σας)",
+                                "Cookies _ga στη συσκευή σας: έως 2 έτη· δεδομένα μετρήσεων στην Google Analytics: έως 14 μήνες. Η διαγραφή του λογαριασμού σας δεν αφαιρεί τα cookies από το πρόγραμμα περιήγησής σας — δείτε την Πολιτική Cookies για το πώς τα διαγράφετε.",
+                            ],
                             ["Εγγραφή στο newsletter", "Μέχρι την απεγγραφή σας"],
                         ],
                     },
@@ -335,7 +339,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "9. Τα δικαιώματά σας και πώς τα ασκείτε",
                     paragraphs: [
                         "Έχετε δικαίωμα πρόσβασης, διόρθωσης, διαγραφής, περιορισμού της επεξεργασίας, φορητότητας και εναντίωσης, καθώς και δικαίωμα να ανακαλέσετε οποιαδήποτε συγκατάθεση — χωρίς η ανάκληση να επηρεάζει τη νομιμότητα της προηγούμενης επεξεργασίας.",
-                        "Μέσα από την εφαρμογή: μπορείτε να υποβάλετε αίτημα εξαγωγής των δεδομένων σας (πλήρες αντίγραφο σε μηχαναγνώσιμη μορφή) και αίτημα διαγραφής λογαριασμού. Κάθε αίτημα διεκπεραιώνεται μέσω εσωτερικής διαδικασίας GDPR με πλήρες ιστορικό ενεργειών.",
+                        "Μέσα από την εφαρμογή: στην ενότητα Λογαριασμός → Ρυθμίσεις μπορείτε να κατεβάσετε πλήρες αντίγραφο των δεδομένων σας σε μηχαναγνώσιμη μορφή («Τα δεδομένα μου») και να υποβάλετε αίτημα διαγραφής λογαριασμού. Εκκρεμές αίτημα διαγραφής μπορείτε να το ανακαλέσετε από το ίδιο σημείο, εφόσον δεν έχει ακόμη εγκριθεί προς εκτέλεση. Κάθε αίτημα διεκπεραιώνεται μέσω εσωτερικής διαδικασίας GDPR με πλήρες ιστορικό ενεργειών και ενημερώνεστε με email για την έκβασή του.",
                         `Με email: στο ${EL.dpoEmail} ή στο info@policywallet.gr. Απαντάμε το αργότερο εντός ενός μηνός, όπως προβλέπει το άρθρο 12 GDPR.`,
                         "Αν θεωρείτε ότι η επεξεργασία παραβιάζει τη νομοθεσία, έχετε δικαίωμα να υποβάλετε καταγγελία στην Αρχή Προστασίας Δεδομένων Προσωπικού Χαρακτήρα (ΑΠΔΠΧ), Κηφισίας 1-3, 115 23 Αθήνα — www.dpa.gr.",
                     ],
@@ -740,7 +744,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "5. AI analysis",
                     paragraphs: [
                         "Policy analysis runs only after you give explicit consent inside the app, through a separate, recorded action. You can revoke it at any time; revocation stops future analyses and does not affect the storage of your documents.",
-                        "For the analysis, the policy content is transmitted to an AI model provider acting as a processor on our behalf: primarily Google (Gemini models), with Anthropic and OpenAI available as alternate providers. The providers' API data-processing terms do not permit the use of your data to train their models.",
+                        "For the analysis, the policy content is transmitted to an AI model provider acting as a processor on our behalf: primarily Google (Gemini models), with Anthropic and OpenAI available as alternate providers. The providers' API data-processing terms do not permit the use of your data to train their models. Content submitted via API is retained by the provider only for a limited period (typically up to 30–55 days, depending on the provider), solely for safety and abuse-prevention purposes, and is then deleted — it is not stored permanently by the provider.",
                         "Analysis results are informational, may contain errors, and do not constitute insurance advice — see the Terms of Service for details.",
                     ],
                 },
@@ -788,6 +792,10 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                                 "5 years from revocation or request completion, for accountability purposes",
                             ],
                             ["Technical logs", "Up to 12 months"],
+                            [
+                                "Traffic-analytics identifiers (Google Analytics, only with your consent)",
+                                "_ga cookies on your device: up to 2 years; measurement data in Google Analytics: up to 14 months. Deleting your account does not remove cookies from your browser — see the Cookie Policy for how to delete them.",
+                            ],
                             ["Newsletter subscription", "Until you unsubscribe"],
                         ],
                     },
@@ -797,7 +805,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     title: "9. Your rights and how to exercise them",
                     paragraphs: [
                         "You have the right of access, rectification, erasure, restriction of processing, portability and objection, as well as the right to withdraw any consent — without the withdrawal affecting the lawfulness of prior processing.",
-                        "From within the app: you can submit a data export request (a full copy in machine-readable form) and an account deletion request. Every request is handled through an internal GDPR workflow with a full action history.",
+                        "From within the app: under Account → Settings you can download a full copy of your data in machine-readable form (“My data”) and submit an account deletion request. A pending deletion request can be withdrawn from the same place, as long as it has not yet been approved for execution. Every request is handled through an internal GDPR workflow with a full action history, and you are notified of the outcome by email.",
                         `By email: at ${EN.dpoEmail} or info@policywallet.gr. We respond within one month at the latest, as provided by Article 12 GDPR.`,
                         "If you believe the processing violates the law, you have the right to lodge a complaint with the Hellenic Data Protection Authority (HDPA), Kifisias 1-3, 115 23 Athens, Greece — www.dpa.gr.",
                     ],
