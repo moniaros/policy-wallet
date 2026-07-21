@@ -82,13 +82,15 @@ async function main() {
             insurerName: "Drill Insurer",
             lineOfBusiness: "motor",
             status: "active",
+            startDate: new Date("2026-01-01"),
+            endDate: new Date("2027-01-01"),
             documents: {
                 create: {
                     uploadedByUserId: user.id,
                     fileName: "drill.pdf",
                     fileUrl: pub.publicUrl,
                     fileSize: pdf.length,
-                    mimeType: "application/pdf",
+                    source: "drill",
                 },
             },
         },
