@@ -91,7 +91,7 @@ const mockSubsFind = vi.mocked(db.subscription.findMany)
 const mockDocsFind = vi.mocked(db.policyDocument.findMany)
 const mockTransaction = vi.mocked(db.$transaction)
 
-const USER = { id: 'user-1', email: 'maria@example.com', stripeCustomerId: null }
+const USER = { id: 'user-1', email: 'maria@example.com', stripeCustomerId: null, roles: 'policyholder' }
 
 beforeEach(() => {
     vi.clearAllMocks()
@@ -244,6 +244,7 @@ describe('eraseUserData — external systems, ordered for retry safety', () => {
         mockUserFind.mockResolvedValue({
             id: 'user-1',
             email: 'deleted+user-1.123@deleted.policywallet.local',
+            roles: 'policyholder',
         } as any)
 
         const summary = await eraseUserData('user-1')
@@ -298,5 +299,14 @@ describe('eraseUserData — external systems, ordered for retry safety', () => {
     it('throws for an unknown user', async () => {
         mockUserFind.mockResolvedValue(null)
         await expect(eraseUserData('nope')).rejects.toThrow('User not found')
+    })
+
+    it('refuses to erase an account that still holds the admin role', async () => {
+        mockUserFind.mockResolvedValue({ ...USER, roles: 'policyholder,admin' } as any)
+
+        await expect(eraseUserData('user-1')).rejects.toThrow(/admin/)
+        expect(mockStripeCancel).not.toHaveBeenCalled()
+        expect(mockListUsers).not.toHaveBeenCalled()
+        expect(mockTransaction).not.toHaveBeenCalled()
     })
 })

@@ -395,10 +395,18 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
 export async function eraseUserData(userId: string): Promise<ErasureSummary> {
     const user = await db.user.findUnique({
         where: { id: userId },
-        select: { id: true, email: true, stripeCustomerId: true },
+        select: { id: true, email: true, stripeCustomerId: true, roles: true },
     })
     if (!user) {
         throw new Error("User not found")
+    }
+
+    // Same rule as the admin user-delete path, enforced at the deepest
+    // chokepoint: an admin account cannot be erased while it still holds the
+    // admin role (a self-created DSR request on the owner account was one
+    // Execute click away from erasing it). Demote first, then erase.
+    if (user.roles.includes("admin")) {
+        throw new Error("Cannot erase an admin account — remove the admin role first")
     }
 
     const stripeSubscriptionsCancelled = await cancelStripeSubscriptions(userId)
