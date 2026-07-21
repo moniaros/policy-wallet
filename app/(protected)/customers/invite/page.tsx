@@ -9,6 +9,8 @@ export default function InviteCustomerPage() {
     const [isPending, setIsPending] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState(false)
+    const [fallbackLink, setFallbackLink] = useState<string | null>(null)
+    const [copied, setCopied] = useState(false)
     const router = useRouter()
     const { t } = useLanguage()
     const inv_t = t.agentPages.invite
@@ -20,6 +22,10 @@ export default function InviteCustomerPage() {
             const result = await inviteCustomer(formData)
             if (result.success) {
                 setSuccess(true)
+                // Email delivery can fail while the invite itself was created —
+                // surface the secure link so the agent can share it manually.
+                const emailFailed = 'emailDelivered' in result && result.emailDelivered === false
+                setFallbackLink(emailFailed && 'inviteLink' in result ? result.inviteLink || null : null)
             }
         } catch (err: any) {
             setError(err.message || inv_t.errorFallback)
@@ -44,8 +50,26 @@ export default function InviteCustomerPage() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                                 </svg>
                             </div>
-                            <h2 className="text-2xl font-bold text-foreground mb-2">{inv_t.successTitle}</h2>
-                            <p className="text-neutral-600 dark:text-neutral-400 mb-6">{inv_t.successBody}</p>
+                            <h2 className="text-2xl font-bold text-foreground mb-2">{fallbackLink ? inv_t.emailFailedTitle : inv_t.successTitle}</h2>
+                            <p className="text-neutral-600 dark:text-neutral-400 mb-6">{fallbackLink ? inv_t.emailFailedBody : inv_t.successBody}</p>
+
+                            {fallbackLink && (
+                                <div className="mb-6 flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/10 p-3">
+                                    <code className="flex-1 truncate text-left text-xs text-neutral-700 dark:text-neutral-300">{fallbackLink}</code>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(fallbackLink).then(() => {
+                                                setCopied(true)
+                                                setTimeout(() => setCopied(false), 2000)
+                                            }).catch(() => {})
+                                        }}
+                                        className="shrink-0 rounded-lg bg-neutral-900 dark:bg-neutral-100 px-3 py-2 text-xs font-bold text-white dark:text-neutral-900 hover:opacity-90 transition-opacity"
+                                    >
+                                        {copied ? inv_t.copied : inv_t.copyLink}
+                                    </button>
+                                </div>
+                            )}
 
                             <button
                                 onClick={() => router.push("/customers")}

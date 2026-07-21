@@ -710,13 +710,21 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
         const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
         const link = `${baseUrl}/invite/${invite.token}`
 
+        // Delivery state must reach the caller — sendEmail returns
+        // {success:false} instead of throwing, so a bare try/catch reported
+        // "sent" while the invitee never got the link.
+        let emailDelivered = false
         try {
-            await sendPolicyInviteEmail({
+            const emailResult = await sendPolicyInviteEmail({
                 to: agentEmail,
                 token: invite.token,
                 inviterName: authResult.dbUser.name || authResult.dbUser.email,
                 language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
             })
+            emailDelivered = emailResult.success
+            if (!emailDelivered) {
+                logger('warn', 'Policy invite email not delivered', { policyId, agentEmail })
+            }
         } catch (error) {
             logger('warn', 'Failed to send policy invite email', {
                 policyId,
@@ -737,7 +745,7 @@ export async function sharePolicy(policyId: string, agentEmail: string, permissi
         })
 
         revalidatePath(`/wallet/${policyId}`)
-        return { success: true, message: "Invitation sent to new user.", link }
+        return { success: true, emailDelivered, link }
     }
 
     // Optional: Verify role

@@ -35,6 +35,8 @@ export interface ShareResult {
     success: boolean
     message?: string
     link?: string
+    // false = the invite exists but the email failed — offer the link fallback.
+    emailDelivered?: boolean
 }
 
 export interface PolicyShare {
@@ -1011,14 +1013,26 @@ export class PolicyService extends BaseService {
                 }
             })
 
+            // sendEmail returns {success:false} instead of throwing — capture
+            // the delivery outcome so the caller can offer the link fallback.
+            let emailDelivered = false
             try {
-                await sendPolicyInviteEmail({
+                const emailResult = await sendPolicyInviteEmail({
                     to: recipientEmail,
                     token: invite.token,
                     inviterName,
                     policyNumber: policy.policyNumber,
                     language,
                 })
+                emailDelivered = emailResult.success
+                if (!emailDelivered) {
+                    logger('warn', 'Policy invite email not delivered', {
+                        ownerUserId,
+                        policyId,
+                        recipientEmail,
+                        inviteId: invite.id,
+                    })
+                }
             } catch (emailError) {
                 logger('warn', 'Policy invite email failed', {
                     ownerUserId,
@@ -1045,9 +1059,14 @@ export class PolicyService extends BaseService {
 
             return {
                 success: true,
-                message: language === 'el'
-                    ? 'Η πρόσκληση στάλθηκε επιτυχώς'
-                    : 'Invite sent successfully',
+                emailDelivered,
+                message: emailDelivered
+                    ? (language === 'el'
+                        ? 'Η πρόσκληση στάλθηκε επιτυχώς'
+                        : 'Invite sent successfully')
+                    : (language === 'el'
+                        ? 'Το email δεν παραδόθηκε — μοιραστείτε τον σύνδεσμο πρόσκλησης'
+                        : 'Email not delivered — share the invite link instead'),
                 link: `/invite/${invite.token}`
             }
         }

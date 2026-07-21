@@ -25,6 +25,7 @@ import { customerResolutionService } from "@/lib/services/customer-resolution.se
 import { normalizeTaxId } from "@/lib/identity/tax-id";
 import { collaborationService } from "@/lib/services/collaboration.service";
 import { sendPolicyInviteEmail, sendAiConsentRequestEmail } from "@/lib/email/invite-emails";
+import { absoluteUrl } from "@/lib/seo/site";
 import { getTranslations } from "@/lib/i18n";
 import { daysFromNow, INVITE_EXPIRY_DAYS } from "@/lib/constants/time";
 import { isAgentRole } from "@/lib/auth/require-agent";
@@ -357,13 +358,18 @@ export async function createAgentInvite(email: string, scope: AccessScope) {
         }
     })
 
+    // sendEmail returns {success:false} instead of throwing — a swallowed
+    // failure here meant the invitee never got the link while the agent saw
+    // "sent". Surface delivery state + a copyable fallback link instead.
+    let emailDelivered = false
     try {
-        await sendPolicyInviteEmail({
+        const emailResult = await sendPolicyInviteEmail({
             to: email,
             token: invite.token,
             inviterName: authResult.dbUser.name || authResult.dbUser.email,
             language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
         })
+        emailDelivered = emailResult.success
     } catch (error) {
         console.error("Failed to send agent invite email", error)
     }
@@ -371,7 +377,13 @@ export async function createAgentInvite(email: string, scope: AccessScope) {
     revalidatePath("/dashboard/agent")
     revalidatePath("/customers")
     revalidatePath(`/customers/${customer.id}`)
-    return { success: true, inviteId: invite.id, token: invite.token }
+    return {
+        success: true,
+        inviteId: invite.id,
+        token: invite.token,
+        emailDelivered,
+        inviteLink: emailDelivered ? undefined : absoluteUrl(`/invite/${invite.token}`),
+    }
 }
 
 export async function addCustomerManually(data: {
@@ -1158,11 +1170,14 @@ export async function requestAiConsent(policyId: string) {
                 relatedObjectId: policy.id,
             },
         })
+        let emailDelivered = false
         if (owner.email) {
-            // Best-effort — the in-app notification is the durable request.
-            await sendAiConsentRequestEmail({ to: owner.email, agentName, language }).catch(() => null)
+            // Best-effort — the in-app notification is the durable request —
+            // but report the email outcome instead of silently swallowing it.
+            const emailResult = await sendAiConsentRequestEmail({ to: owner.email, agentName, language }).catch(() => null)
+            emailDelivered = Boolean(emailResult?.success)
         }
-        return { success: true, mode: "notification" as const }
+        return { success: true, mode: "notification" as const, emailDelivered }
     }
 
     const invite = await db.invite.create({
@@ -1176,12 +1191,18 @@ export async function requestAiConsent(policyId: string) {
             expiresAt: daysFromNow(INVITE_EXPIRY_DAYS),
         },
     })
-    await sendPolicyInviteEmail({
+    const inviteEmailResult = await sendPolicyInviteEmail({
         to: owner.email,
         token: invite.token,
         inviterName: agentName,
         policyNumber: policy.policyNumber,
         language,
-    })
-    return { success: true, mode: "invite" as const }
+    }).catch(() => null)
+    const inviteEmailDelivered = Boolean(inviteEmailResult?.success)
+    return {
+        success: true,
+        mode: "invite" as const,
+        emailDelivered: inviteEmailDelivered,
+        inviteLink: inviteEmailDelivered ? undefined : absoluteUrl(`/invite/${invite.token}`),
+    }
 }
