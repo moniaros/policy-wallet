@@ -223,6 +223,58 @@ export function howToJsonLd(input: {
     }
 }
 
+/**
+ * DefinedTerm for a single glossary entry (AEO: answer engines lift the
+ * `description` as the definition). `inDefinedTermSet` links it back to the
+ * glossary hub so the whole set reads as one authoritative dictionary.
+ */
+export function definedTermJsonLd(input: {
+    path: string
+    name: string
+    description: string
+    inLanguage?: string
+    /** Hub path the term belongs to — defaults to the Greek glossary. */
+    termSetPath?: string
+}) {
+    const origin = getSiteOrigin()
+    const termSetPath = input.termSetPath ?? "/lexiko"
+    return {
+        "@context": "https://schema.org",
+        "@type": "DefinedTerm",
+        "@id": `${origin}${input.path}#term`,
+        name: input.name,
+        description: input.description,
+        inLanguage: input.inLanguage ?? "el",
+        url: `${origin}${input.path}`,
+        inDefinedTermSet: `${origin}${termSetPath}#termset`,
+    }
+}
+
+/** DefinedTermSet for the glossary hub — the dictionary that owns the terms. */
+export function definedTermSetJsonLd(input: {
+    path: string
+    name: string
+    description: string
+    inLanguage?: string
+    terms: { name: string; path: string }[]
+}) {
+    const origin = getSiteOrigin()
+    return {
+        "@context": "https://schema.org",
+        "@type": "DefinedTermSet",
+        "@id": `${origin}${input.path}#termset`,
+        name: input.name,
+        description: input.description,
+        inLanguage: input.inLanguage ?? "el",
+        url: `${origin}${input.path}`,
+        hasDefinedTerm: input.terms.map((term) => ({
+            "@type": "DefinedTerm",
+            name: term.name,
+            url: `${origin}${term.path}`,
+        })),
+    }
+}
+
 export function articleJsonLd(input: {
     path: string
     headline: string

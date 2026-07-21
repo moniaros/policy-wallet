@@ -32,6 +32,7 @@ export type MarketingPageKey =
     | "product-legal-expenses"
     | "product-group-life"
     | "guides"
+    | "lexiko"
     | "privacy"
     | "terms"
     | "cookies"
@@ -354,6 +355,25 @@ export const marketingPages: Record<MarketingPageKey, MarketingPageEntry> = {
             description:
                 "Practical guides to the Greek insurance market: how the ENFIA tax discount works, how to spot coverage gaps and what to check before every renewal.",
             breadcrumb: "Guides",
+        },
+    },
+    lexiko: {
+        path: "/lexiko",
+        title: "Ασφαλιστικό λεξικό: όροι σε απλά ελληνικά",
+        description:
+            "Τι σημαίνει απαλλαγή, εξαίρεση, ασφαλισμένο κεφάλαιο; Σύντομοι, ξεκάθαροι ορισμοί των ασφαλιστικών όρων, με οδηγό για το πού βρίσκεται ο καθένας στο συμβόλαιό σας.",
+        keywords: [
+            "ασφαλιστικό λεξικό",
+            "ασφαλιστικοί όροι",
+            "τι σημαίνει απαλλαγή",
+            "τι είναι το ασφαλιστήριο",
+        ],
+        breadcrumb: "Λεξικό",
+        en: {
+            title: "Insurance glossary: terms in plain language",
+            description:
+                "What do deductible, exclusion and sum insured mean? Short, clear definitions of insurance terms, with a guide to finding each one in your own policy.",
+            breadcrumb: "Glossary",
         },
     },
     privacy: {

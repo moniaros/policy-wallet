@@ -83,6 +83,9 @@ export async function proxy(request: NextRequest) {
         "/product",
         "/solutions",
         "/guides",
+        // Insurance glossary hub + term pages (/lexiko, /lexiko/<term>) — public
+        // AEO content; without this the proxy 307s crawlers to signin.
+        "/lexiko",
         "/auth",
         "/api/auth",
         // English marketing-page variants (/en/product, /en/pricing, …)
