@@ -1,4 +1,14 @@
-import { PrismaClient } from "@prisma/client"
+import { Prisma, PrismaClient } from "@prisma/client"
+
+// Single idiom for detecting a unique-constraint violation (P2002): accepts
+// the typed Prisma error and structurally similar ones (mocked clients in
+// tests throw plain Errors carrying the code).
+export function isUniqueConstraintViolation(error: unknown): boolean {
+  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    return error.code === "P2002"
+  }
+  return error instanceof Error && (error as Error & { code?: string }).code === "P2002"
+}
 
 // Runtime connection selection (verify the pooled URL at deploy — see
 // docs/operations/DEMO_DEPLOY_RUNBOOK.md):

@@ -53,7 +53,9 @@ describe('enqueueAnalysisRun', () => {
         expect(arg.url).toBe('https://app.example.gr/api/v1/jobs/execute-analysis')
         expect(arg.body).toEqual({ runId: 'run-42', language: 'el' })
         expect(arg.flowControl).toEqual({ key: 'ai-analysis', parallelism: 3 })
-        expect(arg.retries).toBe(2)
+        // Sized against the execution lease: redeliveries must outlive a dead
+        // executor's ~4-min lease so the 503-on-held-lease resume path can fire.
+        expect(arg.retries).toBe(5)
     })
 
     it('falls back to inline (false) when the publish call throws', async () => {

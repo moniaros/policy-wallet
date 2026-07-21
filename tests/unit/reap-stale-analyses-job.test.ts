@@ -1,88 +1,106 @@
 /**
- * The stale-analysis reaper (app/api/v1/jobs/reap-stale-analyses): a serverless
- * executor killed at the platform ceiling leaves its run 'running' with an
- * expired lease and the policy stuck 'analyzing' forever. The reaper fails the
- * run, surfaces a retryable error on the policy, unsticks its documents, and
- * clears leaked reserved_tokens.
+ * Stale-analysis reaping: a serverless executor killed at the platform
+ * ceiling leaves its run 'running' with an expired lease and the policy stuck
+ * 'analyzing' forever. The orchestrator's reapStaleRuns fails the run,
+ * surfaces a retryable error on the policy (failRun-shape parity), and
+ * unsticks its documents — atomically, so a crash mid-reap can't strand the
+ * policy with a failed run no later pass revisits. The cron route delegates
+ * there and clears leaked reservations.
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 const runFindMany = vi.fn()
-const runUpdateMany = vi.fn()
-const policyUpdate = vi.fn()
-const documentUpdateMany = vi.fn()
-const executeRaw = vi.fn()
+const txRunUpdateMany = vi.fn()
+const txPolicyFindUnique = vi.fn()
+const txPolicyUpdate = vi.fn()
+const txDocumentUpdateMany = vi.fn()
 
 vi.mock('@/lib/db', () => ({
     db: {
-        policyAnalysisRun: {
-            findMany: (...a: unknown[]) => runFindMany(...a),
-            updateMany: (...a: unknown[]) => runUpdateMany(...a),
+        policyAnalysisRun: { findMany: (...a: unknown[]) => runFindMany(...a) },
+        $transaction: async (arg: unknown) => {
+            if (typeof arg === 'function') {
+                return (arg as (tx: unknown) => Promise<unknown>)({
+                    policyAnalysisRun: { updateMany: (...a: unknown[]) => txRunUpdateMany(...a) },
+                    policy: {
+                        findUnique: (...a: unknown[]) => txPolicyFindUnique(...a),
+                        update: (...a: unknown[]) => txPolicyUpdate(...a),
+                    },
+                    policyDocument: { updateMany: (...a: unknown[]) => txDocumentUpdateMany(...a) },
+                })
+            }
+            return Promise.all(arg as Promise<unknown>[])
         },
-        policy: { update: (...a: unknown[]) => policyUpdate(...a) },
-        policyDocument: { updateMany: (...a: unknown[]) => documentUpdateMany(...a) },
-        $transaction: async (ops: unknown) => (Array.isArray(ops) ? Promise.all(ops) : undefined),
-        $executeRaw: (...a: unknown[]) => executeRaw(...a),
     },
 }))
-
-const requireApiUser = vi.fn(async () => ({ error: new Response('unauthorized', { status: 401 }) }))
-vi.mock('@/lib/api-auth', () => ({
-    requireApiUser: (...a: unknown[]) => (requireApiUser as any)(...a),
+vi.mock('@/lib/env', () => ({
+    env: {
+        GEMINI_MODEL_CLARITY_ANALYSIS: 'gemini-test',
+        GEMINI_MODEL_EXTRACTION: 'gemini-test',
+        GEMINI_MODEL_GAP_ANALYSIS: 'gemini-test',
+        GEMINI_MODEL_QA: 'gemini-test',
+        GEMINI_MODEL_FALLBACK: 'gemini-test',
+        FF_AI_FAILOVER_OPENAI: 'false',
+        FF_AI_DEGRADED_COMPLETION: 'true',
+        FF_AI_REMEDIATION_ALERTS: 'false',
+        FF_AI_REMEDIATION_CANARY_MODE: 'off',
+        AI_ALLOW_FULL_FAILOVER: 'true',
+    },
+}))
+vi.mock('@/lib/logger', () => ({ logger: vi.fn() }))
+vi.mock('@/lib/token-tracking', () => ({
+    canUserUseTokens: vi.fn(),
+    reserveTokens: vi.fn(),
+    releaseTokenReservation: vi.fn(),
+    clearOrphanedReservations: vi.fn(async () => 2),
+}))
+vi.mock('@/lib/services/ai', () => ({
+    getAIService: vi.fn(() => ({ isAvailable: () => false, getServiceName: () => 'mock' })),
+}))
+vi.mock('@/lib/subscription-entitlements', () => ({
+    resolveUserEntitlements: vi.fn(async () => ({ tier: 'plus', limits: {} })),
+    resolveAgentEntitlements: vi.fn(async () => ({ tier: 'agent_pro', limits: { priorityQueue: true } })),
 }))
 
-import { POST } from '@/app/api/v1/jobs/reap-stale-analyses/route'
-
-const originalSecret = process.env.CRON_SECRET
+import { PolicyAnalysisOrchestratorService } from '@/lib/services/analysis/policy-analysis-orchestrator.service'
 
 beforeEach(() => {
     vi.clearAllMocks()
-    process.env.CRON_SECRET = 'test-secret'
     runFindMany.mockResolvedValue([])
-    runUpdateMany.mockResolvedValue({ count: 1 })
-    policyUpdate.mockResolvedValue({})
-    documentUpdateMany.mockResolvedValue({ count: 1 })
-    executeRaw.mockResolvedValue(2)
+    txRunUpdateMany.mockResolvedValue({ count: 1 })
+    txPolicyFindUnique.mockResolvedValue({ acordData: { insurerName: 'Ethniki' } })
+    txPolicyUpdate.mockResolvedValue({})
+    txDocumentUpdateMany.mockResolvedValue({ count: 1 })
 })
 
-afterEach(() => {
-    process.env.CRON_SECRET = originalSecret
-})
+describe('PolicyAnalysisOrchestratorService.reapStaleRuns', () => {
+    const service = new PolicyAnalysisOrchestratorService()
 
-const cronRequest = (secret?: string) =>
-    new Request('http://localhost/api/v1/jobs/reap-stale-analyses', {
-        method: 'POST',
-        headers: secret ? { 'x-cron-secret': secret } : {},
-    })
-
-describe('reap-stale-analyses job', () => {
-    it('fails the orphaned run and resets the policy + documents to a retryable state', async () => {
+    it('fails the orphaned run and resets policy + documents in one transaction, mirroring failRun', async () => {
         runFindMany.mockResolvedValue([
-            {
-                id: 'run-1',
-                policyId: 'policy-1',
-                policy: { acordData: { insurerName: 'Ethniki' } },
-            },
+            { id: 'run-1', policyId: 'policy-1', provider: 'gemini' },
         ])
 
-        const res = await POST(cronRequest('test-secret'))
-        const body = await res.json()
+        const summary = await service.reapStaleRuns({ graceMs: 5 * 60 * 1000, limit: 50 })
 
-        expect(body.data.summary).toEqual({
-            stale_candidates: 1,
-            reaped: 1,
-            token_rows_cleared: 2,
-        })
+        expect(summary).toEqual({ staleCandidates: 1, reaped: 1 })
 
-        // Guarded: only reaps if the run is STILL running with an expired lease.
-        const runArgs = runUpdateMany.mock.calls[0]![0]
+        // Scan is bounded and only looks at running runs past the grace cutoff.
+        const findArgs = runFindMany.mock.calls[0]![0]
+        expect(findArgs.where.status).toBe('running')
+        expect(findArgs.where.executionLeaseExpiresAt.lt).toBeInstanceOf(Date)
+        expect(findArgs.take).toBe(50)
+
+        // Guarded fail with failRun-parity fields (remediationSummary carries
+        // the i18n key the UI reads).
+        const runArgs = txRunUpdateMany.mock.calls[0]![0]
         expect(runArgs.where).toMatchObject({ id: 'run-1', status: 'running' })
-        expect(runArgs.where.executionLeaseExpiresAt.lt).toBeInstanceOf(Date)
         expect(runArgs.data).toMatchObject({ status: 'failed', failureCode: 'LEASE_EXPIRED' })
+        expect(runArgs.data.remediationSummary.finalUserMessageKey).toBe('analysis.errors.generic')
 
-        // Policy leaves the eternal spinner with a retryable processingError,
-        // preserving existing acordData.
-        const policyArgs = policyUpdate.mock.calls[0]![0]
+        // Policy leaves the eternal spinner with a retryable processingError
+        // and the pipeline block, preserving existing acordData.
+        const policyArgs = txPolicyUpdate.mock.calls[0]![0]
         expect(policyArgs.where).toEqual({ id: 'policy-1' })
         expect(policyArgs.data.status).toBe('action_needed')
         expect(policyArgs.data.acordData.insurerName).toBe('Ethniki')
@@ -90,35 +108,71 @@ describe('reap-stale-analyses job', () => {
             code: 'LEASE_EXPIRED',
             retryable: true,
         })
+        expect(policyArgs.data.acordData.analysis.pipeline).toMatchObject({
+            runId: 'run-1',
+            status: 'failed',
+            lastFailureCode: 'LEASE_EXPIRED',
+        })
 
-        expect(documentUpdateMany).toHaveBeenCalledWith({
+        expect(txDocumentUpdateMany).toHaveBeenCalledWith({
             where: { policyId: 'policy-1', processingStatus: 'processing' },
             data: { processingStatus: 'failed' },
         })
     })
 
-    it('skips a run that a redelivery resumed between the scan and the update', async () => {
-        runFindMany.mockResolvedValue([
-            { id: 'run-1', policyId: 'policy-1', policy: { acordData: null } },
-        ])
-        runUpdateMany.mockResolvedValue({ count: 0 })
+    it('skips a run that a redelivery resumed between the scan and the guarded update', async () => {
+        runFindMany.mockResolvedValue([{ id: 'run-1', policyId: 'policy-1', provider: 'gemini' }])
+        txRunUpdateMany.mockResolvedValue({ count: 0 })
 
-        const res = await POST(cronRequest('test-secret'))
+        const summary = await service.reapStaleRuns()
+
+        expect(summary).toEqual({ staleCandidates: 1, reaped: 0 })
+        expect(txPolicyUpdate).not.toHaveBeenCalled()
+        expect(txDocumentUpdateMany).not.toHaveBeenCalled()
+    })
+})
+
+describe('reap-stale-analyses route', () => {
+    it('delegates to the orchestrator + reservation cleanup behind cron auth', async () => {
+        vi.resetModules()
+        const reapStaleRuns = vi.fn(async () => ({ staleCandidates: 3, reaped: 2 }))
+        const clearOrphanedReservations = vi.fn(async () => 4)
+        const authorizeCronRequest = vi.fn(async () => null)
+
+        vi.doMock('@/lib/api-auth', () => ({ authorizeCronRequest }))
+        vi.doMock('@/lib/services/analysis/policy-analysis-orchestrator.service', () => ({
+            PolicyAnalysisOrchestratorService: vi.fn(function (this: any) {
+                this.reapStaleRuns = reapStaleRuns
+            }),
+        }))
+        vi.doMock('@/lib/token-tracking', () => ({ clearOrphanedReservations }))
+
+        const { POST } = await import('@/app/api/v1/jobs/reap-stale-analyses/route')
+        const res = await POST(new Request('http://localhost/api/v1/jobs/reap-stale-analyses', { method: 'POST' }))
         const body = await res.json()
 
-        expect(body.data.summary.reaped).toBe(0)
-        expect(policyUpdate).not.toHaveBeenCalled()
-        expect(documentUpdateMany).not.toHaveBeenCalled()
+        expect(body.data.summary).toEqual({ stale_candidates: 3, reaped: 2, token_rows_cleared: 4 })
+        expect(reapStaleRuns).toHaveBeenCalledWith({ graceMs: 5 * 60 * 1000, limit: 50 })
+        expect(clearOrphanedReservations).toHaveBeenCalledTimes(1)
     })
 
-    it('always clears leaked reservations for users with no running run', async () => {
-        await POST(cronRequest('test-secret'))
-        expect(executeRaw).toHaveBeenCalledTimes(1)
-    })
+    it('refuses to run when cron/admin authorization fails', async () => {
+        vi.resetModules()
+        const reapStaleRuns = vi.fn()
+        vi.doMock('@/lib/api-auth', () => ({
+            authorizeCronRequest: vi.fn(async () => new Response('unauthorized', { status: 401 })),
+        }))
+        vi.doMock('@/lib/services/analysis/policy-analysis-orchestrator.service', () => ({
+            PolicyAnalysisOrchestratorService: vi.fn(function (this: any) {
+                this.reapStaleRuns = reapStaleRuns
+            }),
+        }))
+        vi.doMock('@/lib/token-tracking', () => ({ clearOrphanedReservations: vi.fn() }))
 
-    it('refuses to run without cron or admin authorization', async () => {
-        const res = await POST(cronRequest())
+        const { POST } = await import('@/app/api/v1/jobs/reap-stale-analyses/route')
+        const res = await POST(new Request('http://localhost/api/v1/jobs/reap-stale-analyses', { method: 'POST' }))
+
         expect(res.status).toBe(401)
-        expect(runFindMany).not.toHaveBeenCalled()
+        expect(reapStaleRuns).not.toHaveBeenCalled()
     })
 })

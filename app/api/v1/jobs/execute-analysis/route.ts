@@ -59,24 +59,26 @@ export const POST = withApiGuard(
         }
         const parsed = result.data
 
+        // Hoisted above the try so a module-load failure surfaces as itself,
+        // not as a second failed import inside the catch.
+        const { OrchestrationError, PolicyAnalysisOrchestratorService } = await import(
+            "@/lib/services/analysis/policy-analysis-orchestrator.service"
+        )
+
         try {
-            const { PolicyAnalysisOrchestratorService } = await import(
-                "@/lib/services/analysis/policy-analysis-orchestrator.service"
-            )
             const orchestrator = new PolicyAnalysisOrchestratorService()
             // throwOnLeaseHeld: a held lease must NOT return 200 — QStash would
             // mark the delivery done, and if the lease holder was a killed
             // function the run (and its policy, stuck 'analyzing') would never
-            // be retried. A 503 keeps the redelivery alive until the dead
-            // holder's lease expires and this consumer can re-acquire it.
+            // be retried. A 503 keeps redeliveries alive; if the holder is
+            // dead, its lease expires ≤ ~4 min after death and a later
+            // redelivery (publish retries are sized for this) re-acquires and
+            // resumes. The reap-stale-analyses cron is the final backstop.
             const run = await orchestrator.executeRun(parsed.runId, parsed.language, {
                 throwOnLeaseHeld: true,
             })
             return createApiResponse({ run_id: parsed.runId, status: run?.status ?? "unknown" })
         } catch (error) {
-            const { OrchestrationError } = await import(
-                "@/lib/services/analysis/policy-analysis-orchestrator.service"
-            )
             if (error instanceof OrchestrationError && error.code === "RUN_LEASE_HELD") {
                 logger("info", "Queued analysis delivery deferred: run lease held", {
                     runId: parsed.runId,

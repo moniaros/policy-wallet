@@ -1,10 +1,10 @@
 import { stripe } from "@/lib/stripe";
 import { env } from "@/lib/env";
-import { extractStripeCustomerId, fulfillReportUnlockSession, fulfillTokenPurchaseSession, handleSubscriptionSuccess, persistStripeCustomerId } from "@/lib/billing";
+import { fulfillCheckoutSession } from "@/lib/billing";
 import { handleStripeLifecycleEvent, isStripeLifecycleEvent } from "@/lib/services/billing/stripe-lifecycle";
 import { createApiResponse, createApiError } from "@/lib/api-utils";
 import { withApiGuard } from "@/lib/api-guard";
-import { claimWebhookEvent, markWebhookEventProcessed, releaseWebhookEventClaim } from "@/lib/services/billing/webhook-idempotency";
+import { processWebhookEventOnce } from "@/lib/services/billing/webhook-idempotency";
 import { recordConversionEvent } from "@/lib/journey/conversion-events";
 
 // PUBLIC_ENDPOINT_AUTH_STRATEGY: stripe_signature_verification + secret_key_validation
@@ -45,67 +45,51 @@ export const POST = withApiGuard(
             return createApiError("BAD_REQUEST", `Webhook Error: ${error.message}`, 400)
         }
 
-        // Atomic claim: concurrent redeliveries of the same event both passed
-        // the old check-then-mark and double-processed; exactly one claims now.
-        const claimed = await claimWebhookEvent({
-            provider: "stripe",
-            eventId: event.id,
-            sourceRoute: "/api/v1/billing/webhook",
-        })
-        if (!claimed) {
+        // Atomic claim + release-on-error + mark-on-success, all inside the
+        // wrapper: concurrent redeliveries of the same event both passed the
+        // old check-then-mark and double-processed; exactly one claims now.
+        const session = event.data.object as any
+        const outcome = await processWebhookEventOnce(
+            {
+                provider: "stripe",
+                eventId: event.id,
+                sourceRoute: "/api/v1/billing/webhook",
+            },
+            async () => {
+                if (
+                    event.type === "checkout.session.completed" ||
+                    event.type === "checkout.session.async_payment_succeeded"
+                ) {
+                    // Shared fulfillment (report unlock / token pack /
+                    // subscription) with the payment_status gate applied in ONE
+                    // place for both webhook endpoints.
+                    await fulfillCheckoutSession(session)
+                } else if (event.type === "checkout.session.expired") {
+                    // Stripe expires abandoned sessions (~24h). This is the only
+                    // server-side signal that a started checkout never converted —
+                    // it closes the funnel's drop-off step.
+                    const { userId, planId, billingPeriod, featureKey } = session.metadata || {}
+                    if (userId) {
+                        await recordConversionEvent(userId, "checkout_cancelled", {
+                            plan: planId,
+                            billingPeriod,
+                            feature: featureKey,
+                            source: "stripe_session_expired",
+                        })
+                    }
+                } else if (isStripeLifecycleEvent(event.type)) {
+                    // Dunning, cancellations and plan changes made on Stripe's side
+                    // (incl. the billing portal) — previously only the deprecated
+                    // /api/stripe/webhook synced these.
+                    await handleStripeLifecycleEvent(event)
+                }
+                return { eventType: event.type }
+            }
+        )
+
+        if (outcome === "duplicate") {
             return createApiResponse({ received: true, duplicate: true })
         }
-
-        const session = event.data.object as any
-        try {
-        if (event.type === "checkout.session.completed") {
-            const { userId, planId, tokensPurchased, type, policyId } = session.metadata || {}
-            const customerId = extractStripeCustomerId(session.customer)
-            if (type === "report_unlock" && userId && policyId) {
-                // One-off €3 gap-report unlock (mode: payment)
-                await fulfillReportUnlockSession(session.id, userId, policyId)
-                await persistStripeCustomerId(userId, customerId)
-            } else if (tokensPurchased) {
-                // One-off token-pack checkout (mode: payment)
-                await fulfillTokenPurchaseSession(session.id, userId, parseInt(tokensPurchased, 10))
-                await persistStripeCustomerId(userId, customerId)
-            } else if (userId && planId) {
-                const subscriptionId = session.subscription as string
-                await handleSubscriptionSuccess(userId, planId, subscriptionId, customerId)
-            }
-        } else if (event.type === "checkout.session.expired") {
-            // Stripe expires abandoned sessions (~24h). This is the only
-            // server-side signal that a started checkout never converted —
-            // it closes the funnel's drop-off step.
-            const { userId, planId, billingPeriod, featureKey } = session.metadata || {}
-            if (userId) {
-                await recordConversionEvent(userId, "checkout_cancelled", {
-                    plan: planId,
-                    billingPeriod,
-                    feature: featureKey,
-                    source: "stripe_session_expired",
-                })
-            }
-        } else if (isStripeLifecycleEvent(event.type)) {
-            // Dunning, cancellations and plan changes made on Stripe's side
-            // (incl. the billing portal) — previously only the deprecated
-            // /api/stripe/webhook synced these.
-            await handleStripeLifecycleEvent(event)
-        }
-        } catch (handlerError) {
-            // Release the claim so Stripe's retry is not swallowed as a duplicate.
-            await releaseWebhookEventClaim("stripe", event.id).catch(() => {})
-            throw handlerError
-        }
-
-        await markWebhookEventProcessed({
-            provider: "stripe",
-            eventId: event.id,
-            sourceRoute: "/api/v1/billing/webhook",
-            status: "processed",
-            result: { eventType: event.type },
-        })
-
         return createApiResponse({ received: true })
     }
 )

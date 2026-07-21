@@ -6,7 +6,7 @@ import { logger } from '@/lib/logger'
 import { createApiError } from '@/lib/api-utils'
 import { withApiGuard } from '@/lib/api-guard'
 import { withLegacyBillingDeprecationHeaders } from '@/lib/api-deprecation'
-import { claimWebhookEvent, markWebhookEventProcessed, releaseWebhookEventClaim } from '@/lib/services/billing/webhook-idempotency'
+import { processWebhookEventOnce } from '@/lib/services/billing/webhook-idempotency'
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
@@ -50,75 +50,65 @@ export const POST = withApiGuard(
                 ))
             }
 
-            const claimed = await claimWebhookEvent({
-                provider: "stripe",
-                eventId: event.id,
-                sourceRoute: "/api/stripe/webhook",
-            })
-            if (!claimed) {
+            const outcome = await processWebhookEventOnce(
+                {
+                    provider: "stripe",
+                    eventId: event.id,
+                    sourceRoute: "/api/stripe/webhook",
+                },
+                async () => {
+                    switch (event.type) {
+                        case 'checkout.session.completed':
+                        case 'checkout.session.async_payment_succeeded': {
+                            const session = event.data.object as Stripe.Checkout.Session
+                            const { fulfillCheckoutSession } = await import('@/lib/billing')
+                            await fulfillCheckoutSession(session)
+                            break
+                        }
+
+                        case 'invoice.paid': {
+                            const invoice = event.data.object as Stripe.Invoice
+                            await handleInvoicePaid(invoice)
+                            break
+                        }
+
+                        case 'invoice.payment_failed': {
+                            const invoice = event.data.object as Stripe.Invoice
+                            await handlePaymentFailed(invoice)
+                            break
+                        }
+
+                        case 'customer.subscription.updated': {
+                            const subscription = event.data.object as Stripe.Subscription
+                            await handleSubscriptionUpdated(subscription)
+                            break
+                        }
+
+                        case 'customer.subscription.deleted': {
+                            const subscription = event.data.object as Stripe.Subscription
+                            await handleSubscriptionDeleted(subscription)
+                            break
+                        }
+
+                        case 'payment_intent.succeeded': {
+                            const paymentIntent = event.data.object as Stripe.PaymentIntent
+                            // Only handle token purchases (identified by tokensPurchased metadata)
+                            if (paymentIntent.metadata?.tokensPurchased) {
+                                await handleTokenPurchaseCompleted(paymentIntent)
+                            }
+                            break
+                        }
+
+                        default:
+                            console.log(`Unhandled event type: ${event.type}`)
+                    }
+                    return { eventType: event.type }
+                }
+            )
+
+            if (outcome === "duplicate") {
                 return deprecated(NextResponse.json({ received: true, duplicate: true }))
             }
-
-            try {
-            // Handle the event
-            switch (event.type) {
-                case 'checkout.session.completed': {
-                    const session = event.data.object as Stripe.Checkout.Session
-                    await handleCheckoutCompleted(session)
-                    break
-                }
-
-                case 'invoice.paid': {
-                    const invoice = event.data.object as Stripe.Invoice
-                    await handleInvoicePaid(invoice)
-                    break
-                }
-
-                case 'invoice.payment_failed': {
-                    const invoice = event.data.object as Stripe.Invoice
-                    await handlePaymentFailed(invoice)
-                    break
-                }
-
-                case 'customer.subscription.updated': {
-                    const subscription = event.data.object as Stripe.Subscription
-                    await handleSubscriptionUpdated(subscription)
-                    break
-                }
-
-                case 'customer.subscription.deleted': {
-                    const subscription = event.data.object as Stripe.Subscription
-                    await handleSubscriptionDeleted(subscription)
-                    break
-                }
-
-                case 'payment_intent.succeeded': {
-                    const paymentIntent = event.data.object as Stripe.PaymentIntent
-                    // Only handle token purchases (identified by tokensPurchased metadata)
-                    if (paymentIntent.metadata?.tokensPurchased) {
-                        await handleTokenPurchaseCompleted(paymentIntent)
-                    }
-                    break
-                }
-
-                default:
-                    console.log(`Unhandled event type: ${event.type}`)
-            }
-
-            } catch (handlerError) {
-                // Release the claim so Stripe's retry is not swallowed as a duplicate.
-                await releaseWebhookEventClaim("stripe", event.id).catch(() => {})
-                throw handlerError
-            }
-
-            await markWebhookEventProcessed({
-                provider: "stripe",
-                eventId: event.id,
-                sourceRoute: "/api/stripe/webhook",
-                status: "processed",
-                result: { eventType: event.type },
-            })
-
             return deprecated(NextResponse.json({ received: true }))
         } catch (error) {
             console.error('Webhook error:', error)
@@ -129,56 +119,6 @@ export const POST = withApiGuard(
         }
     }
 )
-
-async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-    const userId = session.metadata?.userId
-    if (!userId) {
-        console.error('No userId in session metadata', session.id)
-        return
-    }
-
-    // One-off €3 gap-report unlock (mode: payment) — no subscription follows.
-    if (session.metadata?.type === 'report_unlock' && session.metadata?.policyId) {
-        const { fulfillReportUnlockSession } = await import('@/lib/billing')
-        await fulfillReportUnlockSession(session.id, userId, session.metadata.policyId)
-        return
-    }
-
-    const { extractStripeCustomerId, handleSubscriptionSuccess, persistStripeCustomerId } =
-        await import('@/lib/billing')
-
-    const stripeCustomerId = extractStripeCustomerId(session.customer)
-    await persistStripeCustomerId(userId, stripeCustomerId)
-
-    const stripeSubscriptionId = session.subscription as string | null
-    if (!stripeSubscriptionId) return
-
-    // Unpaid sessions must not grant entitlement (trials report no_payment_required).
-    if (session.payment_status !== 'paid' && session.payment_status !== 'no_payment_required') {
-        logger('warn', 'Legacy checkout webhook: session completed without payment, skipping', {
-            sessionId: session.id,
-            paymentStatus: session.payment_status,
-        })
-        return
-    }
-
-    const planId = session.metadata?.planId
-    if (!planId) {
-        // The old fallback here invented 'ph-plus', which is not a real plan row.
-        logger('error', 'Legacy checkout webhook: no planId in session metadata, cannot grant', {
-            sessionId: session.id,
-            stripeSubscriptionId,
-        })
-        return
-    }
-
-    // Canonical grant path (same as /api/v1/billing/webhook): idempotent by
-    // stripeSubscriptionId, creates the replacement BEFORE expiring priors, and
-    // mirrors Stripe's real billing period. The previous inline version demoted
-    // every active subscription to past_due before creating the new row — a
-    // throw in between left the payer unentitled.
-    await handleSubscriptionSuccess(userId, planId, stripeSubscriptionId, stripeCustomerId)
-}
 
 async function handleInvoicePaid(invoice: any) {
     const stripeSubscriptionId = invoice.subscription as string

@@ -37,6 +37,8 @@ vi.mock('@/lib/db', () => ({
         activityLog: { create: (...a: unknown[]) => activityCreate(...a) },
         $transaction: async (ops: unknown) => (Array.isArray(ops) ? Promise.all(ops) : undefined),
     },
+    isUniqueConstraintViolation: (error: unknown) =>
+        error instanceof Error && (error as Error & { code?: string }).code === 'P2002',
 }))
 vi.mock('@/lib/stripe', () => ({
     stripe: {
@@ -67,6 +69,7 @@ import {
     extractStripeCustomerId,
     persistStripeCustomerId,
     handleSubscriptionSuccess,
+    fulfillCheckoutSession,
 } from '@/lib/billing'
 import { cancelSubscription } from '@/app/(protected)/account/actions'
 import { resolveUserEntitlements } from '@/lib/subscription-entitlements'
@@ -203,7 +206,7 @@ describe('handleSubscriptionSuccess', () => {
         )
     })
 
-    it('treats a P2002 on create as a concurrent grant: no throw, no Stripe cancel', async () => {
+    it('treats a P2002 on create as a concurrent grant: no double grant, but priors still converge', async () => {
         planFindUnique.mockResolvedValue(plan)
         subFindUnique.mockResolvedValue(null)
         subFindMany.mockResolvedValue([{ id: 'prior-1', stripeSubscriptionId: 'sub_old' }])
@@ -214,12 +217,106 @@ describe('handleSubscriptionSuccess', () => {
             current_period_start: nowSec,
             current_period_end: nowSec + 30 * 24 * 60 * 60,
         })
+        stripeSubCancel.mockResolvedValue({})
         subCreate.mockRejectedValue(Object.assign(new Error('unique'), { code: 'P2002' }))
 
         await expect(handleSubscriptionSuccess('user-1', 'ph-plus', 'sub_race')).resolves.toBeUndefined()
 
-        expect(stripeSubCancel).not.toHaveBeenCalled()
+        // The concurrent winner may have crashed before its remote cancels —
+        // the loser expires and cancels priors so nobody double-bills.
+        expect(subUpdateMany).toHaveBeenCalledWith({
+            where: { id: { in: ['prior-1'] } },
+            data: { status: 'expired', autoRenew: false },
+        })
+        expect(stripeSubCancel).toHaveBeenCalledWith('sub_old')
         expect(activityCreate).not.toHaveBeenCalled()
+    })
+
+    it('does NOT grant when the Stripe subscription is already canceled at grant time', async () => {
+        planFindUnique.mockResolvedValue(plan)
+        subFindUnique.mockResolvedValue(null)
+        stripeSubRetrieve.mockResolvedValue({
+            customer: 'cus_1',
+            status: 'canceled',
+            cancel_at_period_end: false,
+            current_period_start: nowSec,
+            current_period_end: nowSec + 30 * 24 * 60 * 60,
+        })
+
+        await handleSubscriptionSuccess('user-1', 'ph-plus', 'sub_gone')
+
+        expect(subCreate).not.toHaveBeenCalled()
+        expect(activityCreate).not.toHaveBeenCalled()
+    })
+
+    it('converges prior cleanup on the already-granted short-circuit', async () => {
+        planFindUnique.mockResolvedValue(plan)
+        subFindUnique.mockResolvedValue({ id: 'existing' })
+        subFindMany.mockResolvedValue([{ id: 'prior-1', stripeSubscriptionId: 'sub_old' }])
+        stripeSubCancel.mockResolvedValue({})
+
+        await handleSubscriptionSuccess('user-1', 'ph-plus', 'sub_dup', 'cus_x')
+
+        expect(subCreate).not.toHaveBeenCalled()
+        expect(subUpdateMany).toHaveBeenCalledWith({
+            where: { id: { in: ['prior-1'] } },
+            data: { status: 'expired', autoRenew: false },
+        })
+        expect(stripeSubCancel).toHaveBeenCalledWith('sub_old')
+    })
+})
+
+describe('fulfillCheckoutSession (shared webhook fulfillment)', () => {
+    const paidSession = (overrides: Record<string, unknown>) => ({
+        id: 'cs_1',
+        customer: 'cus_1',
+        payment_status: 'paid',
+        subscription: 'sub_new',
+        metadata: { userId: 'user-1', planId: 'ph-plus' },
+        ...overrides,
+    })
+
+    it('defers unpaid sessions without granting (async payment confirms later)', async () => {
+        await fulfillCheckoutSession(paidSession({ payment_status: 'unpaid' }) as any)
+
+        // Customer id is still persisted, but no plan lookup / no grant.
+        expect(userUpdateMany).toHaveBeenCalled()
+        expect(planFindUnique).not.toHaveBeenCalled()
+        expect(subCreate).not.toHaveBeenCalled()
+    })
+
+    it('grants the subscription for a paid session via the canonical path', async () => {
+        planFindUnique.mockResolvedValue({ id: 'ph-plus', name: 'plus', planType: 'policyholder' })
+        subFindUnique.mockResolvedValue(null)
+        stripeSubRetrieve.mockResolvedValue({
+            customer: 'cus_1',
+            status: 'active',
+            cancel_at_period_end: false,
+            current_period_start: nowSec,
+            current_period_end: nowSec + 30 * 24 * 60 * 60,
+        })
+
+        await fulfillCheckoutSession(paidSession({}) as any)
+
+        expect(subCreate).toHaveBeenCalledTimes(1)
+        expect(subCreate.mock.calls[0][0].data.stripeSubscriptionId).toBe('sub_new')
+    })
+
+    it('falls back to ph-plus for legacy sessions without planId metadata (removed-fallback regression)', async () => {
+        planFindUnique.mockResolvedValue({ id: 'ph-plus', name: 'plus', planType: 'policyholder' })
+        subFindUnique.mockResolvedValue(null)
+        stripeSubRetrieve.mockResolvedValue({
+            customer: 'cus_1',
+            status: 'active',
+            cancel_at_period_end: false,
+            current_period_start: nowSec,
+            current_period_end: nowSec + 30 * 24 * 60 * 60,
+        })
+
+        await fulfillCheckoutSession(paidSession({ metadata: { userId: 'user-1' } }) as any)
+
+        expect(planFindUnique).toHaveBeenCalledWith({ where: { id: 'ph-plus' } })
+        expect(subCreate).toHaveBeenCalledTimes(1)
     })
 })
 

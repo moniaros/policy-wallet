@@ -603,6 +603,120 @@ export class PolicyAnalysisOrchestratorService {
         })
     }
 
+    /**
+     * Fail runs whose execution lease expired without a resume — the holder
+     * died (serverless kill) and QStash's redeliveries were exhausted inside
+     * the lease window. Everything for one run happens in ONE transaction so a
+     * crash mid-reap cannot leave the run 'failed' but the policy stuck
+     * 'analyzing' — a state no later pass would ever revisit. The failure
+     * shape mirrors failRun (remediationSummary + acordData.analysis.pipeline
+     * + processingError) so reaped runs render identically to orchestrator-
+     * failed ones.
+     */
+    async reapStaleRuns(options?: { graceMs?: number; limit?: number }): Promise<{
+        staleCandidates: number
+        reaped: number
+    }> {
+        const graceMs = options?.graceMs ?? 5 * 60 * 1000
+        const limit = options?.limit ?? 50
+        const cutoff = new Date(Date.now() - graceMs)
+
+        const staleRuns = await db.policyAnalysisRun.findMany({
+            where: {
+                status: "running",
+                executionLeaseExpiresAt: { lt: cutoff },
+            },
+            select: { id: true, policyId: true, provider: true },
+            orderBy: { executionLeaseExpiresAt: "asc" },
+            take: limit,
+        })
+
+        let reaped = 0
+        for (const run of staleRuns) {
+            const remediationSummary: PipelineRemediationSummary = {
+                providerAttempts: [],
+                degradedSteps: [],
+                missingArtifacts: [],
+                finalUserMessageKey: "analysis.errors.generic",
+                failoverUsed: false,
+                retryScope: "full",
+            }
+            const didReap = await db.$transaction(async (tx) => {
+                // Guarded: only reap if the run is STILL running with the same
+                // expired lease — a redelivery that resumed it in the meantime
+                // has refreshed the lease and must not be clobbered.
+                const failed = await tx.policyAnalysisRun.updateMany({
+                    where: {
+                        id: run.id,
+                        status: "running",
+                        executionLeaseExpiresAt: { lt: cutoff },
+                    },
+                    data: {
+                        status: "failed",
+                        failureCode: "LEASE_EXPIRED",
+                        failureMessage: "Analysis executor died and the run was never resumed",
+                        remediationSummary: remediationSummary as any,
+                        executionLeaseId: null,
+                        executionLeaseExpiresAt: null,
+                        finishedAt: new Date(),
+                    },
+                })
+                if (failed.count !== 1) return false
+
+                // acordData is fetched INSIDE the transaction so the merge is
+                // never a stale snapshot of a concurrently-updated policy.
+                const policy = await tx.policy.findUnique({
+                    where: { id: run.policyId },
+                    select: { acordData: true },
+                })
+                const acordData = (policy?.acordData as Record<string, any> | null) || {}
+                await tx.policy.update({
+                    where: { id: run.policyId },
+                    data: {
+                        status: "action_needed",
+                        acordData: {
+                            ...acordData,
+                            analysis: {
+                                ...((acordData.analysis as Record<string, unknown>) || {}),
+                                pipeline: {
+                                    ...(((acordData.analysis as any)?.pipeline as Record<
+                                        string,
+                                        unknown
+                                    >) || {}),
+                                    runId: run.id,
+                                    provider: run.provider,
+                                    status: "failed",
+                                    lastFailureCode: "LEASE_EXPIRED",
+                                    lastFailureAt: new Date().toISOString(),
+                                },
+                            },
+                            processingError: {
+                                code: "LEASE_EXPIRED",
+                                message: "Analysis was interrupted and did not resume",
+                                retryable: true,
+                                occurredAt: new Date().toISOString(),
+                            },
+                        },
+                    },
+                })
+                await tx.policyDocument.updateMany({
+                    where: { policyId: run.policyId, processingStatus: "processing" },
+                    data: { processingStatus: "failed" },
+                })
+                return true
+            })
+            if (didReap) reaped += 1
+        }
+
+        if (reaped > 0) {
+            logger("info", "Reaped stale analysis runs", {
+                staleCandidates: staleRuns.length,
+                reaped,
+            })
+        }
+        return { staleCandidates: staleRuns.length, reaped }
+    }
+
     async retryMissing(runId: string, userId: string, language: "en" | "el" = "en") {
         const sourceRun = await db.policyAnalysisRun.findFirst({
             where: {
@@ -1728,19 +1842,6 @@ export class PolicyAnalysisOrchestratorService {
             // tokens are not tracked via reserved_tokens so releasing would corrupt the pool.
             const reservationSource = preflight.source
 
-            // Exactly-once release, guaranteed on EVERY exit path. Before this
-            // guard, the token-failure throw and any heartbeat RUN_LEASE_LOST
-            // throw skipped the release, leaking reserved_tokens against the
-            // user's budget for the rest of the billing month.
-            let reservationReleased = false
-            const releaseReservation = async () => {
-                if (reservationReleased) return
-                reservationReleased = true
-                if (reservationSource === 'subscription') {
-                    await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
-                }
-            }
-
             try {
 
             const step = await db.policyAnalysisStep.create({
@@ -1808,7 +1909,6 @@ export class PolicyAnalysisOrchestratorService {
                     willRetry: false,
                 })
                 await this.heartbeatRunLease(params.runId, params.leaseId)
-                await releaseReservation()
                 return null
             }
 
@@ -1876,7 +1976,6 @@ export class PolicyAnalysisOrchestratorService {
                     })
 
                     await this.heartbeatRunLease(params.runId, params.leaseId)
-                    await releaseReservation()
                     return null
                 }
             }
@@ -1935,9 +2034,6 @@ export class PolicyAnalysisOrchestratorService {
                     tokens: payload.usage,
                 })
                 await this.heartbeatRunLease(params.runId, params.leaseId)
-                // Release the subscription reservation — actual usage is recorded by trackTokenUsage in the AI service layer.
-                // Purchased-token path does not use reserved_tokens so must not release.
-                await releaseReservation()
 
                 return {
                     ...payload,
@@ -2022,15 +2118,20 @@ export class PolicyAnalysisOrchestratorService {
                     await sleep(STEP_BACKOFF_MS[Math.min(stepAttemptCounter - 1, STEP_BACKOFF_MS.length - 1)] || 10000)
                 }
 
-                await releaseReservation()
                 return null
             }
 
             } finally {
-                // Safety net for every path that threw past the in-place
-                // releases above (token-classified failures, lost leases,
-                // unexpected DB errors). No-op when already released.
-                await releaseReservation()
+                // Release the subscription reservation on EVERY exit path —
+                // success (actual usage is recorded by trackTokenUsage in the
+                // AI service layer), failure, token-classified throws, and
+                // lost leases. Before this, the throw paths skipped the
+                // release, leaking reserved_tokens against the user's budget
+                // for the rest of the billing month. The purchased-token path
+                // does not use reserved_tokens and must not release.
+                if (reservationSource === 'subscription') {
+                    await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
+                }
             }
         }
 

@@ -413,6 +413,27 @@ export async function releaseTokenReservation(
 }
 
 /**
+ * Zero out reserved_tokens for users with no running analysis — reservations
+ * are only live while a run is running, so anything left over is a leak
+ * (killed executor) silently shrinking the user's monthly budget. Called by
+ * the stale-analysis reaper cron. Lives here so every raw-SQL touch of
+ * monthly_token_usage stays in this module.
+ */
+export async function clearOrphanedReservations(): Promise<number> {
+    const now = new Date()
+    const month = new Date(now.getFullYear(), now.getMonth(), 1)
+    return prisma.$executeRaw`
+        UPDATE monthly_token_usage m
+        SET reserved_tokens = 0
+        WHERE m.month = ${month}
+          AND m.reserved_tokens > 0
+          AND NOT EXISTS (
+              SELECT 1 FROM policy_analysis_runs r
+              WHERE r.user_id = m.user_id AND r.status = 'running'
+          )`
+}
+
+/**
  * Get usage statistics for admin dashboard
  */
 export async function getAdminTokenStats(params?: {

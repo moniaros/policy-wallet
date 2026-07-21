@@ -9,6 +9,8 @@ vi.mock('@/lib/db', () => ({
         notificationEvent: { create: vi.fn() },
         $transaction: vi.fn(async (ops: any) => (Array.isArray(ops) ? Promise.all(ops) : undefined)),
     },
+    isUniqueConstraintViolation: (error: unknown) =>
+        error instanceof Error && (error as Error & { code?: string }).code === 'P2002',
 }))
 vi.mock('@/lib/stripe', () => ({
     stripe: {
@@ -78,8 +80,10 @@ describe('handleSubscriptionSuccess idempotency', () => {
     beforeEach(() => vi.clearAllMocks())
 
     it('skips creation when the stripeSubscriptionId already has a row (webhook/success-page race)', async () => {
-        ;(db.plan.findUnique as any).mockResolvedValue({ id: 'ph-pro', name: 'pro' })
+        ;(db.plan.findUnique as any).mockResolvedValue({ id: 'ph-pro', name: 'pro', planType: 'policyholder' })
         ;(db.subscription.findUnique as any).mockResolvedValue({ id: 'existing' })
+        // The short-circuit still converges prior cleanup (no-op here).
+        ;(db.subscription.findMany as any).mockResolvedValue([])
 
         await handleSubscriptionSuccess('user-1', 'ph-pro', 'sub_123')
 
