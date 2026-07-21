@@ -71,11 +71,12 @@ export async function createPolicy(formData: FormData) {
     const userId = dbUser.id
     const canAdd = await canUserAddPolicy(userId)
     if (!canAdd.allowed) {
-        // Structured code — the client maps this to the policy_limit upgrade
-        // modal. (Previously threw a localized sentence the error mapper
-        // couldn't match, so EL users saw a generic failure toast.)
+        // Structured return, NOT a throw — prod builds redact thrown
+        // server-action messages to a digest, so the client can only ever
+        // see this code as a return value (a throw reads as a generic
+        // failure instead of the policy_limit upgrade modal).
         await recordConversionEvent(userId, "limit_hit", { kind: "policy", source: "create_policy" })
-        throw new Error("POLICY_LIMIT_REACHED")
+        return { error: "POLICY_LIMIT_REACHED" }
     }
 
     const rawData = {

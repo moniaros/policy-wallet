@@ -150,7 +150,17 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                 })
 
                 const result = await createPolicy(formData)
-                if ('policyId' in result && result.policyId) {
+                if ('error' in result) {
+                    if (result.error === "POLICY_LIMIT_REACHED") {
+                        // Natural upgrade moment — show the plan prompt instead
+                        // of a dead-end error toast.
+                        setLimitModalOpen(true)
+                        return
+                    }
+                    toast.error(mapWalletErrorToMessage(result.error, t, "addPolicy"))
+                    return
+                }
+                if (result.policyId) {
                     setCreatedPolicyId(result.policyId)
                     pollingStartRef.current = Date.now()
                     setPhase('reviewing')
@@ -161,12 +171,6 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
             } catch (error: any) {
                 console.error(error)
                 const message = String(error?.message || error)
-                if (message.includes("POLICY_LIMIT_REACHED")) {
-                    // Natural upgrade moment — show the plan prompt instead of
-                    // a dead-end error toast.
-                    setLimitModalOpen(true)
-                    return
-                }
                 toast.error(mapWalletErrorToMessage(message, t, "addPolicy"))
             }
         })
