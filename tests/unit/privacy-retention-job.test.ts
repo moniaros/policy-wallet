@@ -8,10 +8,15 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 const exportUpdateMany = vi.fn(async (_a?: any) => ({ count: 2 }))
 const inviteDeleteMany = vi.fn(async (_a?: any) => ({ count: 3 }))
 
+const formDeleteMany = vi.fn(async (_a?: any) => ({ count: 4 }))
+const activityDeleteMany = vi.fn(async (_a?: any) => ({ count: 5 }))
+
 vi.mock('@/lib/db', () => ({
     db: {
         dataExportRequest: { updateMany: (...a: unknown[]) => (exportUpdateMany as any)(...a) },
         invite: { deleteMany: (...a: unknown[]) => (inviteDeleteMany as any)(...a) },
+        formSubmission: { deleteMany: (...a: unknown[]) => (formDeleteMany as any)(...a) },
+        activityLog: { deleteMany: (...a: unknown[]) => (activityDeleteMany as any)(...a) },
     },
 }))
 
@@ -46,7 +51,20 @@ describe('privacy-retention job', () => {
         const res = await POST(cronRequest('test-secret'))
         const body = await res.json()
 
-        expect(body.data).toEqual({ purged_export_payloads: 2, purged_invites: 3 })
+        expect(body.data).toEqual({
+            purged_export_payloads: 2,
+            purged_invites: 3,
+            purged_form_submissions: 4,
+            purged_activity_logs: 5,
+        })
+
+        // Owner-decided retention windows: 24 months for form submissions,
+        // 5 years for activity logs.
+        const DAY = 24 * 60 * 60 * 1000
+        const formCutoff = formDeleteMany.mock.calls[0]![0].where.createdAt.lte as Date
+        expect(Math.round((Date.now() - formCutoff.getTime()) / DAY)).toBe(730)
+        const logCutoff = activityDeleteMany.mock.calls[0]![0].where.timestamp.lte as Date
+        expect(Math.round((Date.now() - logCutoff.getTime()) / DAY)).toBe(5 * 365)
 
         const exportArgs = exportUpdateMany.mock.calls[0]![0]
         expect(exportArgs.where.status.in).toEqual(['completed', 'expired'])
@@ -68,5 +86,7 @@ describe('privacy-retention job', () => {
         expect(res.status).toBe(401)
         expect(exportUpdateMany).not.toHaveBeenCalled()
         expect(inviteDeleteMany).not.toHaveBeenCalled()
+        expect(formDeleteMany).not.toHaveBeenCalled()
+        expect(activityDeleteMany).not.toHaveBeenCalled()
     })
 })

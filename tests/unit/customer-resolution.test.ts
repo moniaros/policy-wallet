@@ -39,11 +39,11 @@ beforeEach(() => {
 })
 
 describe('resolveCustomerCandidates', () => {
-    it('scopes the query to the agent and excludes inactive relationships', async () => {
+    it('scopes the query to the agent and excludes inactive/terminated relationships', async () => {
         await service.resolveCustomerCandidates('agent-1', { email: 'x@y.gr' })
         const where = relFindMany.mock.calls[0][0].where
         expect(where.agentUserId).toBe('agent-1')
-        expect(where.status).toEqual({ not: 'inactive' })
+        expect(where.status).toEqual({ notIn: ['inactive', 'terminated'] })
     })
 
     it('returns empty without querying when no identity fields are given', async () => {

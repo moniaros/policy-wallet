@@ -278,6 +278,7 @@ export async function generatePlaybook(
         where: {
             agentUserId,
             policyholderUserId: clientUserId,
+            status: { not: "terminated" },
         },
         select: { id: true, activationStatus: true },
     })

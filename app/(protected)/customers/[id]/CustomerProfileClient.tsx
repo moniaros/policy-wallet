@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react"
 import { QuestionnaireSender } from "@/components/agent"
 import { Customer, OpportunityStatus } from "@/components/agent/types"
 import { updateOpportunityStatus, createAgentInvite } from "../../agent/actions"
+import { terminateRelationshipAsAgent } from "../../agent/relationship-actions"
 import { useRouter } from "next/navigation"
 import { CreateTaskModal } from "@/components/agent/CreateTaskModal"
 import { UploadPolicyModal } from "@/components/agent/UploadPolicyModal"
@@ -44,12 +45,30 @@ const PROFILE_COPY = {
     sendFailed: { el: "Η αποστολή απέτυχε. Δοκιμάστε ξανά.", en: "Send failed. Please try again." },
     proposalUpgrade: { el: "Οι προτάσεις απαιτούν το πρόγραμμα Starter ή ανώτερο.", en: "Proposals require the Starter plan or higher." },
     docRequestUpgrade: { el: "Τα αιτήματα εγγράφων απαιτούν το πρόγραμμα Starter ή ανώτερο.", en: "Document requests require the Starter plan or higher." },
+    removeCustomer: { el: "Αφαίρεση Πελάτη", en: "Remove Customer" },
+    removeCustomerDesc: { el: "Ο πελάτης αφαιρείται από το χαρτοφυλάκιό σας και η πρόσβαση στα συμβόλαιά του ανακαλείται. Δεν διαγράφονται δεδομένα.", en: "The customer is removed from your book and access to their policies is revoked. No data is deleted." },
+    removeCustomerConfirm: { el: "Να αφαιρεθεί ο πελάτης από το χαρτοφυλάκιό σας;", en: "Remove this customer from your book?" },
+    removeCustomerFailed: { el: "Η αφαίρεση απέτυχε. Δοκιμάστε ξανά.", en: "Removal failed. Please try again." },
+    removing: { el: "Αφαίρεση...", en: "Removing..." },
 } as const
 
 export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedReport, healthScore }: Props) {
     const router = useRouter()
     const { language } = useLanguage()
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
+    const [isRemovingCustomer, setIsRemovingCustomer] = useState(false)
+
+    const handleRemoveCustomer = async () => {
+        if (!confirm(PROFILE_COPY.removeCustomerConfirm[language])) return
+        setIsRemovingCustomer(true)
+        const result = await terminateRelationshipAsAgent(initialCustomer.relationshipId)
+        setIsRemovingCustomer(false)
+        if (result.success) {
+            router.push("/customers")
+        } else {
+            toast.error(PROFILE_COPY.removeCustomerFailed[language])
+        }
+    }
     const [isPolicyModalOpen, setIsPolicyModalOpen] = useState(false)
     const [isDocRequestFormOpen, setIsDocRequestFormOpen] = useState(false)
     const [isProposalFormOpen, setIsProposalFormOpen] = useState(false)
@@ -384,6 +403,22 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                             router.push(`/collaboration/threads/${threadId}`)
                         }}
                     />
+                </div>
+
+                {/* Relationship danger zone */}
+                <div className="mt-6 rounded-2xl border border-dashed border-red-500/25 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 className="text-sm font-bold text-red-600 dark:text-red-400">{PROFILE_COPY.removeCustomer[language]}</h3>
+                        <p className="text-xs text-muted-foreground mt-1 max-w-md">{PROFILE_COPY.removeCustomerDesc[language]}</p>
+                    </div>
+                    <button
+                        type="button"
+                        disabled={isRemovingCustomer}
+                        onClick={handleRemoveCustomer}
+                        className="shrink-0 rounded-xl border border-red-500/40 px-4 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/15 disabled:opacity-50"
+                    >
+                        {isRemovingCustomer ? PROFILE_COPY.removing[language] : PROFILE_COPY.removeCustomer[language]}
+                    </button>
                 </div>
             </div>
         </>

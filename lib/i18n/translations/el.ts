@@ -2,6 +2,12 @@
 export const el = {
     // Common
     common: {
+        removeCustomer: 'Αφαίρεση Πελάτη',
+        removeCustomerConfirm: 'Να αφαιρεθεί ο πελάτης από το χαρτοφυλάκιό σας; Η πρόσβαση στα συμβόλαιά του θα ανακληθεί. Δεν διαγράφονται δεδομένα.',
+        disconnectAgent: 'Αποσύνδεση από τον Σύμβουλο',
+        disconnectAgentConfirm: 'Να αποσυνδεθείτε από τον σύμβουλό σας; Η πρόσβασή του στα συμβόλαιά σας θα ανακληθεί.',
+        relationshipTerminated: 'Η σύνδεση τερματίστηκε',
+        terminationFailed: 'Η ενέργεια απέτυχε. Δοκιμάστε ξανά.',
         loading: 'Φόρτωση...',
         save: 'Αποθήκευση',
         saving: 'Αποθήκευση...',

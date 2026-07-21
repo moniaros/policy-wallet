@@ -11,9 +11,10 @@
  * 2. Invites older than 90 days past consumption/expiry: `inviteeEmail` is
  *    third-party PII (often someone who never signed up) with no remaining
  *    purpose once the invite is consumed or long-expired.
- *
- * FormSubmission and ActivityLog retention windows need a documented policy
- * decision first — tracked in docs/audits/gdpr-deletion-erasure-2026-07.md.
+ * 3. Contact/newsletter form submissions older than 24 months (owner decision,
+ *    2026-07-21 review).
+ * 4. ActivityLog rows older than 5 years — aligned with the privacy policy's
+ *    5-year accountability-records retention (owner decision, same review).
  */
 
 import { requireApiUser } from "@/lib/api-auth"
@@ -23,6 +24,8 @@ import { logger } from "@/lib/logger"
 import { Prisma } from "@prisma/client"
 
 const INVITE_RETENTION_DAYS = 90
+const FORM_SUBMISSION_RETENTION_DAYS = 730 // 24 months
+const ACTIVITY_LOG_RETENTION_DAYS = 5 * 365
 const DAY_MS = 24 * 60 * 60 * 1000
 
 export async function POST(req: Request) {
@@ -49,8 +52,10 @@ export async function POST(req: Request) {
     try {
         const now = new Date()
         const inviteCutoff = new Date(now.getTime() - INVITE_RETENTION_DAYS * DAY_MS)
+        const formCutoff = new Date(now.getTime() - FORM_SUBMISSION_RETENTION_DAYS * DAY_MS)
+        const activityLogCutoff = new Date(now.getTime() - ACTIVITY_LOG_RETENTION_DAYS * DAY_MS)
 
-        const [purgedExports, purgedInvites] = await Promise.all([
+        const [purgedExports, purgedInvites, purgedFormSubmissions, purgedActivityLogs] = await Promise.all([
             db.dataExportRequest.updateMany({
                 where: {
                     status: { in: ["completed", "expired"] },
@@ -70,16 +75,26 @@ export async function POST(req: Request) {
                     ],
                 },
             }),
+            db.formSubmission.deleteMany({
+                where: { createdAt: { lte: formCutoff } },
+            }),
+            db.activityLog.deleteMany({
+                where: { timestamp: { lte: activityLogCutoff } },
+            }),
         ])
 
         logger("info", "Privacy retention sweep completed", {
             purgedExportPayloads: purgedExports.count,
             purgedInvites: purgedInvites.count,
+            purgedFormSubmissions: purgedFormSubmissions.count,
+            purgedActivityLogs: purgedActivityLogs.count,
         })
 
         return createApiResponse({
             purged_export_payloads: purgedExports.count,
             purged_invites: purgedInvites.count,
+            purged_form_submissions: purgedFormSubmissions.count,
+            purged_activity_logs: purgedActivityLogs.count,
         })
     } catch (error) {
         logger("error", "Privacy retention sweep failed", { error })
