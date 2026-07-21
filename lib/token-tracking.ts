@@ -3,6 +3,7 @@
  * Tracks AI token usage, costs, and manages token balances
  */
 
+import * as Sentry from '@sentry/nextjs'
 import { db as prisma } from '@/lib/db'
 import { getUserSubscription } from '@/lib/subscription-limits'
 import { Decimal } from '@prisma/client/runtime/library'
@@ -192,11 +193,22 @@ export async function trackTokenUsage(params: {
             }
         })
     } catch (error) {
+        // Provider-billed spend that goes unrecorded must at least alert ops.
         console.error('[token-tracking] trackTokenUsage failed (usage not recorded)', {
             userId: params.userId,
             model: params.model,
             operationType: params.operationType,
             error: error instanceof Error ? error.message : String(error),
+        })
+        Sentry.captureException(error, {
+            tags: { component: 'token-tracking' },
+            extra: {
+                userId: params.userId,
+                model: params.model,
+                operationType: params.operationType,
+                inputTokens: params.inputTokens,
+                outputTokens: params.outputTokens,
+            },
         })
     }
 }
