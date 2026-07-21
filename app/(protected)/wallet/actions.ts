@@ -93,11 +93,53 @@ export async function createPolicy(formData: FormData) {
     const documentNames = formData.getAll("documentNames") as string[]
     const documentSizes = formData.getAll("documentSizes") as string[]
 
-    // Determine default status based on uploads
-    const initialStatus = documentUrls.length > 0 ? 'analyzing' : 'active'
+    // Validate documents FIRST — the status must derive from the documents
+    // that actually survive validation, or an all-invalid submission commits
+    // an 'analyzing' policy with zero documents (the eternal-spinner state).
+    // Bounded to the same cap the documents API enforces.
+    const MAX_DOCUMENTS = 20
+    const validDocuments: Array<{ fileUrl: string; fileName: string; fileSize: number }> = []
+    for (let i = 0; i < Math.min(documentUrls.length, MAX_DOCUMENTS); i++) {
+        const fileUrl = documentUrls[i]
+        // Display metadata only — sanitized (Greek-safe), never used as a key.
+        const fileName = sanitizeDisplayName(documentNames[i] || "Unknown Document")
+        const fileSize = parseInt(documentSizes[i] || "0")
 
-    // Policy + documents in ONE transaction: a crash between the two writes
-    // left a zero-document policy stuck 'analyzing' with nothing to analyze.
+        // The bytes were uploaded to storage client-side; only persist a
+        // reference that actually points at one of OUR storage objects — never
+        // an arbitrary client-supplied URL.
+        if (!fileUrl || !isOwnedStorageUrl(fileUrl)) {
+            logger('warn', 'Skipping policy document with untrusted URL')
+            continue
+        }
+
+        // Security: validate extension on the (original) display name.
+        const lowerName = fileName.toLowerCase()
+        const hasValidExt = lowerName.endsWith('.pdf') ||
+            lowerName.endsWith('.jpg') ||
+            lowerName.endsWith('.jpeg') ||
+            lowerName.endsWith('.png') ||
+            lowerName.endsWith('.webp')
+
+        if (!hasValidExt) {
+            logger('warn', 'Skipping policy document with invalid extension')
+            continue
+        }
+
+        validDocuments.push({ fileUrl, fileName, fileSize })
+    }
+    if (documentUrls.length > MAX_DOCUMENTS) {
+        logger('warn', 'Policy submission exceeded the document cap; extra entries dropped', {
+            submitted: documentUrls.length,
+            cap: MAX_DOCUMENTS,
+        })
+    }
+
+    const initialStatus = validDocuments.length > 0 ? 'analyzing' : 'active'
+
+    // Policy + documents in ONE transaction (a crash between the two writes
+    // left a zero-document policy stuck 'analyzing'), with a single batched
+    // insert instead of a per-row round-trip loop.
     const policy = await db.$transaction(async (tx) => {
         const created = await tx.policy.create({
             data: {
@@ -114,44 +156,17 @@ export async function createPolicy(formData: FormData) {
             }
         })
 
-        // Handle files
-        for (let i = 0; i < documentUrls.length; i++) {
-            const fileUrl = documentUrls[i]
-            // Display metadata only — sanitized (Greek-safe), never used as a key.
-            const fileName = sanitizeDisplayName(documentNames[i] || "Unknown Document")
-            const fileSize = parseInt(documentSizes[i] || "0")
-
-            // The bytes were uploaded to storage client-side; only persist a
-            // reference that actually points at one of OUR storage objects — never
-            // an arbitrary client-supplied URL.
-            if (!fileUrl || !isOwnedStorageUrl(fileUrl)) {
-                logger('warn', 'Skipping policy document with untrusted URL')
-                continue
-            }
-
-            // Security: validate extension on the (original) display name.
-            const lowerName = fileName.toLowerCase()
-            const hasValidExt = lowerName.endsWith('.pdf') ||
-                lowerName.endsWith('.jpg') ||
-                lowerName.endsWith('.jpeg') ||
-                lowerName.endsWith('.png') ||
-                lowerName.endsWith('.webp')
-
-            if (!hasValidExt) {
-                logger('warn', 'Skipping policy document with invalid extension')
-                continue
-            }
-
-            await tx.policyDocument.create({
-                data: {
+        if (validDocuments.length > 0) {
+            await tx.policyDocument.createMany({
+                data: validDocuments.map((doc) => ({
                     policyId: created.id,
-                    fileUrl: fileUrl,
-                    fileName: fileName,
-                    fileSize: fileSize,
+                    fileUrl: doc.fileUrl,
+                    fileName: doc.fileName,
+                    fileSize: doc.fileSize,
                     source: "policyholder",
                     uploadedByUserId: userId,
-                    processingStatus: initialStatus === 'analyzing' ? 'processing' : 'completed'
-                }
+                    processingStatus: 'processing',
+                })),
             })
         }
 

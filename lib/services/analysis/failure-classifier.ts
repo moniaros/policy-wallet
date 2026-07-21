@@ -270,14 +270,16 @@ export function classifyAnalysisFailure(error: unknown): ClassifiedFailure {
             "timeout",
             "timed out",
             "deadline",
-            "aborted",
-            "503",
-            "500",
-            "429",
             "service unavailable",
             "temporarily",
             "overloaded",
-        ])
+        ]) ||
+        // Anchored status codes only — bare '500'/'429' substrings matched
+        // inside identifiers ('item5000') and 'aborted' matched client-side
+        // stream cancellations, classifying permanent failures as transient
+        // (retry + provider failover, multiplying cost for errors that can
+        // never succeed).
+        /\b(429|500|502|503|504|529)\b/.test(msg)
     ) {
         return {
             failureClass: "transient",

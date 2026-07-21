@@ -52,6 +52,17 @@ export function isTransientError(error: unknown): boolean {
     )
 }
 
+/** The provider's requested retry delay, from APICallError response headers. */
+function retryAfterMsFrom(error: unknown): number | null {
+    const headers = (error as { responseHeaders?: Record<string, string> })?.responseHeaders
+    if (!headers) return null
+    const ms = Number(headers['retry-after-ms'])
+    if (Number.isFinite(ms) && ms > 0) return ms
+    const seconds = Number(headers['retry-after'])
+    if (Number.isFinite(seconds) && seconds > 0) return seconds * 1000
+    return null
+}
+
 /**
  * Wraps an async function with a timeout and retry logic for transient failures.
  * Accepts an optional AbortSignal so callers can propagate cancellation from
@@ -87,7 +98,14 @@ export async function withTimeoutAndRetry<T>(
             }
             lastError = error
             if (attempt < MAX_RETRIES && isTransientError(error)) {
-                const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt)
+                // maxRetries: 0 on the SDK calls also disabled the SDK's
+                // Retry-After-aware backoff — honor the provider's requested
+                // wait here (capped) or a 2s retry into a 30s rate limit is
+                // guaranteed to fail again.
+                const backoff = Math.min(
+                    30_000,
+                    Math.max(INITIAL_BACKOFF_MS * Math.pow(2, attempt), retryAfterMsFrom(error) ?? 0)
+                )
                 logger(
                     'warn',
                     `${context}: transient failure, retrying in ${backoff}ms (attempt ${attempt + 1}/${MAX_RETRIES})`,
