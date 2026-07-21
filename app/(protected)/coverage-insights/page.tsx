@@ -46,11 +46,13 @@ export default async function CoverageInsightsPage() {
         },
         include: {
             definition: true,
+            // No acordData here: these rows serialize straight into client
+            // props (one per GAP), and the full ACORD JSON per row made the
+            // RSC payload multi-MB. The client reads only lineOfBusiness.
             policy: {
                 select: {
                     id: true,
                     policyNumber: true,
-                    acordData: true,
                     lineOfBusiness: true,
                     insurerName: true,
                     status: true,

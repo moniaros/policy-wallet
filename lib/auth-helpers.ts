@@ -1,13 +1,19 @@
+import { cache } from "react"
 import { createClient } from "@/lib/supabase/server"
 import { db } from "@/lib/db"
 import { redirect } from "next/navigation"
 import { logger } from "@/lib/logger"
 
+// Request-scoped memo (React cache): a single render tree calls these from the
+// layout, the page, and several server actions/components — each call was a
+// fresh Supabase auth round-trip plus a user query. cache() dedupes within one
+// request and never leaks across requests.
+
 /**
  * Get the authenticated user from Supabase and the database.
  * Redirects to signin if not authenticated.
  */
-export async function getAuthenticatedUser() {
+export const getAuthenticatedUser = cache(async function getAuthenticatedUser() {
     const supabase = await createClient()
 
     // Get the current user from Supabase
@@ -36,13 +42,13 @@ export async function getAuthenticatedUser() {
     }
 
     return { supabaseUser: user, dbUser }
-}
+})
 
 /**
  * Get the authenticated user from Supabase and the database.
  * Returns null if not authenticated (doesn't redirect).
  */
-export async function getAuthenticatedUserOrNull() {
+export const getAuthenticatedUserOrNull = cache(async function getAuthenticatedUserOrNull() {
     const supabase = await createClient()
 
     // Get the current user from Supabase
@@ -62,7 +68,7 @@ export async function getAuthenticatedUserOrNull() {
     }
 
     return { supabaseUser: user, dbUser }
-}
+})
 
 /**
  * Check if the user is a paying user without redirecting.

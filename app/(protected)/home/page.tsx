@@ -60,21 +60,50 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
     const t = getTranslations(lang)
     const home = t.dashboard.home
 
-    const policies = await db.policy.findMany({
-        where: { ownerUserId: dbUser.id },
-        include: { documents: true },
-        orderBy: { endDate: "asc" },
-    })
-
-    const customerRelationship = await db.customerRelationship.findFirst({
-        where: {
-            policyholderUserId: dbUser.id,
-            status: "active",
-        },
-        include: { agent: true },
-    })
-
-    const entitlements = await resolveUserEntitlements(dbUser.id)
+    // One parallel batch for every independent read — these ran strictly
+    // serially (~7 round-trips) on the hottest customer page, all keyed on the
+    // same user id with no ordering dependencies.
+    const [
+        policies,
+        customerRelationship,
+        entitlements,
+        openGaps,
+        cachedScore,
+        hasAnalysisRun,
+        hasNotificationPref,
+    ] = await Promise.all([
+        db.policy.findMany({
+            where: { ownerUserId: dbUser.id },
+            include: { documents: true },
+            orderBy: { endDate: "asc" },
+        }),
+        db.customerRelationship.findFirst({
+            where: {
+                policyholderUserId: dbUser.id,
+                status: "active",
+            },
+            include: { agent: true },
+        }),
+        resolveUserEntitlements(dbUser.id),
+        db.gapInstance.findMany({
+            where: {
+                policy: { ownerUserId: dbUser.id },
+                status: { in: ["open", "detected", "acknowledged"] },
+            },
+            select: { severity: true },
+        }),
+        // Protection score: READ-ONLY cached score (never runs the engine on a
+        // GET render). Freshness is the cron / upload pipeline's job.
+        getCachedProtectionScore(dbUser.id).catch(() => null),
+        db.policyAnalysisRun.findFirst({
+            where: { userId: dbUser.id, status: { in: ["completed", "completed_with_warnings"] } },
+            select: { id: true },
+        }),
+        db.notificationPreference.findFirst({
+            where: { userId: dbUser.id, enabled: true },
+            select: { id: true },
+        }),
+    ])
     const isFreeTier = entitlements.tier === "free"
 
     // Plan picked at signup but never activated (carried through onboarding)
@@ -146,20 +175,10 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         return acc
     }, {} as Record<string, number>)
 
-    const openGaps = await db.gapInstance.findMany({
-        where: {
-            policy: { ownerUserId: dbUser.id },
-            status: { in: ["open", "detected", "acknowledged"] },
-        },
-        select: { severity: true },
-    })
     const openGapCount = openGaps.length
 
-    // Protection score: READ-ONLY cached score (never runs the engine on a GET
-    // render — that would be a write transaction + heavy compute per user per
-    // day on the hottest page). Freshness is the cron / upload pipeline's job;
-    // when the cache is absent we fall back to the lightweight penalty estimate.
-    const cachedScore = await getCachedProtectionScore(dbUser.id).catch(() => null)
+    // When the cached score is absent, fall back to the lightweight penalty
+    // estimate (fetched in the parallel batch above).
     let healthScore: number
     if (cachedScore) {
         healthScore = cachedScore.overallScore
@@ -172,16 +191,6 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
             ? 0
             : Math.max(0, Math.min(100, 100 - (criticalGaps * 25 + highGaps * 15 + mediumGaps * 8 + lowGaps * 3)))
     }
-
-    // Getting Started checklist data
-    const hasAnalysisRun = await db.policyAnalysisRun.findFirst({
-        where: { userId: dbUser.id, status: { in: ["completed", "completed_with_warnings"] } },
-        select: { id: true },
-    })
-    const hasNotificationPref = await db.notificationPreference.findFirst({
-        where: { userId: dbUser.id, enabled: true },
-        select: { id: true },
-    })
 
     // Precomputed view models — components stay presentational
     const portfolioChips = Object.entries(lobBreakdown)
