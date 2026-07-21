@@ -6,9 +6,15 @@ import { logger } from "@/lib/logger"
 // platform ceiling leaves its run 'running' with an expired lease, the policy
 // stuck 'analyzing' (blocking review and re-analysis), and its documents stuck
 // 'processing'. QStash redeliveries recover fresh cases via the 503-on-held-
-// lease path; this cron catches whatever outlives the retry budget. The
+// lease path; this route catches whatever outlives the retry budget. The
 // actual state transitions live in the orchestrator (reapStaleRuns) so their
 // shape can never drift from failRun's.
+//
+// Scheduling: Vercel Hobby allows only DAILY crons, so vercel.json runs this
+// once a day as the last resort. The 15-minute cadence comes from a QStash
+// schedule (create once with scripts/setup-qstash-reaper-schedule.mjs) that
+// POSTs here with the forwarded x-cron-secret header. The process-policy
+// pre-flight also reaps opportunistically on user traffic.
 
 // Lease must have been expired this long before the holder is declared dead —
 // QStash redeliveries land within minutes and may still resume the run.
