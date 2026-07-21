@@ -40,7 +40,18 @@ export async function GET(
         const policy = await db.policy.findUnique({
             where: { id },
             include: {
-                documents: true,
+                // Slim select — `documents: true` loaded every row's
+                // extractionCache (the cached AI payload) just to discard it.
+                documents: {
+                    select: {
+                        id: true,
+                        fileName: true,
+                        fileSize: true,
+                        source: true,
+                        processingStatus: true,
+                        uploadedAt: true,
+                    }
+                },
                 gapInstances: {
                     where: { resolvedAt: null },
                     include: { definition: true }
@@ -75,6 +86,9 @@ export async function GET(
             lastAnalyzedAt: policy.lastAnalyzedAt,
             createdAt: policy.createdAt,
             updatedAt: policy.updatedAt,
+            // Kept for API compatibility (pre-projection responses carried
+            // documents) — slim rows, no extractionCache/fileUrl internals.
+            documents: policy.documents,
             highlights,
             gaps: {
                 count: policy.gapInstances.length,

@@ -439,23 +439,23 @@ export async function getTeamOverview(userId: string): Promise<TeamOverview | nu
                 customerCount,
                 pipelineValue: viewerSeesRevenue || m.userId === userId ? pipelineValue : 0,
                 wonValue: viewerSeesRevenue || m.userId === userId ? wonValue : 0,
-                // Unmasked values kept locally for the team totals below.
-                _rawPipelineValue: pipelineValue,
-                _rawWonValue: wonValue,
             }
         })
     )
 
     const activeMembers = memberStats.filter((m) => m.status === "active")
     const totalCustomers = activeMembers.reduce((s, m) => s + m.customerCount, 0)
-    // Aggregates are team-level, computed from the unmasked values.
-    const totalPipeline = activeMembers.reduce((s, m) => s + m._rawPipelineValue, 0)
-    const totalWon = activeMembers.reduce((s, m) => s + m._rawWonValue, 0)
+    // Totals come from the MASKED values: unmasked totals let a two-member
+    // team's plain member derive the colleague's exact revenue (total − own).
+    // Managers see true totals (masked == raw for them); members see the sum
+    // of what they are allowed to see.
+    const totalPipeline = activeMembers.reduce((s, m) => s + m.pipelineValue, 0)
+    const totalWon = activeMembers.reduce((s, m) => s + m.wonValue, 0)
 
     return {
         tenantId: membership.tenantId,
         tenantName: membership.tenant.name,
-        members: memberStats.map(({ _rawPipelineValue, _rawWonValue, ...member }) => member),
+        members: memberStats,
         stats: {
             totalMembers: members.length,
             activeMembers: activeMembers.length,

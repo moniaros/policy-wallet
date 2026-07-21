@@ -5,7 +5,6 @@ import { z } from 'zod'
 import { createApiResponse, createApiError } from "@/lib/api-utils"
 import { sendPolicySharedAccessEmail, sendPolicyInviteEmail } from "@/lib/email/invite-emails"
 import { daysFromNow, POLICY_SHARE_EXPIRY_DAYS } from "@/lib/constants/time"
-import { absoluteUrl } from "@/lib/seo/site"
 import { withApiGuard } from '@/lib/api-guard'
 
 const sharePolicySchema = z.object({
@@ -53,34 +52,50 @@ export const POST = withApiGuard(
             })
 
             if (!granteeUser) {
-                const invite = await db.invite.create({
-                    data: {
+                // Dedup: an unexpired unconsumed invite for the same recipient
+                // and policy means the email already went out — repeat POSTs
+                // must not become a platform-branded spam channel (30/min).
+                const existingInvite = await db.invite.findFirst({
+                    where: {
                         inviterUserId: authResult.dbUser.id,
                         inviteeEmail: email,
-                        token: crypto.randomUUID(),
-                        inviteType: 'share',
-                        relationshipType: 'policy_share',
                         scope: `policy:${policyId}`,
-                        requestedPermissions: permissions,
-                        expiresAt: daysFromNow(POLICY_SHARE_EXPIRY_DAYS)
-                    }
+                        consumedAt: null,
+                        expiresAt: { gt: new Date() },
+                    },
+                    select: { id: true },
                 })
                 let emailDelivered = false
-                try {
-                    const emailResult = await sendPolicyInviteEmail({
-                        to: email,
-                        token: invite.token,
-                        inviterName: authResult.dbUser.name || authResult.dbUser.email,
-                        policyNumber: policy.policyNumber,
-                        language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
+                if (!existingInvite) {
+                    const invite = await db.invite.create({
+                        data: {
+                            inviterUserId: authResult.dbUser.id,
+                            inviteeEmail: email,
+                            token: crypto.randomUUID(),
+                            inviteType: 'share',
+                            relationshipType: 'policy_share',
+                            scope: `policy:${policyId}`,
+                            requestedPermissions: permissions,
+                            expiresAt: daysFromNow(POLICY_SHARE_EXPIRY_DAYS)
+                        }
                     })
-                    emailDelivered = emailResult.success
-                } catch (emailError) {
-                    console.error("Failed to send policy share invite email", emailError)
+                    try {
+                        const emailResult = await sendPolicyInviteEmail({
+                            to: email,
+                            token: invite.token,
+                            inviterName: authResult.dbUser.name || authResult.dbUser.email,
+                            policyNumber: policy.policyNumber,
+                            language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
+                        })
+                        emailDelivered = emailResult.success
+                    } catch (emailError) {
+                        console.error("Failed to send policy share invite email", emailError)
+                    }
                 }
+                // UNIFORM response shape with the registered-user branch below —
+                // a differential response is an account-existence oracle.
                 return createApiResponse({
-                    message: `Invitation created for ${email}`,
-                    invite_link: absoluteUrl(`/invite/${invite.token}`),
+                    message: `Share sent to ${email}`,
                     email_delivered: emailDelivered,
                 })
             }
@@ -114,19 +129,23 @@ export const POST = withApiGuard(
                 })
             }
 
+            let emailDelivered = false
             try {
-                await sendPolicySharedAccessEmail({
+                const emailResult = await sendPolicySharedAccessEmail({
                     to: email,
                     inviterName: authResult.dbUser.name || authResult.dbUser.email,
                     policyNumber: policy.policyNumber,
                     language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
                 })
+                emailDelivered = emailResult.success
             } catch (emailError) {
                 console.error("Failed to send policy share email", emailError)
             }
 
+            // Same shape as the unknown-email branch — see the oracle note above.
             return createApiResponse({
-                message: `Policy shared with ${email}`
+                message: `Share sent to ${email}`,
+                email_delivered: emailDelivered,
             })
         } catch (error) {
             Sentry.captureException(error, {
