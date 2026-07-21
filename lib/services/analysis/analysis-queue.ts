@@ -41,7 +41,13 @@ export async function enqueueAnalysisRun(
                 key: "ai-analysis",
                 parallelism: Number(process.env.AI_ANALYSIS_PARALLELISM ?? 5),
             },
-            retries: 2,
+            // Sized against the execution lease: a killed executor's lease
+            // stays valid up to ~4 min after death (TTL 4 min, 60s interval
+            // heartbeat), and the consumer 503s while it is held. With only 2
+            // retries QStash's early exponential backoff exhausted the budget
+            // INSIDE that window and the run was never resumed; 5 retries
+            // stretch the schedule well past lease expiry.
+            retries: 5,
         })
         return true
     } catch (error) {

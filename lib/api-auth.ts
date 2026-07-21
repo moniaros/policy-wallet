@@ -43,3 +43,30 @@ export async function requireApiUser(options?: { roles?: AppRole[] }): Promise<
 
     return { auth, roles }
 }
+
+/**
+ * Shared guard for cron/job routes: authorizes via CRON_SECRET (x-cron-secret
+ * header or Authorization: Bearer), falling back to an admin session.
+ * Returns null when authorized, or the error response to return as-is.
+ * (The other jobs routes still inline this block — migrate them here when touched.)
+ */
+export async function authorizeCronRequest(req: Request): Promise<NextResponse | null> {
+    const cronSecret = process.env.CRON_SECRET
+    const headerSecret = req.headers.get("x-cron-secret")
+    const authHeader = req.headers.get("authorization")
+    const bearerSecret = authHeader?.startsWith("Bearer ")
+        ? authHeader.slice("Bearer ".length)
+        : null
+
+    const isCronAuthorized = Boolean(
+        cronSecret &&
+        (
+            (headerSecret && headerSecret === cronSecret) ||
+            (bearerSecret && bearerSecret === cronSecret)
+        )
+    )
+    if (isCronAuthorized) return null
+
+    const authCheck = await requireApiUser({ roles: ["admin"] })
+    return "error" in authCheck ? authCheck.error : null
+}

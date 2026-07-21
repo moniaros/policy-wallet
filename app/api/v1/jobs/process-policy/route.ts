@@ -22,23 +22,29 @@ export async function POST(req: Request) {
     if (!limitCheck.success) return limitCheck.error!
 
     try {
-        // Pre-flight: expire stale analysis runs whose serverless lease timed out
-        // Runs stuck in "running" with an expired lease would block future attempts
-        const expiredLeaseCount = await db.policyAnalysisRun.updateMany({
-            where: {
-                status: "running",
-                executionLeaseExpiresAt: { lt: new Date() },
-            },
-            data: {
-                status: "failed",
-                failureCode: "LEASE_EXPIRED",
-                failureMessage: "Execution lease expired — serverless timeout likely",
-                finishedAt: new Date(),
-            },
-        })
-        if (expiredLeaseCount.count > 0) {
-            logger("warn", "Expired stale analysis leases in pre-flight", {
-                count: expiredLeaseCount.count,
+        // Pre-flight: reap stale runs whose serverless lease timed out — they
+        // would block this user's new attempt via the in-flight guard below.
+        // Uses the orchestrator's reaper (NOT an inline updateMany) so the
+        // policy and documents are reset too; the old inline version failed
+        // only the run and left the policy stuck 'analyzing' forever. The
+        // short grace protects a lease mid-handover to a QStash redelivery.
+        try {
+            const { PolicyAnalysisOrchestratorService } = await import(
+                "@/lib/services/analysis/policy-analysis-orchestrator.service"
+            )
+            const preflight = await new PolicyAnalysisOrchestratorService().reapStaleRuns({
+                graceMs: 2 * 60 * 1000,
+                limit: 25,
+            })
+            if (preflight.reaped > 0) {
+                logger("warn", "Reaped stale analysis runs in pre-flight", {
+                    reaped: preflight.reaped,
+                })
+            }
+        } catch (reapError) {
+            // Best-effort: a reaper hiccup must not block a fresh analysis.
+            logger("warn", "Pre-flight stale-run reap failed", {
+                error: reapError instanceof Error ? reapError.message : String(reapError),
             })
         }
 

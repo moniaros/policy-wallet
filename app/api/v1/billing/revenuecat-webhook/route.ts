@@ -5,7 +5,7 @@ import { env } from '@/lib/env';
 import { z } from 'zod';
 import { createApiResponse, createApiError } from "@/lib/api-utils";
 import { withApiGuard } from "@/lib/api-guard";
-import { hasProcessedWebhookEvent, markWebhookEventProcessed } from "@/lib/services/billing/webhook-idempotency";
+import { processWebhookEventOnce } from "@/lib/services/billing/webhook-idempotency";
 import { daysFromNow, SUBSCRIPTION_PERIOD_DAYS } from "@/lib/constants/time";
 
 // PUBLIC_ENDPOINT_AUTH_STRATEGY: bearer_webhook_secret + zod_payload_validation
@@ -62,11 +62,13 @@ export const POST = withApiGuard(
 
         logger('info', 'RevenueCat Webhook Received', { type, userId, productIdentifier });
 
-        const duplicate = await hasProcessedWebhookEvent("revenuecat", idempotencyEventId)
-        if (duplicate) {
-            return createApiResponse({ received: true, duplicate: true });
-        }
-
+        const outcome = await processWebhookEventOnce(
+            {
+                provider: "revenuecat",
+                eventId: idempotencyEventId,
+                sourceRoute: "/api/v1/billing/revenuecat-webhook",
+            },
+            async () => {
         let planId = 'ph-free';
         if (productIdentifier.includes('pro')) planId = 'ph-pro';
         else if (productIdentifier.includes('plus')) planId = 'ph-plus';
@@ -120,15 +122,13 @@ export const POST = withApiGuard(
             default:
                 logger('info', 'Unhandled RevenueCat event type', { type });
         }
+                return { type, userId, productIdentifier }
+            }
+        )
 
-            await markWebhookEventProcessed({
-                provider: "revenuecat",
-                eventId: idempotencyEventId,
-                sourceRoute: "/api/v1/billing/revenuecat-webhook",
-                status: "processed",
-                result: { type, userId, productIdentifier },
-            })
-
+            if (outcome === "duplicate") {
+                return createApiResponse({ received: true, duplicate: true });
+            }
             return createApiResponse({ received: true });
         } catch (error) {
             logger('error', 'RevenueCat Webhook Error', { error });

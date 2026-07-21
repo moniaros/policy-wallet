@@ -6,7 +6,7 @@ import { logger } from '@/lib/logger'
 import { createApiError } from '@/lib/api-utils'
 import { withApiGuard } from '@/lib/api-guard'
 import { withLegacyBillingDeprecationHeaders } from '@/lib/api-deprecation'
-import { hasProcessedWebhookEvent, markWebhookEventProcessed } from '@/lib/services/billing/webhook-idempotency'
+import { processWebhookEventOnce } from '@/lib/services/billing/webhook-idempotency'
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
@@ -50,64 +50,65 @@ export const POST = withApiGuard(
                 ))
             }
 
-            const duplicate = await hasProcessedWebhookEvent("stripe", event.id)
-            if (duplicate) {
+            const outcome = await processWebhookEventOnce(
+                {
+                    provider: "stripe",
+                    eventId: event.id,
+                    sourceRoute: "/api/stripe/webhook",
+                },
+                async () => {
+                    switch (event.type) {
+                        case 'checkout.session.completed':
+                        case 'checkout.session.async_payment_succeeded': {
+                            const session = event.data.object as Stripe.Checkout.Session
+                            const { fulfillCheckoutSession } = await import('@/lib/billing')
+                            await fulfillCheckoutSession(session)
+                            break
+                        }
+
+                        case 'invoice.paid': {
+                            const invoice = event.data.object as Stripe.Invoice
+                            await handleInvoicePaid(invoice)
+                            break
+                        }
+
+                        case 'invoice.payment_failed': {
+                            const invoice = event.data.object as Stripe.Invoice
+                            await handlePaymentFailed(invoice)
+                            break
+                        }
+
+                        case 'customer.subscription.updated': {
+                            const subscription = event.data.object as Stripe.Subscription
+                            await handleSubscriptionUpdated(subscription)
+                            break
+                        }
+
+                        case 'customer.subscription.deleted': {
+                            const subscription = event.data.object as Stripe.Subscription
+                            await handleSubscriptionDeleted(subscription)
+                            break
+                        }
+
+                        case 'payment_intent.succeeded': {
+                            const paymentIntent = event.data.object as Stripe.PaymentIntent
+                            // Only handle token purchases (identified by tokensPurchased metadata)
+                            if (paymentIntent.metadata?.tokensPurchased) {
+                                await handleTokenPurchaseCompleted(paymentIntent)
+                            }
+                            break
+                        }
+
+                        default:
+                            console.log(`Unhandled event type: ${event.type}`)
+                    }
+                    return { eventType: event.type }
+                }
+            )
+
+            if (outcome === "duplicate") {
                 return deprecated(NextResponse.json({ received: true, duplicate: true }))
             }
-
-            // Handle the event
-            switch (event.type) {
-                case 'checkout.session.completed': {
-                    const session = event.data.object as Stripe.Checkout.Session
-                    await handleCheckoutCompleted(session)
-                    break
-                }
-
-                case 'invoice.paid': {
-                    const invoice = event.data.object as Stripe.Invoice
-                    await handleInvoicePaid(invoice)
-                    break
-                }
-
-                case 'invoice.payment_failed': {
-                    const invoice = event.data.object as Stripe.Invoice
-                    await handlePaymentFailed(invoice)
-                    break
-                }
-
-                case 'customer.subscription.updated': {
-                    const subscription = event.data.object as Stripe.Subscription
-                    await handleSubscriptionUpdated(subscription)
-                    break
-                }
-
-                case 'customer.subscription.deleted': {
-                    const subscription = event.data.object as Stripe.Subscription
-                    await handleSubscriptionDeleted(subscription)
-                    break
-                }
-
-                case 'payment_intent.succeeded': {
-                    const paymentIntent = event.data.object as Stripe.PaymentIntent
-                    // Only handle token purchases (identified by tokensPurchased metadata)
-                    if (paymentIntent.metadata?.tokensPurchased) {
-                        await handleTokenPurchaseCompleted(paymentIntent)
-                    }
-                    break
-                }
-
-                default:
-                    console.log(`Unhandled event type: ${event.type}`)
-            }
-
-            await markWebhookEventProcessed({
-                provider: "stripe",
-                eventId: event.id,
-                sourceRoute: "/api/stripe/webhook",
-                status: "processed",
-                result: { eventType: event.type },
-            })
-
             return deprecated(NextResponse.json({ received: true }))
         } catch (error) {
             console.error('Webhook error:', error)
@@ -118,68 +119,6 @@ export const POST = withApiGuard(
         }
     }
 )
-
-async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-    const userId = session.metadata?.userId
-    if (!userId) {
-        console.error('No userId in session metadata', session.id)
-        return
-    }
-
-    // One-off €3 gap-report unlock (mode: payment) — no subscription follows.
-    if (session.metadata?.type === 'report_unlock' && session.metadata?.policyId) {
-        const { fulfillReportUnlockSession } = await import('@/lib/billing')
-        await fulfillReportUnlockSession(session.id, userId, session.metadata.policyId)
-        return
-    }
-
-    const stripeCustomerId = session.customer as string
-    const stripeSubscriptionId = session.subscription as string
-
-    // Update user with stripe customer ID
-    await (prisma.user.update as any)({
-        where: { id: userId },
-        data: { stripeCustomerId }
-    })
-
-    if (stripeSubscriptionId) {
-        const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId) as any
-        const priceId = subscription.items.data[0].price.id
-
-        // Find plan by priceId (stored in metadata usually) or lookup
-        // For now, we'll try to find a plan that matches this price if we had a mapping
-        // Or just update the existing subscription record
-
-        await (prisma.subscription.updateMany as any)({
-            where: { userId, status: 'active' },
-            data: { status: 'past_due' } // Deactivate old ones
-        })
-
-        if (subscription.status === 'canceled') {
-            console.log(`Subscription ${stripeSubscriptionId} is canceled, skipping creation`)
-            return
-        }
-
-        const sub = subscription as any
-
-        // Create new subscription record
-        await (prisma.subscription.create as any)({
-            data: {
-                userId,
-                planId: (session.metadata?.planId as string) || 'ph-plus',
-                stripeSubscriptionId,
-                stripePriceId: priceId,
-                stripeStatus: sub.status,
-                status: 'active',
-                currentPeriodStart: new Date(sub.current_period_start * 1000),
-                currentPeriodEnd: new Date(sub.current_period_end * 1000),
-                autoRenew: !sub.cancel_at_period_end
-            }
-        })
-    }
-
-    console.log(`Checkout completed for user ${userId}`)
-}
 
 async function handleInvoicePaid(invoice: any) {
     const stripeSubscriptionId = invoice.subscription as string

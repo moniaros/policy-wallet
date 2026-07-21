@@ -74,8 +74,11 @@ function analyzeAuthSignals(content) {
   const withApiGuardWebhook = /auth\s*:\s*\{\s*mode\s*:\s*["']webhook["']/.test(content);
   const withApiGuardRole = /auth\s*:\s*\{\s*mode\s*:\s*["']user["'][\s\S]*?roles\s*:/.test(content);
 
-  const requireApiUser = /requireApiUser\s*\(/.test(content);
-  const requireApiUserRole = /requireApiUser\s*\(\s*\{[\s\S]*?roles\s*:/.test(content);
+  // authorizeCronRequest (lib/api-auth) wraps CRON_SECRET + requireApiUser
+  // with roles ['admin'] — treat it as a role-guarded signal.
+  const authorizeCron = /authorizeCronRequest\s*\(/.test(content);
+  const requireApiUser = /requireApiUser\s*\(/.test(content) || authorizeCron;
+  const requireApiUserRole = /requireApiUser\s*\(\s*\{[\s\S]*?roles\s*:/.test(content) || authorizeCron;
 
   const authHelpersUser = /getAuthenticatedUserOrNull\s*\(/.test(content);
   const authHelpersRole = /roles\??\s*\.\s*includes\(\s*["'](?:admin|agent|policyholder)["']\s*\)/.test(content);

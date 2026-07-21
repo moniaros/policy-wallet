@@ -1,4 +1,5 @@
-import { db } from "./db"
+import type Stripe from "stripe"
+import { db, isUniqueConstraintViolation } from "./db"
 import { stripe } from "./stripe"
 import { daysFromNow, SUBSCRIPTION_PERIOD_DAYS } from "@/lib/constants/time"
 import { TOKEN_PACKAGES, type TokenPackageKey } from "@/lib/billing/token-packages"
@@ -384,6 +385,54 @@ export async function persistStripeCustomerId(
 /**
  * Handle Webhook logic
  */
+/**
+ * Expire any still-active prior subscriptions of the same plan type and
+ * best-effort cancel them on Stripe. Called from BOTH the fresh-grant path and
+ * the already-granted short-circuits, so a crash between the grant transaction
+ * and the remote cancels converges on the next call (webhook retry or the
+ * /upgrade/success page) instead of double-billing forever.
+ */
+async function expireAndCancelPriorSubscriptions(
+    userId: string,
+    planType: string,
+    excludeStripeSubscriptionId?: string | null
+) {
+    const priors = await db.subscription.findMany({
+        where: {
+            userId,
+            status: "active",
+            plan: { planType },
+            ...(excludeStripeSubscriptionId
+                ? { NOT: { stripeSubscriptionId: excludeStripeSubscriptionId } }
+                : {}),
+        },
+        select: { id: true, stripeSubscriptionId: true },
+    })
+    if (!priors.length) return
+    await db.subscription.updateMany({
+        where: { id: { in: priors.map((p) => p.id) } },
+        data: { status: "expired", autoRenew: false },
+    })
+    await cancelPriorStripeSubscriptions(priors)
+}
+
+async function cancelPriorStripeSubscriptions(
+    priors: Array<{ stripeSubscriptionId: string | null }>
+) {
+    for (const prior of priors) {
+        if (!prior.stripeSubscriptionId) continue
+        try {
+            await stripe.subscriptions.cancel(prior.stripeSubscriptionId)
+        } catch (error) {
+            // Already canceled / gone on Stripe's side — expired locally anyway
+            logger("warn", "Prior Stripe subscription cancel failed", {
+                stripeSubscriptionId: prior.stripeSubscriptionId,
+                error: error instanceof Error ? error.message : String(error),
+            })
+        }
+    }
+}
+
 export async function handleSubscriptionSuccess(
     userId: string,
     planId: string,
@@ -394,13 +443,18 @@ export async function handleSubscriptionSuccess(
     if (!plan) return
 
     // Idempotent: the webhook AND the /upgrade/success page both call this —
-    // whichever runs first wins, the other is a no-op.
+    // whichever runs first wins. The loser still converges the prior-plan
+    // cleanup, in case the winner crashed after committing the grant but
+    // before the remote cancels.
     if (stripeSubscriptionId) {
         const existing = await db.subscription.findUnique({
             where: { stripeSubscriptionId },
             select: { id: true },
         })
-        if (existing) return
+        if (existing) {
+            await expireAndCancelPriorSubscriptions(userId, plan.planType, stripeSubscriptionId)
+            return
+        }
     }
 
     // Mirror Stripe's real billing period. The old hardcoded +30 days gave
@@ -413,6 +467,16 @@ export async function handleSubscriptionSuccess(
     if (stripeSubscriptionId) {
         try {
             const stripeSub = await stripe.subscriptions.retrieve(stripeSubscriptionId)
+            // Checkout completed but the subscription is already gone (instant
+            // cancel/refund, or the deletion event arrived first): granting an
+            // active local row here would resurrect entitlement nothing revokes.
+            if (stripeSub.status === "canceled" || stripeSub.status === "incomplete_expired") {
+                logger("warn", "Stripe subscription already canceled at grant time; not creating", {
+                    stripeSubscriptionId,
+                    stripeStatus: stripeSub.status,
+                })
+                return
+            }
             const period = extractSubscriptionPeriod(stripeSub)
             if (period.start) currentPeriodStart = period.start
             if (period.end) currentPeriodEnd = period.end
@@ -442,35 +506,48 @@ export async function handleSubscriptionSuccess(
         },
         select: { id: true, stripeSubscriptionId: true },
     })
-    for (const prior of priors) {
-        if (prior.stripeSubscriptionId) {
-            try {
-                await stripe.subscriptions.cancel(prior.stripeSubscriptionId)
-            } catch (error) {
-                // Already canceled / gone on Stripe's side — expire locally anyway
-                logger("warn", "Prior Stripe subscription cancel failed", {
-                    stripeSubscriptionId: prior.stripeSubscriptionId,
-                    error: error instanceof Error ? error.message : String(error),
+
+    // Grant before revoke, atomically: the replacement row is created in the
+    // same transaction that expires the priors, so no failure ordering can
+    // leave the payer with nothing. A P2002 on stripeSubscriptionId means a
+    // concurrent caller (webhook vs /upgrade/success page) already granted —
+    // roll back untouched and let their write stand.
+    try {
+        await db.$transaction([
+            db.subscription.create({
+                data: {
+                    userId,
+                    planId,
+                    status: 'active',
+                    stripeSubscriptionId: stripeSubscriptionId || null,
+                    currentPeriodStart,
+                    currentPeriodEnd,
+                    autoRenew,
+                }
+            }),
+            ...priors.map((prior) =>
+                db.subscription.update({
+                    where: { id: prior.id },
+                    data: { status: "expired", autoRenew: false },
                 })
-            }
+            ),
+        ])
+    } catch (error) {
+        if (isUniqueConstraintViolation(error)) {
+            logger("info", "Subscription already granted by a concurrent caller, converging priors", {
+                stripeSubscriptionId: stripeSubscriptionId || null,
+            })
+            await expireAndCancelPriorSubscriptions(userId, plan.planType, stripeSubscriptionId)
+            return
         }
-        await db.subscription.update({
-            where: { id: prior.id },
-            data: { status: "expired", autoRenew: false },
-        })
+        throw error
     }
 
-    await db.subscription.create({
-        data: {
-            userId,
-            planId,
-            status: 'active',
-            stripeSubscriptionId: stripeSubscriptionId || null,
-            currentPeriodStart,
-            currentPeriodEnd,
-            autoRenew,
-        }
-    })
+    // Cancel superseded Stripe subscriptions AFTER the local grant is durable —
+    // best-effort; a failure here never affects the new entitlement, and any
+    // later call for this stripeSubscriptionId re-attempts via the
+    // existing-row convergence above.
+    await cancelPriorStripeSubscriptions(priors)
 
     // Log Activity
     await (db.activityLog as any).create({
@@ -483,4 +560,65 @@ export async function handleSubscriptionSuccess(
     })
 
     await recordConversionEvent(userId, "checkout_completed", { plan: planId })
+}
+
+/**
+ * Single fulfillment path for a Stripe Checkout session — used by BOTH webhook
+ * endpoints (legacy /api/stripe/webhook and /api/v1/billing/webhook) for
+ * checkout.session.completed AND checkout.session.async_payment_succeeded, so
+ * payment-status rules can't diverge between routes.
+ *
+ * Unpaid sessions are skipped without granting: delayed-notification payment
+ * methods complete the session first and confirm payment later via
+ * async_payment_succeeded, which re-enters here with payment_status 'paid'.
+ */
+export async function fulfillCheckoutSession(session: Stripe.Checkout.Session) {
+    const metadata = session.metadata || {}
+    const userId = metadata.userId
+    if (!userId) {
+        logger("warn", "Checkout session has no userId metadata; nothing to fulfill", {
+            sessionId: session.id,
+        })
+        return
+    }
+
+    const customerId = extractStripeCustomerId(session.customer)
+    await persistStripeCustomerId(userId, customerId)
+
+    if (session.payment_status !== "paid" && session.payment_status !== "no_payment_required") {
+        logger("warn", "Checkout session not paid yet; deferring fulfillment to async payment event", {
+            sessionId: session.id,
+            paymentStatus: session.payment_status,
+        })
+        return
+    }
+
+    // One-off €3 gap-report unlock (mode: payment) — no subscription follows.
+    if (metadata.type === "report_unlock" && metadata.policyId) {
+        await fulfillReportUnlockSession(session.id, userId, metadata.policyId)
+        return
+    }
+
+    // One-off token-pack checkout (mode: payment).
+    if (metadata.tokensPurchased) {
+        await fulfillTokenPurchaseSession(session.id, userId, parseInt(metadata.tokensPurchased, 10))
+        return
+    }
+
+    const stripeSubscriptionId =
+        typeof session.subscription === "string" ? session.subscription : session.subscription?.id
+    if (!stripeSubscriptionId) return
+
+    // Legacy checkout sessions (pre-metadata clients) carry no planId; they
+    // were always granted the base plus plan — keep that grant rather than
+    // silently leaving a payer unentitled.
+    const planId = metadata.planId || "ph-plus"
+    if (!metadata.planId) {
+        logger("warn", "Checkout session missing planId metadata; falling back to ph-plus", {
+            sessionId: session.id,
+            stripeSubscriptionId,
+        })
+    }
+
+    await handleSubscriptionSuccess(userId, planId, stripeSubscriptionId, customerId)
 }
