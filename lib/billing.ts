@@ -442,35 +442,57 @@ export async function handleSubscriptionSuccess(
         },
         select: { id: true, stripeSubscriptionId: true },
     })
+
+    // Grant before revoke, atomically: the replacement row is created in the
+    // same transaction that expires the priors, so no failure ordering can
+    // leave the payer with nothing. A P2002 on stripeSubscriptionId means a
+    // concurrent caller (webhook vs /upgrade/success page) already granted —
+    // roll back untouched and let their write stand.
+    try {
+        await db.$transaction([
+            db.subscription.create({
+                data: {
+                    userId,
+                    planId,
+                    status: 'active',
+                    stripeSubscriptionId: stripeSubscriptionId || null,
+                    currentPeriodStart,
+                    currentPeriodEnd,
+                    autoRenew,
+                }
+            }),
+            ...priors.map((prior) =>
+                db.subscription.update({
+                    where: { id: prior.id },
+                    data: { status: "expired", autoRenew: false },
+                })
+            ),
+        ])
+    } catch (error) {
+        if ((error as { code?: string })?.code === "P2002") {
+            logger("info", "Subscription already granted by a concurrent caller, skipping", {
+                stripeSubscriptionId: stripeSubscriptionId || null,
+            })
+            return
+        }
+        throw error
+    }
+
+    // Cancel superseded Stripe subscriptions AFTER the local grant is durable —
+    // best-effort; a failure here never affects the new entitlement.
     for (const prior of priors) {
         if (prior.stripeSubscriptionId) {
             try {
                 await stripe.subscriptions.cancel(prior.stripeSubscriptionId)
             } catch (error) {
-                // Already canceled / gone on Stripe's side — expire locally anyway
+                // Already canceled / gone on Stripe's side — expired locally anyway
                 logger("warn", "Prior Stripe subscription cancel failed", {
                     stripeSubscriptionId: prior.stripeSubscriptionId,
                     error: error instanceof Error ? error.message : String(error),
                 })
             }
         }
-        await db.subscription.update({
-            where: { id: prior.id },
-            data: { status: "expired", autoRenew: false },
-        })
     }
-
-    await db.subscription.create({
-        data: {
-            userId,
-            planId,
-            status: 'active',
-            stripeSubscriptionId: stripeSubscriptionId || null,
-            currentPeriodStart,
-            currentPeriodEnd,
-            autoRenew,
-        }
-    })
 
     // Log Activity
     await (db.activityLog as any).create({

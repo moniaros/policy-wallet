@@ -5,7 +5,7 @@ import { env } from '@/lib/env';
 import { z } from 'zod';
 import { createApiResponse, createApiError } from "@/lib/api-utils";
 import { withApiGuard } from "@/lib/api-guard";
-import { hasProcessedWebhookEvent, markWebhookEventProcessed } from "@/lib/services/billing/webhook-idempotency";
+import { claimWebhookEvent, markWebhookEventProcessed, releaseWebhookEventClaim } from "@/lib/services/billing/webhook-idempotency";
 import { daysFromNow, SUBSCRIPTION_PERIOD_DAYS } from "@/lib/constants/time";
 
 // PUBLIC_ENDPOINT_AUTH_STRATEGY: bearer_webhook_secret + zod_payload_validation
@@ -62,11 +62,16 @@ export const POST = withApiGuard(
 
         logger('info', 'RevenueCat Webhook Received', { type, userId, productIdentifier });
 
-        const duplicate = await hasProcessedWebhookEvent("revenuecat", idempotencyEventId)
-        if (duplicate) {
+        const claimed = await claimWebhookEvent({
+            provider: "revenuecat",
+            eventId: idempotencyEventId,
+            sourceRoute: "/api/v1/billing/revenuecat-webhook",
+        })
+        if (!claimed) {
             return createApiResponse({ received: true, duplicate: true });
         }
 
+        try {
         let planId = 'ph-free';
         if (productIdentifier.includes('pro')) planId = 'ph-pro';
         else if (productIdentifier.includes('plus')) planId = 'ph-plus';
@@ -119,6 +124,11 @@ export const POST = withApiGuard(
 
             default:
                 logger('info', 'Unhandled RevenueCat event type', { type });
+        }
+        } catch (handlerError) {
+            // Release the claim so RevenueCat's retry is not swallowed as a duplicate.
+            await releaseWebhookEventClaim("revenuecat", idempotencyEventId).catch(() => {})
+            throw handlerError
         }
 
             await markWebhookEventProcessed({

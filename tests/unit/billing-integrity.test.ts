@@ -35,6 +35,7 @@ vi.mock('@/lib/db', () => ({
             updateMany: (...a: unknown[]) => subUpdateMany(...a),
         },
         activityLog: { create: (...a: unknown[]) => activityCreate(...a) },
+        $transaction: async (ops: unknown) => (Array.isArray(ops) ? Promise.all(ops) : undefined),
     },
 }))
 vi.mock('@/lib/stripe', () => ({
@@ -173,6 +174,52 @@ describe('handleSubscriptionSuccess', () => {
 
         expect(subCreate).not.toHaveBeenCalled()
         expect(userUpdateMany).not.toHaveBeenCalled()
+    })
+
+    it('grants before revoking: prior subs expire in the same transaction, Stripe cancel comes after', async () => {
+        planFindUnique.mockResolvedValue(plan)
+        subFindUnique.mockResolvedValue(null)
+        subFindMany.mockResolvedValue([{ id: 'prior-1', stripeSubscriptionId: 'sub_old' }])
+        stripeSubRetrieve.mockResolvedValue({
+            customer: 'cus_1',
+            status: 'active',
+            cancel_at_period_end: false,
+            current_period_start: nowSec,
+            current_period_end: nowSec + 30 * 24 * 60 * 60,
+        })
+        stripeSubCancel.mockResolvedValue({})
+
+        await handleSubscriptionSuccess('user-1', 'ph-plus', 'sub_new')
+
+        expect(subCreate).toHaveBeenCalledTimes(1)
+        expect(subUpdate).toHaveBeenCalledWith({
+            where: { id: 'prior-1' },
+            data: { status: 'expired', autoRenew: false },
+        })
+        // The remote cancel must happen only after the local grant is durable.
+        expect(stripeSubCancel).toHaveBeenCalledWith('sub_old')
+        expect(stripeSubCancel.mock.invocationCallOrder[0]).toBeGreaterThan(
+            subCreate.mock.invocationCallOrder[0]
+        )
+    })
+
+    it('treats a P2002 on create as a concurrent grant: no throw, no Stripe cancel', async () => {
+        planFindUnique.mockResolvedValue(plan)
+        subFindUnique.mockResolvedValue(null)
+        subFindMany.mockResolvedValue([{ id: 'prior-1', stripeSubscriptionId: 'sub_old' }])
+        stripeSubRetrieve.mockResolvedValue({
+            customer: 'cus_1',
+            status: 'active',
+            cancel_at_period_end: false,
+            current_period_start: nowSec,
+            current_period_end: nowSec + 30 * 24 * 60 * 60,
+        })
+        subCreate.mockRejectedValue(Object.assign(new Error('unique'), { code: 'P2002' }))
+
+        await expect(handleSubscriptionSuccess('user-1', 'ph-plus', 'sub_race')).resolves.toBeUndefined()
+
+        expect(stripeSubCancel).not.toHaveBeenCalled()
+        expect(activityCreate).not.toHaveBeenCalled()
     })
 })
 

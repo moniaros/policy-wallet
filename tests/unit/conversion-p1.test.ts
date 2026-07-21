@@ -7,6 +7,7 @@ vi.mock('@/lib/db', () => ({
         subscription: { findUnique: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn() },
         activityLog: { create: vi.fn() },
         notificationEvent: { create: vi.fn() },
+        $transaction: vi.fn(async (ops: any) => (Array.isArray(ops) ? Promise.all(ops) : undefined)),
     },
 }))
 vi.mock('@/lib/stripe', () => ({

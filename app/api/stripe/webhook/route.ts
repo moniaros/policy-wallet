@@ -6,7 +6,7 @@ import { logger } from '@/lib/logger'
 import { createApiError } from '@/lib/api-utils'
 import { withApiGuard } from '@/lib/api-guard'
 import { withLegacyBillingDeprecationHeaders } from '@/lib/api-deprecation'
-import { hasProcessedWebhookEvent, markWebhookEventProcessed } from '@/lib/services/billing/webhook-idempotency'
+import { claimWebhookEvent, markWebhookEventProcessed, releaseWebhookEventClaim } from '@/lib/services/billing/webhook-idempotency'
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
@@ -50,11 +50,16 @@ export const POST = withApiGuard(
                 ))
             }
 
-            const duplicate = await hasProcessedWebhookEvent("stripe", event.id)
-            if (duplicate) {
+            const claimed = await claimWebhookEvent({
+                provider: "stripe",
+                eventId: event.id,
+                sourceRoute: "/api/stripe/webhook",
+            })
+            if (!claimed) {
                 return deprecated(NextResponse.json({ received: true, duplicate: true }))
             }
 
+            try {
             // Handle the event
             switch (event.type) {
                 case 'checkout.session.completed': {
@@ -100,6 +105,12 @@ export const POST = withApiGuard(
                     console.log(`Unhandled event type: ${event.type}`)
             }
 
+            } catch (handlerError) {
+                // Release the claim so Stripe's retry is not swallowed as a duplicate.
+                await releaseWebhookEventClaim("stripe", event.id).catch(() => {})
+                throw handlerError
+            }
+
             await markWebhookEventProcessed({
                 provider: "stripe",
                 eventId: event.id,
@@ -133,52 +144,40 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         return
     }
 
-    const stripeCustomerId = session.customer as string
-    const stripeSubscriptionId = session.subscription as string
+    const { extractStripeCustomerId, handleSubscriptionSuccess, persistStripeCustomerId } =
+        await import('@/lib/billing')
 
-    // Update user with stripe customer ID
-    await (prisma.user.update as any)({
-        where: { id: userId },
-        data: { stripeCustomerId }
-    })
+    const stripeCustomerId = extractStripeCustomerId(session.customer)
+    await persistStripeCustomerId(userId, stripeCustomerId)
 
-    if (stripeSubscriptionId) {
-        const subscription = await stripe.subscriptions.retrieve(stripeSubscriptionId) as any
-        const priceId = subscription.items.data[0].price.id
+    const stripeSubscriptionId = session.subscription as string | null
+    if (!stripeSubscriptionId) return
 
-        // Find plan by priceId (stored in metadata usually) or lookup
-        // For now, we'll try to find a plan that matches this price if we had a mapping
-        // Or just update the existing subscription record
-
-        await (prisma.subscription.updateMany as any)({
-            where: { userId, status: 'active' },
-            data: { status: 'past_due' } // Deactivate old ones
+    // Unpaid sessions must not grant entitlement (trials report no_payment_required).
+    if (session.payment_status !== 'paid' && session.payment_status !== 'no_payment_required') {
+        logger('warn', 'Legacy checkout webhook: session completed without payment, skipping', {
+            sessionId: session.id,
+            paymentStatus: session.payment_status,
         })
-
-        if (subscription.status === 'canceled') {
-            console.log(`Subscription ${stripeSubscriptionId} is canceled, skipping creation`)
-            return
-        }
-
-        const sub = subscription as any
-
-        // Create new subscription record
-        await (prisma.subscription.create as any)({
-            data: {
-                userId,
-                planId: (session.metadata?.planId as string) || 'ph-plus',
-                stripeSubscriptionId,
-                stripePriceId: priceId,
-                stripeStatus: sub.status,
-                status: 'active',
-                currentPeriodStart: new Date(sub.current_period_start * 1000),
-                currentPeriodEnd: new Date(sub.current_period_end * 1000),
-                autoRenew: !sub.cancel_at_period_end
-            }
-        })
+        return
     }
 
-    console.log(`Checkout completed for user ${userId}`)
+    const planId = session.metadata?.planId
+    if (!planId) {
+        // The old fallback here invented 'ph-plus', which is not a real plan row.
+        logger('error', 'Legacy checkout webhook: no planId in session metadata, cannot grant', {
+            sessionId: session.id,
+            stripeSubscriptionId,
+        })
+        return
+    }
+
+    // Canonical grant path (same as /api/v1/billing/webhook): idempotent by
+    // stripeSubscriptionId, creates the replacement BEFORE expiring priors, and
+    // mirrors Stripe's real billing period. The previous inline version demoted
+    // every active subscription to past_due before creating the new row — a
+    // throw in between left the payer unentitled.
+    await handleSubscriptionSuccess(userId, planId, stripeSubscriptionId, stripeCustomerId)
 }
 
 async function handleInvoicePaid(invoice: any) {

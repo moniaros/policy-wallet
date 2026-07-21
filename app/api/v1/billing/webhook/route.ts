@@ -4,7 +4,7 @@ import { extractStripeCustomerId, fulfillReportUnlockSession, fulfillTokenPurcha
 import { handleStripeLifecycleEvent, isStripeLifecycleEvent } from "@/lib/services/billing/stripe-lifecycle";
 import { createApiResponse, createApiError } from "@/lib/api-utils";
 import { withApiGuard } from "@/lib/api-guard";
-import { hasProcessedWebhookEvent, markWebhookEventProcessed } from "@/lib/services/billing/webhook-idempotency";
+import { claimWebhookEvent, markWebhookEventProcessed, releaseWebhookEventClaim } from "@/lib/services/billing/webhook-idempotency";
 import { recordConversionEvent } from "@/lib/journey/conversion-events";
 
 // PUBLIC_ENDPOINT_AUTH_STRATEGY: stripe_signature_verification + secret_key_validation
@@ -45,12 +45,19 @@ export const POST = withApiGuard(
             return createApiError("BAD_REQUEST", `Webhook Error: ${error.message}`, 400)
         }
 
-        const duplicate = await hasProcessedWebhookEvent("stripe", event.id)
-        if (duplicate) {
+        // Atomic claim: concurrent redeliveries of the same event both passed
+        // the old check-then-mark and double-processed; exactly one claims now.
+        const claimed = await claimWebhookEvent({
+            provider: "stripe",
+            eventId: event.id,
+            sourceRoute: "/api/v1/billing/webhook",
+        })
+        if (!claimed) {
             return createApiResponse({ received: true, duplicate: true })
         }
 
         const session = event.data.object as any
+        try {
         if (event.type === "checkout.session.completed") {
             const { userId, planId, tokensPurchased, type, policyId } = session.metadata || {}
             const customerId = extractStripeCustomerId(session.customer)
@@ -84,6 +91,11 @@ export const POST = withApiGuard(
             // (incl. the billing portal) — previously only the deprecated
             // /api/stripe/webhook synced these.
             await handleStripeLifecycleEvent(event)
+        }
+        } catch (handlerError) {
+            // Release the claim so Stripe's retry is not swallowed as a duplicate.
+            await releaseWebhookEventClaim("stripe", event.id).catch(() => {})
+            throw handlerError
         }
 
         await markWebhookEventProcessed({
