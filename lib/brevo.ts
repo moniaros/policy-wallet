@@ -27,6 +27,8 @@ export async function deleteBrevoContact(email: string): Promise<boolean> {
             "api-key": process.env.BREVO_API_KEY,
             "accept": "application/json",
         },
+        // A hung Brevo connection must not eat the serverless budget.
+        signal: AbortSignal.timeout(15_000),
     })
 
     if (response.status === 404) {
@@ -56,6 +58,7 @@ export async function createBrevoContact(contact: BrevoContact) {
                 "Content-Type": "application/json",
                 "accept": "application/json",
             },
+            signal: AbortSignal.timeout(15_000),
             body: JSON.stringify({
                 email: contact.email,
                 attributes: contact.attributes,

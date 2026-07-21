@@ -147,8 +147,13 @@ export class OpenAIAIService implements IAIService {
         })
 
         const result = await withTimeoutAndRetry(
-            () =>
+            (signal) =>
                 generateObject({
+                    // Propagate the wrapper's timeout abort so a timed-out call stops
+                    // billing; the wrapper owns retries (SDK default of 2 multiplied
+                    // every layer's attempts).
+                    abortSignal: signal,
+                    maxRetries: 0,
                     model: this.aiProvider!(modelName as string),
                     schema: ExtractionSchema,
                     messages: [
@@ -253,8 +258,13 @@ export class OpenAIAIService implements IAIService {
         }
 
         const result = await withTimeoutAndRetry(
-            () =>
+            (signal) =>
                 generateObject({
+                    // Propagate the wrapper's timeout abort so a timed-out call stops
+                    // billing; the wrapper owns retries (SDK default of 2 multiplied
+                    // every layer's attempts).
+                    abortSignal: signal,
+                    maxRetries: 0,
                     model: this.aiProvider!(modelName as string),
                     schema: GapAnalysisSchema,
                     messages: [{ role: "user", content: parts }],
@@ -367,8 +377,13 @@ export class OpenAIAIService implements IAIService {
         }
 
         const result = await withTimeoutAndRetry(
-            () =>
+            (signal) =>
                 generateObject({
+                    // Propagate the wrapper's timeout abort so a timed-out call stops
+                    // billing; the wrapper owns retries (SDK default of 2 multiplied
+                    // every layer's attempts).
+                    abortSignal: signal,
+                    maxRetries: 0,
                     model: this.aiProvider!(modelName as string),
                     schema: ClaritySchema,
                     messages: [{ role: "user", content: parts }],
@@ -421,8 +436,13 @@ export class OpenAIAIService implements IAIService {
         }
 
         const result = await withTimeoutAndRetry(
-            () =>
+            (signal) =>
                 generateText({
+                    // Propagate the wrapper's timeout abort so a timed-out call stops
+                    // billing; the wrapper owns retries (SDK default of 2 multiplied
+                    // every layer's attempts).
+                    abortSignal: signal,
+                    maxRetries: 0,
                     model: this.aiProvider!(modelName as string),
                     messages: [{ role: "user", content: parts }],
                     temperature: 0.3,
@@ -483,7 +503,12 @@ export class OpenAIAIService implements IAIService {
 
         try {
             const result = await withTimeoutAndRetry(
-                () => generateObject({
+                (signal) => generateObject({
+                  // Propagate the wrapper's timeout abort so a timed-out call stops
+                  // billing; the wrapper owns retries (SDK default of 2 multiplied
+                  // every layer's attempts).
+                  abortSignal: signal,
+                  maxRetries: 0,
                     model: this.aiProvider!(modelName),
                     schema: RiskProfileAnalysisSchema,
                     messages: [{ role: "user", content: prompt }],

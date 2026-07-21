@@ -19,21 +19,34 @@ export function matchesAnyPattern(value: string, patterns: string[]): boolean {
 }
 
 /**
- * Determines if an error is transient and worth retrying
+ * Determines if an error is transient and worth retrying.
+ *
+ * Structured signals win: the `ai` SDK's APICallError carries the HTTP status
+ * and its own retryability verdict. Message matching is only the fallback,
+ * with anchored status codes — the old bare `includes('500')`/`'aborted'`
+ * matched those substrings anywhere (ids, validation text) and retried
+ * permanent failures.
  */
 export function isTransientError(error: unknown): boolean {
     if (!(error instanceof Error)) return false
+
+    const status = (error as Error & { statusCode?: unknown }).statusCode
+    if (typeof status === 'number') {
+        return status === 408 || status === 409 || status === 429 || status >= 500
+    }
+    const retryable = (error as Error & { isRetryable?: unknown }).isRetryable
+    if (typeof retryable === 'boolean') return retryable
+
+    // The wrapper's own timeout abort and fetch/undici aborts.
+    if (error.name === 'AbortError' || error.name === 'TimeoutError') return true
+
     const msg = error.message.toLowerCase()
     return (
         msg.includes('timeout') ||
         msg.includes('timed out') ||
-        msg.includes('aborted') ||
         msg.includes('deadline') ||
-        msg.includes('429') ||
-        msg.includes('500') ||
-        msg.includes('503') ||
+        /\b(429|500|502|503|504)\b/.test(msg) ||
         msg.includes('service unavailable') ||
-        msg.includes('internal') ||
         msg.includes('temporarily') ||
         msg.includes('overloaded')
     )

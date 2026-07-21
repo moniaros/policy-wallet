@@ -96,53 +96,55 @@ export async function createPolicy(formData: FormData) {
     // Determine default status based on uploads
     const initialStatus = documentUrls.length > 0 ? 'analyzing' : 'active'
 
-    const policy = await db.policy.create({
-        data: {
-            ownerUserId: userId,
-            createdByUserId: userId,
-            insurerName: validatedData.insurerName,
-            policyNumber: validatedData.policyNumber,
-            lineOfBusiness: validatedData.lineOfBusiness,
-            startDate: new Date(validatedData.startDate),
-            endDate: new Date(validatedData.endDate),
-            coverageEndDate: new Date(validatedData.endDate),
-            premiumAmount: validatedData.premiumAmount,
-            status: initialStatus,
-        }
-    })
+    // Policy + documents in ONE transaction: a crash between the two writes
+    // left a zero-document policy stuck 'analyzing' with nothing to analyze.
+    const policy = await db.$transaction(async (tx) => {
+        const created = await tx.policy.create({
+            data: {
+                ownerUserId: userId,
+                createdByUserId: userId,
+                insurerName: validatedData.insurerName,
+                policyNumber: validatedData.policyNumber,
+                lineOfBusiness: validatedData.lineOfBusiness,
+                startDate: new Date(validatedData.startDate),
+                endDate: new Date(validatedData.endDate),
+                coverageEndDate: new Date(validatedData.endDate),
+                premiumAmount: validatedData.premiumAmount,
+                status: initialStatus,
+            }
+        })
 
-    // Handle files
-    for (let i = 0; i < documentUrls.length; i++) {
-        const fileUrl = documentUrls[i]
-        // Display metadata only — sanitized (Greek-safe), never used as a key.
-        const fileName = sanitizeDisplayName(documentNames[i] || "Unknown Document")
-        const fileSize = parseInt(documentSizes[i] || "0")
+        // Handle files
+        for (let i = 0; i < documentUrls.length; i++) {
+            const fileUrl = documentUrls[i]
+            // Display metadata only — sanitized (Greek-safe), never used as a key.
+            const fileName = sanitizeDisplayName(documentNames[i] || "Unknown Document")
+            const fileSize = parseInt(documentSizes[i] || "0")
 
-        // The bytes were uploaded to storage client-side; only persist a
-        // reference that actually points at one of OUR storage objects — never
-        // an arbitrary client-supplied URL.
-        if (!fileUrl || !isOwnedStorageUrl(fileUrl)) {
-            logger('warn', 'Skipping policy document with untrusted URL')
-            continue
-        }
+            // The bytes were uploaded to storage client-side; only persist a
+            // reference that actually points at one of OUR storage objects — never
+            // an arbitrary client-supplied URL.
+            if (!fileUrl || !isOwnedStorageUrl(fileUrl)) {
+                logger('warn', 'Skipping policy document with untrusted URL')
+                continue
+            }
 
-        // Security: validate extension on the (original) display name.
-        const lowerName = fileName.toLowerCase()
-        const hasValidExt = lowerName.endsWith('.pdf') ||
-            lowerName.endsWith('.jpg') ||
-            lowerName.endsWith('.jpeg') ||
-            lowerName.endsWith('.png') ||
-            lowerName.endsWith('.webp')
+            // Security: validate extension on the (original) display name.
+            const lowerName = fileName.toLowerCase()
+            const hasValidExt = lowerName.endsWith('.pdf') ||
+                lowerName.endsWith('.jpg') ||
+                lowerName.endsWith('.jpeg') ||
+                lowerName.endsWith('.png') ||
+                lowerName.endsWith('.webp')
 
-        if (!hasValidExt) {
-            logger('warn', 'Skipping policy document with invalid extension')
-            continue
-        }
+            if (!hasValidExt) {
+                logger('warn', 'Skipping policy document with invalid extension')
+                continue
+            }
 
-        {
-            await db.policyDocument.create({
+            await tx.policyDocument.create({
                 data: {
-                    policyId: policy.id,
+                    policyId: created.id,
                     fileUrl: fileUrl,
                     fileName: fileName,
                     fileSize: fileSize,
@@ -152,7 +154,9 @@ export async function createPolicy(formData: FormData) {
                 }
             })
         }
-    }
+
+        return created
+    })
 
     // Trigger analysis if needed
     if (initialStatus === 'analyzing') {

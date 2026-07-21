@@ -200,7 +200,12 @@ extractionConfidence.fields MUST include a 0-100 score for every extracted field
 ${schemaPromptBlock(ExtractionSchema)}`
 
       const result = await withTimeoutAndRetry(
-        () => generateObject({
+        (signal) => generateObject({
+          // Propagate the wrapper's timeout abort so a timed-out call stops
+          // billing; the wrapper owns retries (SDK default of 2 multiplied
+          // every layer's attempts).
+          abortSignal: signal,
+          maxRetries: 0,
           model: this.aiProvider!(modelName as string),
           output: 'no-schema',
           messages: [
@@ -348,7 +353,12 @@ ${schemaPromptBlock(ExtractionSchema)}`
       parts.push({ type: 'text', text: schemaPromptBlock(GapAnalysisSchema) })
 
       const result = await withTimeoutAndRetry(
-        () => generateObject({
+        (signal) => generateObject({
+          // Propagate the wrapper's timeout abort so a timed-out call stops
+          // billing; the wrapper owns retries (SDK default of 2 multiplied
+          // every layer's attempts).
+          abortSignal: signal,
+          maxRetries: 0,
           model: this.aiProvider!(modelName as string),
           output: 'no-schema',
           messages: [{ role: 'user', content: parts }],
@@ -503,7 +513,12 @@ ${schemaPromptBlock(ExtractionSchema)}`
     parts.push({ type: 'text', text: schemaPromptBlock(ClaritySchema) })
 
     const result = await withTimeoutAndRetry(
-      () => generateObject({
+      (signal) => generateObject({
+        // Propagate the wrapper's timeout abort so a timed-out call stops
+        // billing; the wrapper owns retries (SDK default of 2 multiplied
+        // every layer's attempts).
+        abortSignal: signal,
+        maxRetries: 0,
         model: this.aiProvider!(modelName as string),
         output: 'no-schema',
         messages: [{ role: 'user', content: parts }],
@@ -578,7 +593,12 @@ ${schemaPromptBlock(ExtractionSchema)}`
       }
 
       const result = await withTimeoutAndRetry(
-        () => generateText({
+        (signal) => generateText({
+          // Propagate the wrapper's timeout abort so a timed-out call stops
+          // billing; the wrapper owns retries (SDK default of 2 multiplied
+          // every layer's attempts).
+          abortSignal: signal,
+          maxRetries: 0,
           model,
           messages: [{ role: 'user', content: parts }],
           temperature: 0.3
@@ -658,7 +678,12 @@ ${schemaPromptBlock(ExtractionSchema)}`
 
     try {
       const result = await withTimeoutAndRetry(
-        () => generateObject({
+        (signal) => generateObject({
+          // Propagate the wrapper's timeout abort so a timed-out call stops
+          // billing; the wrapper owns retries (SDK default of 2 multiplied
+          // every layer's attempts).
+          abortSignal: signal,
+          maxRetries: 0,
           model: this.aiProvider!(modelName),
           schema: RiskProfileAnalysisSchema,
           messages: [{ role: 'user', content: prompt }],
