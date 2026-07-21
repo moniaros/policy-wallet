@@ -3,7 +3,9 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { getPublicPartnerOffers } from "@/lib/partner-offers/catalog"
 import { PartnerPerksSection } from "@/components/landing/PartnerPerksSection"
+import { PublicHeader } from "@/components/public/PublicHeader"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
+import { SKIP_LINK_TARGET_ID } from "@/lib/nav/public-nav"
 
 export const metadata: Metadata = {
     title: "Παροχές Συνεργατών | PolicyWallet",
@@ -25,13 +27,8 @@ export default async function PerksPage() {
 
     return (
         <div className="min-h-screen bg-white dark:bg-slate-950">
-            <main className="pt-10">
-                <div className="px-6 pt-10 text-center lg:px-12">
-                    <Link href="/" className="inline-flex items-center text-[20px] font-bold tracking-tight">
-                        <span className="text-[#0F172A] dark:text-white">Policy</span>
-                        <span className="text-[#64748B] dark:text-slate-400">Wallet</span>
-                    </Link>
-                </div>
+            <PublicHeader locale="el" />
+            <main id={SKIP_LINK_TARGET_ID} tabIndex={-1} className="pt-28">
                 <PartnerPerksSection offers={offers} isGreek={true} />
                 <div className="pb-16 text-center">
                     <Link
