@@ -73,6 +73,40 @@
 4. Re-run snapshot and confirm attention flags cleared.
 5. If unresolved after one operator cycle, escalate to engineering + DPO.
 
+## 2026-07 Amendments (post gdpr-deletion-erasure audit)
+1. **Legal deadline**: the queue now shows a "Due (Art. 12)" column — one month
+   from `requestedAt`. Overdue or ≤7-days-left rows take priority over the 72h
+   internal target. The evidence snapshot runs daily via Vercel cron (06:30 UTC)
+   and raises a Sentry warning when `needs_attention=true`.
+2. **Execution side effects** (all in `lib/services/gdpr-erasure.service.ts`,
+   ordered for retry safety): Stripe subscriptions cancelled → Brevo contact
+   deleted → Supabase auth identity deleted → storage PDFs deleted → DB
+   anonymization transaction. Any step failing marks the request `failed` with
+   the reason; **Execute again to retry — every step is idempotent.** A request
+   stuck in `processing` (crash mid-run) can also be re-executed directly.
+3. **User notifications** (automatic, Art. 12(4)): approval, rejection (with the
+   reason you type — write it for the data subject, not for the log) and
+   completion each email the user in their language. The completion email goes
+   to the pre-erasure address; no email is sent on retries of an already-
+   anonymized account.
+4. **User-withdrawn requests** appear as `rejected` with the operator note
+   "Withdrawn by the data subject (self-service)". Do not treat these as
+   operator rejections; no notification email is sent for them.
+5. **Admin-initiated deletions** (from `/admin/users` → Delete) create an
+   `ADMIN_INITIATED` request already approved and execute it immediately —
+   same eraser, same audit trail.
+6. **Backups / PITR**: database restores can resurrect erased personal data.
+   After ANY production restore, list `deletion_requests` with
+   `status='completed'` and `completed_at` AFTER the restore point and
+   re-execute each (idempotent). Record this in the evidence doc.
+7. **Retention sweep**: `/api/v1/jobs/privacy-retention` (daily cron, 06:45
+   UTC) purges expired data-export payloads and 90-day-dead invites. If it
+   fails repeatedly, escalate — expired export rows hold full PII snapshots.
+8. **First-execution drill**: before the first real production erasure, run one
+   against a throwaway account on the dev environment and verify: login
+   impossible afterwards, storage objects gone, Stripe test subscription
+   cancelled, completion email received.
+
 ## Sign-Off
 | Role | Name | Decision | Date (YYYY-MM-DD) | Notes |
 |---|---|---|---|---|

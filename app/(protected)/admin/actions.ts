@@ -9,7 +9,14 @@ import { buildUserDataExportPayload } from "@/lib/services/compliance.service"
 import { getBillingReconciliationSnapshot } from "@/lib/services/billing/reconciliation.service"
 import { getLaunchReadinessSnapshot } from "@/lib/services/ops/launch-readiness.service"
 import * as Sentry from "@sentry/nextjs"
-import { Prisma } from "@prisma/client"
+import { eraseUserData, isAnonymizedEmail } from "@/lib/services/gdpr-erasure.service"
+import {
+    getDeletionApprovedEmail,
+    getDeletionRejectedEmail,
+    getDeletionCompletedEmail,
+    getDataExportReadyEmail,
+} from "@/lib/email/templates/dsr-emails"
+import { getSiteOrigin } from "@/lib/seo/site"
 
 const EXPORT_DOWNLOAD_TTL_MS = 7 * 24 * 60 * 60 * 1000
 const OPEN_DELETION_STATUSES = ["requested", "in_review", "approved", "processing"] as const
@@ -369,6 +376,7 @@ export async function changeUserRole(userId: string, newRole: string) {
 export async function deleteUser(userId: string, reason?: string) {
     const admin = await verifyAdminRole()
 
+    let request: { id: string } | null = null
     try {
         const user = await db.user.findUnique({
             where: { id: userId },
@@ -384,27 +392,62 @@ export async function deleteUser(userId: string, reason?: string) {
             throw new Error("Cannot delete admin users")
         }
 
-        // Soft delete: We'll delete the user but this will cascade to related records
-        // In production, you might want to implement a soft delete with a 'deletedAt' field
-        await db.user.delete({
-            where: { id: userId }
+        // The old direct db.user.delete() FK-failed for any user with policies /
+        // subscriptions / relationships (Restrict relations) and skipped auth,
+        // storage and Stripe entirely. Admin deletion now runs through the same
+        // DSR machinery as self-service requests: one eraser, one audit trail.
+        const openRequest = await db.deletionRequest.findFirst({
+            where: { userId, status: { in: [...OPEN_DELETION_STATUSES] } },
         })
 
-        // Log the action
+        request = openRequest
+            ? await db.deletionRequest.update({
+                  where: { id: openRequest.id },
+                  data: {
+                      status: "approved",
+                      reviewedAt: new Date(),
+                      operatorNotes: appendOperatorNote(
+                          null,
+                          `Admin-initiated deletion. Reason: ${reason || "Not specified"}`
+                      ),
+                  },
+              })
+            : await db.deletionRequest.create({
+                  data: {
+                      userId,
+                      status: "approved",
+                      reviewedAt: new Date(),
+                      legalBasis: "ADMIN_INITIATED",
+                      operatorNotes: appendOperatorNote(
+                          null,
+                          `Admin-initiated deletion. Reason: ${reason || "Not specified"}`
+                      ),
+                  },
+              })
+
         await logAdminAction(
             admin.id,
             admin.email,
             "DELETE_USER",
-            `Deleted user ${user.email}. Reason: ${reason || "Not specified"}`,
-            { userId, userEmail: user.email, reason }
+            `Admin-initiated deletion for user ${userId} (request ${request.id}). Reason: ${reason || "Not specified"}`,
+            { userId, requestId: request.id, reason }
         )
-
-        revalidatePath("/admin/users")
-        return { success: true }
     } catch (error) {
         Sentry.captureException(error)
         throw new Error("Failed to delete user")
     }
+
+    if (!request) {
+        throw new Error("Failed to delete user")
+    }
+
+    const result = await executeDeletionRequest(request.id)
+    if (!result.success) {
+        throw new Error(result.error || "Failed to delete user")
+    }
+
+    revalidatePath("/admin/users")
+    return { success: true }
 }
 
 /**
@@ -589,6 +632,33 @@ function toErrorMessage(error: unknown): string {
     return String(error)
 }
 
+/**
+ * Art. 12(4): the data subject is informed of the outcome of their request.
+ * Failures never block the DSR action itself (log-and-continue, like the
+ * agent approval emails); the completion email goes to the address captured
+ * BEFORE erasure, and an already-anonymized address means a retry of an
+ * earlier partial run — nothing left to notify.
+ */
+async function sendDsrLifecycleEmail(
+    recipient: { email: string; preferredLanguage?: string | null },
+    build: (language: "el" | "en") => { subject: string; html: string; text: string }
+) {
+    try {
+        if (!recipient.email || isAnonymizedEmail(recipient.email)) return
+        const language: "el" | "en" = recipient.preferredLanguage === "en" ? "en" : "el"
+        const template = build(language)
+        const { sendEmail } = await import("@/lib/email/email-service")
+        await sendEmail({
+            to: recipient.email,
+            subject: template.subject,
+            html: template.html,
+            text: template.text,
+        })
+    } catch (error) {
+        Sentry.captureException(error, { tags: { context: "dsr_lifecycle_email" } })
+    }
+}
+
 function appendOperatorNote(existingNotes: string | null, note?: string): string | null {
     if (!note || !note.trim()) {
         return existingNotes || null
@@ -598,114 +668,8 @@ function appendOperatorNote(existingNotes: string | null, note?: string): string
     return existingNotes ? `${existingNotes}\n${stampedNote}` : stampedNote
 }
 
-function getAnonymizedEmail(userId: string): string {
-    return `deleted+${userId}.${Date.now()}@deleted.policywallet.local`
-}
-
-async function executeDeletionAnonymization(userId: string) {
-    const anonymizedEmail = getAnonymizedEmail(userId)
-
-    return db.$transaction(async (tx) => {
-        const [
-            deletedPolicies,
-            deletedOauthAccounts,
-            deletedSessions,
-            deletedActiveSessions,
-            deletedPasskeys,
-            deletedChallenges,
-            deletedNotificationPreferences,
-            deletedNotificationEvents,
-            deletedSecurityEvents,
-            deletedAccessGrants,
-            deletedInvites,
-            cancelledSubscriptions,
-            sanitizedPolicyholderProfiles,
-            sanitizedAgentProfiles,
-        ] = await Promise.all([
-            tx.policy.deleteMany({ where: { ownerUserId: userId } }),
-            tx.account.deleteMany({ where: { userId } }),
-            tx.session.deleteMany({ where: { userId } }),
-            tx.activeSession.deleteMany({ where: { userId } }),
-            tx.passkeyCredential.deleteMany({ where: { userId } }),
-            tx.webAuthnChallenge.deleteMany({ where: { userId } }),
-            tx.notificationPreference.deleteMany({ where: { userId } }),
-            tx.notificationEvent.deleteMany({ where: { userId } }),
-            tx.securityEvent.deleteMany({ where: { userId } }),
-            tx.accessGrant.deleteMany({
-                where: {
-                    OR: [{ granterUserId: userId }, { granteeUserId: userId }],
-                },
-            }),
-            tx.invite.deleteMany({
-                where: {
-                    OR: [{ inviterUserId: userId }, { inviteeUserId: userId }],
-                },
-            }),
-            tx.subscription.updateMany({
-                where: {
-                    userId,
-                    status: "active",
-                },
-                data: {
-                    status: "cancelled",
-                    autoRenew: false,
-                },
-            }),
-            tx.policyholderProfile.updateMany({
-                where: { userId },
-                data: { preferences: Prisma.JsonNull },
-            }),
-            tx.agentProfile.updateMany({
-                where: { userId },
-                data: {
-                    agencyName: null,
-                    licenseNumber: null,
-                    logoUrl: null,
-                    website: null,
-                    phone: null,
-                    documents: Prisma.JsonNull,
-                },
-            }),
-        ])
-
-        await tx.user.update({
-            where: { id: userId },
-            data: {
-                email: anonymizedEmail,
-                name: "Deleted User",
-                image: null,
-                phoneNumber: null,
-                pushToken: null,
-                password: null,
-                stripeCustomerId: null,
-                emailVerified: null,
-                termsVersionAccepted: null,
-                privacyVersionAccepted: null,
-                cookieConsentVersion: null,
-                consentUpdatedAt: null,
-                consentLocale: null,
-            },
-        })
-
-        return {
-            anonymizedEmail,
-            deletedPolicies: deletedPolicies.count,
-            deletedOauthAccounts: deletedOauthAccounts.count,
-            deletedSessions: deletedSessions.count,
-            deletedActiveSessions: deletedActiveSessions.count,
-            deletedPasskeys: deletedPasskeys.count,
-            deletedChallenges: deletedChallenges.count,
-            deletedNotificationPreferences: deletedNotificationPreferences.count,
-            deletedNotificationEvents: deletedNotificationEvents.count,
-            deletedSecurityEvents: deletedSecurityEvents.count,
-            deletedAccessGrants: deletedAccessGrants.count,
-            deletedInvites: deletedInvites.count,
-            cancelledSubscriptions: cancelledSubscriptions.count,
-            sanitizedPolicyholderProfiles: sanitizedPolicyholderProfiles.count,
-            sanitizedAgentProfiles: sanitizedAgentProfiles.count,
-        }
-    })
-}
+// Erasure itself lives in lib/services/gdpr-erasure.service.ts — the single
+// engine shared by the DSR execute path and the admin user delete below.
 
 /**
  * DSR WORKFLOW
@@ -839,6 +803,7 @@ export async function executeDataExportRequestAsAdmin(requestId: string) {
                 select: {
                     id: true,
                     email: true,
+                    preferredLanguage: true,
                 },
             },
         },
@@ -883,12 +848,15 @@ export async function executeDataExportRequestAsAdmin(requestId: string) {
             admin.id,
             admin.email,
             "EXECUTE_DATA_EXPORT_REQUEST",
-            `Executed data export request ${requestId} for ${request.user.email}`,
+            `Executed data export request ${requestId} for user ${request.userId}`,
             {
                 requestId,
                 userId: request.userId,
-                userEmail: request.user.email,
             }
+        )
+
+        await sendDsrLifecycleEmail(request.user, (language) =>
+            getDataExportReadyEmail(language, `${getSiteOrigin()}/account`)
         )
 
         revalidatePath("/admin/dsr")
@@ -910,11 +878,10 @@ export async function executeDataExportRequestAsAdmin(requestId: string) {
             admin.id,
             admin.email,
             "EXECUTE_DATA_EXPORT_REQUEST_FAILED",
-            `Failed executing data export request ${requestId} for ${request.user.email}`,
+            `Failed executing data export request ${requestId} for user ${request.userId}`,
             {
                 requestId,
                 userId: request.userId,
-                userEmail: request.user.email,
                 errorMessage,
             }
         )
@@ -934,6 +901,7 @@ export async function markDeletionRequestInReview(requestId: string, note?: stri
             user: {
                 select: {
                     email: true,
+                    preferredLanguage: true,
                 },
             },
         },
@@ -961,11 +929,10 @@ export async function markDeletionRequestInReview(requestId: string, note?: stri
         admin.id,
         admin.email,
         "DELETION_REQUEST_IN_REVIEW",
-        `Marked deletion request ${requestId} as in review for ${request.user.email}`,
+        `Marked deletion request ${requestId} as in review for user ${request.userId}`,
         {
             requestId,
             userId: request.userId,
-            userEmail: request.user.email,
             note: note || null,
         }
     )
@@ -984,6 +951,7 @@ export async function approveDeletionRequest(requestId: string, note?: string) {
             user: {
                 select: {
                     email: true,
+                    preferredLanguage: true,
                 },
             },
         },
@@ -1011,14 +979,15 @@ export async function approveDeletionRequest(requestId: string, note?: string) {
         admin.id,
         admin.email,
         "APPROVE_DELETION_REQUEST",
-        `Approved deletion request ${requestId} for ${request.user.email}`,
+        `Approved deletion request ${requestId} for user ${request.userId}`,
         {
             requestId,
             userId: request.userId,
-            userEmail: request.user.email,
             note: note || null,
         }
     )
+
+    await sendDsrLifecycleEmail(request.user, (language) => getDeletionApprovedEmail(language))
 
     revalidatePath("/admin/dsr")
     revalidatePath("/admin/dashboard")
@@ -1038,6 +1007,7 @@ export async function rejectDeletionRequest(requestId: string, reason: string) {
             user: {
                 select: {
                     email: true,
+                    preferredLanguage: true,
                 },
             },
         },
@@ -1065,14 +1035,15 @@ export async function rejectDeletionRequest(requestId: string, reason: string) {
         admin.id,
         admin.email,
         "REJECT_DELETION_REQUEST",
-        `Rejected deletion request ${requestId} for ${request.user.email}`,
+        `Rejected deletion request ${requestId} for user ${request.userId}`,
         {
             requestId,
             userId: request.userId,
-            userEmail: request.user.email,
             reason: reason.trim(),
         }
     )
+
+    await sendDsrLifecycleEmail(request.user, (language) => getDeletionRejectedEmail(language, reason.trim()))
 
     revalidatePath("/admin/dsr")
     revalidatePath("/admin/dashboard")
@@ -1088,6 +1059,7 @@ export async function executeDeletionRequest(requestId: string) {
             user: {
                 select: {
                     email: true,
+                    preferredLanguage: true,
                 },
             },
         },
@@ -1097,8 +1069,11 @@ export async function executeDeletionRequest(requestId: string) {
         return { success: false, error: "Deletion request not found" }
     }
 
-    if (request.status !== "approved" && request.status !== "failed") {
-        return { success: false, error: "Only approved or failed requests can be executed" }
+    // "processing" is accepted so a request stranded by a crash between the
+    // erasure and the completed-write below stays recoverable (the erasure
+    // engine is idempotent end to end).
+    if (request.status !== "approved" && request.status !== "failed" && request.status !== "processing") {
+        return { success: false, error: "Only approved, processing or failed requests can be executed" }
     }
 
     await db.deletionRequest.update({
@@ -1112,8 +1087,12 @@ export async function executeDeletionRequest(requestId: string) {
     })
 
     try {
-        const summary = await executeDeletionAnonymization(request.userId)
-        const completionNote = `Execution completed. Deleted policies: ${summary.deletedPolicies}, cancelled subscriptions: ${summary.cancelledSubscriptions}.`
+        const summary = await eraseUserData(request.userId)
+        const completionNote =
+            `Execution completed. Deleted policies: ${summary.deletedPolicies}, ` +
+            `storage files: ${summary.storageFilesDeleted}, ` +
+            `Stripe subscriptions cancelled: ${summary.stripeSubscriptionsCancelled}, ` +
+            `auth identity deleted: ${summary.authUserDeleted ? "yes" : "already absent"}.`
 
         await db.deletionRequest.update({
             where: { id: requestId },
@@ -1129,14 +1108,17 @@ export async function executeDeletionRequest(requestId: string) {
             admin.id,
             admin.email,
             "EXECUTE_DELETION_REQUEST",
-            `Executed deletion request ${requestId} for ${request.user.email}`,
+            `Executed deletion request ${requestId} for user ${request.userId}`,
             {
                 requestId,
                 userId: request.userId,
-                userEmail: request.user.email,
                 summary,
             }
         )
+
+        // `request.user.email` was loaded before the erasure ran — the last
+        // moment the original address exists anywhere in our systems.
+        await sendDsrLifecycleEmail(request.user, (language) => getDeletionCompletedEmail(language))
 
         revalidatePath("/admin/dsr")
         revalidatePath("/admin/dashboard")
@@ -1157,11 +1139,10 @@ export async function executeDeletionRequest(requestId: string) {
             admin.id,
             admin.email,
             "EXECUTE_DELETION_REQUEST_FAILED",
-            `Failed to execute deletion request ${requestId} for ${request.user.email}`,
+            `Failed to execute deletion request ${requestId} for user ${request.userId}`,
             {
                 requestId,
                 userId: request.userId,
-                userEmail: request.user.email,
                 errorMessage,
             }
         )

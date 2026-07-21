@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { ShieldAlert, Download, Trash2, CheckCircle2, XCircle, Clock3 } from "lucide-react"
 import { toast } from "sonner"
+import { getDsrDeadlineInfo } from "@/lib/compliance/dsr-deadline"
 import {
     approveDeletionRequest,
     executeDataExportRequestAsAdmin,
@@ -82,6 +83,31 @@ function getStatusClasses(status: string) {
     }
 }
 
+const OPEN_EXPORT_STATUSES = ["requested", "processing", "failed"]
+const OPEN_DELETION_STATUSES_UI = ["requested", "in_review", "approved", "processing", "failed"]
+
+/** GDPR Art. 12(3): one month to respond. Closed requests show a dash. */
+function DeadlineCell({ requestedAt, open }: { requestedAt: string; open: boolean }) {
+    if (!open) {
+        return <span className="text-xs text-stone-500 dark:text-stone-400">-</span>
+    }
+
+    const { dueAt, daysLeft, overdue, urgent } = getDsrDeadlineInfo(requestedAt)
+    const tone = overdue
+        ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300"
+        : urgent
+            ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300"
+            : "bg-stone-100 text-stone-600 dark:bg-stone-700 dark:text-stone-300"
+    const label = overdue ? `${Math.abs(daysLeft)}d overdue` : `${daysLeft}d left`
+
+    return (
+        <div>
+            <span className={`inline-flex px-2 py-1 rounded text-xs font-medium ${tone}`}>{label}</span>
+            <div className="mt-1 text-[10px] text-stone-500 dark:text-stone-400">{dueAt.toLocaleDateString()}</div>
+        </div>
+    )
+}
+
 export default function DsrQueueClient({ dataExports, deletionRequests, summary }: DsrQueueClientProps) {
     const router = useRouter()
     const [busyAction, setBusyAction] = useState<string | null>(null)
@@ -96,7 +122,7 @@ export default function DsrQueueClient({ dataExports, deletionRequests, summary 
         try {
             const result = await action()
             if (!result?.success) {
-                toast.error(result?.error || "Action failed")
+                toast.error(result?.error || "Action failed") // i18n-hardcoded-ignore — admin console is English-only
                 return
             }
 
@@ -130,7 +156,7 @@ export default function DsrQueueClient({ dataExports, deletionRequests, summary 
     const handleReject = async (requestId: string) => {
         const reason = window.prompt("Rejection reason")
         if (!reason || !reason.trim()) {
-            toast.error("Rejection reason is required")
+            toast.error("Rejection reason is required") // i18n-hardcoded-ignore — admin console is English-only
             return
         }
 
@@ -178,6 +204,7 @@ export default function DsrQueueClient({ dataExports, deletionRequests, summary 
                                 <th className="px-4 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase">User</th>
                                 <th className="px-4 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase">Status</th>
                                 <th className="px-4 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase">Requested</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase">Due (Art. 12)</th>
                                 <th className="px-4 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase">Completed</th>
                                 <th className="px-4 py-3 text-right text-xs font-medium text-stone-500 dark:text-stone-400 uppercase">Actions</th>
                             </tr>
@@ -185,7 +212,7 @@ export default function DsrQueueClient({ dataExports, deletionRequests, summary 
                         <tbody className="divide-y divide-stone-200 dark:divide-stone-700">
                             {dataExports.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-4 py-8 text-center text-sm text-stone-500 dark:text-stone-400">
+                                    <td colSpan={6} className="px-4 py-8 text-center text-sm text-stone-500 dark:text-stone-400">
                                         No data export requests found.
                                     </td>
                                 </tr>
@@ -210,6 +237,9 @@ export default function DsrQueueClient({ dataExports, deletionRequests, summary 
                                                 )}
                                             </td>
                                             <td className="px-4 py-4 text-xs text-stone-600 dark:text-stone-400">{formatDate(request.requestedAt)}</td>
+                                            <td className="px-4 py-4">
+                                                <DeadlineCell requestedAt={request.requestedAt} open={OPEN_EXPORT_STATUSES.includes(request.status)} />
+                                            </td>
                                             <td className="px-4 py-4 text-xs text-stone-600 dark:text-stone-400">{formatDate(request.completedAt)}</td>
                                             <td className="px-4 py-4 text-right">
                                                 {canExecute ? (
@@ -253,13 +283,14 @@ export default function DsrQueueClient({ dataExports, deletionRequests, summary 
                                 <th className="px-4 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase">Status</th>
                                 <th className="px-4 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase">Legal Basis</th>
                                 <th className="px-4 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase">Requested</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-stone-500 dark:text-stone-400 uppercase">Due (Art. 12)</th>
                                 <th className="px-4 py-3 text-right text-xs font-medium text-stone-500 dark:text-stone-400 uppercase">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-stone-200 dark:divide-stone-700">
                             {deletionRequests.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-4 py-8 text-center text-sm text-stone-500 dark:text-stone-400">
+                                    <td colSpan={6} className="px-4 py-8 text-center text-sm text-stone-500 dark:text-stone-400">
                                         No deletion requests found.
                                     </td>
                                 </tr>
@@ -292,6 +323,9 @@ export default function DsrQueueClient({ dataExports, deletionRequests, summary 
                                                 {formatDate(request.requestedAt)}
                                             </td>
                                             <td className="px-4 py-4">
+                                                <DeadlineCell requestedAt={request.requestedAt} open={OPEN_DELETION_STATUSES_UI.includes(request.status)} />
+                                            </td>
+                                            <td className="px-4 py-4">
                                                 <div className="flex items-center justify-end gap-2">
                                                     {(request.status === "requested" || request.status === "failed") && (
                                                         <button
@@ -313,7 +347,7 @@ export default function DsrQueueClient({ dataExports, deletionRequests, summary 
                                                         </button>
                                                     )}
 
-                                                    {(request.status === "approved" || request.status === "failed") && (
+                                                    {(request.status === "approved" || request.status === "failed" || request.status === "processing") && (
                                                         <button
                                                             onClick={() =>
                                                                 runAction(
@@ -339,9 +373,9 @@ export default function DsrQueueClient({ dataExports, deletionRequests, summary 
                                                         </button>
                                                     )}
 
-                                                    {(request.status === "completed" || request.status === "rejected" || request.status === "processing") && (
+                                                    {(request.status === "completed" || request.status === "rejected") && (
                                                         <span className="text-xs text-stone-500 dark:text-stone-400 inline-flex items-center gap-1">
-                                                            {request.status === "processing" ? <Clock3 className="w-3 h-3" /> : request.status === "completed" ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
+                                                            {request.status === "completed" ? <CheckCircle2 className="w-3 h-3" /> : <XCircle className="w-3 h-3" />}
                                                             {request.status}
                                                         </span>
                                                     )}

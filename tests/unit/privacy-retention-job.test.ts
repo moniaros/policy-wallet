@@ -1,0 +1,72 @@
+/**
+ * The daily privacy-retention sweep (app/api/v1/jobs/privacy-retention):
+ * purges expired data-export PII snapshots and long-dead invites (third-party
+ * email PII), and refuses to run without cron/admin authorization.
+ */
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+
+const exportUpdateMany = vi.fn(async (_a?: any) => ({ count: 2 }))
+const inviteDeleteMany = vi.fn(async (_a?: any) => ({ count: 3 }))
+
+vi.mock('@/lib/db', () => ({
+    db: {
+        dataExportRequest: { updateMany: (...a: unknown[]) => (exportUpdateMany as any)(...a) },
+        invite: { deleteMany: (...a: unknown[]) => (inviteDeleteMany as any)(...a) },
+    },
+}))
+
+const requireApiUser = vi.fn(async () => ({ error: new Response('unauthorized', { status: 401 }) }))
+vi.mock('@/lib/api-auth', () => ({
+    requireApiUser: (...a: unknown[]) => (requireApiUser as any)(...a),
+}))
+
+import { POST } from '@/app/api/v1/jobs/privacy-retention/route'
+
+const originalSecret = process.env.CRON_SECRET
+
+beforeEach(() => {
+    vi.clearAllMocks()
+    exportUpdateMany.mockResolvedValue({ count: 2 })
+    inviteDeleteMany.mockResolvedValue({ count: 3 })
+    process.env.CRON_SECRET = 'test-secret'
+})
+
+afterEach(() => {
+    process.env.CRON_SECRET = originalSecret
+})
+
+const cronRequest = (secret?: string) =>
+    new Request('http://localhost/api/v1/jobs/privacy-retention', {
+        method: 'POST',
+        headers: secret ? { 'x-cron-secret': secret } : {},
+    })
+
+describe('privacy-retention job', () => {
+    it('purges expired export payloads and stale invites with the right filters', async () => {
+        const res = await POST(cronRequest('test-secret'))
+        const body = await res.json()
+
+        expect(body.data).toEqual({ purged_export_payloads: 2, purged_invites: 3 })
+
+        const exportArgs = exportUpdateMany.mock.calls[0]![0]
+        expect(exportArgs.where.status.in).toEqual(['completed', 'expired'])
+        expect(exportArgs.where.expiresAt.lte).toBeInstanceOf(Date)
+        expect(exportArgs.data.downloadToken).toBeNull()
+        expect(exportArgs.data.status).toBe('expired')
+        expect(exportArgs.data).toHaveProperty('payloadJson')
+
+        const inviteArgs = inviteDeleteMany.mock.calls[0]![0]
+        // consumed long ago, or never consumed and long expired
+        expect(inviteArgs.where.OR).toHaveLength(2)
+        expect(inviteArgs.where.OR[0].consumedAt.lte).toBeInstanceOf(Date)
+        expect(inviteArgs.where.OR[1]).toMatchObject({ consumedAt: null })
+    })
+
+    it('rejects without cron secret or admin session', async () => {
+        const res = await POST(cronRequest('wrong'))
+
+        expect(res.status).toBe(401)
+        expect(exportUpdateMany).not.toHaveBeenCalled()
+        expect(inviteDeleteMany).not.toHaveBeenCalled()
+    })
+})

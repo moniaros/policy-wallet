@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import type { SettingsProps } from './types'
-import { deleteAccount } from '@/app/(protected)/account/actions'
+import { deleteAccount, cancelDeletionRequest } from '@/app/(protected)/account/actions'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Shield, Smartphone, Globe, Bell, Lock, AlertTriangle, CheckCircle2, Zap, Loader2, ChevronRight, LogIn, LogOut, KeyRound, Mail } from 'lucide-react'
@@ -15,6 +15,7 @@ export function Settings({
     activeSessions,
     securityEvents,
     notificationPreferences,
+    pendingDeletion,
     onUpdateEmail,
     onUpdateProfile,
     onChangePassword,
@@ -40,6 +41,9 @@ export function Settings({
     const [passwordDraft, setPasswordDraft] = useState('')
 
     const [isDeleting, setIsDeleting] = useState(false)
+    const [deletionRequested, setDeletionRequested] = useState(!!pendingDeletion)
+    const [isCancellingDeletion, setIsCancellingDeletion] = useState(false)
+    const [isExporting, setIsExporting] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
     const [processingMessage, setProcessingMessage] = useState('')
     const router = useRouter()
@@ -99,18 +103,59 @@ export function Settings({
         })
     }
 
+    const handleExportData = async () => {
+        setIsExporting(true)
+        try {
+            const res = await fetch('/api/v1/me/data-export', { method: 'POST' })
+            const json = await res.json().catch(() => null)
+            const downloadUrl = json?.data?.download_url
+            if (res.ok && downloadUrl) {
+                toast.success(t.settings.exportReady)
+                window.location.href = downloadUrl
+            } else if (res.status === 429) {
+                toast.error(t.settings.exportRateLimited)
+            } else {
+                toast.error(t.settings.exportFailed)
+            }
+        } catch {
+            toast.error(t.settings.exportFailed)
+        } finally {
+            setIsExporting(false)
+        }
+    }
+
+    const handleCancelDeletion = async () => {
+        setIsCancellingDeletion(true)
+        const res = await cancelDeletionRequest()
+        setIsCancellingDeletion(false)
+        if (res.success) {
+            setDeletionRequested(false)
+            toast.success(t.settings.deletionCancelSuccess)
+        } else if (res.error === 'DELETION_IN_FLIGHT') {
+            toast.error(t.settings.deletionCancelInFlight)
+        } else {
+            setDeletionRequested(false)
+        }
+    }
+
     const handleDeleteAccount = async () => {
         if (confirm(t.settings.deleteAccountConfirm)) {
             setIsDeleting(true)
             setProcessingMessage(t.settings.finalizingDeletion)
             setIsProcessing(true)
             const res = await deleteAccount()
+            setIsDeleting(false)
+            setIsProcessing(false)
             if (res.success) {
-                router.push('/')
+                // The request enters a review queue — nothing is deleted yet, so
+                // stay on the page and say exactly that instead of pretending
+                // the account is gone.
+                setDeletionRequested(true)
+            } else if (res.error === 'DELETION_ALREADY_PENDING') {
+                setDeletionRequested(true)
+                toast.info(t.settings.deletionAlreadyPending)
             } else {
                 toast.error(t.settings.deleteFailed)
-                setIsDeleting(false)
-                setIsProcessing(false)
             }
         }
     }
@@ -464,22 +509,57 @@ export function Settings({
                         </div>
                     </motion.div>
 
-                    {/* Danger Zone */}
-                    <div className="p-6 border-2 border-dashed border-red-500/10 bg-red-50/20 dark:bg-red-900/5 rounded-[28px] flex flex-col md:flex-row items-center justify-between gap-6 group">
+                    {/* My data (GDPR Art. 15/20 export) */}
+                    <div className="p-6 border-2 border-dashed border-black/10 dark:border-white/10 rounded-[28px] flex flex-col md:flex-row items-center justify-between gap-6">
                         <div className="max-w-md text-center md:text-left">
-                            <h4 className="text-xs font-black text-red-600 uppercase tracking-[0.2em] mb-3">{t.settings.nuclearDeletion}</h4>
+                            <h4 className="text-xs font-black text-black/70 dark:text-white/70 uppercase tracking-[0.2em] mb-3">{t.settings.myDataTitle}</h4>
                             <p className="text-[11px] text-black/60 dark:text-white/60 font-bold leading-relaxed">
-                                {t.settings.nuclearDesc}
+                                {t.settings.myDataDesc}
                             </p>
                         </div>
                         <button
-                            onClick={handleDeleteAccount}
-                            disabled={isDeleting}
-                            className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-red-600/20 hover:shadow-red-600/40 active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
+                            onClick={handleExportData}
+                            disabled={isExporting}
+                            className="bg-black dark:bg-white text-white dark:text-black px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
                         >
-                            {isDeleting ? t.settings.processing : t.settings.deletePermanently}
+                            {isExporting ? t.settings.exportPreparing : t.settings.exportData}
                         </button>
                     </div>
+
+                    {/* Danger Zone */}
+                    {deletionRequested ? (
+                        <div className="p-6 border-2 border-dashed border-amber-500/20 bg-amber-50/30 dark:bg-amber-900/10 rounded-[28px] flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="max-w-md text-center md:text-left">
+                                <h4 className="text-xs font-black text-amber-700 dark:text-amber-500 uppercase tracking-[0.2em] mb-3">{t.settings.deletionPendingTitle}</h4>
+                                <p className="text-[11px] text-black/60 dark:text-white/60 font-bold leading-relaxed">
+                                    {t.settings.deletionPendingDesc}
+                                </p>
+                            </div>
+                            <button
+                                onClick={handleCancelDeletion}
+                                disabled={isCancellingDeletion}
+                                className="bg-white dark:bg-black text-black dark:text-white border-2 border-black/15 dark:border-white/20 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
+                            >
+                                {isCancellingDeletion ? t.settings.processing : t.settings.cancelDeletion}
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="p-6 border-2 border-dashed border-red-500/10 bg-red-50/20 dark:bg-red-900/5 rounded-[28px] flex flex-col md:flex-row items-center justify-between gap-6 group">
+                            <div className="max-w-md text-center md:text-left">
+                                <h4 className="text-xs font-black text-red-600 uppercase tracking-[0.2em] mb-3">{t.settings.nuclearDeletion}</h4>
+                                <p className="text-[11px] text-black/60 dark:text-white/60 font-bold leading-relaxed">
+                                    {t.settings.nuclearDesc}
+                                </p>
+                            </div>
+                            <button
+                                onClick={handleDeleteAccount}
+                                disabled={isDeleting}
+                                className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-red-600/20 hover:shadow-red-600/40 active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
+                            >
+                                {isDeleting ? t.settings.processing : t.settings.deletePermanently}
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 
