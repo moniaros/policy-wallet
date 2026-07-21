@@ -54,6 +54,26 @@ export async function getAgentPolicyVisibilityWhere(agentUserId: string) {
     return agentPolicyVisibilityWhere(agentUserId, grantedPolicyIds)
 }
 
+/**
+ * Per-owner count of policies this agent may see, for a batch of customers in
+ * one query. Feeds the identity-consent rule (visiblePolicyCount) and gates
+ * portfolio-derived data (protection scores, gap counts) on surfaces that
+ * would otherwise serve whole-portfolio numbers for unconsented customers.
+ */
+export async function getVisiblePolicyCountsByOwner(
+    agentUserId: string,
+    ownerUserIds: string[]
+): Promise<Map<string, number>> {
+    if (ownerUserIds.length === 0) return new Map()
+    const visibilityWhere = await getAgentPolicyVisibilityWhere(agentUserId)
+    const rows = await db.policy.groupBy({
+        by: ["ownerUserId"],
+        where: { ownerUserId: { in: ownerUserIds }, ...visibilityWhere },
+        _count: { _all: true },
+    })
+    return new Map(rows.map((row) => [row.ownerUserId, row._count._all]))
+}
+
 /** In-memory predicate for already-loaded policies (same rule as the where). */
 export function isPolicyVisibleToAgent(
     policy: { id: string; createdByUserId: string },

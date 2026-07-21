@@ -2,6 +2,8 @@ export const runtime = 'nodejs'
 
 import { db } from "@/lib/db"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
+import { presentCustomerIdentity } from "@/lib/agent-consent"
+import { getVisiblePolicyCountsByOwner } from "@/lib/agent-visibility"
 import { OpportunitiesClient } from "./OpportunitiesClient"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 
@@ -12,9 +14,13 @@ export default async function OpportunitiesPage() {
         where: { ownerAgentUserId: dbUser.id },
         include: {
             relationship: {
-                include: {
+                select: {
+                    activationStatus: true,
+                    policyholderUserId: true,
+                    // password/emailVerified: consent signals for the identity
+                    // rule (lib/agent-consent) — never serialized to the client.
                     customer: {
-                        select: { name: true, email: true }
+                        select: { name: true, email: true, password: true, emailVerified: true }
                     }
                 }
             },
@@ -29,6 +35,13 @@ export default async function OpportunitiesPage() {
         // page rather than streaming an unbounded book to the browser.
         take: 500,
     })
+
+    // Identity-consent rule: an unconsented real account's name must not
+    // render — the email (which the agent typed) stands in.
+    const visibleCounts = await getVisiblePolicyCountsByOwner(
+        dbUser.id,
+        [...new Set(opportunities.map(o => o.relationship.policyholderUserId))]
+    )
 
     // Score every open/contacted opportunity in one batched pass (was ~8
     // queries per opportunity, capped at 20; now a bounded set for all of them).
@@ -45,9 +58,14 @@ export default async function OpportunitiesPage() {
 
     const formattedOpportunities = opportunities.map(opp => {
         const scored = scores.get(opp.id)
+        const identity = presentCustomerIdentity(
+            opp.relationship,
+            opp.relationship.customer,
+            visibleCounts.get(opp.relationship.policyholderUserId) ?? 0
+        )
         return {
             id: opp.id,
-            customerName: opp.relationship.customer.name || 'Unknown',
+            customerName: identity.name,
             customerEmail: opp.relationship.customer.email || '',
             title: opp.gapInstance?.definition?.title || 'General Opportunity',
             status: opp.status,

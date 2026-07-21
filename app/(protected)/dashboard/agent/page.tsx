@@ -14,7 +14,8 @@ import { commissionOn } from "@/lib/agent/commission"
 import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
 import { resolvePolicyLifecycle } from "@/lib/policy-status"
 import { getAgentPortalData } from "@/lib/services/agent-portal.service"
-import { getAgentPolicyVisibilityWhere } from "@/lib/agent-visibility"
+import { getAgentPolicyVisibilityWhere, getVisiblePolicyCountsByOwner } from "@/lib/agent-visibility"
+import { presentCustomerIdentity } from "@/lib/agent-consent"
 import type { AgentDashboardData, ActionQueueItem, ClientCardData, GapsSummary, CrossSellOpportunityItem, AgentTaskItem } from "@/components/agent/types"
 
 export default async function DashboardPage() {
@@ -63,7 +64,18 @@ export default async function DashboardPage() {
         prisma.customerRelationship.findMany({
             where: { agentUserId: agentId },
             include: {
-                customer: { select: { id: true, name: true, email: true, image: true } },
+                // password/emailVerified are consent signals for the identity
+                // rule (lib/agent-consent) — never serialized to the client.
+                customer: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                        image: true,
+                        password: true,
+                        emailVerified: true,
+                    },
+                },
             },
         }),
         prisma.opportunity.findMany({
@@ -111,6 +123,26 @@ export default async function DashboardPage() {
     // Real per-line commission rates the agent configured on /commissions — the
     // Revenue Pulse used to invent a flat 15% (and call premium/12 "revenue").
     const commissionRates = (agentProfile?.commissionRates as Record<string, number> | null) ?? {}
+
+    // ── Identity consent (lib/agent-consent) ─────────────────────
+    // Visible-policy counts feed both the identity rule and the protection-
+    // score privacy gate below. Every customer name/avatar this page emits
+    // goes through presentName/presentCustomerIdentity — an unconsented real
+    // account shows the email the agent typed, never its real name.
+    const visiblePolicyCounts = await getVisiblePolicyCountsByOwner(
+        agentId,
+        relationships.map((r) => r.policyholderUserId)
+    ).catch(() => new Map<string, number>())
+    const relByCustomerId = new Map(relationships.map((r) => [r.customer.id, r]))
+    const presentName = (customerId: string | null | undefined, fallback = "Client") => {
+        const rel = customerId ? relByCustomerId.get(customerId) : undefined
+        if (!rel) return fallback
+        return presentCustomerIdentity(
+            rel,
+            rel.customer,
+            visiblePolicyCounts.get(rel.policyholderUserId) ?? 0
+        ).name
+    }
 
     const totalPolicies = policies.length
     // In-force book revenue, DEDUPED by policy number (re-uploads of the same
@@ -160,7 +192,7 @@ export default async function DashboardPage() {
             .map((o) => ({
                 id: o.id,
                 customerId: o.relationship?.customer?.id ?? "",
-                customerName: o.relationship?.customer?.name || "Client",
+                customerName: presentName(o.relationship?.customer?.id),
                 lineOfBusiness: o.lineOfBusiness as string,
                 estimatedCommission: Number(o.estimatedCommission ?? 0),
             }))
@@ -221,7 +253,7 @@ export default async function DashboardPage() {
                 id: `expiring-${policy.id}`,
                 type: "expiring_policy",
                 clientId: ownerRel?.customer.id || policy.ownerUserId,
-                clientName: ownerRel?.customer.name || "Client",
+                clientName: presentName(ownerRel?.customer.id),
                 description: `${lobLabel} expires ${endDate.toLocaleDateString("el-GR")}`,
                 dueDate: endDate.toISOString(),
                 urgency: (endDate.getTime() - now.getTime()) < 7 * 86_400_000 ? "high" : "medium",
@@ -240,7 +272,7 @@ export default async function DashboardPage() {
                 id: `incomplete-${rel.id}`,
                 type: "incomplete_profile",
                 clientId: rel.customer.id,
-                clientName: rel.customer.name || "Client",
+                clientName: presentName(rel.customer.id),
                 description: "No policies linked yet",
                 dueDate: new Date().toISOString(),
                 urgency: "low",
@@ -311,12 +343,22 @@ export default async function DashboardPage() {
     }
 
     // ── Protection Scores (batch fetch from cache) ──────────────
-    const protectionScores = await prisma.protectionScore.findMany({
-        where: {
-            userId: { in: relationships.map((r) => r.policyholderUserId) },
-        },
-        select: { userId: true, overallScore: true, gapCount: true },
-    }).catch(() => [] as Array<{ userId: string; overallScore: number; gapCount: number }>)
+    // PRIVACY: protection scores are derived from the customer's ENTIRE
+    // portfolio. Serving them for relationship customers with no visible
+    // policy would leak portfolio-derived data the customer never shared —
+    // same rule as /api/v1/customers/protection-scores and agent-portal.
+    const scoreEligibleIds = relationships
+        .map((r) => r.policyholderUserId)
+        .filter((id) => (visiblePolicyCounts.get(id) ?? 0) > 0)
+
+    const protectionScores = scoreEligibleIds.length > 0
+        ? await prisma.protectionScore.findMany({
+            where: {
+                userId: { in: scoreEligibleIds },
+            },
+            select: { userId: true, overallScore: true, gapCount: true },
+        }).catch(() => [] as Array<{ userId: string; overallScore: number; gapCount: number }>)
+        : []
 
     const scoresByUserId = new Map(
         protectionScores.map((s) => [s.userId, s])
@@ -361,7 +403,14 @@ export default async function DashboardPage() {
 
         // Find next action due
         const nextAction = actionsByClient.get(rel.customer.id)?.[0]
-        const nameParts = (rel.customer.name || "").split(" ")
+        // Identity through the consent presenter — an unconsented real account
+        // shows its email (which the agent typed), never its real name/avatar.
+        const identity = presentCustomerIdentity(
+            rel,
+            rel.customer,
+            visiblePolicyCounts.get(rel.policyholderUserId) ?? 0
+        )
+        const nameParts = identity.name.split(" ")
 
         const clientCard: ClientCardData = {
             id: rel.customer.id,
@@ -369,7 +418,7 @@ export default async function DashboardPage() {
             name: nameParts[0] || "",
             surname: nameParts.slice(1).join(" ") || "",
             email: rel.customer.email,
-            avatar: rel.customer.image || undefined,
+            avatar: identity.image || undefined,
             policyCount: clientPolicies.length,
             healthScore,
             urgencyTier,
@@ -459,7 +508,7 @@ export default async function DashboardPage() {
                     const rel = relationships.find((r) => r.policyholderUserId === userId)
                     return {
                         clientId: rel?.customer.id || userId,
-                        clientName: rel?.customer.name || "Client",
+                        clientName: presentName(rel?.customer.id),
                         criticalGaps: counts.critical,
                         highGaps: counts.high,
                     }

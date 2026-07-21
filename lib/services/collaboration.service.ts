@@ -159,6 +159,18 @@ export class CollaborationService {
         })
         if (!relationship) throw new Error("Relationship not found")
         if (relationship.status === "terminated") throw new Error("Relationship terminated")
+        // An agent cannot open a thread at someone who never accepted the
+        // relationship — agents create relationships unilaterally by typing an
+        // email, and a thread makes the platform a message channel to any
+        // registered address. Policyholder-initiated threads are fine at any
+        // pre-termination status (it's their own agent they're contacting).
+        if (
+            relationship.agentUserId === userId &&
+            relationship.policyholderUserId !== userId &&
+            relationship.status !== "active"
+        ) {
+            throw new Error("Relationship not accepted yet")
+        }
 
         const isAllowed =
             roles.includes("admin") ||
