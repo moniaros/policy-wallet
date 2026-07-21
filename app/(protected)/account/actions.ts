@@ -91,6 +91,16 @@ export async function getAccountData() {
         take: 50,
     })
 
+    // An open GDPR deletion request drives the Settings danger-zone state
+    // (pending panel instead of the request button).
+    const openDeletionRequest = await db.deletionRequest.findFirst({
+        where: {
+            userId,
+            status: { in: ["requested", "in_review", "approved", "processing"] },
+        },
+        select: { id: true, status: true, requestedAt: true },
+    })
+
     // Transform for UI (Bridging snake_case and handling types)
     const uiUser = {
         user_id: user.id,
@@ -289,7 +299,8 @@ export async function getAccountData() {
         paymentMethods: uiPaymentMethods,
         activeSessions: uiSessions,
         securityEvents: uiSecurity,
-        notificationPreferences: uinotificationPreferences
+        notificationPreferences: uinotificationPreferences,
+        pendingDeletion: !!openDeletionRequest
     }
 }
 
@@ -461,7 +472,8 @@ export async function deleteAccount() {
         })
 
         if (existingOpenRequest) {
-            return { error: "A deletion request is already in progress." }
+            // Machine-readable code — the Settings UI maps it to localized copy.
+            return { error: "DELETION_ALREADY_PENDING" }
         }
 
         const request = await db.deletionRequest.create({
@@ -490,6 +502,56 @@ export async function deleteAccount() {
         logger('error', 'Account deletion request failed', { userId, error })
         return { error: "Failed to create deletion request" }
     }
+}
+
+/**
+ * Self-service withdrawal of a pending deletion request. Only possible while
+ * the request has not been approved for execution — after that the erasure
+ * may already be in flight and withdrawal goes through support. The row is
+ * kept (finalized as rejected with a withdrawal note) so the request history
+ * stays accountable.
+ */
+export async function cancelDeletionRequest() {
+    const authResult = await getAuthenticatedUserOrNull()
+    if (!authResult) return { error: "Unauthorized" }
+
+    const userId = authResult.dbUser.id
+
+    const openRequest = await db.deletionRequest.findFirst({
+        where: {
+            userId,
+            status: { in: ["requested", "in_review"] },
+        },
+    })
+
+    if (!openRequest) {
+        const inFlight = await db.deletionRequest.findFirst({
+            where: { userId, status: { in: ["approved", "processing"] } },
+            select: { id: true },
+        })
+        return { error: inFlight ? "DELETION_IN_FLIGHT" : "NO_OPEN_REQUEST" }
+    }
+
+    await db.deletionRequest.update({
+        where: { id: openRequest.id },
+        data: {
+            status: "rejected",
+            reviewedAt: new Date(),
+            operatorNotes: `${openRequest.operatorNotes ? `${openRequest.operatorNotes}\n` : ""}${new Date().toISOString()} - Withdrawn by the data subject (self-service)`,
+        },
+    })
+
+    await (db.activityLog as any).create({
+        data: {
+            adminUserId: userId,
+            adminEmail: "security",
+            actionType: "ACCOUNT_DELETION_WITHDRAWN",
+            description: `User ${userId} withdrew deletion request ${openRequest.id}`,
+        }
+    })
+
+    revalidatePath("/account")
+    return { success: true }
 }
 
 export async function updateProfile({ name, phone }: { name?: string; phone?: string }) {

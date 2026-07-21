@@ -2,6 +2,7 @@ import { requireApiUser } from "@/lib/api-auth"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { logger } from "@/lib/logger"
 import { getDsrEvidenceSnapshot } from "@/lib/services/compliance/dsr-evidence.service"
+import * as Sentry from "@sentry/nextjs"
 
 export async function POST(req: Request) {
     const cronSecret = process.env.CRON_SECRET
@@ -33,6 +34,15 @@ export async function POST(req: Request) {
             summary: snapshot.summary,
         })
 
+        // GDPR requests carry a legal deadline — a stale or failed request has
+        // to page someone, not sit in a JSON nobody reads.
+        if (snapshot.needsAttention) {
+            Sentry.captureMessage(
+                `DSR queue needs attention: ${snapshot.summary.pendingBeyondSla} beyond SLA, ${snapshot.summary.failedInWindow} failed in window`,
+                "warning"
+            )
+        }
+
         return createApiResponse({
             generated_at: snapshot.generatedAt,
             needs_attention: snapshot.needsAttention,
@@ -45,3 +55,6 @@ export async function POST(req: Request) {
         return createApiError("INTERNAL_ERROR", "Failed to generate DSR evidence snapshot", 500, String(error))
     }
 }
+
+// Vercel Cron issues GET; reuse the same guarded handler (no request body is read).
+export const GET = POST

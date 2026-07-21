@@ -10,6 +10,38 @@ type BrevoContact = {
     updateEnabled?: boolean
 }
 
+/**
+ * GDPR erasure propagation: remove the contact from Brevo entirely (lists,
+ * attributes, tracking). Unlike createBrevoContact this THROWS on real
+ * failures — the erasure engine must retry until the processor copy is gone.
+ * Unconfigured key or an already-absent contact are clean no-ops.
+ */
+export async function deleteBrevoContact(email: string): Promise<boolean> {
+    if (!process.env.BREVO_API_KEY) {
+        return false
+    }
+
+    const response = await fetch(`${BREVO_API_URL}/${encodeURIComponent(email)}`, {
+        method: "DELETE",
+        headers: {
+            "api-key": process.env.BREVO_API_KEY,
+            "accept": "application/json",
+        },
+    })
+
+    if (response.status === 404) {
+        return false // never synced or already deleted — the outcome we want
+    }
+
+    if (!response.ok) {
+        const detail = await response.text().catch(() => "")
+        throw new Error(`Brevo contact deletion failed (${response.status}): ${detail.slice(0, 200)}`)
+    }
+
+    logger("info", "Brevo contact deleted", { email })
+    return true
+}
+
 export async function createBrevoContact(contact: BrevoContact) {
     if (!process.env.BREVO_API_KEY) {
         logger("warn", "BREVO_API_KEY missing, skipping contact sync", { contact })

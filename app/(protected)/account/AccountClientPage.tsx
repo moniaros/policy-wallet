@@ -221,6 +221,7 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                             activeSessions={initialData.activeSessions}
                             securityEvents={initialData.securityEvents}
                             notificationPreferences={initialData.notificationPreferences || []}
+                            pendingDeletion={initialData.pendingDeletion}
                             onUpdateLanguage={handleLanguageUpdate}
                             onUpdateProfile={handleUpdateProfile}
                             onUpdateEmail={handleUpdateEmail}

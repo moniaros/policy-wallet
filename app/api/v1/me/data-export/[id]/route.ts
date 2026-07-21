@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { Prisma } from "@prisma/client"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
 import { withApiGuard } from "@/lib/api-guard"
 import { db } from "@/lib/db"
@@ -38,11 +39,19 @@ export const GET = withApiGuard(
             exportRequest.expiresAt &&
             exportRequest.expiresAt.getTime() <= Date.now()
         ) {
+            // The payload is a full PII snapshot (identity, policies, billing) —
+            // purge it with the expiry flip instead of retaining it forever.
             await db.dataExportRequest.update({
                 where: { id: exportRequest.id },
-                data: { status: "expired" },
+                data: {
+                    status: "expired",
+                    payloadJson: Prisma.JsonNull,
+                    downloadToken: null,
+                },
             })
             exportRequest.status = "expired"
+            exportRequest.payloadJson = null
+            exportRequest.downloadToken = null
         }
 
         const url = new URL(req.url)

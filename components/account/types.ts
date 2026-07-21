@@ -234,6 +234,8 @@ export interface SettingsProps {
     /** User's security event history */
     securityEvents: SecurityEvent[]
     notificationPreferences: NotificationPreference[]
+    /** True when the user already has an open GDPR deletion request */
+    pendingDeletion?: boolean
     /** Called when user wants to update their profile (name, etc) */
     onUpdateProfile?: (data: { name?: string; phone?: string }) => void
     /** Called when user wants to update their email */

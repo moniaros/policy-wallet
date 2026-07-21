@@ -71,11 +71,12 @@ export const POST = withApiGuard(
                 },
             })
 
+            // Internals stay in the DB row / logs — never in the response body.
             return createApiError(
                 "GDPR_EXPORT_FAILED",
                 "Failed to generate data export",
                 500,
-                error instanceof Error ? error.message : String(error),
+                null,
                 language
             )
         }

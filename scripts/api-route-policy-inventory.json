@@ -693,6 +693,7 @@
     {
       "route": "v1/jobs/dsr-evidence-snapshot/route.ts",
       "methods": [
+        "GET",
         "POST"
       ],
       "policy": {
@@ -715,6 +716,29 @@
     {
       "route": "v1/jobs/launch-readiness-snapshot/route.ts",
       "methods": [
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
+    },
+    {
+      "route": "v1/jobs/privacy-retention/route.ts",
+      "methods": [
+        "GET",
         "POST"
       ],
       "policy": {
