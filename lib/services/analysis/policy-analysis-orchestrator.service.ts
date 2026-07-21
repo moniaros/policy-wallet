@@ -1,4 +1,5 @@
 import fs from "fs/promises"
+import { isTransientError } from "@/lib/services/ai/shared-utils"
 import path from "path"
 import { randomUUID } from "crypto"
 import { z } from "zod"
@@ -160,20 +161,10 @@ export class OrchestrationError extends Error {
     }
 }
 
-function isTransientError(error: unknown): boolean {
-    if (!(error instanceof Error)) return false
-    const msg = error.message.toLowerCase()
-    return (
-        msg.includes("timeout") ||
-        msg.includes("aborted") ||
-        msg.includes("deadline") ||
-        msg.includes("429") ||
-        msg.includes("500") ||
-        msg.includes("503") ||
-        msg.includes("temporarily") ||
-        msg.includes("overloaded")
-    )
-}
+// One classification, one module: this used to be a stale local copy with the
+// bare-substring bugs ('aborted'/'500' anywhere in the message) that
+// shared-utils' isTransientError has since fixed.
+
 
 function normalizeLineOfBusiness(value: string | null | undefined): string {
     const lob = (value || "other").toLowerCase().trim()

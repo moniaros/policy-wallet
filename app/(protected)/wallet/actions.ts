@@ -93,26 +93,13 @@ export async function createPolicy(formData: FormData) {
     const documentNames = formData.getAll("documentNames") as string[]
     const documentSizes = formData.getAll("documentSizes") as string[]
 
-    // Determine default status based on uploads
-    const initialStatus = documentUrls.length > 0 ? 'analyzing' : 'active'
-
-    const policy = await db.policy.create({
-        data: {
-            ownerUserId: userId,
-            createdByUserId: userId,
-            insurerName: validatedData.insurerName,
-            policyNumber: validatedData.policyNumber,
-            lineOfBusiness: validatedData.lineOfBusiness,
-            startDate: new Date(validatedData.startDate),
-            endDate: new Date(validatedData.endDate),
-            coverageEndDate: new Date(validatedData.endDate),
-            premiumAmount: validatedData.premiumAmount,
-            status: initialStatus,
-        }
-    })
-
-    // Handle files
-    for (let i = 0; i < documentUrls.length; i++) {
+    // Validate documents FIRST — the status must derive from the documents
+    // that actually survive validation, or an all-invalid submission commits
+    // an 'analyzing' policy with zero documents (the eternal-spinner state).
+    // Bounded to the same cap the documents API enforces.
+    const MAX_DOCUMENTS = 20
+    const validDocuments: Array<{ fileUrl: string; fileName: string; fileSize: number }> = []
+    for (let i = 0; i < Math.min(documentUrls.length, MAX_DOCUMENTS); i++) {
         const fileUrl = documentUrls[i]
         // Display metadata only — sanitized (Greek-safe), never used as a key.
         const fileName = sanitizeDisplayName(documentNames[i] || "Unknown Document")
@@ -139,20 +126,52 @@ export async function createPolicy(formData: FormData) {
             continue
         }
 
-        {
-            await db.policyDocument.create({
-                data: {
-                    policyId: policy.id,
-                    fileUrl: fileUrl,
-                    fileName: fileName,
-                    fileSize: fileSize,
+        validDocuments.push({ fileUrl, fileName, fileSize })
+    }
+    if (documentUrls.length > MAX_DOCUMENTS) {
+        logger('warn', 'Policy submission exceeded the document cap; extra entries dropped', {
+            submitted: documentUrls.length,
+            cap: MAX_DOCUMENTS,
+        })
+    }
+
+    const initialStatus = validDocuments.length > 0 ? 'analyzing' : 'active'
+
+    // Policy + documents in ONE transaction (a crash between the two writes
+    // left a zero-document policy stuck 'analyzing'), with a single batched
+    // insert instead of a per-row round-trip loop.
+    const policy = await db.$transaction(async (tx) => {
+        const created = await tx.policy.create({
+            data: {
+                ownerUserId: userId,
+                createdByUserId: userId,
+                insurerName: validatedData.insurerName,
+                policyNumber: validatedData.policyNumber,
+                lineOfBusiness: validatedData.lineOfBusiness,
+                startDate: new Date(validatedData.startDate),
+                endDate: new Date(validatedData.endDate),
+                coverageEndDate: new Date(validatedData.endDate),
+                premiumAmount: validatedData.premiumAmount,
+                status: initialStatus,
+            }
+        })
+
+        if (validDocuments.length > 0) {
+            await tx.policyDocument.createMany({
+                data: validDocuments.map((doc) => ({
+                    policyId: created.id,
+                    fileUrl: doc.fileUrl,
+                    fileName: doc.fileName,
+                    fileSize: doc.fileSize,
                     source: "policyholder",
                     uploadedByUserId: userId,
-                    processingStatus: initialStatus === 'analyzing' ? 'processing' : 'completed'
-                }
+                    processingStatus: 'processing',
+                })),
             })
         }
-    }
+
+        return created
+    })
 
     // Trigger analysis if needed
     if (initialStatus === 'analyzing') {

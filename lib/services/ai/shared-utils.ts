@@ -19,24 +19,48 @@ export function matchesAnyPattern(value: string, patterns: string[]): boolean {
 }
 
 /**
- * Determines if an error is transient and worth retrying
+ * Determines if an error is transient and worth retrying.
+ *
+ * Structured signals win: the `ai` SDK's APICallError carries the HTTP status
+ * and its own retryability verdict. Message matching is only the fallback,
+ * with anchored status codes — the old bare `includes('500')`/`'aborted'`
+ * matched those substrings anywhere (ids, validation text) and retried
+ * permanent failures.
  */
 export function isTransientError(error: unknown): boolean {
     if (!(error instanceof Error)) return false
+
+    const status = (error as Error & { statusCode?: unknown }).statusCode
+    if (typeof status === 'number') {
+        return status === 408 || status === 409 || status === 429 || status >= 500
+    }
+    const retryable = (error as Error & { isRetryable?: unknown }).isRetryable
+    if (typeof retryable === 'boolean') return retryable
+
+    // The wrapper's own timeout abort and fetch/undici aborts.
+    if (error.name === 'AbortError' || error.name === 'TimeoutError') return true
+
     const msg = error.message.toLowerCase()
     return (
         msg.includes('timeout') ||
         msg.includes('timed out') ||
-        msg.includes('aborted') ||
         msg.includes('deadline') ||
-        msg.includes('429') ||
-        msg.includes('500') ||
-        msg.includes('503') ||
+        /\b(429|500|502|503|504)\b/.test(msg) ||
         msg.includes('service unavailable') ||
-        msg.includes('internal') ||
         msg.includes('temporarily') ||
         msg.includes('overloaded')
     )
+}
+
+/** The provider's requested retry delay, from APICallError response headers. */
+function retryAfterMsFrom(error: unknown): number | null {
+    const headers = (error as { responseHeaders?: Record<string, string> })?.responseHeaders
+    if (!headers) return null
+    const ms = Number(headers['retry-after-ms'])
+    if (Number.isFinite(ms) && ms > 0) return ms
+    const seconds = Number(headers['retry-after'])
+    if (Number.isFinite(seconds) && seconds > 0) return seconds * 1000
+    return null
 }
 
 /**
@@ -74,7 +98,14 @@ export async function withTimeoutAndRetry<T>(
             }
             lastError = error
             if (attempt < MAX_RETRIES && isTransientError(error)) {
-                const backoff = INITIAL_BACKOFF_MS * Math.pow(2, attempt)
+                // maxRetries: 0 on the SDK calls also disabled the SDK's
+                // Retry-After-aware backoff — honor the provider's requested
+                // wait here (capped) or a 2s retry into a 30s rate limit is
+                // guaranteed to fail again.
+                const backoff = Math.min(
+                    30_000,
+                    Math.max(INITIAL_BACKOFF_MS * Math.pow(2, attempt), retryAfterMsFrom(error) ?? 0)
+                )
                 logger(
                     'warn',
                     `${context}: transient failure, retrying in ${backoff}ms (attempt ${attempt + 1}/${MAX_RETRIES})`,

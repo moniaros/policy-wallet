@@ -82,6 +82,8 @@ export async function sendEmail(options: EmailOptions): Promise<EmailResult> {
                 Accept: "application/json",
             },
             body: JSON.stringify(payload),
+            // A hung Brevo connection must not eat the serverless budget.
+            signal: AbortSignal.timeout(15_000),
         })
 
         if (!response.ok) {
@@ -134,6 +136,7 @@ export async function verifyEmailConfig(): Promise<boolean> {
                 Accept: "application/json",
             },
             cache: "no-store",
+            signal: AbortSignal.timeout(10_000),
         })
         return response.ok
     } catch (error) {

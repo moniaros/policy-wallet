@@ -10,6 +10,7 @@
  */
 
 import { generateObject } from "ai"
+import { withTimeoutAndRetry } from "@/lib/services/ai/shared-utils"
 import { createGoogleGenerativeAI } from "@ai-sdk/google"
 import { z } from "zod"
 import { env } from "@/lib/env"
@@ -102,7 +103,13 @@ async function translateBatch(texts: string[]): Promise<string[]> {
 
     const google = createGoogleGenerativeAI({ apiKey: env.GEMINI_API_KEY })
 
-    const { object } = await generateObject({
+    // Same timeout/abort/retry-ownership hygiene as every other AI call site —
+    // this was the one bare generateObject with no abort path (a hung
+    // connection ate the whole serverless budget) and SDK-internal retries.
+    const { object } = await withTimeoutAndRetry(
+        (signal) => generateObject({
+        abortSignal: signal,
+        maxRetries: 0,
         // Env-keyed: gemini-2.0-flash was hardcoded here and is marked for
         // shutdown by Google — the model now follows GEMINI_MODEL_TRANSLATION.
         model: google(env.GEMINI_MODEL_TRANSLATION),
@@ -117,7 +124,9 @@ Preserve insurance terminology accurately (e.g., ασφαλιστήριο = poli
 Return exactly the same number of translations in the same order.
 Keep translations concise — do not add explanations.`,
         prompt: `Translate these ${texts.length} Greek insurance texts to English:\n\n${texts.map((t, i) => `[${i}] ${t}`).join("\n")}`,
-    })
+        }),
+        'Gemini batch translation'
+    )
 
     if (object.translations.length !== texts.length) {
         logger("warn", "Translation count mismatch", {
