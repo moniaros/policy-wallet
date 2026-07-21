@@ -38,7 +38,9 @@ export class CustomerService extends BaseService {
 
         const where: Prisma.CustomerRelationshipWhereInput = {
             agentUserId,
-            ...(status && { status }),
+            // Terminated relationships (GDPR erasure or explicit removal) leave the
+            // book entirely; an explicit status filter still cannot resurface them.
+            ...(status ? { status } : { status: { not: 'terminated' } }),
             ...(search && {
                 OR: [
                     { customer: { name: { contains: search, mode: 'insensitive' } } },
@@ -131,7 +133,8 @@ export class CustomerService extends BaseService {
         const relationship = await this.db.customerRelationship.findFirst({
             where: {
                 agentUserId,
-                policyholderUserId: customerId
+                policyholderUserId: customerId,
+                status: { not: 'terminated' }
             },
             include: {
                 customer: {

@@ -134,7 +134,7 @@ export async function getAgentPortalData(agentUserId: string): Promise<AgentPort
     const [relationships, pendingInvites, policiesThisMonth, openOpportunities] =
         await Promise.all([
             db.customerRelationship.findMany({
-                where: { agentUserId },
+                where: { agentUserId, status: { not: "terminated" } },
                 select: {
                     id: true,
                     status: true,

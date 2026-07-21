@@ -2655,7 +2655,7 @@ export class PolicyAnalysisOrchestratorService {
             where: {
                 agentUserId: userId,
                 policyholderUserId: policy.ownerUserId,
-                status: { not: "inactive" },
+                status: { notIn: ["inactive", "terminated"] },
             },
         })
         if (hasRelationship) return policy

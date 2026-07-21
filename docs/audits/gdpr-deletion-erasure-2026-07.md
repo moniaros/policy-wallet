@@ -137,4 +137,24 @@
 5. **C5 — no processor, no deadline, no alerting** for a legally deadlined workflow the privacy policy promises.
 6. **C6/H4 — the user is misled at consent time and never informed of the outcome.**
 
-*Status note: Batch 1 (items 1–7 of §6) was implemented in the working tree immediately after this audit; the findings table above describes the pre-remediation state, which is the state of the deployed production code.*
+*Status note: Batch 1 (items 1–7 of §6) was implemented in the working tree immediately after this audit; the findings table above describes the pre-remediation state. Batches 1+2 shipped in PR #198 and were deployed to production the same day.*
+
+---
+
+## 9. Decision log (owner review, 2026-07-21)
+
+Every open product decision in this audit was reviewed and decided one by one. Decisions marked *implemented* shipped in the follow-up batch (PR after #198); the rest are scheduled as noted.
+
+| # | Decision | Outcome | Status |
+|---|---|---|---|
+| 1 | B2C erasure vs the agent's B2B records (H1) | **Terminate + keep agent records**: erasure flips `CustomerRelationship` to `terminated` (leaves books/stats, blocks new collaboration); agent-authored opportunities/proposals/notes survive under the agent's own professional-retention basis | Implemented |
+| 2 | Relationship termination feature | **Build both sides**: agent "Remove customer" + customer "Disconnect from advisor"; status flip + mutual access-grant revocation, never data deletion (`app/(protected)/agent/relationship-actions.ts`) | Implemented |
+| 3 | Org/tenant deletion | **Defer** until real B2B traction; the misleading `leaveTeam` "delete the agency" copy fixed now | Copy fixed; feature deferred |
+| 4 | Policies created for others (H6) | **Confirmed**: policies belong to the owner; the creator's erasure never touches them (creator link points at an anonymized row) | No change |
+| 5 | `FormSubmission` retention (M1) | **24 months**, enforced by the daily `privacy-retention` cron | Implemented |
+| 6 | `ActivityLog` retention (M3) | **5 years** (aligned with the policy's accountability-records window), enforced by the same cron | Implemented |
+| 7 | Inactive-account cleanup | **Keep forever** (policy-aligned: "for as long as you keep an account"); no auto-deletion of dormant wallets | No change |
+| 8 | `DeletionRequest.onDelete` Cascade→SetNull (M5) | **Migrate**, folded into the next schema-touching PR (needs the prod-migration flow) | Scheduled |
+| 9 | Stripe customer object (C4 remainder) | **Delete at Stripe** during erasure (`stripe.customers.del`, tolerant of already-gone); finalized invoices remain retrievable at Stripe, preserving the 5-year tax trail | Implemented |
+| 10 | Privacy-policy text (GA/AI retention, in-app export/withdrawal mention) | **Draft for counsel review** on a branch — `LEGAL_DOC_META` date bump only, no consent-version bump | Scheduled (legal branch) |
+| 11 | Dual control for erasure execution | **Later, at team growth**; single-admin operation stays, noted in the runbook | Runbook noted |

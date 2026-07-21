@@ -40,7 +40,7 @@ export async function getNotificationData() {
 
     // 4. Fetch Customer Relationships (if agent)
     const customerRelationships = await db.customerRelationship.findMany({
-        where: { agentUserId: userId },
+        where: { agentUserId: userId, status: { not: "terminated" } },
         include: {
             customer: {
                 select: { name: true }

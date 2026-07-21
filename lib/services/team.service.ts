@@ -295,7 +295,7 @@ export async function leaveTeam(userId: string) {
     const membership = await getUserTenantMembership(userId)
     if (!membership) throw new Error("You are not in a team")
     if (membership.role === "owner") {
-        throw new Error("Owner cannot leave. Transfer ownership first or delete the agency.")
+        throw new Error("Owner cannot leave the agency. Contact support to transfer ownership or close the agency.")
     }
 
     await db.tenantMembership.delete({ where: { id: membership.id } })

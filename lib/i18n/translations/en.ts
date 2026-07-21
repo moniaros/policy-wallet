@@ -4,6 +4,12 @@ import type { TranslationKeys } from './el'
 export const en: TranslationKeys = {
     // Common
     common: {
+        removeCustomer: 'Remove Customer',
+        removeCustomerConfirm: 'Remove this customer from your book? Access to their policies will be revoked. No data is deleted.',
+        disconnectAgent: 'Disconnect from Advisor',
+        disconnectAgentConfirm: 'Disconnect from your advisor? Their access to your policies will be revoked.',
+        relationshipTerminated: 'The connection has been ended',
+        terminationFailed: 'The action failed. Please try again.',
         loading: 'Loading...',
         save: 'Save',
         saving: 'Saving...',

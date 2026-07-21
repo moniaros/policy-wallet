@@ -90,7 +90,7 @@ export class CustomerResolutionService extends BaseService {
         const rels = await this.db.customerRelationship.findMany({
             where: {
                 agentUserId,
-                status: { not: "inactive" },
+                status: { notIn: ["inactive", "terminated"] },
                 OR: or,
             },
             include: {

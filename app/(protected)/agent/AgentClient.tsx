@@ -9,6 +9,7 @@ import { Mail, Phone, Globe, ShieldCheck, ShieldOff, Building2, MessageSquare, F
 import { EmptyState as SharedEmptyState } from "@/components/ui/EmptyState"
 import { redeemInviteCode } from "@/app/onboarding/actions"
 import { revokeShare } from "@/app/(protected)/wallet/actions"
+import { disconnectFromAgent } from "@/app/(protected)/agent/relationship-actions"
 import { toast } from "sonner"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -61,6 +62,11 @@ type Tab = "overview" | "messages" | "documents" | "proposals"
 
 const PAGE_COPY = {
     kicker: { el: "Ο Σύμβουλός μου", en: "My Agent" },
+    disconnect: { el: "Αποσύνδεση από τον σύμβουλο", en: "Disconnect from advisor" },
+    disconnectDesc: { el: "Η σύνδεση τερματίζεται και η πρόσβαση του συμβούλου στα συμβόλαιά σας ανακαλείται.", en: "The connection ends and your advisor's access to your policies is revoked." },
+    disconnectConfirm: { el: "Να αποσυνδεθείτε από τον σύμβουλό σας; Η πρόσβασή του στα συμβόλαιά σας θα ανακληθεί.", en: "Disconnect from your advisor? Their access to your policies will be revoked." },
+    disconnectFailed: { el: "Η αποσύνδεση απέτυχε. Δοκιμάστε ξανά.", en: "Disconnect failed. Please try again." },
+    disconnecting: { el: "Αποσύνδεση...", en: "Disconnecting..." },
     tabOverview: { el: "Επισκόπηση", en: "Overview" },
     tabMessages: { el: "Μηνύματα", en: "Messages" },
     tabDocuments: { el: "Έγγραφα", en: "Documents" },
@@ -345,6 +351,20 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
     }
 
     const [revokingGrantId, setRevokingGrantId] = useState<string | null>(null)
+    const [isDisconnecting, setIsDisconnecting] = useState(false)
+
+    const handleDisconnect = async () => {
+        if (!relationshipId) return
+        if (!confirm(pick(PAGE_COPY.disconnectConfirm, language))) return
+        setIsDisconnecting(true)
+        const result = await disconnectFromAgent(relationshipId)
+        setIsDisconnecting(false)
+        if (result.success) {
+            router.refresh()
+        } else {
+            toast.error(pick(PAGE_COPY.disconnectFailed, language))
+        }
+    }
     const handleRevokeShare = async (grantId: string) => {
         setRevokingGrantId(grantId)
         try {
@@ -413,13 +433,31 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
 
                 {/* Tab content */}
                 {activeTab === "overview" && (
-                    <OverviewTab
-                        agent={agent}
-                        language={language}
-                        sharedPolicies={sharedPolicies}
-                        onRevoke={handleRevokeShare}
-                        revokingGrantId={revokingGrantId}
-                    />
+                    <>
+                        <OverviewTab
+                            agent={agent}
+                            language={language}
+                            sharedPolicies={sharedPolicies}
+                            onRevoke={handleRevokeShare}
+                            revokingGrantId={revokingGrantId}
+                        />
+                        {relationshipId && (
+                            <div className="mt-6 rounded-2xl border border-dashed border-red-500/25 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                <div>
+                                    <h3 className="text-sm font-bold text-red-600 dark:text-red-400">{pick(PAGE_COPY.disconnect, language)}</h3>
+                                    <p className="text-xs text-muted-foreground mt-1 max-w-md">{pick(PAGE_COPY.disconnectDesc, language)}</p>
+                                </div>
+                                <button
+                                    type="button"
+                                    disabled={isDisconnecting}
+                                    onClick={handleDisconnect}
+                                    className="shrink-0 rounded-xl border border-red-500/40 px-4 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/15 disabled:opacity-50"
+                                >
+                                    {isDisconnecting ? pick(PAGE_COPY.disconnecting, language) : pick(PAGE_COPY.disconnect, language)}
+                                </button>
+                            </div>
+                        )}
+                    </>
                 )}
 
                 {activeTab === "messages" && relationshipId && (

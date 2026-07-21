@@ -122,7 +122,8 @@ export function computePolicyAccess(input: PolicyAccessInput): PolicyAccess {
 
     const isAgent = parseRoles(viewer.roles ?? "").includes("agent")
     const hasAgentRelationship =
-        !isOwner && isAgent && relationship != null && relationship.status !== "inactive"
+        !isOwner && isAgent && relationship != null &&
+        !["inactive", "terminated"].includes(relationship.status)
 
     // PRIVACY: a customer relationship is NOT consent to read the customer's
     // documents. It is created unilaterally by the agent (an invite that was

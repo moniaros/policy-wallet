@@ -106,6 +106,17 @@
    against a throwaway account on the dev environment and verify: login
    impossible afterwards, storage objects gone, Stripe test subscription
    cancelled, completion email received.
+9. **Single-operator model (owner decision, 2026-07-21)**: the same admin may
+   approve and execute a deletion. Revisit (approver ≠ executor) once there
+   are two or more admin operators.
+10. **Erasure now also**: deletes the Stripe customer object (finalized
+    invoices stay retrievable at Stripe) and flips the customer's
+    relationships to `terminated`. Agent-authored records about the erased
+    customer survive under the agent's own retention basis — do not "clean
+    them up" manually.
+11. **Relationship terminations** (`RELATIONSHIP_TERMINATED` in activity logs)
+    are user/agent-initiated status flips, not deletions, and are NOT DSR
+    events — they need no queue entry or notification handling.
 
 ## Sign-Off
 | Role | Name | Decision | Date (YYYY-MM-DD) | Notes |

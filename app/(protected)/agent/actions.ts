@@ -492,7 +492,7 @@ export async function addPolicyForCustomer(data: {
             }
         })
 
-        if (!relationship || relationship.status === 'inactive') {
+        if (!relationship || ['inactive', 'terminated'].includes(relationship.status)) {
             return { success: false, error: "You don't have access to this customer" }
         }
 

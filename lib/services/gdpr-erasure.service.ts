@@ -26,9 +26,9 @@
  *   payloads (accountability) · ConsentAudit rows minus ip/user-agent
  *   (proof of consent) · Subscription/token/credit ledgers (financial
  *   metering, keyed to the anonymized row) · agent-authored B2B artifacts
- *   about the user (Opportunity notes, CustomerRelationship, Proposal,
- *   DocumentRequest — the agent's own records; product/legal decision
- *   tracked in the audit as H1).
+ *   about the user (Opportunity notes, Proposal, DocumentRequest — the
+ *   agent's own records; owner decision 2026-07-21, audit H1). The
+ *   CustomerRelationship row survives but is flipped to `terminated`.
  */
 
 import { db } from "@/lib/db"
@@ -52,6 +52,7 @@ export function isAnonymizedEmail(email: string | null | undefined): boolean {
 export type ErasureSummary = {
     anonymizedEmail: string
     stripeSubscriptionsCancelled: number
+    stripeCustomerDeleted: boolean
     brevoContactDeleted: boolean
     authUserDeleted: boolean
     storageFilesDeleted: number
@@ -77,6 +78,7 @@ export type ErasureSummary = {
     scrubbedReferrals: number
     scrubbedConsentAudits: number
     purgedDataExports: number
+    terminatedRelationships: number
     cancelledSubscriptions: number
     sanitizedPolicyholderProfiles: number
     sanitizedAgentProfiles: number
@@ -106,6 +108,26 @@ async function cancelStripeSubscriptions(userId: string): Promise<number> {
         }
     }
     return cancelled
+}
+
+/** Owner decision (2026-07-21 review): the Stripe customer object (name,
+ *  email, payment methods) is deleted at the processor too. Stripe keeps
+ *  finalized invoices retrievable after customer deletion, so the 5-year
+ *  tax trail survives. Tolerates already-deleted (retry). */
+async function deleteStripeCustomer(stripeCustomerId: string | null): Promise<boolean> {
+    if (!stripeCustomerId) return false
+    try {
+        await stripe.customers.del(stripeCustomerId)
+        return true
+    } catch (error) {
+        const code = (error as { code?: string })?.code
+        if (code === "resource_missing") return false
+        throw new Error(
+            `Stripe customer deletion failed for ${stripeCustomerId}: ${
+                error instanceof Error ? error.message : String(error)
+            }`
+        )
+    }
 }
 
 /** Step 2 — delete the Supabase auth identity. The DB user is linked to auth
@@ -193,6 +215,7 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 scrubbedReferrals,
                 scrubbedConsentAudits,
                 purgedDataExports,
+                terminatedRelationships,
             ] = await Promise.all([
                 tx.policy.deleteMany({ where: { ownerUserId: userId } }),
                 tx.account.deleteMany({ where: { userId } }),
@@ -294,6 +317,14 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                     where: { userId },
                     data: { payloadJson: Prisma.JsonNull, downloadToken: null },
                 }),
+                // Owner decision (2026-07-21 review): erasure terminates the
+                // B2B relationship (drops out of books/stats, blocks new
+                // collaboration) while agent-authored records survive under
+                // the agent's own professional-retention basis.
+                tx.customerRelationship.updateMany({
+                    where: { OR: [{ policyholderUserId: userId }, { agentUserId: userId }] },
+                    data: { status: "terminated" },
+                }),
             ])
 
             // Profile-level gaps survive the policy cascade (policyId null) and
@@ -349,6 +380,7 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
                 scrubbedReferrals: scrubbedReferrals.count,
                 scrubbedConsentAudits: scrubbedConsentAudits.count,
                 purgedDataExports: purgedDataExports.count,
+                terminatedRelationships: terminatedRelationships.count,
                 cancelledSubscriptions: cancelledSubscriptions.count,
                 sanitizedPolicyholderProfiles: sanitizedPolicyholderProfiles.count,
                 sanitizedAgentProfiles: sanitizedAgentProfiles.count,
@@ -363,13 +395,14 @@ async function anonymizeDatabaseRecords(userId: string, originalEmail: string) {
 export async function eraseUserData(userId: string): Promise<ErasureSummary> {
     const user = await db.user.findUnique({
         where: { id: userId },
-        select: { id: true, email: true },
+        select: { id: true, email: true, stripeCustomerId: true },
     })
     if (!user) {
         throw new Error("User not found")
     }
 
     const stripeSubscriptionsCancelled = await cancelStripeSubscriptions(userId)
+    const stripeCustomerDeleted = await deleteStripeCustomer(user.stripeCustomerId)
     // Brevo is keyed by email — must run before anonymization renames it.
     // Throws on real failures (retryable); anonymized email = prior run, skip.
     const brevoContactDeleted = isAnonymizedEmail(user.email)
@@ -382,6 +415,7 @@ export async function eraseUserData(userId: string): Promise<ErasureSummary> {
     logger("info", "GDPR erasure completed", {
         userId,
         stripeSubscriptionsCancelled,
+        stripeCustomerDeleted,
         brevoContactDeleted,
         authUserDeleted,
         storageFilesDeleted,
@@ -389,6 +423,7 @@ export async function eraseUserData(userId: string): Promise<ErasureSummary> {
 
     return {
         stripeSubscriptionsCancelled,
+        stripeCustomerDeleted,
         brevoContactDeleted,
         authUserDeleted,
         storageFilesDeleted,

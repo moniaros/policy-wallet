@@ -158,6 +158,7 @@ export class CollaborationService {
             where: { id: input.relationshipId },
         })
         if (!relationship) throw new Error("Relationship not found")
+        if (relationship.status === "terminated") throw new Error("Relationship terminated")
 
         const isAllowed =
             roles.includes("admin") ||

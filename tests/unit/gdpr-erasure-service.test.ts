@@ -35,6 +35,7 @@ const tx = {
     referral: { updateMany: vi.fn(async (_a?: any) => count()) },
     consentAudit: { updateMany: vi.fn(async (_a?: any) => count()) },
     dataExportRequest: { updateMany: vi.fn(async (_a?: any) => count(1)) },
+    customerRelationship: { updateMany: vi.fn(async (_a?: any) => count(1)) },
     gapInstance: { deleteMany: vi.fn(async (_a?: any) => count(1)) },
     user: { update: vi.fn(async (_a?: any) => ({})) },
 }
@@ -49,8 +50,12 @@ vi.mock('@/lib/db', () => ({
 }))
 
 const mockStripeCancel = vi.fn(async (..._a: any[]) => ({}))
+const mockStripeCustomerDel = vi.fn(async (..._a: any[]) => ({}))
 vi.mock('@/lib/stripe', () => ({
-    stripe: { subscriptions: { cancel: (...a: unknown[]) => (mockStripeCancel as any)(...a) } },
+    stripe: {
+        subscriptions: { cancel: (...a: unknown[]) => (mockStripeCancel as any)(...a) },
+        customers: { del: (...a: unknown[]) => (mockStripeCustomerDel as any)(...a) },
+    },
 }))
 
 const mockDeleteFile = vi.fn(async (..._a: any[]) => true)
@@ -86,7 +91,7 @@ const mockSubsFind = vi.mocked(db.subscription.findMany)
 const mockDocsFind = vi.mocked(db.policyDocument.findMany)
 const mockTransaction = vi.mocked(db.$transaction)
 
-const USER = { id: 'user-1', email: 'maria@example.com' }
+const USER = { id: 'user-1', email: 'maria@example.com', stripeCustomerId: null }
 
 beforeEach(() => {
     vi.clearAllMocks()
@@ -262,6 +267,32 @@ describe('eraseUserData — external systems, ordered for retry safety', () => {
         mockDeleteBrevo.mockRejectedValueOnce(new Error('Brevo contact deletion failed (500): boom'))
         await expect(eraseUserData('user-1')).rejects.toThrow(/Brevo contact deletion failed/)
         expect(mockTransaction).toHaveBeenCalledTimes(1) // only the first, successful run
+    })
+
+    it('terminates the B2B relationships on both sides (owner decision #1)', async () => {
+        await eraseUserData('user-1')
+        expect(tx.customerRelationship.updateMany).toHaveBeenCalledWith({
+            where: { OR: [{ policyholderUserId: 'user-1' }, { agentUserId: 'user-1' }] },
+            data: { status: 'terminated' },
+        })
+    })
+
+    it('deletes the Stripe customer object, tolerating already-gone (owner decision #9)', async () => {
+        mockUserFind.mockResolvedValue({ ...USER, stripeCustomerId: 'cus_123' } as any)
+        const summary = await eraseUserData('user-1')
+        expect(mockStripeCustomerDel).toHaveBeenCalledWith('cus_123')
+        expect(summary.stripeCustomerDeleted).toBe(true)
+
+        mockUserFind.mockResolvedValue({ ...USER, stripeCustomerId: 'cus_gone' } as any)
+        mockStripeCustomerDel.mockRejectedValueOnce(Object.assign(new Error('nope'), { code: 'resource_missing' }))
+        const retry = await eraseUserData('user-1')
+        expect(retry.stripeCustomerDeleted).toBe(false)
+    })
+
+    it('skips Stripe customer deletion when no customer id exists', async () => {
+        const summary = await eraseUserData('user-1')
+        expect(mockStripeCustomerDel).not.toHaveBeenCalled()
+        expect(summary.stripeCustomerDeleted).toBe(false)
     })
 
     it('throws for an unknown user', async () => {
