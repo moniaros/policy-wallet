@@ -42,6 +42,9 @@ export const el = {
         aiConsentRequestTitle: 'Αίτημα συγκατάθεσης για ανάλυση AI',
         aiConsentRequestMessage: 'Ο ασφαλιστικός σας σύμβουλος ζητά τη συγκατάθεσή σας για ανάλυση των συμβολαίων σας με AI.',
         aiConsentRequestSent: 'Το αίτημα συγκατάθεσης εστάλη στον πελάτη.',
+        aiConsentEmailFailed: 'Το αίτημα καταχωρήθηκε, αλλά το email δεν παραδόθηκε.',
+        aiConsentInviteLinkCopied: 'Ο σύνδεσμος πρόσκλησης αντιγράφηκε — μοιραστείτε τον με τον κάτοχο.',
+        aiConsentEmailFailedLinkCopied: 'Το αίτημα καταχωρήθηκε, αλλά το email δεν παραδόθηκε — ο σύνδεσμος πρόσκλησης αντιγράφηκε, μοιραστείτε τον με τον κάτοχο.',
         aiConsentRequestAction: 'Ζητήστε συγκατάθεση πελάτη',
     },
     // Navigation
@@ -251,6 +254,7 @@ export const el = {
         noNotificationsYetDesc: 'Θα σας ειδοποιήσουμε όταν υπάρχει κάτι νέο',
         shareWithAgent: 'Κοινοποίηση σε Σύμβουλο',
         invitationCreated: 'Η πρόσκληση δημιουργήθηκε. Στείλτε το link στον σύμβουλό σας.',
+        invitationEmailFailed: 'Το email δεν παραδόθηκε — αντιγράψτε τον σύνδεσμο και μοιραστείτε τον εσείς.',
         policyShared: 'Το ασφαλιστήριο κοινοποιήθηκε με επιτυχία',
         linkCopied: 'Το link αντιγράφηκε!',
         revokeAccess: 'Ανάκληση πρόσβασης;',
@@ -1993,6 +1997,10 @@ export const el = {
 
     // ── Agent Dashboard & Collaboration ──────────────────────────
     agentDashboard: {
+        inviteEmailFailed: 'Η πρόσκληση δημιουργήθηκε, αλλά το email δεν παραδόθηκε — ο σύνδεσμος αντιγράφηκε, μοιραστείτε τον χειροκίνητα.',
+        consentEmailFailed: 'Το αίτημα καταχωρήθηκε, αλλά το email δεν παραδόθηκε.',
+        consentEmailFailedLinkCopied: 'Το email δεν παραδόθηκε — ο σύνδεσμος πρόσκλησης αντιγράφηκε, μοιραστείτε τον χειροκίνητα.',
+        consentRequestFailed: 'Η αποστολή του αιτήματος συγκατάθεσης απέτυχε.',
         actionQueue: "Ουρά Ενεργειών",
         revenuePulse: "Παλμός Εσόδων",
         portfolioHealth: "Υγεία Χαρτοφυλακίου",
@@ -2268,6 +2276,10 @@ export const el = {
             subtitle: 'Αναπτύξτε το χαρτοφυλάκιό σας προσκαλώντας νέους πελάτες στο PolicyWallet.',
             successTitle: 'Η πρόσκληση στάλθηκε',
             successBody: 'Στείλαμε στον πελάτη έναν σύνδεσμο πρόσκλησης στο email του.',
+            emailFailedTitle: 'Η πρόσκληση δημιουργήθηκε — το email δεν παραδόθηκε',
+            emailFailedBody: 'Δεν ήταν δυνατή η αποστολή του email πρόσκλησης. Μοιραστείτε αυτόν τον ασφαλή σύνδεσμο με τον πελάτη:',
+            copyLink: 'Αντιγραφή συνδέσμου',
+            copied: 'Αντιγράφηκε!',
             backToCustomers: 'Επιστροφή στους Πελάτες',
             emailLabel: 'Διεύθυνση Email Πελάτη',
             emailHelper: 'Θα δημιουργήσουμε έναν ασφαλή σύνδεσμο πρόσκλησης για αυτό το email.',

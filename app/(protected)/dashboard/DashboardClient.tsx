@@ -10,6 +10,7 @@ import type { ActionQueueItem, AgentDashboardData } from "@/components/agent/typ
 import type { AgentTier } from "@/types/subscription-entitlements"
 import { createAgentInvite } from "../agent/actions"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 import { resendVerificationEmail } from "@/app/auth/actions"
 import { AlertCircle, CheckCircle, Loader2, X } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -59,7 +60,15 @@ export function DashboardClient({
     const handleInvite = async (email: string, scope: AccessScope) => {
         const result = await createAgentInvite(email, scope)
         if (result.success) {
+            if ("emailDelivered" in result && result.emailDelivered === false) {
+                // Invite exists but the email never left — hand over the link.
+                const link = "inviteLink" in result ? result.inviteLink : undefined
+                if (link) navigator.clipboard?.writeText(link).catch(() => {})
+                toast.warning(tb.inviteEmailFailed)
+            }
             router.refresh()
+        } else if ("error" in result && result.error) {
+            toast.error(result.error)
         }
     }
 

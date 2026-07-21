@@ -44,6 +44,9 @@ export const en: TranslationKeys = {
         aiConsentRequestTitle: 'AI analysis consent request',
         aiConsentRequestMessage: 'Your insurance advisor requests your consent to analyze your policies with AI.',
         aiConsentRequestSent: 'Consent request sent to the client.',
+        aiConsentEmailFailed: 'Request recorded, but the email could not be delivered.',
+        aiConsentInviteLinkCopied: 'Invite link copied — share it with the policy owner yourself.',
+        aiConsentEmailFailedLinkCopied: 'Request recorded, but the email could not be delivered — invite link copied, share it with the policy owner yourself.',
         aiConsentRequestAction: 'Request client consent',
     },
 
@@ -254,6 +257,7 @@ export const en: TranslationKeys = {
         noNotificationsYetDesc: "We'll notify you when there's something new",
         shareWithAgent: 'Share with Agent',
         invitationCreated: 'Invitation created. Send the link to your agent.',
+        invitationEmailFailed: 'Email not delivered — copy the link below and share it yourself.',
         policyShared: 'Policy shared successfully',
         linkCopied: 'Link copied!',
         revokeAccess: 'Revoke access?',
@@ -1995,6 +1999,10 @@ export const en: TranslationKeys = {
 
     // ── Agent Dashboard & Collaboration ──────────────────────────
     agentDashboard: {
+        inviteEmailFailed: 'Invite created, but the email was not delivered — link copied, share it manually.',
+        consentEmailFailed: 'Request recorded, but the email could not be delivered.',
+        consentEmailFailedLinkCopied: 'Email not delivered — invite link copied, share it manually.',
+        consentRequestFailed: 'Failed to request consent.',
         actionQueue: "Action Queue",
         revenuePulse: "Revenue Pulse",
         portfolioHealth: "Portfolio Health",
@@ -2270,6 +2278,10 @@ export const en: TranslationKeys = {
             subtitle: 'Grow your portfolio by inviting new customers to join PolicyWallet.',
             successTitle: 'Invitation sent',
             successBody: 'We sent the customer an invitation link to their email.',
+            emailFailedTitle: 'Invitation created — email not delivered',
+            emailFailedBody: 'The invitation email could not be sent. Share this secure link with the customer instead:',
+            copyLink: 'Copy link',
+            copied: 'Copied!',
             backToCustomers: 'Back to Customers',
             emailLabel: 'Customer Email Address',
             emailHelper: "We'll create a secure invitation link for this email.",

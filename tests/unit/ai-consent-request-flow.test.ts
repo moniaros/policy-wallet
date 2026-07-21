@@ -81,7 +81,7 @@ describe('requestAiConsent — agent asks the policy owner instead of being dead
 
         const res = await requestAiConsent('pol-1')
 
-        expect(res).toEqual({ success: true, mode: 'notification' })
+        expect(res).toEqual({ success: true, mode: 'notification', emailDelivered: true })
         expect(mockNotifCreate).toHaveBeenCalledWith(
             expect.objectContaining({
                 data: expect.objectContaining({
@@ -105,7 +105,7 @@ describe('requestAiConsent — agent asks the policy owner instead of being dead
 
         const res = await requestAiConsent('pol-1')
 
-        expect(res).toEqual({ success: true, mode: 'invite' })
+        expect(res).toMatchObject({ success: true, mode: 'invite', emailDelivered: true })
         expect(mockInviteCreate).toHaveBeenCalledWith(
             expect.objectContaining({
                 data: expect.objectContaining({

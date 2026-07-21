@@ -32,6 +32,7 @@ interface CollaborationPanelProps {
 
 const DEFAULT_WALLET_COPY = {
     invitationCreated: "Invitation created. Send the link to your collaborator.",
+    invitationEmailFailed: "Email not delivered — copy the link below and share it yourself.",
     policyShared: "Policy shared successfully.",
     linkCopied: "Link copied.",
     revokeAccess: "Revoke access?",
@@ -97,7 +98,11 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
 
         if (res.link) {
             setInviteLink(res.link)
-            toast.success(walletCopy.invitationCreated)
+            if (res.emailDelivered === false) {
+                toast.warning(walletCopy.invitationEmailFailed)
+            } else {
+                toast.success(walletCopy.invitationCreated)
+            }
             trackJourneyEvent("first_policy_shared", {
                 policy_id: policyId,
                 share_type: "agent_invite",
