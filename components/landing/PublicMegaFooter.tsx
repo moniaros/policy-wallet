@@ -54,6 +54,7 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
     const companyLinks = [
         { href: l("/company"), label: t("Εταιρεία", "Company") },
         { href: l("/guides"), label: t("Οδηγοί Ασφάλισης", "Insurance Guides") },
+        { href: l("/lexiko"), label: t("Ασφαλιστικό Λεξικό", "Insurance Glossary") },
         { href: l("/contact"), label: t("Επικοινωνία", "Contact") },
         { href: l("/privacy"), label: t("Πολιτική Απορρήτου", "Privacy Policy") },
         { href: l("/terms"), label: t("Όροι Χρήσης", "Terms of Service") },

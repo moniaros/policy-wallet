@@ -15,11 +15,16 @@ const EN_MIRRORED_EXACT: ReadonlySet<string> = new Set([
 ])
 
 /**
- * Mirrored sections whose children are all mirrored too. Guide articles are
- * fully bilingual in lib/guides/content.ts, so once the guides index declares
- * an English variant every /guides/<slug> has a live /en/guides/<slug>.
+ * Mirrored sections whose children are all mirrored too. Guide articles and
+ * glossary terms are fully bilingual (lib/guides/content.ts,
+ * lib/glossary/content.ts) — every /guides/<slug> and /lexiko/<term> has a live
+ * /en/... mirror generated from the same content — so once each index declares
+ * an English variant, all its children are safe to prefix with /en.
  */
-const EN_MIRRORED_PREFIXES: readonly string[] = marketingPages.guides.en ? ["/guides/"] : []
+const EN_MIRRORED_PREFIXES: readonly string[] = [
+    ...(marketingPages.guides.en ? ["/guides/"] : []),
+    ...(marketingPages.lexiko.en ? ["/lexiko/"] : []),
+]
 
 export type MarketingLocale = "el" | "en"
 
