@@ -8,14 +8,29 @@ export const getStripe = () => {
     if (!stripeInstance) {
         const key = env.STRIPE_SECRET_KEY || process.env.STRIPE_SECRET_KEY;
 
-        // Stripe requires a valid-looking key even for initialization if using newer versions
-        // If no key is found, and we're in production, it will fail when called.
-        // During build, we provide a placeholder that matches the expected format to avoid crash.
-        const apiKey = key && key.startsWith('sk_') ? key : "sk_test_4eC39HqLyjWDarjtT1zdp7dc";
+        // A missing/malformed key must never silently fall back at runtime in
+        // production — billing calls would hit a placeholder account and
+        // "work" until card entry while subscription sync silently diverges.
+        // The build phase still gets a placeholder so `next build` can import
+        // this module without the secret present.
+        if (!key || !key.startsWith("sk_")) {
+            if (
+                process.env.NODE_ENV === "production" &&
+                process.env.NEXT_PHASE !== "phase-production-build"
+            ) {
+                throw new Error(
+                    "STRIPE_SECRET_KEY missing or malformed — refusing to initialize billing with a fallback key"
+                );
+            }
+        }
 
-        stripeInstance = new Stripe(apiKey, {
+        stripeInstance = new Stripe(key && key.startsWith("sk_") ? key : "sk_test_placeholder_build_only", {
             apiVersion: "2024-12-18.acacia" as any,
             typescript: true,
+            // Serverless functions have short budgets; the SDK default of 80s
+            // would eat the whole window on a hung connection.
+            timeout: 20_000,
+            maxNetworkRetries: 2,
         });
     }
     return stripeInstance;
