@@ -4,14 +4,18 @@ import { withApiGuard } from "@/lib/api-guard"
 import { z } from "zod"
 import { msFromNow, SIGNED_URL_EXPIRY_MS } from "@/lib/constants/time"
 import { getPolicyAccess } from "@/lib/policy-access"
-import { uploadFile } from "@/lib/storage"
+import { uploadFile, deleteFile } from "@/lib/storage"
 import { createSignedUrlForStoredObject } from "@/lib/supabase/storage-download"
+import {
+    validateUploadFile,
+    REJECTION_MESSAGES,
+    MAX_DOCUMENTS_PER_POLICY,
+} from "@/lib/security/file-upload"
 
 const policyDocumentParamsSchema = z.object({
     id: z.string().min(1),
 })
 
-const ALLOWED_DOCUMENT_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/webp"]
 const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024
 
 export const POST = withApiGuard(
@@ -30,17 +34,22 @@ export const POST = withApiGuard(
 
         try {
             const formData = await req.formData()
-            const file = formData.get("file") as File
+            const file = formData.get("file")
 
-            if (!file) {
+            if (!(file instanceof File)) {
                 return createApiError("BAD_REQUEST", "No file provided", 400)
             }
-            if (file.size > MAX_DOCUMENT_BYTES) {
-                return createApiError("BAD_REQUEST", "File too large. Maximum size is 10MB.", 400)
+
+            // Full validation: size (10MB here), extension allowlist, content-type
+            // cross-check, and magic-byte signature — content, not just the header.
+            const validation = await validateUploadFile(file, {
+                category: "policy",
+                maxBytes: MAX_DOCUMENT_BYTES,
+            })
+            if (!validation.ok) {
+                return createApiError("BAD_REQUEST", REJECTION_MESSAGES[validation.reason], 400)
             }
-            if (file.type && !ALLOWED_DOCUMENT_TYPES.includes(file.type)) {
-                return createApiError("BAD_REQUEST", "Invalid file type. Only PDF and images are allowed.", 400)
-            }
+            const displayName = validation.value.displayName
 
             const access = await getPolicyAccess(id, {
                 id: authResult.dbUser.id,
@@ -58,6 +67,13 @@ export const POST = withApiGuard(
                 return createApiError("NOT_FOUND", "Policy not found", 404)
             }
 
+            // Abuse cap: per-minute rate limits don't bound TOTAL volume — a
+            // patient caller could attach unbounded files to one policy.
+            const documentCount = await db.policyDocument.count({ where: { policyId: id } })
+            if (documentCount >= MAX_DOCUMENTS_PER_POLICY) {
+                return createApiError("BAD_REQUEST", "Document limit reached for this policy", 400)
+            }
+
             // Derive source from the uploader's actual role in this policy —
             // never trust the form value for provenance.
             const source = access.isOwner ? "policyholder" : "agent"
@@ -73,24 +89,32 @@ export const POST = withApiGuard(
                 return createApiError("INTERNAL_ERROR", "Document upload failed", 500)
             }
 
-            const document = await db.policyDocument.create({
-                data: {
-                    policyId: id,
-                    fileUrl,
-                    fileName: file.name,
-                    fileSize: file.size,
-                    source: source as string,
-                    uploadedByUserId: authResult.dbUser.id,
-                    processingStatus: "pending"
-                }
-            })
+            // If the DB write fails AFTER the object landed, remove the object —
+            // otherwise it sits orphaned (and unreferenced) in the bucket forever.
+            let document
+            try {
+                document = await db.policyDocument.create({
+                    data: {
+                        policyId: id,
+                        fileUrl,
+                        fileName: displayName,
+                        fileSize: file.size,
+                        source: source as string,
+                        uploadedByUserId: authResult.dbUser.id,
+                        processingStatus: "pending"
+                    }
+                })
+            } catch (dbError) {
+                await deleteFile(fileUrl)
+                throw dbError
+            }
 
             await (db.activityLog as any).create({
                 data: {
                     adminUserId: authResult.dbUser.id,
                     adminEmail: authResult.dbUser.email || "unknown",
                     actionType: "DOCUMENT_UPLOADED",
-                    description: `Uploaded document ${file.name} for policy ${policy.policyNumber}`,
+                    description: `Uploaded document ${displayName} for policy ${policy.policyNumber}`,
                     timestamp: new Date()
                 }
             })

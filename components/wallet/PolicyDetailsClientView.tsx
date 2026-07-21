@@ -1008,6 +1008,7 @@ export function PolicyDetailsClient({
                         {/* Uploaded documents */}
                         <section id="documents" className="scroll-mt-24">
                             <DocumentsCard
+                                policyId={policy.id}
                                 documents={policy.documents}
                                 isFreeTier={isFreeTier}
                                 copy={{

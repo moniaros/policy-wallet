@@ -28,6 +28,7 @@ import { sendPolicyInviteEmail, sendAiConsentRequestEmail } from "@/lib/email/in
 import { getTranslations } from "@/lib/i18n";
 import { daysFromNow, INVITE_EXPIRY_DAYS } from "@/lib/constants/time";
 import { isAgentRole } from "@/lib/auth/require-agent";
+import { validateUploadFile, sanitizeDisplayName, REJECTION_MESSAGES } from "@/lib/security/file-upload";
 
 const customerService = new CustomerService(db);
 
@@ -515,12 +516,9 @@ export async function addPolicyForCustomer(data: {
         if (documentFormData) {
             const candidate = documentFormData.get("file")
             if (candidate instanceof File && candidate.size > 0) {
-                if (candidate.size > 10 * 1024 * 1024) {
-                    return { success: false, error: "File too large. Maximum size is 10MB." }
-                }
-                const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp"]
-                if (!allowedTypes.includes(candidate.type)) {
-                    return { success: false, error: "Invalid file type. Only PDF and images are allowed." }
+                const docValidation = await validateUploadFile(candidate, { category: "policy", maxBytes: 10 * 1024 * 1024 })
+                if (!docValidation.ok) {
+                    return { success: false, error: REJECTION_MESSAGES[docValidation.reason] }
                 }
                 file = candidate
             }
@@ -668,19 +666,25 @@ export async function addPolicyForCustomer(data: {
         // attributed to the AGENT (agent-plan run count + token budget).
         let analysisState: 'started' | 'consent_required' | 'limit_reached' | 'none' = 'none'
         if (file) {
-            const { uploadFile } = await import("@/lib/storage")
+            const { uploadFile, deleteFile } = await import("@/lib/storage")
             const fileUrl = await uploadFile(file, "policies")
-            await db.policyDocument.create({
-                data: {
-                    policyId: policy.id,
-                    fileUrl,
-                    fileName: file.name,
-                    fileSize: file.size,
-                    source: 'agent',
-                    uploadedByUserId: agentId,
-                    processingStatus: 'pending',
-                }
-            })
+            try {
+                await db.policyDocument.create({
+                    data: {
+                        policyId: policy.id,
+                        fileUrl,
+                        fileName: sanitizeDisplayName(file.name),
+                        fileSize: file.size,
+                        source: 'agent',
+                        uploadedByUserId: agentId,
+                        processingStatus: 'pending',
+                    }
+                })
+            } catch (dbError) {
+                // Remove the just-stored object rather than orphaning it.
+                await deleteFile(fileUrl).catch(() => {})
+                throw dbError
+            }
 
             const owner = await db.user.findUnique({
                 where: { id: data.customerId },
@@ -735,15 +739,11 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
     const file = formData.get("file") as File
     if (!file) return { error: "No file provided" }
 
-    // Security: Size Check (10MB)
-    if (file.size > 10 * 1024 * 1024) {
-        return { error: "File too large. Maximum size is 10MB." }
-    }
-
-    // Security: Type Check
-    const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp"]
-    if (!allowedTypes.includes(file.type)) {
-        return { error: "Invalid file type. Only PDF and images are allowed." }
+    // Full validation (size, extension allowlist, content-type, magic bytes)
+    // before the file is handed to the AI — don't feed a disguised payload in.
+    const scanValidation = await validateUploadFile(file, { category: "policy", maxBytes: 10 * 1024 * 1024 })
+    if (!scanValidation.ok) {
+        return { error: REJECTION_MESSAGES[scanValidation.reason] }
     }
 
     const apiKey = process.env.GEMINI_API_KEY
@@ -770,7 +770,9 @@ export async function parsePolicyPdfWithGemini(formData: FormData) {
             {
                 data: base64Data,
                 mimeType: file.type,
-                fileName: file.name
+                // Sanitized — the raw client filename (often the customer's
+                // name) should not reach the third-party AI provider.
+                fileName: sanitizeDisplayName(file.name)
             },
             // Attribute the token cost to the agent — the scan used to run
             // entirely off the books.

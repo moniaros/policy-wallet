@@ -18,6 +18,9 @@ export const SUBSCRIPTION_PERIOD_DAYS = 30
 export const POLICY_SHARE_EXPIRY_DAYS = 7
 export const DEFAULT_POLICY_DURATION_DAYS = 365
 export const SIGNED_URL_EXPIRY_MS = 3_600_000      // 1 hour
+// View/download links handed to the browser — short-lived on purpose; the
+// authorized GET endpoint mints a fresh one per request.
+export const DOWNLOAD_SIGNED_URL_EXPIRY_SECONDS = 300 // 5 minutes
 export const COMPLETION_ESTIMATE_MS = 120_000       // 2 minutes
 
 // ─── Helpers ───

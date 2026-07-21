@@ -14,6 +14,7 @@ interface PolicyDocumentItem {
 }
 
 interface DocumentsCardProps {
+    policyId: string
     documents: PolicyDocumentItem[]
     isFreeTier: boolean
     copy: {
@@ -34,10 +35,14 @@ interface DocumentsCardProps {
  * Uploaded documents with inline preview (PDF preview is Plus-gated).
  * Owns the preview-modal state so the page orchestrator stays stateless.
  */
-export function DocumentsCard({ documents, isFreeTier, copy }: DocumentsCardProps) {
+export function DocumentsCard({ policyId, documents, isFreeTier, copy }: DocumentsCardProps) {
     const pathname = usePathname()
     const [previewDoc, setPreviewDoc] = useState<{ fileName: string; fileUrl: string } | null>(null)
     const [upgradeOpen, setUpgradeOpen] = useState(false)
+
+    // Authorized retrieval: the raw storage URL is never rendered. This
+    // endpoint re-checks access and 302s to a fresh short-lived signed URL.
+    const docHref = (docId: string) => `/api/v1/policies/${policyId}/documents/${docId}`
 
     return (
         <div className="pw-card p-6">
@@ -59,7 +64,7 @@ export function DocumentsCard({ documents, isFreeTier, copy }: DocumentsCardProp
                         return (
                             <li key={doc.id} className="flex items-center gap-2">
                                 <a
-                                    href={doc.fileUrl}
+                                    href={docHref(doc.id)}
                                     target="_blank"
                                     rel="noreferrer"
                                     className="flex flex-1 items-center gap-3 rounded-xl border border-black/10 bg-white px-3 py-3 transition-colors hover:bg-black/5 dark:border-white/15 dark:bg-black dark:hover:bg-white/10"
@@ -74,7 +79,7 @@ export function DocumentsCard({ documents, isFreeTier, copy }: DocumentsCardProp
                                     <div className="flex items-center gap-1.5">
                                         {canPreview && (
                                             <DocumentPreviewButton
-                                                onClick={() => setPreviewDoc({ fileName: doc.fileName, fileUrl: doc.fileUrl })}
+                                                onClick={() => setPreviewDoc({ fileName: doc.fileName, fileUrl: docHref(doc.id) })}
                                                 isLocked={isPreviewLocked}
                                                 label={copy.preview}
                                                 lockedLabel={copy.upgradeToPlusPreview}
