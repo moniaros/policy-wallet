@@ -8,6 +8,7 @@ import { localizeHref } from "@/lib/seo/locale-links"
 import { ThemeToggle } from "@/components/ThemeToggle"
 import { SolutionsDropdown, SolutionsMobileGroup } from "@/components/landing/SolutionsDropdown"
 import { PublicMegaFooter } from "@/components/landing/PublicMegaFooter"
+import { PublicHeader } from "@/components/public/PublicHeader"
 import { PricingCard } from "@/components/pricing/PricingCard"
 import { FeatureComparison } from "@/components/pricing/FeatureComparison"
 import { PricingFAQ } from "@/components/pricing/PricingFAQ"
@@ -203,138 +204,9 @@ export default function PricingPage({
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-[#F0FDF4] via-white to-[#ECFDF5] selection:bg-[#29685B]/20 selection:text-[#0F172A] dark:from-slate-950 dark:via-slate-900 dark:to-[#0B1F1A]">
-            <header className="fixed left-4 right-4 top-4 z-50">
-                <div className="mx-auto flex h-14 max-w-[1400px] items-center justify-between rounded-full border border-gray-200/50 bg-white/80 px-6 shadow-sm backdrop-blur-xl transition-all duration-300 dark:border-slate-700/50 dark:bg-slate-900/80">
-                    <Link href={l("/")} className="inline-flex items-center text-[20px] font-bold tracking-tight">
-                        <span className="text-[#0F172A] dark:text-white">Policy</span>
-                        <span className="text-[#64748B] dark:text-slate-400">Wallet</span>
-                    </Link>
+            <PublicHeader locale={language} ctaSource="public_pricing_nav" />
 
-                    <nav className="hidden items-center gap-8 text-[14px] font-medium text-[#475569] dark:text-slate-300 md:flex">
-                        <Link href={l("/product")} className="transition-colors hover:text-[#0F172A] dark:hover:text-white">
-                            {labels.products[language]}
-                        </Link>
-                        <SolutionsDropdown language={language} />
-                        <Link href={l("/company")} className="transition-colors hover:text-[#0F172A] dark:hover:text-white">
-                            {labels.company[language]}
-                        </Link>
-                        <Link href={l("/pricing")} className="text-[#0F172A] transition-colors dark:text-white">
-                            {labels.pricing[language]}
-                        </Link>
-                    </nav>
-
-                    <div className="hidden items-center gap-5 md:flex">
-                        <div className="flex items-center gap-2">
-                            <button
-                                onClick={() => setLanguage("el")}
-                                className={`text-xs font-semibold transition-colors ${
-                                    language === "el"
-                                        ? "text-[#0F172A] dark:text-white"
-                                        : "text-[#64748B] hover:text-[#0F172A] dark:text-slate-400 dark:hover:text-white"
-                                }`}
-                            >
-                                EL
-                            </button>
-                            <span className="text-[#E2E8F0] dark:text-slate-700">|</span>
-                            <button
-                                onClick={() => setLanguage("en")}
-                                className={`text-xs font-semibold transition-colors ${
-                                    language === "en"
-                                        ? "text-[#0F172A] dark:text-white"
-                                        : "text-[#64748B] hover:text-[#0F172A] dark:text-slate-400 dark:hover:text-white"
-                                }`}
-                            >
-                                EN
-                            </button>
-                        </div>
-                        <ThemeToggle />
-                        {session ? (
-                            <Link
-                                href="/wallet"
-                                className="text-[14px] font-medium text-[#0F172A] transition-colors hover:text-[#64748B] dark:text-white"
-                            >
-                                {labels.dashboard[language]}
-                            </Link>
-                        ) : (
-                            <>
-                                <Link
-                                    href="/auth/signin"
-                                    className="text-[14px] font-medium text-[#0F172A] transition-colors hover:text-[#64748B] dark:text-white"
-                                >
-                                    {labels.signin[language]}
-                                </Link>
-                                <Link href="/auth/signup" className="pw-primary-button pw-btn-sm">
-                                    {labels.getStarted[language]}
-                                </Link>
-                            </>
-                        )}
-                    </div>
-
-                    <div className="flex items-center gap-4 md:hidden">
-                        <ThemeToggle />
-                        <button
-                            className="p-2 -mr-2 text-[#0F172A] dark:text-white"
-                            onClick={() => setIsMobileMenuOpen(true)}
-                            aria-label={labels.openMenu[language]}
-                        >
-                            <Menu className="h-5 w-5" />
-                        </button>
-                    </div>
-                </div>
-            </header>
-
-            <div
-                className={`fixed inset-0 z-[100] flex flex-col bg-[#29685B] text-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                    isMobileMenuOpen ? "translate-y-0" : "-translate-y-full"
-                }`}
-            >
-                <div className="mx-auto flex h-16 w-full max-w-[1400px] items-center justify-between px-6 pt-4">
-                    <Link
-                        href={l("/")}
-                        className="inline-flex items-center text-[20px] font-bold tracking-tight"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                        <span className="text-white">Policy</span>
-                        <span className="text-white/80">Wallet</span>
-                    </Link>
-                    <button
-                        className="rounded-full p-2 -mr-2 text-white transition-colors hover:bg-white/10"
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        aria-label={labels.closeMenu[language]}
-                    >
-                        <X className="h-6 w-6" />
-                    </button>
-                </div>
-
-                <div className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-center px-8 pb-24 sm:px-12">
-                    <nav className="mb-12 flex flex-col gap-6 text-[44px] font-medium leading-tight tracking-tight sm:text-[56px]">
-                        <Link
-                            href={l("/product")}
-                            className="text-white transition-colors hover:text-white/80"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            {labels.products[language]}
-                        </Link>
-                        <SolutionsMobileGroup language={language} onNavigate={() => setIsMobileMenuOpen(false)} className="text-[20px]" />
-                        <Link
-                            href={l("/company")}
-                            className="text-white transition-colors hover:text-white/80"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            {labels.company[language]}
-                        </Link>
-                        <Link
-                            href={l("/pricing")}
-                            className="text-white transition-colors hover:text-white/80"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                        >
-                            {labels.pricing[language]}
-                        </Link>
-                    </nav>
-                </div>
-            </div>
-
-            <main>
+            <main id="main-content" tabIndex={-1}>
             <section className="px-4 pb-12 pt-28 sm:px-6 lg:px-8 lg:pt-36">
                 <div className="mx-auto max-w-7xl text-center">
                     <h1 className="mb-4 text-4xl font-bold leading-tight text-slate-900 dark:text-white md:text-5xl">
