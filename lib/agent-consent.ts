@@ -19,7 +19,11 @@
 export function isConsentedRelationship(
     rel: { activationStatus?: string | null } | null | undefined
 ): boolean {
-    return rel?.activationStatus === "activated"
+    // "activated" — the customer accepted the agent's invite (redeemInvite).
+    // "active"    — the CUSTOMER initiated the relationship by sharing a
+    //               policy with the agent (wallet sharePolicy) — unambiguous
+    //               consent, and it must survive later grant revocations.
+    return rel?.activationStatus === "activated" || rel?.activationStatus === "active"
 }
 
 export function isPhantomCustomer(

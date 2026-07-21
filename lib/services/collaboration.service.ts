@@ -443,16 +443,28 @@ export class CollaborationService {
 
         if (existing) return existing
 
-        const thread = await this.createThread(userId, "agent,policyholder", {
-            relationshipId: input.relationshipId,
-            policyId: input.policyId || null,
-            subject: input.subject,
-            category: input.category,
-            priority: input.priority || "medium",
-            linkedGapInstanceId: input.linkedGapInstanceId || null,
-            linkedQuestionnaireInstanceId: input.linkedQuestionnaireInstanceId || null,
-            linkedOpportunityId: input.linkedOpportunityId || null,
-        })
+        // Automation threads are an enhancement riding on a primary action
+        // (questionnaire sent, policy shared, gap flagged) — the acceptance
+        // gate in createThread must not fail that primary action mid-flow.
+        // No thread simply means no follow-up channel yet.
+        let thread
+        try {
+            thread = await this.createThread(userId, "agent,policyholder", {
+                relationshipId: input.relationshipId,
+                policyId: input.policyId || null,
+                subject: input.subject,
+                category: input.category,
+                priority: input.priority || "medium",
+                linkedGapInstanceId: input.linkedGapInstanceId || null,
+                linkedQuestionnaireInstanceId: input.linkedQuestionnaireInstanceId || null,
+                linkedOpportunityId: input.linkedOpportunityId || null,
+            })
+        } catch (error) {
+            if (error instanceof Error && error.message === "Relationship not accepted yet") {
+                return null
+            }
+            throw error
+        }
 
         if (input.initialMessage) {
             await db.collaborationMessage.create({

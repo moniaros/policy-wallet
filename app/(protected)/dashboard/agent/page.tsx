@@ -129,10 +129,13 @@ export default async function DashboardPage() {
     // score privacy gate below. Every customer name/avatar this page emits
     // goes through presentName/presentCustomerIdentity — an unconsented real
     // account shows the email the agent typed, never its real name.
+    // No .catch fallback: silently zeroing the counts would mask every name
+    // and score on a transient DB error while the page renders "successfully".
+    // Fail the render loudly, like the other consent-gated surfaces do.
     const visiblePolicyCounts = await getVisiblePolicyCountsByOwner(
         agentId,
         relationships.map((r) => r.policyholderUserId)
-    ).catch(() => new Map<string, number>())
+    )
     const relByCustomerId = new Map(relationships.map((r) => [r.customer.id, r]))
     const presentName = (customerId: string | null | undefined, fallback = "Client") => {
         const rel = customerId ? relByCustomerId.get(customerId) : undefined

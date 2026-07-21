@@ -69,6 +69,13 @@ export async function POST(req: Request) {
     } catch (error: any) {
         if (error?.message === "Forbidden") return createApiError("FORBIDDEN", "Forbidden", 403)
         if (error?.message === "Relationship not found") return createApiError("NOT_FOUND", "Relationship not found", 404)
-        return createApiError("INTERNAL_ERROR", "Failed to create collaboration thread", 500, String(error))
+        // Deliberate policy denials, not server errors — no String(error) leak.
+        if (error?.message === "Relationship not accepted yet") {
+            return createApiError("FORBIDDEN", "The customer has not accepted this relationship yet", 403)
+        }
+        if (error?.message === "Relationship terminated") {
+            return createApiError("FORBIDDEN", "This relationship has been terminated", 403)
+        }
+        return createApiError("INTERNAL_ERROR", "Failed to create collaboration thread", 500)
     }
 }

@@ -90,6 +90,13 @@ export async function startBranchActionThread(policyId: string, actionId: string
         return { error: "THREAD_FAILED" }
     }
 
+    // null = the acceptance gate skipped thread creation. This flow is
+    // policyholder-initiated so the gate never applies to it, but the type
+    // is honest about the possibility.
+    if (!thread) {
+        return { error: "THREAD_FAILED" }
+    }
+
     revalidatePath("/wallet")
     revalidatePath(`/wallet/${policyId}`)
     return { success: true, threadId: thread.id }
