@@ -64,9 +64,25 @@ export const POST = withApiGuard(
                 "@/lib/services/analysis/policy-analysis-orchestrator.service"
             )
             const orchestrator = new PolicyAnalysisOrchestratorService()
-            const run = await orchestrator.executeRun(parsed.runId, parsed.language)
+            // throwOnLeaseHeld: a held lease must NOT return 200 — QStash would
+            // mark the delivery done, and if the lease holder was a killed
+            // function the run (and its policy, stuck 'analyzing') would never
+            // be retried. A 503 keeps the redelivery alive until the dead
+            // holder's lease expires and this consumer can re-acquire it.
+            const run = await orchestrator.executeRun(parsed.runId, parsed.language, {
+                throwOnLeaseHeld: true,
+            })
             return createApiResponse({ run_id: parsed.runId, status: run?.status ?? "unknown" })
         } catch (error) {
+            const { OrchestrationError } = await import(
+                "@/lib/services/analysis/policy-analysis-orchestrator.service"
+            )
+            if (error instanceof OrchestrationError && error.code === "RUN_LEASE_HELD") {
+                logger("info", "Queued analysis delivery deferred: run lease held", {
+                    runId: parsed.runId,
+                })
+                return createApiError("SERVICE_UNAVAILABLE", "Run locked by another executor, retry later", 503)
+            }
             // A 500 makes QStash retry per its retry policy.
             logger("error", "Queued analysis execution failed", {
                 runId: parsed.runId,

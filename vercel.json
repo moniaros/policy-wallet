@@ -57,6 +57,10 @@
     {
       "path": "/api/v1/jobs/privacy-retention",
       "schedule": "45 6 * * *"
+    },
+    {
+      "path": "/api/v1/jobs/reap-stale-analyses",
+      "schedule": "*/15 * * * *"
     }
   ]
 }

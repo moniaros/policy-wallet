@@ -1877,6 +1877,29 @@
           "profile": "zod-or-guard"
         }
       }
+    },
+    {
+      "route": "v1/jobs/reap-stale-analyses/route.ts",
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "policy": {
+        "auth": {
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
+        },
+        "rateLimit": {
+          "required": false,
+          "profile": "none"
+        },
+        "validation": {
+          "required": false,
+          "profile": "optional"
+        }
+      }
     }
   ]
 }

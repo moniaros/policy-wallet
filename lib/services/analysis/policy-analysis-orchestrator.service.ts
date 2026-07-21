@@ -71,7 +71,12 @@ const STEP_ORDER: Record<PolicyAnalysisStepKey, number> = {
 const MAX_STEP_ATTEMPTS = 3
 const MAX_RUN_ATTEMPTS = 5
 const STEP_BACKOFF_MS = [2000, 5000, 10000]
-const RUN_EXECUTION_LEASE_TTL_MS = 8 * 60 * 1000 // 8 min — matches real serverless timeout ceiling
+// Must stay BELOW the execute-analysis route's maxDuration (300s): when the
+// function is killed at the platform ceiling, the lease has to expire before
+// QStash's next redelivery so the retry can re-acquire and resume. At the old
+// 8 min the retry landed inside the still-valid lease, no-op'ed with a 200,
+// and the run stayed 'running' (and the policy 'analyzing') forever.
+const RUN_EXECUTION_LEASE_TTL_MS = 4 * 60 * 1000
 
 // H4: Minimal schema for sourceRun.resultJson — guards retryMissing against propagating corrupt JSON
 const sourceRunResultSchema = z.object({
@@ -123,7 +128,7 @@ type StepExecutionPayload<T> = {
     }
 }
 
-class OrchestrationError extends Error {
+export class OrchestrationError extends Error {
     code: string
     retryable: boolean
     hardFailure: boolean
@@ -650,6 +655,10 @@ export class PolicyAnalysisOrchestratorService {
         options?: {
             retryOnlySteps?: Set<PolicyAnalysisStepKey>
             retrySourceRunId?: string
+            // Queue consumers set this so a held lease surfaces as a retryable
+            // error (503) instead of a silent no-op 200 — otherwise QStash
+            // marks the delivery done and a killed executor's run is orphaned.
+            throwOnLeaseHeld?: boolean
         }
     ) {
         const existing = await db.policyAnalysisRun.findUnique({
@@ -678,11 +687,26 @@ export class PolicyAnalysisOrchestratorService {
                 executionLeaseId: currentRun?.executionLeaseId || null,
                 executionLeaseExpiresAt: currentRun?.executionLeaseExpiresAt || null,
             })
+            if (options?.throwOnLeaseHeld) {
+                throw new OrchestrationError("Run execution lease held by another executor", {
+                    code: "RUN_LEASE_HELD",
+                    retryable: true,
+                })
+            }
             return currentRun
         }
 
         let lastError: OrchestrationError | null = null
         const runStartedAt = existing.startedAt || new Date()
+
+        // Keep the lease fresh for as long as this process is alive, independent
+        // of step duration — a single AI call (timeout 180s × retries) can exceed
+        // the lease TTL between step-boundary heartbeats. Failures are swallowed
+        // here: if the lease is genuinely lost, the next step-boundary heartbeat
+        // throws RUN_LEASE_LOST and aborts the attempt.
+        const leaseRefreshTimer = setInterval(() => {
+            void this.heartbeatRunLease(runId, leaseId).catch(() => {})
+        }, 60_000)
 
         try {
             await this.heartbeatRunLease(runId, leaseId)
@@ -795,6 +819,7 @@ export class PolicyAnalysisOrchestratorService {
             }
             return db.policyAnalysisRun.findUnique({ where: { id: runId } })
         } finally {
+            clearInterval(leaseRefreshTimer)
             await this.releaseRunLease(runId, leaseId).catch((error) => {
                 logger("warn", "Failed to release policy analysis execution lease", {
                     runId,
@@ -1703,6 +1728,21 @@ export class PolicyAnalysisOrchestratorService {
             // tokens are not tracked via reserved_tokens so releasing would corrupt the pool.
             const reservationSource = preflight.source
 
+            // Exactly-once release, guaranteed on EVERY exit path. Before this
+            // guard, the token-failure throw and any heartbeat RUN_LEASE_LOST
+            // throw skipped the release, leaking reserved_tokens against the
+            // user's budget for the rest of the billing month.
+            let reservationReleased = false
+            const releaseReservation = async () => {
+                if (reservationReleased) return
+                reservationReleased = true
+                if (reservationSource === 'subscription') {
+                    await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
+                }
+            }
+
+            try {
+
             const step = await db.policyAnalysisStep.create({
                 data: {
                     runId: params.runId,
@@ -1768,9 +1808,7 @@ export class PolicyAnalysisOrchestratorService {
                     willRetry: false,
                 })
                 await this.heartbeatRunLease(params.runId, params.leaseId)
-                if (reservationSource === 'subscription') {
-                    await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
-                }
+                await releaseReservation()
                 return null
             }
 
@@ -1838,9 +1876,7 @@ export class PolicyAnalysisOrchestratorService {
                     })
 
                     await this.heartbeatRunLease(params.runId, params.leaseId)
-                    if (reservationSource === 'subscription') {
-                        await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
-                    }
+                    await releaseReservation()
                     return null
                 }
             }
@@ -1901,9 +1937,7 @@ export class PolicyAnalysisOrchestratorService {
                 await this.heartbeatRunLease(params.runId, params.leaseId)
                 // Release the subscription reservation — actual usage is recorded by trackTokenUsage in the AI service layer.
                 // Purchased-token path does not use reserved_tokens so must not release.
-                if (reservationSource === 'subscription') {
-                    await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
-                }
+                await releaseReservation()
 
                 return {
                     ...payload,
@@ -1988,10 +2022,15 @@ export class PolicyAnalysisOrchestratorService {
                     await sleep(STEP_BACKOFF_MS[Math.min(stepAttemptCounter - 1, STEP_BACKOFF_MS.length - 1)] || 10000)
                 }
 
-                if (reservationSource === 'subscription') {
-                    await releaseTokenReservation(params.userId, params.estimatedTokens).catch(() => {})
-                }
+                await releaseReservation()
                 return null
+            }
+
+            } finally {
+                // Safety net for every path that threw past the in-place
+                // releases above (token-classified failures, lost leases,
+                // unexpected DB errors). No-op when already released.
+                await releaseReservation()
             }
         }
 
