@@ -22,7 +22,7 @@ export default async function WalletPage() {
     const showTour = (profile?.preferences as any)?.showTour || false
 
 
-    const policies = await db.policy.findMany({
+    let policies = await db.policy.findMany({
         where: {
             ownerUserId: dbUser.id
         },
@@ -38,6 +38,40 @@ export default async function WalletPage() {
             endDate: 'asc'
         }
     })
+
+    // Self-heal exactly where the user is staring at the spinner: an
+    // 'analyzing' policy whose run's executor died (expired lease) is reaped
+    // here, scoped to this user's policies, so the poller's next refresh shows
+    // the retryable error instead of an eternal spinner. In prod (no QStash)
+    // this and the daily cron are the only recovery paths. No-op — one cheap
+    // indexed query — while a live run's heartbeat keeps its lease fresh.
+    const analyzingIds = policies.filter((p) => p.status === 'analyzing').map((p) => p.id)
+    if (analyzingIds.length > 0) {
+        try {
+            const { PolicyAnalysisOrchestratorService } = await import(
+                '@/lib/services/analysis/policy-analysis-orchestrator.service'
+            )
+            const { reaped } = await new PolicyAnalysisOrchestratorService().reapStaleRuns({
+                graceMs: 2 * 60 * 1000,
+                limit: 5,
+                policyIds: analyzingIds,
+            })
+            if (reaped > 0) {
+                policies = await db.policy.findMany({
+                    where: { ownerUserId: dbUser.id },
+                    include: {
+                        documents: true,
+                        _count: {
+                            select: { gapInstances: { where: { status: { in: ['open', 'detected', 'acknowledged'] } } } }
+                        }
+                    },
+                    orderBy: { endDate: 'asc' }
+                })
+            }
+        } catch {
+            // Best-effort: a reap hiccup must never break the wallet render.
+        }
+    }
 
     // Fetch agent relationship for mobile view
     const customerRelationship = await db.customerRelationship.findFirst({

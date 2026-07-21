@@ -613,7 +613,13 @@ export class PolicyAnalysisOrchestratorService {
      * + processingError) so reaped runs render identically to orchestrator-
      * failed ones.
      */
-    async reapStaleRuns(options?: { graceMs?: number; limit?: number }): Promise<{
+    async reapStaleRuns(options?: {
+        graceMs?: number
+        limit?: number
+        // Scope to specific policies — used by user-facing surfaces to self-heal
+        // exactly the policy the user is staring at, without a global sweep.
+        policyIds?: string[]
+    }): Promise<{
         staleCandidates: number
         reaped: number
     }> {
@@ -625,6 +631,7 @@ export class PolicyAnalysisOrchestratorService {
             where: {
                 status: "running",
                 executionLeaseExpiresAt: { lt: cutoff },
+                ...(options?.policyIds?.length ? { policyId: { in: options.policyIds } } : {}),
             },
             select: { id: true, policyId: true, provider: true },
             orderBy: { executionLeaseExpiresAt: "asc" },
