@@ -337,8 +337,25 @@ export async function getUserDetails(userId: string) {
     }
 }
 
+const VALID_ROLES = new Set(["policyholder", "agent", "admin"])
+
 export async function changeUserRole(userId: string, newRole: string) {
     const admin = await verifyAdminRole()
+
+    // The roles column is a comma-separated string checked all over the
+    // codebase — an arbitrary value here (typo, junk, embedded substring)
+    // would silently corrupt every downstream role check.
+    const normalizedRoles = newRole
+        .split(",")
+        .map((r) => r.trim())
+        .filter(Boolean)
+    if (
+        normalizedRoles.length === 0 ||
+        normalizedRoles.some((r) => !VALID_ROLES.has(r))
+    ) {
+        throw new Error(`Invalid role value. Allowed: ${[...VALID_ROLES].join(", ")}`)
+    }
+    const validatedRoles = [...new Set(normalizedRoles)].join(",")
 
     try {
         const user = await db.user.findUnique({
@@ -353,7 +370,7 @@ export async function changeUserRole(userId: string, newRole: string) {
         // Update user role
         const updatedUser = await db.user.update({
             where: { id: userId },
-            data: { roles: newRole }
+            data: { roles: validatedRoles }
         })
 
         // Log the action
@@ -361,8 +378,8 @@ export async function changeUserRole(userId: string, newRole: string) {
             admin.id,
             admin.email,
             "CHANGE_USER_ROLE",
-            `Changed role for user ${user.email} from ${user.roles} to ${newRole}`,
-            { userId, oldRole: user.roles, newRole }
+            `Changed role for user ${user.email} from ${user.roles} to ${validatedRoles}`,
+            { userId, oldRole: user.roles, newRole: validatedRoles }
         )
 
         revalidatePath("/admin/users")

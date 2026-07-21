@@ -58,9 +58,10 @@ export const POST = withApiGuard(
                 userId: auth!.dbUser.id,
                 error: error instanceof Error ? error.message : String(error),
             })
+            // Never echo internal error text (Stripe/DB details) to the client.
             return createApiError(
                 "INTERNAL_ERROR",
-                error?.message || "Failed to create checkout session",
+                "Failed to create checkout session",
                 500,
                 null,
                 language

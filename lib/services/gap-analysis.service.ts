@@ -467,25 +467,18 @@ export class GapAnalysisService extends BaseService {
             throw AppError.notFound('Gap policy', gapInstanceId)
         }
 
-        // Check authorization
-        const isOwner = gap.policy.ownerUserId === userId
-        if (!isOwner) {
-            // Check for agent access
-            const hasAccess = await this.db.accessGrant.findFirst({
-                where: {
-                    granterUserId: gap.policy.ownerUserId,
-                    granteeUserId: userId,
-                    status: 'active'
-                }
-            })
-
-            if (!hasAccess) {
-                throw AppError.forbidden(
-                    language === 'el'
-                        ? 'Δεν έχετε δικαίωμα να επιλύσετε αυτό το κενό'
-                        : 'You do not have permission to resolve this gap'
-                )
-            }
+        // Central authorization rule: mutating a gap requires WRITE access to
+        // its policy. The old check accepted any active grant between the two
+        // users regardless of scope — a read-only or unrelated-policy grant
+        // could resolve gaps.
+        const { getPolicyAccess } = await import('@/lib/policy-access')
+        const access = await getPolicyAccess(gap.policy.id, { id: userId })
+        if (!access.canWrite) {
+            throw AppError.forbidden(
+                language === 'el'
+                    ? 'Δεν έχετε δικαίωμα να επιλύσετε αυτό το κενό'
+                    : 'You do not have permission to resolve this gap'
+            )
         }
 
         await this.db.gapInstance.update({
@@ -542,25 +535,16 @@ export class GapAnalysisService extends BaseService {
             throw AppError.notFound('Gap policy', gapInstanceId)
         }
 
-        // Check authorization
-        const isOwner = gap.policy.ownerUserId === userId
-        if (!isOwner) {
-            // Check for agent access
-            const hasAccess = await this.db.accessGrant.findFirst({
-                where: {
-                    granterUserId: gap.policy.ownerUserId,
-                    granteeUserId: userId,
-                    status: 'active'
-                }
-            })
-
-            if (!hasAccess) {
-                throw AppError.forbidden(
-                    language === 'el'
-                        ? 'Δεν έχετε δικαίωμα να απορρίψετε αυτό το κενό'
-                        : 'You do not have permission to dismiss this gap'
-                )
-            }
+        // Central authorization rule: mutating a gap requires WRITE access to
+        // its policy (see resolveGap above).
+        const { getPolicyAccess } = await import('@/lib/policy-access')
+        const access = await getPolicyAccess(gap.policy.id, { id: userId })
+        if (!access.canWrite) {
+            throw AppError.forbidden(
+                language === 'el'
+                    ? 'Δεν έχετε δικαίωμα να απορρίψετε αυτό το κενό'
+                    : 'You do not have permission to dismiss this gap'
+            )
         }
 
         await this.db.gapInstance.update({

@@ -3,13 +3,16 @@ import * as Sentry from '@sentry/nextjs'
 import { requireApiUser } from '@/lib/api-auth'
 import { z } from 'zod'
 import { createApiResponse, createApiError } from "@/lib/api-utils"
-import { sendPolicySharedAccessEmail } from "@/lib/email/invite-emails"
+import { sendPolicySharedAccessEmail, sendPolicyInviteEmail } from "@/lib/email/invite-emails"
+import { daysFromNow, POLICY_SHARE_EXPIRY_DAYS } from "@/lib/constants/time"
+import { absoluteUrl } from "@/lib/seo/site"
 import { withApiGuard } from '@/lib/api-guard'
 
 const sharePolicySchema = z.object({
     policyId: z.string().min(1),
     email: z.string().email(),
-    permissions: z.string().min(1),
+    // Free-form permission strings were persisted verbatim; only these exist.
+    permissions: z.enum(["view", "edit"]),
 })
 
 const revokeShareQuerySchema = z.object({
@@ -41,19 +44,44 @@ export const POST = withApiGuard(
                 return createApiError("NOT_FOUND", "Policy not found or access denied", 404)
             }
 
-            // Find or create the grantee user
-            let granteeUser = await db.user.findUnique({
+            // Find the grantee — an unknown email gets an INVITE the recipient
+            // must accept, mirroring the wallet share action. The old path
+            // minted a placeholder User row + a silently ACTIVE grant for any
+            // address a caller typed (account-enumeration and spam vector).
+            const granteeUser = await db.user.findUnique({
                 where: { email }
             })
 
             if (!granteeUser) {
-                // Create placeholder user
-                granteeUser = await db.user.create({
+                const invite = await db.invite.create({
                     data: {
-                        email,
-                        name: email.split('@')[0],
-                        roles: 'policyholder'
+                        inviterUserId: authResult.dbUser.id,
+                        inviteeEmail: email,
+                        token: crypto.randomUUID(),
+                        inviteType: 'share',
+                        relationshipType: 'policy_share',
+                        scope: `policy:${policyId}`,
+                        requestedPermissions: permissions,
+                        expiresAt: daysFromNow(POLICY_SHARE_EXPIRY_DAYS)
                     }
+                })
+                let emailDelivered = false
+                try {
+                    const emailResult = await sendPolicyInviteEmail({
+                        to: email,
+                        token: invite.token,
+                        inviterName: authResult.dbUser.name || authResult.dbUser.email,
+                        policyNumber: policy.policyNumber,
+                        language: (authResult.dbUser.preferredLanguage as "el" | "en") || "en",
+                    })
+                    emailDelivered = emailResult.success
+                } catch (emailError) {
+                    console.error("Failed to send policy share invite email", emailError)
+                }
+                return createApiResponse({
+                    message: `Invitation created for ${email}`,
+                    invite_link: absoluteUrl(`/invite/${invite.token}`),
+                    email_delivered: emailDelivered,
                 })
             }
 
@@ -157,9 +185,21 @@ export async function GET(req: Request) {
             }
         })
 
+        // Explicit projection — the old full-row spread shipped acordData and
+        // internal ids to the client for every shared policy.
         return createApiResponse({
             sharedPolicies: policies.map(p => ({
-                ...p,
+                id: p.id,
+                policyNumber: p.policyNumber,
+                insurerName: p.insurerName,
+                lineOfBusiness: p.lineOfBusiness,
+                status: p.status,
+                startDate: p.startDate,
+                endDate: p.endDate,
+                coverageEndDate: p.coverageEndDate,
+                premiumAmount: p.premiumAmount,
+                premiumCurrency: p.premiumCurrency,
+                owner: p.owner,
                 sharedBy: grants.find(g => g.scope === `policy:${p.id}`)?.granter,
                 permissions: grants.find(g => g.scope === `policy:${p.id}`)?.permissions
             }))

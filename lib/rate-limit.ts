@@ -49,10 +49,20 @@ const localCache = new Map<string, { count: number; expires: number }>()
  * counter — a visitor who merely browses the site can get 429'd out of submitting
  * a form. Pass a bucket (e.g. `contact:${ip}`) to get an independent allowance.
  */
+// One-time signal: running production WITHOUT Upstash configured means every
+// limit is per-instance in-memory only — silently useless across serverless
+// instances. Failing open without a trace hid exactly that in prod.
+let warnedUnconfigured = false
+
 export async function rateLimit(ip: string, limit: number = 10, durationMs: number = 60000, bucket?: string) {
     const key = bucket || ip
 
     const limiter = getLimiter(limit, durationMs)
+    if (!limiter && process.env.NODE_ENV === "production" && !warnedUnconfigured) {
+        warnedUnconfigured = true
+        console.warn("rate-limit: Upstash not configured — per-instance in-memory limiting only")
+        Sentry.captureMessage("rate-limit: Upstash not configured in production", { level: "warning" })
+    }
     if (limiter) {
         try {
             // Use Global Redis Ratelimiter (per (limit, window) instance)

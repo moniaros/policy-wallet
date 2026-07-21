@@ -401,6 +401,11 @@ export async function getTeamOverview(userId: string): Promise<TeamOverview | nu
         ],
     })
 
+    // Per-member REVENUE is manager/owner-only — the pipeline view already
+    // gates it, but this overview served every plain member each colleague's
+    // pipeline and won totals. Members keep their own numbers; peers show 0.
+    const viewerSeesRevenue = membership.role === "owner" || membership.role === "manager"
+
     // Gather per-member stats in parallel
     const memberStats = await Promise.all(
         members.map(async (m) => {
@@ -432,21 +437,25 @@ export async function getTeamOverview(userId: string): Promise<TeamOverview | nu
                 photoUrl: m.user.image || undefined,
                 joinedAt: m.joinedAt?.toISOString() || null,
                 customerCount,
-                pipelineValue,
-                wonValue,
+                pipelineValue: viewerSeesRevenue || m.userId === userId ? pipelineValue : 0,
+                wonValue: viewerSeesRevenue || m.userId === userId ? wonValue : 0,
+                // Unmasked values kept locally for the team totals below.
+                _rawPipelineValue: pipelineValue,
+                _rawWonValue: wonValue,
             }
         })
     )
 
     const activeMembers = memberStats.filter((m) => m.status === "active")
     const totalCustomers = activeMembers.reduce((s, m) => s + m.customerCount, 0)
-    const totalPipeline = activeMembers.reduce((s, m) => s + m.pipelineValue, 0)
-    const totalWon = activeMembers.reduce((s, m) => s + m.wonValue, 0)
+    // Aggregates are team-level, computed from the unmasked values.
+    const totalPipeline = activeMembers.reduce((s, m) => s + m._rawPipelineValue, 0)
+    const totalWon = activeMembers.reduce((s, m) => s + m._rawWonValue, 0)
 
     return {
         tenantId: membership.tenantId,
         tenantName: membership.tenant.name,
-        members: memberStats,
+        members: memberStats.map(({ _rawPipelineValue, _rawWonValue, ...member }) => member),
         stats: {
             totalMembers: members.length,
             activeMembers: activeMembers.length,

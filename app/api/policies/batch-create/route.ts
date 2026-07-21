@@ -119,10 +119,12 @@ export const POST = withApiGuard(
                     })
                     createdPolicies.push(policy)
                 } catch (error: any) {
+                    // Log the real error; never echo Prisma/DB internals to the client.
+                    console.error("Batch create: policy failed", { index, error: error?.message })
                     failedPolicies.push({
                         index,
                         policyNumber: policyData.policyNumber || "unknown",
-                        error: error?.message || "Failed to create policy"
+                        error: "Failed to create policy"
                     })
                 }
             }
@@ -156,7 +158,7 @@ export const POST = withApiGuard(
         } catch (error) {
             console.error("Batch create error:", error)
             return NextResponse.json({
-                error: error instanceof Error ? error.message : "Failed to create policies"
+                error: "Failed to create policies"
             }, { status: 500 })
         }
     }
