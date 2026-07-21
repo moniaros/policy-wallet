@@ -220,9 +220,15 @@ export async function analyzeQuestionnaireResponse(instanceId: string) {
     // Run cross-sell analysis for the customer
     const { analyzePortfolioGaps } = await import("@/lib/services/cross-sell.service")
 
-    // Get customer's existing LoB
+    // Get customer's existing LoB — ONLY from policies this agent may see.
+    // The unscoped query read the customer's entire portfolio; the complement
+    // ("missing lines") let the agent infer holdings the customer never shared.
+    const { getAgentPolicyVisibilityWhere } = await import("@/lib/agent-visibility")
     const customerPolicies = await db.policy.findMany({
-        where: { ownerUserId: instance.relationship.policyholderUserId },
+        where: {
+            ownerUserId: instance.relationship.policyholderUserId,
+            ...(await getAgentPolicyVisibilityWhere(dbUser.id)),
+        },
         select: { lineOfBusiness: true },
     })
     const existingLobs = [...new Set(customerPolicies.map((p) => p.lineOfBusiness.toLowerCase()))]

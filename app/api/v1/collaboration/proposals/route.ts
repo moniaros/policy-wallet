@@ -44,12 +44,21 @@ export const POST = withApiGuard(
 
         const agentUserId = auth!.dbUser.id
 
-        // Verify relationship
+        // Verify relationship — and require ACCEPTANCE: this creates a thread
+        // and notifies the customer, so an agent must not be able to message
+        // someone who never accepted the relationship (same gate as
+        // collaborationService.createThread).
         const relationship = await prisma.customerRelationship.findFirst({
             where: { id: relationshipId, agentUserId },
         })
         if (!relationship) {
             return NextResponse.json({ error: "Relationship not found" }, { status: 404 })
+        }
+        if (relationship.status !== "active") {
+            return NextResponse.json(
+                { error: "The customer has not accepted this relationship yet" },
+                { status: 403 }
+            )
         }
 
         const result = await prisma.$transaction(async (tx) => {

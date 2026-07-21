@@ -1127,6 +1127,10 @@ export async function requestAiConsent(policyId: string) {
             where: {
                 agentUserId: authResult.dbUser.id,
                 policyholderUserId: policy.ownerUserId,
+                // Only an ACCEPTED relationship may trigger consent emails —
+                // pending/terminated ones are agent-created, not the owner's
+                // choice, and this action emails the owner directly.
+                status: "active",
             },
         })
     if (!hasGrant && !hasRelationship) return { error: "Unauthorized" }

@@ -3,6 +3,7 @@ import {
     isConsentedRelationship,
     isPhantomCustomer,
     agentMaySeeCustomerIdentity,
+    presentCustomerIdentity,
 } from "@/lib/agent-consent"
 
 const phantom = { password: null, emailVerified: null }
@@ -44,5 +45,47 @@ describe("agentMaySeeCustomerIdentity", () => {
         // no policy the agent may see: identity must stay masked.
         expect(agentMaySeeCustomerIdentity({ activationStatus: "invited" }, realWithPassword, 0)).toBe(false)
         expect(agentMaySeeCustomerIdentity({ activationStatus: "no_policies" }, realVerified, 0)).toBe(false)
+    })
+})
+
+describe("presentCustomerIdentity — the ONE serialization path", () => {
+    const customer = {
+        name: "Γιώργος Παπαδόπουλος",
+        email: "gp@example.com",
+        image: "https://cdn/avatar.png",
+        ...realWithPassword,
+    }
+
+    it("consented → real name and avatar", () => {
+        const p = presentCustomerIdentity({ activationStatus: "activated" }, customer, 0)
+        expect(p).toEqual({
+            identityVisible: true,
+            name: "Γιώργος Παπαδόπουλος",
+            image: "https://cdn/avatar.png",
+        })
+    })
+
+    it("unconsented real account → email stands in, avatar stripped", () => {
+        const p = presentCustomerIdentity({ activationStatus: "invited" }, customer, 0)
+        expect(p).toEqual({
+            identityVisible: false,
+            name: "gp@example.com",
+            image: null,
+        })
+    })
+
+    it("visible policy count unlocks identity", () => {
+        const p = presentCustomerIdentity({ activationStatus: "invited" }, customer, 2)
+        expect(p.identityVisible).toBe(true)
+        expect(p.name).toBe("Γιώργος Παπαδόπουλος")
+    })
+
+    it("consented but nameless → email fallback", () => {
+        const p = presentCustomerIdentity(
+            { activationStatus: "activated" },
+            { ...customer, name: null },
+            0
+        )
+        expect(p.name).toBe("gp@example.com")
     })
 })

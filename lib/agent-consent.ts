@@ -19,7 +19,11 @@
 export function isConsentedRelationship(
     rel: { activationStatus?: string | null } | null | undefined
 ): boolean {
-    return rel?.activationStatus === "activated"
+    // "activated" — the customer accepted the agent's invite (redeemInvite).
+    // "active"    — the CUSTOMER initiated the relationship by sharing a
+    //               policy with the agent (wallet sharePolicy) — unambiguous
+    //               consent, and it must survive later grant revocations.
+    return rel?.activationStatus === "activated" || rel?.activationStatus === "active"
 }
 
 export function isPhantomCustomer(
@@ -38,4 +42,33 @@ export function agentMaySeeCustomerIdentity(
         isPhantomCustomer(customer) ||
         visiblePolicyCount > 0
     )
+}
+
+/**
+ * The ONE way to serialize a customer's identity toward an agent-facing
+ * surface. Every place that renders a relationship's customer (dashboard,
+ * activity feed, opportunities, protection scores…) must go through this —
+ * ad-hoc `customer.name` reads are how the consent rule kept getting bypassed
+ * off the /customers page.
+ *
+ * When identity is not visible, the email stands in for the name: the agent
+ * typed it themselves, so it is never a disclosure — the real name is.
+ */
+export function presentCustomerIdentity(
+    rel: { activationStatus?: string | null } | null | undefined,
+    customer: {
+        name: string | null
+        email: string
+        image?: string | null
+        password: string | null
+        emailVerified: Date | null
+    },
+    visiblePolicyCount: number
+): { identityVisible: boolean; name: string; image: string | null } {
+    const identityVisible = agentMaySeeCustomerIdentity(rel, customer, visiblePolicyCount)
+    return {
+        identityVisible,
+        name: identityVisible ? customer.name || customer.email : customer.email,
+        image: identityVisible ? (customer.image ?? null) : null,
+    }
 }

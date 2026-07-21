@@ -1,7 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest"
 
 vi.mock("@/lib/db", () => ({
-    db: { collaborationThread: { findUnique: vi.fn() } },
+    db: {
+        collaborationThread: { findUnique: vi.fn(), create: vi.fn() },
+        customerRelationship: { findUnique: vi.fn() },
+        notificationEvent: { create: vi.fn() },
+    },
 }))
 vi.mock("@/lib/notifications", () => ({ sendNotification: vi.fn() }))
 
@@ -50,5 +54,57 @@ describe("getThreadDetail — private notes filtered server-side (B1)", () => {
         expect(result).toBeNull()
         // Only the access-check findUnique ran; no detail query.
         expect(vi.mocked(db.collaborationThread.findUnique).mock.calls).toHaveLength(1)
+    })
+})
+
+describe("createThread — agent cannot open threads on unaccepted relationships", () => {
+    beforeEach(() => {
+        vi.clearAllMocks()
+    })
+
+    const pendingRel = {
+        id: "rel-1",
+        agentUserId: "agent-1",
+        policyholderUserId: "cust-1",
+        status: "pending_activation",
+    }
+
+    it("agent on a pending relationship → rejected (spam-channel guard)", async () => {
+        vi.mocked(db.customerRelationship.findUnique).mockResolvedValue(pendingRel as any)
+
+        await expect(
+            collaborationService.createThread("agent-1", "agent", {
+                relationshipId: "rel-1",
+                subject: "Hello",
+            } as any)
+        ).rejects.toThrow("Relationship not accepted yet")
+        expect(db.collaborationThread.create).not.toHaveBeenCalled()
+    })
+
+    it("policyholder may open a thread at any pre-termination status", async () => {
+        vi.mocked(db.customerRelationship.findUnique).mockResolvedValue(pendingRel as any)
+        vi.mocked(db.collaborationThread.create).mockResolvedValue({ id: "t-new", subject: "s", relationshipId: "rel-1" } as any)
+
+        await expect(
+            collaborationService.createThread("cust-1", "policyholder", {
+                relationshipId: "rel-1",
+                subject: "Question about my policy",
+            } as any)
+        ).resolves.toBeTruthy()
+    })
+
+    it("agent on an ACTIVE relationship → allowed", async () => {
+        vi.mocked(db.customerRelationship.findUnique).mockResolvedValue({
+            ...pendingRel,
+            status: "active",
+        } as any)
+        vi.mocked(db.collaborationThread.create).mockResolvedValue({ id: "t-new", subject: "s", relationshipId: "rel-1" } as any)
+
+        await expect(
+            collaborationService.createThread("agent-1", "agent", {
+                relationshipId: "rel-1",
+                subject: "Coverage review",
+            } as any)
+        ).resolves.toBeTruthy()
     })
 })

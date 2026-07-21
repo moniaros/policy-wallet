@@ -1,6 +1,8 @@
+import { hasAnyRole } from "@/lib/api-auth"
 import { createApiResponse } from "@/lib/api-utils"
 import { withApiGuard } from "@/lib/api-guard"
 import { db } from "@/lib/db"
+import { presentCustomerIdentity } from "@/lib/agent-consent"
 import { getAgentPolicyVisibilityWhere } from "@/lib/agent-visibility"
 
 /**
@@ -22,8 +24,8 @@ export const GET = withApiGuard(
     async ({ auth }) => {
         const agentId = auth!.dbUser.id
 
-        // Verify agent role
-        if (!auth!.dbUser.roles?.includes("agent")) {
+        // Verify agent role (parseRoles — not a raw substring match)
+        if (!hasAnyRole(auth!.dbUser.roles, ["agent", "admin"])) {
             return createApiResponse({ scores: [] })
         }
 
@@ -35,8 +37,11 @@ export const GET = withApiGuard(
             },
             select: {
                 policyholderUserId: true,
+                activationStatus: true,
                 customer: {
-                    select: { id: true, name: true },
+                    // password/emailVerified: consent signals for the identity
+                    // rule (lib/agent-consent) — never serialized to the client.
+                    select: { id: true, name: true, email: true, password: true, emailVerified: true },
                 },
             },
         })
@@ -78,9 +83,16 @@ export const GET = withApiGuard(
             const cached = visibleOwners.has(rel.policyholderUserId)
                 ? scoreMap.get(rel.policyholderUserId)
                 : undefined
+            // Identity-consent rule: unconsented accounts show their email
+            // (which the agent typed), never their real name.
+            const identity = presentCustomerIdentity(
+                rel,
+                rel.customer,
+                visibleOwners.has(rel.policyholderUserId) ? 1 : 0
+            )
             return {
                 customerId: rel.policyholderUserId,
-                customerName: rel.customer.name || "Unknown",
+                customerName: identity.name,
                 protectionScore: cached?.overallScore ?? null,
                 gapCount: cached?.gapCount ?? 0,
                 computedAt: cached?.computedAt?.toISOString() ?? null,
