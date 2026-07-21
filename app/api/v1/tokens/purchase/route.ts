@@ -1,11 +1,18 @@
+import { z } from "zod"
 import { requireApiUser } from "@/lib/api-auth"
 import { createApiError, createApiResponse } from "@/lib/api-utils"
+import { rateLimit } from "@/lib/rate-limit"
 import { stripe } from "@/lib/stripe"
 import { getUserSubscription } from "@/lib/subscription-limits"
-import { createTokenCheckoutSession } from "@/lib/billing"
+import { createTokenCheckoutSession, sanitizeReturnPath } from "@/lib/billing"
 import { recordConversionEvent } from "@/lib/journey/conversion-events"
 import { logger } from "@/lib/logger"
 import { TOKEN_PACKAGES, type TokenPackageKey } from "@/lib/billing/token-packages"
+
+const purchaseSchema = z.object({
+    package: z.string().min(1),
+    returnTo: z.string().optional(),
+})
 
 export async function GET() {
     const authCheck = await requireApiUser()
@@ -21,6 +28,11 @@ export async function POST(req: Request) {
 
     const userId = authResult.dbUser.id
 
+    // Each call creates a Stripe checkout session — cap per user so the
+    // endpoint can't be scripted into session spam (was entirely unthrottled).
+    const limitCheck = await rateLimit(userId, 10, 60 * 1000, `token-purchase:${userId}`)
+    if (!limitCheck.success) return limitCheck.error!
+
     // Free tier users cannot purchase tokens
     const { tier } = await getUserSubscription(userId)
     if (tier === "free") {
@@ -31,13 +43,18 @@ export async function POST(req: Request) {
         )
     }
 
-    // Parse request body
-    let body: { package: string }
+    // Parse + validate request body
+    let json: unknown
     try {
-        body = await req.json()
+        json = await req.json()
     } catch {
         return createApiError("BAD_REQUEST", "Invalid request body", 400)
     }
+    const parsed = purchaseSchema.safeParse(json)
+    if (!parsed.success) {
+        return createApiError("BAD_REQUEST", "Invalid request body", 400)
+    }
+    const body = parsed.data
 
     const pkg = TOKEN_PACKAGES[body.package as TokenPackageKey]
     if (!pkg) {
@@ -53,8 +70,8 @@ export async function POST(req: Request) {
         return createApiError("SERVICE_UNAVAILABLE", "Payment service not configured", 503)
     }
 
-    // Same-origin path to land back on after Stripe (context preservation)
-    const returnTo = typeof (body as any).returnTo === "string" ? (body as any).returnTo : null
+    // Same-origin path to land back on after Stripe (open-redirect guard).
+    const returnTo = sanitizeReturnPath(body.returnTo ?? null)
 
     try {
         // Hosted Stripe Checkout (mode: payment) — the previous bare

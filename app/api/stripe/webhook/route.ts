@@ -196,8 +196,11 @@ async function handleTokenPurchaseCompleted(paymentIntent: Stripe.PaymentIntent)
 
     try {
         await prisma.$transaction(async (tx) => {
-            // Update existing pending purchase record
-            await tx.tokenPurchase.updateMany({
+            // Update existing pending purchase record. Crediting is gated on
+            // this flip: if no pending row matched (already completed via the
+            // checkout-session path, or an unknown PI), crediting again would
+            // double the tokens.
+            const claimed = await tx.tokenPurchase.updateMany({
                 where: {
                     userId,
                     stripePaymentIntentId: paymentIntent.id,
@@ -205,6 +208,13 @@ async function handleTokenPurchaseCompleted(paymentIntent: Stripe.PaymentIntent)
                 },
                 data: { status: 'completed' },
             })
+            if (claimed.count === 0) {
+                logger('info', 'Token purchase PI event without a pending row; not crediting', {
+                    userId,
+                    paymentIntentId: paymentIntent.id,
+                })
+                return
+            }
 
             // Upsert token balance
             await tx.tokenBalance.upsert({

@@ -1,3 +1,4 @@
+import { z } from "zod"
 import { withApiGuard } from "@/lib/api-guard"
 import { db as prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
@@ -53,12 +54,19 @@ export const PATCH = withApiGuard(
     },
     async ({ req, auth, params }) => {
         const id = (params as { id: string }).id
-        const body = (await req.json()) as {
-            status?: "accepted" | "declined"
-            declineReason?: "too_expensive" | "not_needed" | "prefer_different" | "other"
-            declineComment?: string
-            counterOfferNotes?: string
+        // Runtime validation — the old `as` cast persisted ANY status string
+        // (e.g. resetting to "pending") straight into the row.
+        const respondSchema = z.object({
+            status: z.enum(["accepted", "declined"]),
+            declineReason: z.enum(["too_expensive", "not_needed", "prefer_different", "other"]).optional(),
+            declineComment: z.string().max(2000).optional(),
+            counterOfferNotes: z.string().max(2000).optional(),
+        })
+        const parsedBody = respondSchema.safeParse(await req.json().catch(() => null))
+        if (!parsedBody.success) {
+            return NextResponse.json({ error: "Invalid proposal response payload" }, { status: 400 })
         }
+        const body = parsedBody.data
 
         const proposal = await prisma.proposal.findUnique({
             where: { id },

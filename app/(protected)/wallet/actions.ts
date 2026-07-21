@@ -11,6 +11,7 @@ import { uploadFile, deleteFile } from "@/lib/storage"
 import { sanitizeDisplayName } from "@/lib/security/file-upload"
 import { isOwnedStorageUrl } from "@/lib/supabase/storage-download"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
+import { hasAnyRole } from "@/lib/api-auth"
 import fs from "fs/promises"
 import path from "path"
 import { getAIService } from "@/lib/services/ai"
@@ -929,7 +930,7 @@ export async function analyzeGaps(policyId: string) {
     // bypass).
     const { tier } = await getUserSubscription(authResult.dbUser.id)
     const callerRoles = authResult.dbUser.roles || ""
-    if (tier !== "pro" && !callerRoles.includes("agent") && !callerRoles.includes("admin")) {
+    if (tier !== "pro" && !hasAnyRole(callerRoles, ["agent", "admin"])) {
         await recordConversionEvent(authResult.dbUser.id, "free_ai_call_blocked", {
             kind: "gap_analysis",
             source: "analyze_gaps",
@@ -941,7 +942,7 @@ export async function analyzeGaps(policyId: string) {
     // Check Daily Limit for Gap Analysis
     const dailyLimit = SUBSCRIPTION_LIMITS[tier].gapAnalysisPerDay
 
-    if (dailyLimit !== null && !authResult.dbUser.roles.includes('admin')) {
+    if (dailyLimit !== null && !hasAnyRole(authResult.dbUser.roles, ['admin'])) {
         const today = new Date()
         today.setHours(0, 0, 0, 0)
 
@@ -961,7 +962,7 @@ export async function analyzeGaps(policyId: string) {
     const language = (authResult.dbUser.preferredLanguage as 'en' | 'el') || 'en'
     const gapService = new GapAnalysisService(db)
     const gapTokenGate = await canUserUseTokens(authResult.dbUser.id, 60000)
-    if (!gapTokenGate.allowed && !authResult.dbUser.roles.includes('admin')) {
+    if (!gapTokenGate.allowed && !hasAnyRole(authResult.dbUser.roles, ['admin'])) {
         return { error: "TOKEN_LIMIT_BLOCKED" }
     }
 
@@ -1138,7 +1139,7 @@ export async function askPolicyQuestion(policyId: string, question: string) {
     // Under the paid-aha-loop tier restructure the deep-AI Q&A is a paid
     // feature with no free allowance, so a free-tier ask is blocked outright.
     const isAllowed = await canUserUseFeature(authResult.dbUser.id, 'interactiveQA')
-    if (!isAllowed && !authResult.dbUser.roles.includes('admin') && !authResult.dbUser.roles.includes('agent')) {
+    if (!isAllowed && !hasAnyRole(authResult.dbUser.roles, ['admin', 'agent'])) {
         await recordConversionEvent(authResult.dbUser.id, "limit_hit", { kind: "ai_question", source: "policy_qa" })
         await recordConversionEvent(authResult.dbUser.id, "free_ai_call_blocked", {
             kind: "ai_question",
@@ -1152,7 +1153,7 @@ export async function askPolicyQuestion(policyId: string, question: string) {
     const { tier } = await getUserSubscription(authResult.dbUser.id)
     const dailyLimit = SUBSCRIPTION_LIMITS[tier].questionsPerDay
 
-    if (dailyLimit !== null && !authResult.dbUser.roles.includes('admin')) {
+    if (dailyLimit !== null && !hasAnyRole(authResult.dbUser.roles, ['admin'])) {
         const today = new Date()
         today.setHours(0, 0, 0, 0)
 
@@ -1173,7 +1174,7 @@ export async function askPolicyQuestion(policyId: string, question: string) {
     }
 
     const qaTokenGate = await canUserUseTokens(authResult.dbUser.id, 15000)
-    if (!qaTokenGate.allowed && !authResult.dbUser.roles.includes('admin')) {
+    if (!qaTokenGate.allowed && !hasAnyRole(authResult.dbUser.roles, ['admin'])) {
         return { error: "TOKEN_LIMIT_BLOCKED" }
     }
 
@@ -1383,8 +1384,19 @@ export async function notifyAgentAboutGap(gapId: string, policyId: string) {
 
     // Agent collaboration (incl. gap escalation) is a paid-plan feature.
     const notifierEntitlements = await resolveUserEntitlements(authResult.dbUser.id)
-    if (!notifierEntitlements.limits.agentCollaboration && !authResult.dbUser.roles.includes('admin')) {
+    if (!notifierEntitlements.limits.agentCollaboration && !hasAnyRole(authResult.dbUser.roles, ['admin'])) {
         return { error: "UPGRADE_REQUIRED" }
+    }
+
+    // The gap must actually belong to the authorized policy — the client
+    // supplies gapId, and trusting it let a caller mint an Opportunity
+    // cross-linked to another policy's gap.
+    const gap = await db.gapInstance.findFirst({
+        where: { id: gapId, policyId },
+        select: { id: true },
+    })
+    if (!gap) {
+        return { error: "Gap not found for this policy." }
     }
 
     // Find active relationship

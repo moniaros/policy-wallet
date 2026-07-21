@@ -72,7 +72,10 @@
       ],
       "policy": {
         "auth": {
-          "mode": "public"
+          "mode": "role",
+          "roles": [
+            "admin"
+          ]
         },
         "rateLimit": {
           "required": false,

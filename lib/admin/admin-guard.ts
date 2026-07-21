@@ -8,6 +8,7 @@
  */
 
 import { db } from "@/lib/db"
+import { hasAnyRole } from "@/lib/api-auth"
 import { headers } from "next/headers"
 import { getAuthenticatedUserOrNull } from "@/lib/auth-helpers"
 import * as Sentry from "@sentry/nextjs"
@@ -24,8 +25,8 @@ export async function verifyAdminRole() {
 
     const { dbUser } = auth
 
-    // Check if user has admin role
-    if (!dbUser.roles.includes("admin")) {
+    // Check if user has admin role (parseRoles — not a raw substring match)
+    if (!hasAnyRole(dbUser.roles, ["admin"])) {
         Sentry.captureMessage(`Unauthorized admin access attempt by user ${dbUser.id}`, "warning")
         throw new Error("Unauthorized: Admin role required")
     }

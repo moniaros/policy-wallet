@@ -16,9 +16,11 @@ export async function POST(req: Request) {
     if ("error" in authCheck) return authCheck.error
     const authResult = authCheck.auth
 
-    // Rate limiting: max 5 policy analysis requests per minute per IP
-    const ip = req.headers.get("x-forwarded-for") || "127.0.0.1"
-    const limitCheck = await rateLimit(ip as string, 5, 60000)
+    // Rate limiting: max 5 policy analysis requests per minute per user.
+    // The bare-IP key shared proxy.ts's global bucket, so browsing the site
+    // could 429 the analysis trigger; keying on the authenticated user also
+    // survives NAT'd offices sharing one IP.
+    const limitCheck = await rateLimit(authResult.dbUser.id, 5, 60000, `process-policy:${authResult.dbUser.id}`)
     if (!limitCheck.success) return limitCheck.error!
 
     try {

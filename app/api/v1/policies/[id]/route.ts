@@ -40,7 +40,18 @@ export async function GET(
         const policy = await db.policy.findUnique({
             where: { id },
             include: {
-                documents: true,
+                // Slim select — `documents: true` loaded every row's
+                // extractionCache (the cached AI payload) just to discard it.
+                documents: {
+                    select: {
+                        id: true,
+                        fileName: true,
+                        fileSize: true,
+                        source: true,
+                        processingStatus: true,
+                        uploadedAt: true,
+                    }
+                },
                 gapInstances: {
                     where: { resolvedAt: null },
                     include: { definition: true }
@@ -57,8 +68,27 @@ export async function GET(
             `Valid until: ${policy.endDate.toDateString()}`
         ]
 
+        // Explicit projection — the old full-row spread also re-shipped the raw
+        // gapInstances include and internal ids alongside the mapped fields.
         return createApiResponse({
-            ...policy,
+            id: policy.id,
+            policyNumber: policy.policyNumber,
+            insurerName: policy.insurerName,
+            lineOfBusiness: policy.lineOfBusiness,
+            status: policy.status,
+            startDate: policy.startDate,
+            endDate: policy.endDate,
+            coverageEndDate: policy.coverageEndDate,
+            premiumAmount: policy.premiumAmount,
+            premiumCurrency: policy.premiumCurrency,
+            coverageSummary: policy.coverageSummary,
+            acordData: policy.acordData,
+            lastAnalyzedAt: policy.lastAnalyzedAt,
+            createdAt: policy.createdAt,
+            updatedAt: policy.updatedAt,
+            // Kept for API compatibility (pre-projection responses carried
+            // documents) — slim rows, no extractionCache/fileUrl internals.
+            documents: policy.documents,
             highlights,
             gaps: {
                 count: policy.gapInstances.length,

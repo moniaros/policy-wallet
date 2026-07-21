@@ -16,9 +16,9 @@ export async function POST(req: Request) {
     if ("error" in authCheck) return authCheck.error
     const authResult = authCheck.auth
 
-    // Rate limiting: max 3 registration attempts per minute per IP
-    const ip = req.headers.get("x-forwarded-for") || "127.0.0.1"
-    const limitCheck = await rateLimit(ip as string, 3, 60000)
+    // Rate limiting: max 3 registration attempts per minute per USER — the
+    // bare-IP key shared proxy.ts's global bucket and punished NAT'd offices.
+    const limitCheck = await rateLimit(authResult.dbUser.id, 3, 60000, `device-token:${authResult.dbUser.id}`)
     if (!limitCheck.success) return limitCheck.error!
 
     try {
