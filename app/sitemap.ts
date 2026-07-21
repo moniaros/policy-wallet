@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next"
 import { getSiteOrigin } from "@/lib/seo/site"
 import { enPathFor, marketingPages } from "@/lib/seo/marketing-pages"
 import { guides } from "@/lib/guides/content"
+import { glossaryTerms } from "@/lib/glossary/content"
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const origin = getSiteOrigin()
@@ -34,6 +35,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         pricing: 0.9,
         "solutions-agents": 0.8,
         guides: 0.7,
+        lexiko: 0.7,
         company: 0.6,
         contact: 0.6,
         privacy: 0.3,
@@ -97,6 +99,32 @@ export default function sitemap(): MetadataRoute.Sitemap {
             changeFrequency: "monthly",
             priority: 0.6,
             alternates: { languages: guideLanguages },
+        })
+    }
+
+    for (const entry of glossaryTerms) {
+        const termUrl = `${origin}/lexiko/${entry.slug}`
+        const termEnUrl = `${origin}/en/lexiko/${entry.slug}`
+        // Glossary terms are fully bilingual: every /lexiko/<slug> has a real
+        // /en/lexiko/<slug> mirror, so each entry carries the hreflang pair.
+        const termLanguages = {
+            el: termUrl,
+            en: termEnUrl,
+            "x-default": termUrl,
+        }
+        entries.push({
+            url: termUrl,
+            lastModified: new Date(entry.dateModified),
+            changeFrequency: "monthly",
+            priority: 0.6,
+            alternates: { languages: termLanguages },
+        })
+        entries.push({
+            url: termEnUrl,
+            lastModified: new Date(entry.dateModified),
+            changeFrequency: "monthly",
+            priority: 0.5,
+            alternates: { languages: termLanguages },
         })
     }
 
