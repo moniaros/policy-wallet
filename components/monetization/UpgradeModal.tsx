@@ -40,6 +40,8 @@ const MODAL_COPY = {
     starterPrefix: { el: "Ξεκίνα με Starter —", en: "Start with Starter —" },
     notNow: { el: "Όχι τώρα", en: "Not now" },
     checkoutError: { el: "Η μετάβαση στην πληρωμή απέτυχε. Δοκιμάστε ξανά.", en: "Could not start checkout. Please try again." },
+    close: { el: "Κλείσιμο", en: "Close" },
+    redirecting: { el: "Μετάβαση στην ασφαλή πληρωμή…", en: "Redirecting to secure payment…" },
 } as const
 
 const pick = (pair: { el: string; en: string }, language: string) =>
@@ -169,24 +171,28 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
     const isRedirecting = redirectingPlan !== null
 
     return (
-        <Modal isOpen={isOpen} onClose={handleDismiss}>
+        <Modal isOpen={isOpen} onClose={handleDismiss} ariaLabelledBy="upgrade-modal-title" closeLabel={pick(MODAL_COPY.close, language)}>
             <div className="p-6 sm:p-8">
+                {/* Screen-reader announcement while the Stripe redirect is in flight */}
+                <span className="sr-only" aria-live="polite">
+                    {isRedirecting ? pick(MODAL_COPY.redirecting, language) : ""}
+                </span>
                 {/* Header */}
                 <div className="text-center">
                     <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-primary-soft dark:bg-primary/15">
                         <Crown className="h-6 w-6 text-primary dark:text-mint" />
                     </div>
-                    <h2 className="mt-4 text-xl font-black text-black dark:text-white">{copy.headline}</h2>
-                    <p className="mt-2 text-sm leading-relaxed text-black/60 dark:text-white/65">{copy.body}</p>
+                    <h2 id="upgrade-modal-title" className="mt-4 text-xl font-black text-foreground">{copy.headline}</h2>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{copy.body}</p>
                 </div>
 
                 {/* Current → recommended (Plus) */}
-                <div className="mt-5 flex items-center justify-center gap-3 text-xs text-black/50 dark:text-white/55">
+                <div className="mt-5 flex items-center justify-center gap-3 text-xs text-muted-foreground">
                     <span className="inline-flex items-center gap-1.5">
                         {pick(MODAL_COPY.currentPlan, language)}: <PlanBadge tier={tier} />
                     </span>
                     <span aria-hidden>→</span>
-                    <span className="inline-flex items-center gap-1.5 font-semibold text-black/75 dark:text-white/80">
+                    <span className="inline-flex items-center gap-1.5 font-semibold text-foreground">
                         <PlanBadge tier="pro" />
                     </span>
                 </div>
@@ -197,7 +203,7 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                 {/* Benefits (what Plus unlocks) */}
                 <ul className="mt-5 space-y-2">
                     {copy.benefits.map((benefit, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-black/75 dark:text-white/80">
+                        <li key={i} className="flex items-start gap-2 text-sm text-foreground">
                             <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary dark:text-mint" />
                             {benefit}
                         </li>
@@ -205,7 +211,7 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                 </ul>
 
                 {/* Billing period toggle */}
-                <div className="mt-6 grid grid-cols-2 gap-2 rounded-2xl bg-black/5 p-1 dark:bg-white/10" role="radiogroup">
+                <div className="mt-6 grid grid-cols-2 gap-2 rounded-2xl bg-muted p-1" role="radiogroup">
                     {(["monthly", "annual"] as const).map((period) => (
                         <button
                             key={period}
@@ -213,15 +219,15 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                             role="radio"
                             aria-checked={billingPeriod === period}
                             onClick={() => selectPeriod(period)}
-                            className={`rounded-xl px-3 py-2.5 text-sm font-bold transition-all ${
+                            className={`rounded-xl px-3 py-2.5 text-sm font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
                                 billingPeriod === period
-                                    ? "bg-white text-black shadow-sm dark:bg-black dark:text-white"
-                                    : "text-black/50 dark:text-white/55"
+                                    ? "bg-card text-foreground shadow-sm"
+                                    : "text-muted-foreground"
                             }`}
                         >
                             {period === "monthly" ? pick(MODAL_COPY.monthly, language) : pick(MODAL_COPY.annual, language)}
                             {period === "annual" && (
-                                <span className="ml-1.5 rounded-full bg-primary-soft px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-[#166534] dark:bg-primary/20 dark:text-mint">
+                                <span className="ml-1.5 rounded-full bg-primary-soft px-1.5 py-0.5 text-[9px] font-black uppercase tracking-wider text-primary dark:bg-primary/20 dark:text-mint">
                                     {pick(MODAL_COPY.savings, language)}
                                 </span>
                             )}
@@ -234,9 +240,10 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                     type="button"
                     onClick={() => startCheckout(PLUS.planId, "pro", "plus_selected")}
                     disabled={isRedirecting}
-                    className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-bold uppercase tracking-widest text-white shadow-xl shadow-primary/25 transition-all hover:bg-primary-hover disabled:opacity-60 dark:text-[#1A2420]"
+                    aria-busy={redirectingPlan === PLUS.planId}
+                    className="mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-sm font-bold uppercase tracking-widest text-primary-foreground shadow-xl shadow-primary/25 transition-all hover:bg-primary-hover disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                 >
-                    {redirectingPlan === PLUS.planId && <Loader2 className="h-4 w-4 animate-spin" />}
+                    {redirectingPlan === PLUS.planId && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
                     {pick(MODAL_COPY.plusPrefix, language)} €{plusPrice}{suffix}
                 </button>
                 {PLUS.trialDays > 0 && (
@@ -250,9 +257,10 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                     type="button"
                     onClick={() => startCheckout(STARTER.planId, "plus", "starter_selected")}
                     disabled={isRedirecting}
-                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-black/10 bg-transparent py-3.5 text-sm font-bold text-black/75 transition-all hover:bg-black/5 disabled:opacity-60 dark:border-white/15 dark:text-white/80 dark:hover:bg-white/10"
+                    aria-busy={redirectingPlan === STARTER.planId}
+                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-border bg-transparent py-3.5 text-sm font-bold text-foreground transition-all hover:bg-muted disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                 >
-                    {redirectingPlan === STARTER.planId && <Loader2 className="h-4 w-4 animate-spin" />}
+                    {redirectingPlan === STARTER.planId && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
                     {pick(MODAL_COPY.starterPrefix, language)} €{starterPrice}{suffix}
                 </button>
 
@@ -260,7 +268,8 @@ export function UpgradeModal({ isOpen, onClose, featureKey, returnTo, triggerSou
                 <button
                     type="button"
                     onClick={handleDismiss}
-                    className="mt-3 w-full text-center text-xs text-black/45 underline transition-colors hover:text-black/70 dark:text-white/50 dark:hover:text-white/75"
+                    disabled={isRedirecting}
+                    className="mt-3 w-full rounded text-center text-xs text-muted-foreground underline transition-colors hover:text-foreground disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                 >
                     {pick(MODAL_COPY.notNow, language)}
                 </button>

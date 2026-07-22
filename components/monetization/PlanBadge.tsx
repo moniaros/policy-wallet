@@ -4,9 +4,9 @@ import { Crown } from "lucide-react"
 import type { PlanTier } from "@/types/subscription-entitlements"
 
 const TIER_STYLES: Record<PlanTier, string> = {
-    free: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300",
-    plus: "bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint",
-    pro: "bg-[#1A2420] text-mint dark:bg-mint dark:text-[#1A2420]",
+    free: "bg-muted text-muted-foreground",
+    plus: "bg-primary-soft text-primary dark:bg-primary/15 dark:text-mint",
+    pro: "bg-primary text-primary-foreground",
 }
 
 // Display labels. NOTE the relabel-in-place mapping: code key `plus` is the
