@@ -68,7 +68,7 @@ export function PolicyHeaderMenu({ ariaLabel, items }: PolicyHeaderMenuProps) {
             {open && (
                 <div
                     role="menu"
-                    className="absolute right-0 top-12 z-30 min-w-52 overflow-hidden rounded-2xl border border-black/10 bg-white py-1.5 shadow-xl dark:border-white/15 dark:bg-slate-900"
+                    className="absolute right-0 top-12 z-30 min-w-52 overflow-hidden rounded-2xl border border-black/10 bg-card py-1.5 shadow-xl dark:border-white/15"
                 >
                     {items.map((item) => {
                         const Icon = item.icon

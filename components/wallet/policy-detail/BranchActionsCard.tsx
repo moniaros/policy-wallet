@@ -70,9 +70,9 @@ const ANSWERED_PREVIEW_COUNT = 4
 
 function AnsweredChip({ item, callLabel }: { item: BranchActionItem; callLabel: string }) {
     return (
-        <li className="rounded-xl border border-emerald-200 bg-emerald-50/60 px-3 py-2.5 dark:border-emerald-900/40 dark:bg-emerald-950/15">
+        <li className="rounded-xl border border-primary/20 bg-primary/[0.06] px-3 py-2.5 dark:border-mint/20 dark:bg-mint/10">
             <div className="flex items-start gap-2">
-                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-emerald-600 dark:text-emerald-400" aria-hidden />
+                <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-primary dark:text-mint" aria-hidden />
                 <div className="min-w-0 flex-1">
                     <p className="text-xs font-bold text-black dark:text-white">{item.label}</p>
                     {item.resolved.value && (
@@ -83,7 +83,7 @@ function AnsweredChip({ item, callLabel }: { item: BranchActionItem; callLabel: 
                     {item.resolved.phone && (
                         <a
                             href={`tel:${item.resolved.phone.replace(/\s+/g, "")}`}
-                            className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-white/70 px-2.5 py-1 text-[11px] font-bold text-emerald-800 hover:bg-white dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300"
+                            className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-primary/25 bg-white/70 px-2.5 py-1 text-[11px] font-bold text-primary hover:bg-white dark:border-mint/25 dark:bg-mint/10 dark:text-mint"
                         >
                             <Phone className="h-3 w-3" aria-hidden />
                             <span>{callLabel}</span>
