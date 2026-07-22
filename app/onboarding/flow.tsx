@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import { useRouter } from "next/navigation"
 import { Loader2, Sparkles, Upload, Wallet, Users, Check } from "lucide-react"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -47,6 +48,7 @@ const GOALS: { key: GoalType; el: string; en: string }[] = [
 
 export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
     const { language } = useLanguage()
+    const router = useRouter()
     const isGreek = language === "el"
     const t = (el: string, en: string) => (isGreek ? fixMojibakeText(el) : en)
 
@@ -251,7 +253,7 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
     const finishOnboarding = async () => {
         setBusy(true)
         try {
-            await completeOnboardingStep(5, {
+            const result = await completeOnboardingStep(5, {
                 markCompleted: true,
                 redirectTo: "/home",
                 onboardingCompletionLocation: "home_dashboard",
@@ -259,6 +261,10 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                 onboardingUploadedPolicyId: uploadedPolicyId,
                 onboardingConnectedAgent: connectedAgentName,
             })
+            // completeOnboardingStep returns the destination (it no longer
+            // redirects server-side — that threw NEXT_REDIRECT which this catch
+            // swallowed). Navigate client-side.
+            router.push(result?.redirectTo ?? "/home")
         } catch {
             toast.error(t("Δεν ολοκληρώθηκε το onboarding.", "Could not finish onboarding."))
             setBusy(false)

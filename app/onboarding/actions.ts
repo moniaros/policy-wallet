@@ -4,7 +4,6 @@ import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { db } from "@/lib/db"
 import { PolicyService } from "@/lib/services/policy.service"
 import { revalidatePath } from "next/cache"
-import { redirect } from "next/navigation"
 import { canUserAddPolicy, getUpgradeMessage } from "@/lib/subscription-limits"
 
 const ONBOARDING_REMINDER_EVENT_TYPES = [
@@ -118,7 +117,12 @@ export async function completeOnboardingStep(step: number, data?: any) {
         const redirectTo = typeof payload?.redirectTo === "string" && payload.redirectTo.startsWith("/")
             ? payload.redirectTo
             : "/home"
-        redirect(redirectTo)
+        // Return the destination instead of redirect()-ing here. A server-side
+        // redirect() throws a NEXT_REDIRECT control-flow error, which the client
+        // caller's try/catch swallowed (surfacing as a false "could not finish
+        // onboarding" toast, e.g. after sending an advisor invite). The caller
+        // navigates client-side with this value.
+        return { redirectTo }
     }
 }
 
