@@ -434,6 +434,73 @@ export async function changeUserRole(userId: string, newRole: string): Promise<C
     return { ok: true, jwtSynced: true }
 }
 
+const grantTokensSchema = z.object({
+    userId: z.string().trim().min(1),
+    amount: z.number().int().positive().max(100_000_000),
+    reason: z.string().trim().min(1).max(500),
+})
+
+export type GrantTokensResult =
+    | { ok: true; newAvailable: number }
+    | { ok: false; error: string }
+
+/**
+ * Admin grant of AI tokens (support comp). Increments the purchasable balance
+ * (TokenBalance.purchasedTokens — the same field the top-up purchase path
+ * writes), records a €0 TokenPurchase history row so it shows up in the user's
+ * token ledger, and audits actor + amount + reason. Returns the new available
+ * balance (purchased − used) so the UI can reflect it immediately.
+ */
+export async function grantTokens(input: {
+    userId: string
+    amount: number
+    reason: string
+}): Promise<GrantTokensResult> {
+    const admin = await verifyAdminRole()
+    const parsed = grantTokensSchema.safeParse(input)
+    if (!parsed.success) return { ok: false, error: "Invalid grant details." }
+
+    const { userId, amount, reason } = parsed.data
+    const user = await db.user.findUnique({ where: { id: userId }, select: { email: true } })
+    if (!user) return { ok: false, error: "User not found." }
+
+    try {
+        const balance = await db.$transaction(async (tx) => {
+            const b = await tx.tokenBalance.upsert({
+                where: { userId },
+                create: {
+                    userId,
+                    purchasedTokens: BigInt(amount),
+                    usedTokens: BigInt(0),
+                    lastPurchaseAt: new Date(),
+                },
+                update: {
+                    purchasedTokens: { increment: BigInt(amount) },
+                    lastPurchaseAt: new Date(),
+                },
+            })
+            await tx.tokenPurchase.create({
+                data: { userId, tokensPurchased: BigInt(amount), amountEur: 0, status: "completed" },
+            })
+            return b
+        })
+
+        const newAvailable = Number(balance.purchasedTokens) - Number(balance.usedTokens)
+        await logAdminAction(
+            admin.id,
+            admin.email,
+            "GRANT_TOKENS",
+            `Granted ${amount} tokens to ${user.email}. Reason: ${reason}`,
+            { userId, amount, reason, newAvailable }
+        )
+        revalidatePath("/admin/users")
+        return { ok: true, newAvailable }
+    } catch (error) {
+        Sentry.captureException(error)
+        return { ok: false, error: "Failed to grant tokens." }
+    }
+}
+
 export async function deleteUser(userId: string, reason?: string) {
     const admin = await verifyAdminRole()
 
