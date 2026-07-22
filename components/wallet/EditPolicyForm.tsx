@@ -86,8 +86,8 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
 
     const policyTypes = ["motor", "health", "home", "life", "travel", "business", "liability", "pet", "other"] as const
 
-    const inputClass = "flex h-10 w-full rounded-md border border-stone-300 bg-white px-3 py-2 text-sm placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-400 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
-    const labelClass = "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-stone-700"
+    const inputClass = "flex h-10 w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
+    const labelClass = "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-foreground"
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6 pb-20">
@@ -196,19 +196,19 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
                 </div>
             </div>
 
-            <div className="flex items-center gap-3 pt-4 border-t border-stone-100">
+            <div className="flex items-center gap-3 pt-4 border-t border-border">
                 <button
                     type="button"
                     onClick={() => router.back()}
                     disabled={isPending}
-                    className="flex-1 h-10 px-4 py-2 bg-white border border-stone-300 rounded-lg text-sm font-medium text-stone-700 hover:bg-stone-50 disabled:opacity-50"
+                    className="flex-1 h-10 px-4 py-2 bg-card border border-border rounded-lg text-sm font-medium text-foreground hover:bg-muted disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                 >
                     {copy.cancel}
                 </button>
                 <button
                     type="submit"
                     disabled={isPending}
-                    className="flex-1 h-10 px-4 py-2 bg-primary text-white dark:text-[#1A2420] rounded-lg text-sm font-medium hover:bg-primary-hover disabled:opacity-50 flex items-center justify-center"
+                    className="flex-1 h-10 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary-hover disabled:opacity-50 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
                     {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {isPending ? copy.saving : copy.save}
