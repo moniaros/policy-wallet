@@ -90,7 +90,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "provider",
                     title: "1. Πάροχος της υπηρεσίας",
                     paragraphs: [
-                        `Την πλατφόρμα PolicyWallet (policywallet.gr) λειτουργεί η εταιρεία ${EL.company}, με αριθμό ΓΕΜΗ ${EL.gemi}, ${EL.vat}, και έδρα ${EL.address}.`,
+                        `Την πλατφόρμα PolicyWallet (policywallet.gr) λειτουργεί ελληνική εταιρεία. ${EL.detailsComingSoon}`,
                         "Για κάθε θέμα σχετικό με τους παρόντες όρους μπορείτε να επικοινωνείτε στο info@policywallet.gr.",
                     ],
                 },
@@ -194,7 +194,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "contact",
                     title: "13. Επικοινωνία",
                     paragraphs: [
-                        `Για κάθε ερώτημα σχετικά με τους όρους: info@policywallet.gr ή ταχυδρομικά στη διεύθυνση ${EL.address}.`,
+                        `Για κάθε ερώτημα σχετικά με τους όρους: info@policywallet.gr.`,
                     ],
                 },
             ],
@@ -210,7 +210,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "controller",
                     title: "1. Υπεύθυνος επεξεργασίας",
                     paragraphs: [
-                        `Υπεύθυνος επεξεργασίας των δεδομένων σας είναι η εταιρεία ${EL.company}, με αριθμό ΓΕΜΗ ${EL.gemi} και έδρα ${EL.address}, η οποία λειτουργεί την πλατφόρμα PolicyWallet (policywallet.gr).`,
+                        `Υπεύθυνος επεξεργασίας των δεδομένων σας είναι η εταιρεία που λειτουργεί την πλατφόρμα PolicyWallet (policywallet.gr). ${EL.detailsComingSoon}`,
                         `Για κάθε θέμα προστασίας δεδομένων μπορείτε να επικοινωνείτε με τον υπεύθυνο απορρήτου στο ${EL.dpoEmail} ή στο info@policywallet.gr.`,
                     ],
                 },
@@ -552,7 +552,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "provider",
                     title: "1. Service provider",
                     paragraphs: [
-                        `The PolicyWallet platform (policywallet.gr) is operated by ${EN.company}, GEMI registration number ${EN.gemi}, ${EN.vat}, with registered seat at ${EN.address}.`,
+                        `The PolicyWallet platform (policywallet.gr) is operated by a Greek company. ${EN.detailsComingSoon}`,
                         "For any matter relating to these terms you can contact us at info@policywallet.gr.",
                     ],
                 },
@@ -656,7 +656,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "contact",
                     title: "13. Contact",
                     paragraphs: [
-                        `For any question about these terms: info@policywallet.gr or by post at ${EN.address}.`,
+                        `For any question about these terms: info@policywallet.gr.`,
                     ],
                 },
             ],
@@ -672,7 +672,7 @@ const legalContentByLanguageRaw: Record<LegalLanguage, LegalContent> = {
                     id: "controller",
                     title: "1. Data controller",
                     paragraphs: [
-                        `The controller of your data is ${EN.company}, GEMI registration number ${EN.gemi}, with registered seat at ${EN.address}, which operates the PolicyWallet platform (policywallet.gr).`,
+                        `The controller of your data is the company that operates the PolicyWallet platform (policywallet.gr). ${EN.detailsComingSoon}`,
                         `For any data-protection matter you can contact our privacy officer at ${EN.dpoEmail} or at info@policywallet.gr.`,
                     ],
                 },

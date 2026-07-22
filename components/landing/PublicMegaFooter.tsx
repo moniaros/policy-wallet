@@ -295,16 +295,10 @@ export function PublicMegaFooter({ locale }: PublicMegaFooterProps) {
                 <div className="mx-auto max-w-[1400px] pb-4 text-[13px] leading-relaxed text-[#64748B]">
                     <p>
                         {t(
-                            "Η πλατφόρμα PolicyWallet λειτουργεί από την εταιρεία",
-                            "The PolicyWallet platform is operated by"
+                            "Η πλατφόρμα PolicyWallet λειτουργεί από ελληνική εταιρεία.",
+                            "The PolicyWallet platform is operated by a Greek company."
                         )}{" "}
-                        <span className="font-semibold">{entity.company}</span>
-                        {" · "}
-                        {t("ΓΕΜΗ", "GEMI No.")} {entity.gemi}
-                        {" · "}
-                        {entity.vat}
-                        {" · "}
-                        {t("Έδρα:", "Registered seat:")} {entity.address}
+                        {entity.detailsComingSoon}
                     </p>
                 </div>
                 <div className="mx-auto flex max-w-[1400px] flex-col gap-3 text-[13px] text-[#64748B] sm:flex-row sm:items-center sm:justify-between">

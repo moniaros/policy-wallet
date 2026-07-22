@@ -3,27 +3,23 @@
  * across the legal documents (lib/legal/legal-content.ts) and the public footer
  * (components/landing/PublicMegaFooter.tsx).
  *
- * These are the REAL corporate registry values. Greek corporate sites must
- * display the ΓΕΜΗ number (ν. 3419/2005), so the footer and the terms both
- * render from here — change a value once and every surface follows.
+ * The corporate registry details (legal name, ΓΕΜΗ, ΑΦΜ, registered seat) are
+ * intentionally WITHHELD for now and rendered as a single "coming soon" notice
+ * (`detailsComingSoon`) in place of the individual values — change the copy once
+ * here and every surface follows. When the finalized details are ready, restore
+ * the individual `company` / `gemi` / `vat` / `address` fields and inline them
+ * back into legal-content.ts + the footer.
  *
- * Greek strings use the Greek legal register («Insurance Martech Ι.Κ.Ε.»); the
- * English strings keep the Latin transliteration ("Insurance Martech IKE").
- * PolicyWallet is the trade/product name, not the legal entity.
+ * PolicyWallet is the trade/product name, not the legal entity — it is not a
+ * "detail" and stays visible everywhere.
  *
  * Kept in its own tiny module (instead of legal-content.ts) so the client-side
  * footer does not pull the full legal corpus into its bundle.
  */
 
 export type LegalEntity = {
-    /** Registered company name, in the register of the given language. */
-    company: string
-    /** ΓΕΜΗ (General Commercial Registry) number — mandatory on Greek corporate sites (ν. 3419/2005). */
-    gemi: string
-    /** Tax ID + competent tax office, rendered as a ready-to-inline clause. */
-    vat: string
-    /** Registered address of the company seat. */
-    address: string
+    /** Placeholder shown in place of the withheld company name / ΓΕΜΗ / ΑΦΜ / seat. */
+    detailsComingSoon: string
     /** Data Protection Officer / privacy contact mailbox. */
     dpoEmail: string
     /** Competent court venue named in the terms (already in the right grammatical case). */
@@ -34,22 +30,18 @@ export type LegalEntity = {
 
 export const LEGAL_ENTITY: Record<"el" | "en", LegalEntity> = {
     el: {
-        company: "«Insurance Martech Ι.Κ.Ε.»",
-        gemi: "188863359000",
-        vat: "ΑΦΜ 302659440, ΔΟΥ Χίου",
-        address: "Εντός Οικισμού Καλαμωτής, 82102, Χίος",
+        detailsComingSoon:
+            "Τα πλήρη εταιρικά στοιχεία (επωνυμία, αριθμός ΓΕΜΗ, ΑΦΜ και έδρα) θα είναι διαθέσιμα σύντομα.",
         dpoEmail: "dpo@policywallet.gr",
-        venue: "Χίου (Βορείου Αιγαίου)",
+        venue: "της Ελλάδας",
         liabilityCap:
             "το συνολικό ποσό που καταβάλατε για την υπηρεσία κατά τους δώδεκα (12) μήνες που προηγούνται του γεγονότος από το οποίο πηγάζει η αξίωση",
     },
     en: {
-        company: "Insurance Martech IKE",
-        gemi: "188863359000",
-        vat: "Tax ID (ΑΦΜ) 302659440, Chios Tax Office",
-        address: "Kalamoti, 82102, Chios, Greece",
+        detailsComingSoon:
+            "Full company details (legal name, GEMI number, VAT and registered seat) will be available soon.",
         dpoEmail: "dpo@policywallet.gr",
-        venue: "Chios (North Aegean, Greece)",
+        venue: "Greece",
         liabilityCap:
             "the total amount you paid for the service in the twelve (12) months preceding the event giving rise to the claim",
     },
