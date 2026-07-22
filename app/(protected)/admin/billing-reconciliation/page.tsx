@@ -3,6 +3,8 @@ export const runtime = 'nodejs'
 import { redirect } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { getBillingReconciliation } from "../actions"
+import BillingOpsPanel from "@/components/admin/BillingOpsPanel"
+import CancelSubscriptionButton from "@/components/admin/CancelSubscriptionButton"
 
 function formatDate(value: string | null | undefined) {
     if (!value) return "-"
@@ -34,6 +36,8 @@ export default async function BillingReconciliationPage() {
                         : "No critical billing reconciliation issues detected in this window."}
                 </p>
             </div>
+
+            <BillingOpsPanel />
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 p-4">
@@ -118,12 +122,13 @@ export default async function BillingReconciliationPage() {
                                 <th className="py-2 pr-4">Status</th>
                                 <th className="py-2 pr-4">Current Period End</th>
                                 <th className="py-2 pr-4">Last Invoice</th>
+                                <th className="py-2 pr-4">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {snapshot.samples.subscriptionsWithoutRecentInvoice.length === 0 ? (
                                 <tr>
-                                    <td className="py-3 text-stone-500 dark:text-stone-400" colSpan={6}>No missing-invoice subscriptions detected.</td>
+                                    <td className="py-3 text-stone-500 dark:text-stone-400" colSpan={7}>No missing-invoice subscriptions detected.</td>
                                 </tr>
                             ) : (
                                 snapshot.samples.subscriptionsWithoutRecentInvoice.map((row) => (
@@ -134,6 +139,7 @@ export default async function BillingReconciliationPage() {
                                         <td className="py-2 pr-4 text-stone-900 dark:text-stone-100">{row.status}</td>
                                         <td className="py-2 pr-4 text-stone-900 dark:text-stone-100">{formatDate(row.currentPeriodEnd)}</td>
                                         <td className="py-2 pr-4 text-stone-900 dark:text-stone-100">{formatDate(row.lastInvoiceDate)}</td>
+                                        <td className="py-2 pr-4"><CancelSubscriptionButton subscriptionId={row.subscriptionId} /></td>
                                     </tr>
                                 ))
                             )}
