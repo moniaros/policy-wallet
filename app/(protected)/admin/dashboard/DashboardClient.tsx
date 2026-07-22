@@ -98,12 +98,12 @@ export default function DashboardClient({ metrics, activityLogs, pendingAgentsCo
                         <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
                             {pendingAgentsCount} agent{pendingAgentsCount !== 1 ? 's' : ''} pending verification
                         </p>
-                        <a
+                        <Link
                             href="/admin/users?filter=pending_agents"
                             className="text-sm text-amber-700 dark:text-amber-300 underline hover:no-underline"
                         >
                             Review now →
-                        </a>
+                        </Link>
                     </div>
                 </div>
             )}

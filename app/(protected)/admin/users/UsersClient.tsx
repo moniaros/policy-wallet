@@ -49,7 +49,6 @@ export default function UsersClient({
     const [search, setSearch] = useState(initialSearch || "")
     const [roleFilter, setRoleFilter] = useState(initialRoleFilter || "all")
     const [selectedUser, setSelectedUser] = useState<User | null>(null)
-    const [showDetailModal, setShowDetailModal] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
     const [showRoleModal, setShowRoleModal] = useState(false)
     const [showApproveModal, setShowApproveModal] = useState(false)
@@ -349,49 +348,6 @@ export default function UsersClient({
                 )}
             </div>
 
-            {/* Modals would go here - simplified for now */}
-            {showDetailModal && selectedUser && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-stone-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="p-6 border-b border-stone-200 dark:border-stone-700">
-                            <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100">
-                                User Details
-                            </h2>
-                        </div>
-                        <div className="p-6 space-y-4">
-                            <div>
-                                <label className="text-sm font-medium text-stone-600 dark:text-stone-400">Name</label>
-                                <p className="text-stone-900 dark:text-stone-100">{selectedUser.name || "N/A"}</p>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-stone-600 dark:text-stone-400">Email</label>
-                                <p className="text-stone-900 dark:text-stone-100">{selectedUser.email}</p>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-stone-600 dark:text-stone-400">Role</label>
-                                <p className="text-stone-900 dark:text-stone-100">{selectedUser.roles}</p>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-stone-600 dark:text-stone-400">Phone</label>
-                                <p className="text-stone-900 dark:text-stone-100">{selectedUser.phoneNumber || "N/A"}</p>
-                            </div>
-                            <div>
-                                <label className="text-sm font-medium text-stone-600 dark:text-stone-400">Policies Owned</label>
-                                <p className="text-stone-900 dark:text-stone-100">{selectedUser._count.policiesOwned}</p>
-                            </div>
-                        </div>
-                        <div className="p-6 border-t border-stone-200 dark:border-stone-700 flex justify-end">
-                            <button
-                                onClick={() => setShowDetailModal(false)}
-                                className="px-4 py-2 bg-stone-200 dark:bg-stone-700 text-stone-900 dark:text-stone-100 rounded-lg hover:bg-stone-300 dark:hover:bg-stone-600"
-                            >
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
             {/* Approve Modal */}
             {showApproveModal && selectedUser && selectedUser.agentProfile && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -523,7 +479,7 @@ export default function UsersClient({
                                         toast.error("Failed to change role") // i18n-hardcoded-ignore
                                     }
                                 }}
-                                className="px-4 py-2 bg-primary text-white dark:text-[#1A2420] rounded hover:bg-primary-hover disabled:opacity-50"
+                                className="px-4 py-2 bg-primary text-white dark:text-[#1A2420] rounded hover:bg-primary-hover"
                             >
                                 Save
                             </button>

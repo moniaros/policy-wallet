@@ -6,9 +6,7 @@ import {
     TrendingUp,
     Users,
     Activity,
-    DollarSign,
-    ArrowUp,
-    ArrowDown
+    DollarSign
 } from 'lucide-react'
 import { formatTokens, formatCost } from '@/lib/token-utils'
 
@@ -89,15 +87,6 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
         trends: { el: 'Τάσεις Χρήσης', en: 'Usage Trends' },
     }
 
-    // Calculate profit margin
-    const averageRevenue = stats.byTier.reduce((sum, tier) => {
-        const prices = { free: 0, essential: 2.99, professional: 19.99 }
-        return sum + (prices[tier.tier as keyof typeof prices] || 0) * tier.users
-    }, 0)
-    const profitMargin = averageRevenue > 0
-        ? ((averageRevenue - stats.total.cost) / averageRevenue) * 100
-        : 0
-
     return (
         <div className="space-y-6">
             {/* Header */}
@@ -124,10 +113,6 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                 <div className="bg-primary-tint dark:bg-primary/15 rounded-2xl border-2 border-[#E2E8F0] dark:border-slate-800 p-6">
                     <div className="flex items-center justify-between mb-2">
                         <Coins className="w-8 h-8 text-primary dark:text-mint" />
-                        <div className="flex items-center gap-1 text-[#166534] dark:text-mint text-sm font-bold">
-                            <ArrowUp className="w-4 h-4" />
-                            12%
-                        </div>
                     </div>
                     <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">
                         {copy.totalUsage[language]}
@@ -141,19 +126,12 @@ export function TokenAnalyticsDashboard({ language }: { language: 'el' | 'en' })
                 <div className="bg-primary-tint dark:bg-primary/15 rounded-2xl border-2 border-[#E2E8F0] dark:border-slate-800 p-6">
                     <div className="flex items-center justify-between mb-2">
                         <DollarSign className="w-8 h-8 text-primary dark:text-mint" />
-                        <div className="flex items-center gap-1 text-red-600 dark:text-red-400 text-sm font-bold">
-                            <ArrowUp className="w-4 h-4" />
-                            8%
-                        </div>
                     </div>
                     <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-1">
                         {copy.totalCost[language]}
                     </h3>
                     <p className="text-3xl font-black text-slate-900 dark:text-white">
                         {formatCost(stats.total.cost)}
-                    </p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                        Profit Margin: {profitMargin.toFixed(1)}%
                     </p>
                 </div>
 

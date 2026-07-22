@@ -2,6 +2,7 @@ export const runtime = 'nodejs'
 
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { redirect } from "next/navigation"
+import AdminSidebar from "@/components/admin/AdminSidebar"
 
 export default async function AdminLayout({
     children,
@@ -19,8 +20,9 @@ export default async function AdminLayout({
     }
 
     return (
-        <div className="flex min-h-screen flex-col">
-            {children}
+        <div className="flex min-h-screen flex-col md:flex-row">
+            <AdminSidebar />
+            <main className="flex-1 min-w-0">{children}</main>
         </div>
     )
 }

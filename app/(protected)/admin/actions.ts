@@ -1363,6 +1363,11 @@ export async function createInsuranceType(formData: FormData) {
 /**
  * L4: Update a gap definition with automatic version increment.
  * Records changedAt and changedBy (admin user id) on every write.
+ *
+ * ORPHANED (audited 2026-07): no UI calls this — there is no /admin/gaps page.
+ * Kept (not deleted) as the versioned-edit foundation for a future gap-definition
+ * admin editor. Do NOT assume it is reachable from the product today.
+ * (Same status: the guarded but UI-less GET /api/admin/tokens/usage endpoint.)
  */
 export async function updateGapDefinition(
     gapDefinitionId: string,
