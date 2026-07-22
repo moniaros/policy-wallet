@@ -31,6 +31,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         return createApiResponse({ action })
     } catch (error: any) {
         if (error?.message === "Forbidden") return createApiError("FORBIDDEN", "Forbidden", 403)
+        if (error?.message === "Invalid assignee") return createApiError("VALIDATION_ERROR", "Invalid assignee", 400)
         return createApiError("INTERNAL_ERROR", "Failed to add action", 500, String(error))
     }
 }

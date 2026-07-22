@@ -452,6 +452,138 @@ export const GAP_CONTENT_MAP: Record<string, GapContentEntry> = {
         mechanic: "limit",
         coverageArea: "abroad",
     },
+
+    // ── Liability / business / disability slugs (prod dump 2026-07-18→21;
+    //    Sentry POLICYWALLET-7). These fell through to the AI-sentence fallback,
+    //    and alias pairs (…-gap vs bare, singular/plural) failed to dedupe as
+    //    one concept. General coverage area — outside health the area is the
+    //    branch, and these ride liability/business/professional lines. ──
+    "employer-liability": {
+        concept: "employer-liability",
+        titleEl: "Πιθανό κενό ευθύνης εργοδότη",
+        titleEn: "Possible employer's liability gap",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "employer-liability-gap": {
+        concept: "employer-liability",
+        titleEl: "Πιθανό κενό ευθύνης εργοδότη",
+        titleEn: "Possible employer's liability gap",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "employers-liability": {
+        concept: "employer-liability",
+        titleEl: "Πιθανό κενό ευθύνης εργοδότη",
+        titleEn: "Possible employer's liability gap",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "professional-liability": {
+        concept: "professional-liability",
+        titleEl: "Πιθανό κενό επαγγελματικής ευθύνης",
+        titleEn: "Possible professional liability gap",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "professional-liability-gap": {
+        concept: "professional-liability",
+        titleEl: "Πιθανό κενό επαγγελματικής ευθύνης",
+        titleEn: "Possible professional liability gap",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "product-liability": {
+        concept: "product-liability",
+        titleEl: "Πιθανό κενό ευθύνης προϊόντος",
+        titleEn: "Possible product liability gap",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "product-liability-gap": {
+        concept: "product-liability",
+        titleEl: "Πιθανό κενό ευθύνης προϊόντος",
+        titleEn: "Possible product liability gap",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "cyber-liability": {
+        concept: "cyber-liability",
+        titleEl: "Πιθανό κενό κάλυψης κυβερνοκινδύνων",
+        titleEn: "Possible cyber liability gap",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "cyber-risk-gap": {
+        concept: "cyber-liability",
+        titleEl: "Πιθανό κενό κάλυψης κυβερνοκινδύνων",
+        titleEn: "Possible cyber liability gap",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "fire-explosion-liability-gap": {
+        concept: "fire-explosion-liability",
+        titleEl: "Πιθανό κενό ευθύνης από πυρκαγιά/έκρηξη",
+        titleEn: "Possible fire & explosion liability gap",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "vehicle-vessel-aircraft-liability-gap": {
+        concept: "vehicle-vessel-aircraft-liability",
+        titleEl: "Πιθανό κενό ευθύνης οχήματος/σκάφους/αεροσκάφους",
+        titleEn: "Possible vehicle/vessel/aircraft liability gap",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "communicable-disease-liability": {
+        concept: "communicable-disease",
+        titleEl: "Πιθανή εξαίρεση μεταδοτικών νόσων",
+        titleEn: "Possible communicable-disease exclusion",
+        mechanic: "exclusion",
+        coverageArea: "general",
+    },
+    "communicable-disease-gap": {
+        concept: "communicable-disease",
+        titleEl: "Πιθανή εξαίρεση μεταδοτικών νόσων",
+        titleEn: "Possible communicable-disease exclusion",
+        mechanic: "exclusion",
+        coverageArea: "general",
+    },
+    "elevator-maintenance-risk": {
+        concept: "elevator-maintenance",
+        titleEl: "Κίνδυνος συντήρησης ανελκυστήρα",
+        titleEn: "Elevator maintenance risk",
+        mechanic: "other",
+        coverageArea: "general",
+    },
+    "low-liability-limits": {
+        concept: "low-liability-limits",
+        titleEl: "Χαμηλά όρια αστικής ευθύνης",
+        titleEn: "Low liability limits",
+        mechanic: "limit",
+        coverageArea: "general",
+    },
+    "family-exclusion-gap": {
+        concept: "family-exclusion",
+        titleEl: "Πιθανή εξαίρεση μελών οικογένειας",
+        titleEn: "Possible family-member exclusion",
+        mechanic: "exclusion",
+        coverageArea: "general",
+    },
+    "waiting-period-disability": {
+        concept: "waiting-period-disability",
+        titleEl: "Περίοδος αναμονής για παροχές ανικανότητας",
+        titleEn: "Waiting period for disability benefits",
+        mechanic: "limit",
+        coverageArea: "general",
+    },
+    "missing-policy-details": {
+        concept: "missing-policy-details",
+        titleEl: "Ελλιπή στοιχεία ασφαλιστηρίου",
+        titleEn: "Missing policy details",
+        mechanic: "other",
+        coverageArea: "general",
+    },
 }
 
 const GENERIC_TITLES: Record<GapMechanic, { el: string; en: string }> = {

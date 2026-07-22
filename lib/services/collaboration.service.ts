@@ -178,9 +178,17 @@ export class CollaborationService {
             relationship.policyholderUserId === userId
         if (!isAllowed) throw new Error("Forbidden")
 
+        // The notified/emailed recipient must be a party to the relationship —
+        // never an arbitrary user id from the caller. Without this clamp, a
+        // caller in one relationship could direct a platform-authored email
+        // (with an attacker-chosen subject) at any registered address.
+        const counterparty =
+            relationship.agentUserId === userId ? relationship.policyholderUserId : relationship.agentUserId
         const assignedToUserId =
-            input.assignedToUserId ??
-            (relationship.agentUserId === userId ? relationship.policyholderUserId : relationship.agentUserId)
+            input.assignedToUserId === relationship.agentUserId ||
+            input.assignedToUserId === relationship.policyholderUserId
+                ? input.assignedToUserId
+                : counterparty
 
         const thread = await db.collaborationThread.create({
             data: {
@@ -325,6 +333,17 @@ export class CollaborationService {
     async addAction(userId: string, rolesRaw: string, threadId: string, input: CreateActionInput) {
         const thread = await this.assertThreadAccess(userId, rolesRaw, threadId)
         if (!thread) throw new Error("Forbidden")
+
+        // The assignee (who receives an email + notification) must be a party to
+        // the thread — not an arbitrary user id from the caller.
+        const allowedAssignees = new Set<string>([
+            thread.relationship.agentUserId,
+            thread.relationship.policyholderUserId,
+            ...thread.participants.map((p) => p.userId),
+        ])
+        if (!allowedAssignees.has(input.assigneeUserId)) {
+            throw new Error("Invalid assignee")
+        }
 
         const action = await db.collaborationAction.create({
             data: {

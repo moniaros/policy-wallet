@@ -1,4 +1,4 @@
-import { createApiResponse, createApiError } from "@/lib/api-utils"
+import { createApiResponse } from "@/lib/api-utils"
 import { withApiGuard } from "@/lib/api-guard"
 import { generateAgentPlaybooks, generatePlaybook } from "@/lib/services/gap-engine/agent-playbook"
 
@@ -12,7 +12,9 @@ import { generateAgentPlaybooks, generatePlaybook } from "@/lib/services/gap-eng
  */
 export const GET = withApiGuard(
     {
-        auth: { mode: "user" },
+        // Declarative role gate uses the canonical hasAnyRole/parseRoles path
+        // (was a naive roles.includes("agent") substring check).
+        auth: { mode: "user", roles: ["agent"] },
         rateLimit: {
             limit: 15,
             windowMs: 60 * 1000,
@@ -22,11 +24,6 @@ export const GET = withApiGuard(
     },
     async ({ auth, req }) => {
         const agentId = auth!.dbUser.id
-
-        // Verify agent role
-        if (!auth!.dbUser.roles?.includes("agent")) {
-            return createApiError("FORBIDDEN", "Agent role required", 403)
-        }
 
         const url = new URL(req.url)
         const clientId = url.searchParams.get("clientId")
