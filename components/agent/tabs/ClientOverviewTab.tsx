@@ -142,7 +142,7 @@ export function ClientOverviewTab({
                                     critical: "border-l-red-500 bg-red-50/50 dark:bg-red-950/20",
                                     high: "border-l-amber-500 bg-amber-50/50 dark:bg-amber-950/20",
                                     medium: "border-l-blue-500 bg-blue-50/50 dark:bg-blue-950/20",
-                                    low: "border-l-slate-400 bg-neutral-50/50 dark:bg-neutral-900/20",
+                                    low: "border-l-neutral-400 bg-neutral-50/50 dark:bg-neutral-900/20",
                                 }
                                 return (
                                     <div

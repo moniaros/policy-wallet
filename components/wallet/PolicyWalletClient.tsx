@@ -106,11 +106,18 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
 
     // Polling with backoff: 2s for first 30s, 5s until 2min, 10s after
     const pollingStartRef = useRef<number>(0)
+    // The poll below calls router.refresh(), which yields a new `policies`
+    // reference and re-runs this effect every 2–10s. Without this guard the
+    // browser-notification prompt toast re-fired on every poll (a fresh copy
+    // stacking every few seconds). Fires once per analyzing run; resets when
+    // nothing is analyzing so a later upload can prompt again.
+    const notifyPromptShownRef = useRef(false)
 
     React.useEffect(() => {
         const hasAnalyzing = policies.some((p) => p.status === 'analyzing')
         if (!hasAnalyzing) {
             pollingStartRef.current = 0
+            notifyPromptShownRef.current = false
             return
         }
 
@@ -130,8 +137,12 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
         }
         timeout = setTimeout(poll, getInterval())
 
-        if ('Notification' in window && Notification.permission === 'default') {
+        if (!notifyPromptShownRef.current && 'Notification' in window && Notification.permission === 'default') {
+            notifyPromptShownRef.current = true
             toast(copy.inProgress, {
+                // Stable id: any residual re-trigger updates this toast in place
+                // instead of stacking a new one.
+                id: 'analysis-notify-prompt',
                 description: copy.notifyPrompt,
                 action: {
                     label: copy.notifyMe,
