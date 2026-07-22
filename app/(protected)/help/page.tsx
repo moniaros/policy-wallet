@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import React, { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -22,7 +22,7 @@ import {
 } from 'lucide-react'
 
 function stripDiacritics(str: string): string {
-    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    return str.normalize('NFD').replace(/[̀-ͯ]/g, '')
 }
 
 type CategoryKey = 'all' | 'gettingStarted' | 'policyManagement' | 'accountSecure' | 'billing' | 'mobileApp'
@@ -130,29 +130,29 @@ export default function HelpPage() {
         {
             id: 'wallet-upload',
             icon: Upload,
-            label: language === 'el' ? 'Ανέβασε νέο ασφαλιστήριο' : 'Upload a new policy',
-            desc: language === 'el' ? 'Ξεκίνα από το πορτοφόλι σου σε λιγότερο από 1 λεπτό.' : 'Start from your wallet in under a minute.',
+            label: t.help.shortcuts.uploadLabel,
+            desc: t.help.shortcuts.uploadDesc,
             href: '/wallet',
         },
         {
             id: 'coverage-insights',
             icon: Sparkles,
-            label: language === 'el' ? 'Δες τις καλύψεις σου καθαρά' : 'Understand your coverage clearly',
-            desc: language === 'el' ? 'Άνοιξε τα coverage insights και εντόπισε τα επόμενα βήματα.' : 'Open coverage insights and find your next best actions.',
+            label: t.help.shortcuts.coverageLabel,
+            desc: t.help.shortcuts.coverageDesc,
             href: '/coverage-insights',
         },
         {
             id: 'share-collab',
             icon: Users,
-            label: language === 'el' ? 'Κοινοποίηση με σύμβουλο ή οικογένεια' : 'Share with agent or family',
-            desc: language === 'el' ? 'Συνεργασία με πλήρη έλεγχο δικαιωμάτων.' : 'Collaborate with full permission control.',
+            label: t.help.shortcuts.shareLabel,
+            desc: t.help.shortcuts.shareDesc,
             href: '/help/article/sharing-access',
         },
         {
             id: 'billing-plans',
             icon: CreditCard,
-            label: language === 'el' ? 'Χρέωση και συνδρομή' : 'Billing and plans',
-            desc: language === 'el' ? 'Διαχείριση κάρτας, πλάνου και αναβαθμίσεων.' : 'Manage card, plan, and upgrades.',
+            label: t.help.shortcuts.billingLabel,
+            desc: t.help.shortcuts.billingDesc,
             href: '/account',
         },
     ]
@@ -160,33 +160,31 @@ export default function HelpPage() {
     const hasFilters = query.trim().length > 0 || activeCategory !== 'all'
 
     return (
-        <div className="min-h-screen bg-stone-50 dark:bg-stone-950 pb-20">
+        <div className="min-h-screen bg-background pb-20">
             <PageHeader title={t.help.pageTitle} subtitle={t.help.pageSubtitle} />
 
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8">
-                <section className="rounded-3xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 p-5 sm:p-7 shadow-sm">
+                <section className="rounded-3xl border border-border bg-card p-5 sm:p-7 shadow-sm">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                         <div>
-                            <h2 className="text-xl sm:text-2xl font-black text-stone-900 dark:text-white tracking-tight">
-                                {language === 'el' ? 'Τι θέλεις να κάνεις σήμερα;' : 'What do you need to do today?'}
+                            <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
+                                {t.help.todayTitle}
                             </h2>
-                            <p className="mt-1 text-sm text-stone-500 dark:text-stone-400 max-w-2xl">
-                                {language === 'el'
-                                    ? 'Βρες άμεσα οδηγούς για ανέβασμα ασφαλιστηρίου, κατανόηση καλύψεων και συνεργασία με τον σύμβουλό σου.'
-                                    : 'Get instant guidance on uploading policies, understanding coverage, and collaborating with your agent.'}
+                            <p className="mt-1 text-sm text-muted-foreground max-w-2xl">
+                                {t.help.todaySubtitle}
                             </p>
                         </div>
                         <div className="flex items-center gap-3">
                             <button
                                 onClick={() => router.push('/wallet')}
-                                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-stone-900 dark:bg-white text-white dark:text-stone-900 text-sm font-bold hover:opacity-90 transition-opacity cursor-pointer"
+                                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary-hover transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                             >
-                                {language === 'el' ? 'Άνοιγμα πορτοφολιού' : 'Open wallet'}
+                                {t.help.openWallet}
                                 <ArrowRight className="w-4 h-4" />
                             </button>
                             <a
                                 href="mailto:support@policywallet.com"
-                                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 text-sm font-bold hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors"
+                                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-foreground text-sm font-bold hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                             >
                                 {t.help.sendEmail}
                             </a>
@@ -194,18 +192,20 @@ export default function HelpPage() {
                     </div>
 
                     <div className="mt-6 relative">
-                        <Search className="w-5 h-5 text-stone-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                        <Search className="w-5 h-5 text-muted-foreground absolute left-4 top-1/2 -translate-y-1/2" />
                         <input
                             type="text"
+                            aria-label={t.help.searchPlaceholder}
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder={t.help.searchPlaceholder}
-                            className="w-full pl-12 pr-12 py-3.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/40"
+                            className="w-full pl-12 pr-12 py-3.5 bg-muted border border-border rounded-2xl text-sm font-medium text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
                         />
                         {query && (
                             <button
                                 onClick={() => setQuery('')}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors cursor-pointer"
+                                aria-label={t.help.clearFilters}
+                                className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                             >
                                 <X className="w-4 h-4" />
                             </button>
@@ -221,10 +221,11 @@ export default function HelpPage() {
                                 <button
                                     key={category}
                                     onClick={() => setActiveCategory(category)}
-                                    className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+                                    aria-pressed={isActive}
+                                    className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
                                         isActive
-                                            ? 'bg-stone-900 dark:bg-white text-white dark:text-stone-900'
-                                            : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200 dark:hover:bg-stone-700'
+                                            ? 'bg-primary text-primary-foreground'
+                                            : 'bg-muted text-muted-foreground hover:bg-muted/70'
                                     }`}
                                 >
                                     <Icon className="w-3.5 h-3.5" />
@@ -237,21 +238,21 @@ export default function HelpPage() {
 
                 {!hasFilters && (
                     <section>
-                        <h2 className="text-lg font-black text-stone-900 dark:text-white tracking-tight mb-4">
-                            {language === 'el' ? 'Γρήγορες ενέργειες' : 'Quick actions'}
+                        <h2 className="text-lg font-black text-foreground tracking-tight mb-4">
+                            {t.help.quickActions}
                         </h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             {taskShortcuts.map((task) => (
                                 <button
                                     key={task.id}
                                     onClick={() => router.push(task.href)}
-                                    className="text-left p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-primary/50 dark:hover:border-mint/40 hover:shadow-md transition-all cursor-pointer"
+                                    className="text-left p-5 rounded-2xl bg-card border border-border hover:border-primary/50 hover:shadow-md transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                                 >
                                     <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint flex items-center justify-center mb-3">
                                         <task.icon className="w-5 h-5" />
                                     </div>
-                                    <p className="font-bold text-sm text-stone-900 dark:text-white mb-1">{task.label}</p>
-                                    <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">{task.desc}</p>
+                                    <p className="font-bold text-sm text-foreground mb-1">{task.label}</p>
+                                    <p className="text-xs text-muted-foreground leading-relaxed">{task.desc}</p>
                                 </button>
                             ))}
                         </div>
@@ -260,12 +261,8 @@ export default function HelpPage() {
 
                 <section>
                     <div className="flex items-center justify-between mb-4">
-                        <h2 className="text-lg font-black text-stone-900 dark:text-white tracking-tight">
-                            {hasFilters
-                                ? language === 'el'
-                                    ? 'Αποτελέσματα'
-                                    : 'Results'
-                                : t.help.featuredGuides}
+                        <h2 className="text-lg font-black text-foreground tracking-tight">
+                            {hasFilters ? t.help.results : t.help.featuredGuides}
                         </h2>
                         {hasFilters && (
                             <button
@@ -273,20 +270,20 @@ export default function HelpPage() {
                                     setActiveCategory('all')
                                     setQuery('')
                                 }}
-                                className="text-xs font-bold text-primary dark:text-mint hover:underline cursor-pointer"
+                                className="rounded text-xs font-bold text-primary dark:text-mint hover:underline cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                             >
-                                {language === 'el' ? 'Καθαρισμός φίλτρων' : 'Clear filters'}
+                                {t.help.clearFilters}
                             </button>
                         )}
                     </div>
 
                     {filtered.length === 0 ? (
-                        <div className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 p-10 text-center">
-                            <p className="text-sm font-bold text-stone-700 dark:text-stone-200 mb-2">
-                                {language === 'el' ? 'Δεν βρέθηκαν άρθρα' : 'No articles found'}
+                        <div className="bg-card rounded-2xl border border-border p-10 text-center">
+                            <p className="text-sm font-bold text-foreground mb-2">
+                                {t.help.noArticles}
                             </p>
-                            <p className="text-xs text-stone-500 dark:text-stone-400">
-                                {language === 'el' ? 'Δοκιμάστε διαφορετική λέξη ή κατηγορία.' : 'Try a different keyword or category.'}
+                            <p className="text-xs text-muted-foreground">
+                                {t.help.noArticlesHint}
                             </p>
                         </div>
                     ) : (
@@ -295,20 +292,20 @@ export default function HelpPage() {
                                 <button
                                     key={article.id}
                                     onClick={() => router.push(`/help/article/${article.id}`)}
-                                    className="text-left h-full p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-primary/50 dark:hover:border-mint/40 hover:shadow-md transition-all group cursor-pointer"
+                                    className="text-left h-full p-5 rounded-2xl bg-card border border-border hover:border-primary/50 hover:shadow-md transition-all group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                                 >
                                     <div className="flex items-center justify-between mb-3">
-                                        <span className="px-2.5 py-1 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 text-[10px] font-bold uppercase tracking-widest">
+                                        <span className="px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-[10px] font-bold uppercase tracking-widest">
                                             {article.categoryLabel}
                                         </span>
-                                        <span className="text-[10px] font-bold text-stone-400">{article.readTime}</span>
+                                        <span className="text-[10px] font-bold text-muted-foreground">{article.readTime}</span>
                                     </div>
-                                    <h3 className="text-base font-black text-slate-900 dark:text-white mb-2 leading-tight group-hover:text-primary dark:group-hover:text-mint transition-colors">
+                                    <h3 className="text-base font-black text-foreground mb-2 leading-tight group-hover:text-primary dark:group-hover:text-mint transition-colors">
                                         {article.title}
                                     </h3>
-                                    <p className="text-sm text-stone-500 dark:text-stone-400 line-clamp-2 mb-4">{article.subtitle}</p>
+                                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{article.subtitle}</p>
                                     <div className="inline-flex items-center gap-1.5 text-xs font-bold text-primary dark:text-mint">
-                                        {language === 'el' ? 'Άνοιγμα οδηγού' : 'Open guide'}
+                                        {t.help.openGuide}
                                         <ChevronRight className="w-3.5 h-3.5" />
                                     </div>
                                 </button>
@@ -318,36 +315,36 @@ export default function HelpPage() {
                 </section>
 
                 <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div className="rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-6">
+                    <div className="rounded-2xl bg-card border border-border p-6">
                         <div className="flex items-center gap-3 mb-3">
                             <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint flex items-center justify-center">
                                 <Mail className="w-5 h-5" />
                             </div>
-                            <h3 className="text-base font-black text-stone-900 dark:text-white">{t.help.emailSupport}</h3>
+                            <h3 className="text-base font-black text-foreground">{t.help.emailSupport}</h3>
                         </div>
-                        <p className="text-sm text-stone-600 dark:text-stone-400 mb-5">{t.help.emailDesc}</p>
+                        <p className="text-sm text-muted-foreground mb-5">{t.help.emailDesc}</p>
                         <a
                             href="mailto:support@policywallet.com"
-                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-stone-900 dark:bg-white text-white dark:text-stone-900 text-sm font-bold hover:opacity-90 transition-opacity"
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-bold hover:bg-primary-hover transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                         >
                             {t.help.sendEmail}
                             <ArrowRight className="w-4 h-4" />
                         </a>
                     </div>
 
-                    <div className="rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 p-6">
+                    <div className="rounded-2xl bg-card border border-border p-6">
                         <div className="flex items-center gap-3 mb-3">
                             <div className="w-10 h-10 rounded-xl bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint flex items-center justify-center">
                                 <MessageCircle className="w-5 h-5" />
                             </div>
-                            <h3 className="text-base font-black text-stone-900 dark:text-white">{t.help.communityChat}</h3>
+                            <h3 className="text-base font-black text-foreground">{t.help.communityChat}</h3>
                         </div>
-                        <p className="text-sm text-stone-600 dark:text-stone-400 mb-5">{t.help.communityDesc}</p>
+                        <p className="text-sm text-muted-foreground mb-5">{t.help.communityDesc}</p>
                         <button
                             onClick={() => router.push('/account')}
-                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 text-sm font-bold hover:bg-stone-50 dark:hover:bg-stone-800 transition-colors cursor-pointer"
+                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border text-foreground text-sm font-bold hover:bg-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                         >
-                            {language === 'el' ? 'Άνοιγμα ρυθμίσεων' : 'Open settings'}
+                            {t.help.openSettings}
                             <ArrowRight className="w-4 h-4" />
                         </button>
                     </div>
