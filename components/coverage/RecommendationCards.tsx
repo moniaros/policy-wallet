@@ -57,6 +57,8 @@ interface RecommendationCardsProps {
     smartContent?: Record<string, SmartCardContent>
     /** When "free", evidence/next-step details render behind a soft paywall. */
     tier?: "free" | "plus" | "pro"
+    /** ≥1 active policy exists — drives the empty-state message/CTA. */
+    hasPolicies?: boolean
 }
 
 // ── LOB icon map ─────────────────────────────────────────────────────
@@ -125,6 +127,7 @@ export function RecommendationCards({
     profileIncomplete = false,
     smartContent = {},
     tier,
+    hasPolicies = true,
 }: RecommendationCardsProps) {
     const evidenceLocked = tier === "free"
     const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set())
@@ -157,35 +160,53 @@ export function RecommendationCards({
     }
 
     if (visible.length === 0) {
+        // Three honest empty states — never "preparing" indefinitely:
+        //  • no policies → add one;
+        //  • profile incomplete → complete it (recommendations sharpen);
+        //  • otherwise → the user is genuinely well covered right now.
+        const wellCovered = hasPolicies && !profileIncomplete
         return (
             <EmptyState
                 icon={Lightbulb}
-                headline={t("Οι προτάσεις σας ετοιμάζονται", "Your recommendations are on the way")}
-                description={t(
-                    "Όσο πληρέστερο το προφίλ και τα συμβόλαιά σας, τόσο πιο εύστοχες οι προτάσεις της AI.",
-                    "The more complete your profile and policies, the sharper the AI's recommendations."
-                )}
-                cta={
-                    profileIncomplete
-                        ? {
-                              label: t("Συμπλήρωση προφίλ κινδύνου", "Complete your risk profile"),
-                              onClick: () =>
-                                  document
-                                      .getElementById("risk-profile-wizard")
-                                      ?.scrollIntoView({ behavior: "smooth", block: "start" }),
-                          }
-                        : { label: t("Προσθήκη συμβολαίου", "Add a policy"), href: "/wallet/add" }
+                headline={
+                    !hasPolicies
+                        ? t("Προσθέστε το πρώτο σας συμβόλαιο", "Add your first policy")
+                        : profileIncomplete
+                            ? t("Οι προτάσεις σας ετοιμάζονται", "Your recommendations are on the way")
+                            : t("Φαίνεστε καλά καλυμμένος/η", "You look well covered")
                 }
-                previewLabel={t("Παράδειγμα", "Example")}
+                description={
+                    !hasPolicies
+                        ? t("Προσθέστε ένα συμβόλαιο για να λάβετε εξατομικευμένες προτάσεις.", "Add a policy to get personalized recommendations.")
+                        : profileIncomplete
+                            ? t("Όσο πληρέστερο το προφίλ και τα συμβόλαιά σας, τόσο πιο εύστοχες οι προτάσεις της AI.", "The more complete your profile and policies, the sharper the AI's recommendations.")
+                            : t("Δεν υπάρχουν προτάσεις αυτή τη στιγμή. Ανανεώστε την ανάλυση για επανέλεγχο.", "No recommendations right now. Refresh the analysis to re-check.")
+                }
+                cta={
+                    !hasPolicies
+                        ? { label: t("Προσθήκη συμβολαίου", "Add a policy"), href: "/wallet/add" }
+                        : profileIncomplete
+                            ? {
+                                  label: t("Συμπλήρωση προφίλ κινδύνου", "Complete your risk profile"),
+                                  onClick: () =>
+                                      document
+                                          .getElementById("risk-profile-wizard")
+                                          ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+                              }
+                            : { label: t("Επιστροφή στο πορτοφόλι", "Back to wallet"), href: "/wallet" }
+                }
+                previewLabel={wellCovered ? undefined : t("Παράδειγμα", "Example")}
                 preview={
-                    <RecommendationPreviewCard
-                        title={t("Αύξηση κάλυψης κατοικίας", "Increase home coverage")}
-                        meta={t(
-                            "Η κάλυψη περιεχομένου φαίνεται χαμηλή για το προφίλ σας.",
-                            "Your contents coverage looks low for your profile."
-                        )}
-                        urgencyLabel={t("Συνιστάται", "Recommended")}
-                    />
+                    wellCovered ? undefined : (
+                        <RecommendationPreviewCard
+                            title={t("Αύξηση κάλυψης κατοικίας", "Increase home coverage")}
+                            meta={t(
+                                "Η κάλυψη περιεχομένου φαίνεται χαμηλή για το προφίλ σας.",
+                                "Your contents coverage looks low for your profile."
+                            )}
+                            urgencyLabel={t("Συνιστάται", "Recommended")}
+                        />
+                    )
                 }
                 trust={t(
                     "Ενημερωτικές προτάσεις — όχι ασφαλιστική συμβουλή",

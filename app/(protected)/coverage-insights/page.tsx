@@ -78,7 +78,10 @@ export default async function CoverageInsightsPage() {
             insurerName: true,
             lineOfBusiness: true,
             status: true,
-            endDate: true
+            endDate: true,
+            // Deep gap analysis is Plus-gated; only the deep pipeline sets this
+            // (extractBasicSummary does not). Null everywhere ⇒ never deep-analyzed.
+            lastAnalyzedAt: true
         }
     })
 
@@ -97,12 +100,16 @@ export default async function CoverageInsightsPage() {
     const mediumGaps = gapInstances.filter(g => g.severity === 'medium').length
     const lowGaps = gapInstances.filter(g => g.severity === 'low').length
 
-    // Use protection score from engine if available, otherwise legacy calculation
-    const healthScore = engineResult
-        ? engineResult.protectionScore.overallScore
-        : Math.max(0, Math.min(100,
-            100 - (criticalGaps * 25 + highGaps * 15 + mediumGaps * 8 + lowGaps * 3)
-        ))
+    // Coverage-completeness score (profile-based). No misleading "100 = Strong"
+    // fallback when the engine errors — an unknown score must never read as strong.
+    const healthScore = engineResult ? engineResult.protectionScore.overallScore : 0
+
+    // Verdict gating signals (Concept B = policy gaps): distinguish
+    // "analyzed & clean" from "never deep-analyzed", and whether deep analysis
+    // is available (Plus) at all. lastAnalyzedAt is set only by the deep pipeline.
+    const hasPolicies = policies.length > 0
+    const hasDeepAnalysis = policies.some((p) => (p as any).lastAnalyzedAt != null)
+    const isDeepAnalysisLocked = entitlements.tier !== 'pro'
 
     const userLanguage = (dbUser.preferredLanguage || 'en') as 'en' | 'el'
     const t = getTranslations(userLanguage)
@@ -137,6 +144,7 @@ export default async function CoverageInsightsPage() {
                             profileIncomplete={engineResult.profileCompleteness < 80}
                             smartContent={engineResult.smartContent}
                             tier={entitlements.tier}
+                            hasPolicies={hasPolicies}
                         />
                     </div>
                 </div>
@@ -162,6 +170,9 @@ export default async function CoverageInsightsPage() {
                     userLanguage={userLanguage}
                     tier={entitlements.tier}
                     isPaid={entitlements.isPaid}
+                    hasPolicies={hasPolicies}
+                    hasDeepAnalysis={hasDeepAnalysis}
+                    isDeepAnalysisLocked={isDeepAnalysisLocked}
                     canUseAgentCollaboration={entitlements.limits.agentCollaboration}
                     policies={policies.map(p => ({
                         id: p.id,

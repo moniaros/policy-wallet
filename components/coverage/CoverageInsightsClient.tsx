@@ -36,6 +36,12 @@ interface CoverageInsightsClientProps {
     userLanguage: string
     tier: PlanTier
     isPaid: boolean
+    /** ≥1 active policy exists. */
+    hasPolicies?: boolean
+    /** Deep gap analysis ran (Policy.lastAnalyzedAt set) — so 0 gaps means clean, not un-analyzed. */
+    hasDeepAnalysis?: boolean
+    /** Deep gap analysis is a Plus feature the current tier can't run. */
+    isDeepAnalysisLocked?: boolean
     canUseAgentCollaboration: boolean
     policies?: Array<{
         id: string
@@ -51,6 +57,9 @@ export function CoverageInsightsClient({
     userLanguage,
     tier,
     isPaid,
+    hasPolicies = true,
+    hasDeepAnalysis = false,
+    isDeepAnalysisLocked = false,
     canUseAgentCollaboration,
     policies = []
 }: CoverageInsightsClientProps) {
@@ -94,57 +103,83 @@ export function CoverageInsightsClient({
         ignore: lang === 'el' ? 'Αγνόηση' : 'Ignore',
         immediateReview: lang === 'el' ? 'Συνιστάται άμεσος έλεγχος' : 'Immediate review recommended',
         noImmediateAction: lang === 'el' ? 'Δεν απαιτείται άμεση ενέργεια' : 'No immediate action required',
+        // Add-first-policy state (no policies yet)
+        addFirstTitle: lang === 'el' ? 'Προσθέστε το πρώτο σας συμβόλαιο' : 'Add your first policy',
+        addFirstBody: lang === 'el' ? 'Προσθέστε ένα συμβόλαιο για να δείτε την εικόνα κάλυψής σας.' : 'Add a policy to see your coverage picture.',
+        addFirstCta: lang === 'el' ? 'Προσθήκη συμβολαίου' : 'Add a policy',
+        // Not-yet-deep-analyzed state (replaces a false "no gaps")
+        notAnalyzedTitle: lang === 'el' ? 'Δεν έχει γίνει ακόμη πλήρης ανάλυση' : 'No full analysis yet',
+        notAnalyzedBody: lang === 'el'
+            ? 'Τρέξτε πλήρη ανάλυση για να ελεγχθούν τα συμβόλαιά σας για κενά.'
+            : 'Run a full analysis to check your policies for gaps.',
+        notAnalyzedLockedCta: lang === 'el' ? 'Ξεκλείδωμα με Plus' : 'Unlock with Plus',
+        notAnalyzedRefreshHint: lang === 'el' ? 'Ανεβάστε ή ανανεώστε ένα συμβόλαιο για να ξεκινήσει.' : 'Upload or refresh a policy to start it.',
+        unknownCount: '—',
     }
 
-    const getConfidenceLevel = (score: number) => {
-        if (score >= 80) {
-            return {
-                label: { el: 'Ισχυρή', en: 'Strong' },
-                desc: {
-                    el: 'Η συνολική κάλυψη είναι σταθερή και ισορροπημένη.',
-                    en: 'Your overall coverage is stable and balanced.'
-                },
-                summary: { el: 'Η κάλυψή σας είναι ισχυρή.', en: 'Your coverage is strong.' },
-                color: 'text-[#166534] dark:text-mint',
-                bg: 'bg-primary-soft dark:bg-primary/15'
-            }
-        }
-
-        if (score >= 50) {
-            return {
-                label: { el: 'Επαρκής', en: 'Sufficient' },
-                desc: {
-                    el: 'Καλύπτετε τα βασικά, αλλά υπάρχουν σημεία για βελτίωση.',
-                    en: 'You cover the basics, but a few points need attention.'
-                },
-                summary: { el: 'Η κάλυψή σας είναι επαρκής.', en: 'Your coverage is sufficient.' },
-                color: 'text-amber-600',
-                bg: 'bg-amber-100 dark:bg-amber-900/30'
-            }
-        }
-
-        return {
-            label: { el: 'Ανεπαρκής', en: 'Insufficient' },
-            desc: {
-                el: 'Υπάρχουν κενά που μπορεί να αυξήσουν τον κίνδυνό σας.',
-                en: 'There are gaps that may increase your exposure.'
-            },
-            summary: { el: 'Η κάλυψή σας χρειάζεται ενίσχυση.', en: 'Your coverage needs attention.' },
-            color: 'text-red-600',
-            bg: 'bg-red-100 dark:bg-red-900/30'
-        }
-    }
-
-    const confidence = getConfidenceLevel(stats.healthScore)
     const visibleGaps = gaps.filter((g) => !hiddenInsights.has(g.id))
     const freeUnlockedLimit = 2
     const maxVisibleInsights = isFreeTier ? freeUnlockedLimit : 6
+    const hasSevereGap = visibleGaps.some((g) => g.severity === 'critical' || g.severity === 'high')
 
-    const summaryText = visibleGaps.length > 0
-        ? (lang === 'el'
-            ? `${confidence.summary.el} Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο.`
-            : `${confidence.summary.en} ${visibleGaps.length} points were identified for review.`)
-        : (lang === 'el' ? `${confidence.summary.el} Δεν εντοπίστηκαν κενά.` : `${confidence.summary.en} No gaps detected.`)
+    // Concept B — policy-gap verdict. The SINGLE source for the headline + the
+    // top tile, gated on whether deep analysis actually ran so "0 gaps" never
+    // masquerades as "clean" when the Plus-gated pipeline never ran. (The
+    // profile protection-SCORE verdict is a separate concept — it lives only in
+    // the ProtectionScoreCard and no longer drives this headline.)
+    const gapVerdict = !hasDeepAnalysis
+        ? {
+            label: { el: 'Εκκρεμεί', en: 'Pending' },
+            desc: {
+                el: 'Δεν έχει γίνει ακόμη πλήρης ανάλυση κενών.',
+                en: 'A full gap analysis has not run yet.',
+            },
+            summary: isDeepAnalysisLocked
+                ? { el: 'Δεν έχει γίνει ακόμη πλήρης ανάλυση κενών — ξεκλειδώστε την με το Plus.', en: "Full gap analysis hasn't run yet — unlock it with Plus." }
+                : { el: 'Η ανάλυση κενών εκκρεμεί — ανεβάστε ή ανανεώστε ένα συμβόλαιο.', en: 'Gap analysis pending — upload or refresh a policy.' },
+            color: 'text-black/60 dark:text-white/60',
+            bg: 'bg-black/5 dark:bg-white/10',
+        }
+        : visibleGaps.length === 0
+            ? {
+                label: { el: 'Επαρκής', en: 'Adequate' },
+                desc: {
+                    el: 'Δεν βρέθηκαν προβλήματα στα ενεργά σας συμβόλαια.',
+                    en: 'No issues found in your active policies.',
+                },
+                summary: { el: 'Δεν εντοπίστηκαν κενά στα ενεργά σας συμβόλαια.', en: 'No gaps found in your active policies.' },
+                color: 'text-[#166534] dark:text-mint',
+                bg: 'bg-primary-soft dark:bg-primary/15',
+            }
+            : hasSevereGap
+                ? {
+                    label: { el: 'Χρειάζεται προσοχή', en: 'Needs attention' },
+                    desc: {
+                        el: 'Υπάρχουν σημαντικά σημεία που αξίζει να ελέγξετε.',
+                        en: 'There are important points worth reviewing.',
+                    },
+                    summary: {
+                        el: `Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο στα συμβόλαιά σας.`,
+                        en: `${visibleGaps.length} points to review across your policies.`,
+                    },
+                    color: 'text-red-600',
+                    bg: 'bg-red-100 dark:bg-red-900/30',
+                }
+                : {
+                    label: { el: 'Σχεδόν έτοιμη', en: 'Almost there' },
+                    desc: {
+                        el: 'Λίγα σημεία προς βελτίωση.',
+                        en: 'A few minor points to improve.',
+                    },
+                    summary: {
+                        el: `Εντοπίστηκαν ${visibleGaps.length} σημεία προς έλεγχο στα συμβόλαιά σας.`,
+                        en: `${visibleGaps.length} points to review across your policies.`,
+                    },
+                    color: 'text-amber-600',
+                    bg: 'bg-amber-100 dark:bg-amber-900/30',
+                }
+
+    const summaryText = gapVerdict.summary[lang]
 
     const insights: InsightData[] = useMemo(() => {
         return visibleGaps.slice(0, maxVisibleInsights).map((gap, index) => ({
@@ -203,6 +238,29 @@ export function CoverageInsightsClient({
         }
     }
 
+    // No policies at all → nothing to assess. Show a single "add your first
+    // policy" state instead of a score-0 / "no gaps detected" contradiction.
+    if (!hasPolicies) {
+        return (
+            <div>
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-7 lg:py-10">
+                    <div className="mb-7 text-center">
+                        <h1 className="pw-kicker mb-2">{copy.summaryTitle}</h1>
+                        <p className="text-xl sm:text-2xl font-semibold text-black dark:text-white leading-tight">{copy.addFirstBody}</p>
+                    </div>
+                    <div className="text-center py-10 pw-card">
+                        <Sparkles className="w-8 h-8 text-primary dark:text-mint mx-auto mb-3" />
+                        <p className="text-black dark:text-white font-semibold">{copy.addFirstTitle}</p>
+                        <p className="text-black/55 dark:text-white/65 text-sm mb-5">{copy.addFirstBody}</p>
+                        <button onClick={() => router.push('/wallet/add')} className="pw-primary-button text-sm cursor-pointer mx-auto">
+                            {copy.addFirstCta}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     return (
         // No page shell here — the coverage-insights route provides the single
         // shared `.pw-page-shell` so the sections don't each claim a full screen.
@@ -228,13 +286,13 @@ export function CoverageInsightsClient({
                 )}
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
-                    <div className={`rounded-2xl p-4 ${confidence.bg}`}>
-                        <p className={`text-xs font-semibold uppercase tracking-widest mb-1 ${confidence.color}`}>{confidence.label[lang]}</p>
-                        <p className="text-sm text-black/85 dark:text-white/85">{confidence.desc[lang]}</p>
+                    <div className={`rounded-2xl p-4 ${gapVerdict.bg}`}>
+                        <p className={`text-xs font-semibold uppercase tracking-widest mb-1 ${gapVerdict.color}`}>{gapVerdict.label[lang]}</p>
+                        <p className="text-sm text-black/85 dark:text-white/85">{gapVerdict.desc[lang]}</p>
                     </div>
                     <div className="pw-card rounded-2xl p-4">
                         <p className="pw-kicker mb-1">{copy.policiesWithPoints}</p>
-                        <p className="text-2xl font-semibold text-black dark:text-white">{policiesWithIssues.size}</p>
+                        <p className="text-2xl font-semibold text-black dark:text-white">{hasDeepAnalysis ? policiesWithIssues.size : copy.unknownCount}</p>
                     </div>
                     <div className="pw-card rounded-2xl p-4">
                         <p className="pw-kicker mb-1">{copy.totalPolicies}</p>
@@ -277,6 +335,23 @@ export function CoverageInsightsClient({
                                     onAction={handleAction}
                                 />
                             ))
+                        ) : !hasDeepAnalysis ? (
+                            <div className="text-center py-10 pw-card">
+                                <Lock className="w-8 h-8 text-primary dark:text-mint mx-auto mb-3" />
+                                <p className="text-black dark:text-white font-semibold">{copy.notAnalyzedTitle}</p>
+                                <p className="text-black/55 dark:text-white/65 text-sm mb-5">{copy.notAnalyzedBody}</p>
+                                {isDeepAnalysisLocked ? (
+                                    <button
+                                        onClick={() => router.push('/upgrade?reason=feature_locked')}
+                                        className="pw-primary-button text-sm cursor-pointer mx-auto"
+                                    >
+                                        <Crown className="w-4 h-4" />
+                                        {copy.notAnalyzedLockedCta}
+                                    </button>
+                                ) : (
+                                    <p className="text-xs text-black/45 dark:text-white/55">{copy.notAnalyzedRefreshHint}</p>
+                                )}
+                            </div>
                         ) : (
                             <div className="text-center py-10 pw-card">
                                 <Sparkles className="w-8 h-8 text-primary dark:text-mint mx-auto mb-3" />
@@ -287,7 +362,7 @@ export function CoverageInsightsClient({
                     </div>
                 </div>
 
-                {policiesOk.length > 0 && (
+                {hasDeepAnalysis && policiesOk.length > 0 && (
                     <div className="mb-10">
                         <h3 className="text-sm font-semibold text-black/55 dark:text-white/60 uppercase tracking-widest mb-3 px-1">{copy.checkedAndGood}</h3>
                         <div className="pw-card rounded-2xl divide-y divide-black/10 dark:divide-white/10">

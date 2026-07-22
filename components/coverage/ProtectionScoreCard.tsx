@@ -53,7 +53,10 @@ export function ProtectionScoreCard({
     const copy = {
         title: lang === "el" ? "Βαθμολογία Προστασίας" : "Protection Score",
         subtitle: lang === "el" ? "Πόσο καλά καλύπτεστε" : "How well you are covered",
-        gapsFound: lang === "el" ? "κενά εντοπίστηκαν" : "gaps found",
+        // Concept A — missing coverage TYPES (profile categories), distinct from
+        // the policy-gap count on the rest of the page. Never call these "gaps".
+        typesMissing: lang === "el" ? "κατηγορίες χωρίς κάλυψη" : "coverage types missing",
+        provisional: lang === "el" ? "Προσωρινή — συμπληρώστε το προφίλ σας" : "Provisional — complete your profile",
         categories: lang === "el" ? "Κατηγορίες" : "Categories",
         notApplicable: lang === "el" ? "Δεν εφαρμόζεται" : "N/A",
         completeProfile: lang === "el"
@@ -80,6 +83,8 @@ export function ProtectionScoreCard({
     const applicableCategories = Object.values(categoryScores).filter(
         (c) => c.applicable
     )
+    // Essential/applicable coverage TYPES the user has no active policy for.
+    const missingTypes = applicableCategories.filter((c) => c.coveredLobs.length === 0).length
 
     return (
         <div className="pw-card p-6 mb-8">
@@ -128,14 +133,17 @@ export function ProtectionScoreCard({
                     </h2>
                     <p className={`text-sm font-medium ${scoreColor} mb-1`}>
                         {tier.label[lang]}
+                        {profileCompleteness < 80 && (
+                            <span className="ml-1.5 text-xs font-normal text-black/45 dark:text-white/50">· {copy.provisional}</span>
+                        )}
                     </p>
                     <p className="text-sm text-black/60 dark:text-white/60 mb-2">
                         {copy.subtitle}
                     </p>
-                    {gapCount > 0 && (
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-medium">
+                    {missingTypes > 0 && (
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/25 text-amber-700 dark:text-amber-400 text-xs font-medium">
                             <AlertTriangle className="w-3.5 h-3.5" />
-                            {gapCount} {copy.gapsFound}
+                            {missingTypes} {copy.typesMissing}
                         </div>
                     )}
                 </div>
