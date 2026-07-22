@@ -56,12 +56,18 @@ interface DsrQueueClientProps {
     summary: QueueSummary
 }
 
+// Fixed locale + timeZone so the SSR pass (UTC) and the client hydration pass
+// (the admin's local zone) render byte-identical strings. Bare toLocale*()
+// without these produced a hydration mismatch on /admin/dsr (POLICYWALLET-8).
+const DSR_TZ = "Europe/Athens"
+const DSR_LOCALE = "el-GR"
+
 function formatDate(value: string | null) {
     if (!value) {
         return "-"
     }
 
-    return new Date(value).toLocaleString()
+    return new Date(value).toLocaleString(DSR_LOCALE, { timeZone: DSR_TZ })
 }
 
 function getStatusClasses(status: string) {
@@ -103,7 +109,7 @@ function DeadlineCell({ requestedAt, open }: { requestedAt: string; open: boolea
     return (
         <div>
             <span className={`inline-flex px-2 py-1 rounded text-xs font-medium ${tone}`}>{label}</span>
-            <div className="mt-1 text-[10px] text-stone-500 dark:text-stone-400">{dueAt.toLocaleDateString()}</div>
+            <div className="mt-1 text-[10px] text-stone-500 dark:text-stone-400">{dueAt.toLocaleDateString(DSR_LOCALE, { timeZone: DSR_TZ })}</div>
         </div>
     )
 }
