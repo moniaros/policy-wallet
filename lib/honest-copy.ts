@@ -372,8 +372,8 @@ export const honestCopy = {
                 en: 'Contact'
             },
             address: {
-                el: 'Αθήνα, Ελλάδα',
-                en: 'Athens, Greece'
+                el: 'Διαθέσιμο σύντομα',
+                en: 'Available soon'
             },
             email: 'hello@policywallet.gr',
             phone: ''

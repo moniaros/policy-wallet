@@ -91,7 +91,7 @@ describe("legal content parity", () => {
         expect(LEGAL_CONTENT_VERSION).not.toContain("DRAFT")
     })
 
-    it("states the real corporate identity in the controller and provider sections", () => {
+    it("withholds the corporate identity with a coming-soon notice (no name/ΓΕΜΗ/ΑΦΜ/seat leaked)", () => {
         const el = getLegalContent("el")
         const en = getLegalContent("en")
 
@@ -101,15 +101,17 @@ describe("legal content parity", () => {
         const enProvider = en.terms.sections.find((s) => s.id === "provider")?.paragraphs.join(" ") ?? ""
 
         for (const text of [elController, elProvider]) {
-            expect(text).toContain("Insurance Martech Ι.Κ.Ε.")
-            expect(text).toContain(LEGAL_ENTITY.el.gemi)
+            expect(text).toContain(LEGAL_ENTITY.el.detailsComingSoon)
+            expect(text).not.toContain("Insurance Martech")
+            expect(text).not.toContain("188863359000")
+            expect(text).not.toContain("302659440")
         }
         for (const text of [enController, enProvider]) {
-            expect(text).toContain("Insurance Martech IKE")
-            expect(text).toContain(LEGAL_ENTITY.en.gemi)
+            expect(text).toContain(LEGAL_ENTITY.en.detailsComingSoon)
+            expect(text).not.toContain("Insurance Martech")
         }
 
-        // The DPO mailbox must be reachable from the privacy policy in both languages.
+        // The DPO mailbox must still be reachable from the privacy policy in both languages.
         expect(elController).toContain(LEGAL_ENTITY.el.dpoEmail)
         expect(enController).toContain(LEGAL_ENTITY.en.dpoEmail)
     })
@@ -132,12 +134,12 @@ describe("legal content parity", () => {
         }
     })
 
-    it("names the courts of Chios as the competent venue", () => {
-        expect(getLegalContent("el").terms.sections.find((s) => s.id === "law_venue")?.paragraphs.join(" ")).toContain(
-            "Δικαστήρια Χίου"
-        )
-        expect(getLegalContent("en").terms.sections.find((s) => s.id === "law_venue")?.paragraphs.join(" ")).toContain(
-            "Chios"
-        )
+    it("names the Greek courts as the competent venue (no seat location leaked)", () => {
+        const elVenue = getLegalContent("el").terms.sections.find((s) => s.id === "law_venue")?.paragraphs.join(" ") ?? ""
+        const enVenue = getLegalContent("en").terms.sections.find((s) => s.id === "law_venue")?.paragraphs.join(" ") ?? ""
+        expect(elVenue).toContain("Δικαστήρια της Ελλάδας")
+        expect(elVenue).not.toContain("Χίου")
+        expect(enVenue).toContain("courts of Greece")
+        expect(enVenue).not.toContain("Chios")
     })
 })
