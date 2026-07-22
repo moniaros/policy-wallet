@@ -100,57 +100,24 @@ export async function getPendingMergeRequests(userId: string) {
 }
 
 /**
- * Approve: fold the incoming record into the existing one (documents move,
- * the incoming period joins the renewal history) and delete the duplicate.
- * Reject: keep both records, forever — the duplicate is not an error.
+ * Core merge: fold `incoming` into `existing` — move documents, append the
+ * incoming period to the renewal history, promote the newer envelope, then
+ * delete the incoming record (cascade removes its children + any merge-request
+ * row). Consent / authorization is the CALLER's responsibility — the mutual-
+ * consent flow (decidePolicyMerge) and the admin override both delegate here.
  */
-export async function decidePolicyMerge(
-    requestId: string,
-    approverUserId: string,
-    decision: "approved" | "rejected"
-): Promise<{ ok: boolean; mergedIntoPolicyId?: string; error?: string }> {
-    const request = await db.policyMergeRequest.findUnique({
-        where: { id: requestId },
-        select: {
-            id: true,
-            status: true,
-            approverUserId: true,
-            requestedByUserId: true,
-            existingPolicyId: true,
-            incomingPolicyId: true,
-        },
-    })
-    if (!request || request.approverUserId !== approverUserId) {
-        return { ok: false, error: "NOT_FOUND" }
-    }
-    if (request.status !== "pending") {
-        return { ok: false, error: "ALREADY_DECIDED" }
-    }
-
-    if (decision === "rejected") {
-        await db.policyMergeRequest.update({
-            where: { id: request.id },
-            data: { status: "rejected", decidedAt: new Date() },
-        })
-        await db.notificationEvent.create({
-            data: {
-                userId: request.requestedByUserId,
-                eventType: "policy_merge_rejected",
-                channel: "in_app",
-                title: "Merge declined",
-                message: "The duplicate policy stays as a separate record.",
-                relatedObjectType: "policy_merge_request",
-                relatedObjectId: request.id,
-            },
-        })
-        return { ok: true }
-    }
+export async function mergePolicyRecords(
+    existingPolicyId: string,
+    incomingPolicyId: string
+): Promise<{ ok: boolean; mergedIntoPolicyId?: string; policyNumber?: string; error?: string }> {
+    if (existingPolicyId === incomingPolicyId) return { ok: false, error: "SAME_POLICY" }
 
     const [existing, incoming] = await Promise.all([
-        db.policy.findUnique({ where: { id: request.existingPolicyId }, include: { documents: true } }),
-        db.policy.findUnique({ where: { id: request.incomingPolicyId }, include: { documents: true } }),
+        db.policy.findUnique({ where: { id: existingPolicyId }, include: { documents: true } }),
+        db.policy.findUnique({ where: { id: incomingPolicyId }, include: { documents: true } }),
     ])
     if (!existing || !incoming) return { ok: false, error: "NOT_FOUND" }
+    if (existing.ownerUserId !== incoming.ownerUserId) return { ok: false, error: "OWNER_MISMATCH" }
 
     const existingEnd = existing.endDate?.getTime() ?? 0
     const incomingEnd = incoming.endDate?.getTime() ?? 0
@@ -206,18 +173,72 @@ export async function decidePolicyMerge(
                     : {}),
             },
         })
-        await tx.policyMergeRequest.update({
-            where: { id: request.id },
-            data: { status: "approved", decidedAt: new Date() },
-        })
         // The duplicate row goes; its documents and period now live on the
         // surviving policy. (Cascade removes the merge request row too.)
         await tx.policy.delete({ where: { id: incoming.id } })
     })
 
-    logger("info", "Policies merged by mutual consent", {
+    logger("info", "Policies merged", {
         existingPolicyId: existing.id,
         incomingPolicyId: incoming.id,
+    })
+
+    return { ok: true, mergedIntoPolicyId: existing.id, policyNumber: existing.policyNumber }
+}
+
+/**
+ * Approve: fold the incoming record into the existing one (documents move,
+ * the incoming period joins the renewal history) and delete the duplicate.
+ * Reject: keep both records, forever — the duplicate is not an error.
+ */
+export async function decidePolicyMerge(
+    requestId: string,
+    approverUserId: string,
+    decision: "approved" | "rejected"
+): Promise<{ ok: boolean; mergedIntoPolicyId?: string; error?: string }> {
+    const request = await db.policyMergeRequest.findUnique({
+        where: { id: requestId },
+        select: {
+            id: true,
+            status: true,
+            approverUserId: true,
+            requestedByUserId: true,
+            existingPolicyId: true,
+            incomingPolicyId: true,
+        },
+    })
+    if (!request || request.approverUserId !== approverUserId) {
+        return { ok: false, error: "NOT_FOUND" }
+    }
+    if (request.status !== "pending") {
+        return { ok: false, error: "ALREADY_DECIDED" }
+    }
+
+    if (decision === "rejected") {
+        await db.policyMergeRequest.update({
+            where: { id: request.id },
+            data: { status: "rejected", decidedAt: new Date() },
+        })
+        await db.notificationEvent.create({
+            data: {
+                userId: request.requestedByUserId,
+                eventType: "policy_merge_rejected",
+                channel: "in_app",
+                title: "Merge declined",
+                message: "The duplicate policy stays as a separate record.",
+                relatedObjectType: "policy_merge_request",
+                relatedObjectId: request.id,
+            },
+        })
+        return { ok: true }
+    }
+
+    const result = await mergePolicyRecords(request.existingPolicyId, request.incomingPolicyId)
+    if (!result.ok) return { ok: false, error: result.error }
+
+    logger("info", "Policies merged by mutual consent", {
+        existingPolicyId: request.existingPolicyId,
+        incomingPolicyId: request.incomingPolicyId,
         approverUserId,
     })
 
@@ -227,11 +248,11 @@ export async function decidePolicyMerge(
             eventType: "policy_merged",
             channel: "in_app",
             title: "Policies merged",
-            message: `The duplicate of ${existing.policyNumber} was merged into one record.`,
+            message: `The duplicate of ${result.policyNumber} was merged into one record.`,
             relatedObjectType: "policy",
-            relatedObjectId: existing.id,
+            relatedObjectId: result.mergedIntoPolicyId!,
         },
     })
 
-    return { ok: true, mergedIntoPolicyId: existing.id }
+    return { ok: true, mergedIntoPolicyId: result.mergedIntoPolicyId }
 }
