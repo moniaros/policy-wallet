@@ -707,6 +707,8 @@ export const en: TranslationKeys = {
         },
         review: {
             title: 'Policy Review',
+            analysisNotCompleted: 'Analysis could not be completed',
+            analysisNotCompletedHint: 'You can retry or fill in the details manually.',
             analyzing: "We're reading your document...",
             stepUploading: 'Uploading document...',
             stepExtracting: 'Extracting policy data...',

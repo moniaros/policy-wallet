@@ -704,6 +704,8 @@ export const el = {
         },
         review: {
             title: 'Επισκόπηση Ασφαλιστηρίου',
+            analysisNotCompleted: 'Η ανάλυση δεν ολοκληρώθηκε',
+            analysisNotCompletedHint: 'Μπορείτε να δοκιμάσετε ξανά ή να συμπληρώσετε τα στοιχεία χειροκίνητα.',
             analyzing: 'Διαβάζουμε το έγγραφό σας...',
             stepUploading: 'Μεταφόρτωση εγγράφου...',
             stepExtracting: 'Εξαγωγή δεδομένων...',

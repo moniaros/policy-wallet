@@ -37,15 +37,15 @@ interface AddPolicyClientProps {
 type Phase = 'form' | 'reviewing'
 
 function getAnalyzingStep(elapsed: number, t: any): string {
-    const steps = (t.wallet as any)?.review
-    if (elapsed < 5) return steps?.stepUploading || 'Uploading document...'
-    if (elapsed < 15) return steps?.stepExtracting || 'Extracting policy data...'
-    if (elapsed < 40) return steps?.stepAnalyzing || 'Analyzing coverage...'
-    return steps?.stepGenerating || 'Generating insights...'
+    const steps = t.wallet.review
+    if (elapsed < 5) return steps.stepUploading
+    if (elapsed < 15) return steps.stepExtracting
+    if (elapsed < 40) return steps.stepAnalyzing
+    return steps.stepGenerating
 }
 
 export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClientProps) {
-    const { t, language } = useLanguage()
+    const { t } = useLanguage()
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
     const [selectedFiles, setSelectedFiles] = useState<File[]>([])
@@ -212,25 +212,25 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
         return () => clearTimeout(timeout)
     }, [phase, createdPolicyId, reviewData, pollReviewData])
 
-    const reviewCopy = (t.wallet as any)?.review || {}
+    const reviewCopy = t.wallet.review
 
     // ─────────────────── POST-UPLOAD PROCESSING SCREEN ───────────────────
     if (phase === 'reviewing') {
         const elapsedSecs = (Date.now() - pollingStartRef.current) / 1000
 
         return (
-            <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+            <div className="min-h-screen bg-background pb-20">
                 {/* Header */}
-                <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30">
+                <div className="bg-card border-b border-border sticky top-0 z-30">
                     <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-center">
-                        <span className="font-bold text-slate-900 dark:text-white">
+                        <span className="font-bold text-foreground">
                             {t.wallet.addPolicy}
                         </span>
                     </div>
                 </div>
 
                 <div className="max-w-3xl mx-auto px-4 py-8">
-                    <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 shadow-xl border border-slate-200 dark:border-slate-800">
+                    <div className="bg-card rounded-3xl p-6 md:p-8 shadow-xl border border-border">
 
                         {reviewData?.status === 'action_needed' ? (
                             /* ── Analysis Failed State ── */
@@ -240,15 +240,11 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         <AlertTriangle className="w-7 h-7 text-amber-500" />
                                     </div>
                                     <div className="text-center">
-                                        <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                                            {language === 'el'
-                                                ? 'Η ανάλυση δεν ολοκληρώθηκε'
-                                                : 'Analysis could not be completed'}
+                                        <p className="text-sm font-semibold text-foreground">
+                                            {reviewCopy.analysisNotCompleted}
                                         </p>
-                                        <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
-                                            {language === 'el'
-                                                ? 'Μπορείτε να δοκιμάσετε ξανά ή να συμπληρώσετε τα στοιχεία χειροκίνητα.'
-                                                : 'You can retry or fill in the details manually.'}
+                                        <p className="mt-1 text-xs text-muted-foreground">
+                                            {reviewCopy.analysisNotCompletedHint}
                                         </p>
                                     </div>
                                 </div>
@@ -266,7 +262,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                             setReviewData(null)
                                             pollingStartRef.current = Date.now()
                                         }}
-                                        className="w-full bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-2xl py-4 font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-primary/25"
+                                        className="w-full bg-primary hover:bg-primary-hover text-primary-foreground rounded-2xl py-4 font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-primary/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                                     >
                                         <span className="flex items-center justify-center gap-2">
                                             <RefreshCw className="w-5 h-5" />
@@ -277,7 +273,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     <button
                                         type="button"
                                         onClick={() => router.push(`/wallet/${createdPolicyId}/edit`)}
-                                        className="w-full rounded-2xl py-3.5 font-bold text-sm text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                                        className="w-full rounded-2xl py-3.5 font-bold text-sm text-foreground border border-border hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                                     >
                                         <span className="flex items-center justify-center gap-2">
                                             <Pencil className="w-4 h-4" />
@@ -288,7 +284,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     <button
                                         type="button"
                                         onClick={() => router.push(createdPolicyId ? `/wallet/${createdPolicyId}` : '/wallet')}
-                                        className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 underline transition-colors mt-2"
+                                        className="text-xs text-muted-foreground hover:text-foreground underline transition-colors mt-2"
                                     >
                                         {reviewCopy.skipForNow}
                                     </button>
@@ -304,10 +300,10 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         </div>
                                     </div>
                                     <div className="text-center">
-                                        <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-                                            {reviewCopy.analyzing || "We're reading your document..."}
+                                        <p className="text-sm font-semibold text-foreground">
+                                            {reviewCopy.analyzing}
                                         </p>
-                                        <p className="mt-1 text-xs text-slate-400 dark:text-slate-500 animate-pulse">
+                                        <p className="mt-1 text-xs text-muted-foreground animate-pulse">
                                             {getAnalyzingStep(elapsedSecs, t)}
                                         </p>
                                     </div>
@@ -330,9 +326,9 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                     <button
                                         type="button"
                                         onClick={() => router.push(createdPolicyId ? `/wallet/${createdPolicyId}` : '/wallet')}
-                                        className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 underline transition-colors"
+                                        className="text-xs text-muted-foreground hover:text-foreground underline transition-colors"
                                     >
-                                        {reviewCopy.skipForNow || 'Skip and review later'}
+                                        {reviewCopy.skipForNow}
                                     </button>
                                 </div>
                             </div>
@@ -346,7 +342,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         <BadgeCheck className="w-7 h-7 text-primary dark:text-mint" />
                                     </div>
                                     <div className="text-center">
-                                        <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                        <p className="text-sm font-semibold text-foreground">
                                             {reviewCopy.success}
                                         </p>
                                     </div>
@@ -354,7 +350,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                 <button
                                     type="button"
                                     onClick={() => router.push(`/wallet/${createdPolicyId}`)}
-                                    className="w-full bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-2xl py-4 font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-primary/25"
+                                    className="w-full bg-primary hover:bg-primary-hover text-primary-foreground rounded-2xl py-4 font-bold text-sm uppercase tracking-widest transition-all shadow-xl shadow-primary/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                                 >
                                     <span className="flex items-center justify-center gap-2">
                                         <Check className="w-5 h-5" />
@@ -371,18 +367,19 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
 
     // ────────────────────────────── UPLOAD FORM ──────────────────────────────
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
+        <div className="min-h-screen bg-background pb-20">
             {/* Header */}
-            <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30">
+            <div className="bg-card border-b border-border sticky top-0 z-30">
                 <div className="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
                     <button
                         type="button"
                         onClick={() => router.back()}
-                        className="p-2 -ml-2 text-slate-500 hover:text-slate-900 dark:text-slate-400"
+                        aria-label={t.common.back}
+                        className="p-2 -ml-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                     >
                         <ArrowLeft className="w-5 h-5" />
                     </button>
-                    <span className="font-bold text-slate-900 dark:text-white">{t.wallet.addPolicy}</span>
+                    <span className="font-bold text-foreground">{t.wallet.addPolicy}</span>
                     <div className="w-9" />
                 </div>
             </div>
@@ -415,7 +412,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                 <form onSubmit={handleSubmit} className="space-y-8">
 
                     {/* File Upload Section */}
-                    <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 shadow-xl border border-slate-200 dark:border-slate-800 relative overflow-hidden group">
+                    <div className="bg-card rounded-3xl p-6 md:p-8 shadow-xl border border-border relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
 
                         <div className="relative z-10">
@@ -423,7 +420,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                 <div className="w-10 h-10 bg-primary-soft dark:bg-primary/15 rounded-xl flex items-center justify-center text-primary dark:text-mint">
                                     <UploadCloud className="w-5 h-5" />
                                 </div>
-                                <h2 className="text-xl font-black text-slate-900 dark:text-white">
+                                <h2 className="text-xl font-black text-foreground">
                                     {t.wallet.uploadDocument}
                                 </h2>
                             </div>
@@ -440,17 +437,17 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                             {selectedFiles.length > 0 && (
                                 <div className="mt-4 space-y-2">
                                     {selectedFiles.map((file, idx) => (
-                                        <div key={idx} className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-bottom-2">
+                                        <div key={idx} className="flex items-center justify-between p-3 bg-muted rounded-xl border border-border animate-in fade-in slide-in-from-bottom-2">
                                             <div className="flex items-center gap-3 overflow-hidden">
                                                 <div className="w-8 h-8 bg-red-100 dark:bg-red-900/20 text-red-600 rounded-lg flex items-center justify-center flex-shrink-0">
                                                     <FileText className="w-4 h-4" />
                                                 </div>
                                                 <div className="truncate">
-                                                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{file.name}</p>
-                                                    <p className="text-xs text-slate-500">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                                    <p className="text-sm font-bold text-foreground truncate">{file.name}</p>
+                                                    <p className="text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                                                 </div>
                                             </div>
-                                            <button type="button" onClick={() => removeFile(idx)} className="p-2 text-slate-400 hover:text-red-500 transition-colors">
+                                            <button type="button" onClick={() => removeFile(idx)} aria-label={t.common.delete} className="p-2 text-muted-foreground hover:text-red-500 transition-colors rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/40">
                                                 <X className="w-4 h-4" />
                                             </button>
                                         </div>
@@ -468,12 +465,12 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                     </div>
 
                     {/* Manual Details */}
-                    <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 shadow-xl border border-slate-200 dark:border-slate-800">
+                    <div className="bg-card rounded-3xl p-6 md:p-8 shadow-xl border border-border">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-400">
+                            <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center text-muted-foreground">
                                 <FileText className="w-5 h-5" />
                             </div>
-                            <h2 className="text-xl font-black text-slate-900 dark:text-white">
+                            <h2 className="text-xl font-black text-foreground">
                                 {t.wallet.policyDetails}
                             </h2>
                         </div>
@@ -482,13 +479,14 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Type - REQUIRED */}
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white ml-1">
+                                    <label htmlFor="add-lineOfBusiness" className="text-xs font-bold uppercase tracking-wider text-foreground ml-1 block">
                                         {t.wallet.coverageType} <span className="text-red-500">*</span>
                                     </label>
                                     <select
+                                        id="add-lineOfBusiness"
                                         name="lineOfBusiness"
                                         required
-                                        className="w-full appearance-none bg-primary-tint dark:bg-primary/10 border border-primary-soft dark:border-primary/30 rounded-xl px-4 py-3.5 text-sm font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:bg-white dark:focus:bg-slate-800 transition-all"
+                                        className="w-full appearance-none bg-primary-tint dark:bg-primary/10 border border-primary-soft dark:border-primary/30 rounded-xl px-4 py-3.5 text-sm font-bold text-foreground focus:ring-2 focus:ring-primary focus:bg-card transition-all"
                                     >
                                         <option value="">{t.wallet.selectTypePlaceholder}</option>
                                         {types.map(typeItem => (
@@ -502,15 +500,16 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                 {/* Insurer - OPTIONAL */}
                                 <div className="space-y-2">
                                     <div className="flex justify-between items-center ml-1">
-                                        <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                                        <label htmlFor="add-insurerName" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                                             {t.wallet.insurerProvider}
                                         </label>
-                                        <span className="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">{t.wallet.optional}</span>
+                                        <span className="text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{t.wallet.optional}</span>
                                     </div>
                                     <div className="relative">
                                         <select
+                                            id="add-insurerName"
                                             name="insurerName"
-                                            className="w-full appearance-none bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3.5 text-sm font-medium text-slate-900 dark:text-white focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-700"
+                                            className="w-full appearance-none bg-muted border-none rounded-xl px-4 py-3.5 text-sm font-medium text-foreground focus:ring-2 focus:ring-primary/30"
                                         >
                                             <option value="">{t.wallet.selectOrEmpty}</option>
                                             {insurers.map(i => (
@@ -518,7 +517,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                             ))}
                                         </select>
                                         <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                            <Shield className="w-4 h-4 text-slate-400" />
+                                            <Shield className="w-4 h-4 text-muted-foreground" />
                                         </div>
                                     </div>
                                 </div>
@@ -527,18 +526,19 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                             {/* Policy Number - OPTIONAL */}
                             <div className="space-y-2">
                                 <div className="flex justify-between items-center ml-1">
-                                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                                    <label htmlFor="add-policyNumber" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                                         {t.wallet.policyNumber}
                                     </label>
-                                    <span className="text-[10px] font-medium text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">{t.wallet.optional}</span>
+                                    <span className="text-[10px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">{t.wallet.optional}</span>
                                 </div>
                                 <div className="relative">
-                                    <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                    <Hash className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                     <input
+                                        id="add-policyNumber"
                                         type="text"
                                         name="policyNumber"
                                         placeholder={formCopy.policyNumberPlaceholder}
-                                        className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl pl-10 pr-4 py-3.5 text-sm font-medium text-slate-900 dark:text-white focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-700 pointer-events-auto"
+                                        className="w-full bg-muted border-none rounded-xl pl-10 pr-4 py-3.5 text-sm font-medium text-foreground focus:ring-2 focus:ring-primary/30 pointer-events-auto"
                                     />
                                 </div>
                             </div>
@@ -546,19 +546,21 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                             {/* Dates - OPTIONAL */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">{t.wallet.startDate}</label>
+                                    <label htmlFor="add-startDate" className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1 block">{t.wallet.startDate}</label>
                                     <input
+                                        id="add-startDate"
                                         type="date"
                                         name="startDate"
-                                        className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3.5 text-sm font-medium text-slate-500 dark:text-slate-400 focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-700"
+                                        className="w-full bg-muted border-none rounded-xl px-4 py-3.5 text-sm font-medium text-muted-foreground focus:ring-2 focus:ring-primary/30"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1">{t.wallet.endDate}</label>
+                                    <label htmlFor="add-endDate" className="text-xs font-bold uppercase tracking-wider text-muted-foreground ml-1 block">{t.wallet.endDate}</label>
                                     <input
+                                        id="add-endDate"
                                         type="date"
                                         name="endDate"
-                                        className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-xl px-4 py-3.5 text-sm font-medium text-slate-500 dark:text-slate-400 focus:ring-2 focus:ring-slate-200 dark:focus:ring-slate-700"
+                                        className="w-full bg-muted border-none rounded-xl px-4 py-3.5 text-sm font-medium text-muted-foreground focus:ring-2 focus:ring-primary/30"
                                     />
                                 </div>
                             </div>
@@ -569,7 +571,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                     <button
                         type="submit"
                         disabled={isPending}
-                        className="w-full group relative overflow-hidden bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-2xl py-4 font-bold text-sm uppercase tracking-widest hover:scale-[1.01] active:scale-[0.99] transition-all shadow-xl hover:shadow-2xl shadow-primary/25 disabled:opacity-70 disabled:scale-100"
+                        className="w-full group relative overflow-hidden bg-primary hover:bg-primary-hover text-primary-foreground rounded-2xl py-4 font-bold text-sm uppercase tracking-widest hover:scale-[1.01] active:scale-[0.99] transition-all shadow-xl hover:shadow-2xl shadow-primary/25 disabled:opacity-70 disabled:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                     >
                         <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                         <span className="relative z-10 flex items-center justify-center gap-2">
@@ -587,7 +589,7 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                         </span>
                     </button>
 
-                    <p className="text-center text-xs text-slate-500 dark:text-slate-400">
+                    <p className="text-center text-xs text-muted-foreground">
                         {t.wallet.securityNote}
                     </p>
                 </form>
