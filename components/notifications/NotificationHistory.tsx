@@ -61,7 +61,7 @@ export function NotificationHistory({
                 return {
                     icon: null,
                     label: channel,
-                    color: 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-stone-700'
+                    color: 'bg-muted text-muted-foreground border-border'
                 }
         }
     }
@@ -71,7 +71,7 @@ export function NotificationHistory({
             case 'sent':
                 return {
                     label: 'Εστάλη',
-                    color: 'bg-primary-soft dark:bg-primary/15 text-[#166534] dark:text-mint border-primary/30 dark:border-primary/30'
+                    color: 'bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint border-primary/30 dark:border-primary/30'
                 }
             case 'failed':
                 return {
@@ -86,7 +86,7 @@ export function NotificationHistory({
             default:
                 return {
                     label: status,
-                    color: 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border-stone-200 dark:border-stone-700'
+                    color: 'bg-muted text-muted-foreground border-border'
                 }
         }
     }
@@ -160,24 +160,25 @@ export function NotificationHistory({
                 {/* Search */}
                 <div className="relative group">
                     <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
-                        <svg className="h-5 w-5 text-stone-400 group-focus-within:text-primary dark:group-focus-within:text-mint transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="h-5 w-5 text-muted-foreground group-focus-within:text-primary dark:group-focus-within:text-mint transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
                     <input
                         type="text"
+                        aria-label="Αναζήτηση στις ειδοποιήσεις"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         placeholder="Αναζήτηση στις ειδοποιήσεις..."
-                        className="block w-full pl-16 pr-6 py-5 border border-stone-100 dark:border-stone-800 rounded-[24px] bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary/30 transition-all shadow-sm"
+                        className="block w-full pl-16 pr-6 py-5 border border-border rounded-[24px] bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-4 focus:ring-primary/5 focus:border-primary/30 transition-all shadow-sm"
                     />
                 </div>
 
                 {/* Active Filters */}
                 {activeFilter && (
                     <div className="flex items-center gap-3 px-2">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-stone-400">Φίλτρο:</span>
-                        <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-stone-900 dark:bg-white text-white dark:text-stone-900 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-stone-900/10 transition-all">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Φίλτρο:</span>
+                        <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary text-primary-foreground rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/10 transition-all">
                             {activeFilter.type === 'policy' && 'Ασφάλεια'}
                             {activeFilter.type === 'customer' && 'Πελάτης'}
                             {activeFilter.type === 'event_type' && 'Τύπος'}
@@ -196,26 +197,26 @@ export function NotificationHistory({
 
             {/* Notification List */}
             {sortedEvents.length === 0 ? (
-                <div className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[40px] p-24 text-center shadow-xl shadow-stone-100/50 dark:shadow-none">
-                    <div className="w-20 h-20 bg-stone-50 dark:bg-stone-800 rounded-3xl flex items-center justify-center mx-auto mb-8 text-stone-200">
+                <div className="bg-card border border-border rounded-[40px] p-24 text-center shadow-xl">
+                    <div className="w-20 h-20 bg-muted rounded-3xl flex items-center justify-center mx-auto mb-8 text-muted-foreground">
                         <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                         </svg>
                     </div>
-                    <h3 className="text-xl font-black text-stone-900 dark:text-white mb-2 tracking-tight">Όλα ήσυχα εδώ</h3>
-                    <p className="text-stone-400 text-sm max-w-xs mx-auto italic font-medium">
+                    <h3 className="text-xl font-black text-foreground mb-2 tracking-tight">Όλα ήσυχα εδώ</h3>
+                    <p className="text-muted-foreground text-sm max-w-xs mx-auto italic font-medium">
                         {searchQuery || activeFilter ? 'Δεν βρέθηκαν ειδοποιήσεις για τα κριτήρια αναζήτησης.' : 'Δεν υπάρχουν ακόμα ειδοποιήσεις στο ιστορικό σας.'}
                     </p>
                 </div>
             ) : (
-                <div className="bg-white dark:bg-stone-900 border border-stone-100 dark:border-stone-800 rounded-[40px] shadow-2xl shadow-stone-200/50 dark:shadow-none overflow-hidden">
-                    <div className="divide-y divide-stone-50 dark:divide-stone-800">
+                <div className="bg-card border border-border rounded-[40px] shadow-2xl overflow-hidden">
+                    <div className="divide-y divide-border">
                         {sortedEvents.map((event) => {
                             const channelBadge = getChannelBadge(event.channel)
                             const statusBadge = getStatusBadge(event.status)
 
                             return (
-                                <div key={event.event_id} className="p-8 hover:bg-stone-50/50 dark:hover:bg-stone-800/30 transition-all group">
+                                <div key={event.event_id} className="p-8 hover:bg-muted/40 transition-all group">
                                     <div className="flex items-start gap-8">
                                         {/* Icon and Badges */}
                                         <div className="flex-shrink-0 flex flex-col gap-3 pt-1">
@@ -232,32 +233,32 @@ export function NotificationHistory({
                                             <div className="flex items-start justify-between gap-6 mb-3">
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-3 mb-1">
-                                                        <div className="font-black text-stone-900 dark:text-stone-100 uppercase tracking-tight text-lg">
+                                                        <div className="font-black text-foreground uppercase tracking-tight text-lg">
                                                             {event.subject}
                                                         </div>
-                                                        <span className="w-1.5 h-1.5 rounded-full bg-stone-200 dark:bg-stone-700" />
-                                                        <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest">{getEventTypeLabel(event.event_type)}</span>
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground/30" />
+                                                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">{getEventTypeLabel(event.event_type)}</span>
                                                     </div>
-                                                    <p className="text-sm text-stone-500 dark:text-stone-400 leading-relaxed max-w-3xl">
+                                                    <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
                                                         {event.message}
                                                     </p>
                                                 </div>
-                                                <div className="text-[10px] font-black text-stone-400 dark:text-stone-500 uppercase tracking-widest bg-stone-50 dark:bg-stone-800 px-3 py-1.5 rounded-full border border-stone-100 dark:border-stone-700 whitespace-nowrap">
+                                                <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest bg-muted px-3 py-1.5 rounded-full border border-border whitespace-nowrap">
                                                     {formatDateTime(event.sent_at || event.created_at)}
                                                 </div>
                                             </div>
 
                                             {/* Metadata / Actions */}
-                                            <div className="flex flex-wrap items-center gap-6 mt-4 pt-4 border-t border-stone-50 dark:border-stone-800">
+                                            <div className="flex flex-wrap items-center gap-6 mt-4 pt-4 border-t border-border">
                                                 {event.related_policy_name && (
                                                     <button
                                                         onClick={() => onNavigateToRelatedObject?.('policy', event.related_policy_id!)}
                                                         className="flex items-center gap-2 group/link"
                                                     >
-                                                        <div className="w-6 h-6 rounded-lg bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-stone-400 group-hover/link:bg-primary group-hover/link:text-white dark:group-hover/link:text-[#1A2420] transition-all">
+                                                        <div className="w-6 h-6 rounded-lg bg-muted flex items-center justify-center text-muted-foreground group-hover/link:bg-primary group-hover/link:text-primary-foreground transition-all">
                                                             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" strokeWidth="2.5" /></svg>
                                                         </div>
-                                                        <span className="text-[10px] font-black text-stone-500 dark:text-stone-400 uppercase tracking-widest group-hover/link:text-primary dark:group-hover/link:text-mint transition-colors">{event.related_policy_name}</span>
+                                                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest group-hover/link:text-primary dark:group-hover/link:text-mint transition-colors">{event.related_policy_name}</span>
                                                     </button>
                                                 )}
                                                 {event.related_customer_name && (
@@ -265,10 +266,10 @@ export function NotificationHistory({
                                                         onClick={() => onNavigateToRelatedObject?.('customer', event.related_customer_relationship_id!)}
                                                         className="flex items-center gap-2 group/link"
                                                     >
-                                                        <div className="w-6 h-6 rounded-lg bg-stone-100 dark:bg-stone-800 flex items-center justify-center text-stone-400 group-hover/link:bg-primary group-hover/link:text-white dark:group-hover/link:text-[#1A2420] transition-all">
+                                                        <div className="w-6 h-6 rounded-lg bg-muted flex items-center justify-center text-muted-foreground group-hover/link:bg-primary group-hover/link:text-primary-foreground transition-all">
                                                             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" strokeWidth="2.5" /></svg>
                                                         </div>
-                                                        <span className="text-[10px] font-black text-stone-500 dark:text-stone-400 uppercase tracking-widest group-hover/link:text-primary dark:group-hover/link:text-mint transition-colors">{event.related_customer_name}</span>
+                                                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest group-hover/link:text-primary dark:group-hover/link:text-mint transition-colors">{event.related_customer_name}</span>
                                                     </button>
                                                 )}
 

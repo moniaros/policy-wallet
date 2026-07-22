@@ -1,18 +1,20 @@
 export const runtime = 'nodejs'
 
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
+import { getTranslations } from "@/lib/i18n"
 import { getNotificationData } from "./actions"
 import { NotificationsClient } from "@/components/notifications/NotificationsClient"
 
 export default async function NotificationsPage() {
     const { dbUser } = await getAuthenticatedUser()
+    const t = getTranslations((dbUser.preferredLanguage as 'en' | 'el') || 'en')
 
     const data = await getNotificationData()
     if (!data) {
         return (
             <div className="pw-page-shell px-4 py-8">
-                <div className="mx-auto max-w-2xl pw-card p-6 text-sm text-black/70 dark:text-white/75">
-                    Error loading notifications data.
+                <div className="mx-auto max-w-2xl pw-card p-6 text-sm text-muted-foreground">
+                    {t.errors.somethingWentWrong}
                 </div>
             </div>
         )
