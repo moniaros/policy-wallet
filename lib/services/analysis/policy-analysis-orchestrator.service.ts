@@ -2532,7 +2532,63 @@ export class PolicyAnalysisOrchestratorService {
         const normalizedLob = normalizeLineOfBusiness(extraction.lineOfBusiness || metadata.lineOfBusiness)
         const now = new Date()
 
-        // All writes are atomic: if any step fails, no partial state is persisted.
+        // Resolve gap definitions BEFORE the transaction. They are shared
+        // reference data (unique by slug), so holding the interactive tx open
+        // for a per-gap findUnique/create + gapInstance.create round-trip was
+        // what pushed the finalize past its timeout on documents with several
+        // gaps ("Transaction already closed / expired transaction"). We build
+        // the instance rows here; the tx below then does a fixed handful of
+        // writes regardless of gap count. upsert is race-safe if two analyses
+        // create the same slug concurrently.
+        const gapRows: Array<{
+            policyId: string
+            gapDefinitionId: string
+            severity: string
+            status: string
+            aiExplanation: string | null
+            aiExplanationEl: string | null
+            aiSuggestion: string | null
+            aiSuggestionEl: string | null
+            detectedAt: Date
+        }> = []
+
+        for (const [slug, details] of detectedGaps.entries()) {
+            const source = gapDefinitions.find((item) => item.slug === slug)
+            const fallbackTitle = slug
+                .replace(/_/g, " ")
+                .replace(/\b\w/g, (char) => char.toUpperCase())
+            const definition = await db.gapDefinition.upsert({
+                where: { slug },
+                update: {},
+                create: {
+                    slug,
+                    name: source?.name || fallbackTitle,
+                    title: source?.name || fallbackTitle,
+                    description: source?.description || "Auto-created from AI clarity analysis",
+                    lineOfBusiness: normalizedLob,
+                    severity: details.severity,
+                    defaultSeverity: details.severity,
+                    ruleId: `ai_${slug}`,
+                    detectionLogic: { source: "ai_clarity_pipeline" },
+                    isActive: true,
+                },
+            })
+            gapRows.push({
+                policyId: policy.id,
+                gapDefinitionId: definition.id,
+                severity: details.severity,
+                status: "open",
+                aiExplanation: details.explanationEn,
+                aiExplanationEl: details.explanationEl,
+                aiSuggestion: details.suggestionEn,
+                aiSuggestionEl: details.suggestionEl,
+                detectedAt: now,
+            })
+        }
+
+        // All writes are atomic: if any step fails, no partial state is
+        // persisted. Only the policy+gap swap runs inside the tx now — no
+        // per-gap round-trips — so it completes well within the timeout.
         await db.$transaction(async (tx) => {
             await tx.policy.update({
                 where: { id: policy.id },
@@ -2562,43 +2618,8 @@ export class PolicyAnalysisOrchestratorService {
                 where: { policyId: policy.id },
             })
 
-            for (const [slug, details] of detectedGaps.entries()) {
-                // Resolve or create the gap definition inside the transaction
-                let definition = await tx.gapDefinition.findUnique({ where: { slug } })
-                if (!definition) {
-                    const source = gapDefinitions.find((item) => item.slug === slug)
-                    const fallbackTitle = slug
-                        .replace(/_/g, " ")
-                        .replace(/\b\w/g, (char) => char.toUpperCase())
-                    definition = await tx.gapDefinition.create({
-                        data: {
-                            slug,
-                            name: source?.name || fallbackTitle,
-                            title: source?.name || fallbackTitle,
-                            description: source?.description || "Auto-created from AI clarity analysis",
-                            lineOfBusiness: normalizedLob,
-                            severity: details.severity,
-                            defaultSeverity: details.severity,
-                            ruleId: `ai_${slug}`,
-                            detectionLogic: { source: "ai_clarity_pipeline" },
-                            isActive: true,
-                        },
-                    })
-                }
-
-                await tx.gapInstance.create({
-                    data: {
-                        policyId: policy.id,
-                        gapDefinitionId: definition.id,
-                        severity: details.severity,
-                        status: "open",
-                        aiExplanation: details.explanationEn,
-                        aiExplanationEl: details.explanationEl,
-                        aiSuggestion: details.suggestionEn,
-                        aiSuggestionEl: details.suggestionEl,
-                        detectedAt: now,
-                    },
-                })
+            if (gapRows.length > 0) {
+                await tx.gapInstance.createMany({ data: gapRows })
             }
         })
     }
