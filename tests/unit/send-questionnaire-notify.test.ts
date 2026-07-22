@@ -42,7 +42,7 @@ const mockNotify = vi.mocked(notifyCounterparty)
 beforeEach(() => {
     vi.clearAllMocks()
     mockAuth.mockResolvedValue({ dbUser: { id: 'agent-1', roles: 'agent' } } as any)
-    mockRelFind.mockResolvedValue({ policyholderUserId: 'cust-9', agentUserId: 'agent-1' } as any)
+    mockRelFind.mockResolvedValue({ policyholderUserId: 'cust-9', agentUserId: 'agent-1', status: 'active' } as any)
     mockTemplateFind.mockResolvedValue({ id: 'tpl-1' } as any)
     mockInstanceCreate.mockResolvedValue({ id: 'inst-1' } as any)
 })
@@ -63,9 +63,17 @@ describe('sendQuestionnaire — notifies the recipient', () => {
     })
 
     it('does not notify when the agent does not own the relationship', async () => {
-        mockRelFind.mockResolvedValue({ policyholderUserId: 'cust-9', agentUserId: 'other-agent' } as any)
+        mockRelFind.mockResolvedValue({ policyholderUserId: 'cust-9', agentUserId: 'other-agent', status: 'active' } as any)
 
         await expect(sendQuestionnaire('rel-1', 'tpl-1')).rejects.toThrow('Relationship not found')
+        expect(mockNotify).not.toHaveBeenCalled()
+        expect(mockInstanceCreate).not.toHaveBeenCalled()
+    })
+
+    it('refuses to send when the relationship has not been accepted yet', async () => {
+        mockRelFind.mockResolvedValue({ policyholderUserId: 'cust-9', agentUserId: 'agent-1', status: 'pending_activation' } as any)
+
+        await expect(sendQuestionnaire('rel-1', 'tpl-1')).rejects.toThrow('not accepted this relationship yet')
         expect(mockNotify).not.toHaveBeenCalled()
         expect(mockInstanceCreate).not.toHaveBeenCalled()
     })

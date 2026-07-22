@@ -96,6 +96,29 @@ describe('resolveGapContent', () => {
         expect(captureMessage).not.toHaveBeenCalled()
     })
 
+    it('maps the liability/business/disability slugs (Sentry POLICYWALLET-7)', () => {
+        const slugs = [
+            'employer-liability-gap', 'employers-liability', 'professional-liability',
+            'professional-liability-gap', 'product-liability', 'cyber-liability',
+            'cyber-risk-gap', 'fire-explosion-liability-gap', 'vehicle-vessel-aircraft-liability-gap',
+            'communicable-disease-liability', 'communicable-disease-gap', 'elevator-maintenance-risk',
+            'low-liability-limits', 'family-exclusion-gap', 'waiting-period-disability', 'missing-policy-details',
+        ]
+        for (const slug of slugs) {
+            const content = resolveGapContent(slug)
+            expect(content.known, slug).toBe(true)
+            expect(content.titleEl, slug).toMatch(GREEK_TEXT)
+        }
+        expect(captureMessage).not.toHaveBeenCalled()
+    })
+
+    it('collapses alias slug pairs onto one concept (dedupe key)', () => {
+        expect(resolveGapContent('employers-liability').concept).toBe(resolveGapContent('employer-liability-gap').concept)
+        expect(resolveGapContent('professional-liability').concept).toBe(resolveGapContent('professional-liability-gap').concept)
+        expect(resolveGapContent('cyber-liability').concept).toBe(resolveGapContent('cyber-risk-gap').concept)
+        expect(resolveGapContent('communicable-disease-gap').concept).toBe(resolveGapContent('communicable-disease-liability').concept)
+    })
+
     it('covers the seeded definitions', () => {
         for (const slug of [
             'motor-theft',

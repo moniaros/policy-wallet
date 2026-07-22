@@ -1,13 +1,26 @@
+import { z } from "zod"
 import { withApiGuard } from "@/lib/api-guard"
 import { db as prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { canAgentUseFeature } from "@/lib/subscription-entitlements"
 import { notifyCounterparty } from "@/lib/notifications"
 
+// withApiGuard only populates `body` when a body schema is declared; without
+// this the handler destructured `undefined` and every request 500'd (same
+// class as the proposals route — the document-request feature was broken).
+const createDocumentRequestSchema = z.object({
+    relationshipId: z.string().min(1),
+    documentType: z.string().min(1).max(120),
+    instruction: z.string().max(2000).optional(),
+    urgency: z.enum(["normal", "urgent"]).optional(),
+    dueDate: z.string().datetime().optional(),
+})
+
 // POST — Create a document request
 export const POST = withApiGuard(
     {
         auth: { mode: "user", roles: ["agent"] },
+        validation: { body: createDocumentRequestSchema },
     },
     async ({ auth, body }) => {
         // Document requests are a Starter+ feature (documentRequestFlow).

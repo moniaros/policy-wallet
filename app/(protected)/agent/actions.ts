@@ -920,13 +920,21 @@ export async function commitScannedPolicy(
             }
         } else {
             customerId = decision.customerId
-            await backfillCustomerTaxId(customerId, decision.taxId)
         }
 
         const result = await addPolicyForCustomer(
             { customerId, policy, attestedAiConsent, confirmDuplicate },
             documentFormData,
         )
+
+        // Backfill the ΑΦΜ only AFTER addPolicyForCustomer has verified the
+        // agent↔customer relationship. Doing it in the attach branch above let
+        // an agent write a tax ID onto ANY account (arbitrary decision.customerId)
+        // before the relationship gate ran. create_new already backfilled via
+        // createCustomer, so this covers the attach path only.
+        if (result?.success && decision.mode === "attach") {
+            await backfillCustomerTaxId(customerId, decision.taxId)
+        }
 
         return { ...result, customerId, created }
     } catch (e) {
@@ -960,13 +968,26 @@ export async function sendQuestionnaire(relationshipId: string, templateId: stri
     if (!authResult) throw new Error("Unauthorized")
     if (!isAgentRole(authResult.dbUser.roles)) throw new Error("Unauthorized")
 
+    // Sends an email + in-app notification — cap per agent (same policy as
+    // createAgentInvite) so it can't be used to spam an address.
+    const { rateLimit } = await import("@/lib/rate-limit")
+    const sendLimit = await rateLimit(authResult.dbUser.id, 20, 60 * 60 * 1000, `agent-questionnaire:${authResult.dbUser.id}`)
+    if (!sendLimit.success) {
+        throw new Error("Too many questionnaires sent. Please wait a bit and try again.")
+    }
+
     const relationship = await db.customerRelationship.findUnique({
         where: { id: relationshipId },
-        select: { policyholderUserId: true, agentUserId: true }
+        select: { policyholderUserId: true, agentUserId: true, status: true }
     })
 
     if (!relationship || relationship.agentUserId !== authResult.dbUser.id) {
         throw new Error("Relationship not found")
+    }
+    // Mirror the other collaboration flows (proposals / document-requests /
+    // createThread): never message someone who hasn't accepted the relationship.
+    if (relationship.status !== "active") {
+        throw new Error("The customer has not accepted this relationship yet")
     }
 
     // Same visibility rule as getQuestionnaireTemplates: only a system template

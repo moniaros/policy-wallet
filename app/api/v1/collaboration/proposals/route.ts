@@ -1,13 +1,29 @@
+import { z } from "zod"
 import { withApiGuard } from "@/lib/api-guard"
 import { db as prisma } from "@/lib/db"
 import { NextResponse } from "next/server"
 import { canAgentUseFeature } from "@/lib/subscription-entitlements"
 import { notifyCounterparty } from "@/lib/notifications"
 
+// withApiGuard only populates `body` when a body schema is declared; without
+// this the handler destructured `undefined` and every request 500'd
+// (Sentry POLICYWALLET-C — the proposal feature was hard-broken in prod).
+const createProposalSchema = z.object({
+    relationshipId: z.string().min(1),
+    proposalType: z.string().min(1).max(60).default("recommendation"),
+    insurerName: z.string().min(1).max(160),
+    lineOfBusiness: z.string().min(1).max(60),
+    premiumAmount: z.coerce.number().positive().max(10_000_000),
+    coverageSummary: z.string().min(1).max(8000),
+    comparisonData: z.record(z.string(), z.unknown()).optional(),
+    plainLanguageSummary: z.string().max(8000).optional(),
+})
+
 // POST — Create a proposal
 export const POST = withApiGuard(
     {
         auth: { mode: "user", roles: ["agent"] },
+        validation: { body: createProposalSchema },
     },
     async ({ auth, body }) => {
         // Proposals are a Starter+ feature (proposalFlow) — sold, previously
