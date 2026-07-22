@@ -141,7 +141,7 @@ export default async function UpgradeSuccessPage({
                 <div className={`mx-auto grid h-16 w-16 place-items-center rounded-full ${activated ? "bg-primary-soft dark:bg-primary/15" : "bg-amber-100 dark:bg-amber-900/30"}`}>
                     <CheckCircle2 className={`h-8 w-8 ${activated ? "text-primary dark:text-mint" : "text-amber-600 dark:text-amber-400"}`} />
                 </div>
-                <h1 className="mt-5 text-2xl font-black text-black dark:text-white">
+                <h1 className="mt-5 text-2xl font-black text-foreground">
                     {reportUnlock
                         ? pick(COPY.reportTitle, language)
                         : tokenPurchase
@@ -150,7 +150,7 @@ export default async function UpgradeSuccessPage({
                                 ? pick(COPY.title, language)
                                 : pick(COPY.pendingTitle, language)}
                 </h1>
-                <p className="mt-2 text-sm leading-relaxed text-black/60 dark:text-white/65">
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                     {reportUnlock
                         ? pick(COPY.reportBody, language)
                         : tokenPurchase
@@ -164,7 +164,7 @@ export default async function UpgradeSuccessPage({
                 </p>
                 <Link
                     href={returnPath}
-                    className="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-primary py-3.5 text-sm font-bold uppercase tracking-widest text-white shadow-xl shadow-primary/25 transition-all hover:bg-primary-hover dark:text-[#1A2420]"
+                    className="mt-6 inline-flex w-full items-center justify-center rounded-2xl bg-primary py-3.5 text-sm font-bold uppercase tracking-widest text-primary-foreground shadow-xl shadow-primary/25 transition-all hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                 >
                     {activated && !tokenPurchase && !reportUnlock && featureCopy
                         ? featureCopy.successCta
@@ -173,7 +173,7 @@ export default async function UpgradeSuccessPage({
                 {activated && !tokenPurchase && !reportUnlock && (
                     <UpgradeSuccessTracker feature={featureKey ?? undefined} plan={activatedPlanId} />
                 )}
-                <p className="mt-4 inline-flex items-center gap-1.5 text-xs text-black/45 dark:text-white/50">
+                <p className="mt-4 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
                     <ShieldCheck className="h-3.5 w-3.5 text-primary dark:text-mint" />
                     {pick(COPY.trust, language)}
                 </p>

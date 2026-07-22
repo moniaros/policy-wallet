@@ -89,13 +89,13 @@ export function UpgradeTriggerCard({
         return (
             <div className={`flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-primary/20 bg-primary-soft/60 p-3 dark:border-mint/20 dark:bg-primary/10 ${className}`}>
                 <Crown className="h-4 w-4 flex-shrink-0 text-primary dark:text-mint" />
-                <p className="min-w-0 flex-1 text-xs leading-relaxed text-black/70 dark:text-white/75">
+                <p className="min-w-0 flex-1 text-xs leading-relaxed text-muted-foreground">
                     {copy.body}
                 </p>
                 <button
                     type="button"
                     onClick={openModal}
-                    className="text-xs font-bold text-primary hover:underline dark:text-mint"
+                    className="rounded text-xs font-bold text-primary hover:underline dark:text-mint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                 >
                     {copy.primaryCta}
                 </button>
@@ -122,8 +122,8 @@ export function UpgradeTriggerCard({
                         <Crown className="h-4 w-4 text-primary dark:text-mint" />
                     </span>
                     <div className="min-w-0 flex-1">
-                        <h3 className="text-sm font-bold text-black dark:text-white">{copy.headline}</h3>
-                        <p className="mt-1 text-xs leading-relaxed text-black/60 dark:text-white/65">
+                        <h3 className="text-sm font-bold text-foreground">{copy.headline}</h3>
+                        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                             {copy.body}
                         </p>
                     </div>
@@ -132,7 +132,7 @@ export function UpgradeTriggerCard({
                     <button
                         type="button"
                         onClick={openModal}
-                        className="inline-flex min-h-9 items-center justify-center gap-2 rounded-full bg-primary px-4 text-xs font-bold text-white transition-colors hover:bg-primary-hover dark:text-[#1A2420]"
+                        className="inline-flex min-h-9 items-center justify-center gap-2 rounded-full bg-primary px-4 text-xs font-bold text-primary-foreground transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
                     >
                         <Crown className="h-3.5 w-3.5" />
                         {copy.primaryCta}
@@ -141,7 +141,7 @@ export function UpgradeTriggerCard({
                         <button
                             type="button"
                             onClick={dismiss}
-                            className="text-xs font-semibold text-black/50 hover:text-black/70 dark:text-white/55 dark:hover:text-white/75"
+                            className="rounded text-xs font-semibold text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                         >
                             {copy.secondaryCta}
                         </button>
