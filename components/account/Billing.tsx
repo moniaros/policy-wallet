@@ -234,8 +234,8 @@ export function Billing({
                                                     <td className="px-8 py-5 whitespace-nowrap text-right">
                                                         {invoice.pdf_url && (
                                                             <button
-                                                                onClick={() => onDownloadInvoice?.(invoice.invoice_id)}
-                                                                className="w-8 h-8 rounded-lg bg-black/5 dark:bg-black flex items-center justify-center text-black/45 dark:text-white/60 hover:bg-primary hover:text-white dark:hover:text-[#1A2420] transition-all"
+                                                                onClick={() => (onDownloadInvoice ? onDownloadInvoice(invoice.invoice_id) : onOpenPortal?.())}
+                                                                className="w-8 h-8 rounded-lg bg-black/5 dark:bg-black flex items-center justify-center text-black/45 dark:text-white/60 hover:bg-primary hover:text-white dark:hover:text-[#1A2420] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                                                             >
                                                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" strokeWidth="2.5" /></svg>
                                                             </button>
@@ -257,8 +257,8 @@ export function Billing({
                             <h3 className="text-[10px] font-black uppercase tracking-widest text-black dark:text-white">{t.billing.paymentMethod}</h3>
                             {defaultPaymentMethod && (
                                 <button
-                                    onClick={() => onUpdatePaymentMethod?.(defaultPaymentMethod.payment_method_id)}
-                                    className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint hover:underline"
+                                    onClick={() => (onUpdatePaymentMethod ? onUpdatePaymentMethod(defaultPaymentMethod.payment_method_id) : onOpenPortal?.())}
+                                    className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint hover:underline rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                                 >
                                     {t.billing.edit}
                                 </button>
@@ -286,8 +286,8 @@ export function Billing({
                             </div>
                         ) : (
                             <button
-                                onClick={() => onAddPaymentMethod?.()}
-                                className="w-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-black/10 dark:border-white/15 rounded-[32px] hover:border-primary/35 hover:bg-primary/10 transition-all group"
+                                onClick={() => (onAddPaymentMethod ? onAddPaymentMethod() : onOpenPortal?.())}
+                                className="w-full flex flex-col items-center justify-center p-8 border-2 border-dashed border-black/10 dark:border-white/15 rounded-[32px] hover:border-primary/35 hover:bg-primary/10 transition-all group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                             >
                                 <div className="w-12 h-12 rounded-2xl bg-black/5 dark:bg-black flex items-center justify-center text-black/45 dark:text-white/60 group-hover:bg-primary group-hover:text-white dark:group-hover:text-[#1A2420] transition-all mb-4">
                                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 4v16m8-8H4" strokeWidth="2.5" /></svg>

@@ -153,18 +153,32 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                 subtitle={t.account.pageSubtitle}
                 className="shadow-sm"
                 actions={
-                    <div className="flex p-1 bg-black/5 dark:bg-white/10 backdrop-blur-md rounded-xl border border-black/10 dark:border-white/15 overflow-x-auto no-scrollbar relative isolate">
+                    <div role="tablist" aria-label={t.account.pageTitle} className="flex p-1 bg-black/5 dark:bg-white/10 backdrop-blur-md rounded-xl border border-black/10 dark:border-white/15 overflow-x-auto no-scrollbar relative isolate">
                         {[
                             { id: 'overview', label: t.account.overview, icon: User },
                             { id: 'billing', label: t.account.billing, icon: CreditCard },
                             { id: 'settings', label: t.account.settings, icon: SettingsIcon },
-                        ].map((tab) => (
+                        ].map((tab, index, arr) => (
                             <button
                                 key={tab.id}
+                                role="tab"
+                                id={`account-tab-${tab.id}`}
+                                aria-selected={activeTab === tab.id}
+                                aria-controls={`account-panel-${tab.id}`}
+                                tabIndex={activeTab === tab.id ? 0 : -1}
                                 onClick={() => setActiveTab(tab.id as any)}
+                                onKeyDown={(e) => {
+                                    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return
+                                    e.preventDefault()
+                                    const dir = e.key === 'ArrowRight' ? 1 : -1
+                                    const nextId = arr[(index + dir + arr.length) % arr.length].id
+                                    setActiveTab(nextId as any)
+                                    document.getElementById(`account-tab-${nextId}`)?.focus()
+                                }}
                                 className={`
                                     flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider
                                     transition-all duration-300 relative isolate whitespace-nowrap
+                                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1
                                     ${activeTab === tab.id
                                         ? 'text-black dark:text-mint'
                                         : 'text-black/45 dark:text-white/60 hover:text-black dark:hover:text-white'
@@ -188,7 +202,13 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-                <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div
+                    role="tabpanel"
+                    id={`account-panel-${activeTab}`}
+                    aria-labelledby={`account-tab-${activeTab}`}
+                    tabIndex={0}
+                    className="animate-in fade-in slide-in-from-bottom-4 duration-700 focus:outline-none"
+                >
                     {activeTab === 'overview' && (
                         <AccountOverview
                             currentUser={initialData.user}

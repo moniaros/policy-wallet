@@ -16,13 +16,13 @@ export function ProcessingHUD({ isVisible, message = "Processing action..." }: P
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-[100] flex items-center justify-center bg-white/60 dark:bg-stone-950/60 backdrop-blur-md"
+                    className="fixed inset-0 z-[100] flex items-center justify-center bg-background/70 backdrop-blur-md"
                 >
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0, y: 10 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.9, opacity: 0, y: 10 }}
-                        className="bg-white dark:bg-stone-900 p-8 rounded-[32px] shadow-2xl border border-stone-100 dark:border-stone-800 flex flex-col items-center gap-6 max-w-xs w-full text-center"
+                        className="bg-card border border-border p-8 rounded-2xl shadow-2xl flex flex-col items-center gap-6 max-w-xs w-full text-center"
                     >
                         <div className="relative">
                             <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full"></div>
@@ -30,10 +30,10 @@ export function ProcessingHUD({ isVisible, message = "Processing action..." }: P
                         </div>
 
                         <div>
-                            <h3 className="text-sm font-black text-stone-900 dark:text-white uppercase tracking-widest mb-2">
+                            <h3 className="text-sm font-black text-foreground uppercase tracking-widest mb-2">
                                 Please Wait
                             </h3>
-                            <p className="text-xs font-bold text-stone-500 dark:text-stone-400 leading-relaxed">
+                            <p className="text-xs font-bold text-muted-foreground leading-relaxed">
                                 {message}
                             </p>
                         </div>

@@ -5,7 +5,7 @@ import type { SettingsProps } from './types'
 import { deleteAccount, cancelDeletionRequest } from '@/app/(protected)/account/actions'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Shield, Smartphone, Globe, Bell, Lock, AlertTriangle, CheckCircle2, Zap, Loader2, ChevronRight, LogIn, LogOut, KeyRound, Mail } from 'lucide-react'
+import { Shield, Smartphone, Globe, Bell, Lock, AlertTriangle, CheckCircle2, Zap, Loader2, ChevronRight, LogIn, LogOut, KeyRound, Mail, X } from 'lucide-react'
 import { ProcessingHUD } from '@/components/ui/ProcessingHUD'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { toast } from 'sonner'
@@ -24,7 +24,7 @@ export function Settings({
     onLogoutSession,
     onLogoutAllSessions
 }: SettingsProps) {
-    const { t } = useLanguage()
+    const { t, language } = useLanguage()
     const [isEditingName, setIsEditingName] = useState(false)
     const [nameDraft, setNameDraft] = useState(currentUser.name || '')
 
@@ -168,7 +168,7 @@ export function Settings({
 
     const formatDateTime = (dateString: string) => {
         const date = new Date(dateString)
-        return date.toLocaleDateString('el-GR', {
+        return date.toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US', {
             day: 'numeric',
             month: 'short',
             year: 'numeric',
@@ -226,21 +226,22 @@ export function Settings({
                         <div className="space-y-6">
                             {/* Name Edit */}
                             <div className="group">
-                                <label className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] block mb-3">{t.settings.fullName}</label>
+                                <label htmlFor="settings-name" className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] block mb-3">{t.settings.fullName}</label>
                                 {isEditingName ? (
                                     <div className="flex items-center gap-2">
                                         <input
+                                            id="settings-name"
                                             type="text"
                                             value={nameDraft}
                                             onChange={(e) => setNameDraft(e.target.value)}
                                             autoFocus
                                             className="flex-1 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-primary transition-all outline-none"
                                         />
-                                        <button onClick={handleSaveName} className="p-2 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-xl shadow-lg shadow-primary/25 active:scale-90 transition-transform">
+                                        <button onClick={handleSaveName} aria-label={t.common.save} className="p-2 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-xl shadow-lg shadow-primary/25 active:scale-90 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
                                             <CheckCircle2 className="w-4 h-4" />
                                         </button>
-                                        <button onClick={() => { setIsEditingName(false); setNameDraft(currentUser.name || '') }} className="p-2 border border-black/10 dark:border-white/15 rounded-xl active:scale-90 transition-transform">
-                                            <AlertTriangle className="w-4 h-4" />
+                                        <button onClick={() => { setIsEditingName(false); setNameDraft(currentUser.name || '') }} aria-label={t.common.cancel} className="p-2 border border-black/10 dark:border-white/15 rounded-xl active:scale-90 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+                                            <X className="w-4 h-4" />
                                         </button>
                                     </div>
                                 ) : (
@@ -253,20 +254,21 @@ export function Settings({
 
                             {/* Email Edit */}
                             <div className="group">
-                                <label className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] block mb-3">{t.settings.registeredEmail}</label>
+                                <label htmlFor="settings-email" className="text-[10px] font-black text-black/45 dark:text-white/60 uppercase tracking-[0.2em] block mb-3">{t.settings.registeredEmail}</label>
                                 {isEditingEmail ? (
                                     <div className="flex items-center gap-2">
                                         <input
+                                            id="settings-email"
                                             type="email"
                                             value={emailDraft}
                                             onChange={(e) => setEmailDraft(e.target.value)}
                                             className="flex-1 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-xl px-4 py-2 text-sm font-bold focus:ring-2 focus:ring-primary transition-all outline-none"
                                         />
-                                        <button onClick={handleSaveEmail} className="p-2 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-xl shadow-lg shadow-primary/25 active:scale-90 transition-transform">
+                                        <button onClick={handleSaveEmail} aria-label={t.common.save} className="p-2 bg-primary hover:bg-primary-hover text-white dark:text-[#1A2420] rounded-xl shadow-lg shadow-primary/25 active:scale-90 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
                                             <CheckCircle2 className="w-4 h-4" />
                                         </button>
-                                        <button onClick={() => { setIsEditingEmail(false); setEmailDraft(currentUser.email) }} className="p-2 border border-black/10 dark:border-white/15 rounded-xl active:scale-90 transition-transform">
-                                            <AlertTriangle className="w-4 h-4" />
+                                        <button onClick={() => { setIsEditingEmail(false); setEmailDraft(currentUser.email) }} aria-label={t.common.cancel} className="p-2 border border-black/10 dark:border-white/15 rounded-xl active:scale-90 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
+                                            <X className="w-4 h-4" />
                                         </button>
                                     </div>
                                 ) : (
@@ -283,13 +285,15 @@ export function Settings({
                                 <div className="grid grid-cols-2 gap-2 p-1.5 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl">
                                     <button
                                         onClick={() => handleLanguageUpdate('el')}
-                                        className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentUser.preferred_language === 'el' ? 'bg-white dark:bg-black text-primary dark:text-mint shadow-md transform scale-[1.02]' : 'text-black/45 dark:text-white/60 hover:text-black/70 dark:hover:text-white/80'}`}
+                                        aria-pressed={currentUser.preferred_language === 'el'}
+                                        className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${currentUser.preferred_language === 'el' ? 'bg-white dark:bg-black text-primary dark:text-mint shadow-md transform scale-[1.02]' : 'text-black/45 dark:text-white/60 hover:text-black/70 dark:hover:text-white/80'}`}
                                     >
                                         {t.settings.greek}
                                     </button>
                                     <button
                                         onClick={() => handleLanguageUpdate('en')}
-                                        className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${currentUser.preferred_language === 'en' ? 'bg-white dark:bg-black text-primary dark:text-mint shadow-md transform scale-[1.02]' : 'text-black/45 dark:text-white/60 hover:text-black/70 dark:hover:text-white/80'}`}
+                                        aria-pressed={currentUser.preferred_language === 'en'}
+                                        className={`py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${currentUser.preferred_language === 'en' ? 'bg-white dark:bg-black text-primary dark:text-mint shadow-md transform scale-[1.02]' : 'text-black/45 dark:text-white/60 hover:text-black/70 dark:hover:text-white/80'}`}
                                     >
                                         {t.settings.english}
                                     </button>
@@ -324,8 +328,11 @@ export function Settings({
                                         <span className="text-[11px] font-bold text-black/80 dark:text-white/70 group-hover:text-black dark:group-hover:text-white transition-colors">{pref.label}</span>
                                     </div>
                                     <button
+                                        role="switch"
+                                        aria-checked={isPreferenceEnabled(pref.id, 'email')}
+                                        aria-label={pref.label}
                                         onClick={() => onToggleNotification?.(pref.id, 'email', !isPreferenceEnabled(pref.id, 'email'))}
-                                        className={`w-11 h-6 rounded-full transition-all relative ${isPreferenceEnabled(pref.id, 'email') ? 'bg-primary' : 'bg-black/10 dark:bg-white/15'}`}
+                                        className={`w-11 h-6 rounded-full transition-all relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${isPreferenceEnabled(pref.id, 'email') ? 'bg-primary' : 'bg-black/10 dark:bg-white/15'}`}
                                     >
                                         <motion.span
                                             animate={{ x: isPreferenceEnabled(pref.id, 'email') ? 22 : 2 }}
@@ -357,49 +364,6 @@ export function Settings({
 
                 {/* Right Col: Sessions & Logs */}
                 <div className="lg:col-span-2 space-y-6">
-                    {/* Security Posture Score */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="bg-black rounded-[28px] p-6 text-white relative overflow-hidden group shadow-2xl"
-                    >
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-mint/10 blur-[100px] rounded-full -mr-32 -mt-32 transition-transform duration-1000 group-hover:scale-110"></div>
-
-                        <div className="flex flex-col md:flex-row items-center gap-10 relative z-10">
-                            <div className="relative w-32 h-32 flex items-center justify-center">
-                                <svg className="w-full h-full -rotate-90">
-                                    <circle cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/5" />
-                                    <motion.circle
-                                        cx="64" cy="64" r="58" stroke="currentColor" strokeWidth="8" fill="transparent"
-                                        className="text-mint"
-                                        initial={{ strokeDasharray: "365 365", strokeDashoffset: 365 }}
-                                        animate={{ strokeDashoffset: 365 - (365 * 0.85) }}
-                                        transition={{ duration: 1.5, ease: "easeOut" }}
-                                    />
-                                </svg>
-                                <div className="absolute flex flex-col items-center">
-                                    <span className="text-3xl font-black">85</span>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-white/70">{t.settings.score}</span>
-                                </div>
-                            </div>
-
-                            <div className="flex-1 text-center md:text-left">
-                                <div className="flex items-center justify-center md:justify-start gap-2 mb-2">
-                                    <CheckCircle2 className="w-5 h-5 text-mint" />
-                                    <h3 className="text-2xl font-black tracking-tight">{t.settings.accountShield}</h3>
-                                </div>
-                                <p className="text-white/75 text-sm font-medium leading-relaxed max-w-md">
-                                    {t.settings.securityPosture} <span className="text-white font-black">{t.settings.excellent}</span>. We found <span className="text-mint underline decoration-mint/35">{t.settings.optimizations}</span> {t.settings.securityPostureDesc}
-                                </p>
-                                <div className="flex flex-wrap gap-2 mt-6">
-                                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest">{t.settings.verified2FA}</span>
-                                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest">{t.settings.safeIP}</span>
-                                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest text-mint">{t.settings.encryptionActive}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </motion.div>
-
                     {/* Active Sessions */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
