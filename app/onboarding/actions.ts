@@ -177,6 +177,18 @@ export async function uploadOnboardingPolicy(formData: FormData) {
     }
 }
 
+// First name for the onboarding greeting. `User.name` is a free-text full name,
+// but phone-only signups get a synthetic placeholder ("Policyholder 1234" /
+// "Agent User", set in app/auth/actions.ts) — those are NOT real names, so we
+// treat them (and a missing name) as unknown and return "" so the greeting omits
+// the name entirely rather than saying "Policyholder".
+function greetingFirstName(fullName: string | null | undefined): string {
+    const name = fullName?.trim()
+    if (!name) return ""
+    if (/^Policyholder(\s|$)/i.test(name) || name === "Agent User") return ""
+    return name.split(" ")[0] || ""
+}
+
 export async function getOnboardingState() {
     const { dbUser } = await getAuthenticatedUser()
 
@@ -187,7 +199,7 @@ export async function getOnboardingState() {
     if (!profile || !profile.preferences) return {
         step: 1,
         completed: false,
-        name: dbUser.name?.split(" ")[0] || "there",
+        name: greetingFirstName(dbUser.name),
         onboardingSegment: null as "individual" | "family_manager" | "small_business" | null,
         onboardingGoals: [] as string[],
         onboardingFamiliarity: null as "beginner" | "intermediate" | "experienced" | null,
@@ -200,7 +212,7 @@ export async function getOnboardingState() {
     return {
         step: prefs.onboardingStep || 1,
         completed: prefs.onboardingCompleted || false,
-        name: dbUser.name?.split(" ")[0] || "there",
+        name: greetingFirstName(dbUser.name),
         onboardingSegment: prefs.onboardingSegment ?? null,
         onboardingGoals: Array.isArray(prefs.onboardingGoals) ? prefs.onboardingGoals : [],
         onboardingFamiliarity: prefs.onboardingFamiliarity ?? null,

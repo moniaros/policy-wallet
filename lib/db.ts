@@ -34,6 +34,13 @@ export const db =
   new PrismaClient({
     datasourceUrl: dbUrl,
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
+    // Prisma's default interactive-transaction timeout is 5000ms — too tight for
+    // the analysis-finalize tx (policy update + gap deleteMany + a per-gap
+    // resolve/create loop, ~3 + N×2-3 serial round trips) on the Supavisor
+    // pooler, which raised P2028 "Transaction already closed … timeout 5000ms"
+    // on upload commit for many-gap policies. Raise the ceiling globally
+    // (maxWait = time allowed to acquire a pooled connection before the tx body).
+    transactionOptions: { maxWait: 5000, timeout: 15000 },
   })
 
 // Cache the client on the global in ALL environments. On serverless this reuses

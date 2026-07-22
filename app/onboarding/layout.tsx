@@ -18,7 +18,7 @@ export default async function OnboardingLayout({
     return (
         // AiConsentModal (shared with the protected tree) reads `t`.
         <TranslationsProvider>
-            <div className="min-h-screen bg-[#F8FAFC] dark:bg-slate-950 flex flex-col">
+            <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
                 {children}
             </div>
         </TranslationsProvider>
