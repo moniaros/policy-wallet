@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { fixMojibakeText } from "@/lib/i18n/fix-mojibake"
 import { completeOnboardingStep, uploadOnboardingPolicy, redeemInviteCode, triggerOnboardingAnalysis } from "./actions"
+import { inviteAdvisorByEmail } from "@/app/(protected)/agent/relationship-actions"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
 import { PremiumInsightCards } from "@/components/monetization/PremiumInsightCards"
 
@@ -60,6 +61,12 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
     const [inviteCode, setInviteCode] = useState("")
     const [connectedAgentName, setConnectedAgentName] = useState<string | null>(null)
     const [inviteError, setInviteError] = useState<string | null>(null)
+    // Primary advisor-connect path: invite by email (code entry is secondary).
+    const [advisorEmail, setAdvisorEmail] = useState("")
+    const [advisorEmailError, setAdvisorEmailError] = useState<string | null>(null)
+    const [inviteSent, setInviteSent] = useState<{ link?: string } | null>(null)
+    const [sendingInvite, setSendingInvite] = useState(false)
+    const [showCodeEntry, setShowCodeEntry] = useState(false)
     // AI-processing consent: uploading a policy leads straight into AI analysis,
     // so consent is captured before the step-2 upload proceeds.
     const [aiConsent, setAiConsent] = useState(initialState.hasAiConsent)
@@ -198,6 +205,34 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
             setInviteError(t("Σφάλμα σύνδεσης.", "Connection error."))
         } finally {
             setBusy(false)
+        }
+    }
+
+    const handleInviteAdvisor = async () => {
+        if (!advisorEmail.trim() || sendingInvite) return
+        setSendingInvite(true)
+        setAdvisorEmailError(null)
+        try {
+            const result = await inviteAdvisorByEmail(advisorEmail.trim())
+            if (result.success) {
+                if (result.alreadyConnected) {
+                    setConnectedAgentName(advisorEmail.trim())
+                } else {
+                    setInviteSent({ link: result.inviteLink })
+                }
+            } else {
+                const map: Record<string, string> = {
+                    invalid_email: t("Μη έγκυρο email.", "Invalid email address."),
+                    self: t("Δεν μπορείτε να προσκαλέσετε τον εαυτό σας.", "You can't invite yourself."),
+                    rate_limited: t("Πολλές προσκλήσεις. Δοκιμάστε ξανά αργότερα.", "Too many invites. Try again later."),
+                    unauthorized: t("Σφάλμα. Δοκιμάστε ξανά.", "Something went wrong. Please try again."),
+                }
+                setAdvisorEmailError(map[result.error] || t("Σφάλμα.", "Error."))
+            }
+        } catch {
+            setAdvisorEmailError(t("Σφάλμα σύνδεσης.", "Connection error."))
+        } finally {
+            setSendingInvite(false)
         }
     }
 
@@ -460,8 +495,8 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                 </h2>
                                 <p className="mt-2 text-sm text-stone-600">
                                     {t(
-                                        "Αν έχετε κωδικό πρόσκλησης από τον ασφαλιστικό σας σύμβουλο, εισάγετέ τον εδώ.",
-                                        "If you have an invite code from your insurance advisor, enter it here."
+                                        "Προσκαλέστε τον ασφαλιστικό σας σύμβουλο με το email του — θα συνδεθείτε αυτόματα μόλις αποδεχτεί.",
+                                        "Invite your insurance advisor by their email — you'll be connected automatically once they accept."
                                     )}
                                 </p>
                             </div>
@@ -482,28 +517,96 @@ export default function OnboardingFlow({ initialState }: OnboardingFlowProps) {
                                         </div>
                                     </div>
                                 </div>
+                            ) : inviteSent ? (
+                                <div className="rounded-2xl border border-primary/20 bg-primary-tint p-5">
+                                    <p className="text-sm font-black text-stone-900">
+                                        {t("Η πρόσκληση στάλθηκε", "Invitation sent")}
+                                    </p>
+                                    <p className="mt-1 text-xs text-stone-600">
+                                        {t(
+                                            "Θα συνδεθείτε αυτόματα μόλις ο σύμβουλός σας αποδεχτεί την πρόσκληση.",
+                                            "You'll be connected automatically once your advisor accepts the invitation."
+                                        )}
+                                    </p>
+                                    {inviteSent.link && (
+                                        <div className="mt-3">
+                                            <p className="text-xs text-stone-600">
+                                                {t(
+                                                    "Δεν στάλθηκε το email. Αντιγράψτε τον σύνδεσμο και στείλτε τον στον σύμβουλό σας:",
+                                                    "Couldn't send the email. Copy this link and send it to your advisor:"
+                                                )}
+                                            </p>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    navigator.clipboard?.writeText(inviteSent.link!)
+                                                    toast.success(t("Ο σύνδεσμος αντιγράφηκε", "Link copied"))
+                                                }}
+                                                className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-stone-300 bg-white px-3 py-1.5 text-xs font-semibold text-stone-700 transition hover:bg-stone-50"
+                                            >
+                                                {t("Αντιγραφή συνδέσμου", "Copy link")}
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             ) : (
                                 <div className="space-y-3">
+                                    {/* Primary — invite the advisor by email */}
                                     <div className="flex gap-2">
                                         <input
-                                            type="text"
-                                            value={inviteCode}
-                                            onChange={(e) => { setInviteCode(e.target.value); setInviteError(null) }}
-                                            placeholder={t("Εισάγετε κωδικό πρόσκλησης...", "Enter invite code...")}
+                                            type="email"
+                                            value={advisorEmail}
+                                            onChange={(e) => { setAdvisorEmail(e.target.value); setAdvisorEmailError(null) }}
+                                            onKeyDown={(e) => e.key === "Enter" && handleInviteAdvisor()}
+                                            placeholder={t("Το email του συμβούλου σας", "Your advisor's email")}
                                             className="flex-1 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm placeholder:text-stone-400"
                                         />
                                         <button
                                             type="button"
-                                            onClick={handleRedeemInvite}
-                                            disabled={busy || !inviteCode.trim()}
-                                            aria-label={t("Σύνδεση", "Connect")}
+                                            onClick={handleInviteAdvisor}
+                                            disabled={sendingInvite || !advisorEmail.trim()}
                                             className="rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white transition hover:bg-primary-hover disabled:opacity-60"
                                         >
-                                            <Users className="h-4 w-4" />
+                                            {sendingInvite ? t("Αποστολή…", "Sending…") : t("Αποστολή", "Send")}
                                         </button>
                                     </div>
-                                    {inviteError && (
-                                        <p className="text-xs text-red-600">{inviteError}</p>
+                                    {advisorEmailError && (
+                                        <p className="text-xs text-red-600">{advisorEmailError}</p>
+                                    )}
+
+                                    {/* Secondary — invite code */}
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowCodeEntry((v) => !v)}
+                                        className="text-xs font-semibold text-primary underline-offset-2 hover:underline"
+                                    >
+                                        {t("Έχετε κωδικό πρόσκλησης;", "Have an invite code instead?")}
+                                    </button>
+                                    {showCodeEntry && (
+                                        <div className="space-y-2">
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="text"
+                                                    value={inviteCode}
+                                                    onChange={(e) => { setInviteCode(e.target.value); setInviteError(null) }}
+                                                    onKeyDown={(e) => e.key === "Enter" && handleRedeemInvite()}
+                                                    placeholder={t("Εισάγετε κωδικό πρόσκλησης...", "Enter invite code...")}
+                                                    className="flex-1 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm placeholder:text-stone-400"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={handleRedeemInvite}
+                                                    disabled={busy || !inviteCode.trim()}
+                                                    aria-label={t("Σύνδεση", "Connect")}
+                                                    className="rounded-xl border border-stone-300 bg-white px-5 py-3 text-sm font-bold text-stone-700 transition hover:bg-stone-50 disabled:opacity-60"
+                                                >
+                                                    <Users className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                            {inviteError && (
+                                                <p className="text-xs text-red-600">{inviteError}</p>
+                                            )}
+                                        </div>
                                     )}
                                 </div>
                             )}

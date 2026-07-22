@@ -21,6 +21,7 @@ import {
     isSyntheticPhoneEmail,
     normalizeGreekMobile,
 } from "@/lib/auth/phone-auth"
+import { isAgentRole } from "@/lib/auth/require-agent"
 import { VALID_PLAN_IDS } from "@/lib/pricing/public-pricing-content"
 
 const RegisterSchema = z.object({
@@ -146,13 +147,20 @@ export async function redeemInvite(token: string, userId: string) {
     if (!invite || invite.consumedAt || invite.expiresAt < new Date()) return
 
     const isShareInvite = ["share", "policy_share", "access_grant"].includes(invite.inviteType)
+    // Policyholder→advisor "connect" invite (inverse of the agent→client signup
+    // invite): the invitee becomes the AGENT of the relationship, and — unlike
+    // the agent→client signup invite whose relationship is pre-created keyed to
+    // the invited id — this one is created here at redeem time, so it must be
+    // email-bound like a share invite.
+    const isClientAgentInvite =
+        invite.inviteType === "signup" && invite.relationshipType === "client_agent"
 
-    // Bind a share/access invite to the address it was sent to: a leaked
-    // policy-share token must not grant access to whoever opens the link. Check
-    // BEFORE consuming so a wrong-recipient click leaves the invite valid for
-    // the intended user. (The signup branch is already email-bound — its
-    // relationship was pre-created keyed on the invited user's id.)
-    if (isShareInvite && invite.inviteeEmail) {
+    // Bind a share/access/client-agent invite to the address it was sent to: a
+    // leaked token must not connect/grant whoever opens the link. Check BEFORE
+    // consuming so a wrong-recipient click leaves the invite valid for the
+    // intended user. (The agent→client signup branch is already email-bound —
+    // its relationship was pre-created keyed on the invited user's id.)
+    if ((isShareInvite || isClientAgentInvite) && invite.inviteeEmail) {
         const redeemer = await db.user.findUnique({ where: { id: userId }, select: { email: true } })
         const redeemerEmail = redeemer?.email?.trim().toLowerCase()
         if (!redeemerEmail || redeemerEmail !== invite.inviteeEmail.trim().toLowerCase()) {
@@ -164,6 +172,64 @@ export async function redeemInvite(token: string, userId: string) {
         where: { id: invite.id },
         data: { consumedAt: new Date(), inviteeUserId: userId },
     })
+
+    if (isClientAgentInvite) {
+        // Ensure the redeeming advisor holds the agent role so they can manage
+        // the client. The register path already set role=agent (→ idempotent
+        // here). For an existing NON-agent account (accepting via login) we add
+        // the role, an AgentProfile, and sync the Supabase JWT metadata —
+        // effective on their NEXT login, since middleware gates the agent
+        // dashboard on the token role. The DB role is the source of truth for
+        // server checks either way.
+        const redeemer = await db.user.findUnique({
+            where: { id: userId },
+            select: { email: true, roles: true },
+        })
+        if (redeemer && !isAgentRole(redeemer.roles)) {
+            const nextRoles = [
+                ...redeemer.roles.split(",").map((r) => r.trim()).filter(Boolean),
+                "agent",
+            ].join(",")
+            await db.user.update({ where: { id: userId }, data: { roles: nextRoles } })
+            await db.agentProfile.upsert({
+                where: { userId },
+                update: {},
+                create: { userId, verificationStatus: "pending" },
+            })
+            try {
+                const { getSupabaseAuthUserByEmail, createAdminClient } = await import("@/lib/supabase/admin")
+                if (redeemer.email) {
+                    const authUser = await getSupabaseAuthUserByEmail(redeemer.email)
+                    if (authUser) {
+                        await createAdminClient().auth.admin.updateUserById(authUser.id, {
+                            user_metadata: { ...authUser.user_metadata, role: nextRoles },
+                        })
+                    }
+                }
+            } catch (error) {
+                // Best-effort — never fail the connect over a JWT sync hiccup.
+                console.error("Advisor JWT role sync failed", error)
+            }
+        }
+
+        // Connect: the advisor (redeemer) is the agent; the inviter is the client.
+        await db.customerRelationship.upsert({
+            where: {
+                agentUserId_policyholderUserId: {
+                    agentUserId: userId,
+                    policyholderUserId: invite.inviterUserId,
+                },
+            },
+            create: {
+                agentUserId: userId,
+                policyholderUserId: invite.inviterUserId,
+                status: "active",
+                activationStatus: "activated",
+            },
+            update: { status: "active", activationStatus: "activated" },
+        })
+        return
+    }
 
     if (invite.inviteType === "signup") {
         await (db.customerRelationship.updateMany as any)({

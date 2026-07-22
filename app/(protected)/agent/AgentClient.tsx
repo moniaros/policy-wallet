@@ -9,7 +9,7 @@ import { Mail, Phone, Globe, ShieldCheck, ShieldOff, Building2, MessageSquare, F
 import { EmptyState as SharedEmptyState } from "@/components/ui/EmptyState"
 import { redeemInviteCode } from "@/app/onboarding/actions"
 import { revokeShare } from "@/app/(protected)/wallet/actions"
-import { disconnectFromAgent } from "@/app/(protected)/agent/relationship-actions"
+import { disconnectFromAgent, inviteAdvisorByEmail } from "@/app/(protected)/agent/relationship-actions"
 import { toast } from "sonner"
 import { BrandCard } from "@/components/ui/brand/BrandCard"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -122,25 +122,75 @@ const NO_AGENT_COPY = {
         expired: { el: "Ο κωδικός έχει λήξει. Ζητήστε νέο από τον σύμβουλό σας.", en: "This code has expired. Ask your advisor for a new one." },
         wrong_account: { el: "Η πρόσκληση στάλθηκε σε διαφορετική διεύθυνση email.", en: "This invite was sent to a different email address." },
     },
+    // Primary action — invite the advisor by email.
+    emailLabel: { el: "Το email του συμβούλου σας", en: "Your advisor's email" },
+    emailPlaceholder: { el: "advisor@example.com", en: "advisor@example.com" },
+    sendInvite: { el: "Αποστολή πρόσκλησης", en: "Send invitation" },
+    sending: { el: "Αποστολή…", en: "Sending…" },
+    sentTitle: { el: "Η πρόσκληση στάλθηκε", en: "Invitation sent" },
+    sentBody: {
+        el: "Στείλαμε πρόσκληση με email στον σύμβουλό σας. Θα συνδεθείτε μόλις την αποδεχτεί.",
+        en: "We emailed your advisor an invitation. You'll be connected once they accept.",
+    },
+    linkFallback: {
+        el: "Δεν στάλθηκε το email. Αντιγράψτε τον σύνδεσμο και στείλτε τον στον σύμβουλό σας:",
+        en: "Couldn't send the email. Copy this link and send it to your advisor:",
+    },
+    copyLink: { el: "Αντιγραφή συνδέσμου", en: "Copy link" },
+    linkCopied: { el: "Ο σύνδεσμος αντιγράφηκε", en: "Link copied" },
+    haveCode: { el: "Έχετε κωδικό πρόσκλησης;", en: "Have an invite code instead?" },
+    emailErrors: {
+        invalid_email: { el: "Μη έγκυρο email.", en: "Invalid email address." },
+        self: { el: "Δεν μπορείτε να προσκαλέσετε τον εαυτό σας.", en: "You can't invite yourself." },
+        rate_limited: { el: "Πολλές προσκλήσεις. Δοκιμάστε ξανά αργότερα.", en: "Too many invites. Try again later." },
+        unauthorized: { el: "Κάτι πήγε στραβά. Δοκιμάστε ξανά.", en: "Something went wrong. Please try again." },
+    },
 } as const
 
 function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
     const router = useRouter()
-    const [code, setCode] = useState("")
-    const [error, setError] = useState<string | null>(null)
-    const [isPending, startTransition] = useTransition()
     const lang = language
 
-    const submit = () => {
-        if (!code.trim() || isPending) return
-        setError(null)
-        startTransition(async () => {
+    // Primary — invite the advisor by email.
+    const [email, setEmail] = useState("")
+    const [emailError, setEmailError] = useState<string | null>(null)
+    const [sent, setSent] = useState<{ link?: string } | null>(null)
+    const [sending, startSending] = useTransition()
+
+    // Secondary — redeem an invite code (revealed on demand).
+    const [showCode, setShowCode] = useState(false)
+    const [code, setCode] = useState("")
+    const [codeError, setCodeError] = useState<string | null>(null)
+    const [redeeming, startRedeeming] = useTransition()
+
+    const sendInvite = () => {
+        if (!email.trim() || sending) return
+        setEmailError(null)
+        startSending(async () => {
+            const result = await inviteAdvisorByEmail(email.trim())
+            if (result.success) {
+                // Already connected → the parent will show the advisor card.
+                if (result.alreadyConnected) {
+                    router.refresh()
+                    return
+                }
+                setSent({ link: result.inviteLink })
+            } else {
+                setEmailError(NO_AGENT_COPY.emailErrors[result.error]?.[lang] ?? NO_AGENT_COPY.emailErrors.unauthorized[lang])
+            }
+        })
+    }
+
+    const redeem = () => {
+        if (!code.trim() || redeeming) return
+        setCodeError(null)
+        startRedeeming(async () => {
             const result = await redeemInviteCode(code.trim())
             if (result.success) {
                 router.refresh()
             } else {
                 const key = ("error" in result ? result.error : "invalid") as keyof typeof NO_AGENT_COPY.errors
-                setError(NO_AGENT_COPY.errors[key]?.[lang] ?? NO_AGENT_COPY.errors.invalid[lang])
+                setCodeError(NO_AGENT_COPY.errors[key]?.[lang] ?? NO_AGENT_COPY.errors.invalid[lang])
             }
         })
     }
@@ -175,28 +225,88 @@ function NoAgentEmptyState({ language }: { language: "el" | "en" }) {
                 trust={NO_AGENT_COPY.trust[lang]}
                 secondary={
                     <div className="text-left">
-                        <label htmlFor="agent-invite-code" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-[#64748B] dark:text-white/55">
-                            {NO_AGENT_COPY.inputLabel[lang]}
-                        </label>
-                        <div className="flex gap-2">
-                            <input
-                                id="agent-invite-code"
-                                value={code}
-                                onChange={(e) => setCode(e.target.value)}
-                                onKeyDown={(e) => e.key === "Enter" && submit()}
-                                placeholder={NO_AGENT_COPY.inputPlaceholder[lang]}
-                                className="min-w-0 flex-1 rounded-full border border-[#E2E8F0] bg-white px-4 py-2.5 text-sm text-[#0F172A] outline-none transition-colors focus:border-primary dark:border-white/15 dark:bg-black dark:text-white dark:focus:border-mint"
-                            />
-                            <button
-                                type="button"
-                                onClick={submit}
-                                disabled={isPending || !code.trim()}
-                                className="flex-shrink-0 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-primary-hover active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 dark:text-[#1A2420]"
-                            >
-                                {isPending ? NO_AGENT_COPY.submitting[lang] : NO_AGENT_COPY.submit[lang]}
-                            </button>
-                        </div>
-                        {error && <p className="mt-2 text-xs text-[#B91C1C]">{error}</p>}
+                        {sent ? (
+                            <div className="rounded-xl border border-primary/20 bg-primary/[0.06] p-4 dark:border-mint/20 dark:bg-mint/10">
+                                <p className="text-sm font-semibold text-foreground">{NO_AGENT_COPY.sentTitle[lang]}</p>
+                                <p className="mt-1 text-xs text-muted-foreground">{NO_AGENT_COPY.sentBody[lang]}</p>
+                                {sent.link && (
+                                    <div className="mt-3">
+                                        <p className="text-xs text-muted-foreground">{NO_AGENT_COPY.linkFallback[lang]}</p>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                navigator.clipboard?.writeText(sent.link!)
+                                                toast.success(NO_AGENT_COPY.linkCopied[lang])
+                                            }}
+                                            className="mt-1.5 inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                        >
+                                            {NO_AGENT_COPY.copyLink[lang]}
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <>
+                                <label htmlFor="advisor-email" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                    {NO_AGENT_COPY.emailLabel[lang]}
+                                </label>
+                                <div className="flex gap-2">
+                                    <input
+                                        id="advisor-email"
+                                        type="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        onKeyDown={(e) => e.key === "Enter" && sendInvite()}
+                                        placeholder={NO_AGENT_COPY.emailPlaceholder[lang]}
+                                        className="min-w-0 flex-1 rounded-full border border-border bg-card px-4 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-primary dark:focus:border-mint"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={sendInvite}
+                                        disabled={sending || !email.trim()}
+                                        className="flex-shrink-0 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-all hover:bg-primary-hover active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                                    >
+                                        {sending ? NO_AGENT_COPY.sending[lang] : NO_AGENT_COPY.sendInvite[lang]}
+                                    </button>
+                                </div>
+                                {emailError && <p className="mt-2 text-xs text-red-600">{emailError}</p>}
+
+                                <button
+                                    type="button"
+                                    onClick={() => setShowCode((v) => !v)}
+                                    className="mt-4 rounded text-xs font-semibold text-primary underline-offset-2 hover:underline dark:text-mint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                >
+                                    {NO_AGENT_COPY.haveCode[lang]}
+                                </button>
+
+                                {showCode && (
+                                    <div className="mt-3">
+                                        <label htmlFor="agent-invite-code" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                            {NO_AGENT_COPY.inputLabel[lang]}
+                                        </label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                id="agent-invite-code"
+                                                value={code}
+                                                onChange={(e) => setCode(e.target.value)}
+                                                onKeyDown={(e) => e.key === "Enter" && redeem()}
+                                                placeholder={NO_AGENT_COPY.inputPlaceholder[lang]}
+                                                className="min-w-0 flex-1 rounded-full border border-border bg-card px-4 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-primary dark:focus:border-mint"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={redeem}
+                                                disabled={redeeming || !code.trim()}
+                                                className="flex-shrink-0 rounded-full border border-border px-5 py-2.5 text-sm font-semibold text-foreground transition-all hover:bg-muted active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                            >
+                                                {redeeming ? NO_AGENT_COPY.submitting[lang] : NO_AGENT_COPY.submit[lang]}
+                                            </button>
+                                        </div>
+                                        {codeError && <p className="mt-2 text-xs text-red-600">{codeError}</p>}
+                                    </div>
+                                )}
+                            </>
+                        )}
                     </div>
                 }
             />

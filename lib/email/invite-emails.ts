@@ -62,6 +62,46 @@ export async function sendPolicyInviteEmail(params: {
     })
 }
 
+export async function sendAdvisorInviteEmail(params: {
+    to: string
+    token: string
+    inviterName?: string | null
+    language?: Language
+}) {
+    const language: Language = params.language === "el" ? "el" : "en"
+    // The inviter here is the POLICYHOLDER (client), not an advisor — use their
+    // real name, falling back to a neutral "A PolicyWallet member".
+    const trimmed = params.inviterName?.trim()
+    const inviter = trimmed || (language === "el" ? "Ένα μέλος του PolicyWallet" : "A PolicyWallet member")
+    const inviteUrl = absoluteUrl(`/invite/${params.token}`)
+
+    const copy = language === "el"
+        ? {
+            subject: `${inviter} σας προσκαλεί ως σύμβουλό του στο PolicyWallet`,
+            title: "Προσκληθήκατε ως σύμβουλος",
+            body: `${inviter} θέλει να σας συνδέσει ως ασφαλιστικό σύμβουλό του στο PolicyWallet. Ανοίξτε τον ασφαλή σύνδεσμο για να δημιουργήσετε λογαριασμό συμβούλου ή να συνδεθείτε — θα συνδεθείτε αυτόματα.`,
+            action: "Αποδοχή πρόσκλησης",
+        }
+        : {
+            subject: `${inviter} invited you to be their advisor on PolicyWallet`,
+            title: "You've been invited as an advisor",
+            body: `${inviter} wants to connect you as their insurance advisor on PolicyWallet. Open the secure link to create an advisor account or log in — you'll be connected automatically.`,
+            action: "Accept invitation",
+        }
+
+    return sendEmail({
+        to: params.to,
+        subject: copy.subject,
+        html: getBaseTemplate({
+            title: copy.title,
+            description: copy.body,
+            actionUrl: inviteUrl,
+            actionLabel: copy.action,
+            footerText: inviteFooter(language),
+        }),
+    })
+}
+
 export async function sendPolicySharedAccessEmail(params: {
     to: string
     inviterName?: string | null
