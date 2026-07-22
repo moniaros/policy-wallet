@@ -53,8 +53,10 @@ export function Settings({
         setIsProcessing(true)
         try {
             await action()
+            toast.success(t.settings.updateSuccess)
         } catch (error) {
             console.error(error)
+            toast.error(t.settings.updateFailed)
         } finally {
             setIsProcessing(false)
         }
