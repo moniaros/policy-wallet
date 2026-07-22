@@ -8,6 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { Users, UserPlus, Mail, Shield, Clock, CheckCircle2, Copy, Trash2, Eye, Edit3, AlertCircle } from "lucide-react"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
+import { Modal } from "@/components/ui/Modal"
 
 export interface Share {
     id: string
@@ -69,6 +70,8 @@ const DEFAULT_WALLET_COPY = {
 export function CollaborationPanel({ policyId, policyNumber: _policyNumber, initialShares, isOwner }: CollaborationPanelProps) {
     const { t, language } = useLanguage()
     const walletCopy = t.wallet ?? DEFAULT_WALLET_COPY
+    const [revokingId, setRevokingId] = useState<string | null>(null)
+    const [isRevoking, setIsRevoking] = useState(false)
     const copy = walletCopy.collaboration ?? DEFAULT_WALLET_COPY.collaboration
     const locale = t.common.locale || "en-US"
     const [shares, setShares] = useState<Share[]>(initialShares)
@@ -129,10 +132,14 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
             .catch(() => toast.error(mapWalletErrorToMessage("COPY_FAILED", t, "copy")))
     }
 
-    const handleRevoke = async (grantId: string) => {
-        if (!confirm(walletCopy.revokeAccess)) return
-
-        const res = await revokeShare(grantId)
+    // Revoke is destructive — confirm in a branded dialog instead of the old
+    // native confirm() (which ignored the design system and gave no pending state).
+    const confirmRevoke = async () => {
+        if (!revokingId) return
+        setIsRevoking(true)
+        const res = await revokeShare(revokingId)
+        setIsRevoking(false)
+        setRevokingId(null)
         if (res.success) {
             toast.success(walletCopy.accessRevoked)
             router.refresh()
@@ -390,8 +397,9 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
 
                                     {isOwner && (
                                         <button
-                                            onClick={() => handleRevoke(share.id)}
-                                            className="flex-shrink-0 p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors group/btn"
+                                            onClick={() => setRevokingId(share.id)}
+                                            className="flex-shrink-0 p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors group/btn focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/40"
+                                            aria-label={walletCopy.revoke}
                                             title={walletCopy.revoke}
                                         >
                                             <Trash2 className="w-4 h-4 group-hover/btn:scale-110 transition-transform" />
@@ -412,6 +420,35 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
                     </div>
                 </div>
             )}
+
+            <Modal
+                isOpen={revokingId !== null}
+                onClose={() => setRevokingId(null)}
+                ariaLabel={walletCopy.revokeAccess}
+                closeLabel={t.common.cancel}
+                className="max-w-md"
+            >
+                <div className="p-6 sm:p-7">
+                    <h2 className="text-lg font-black text-foreground">{walletCopy.revokeAccess}</h2>
+                    <div className="mt-6 flex gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setRevokingId(null)}
+                            className="flex-1 py-3 px-4 bg-muted text-foreground rounded-xl font-bold hover:bg-muted/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                        >
+                            {t.common.cancel}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={confirmRevoke}
+                            disabled={isRevoking}
+                            className="flex-1 py-3 px-4 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-colors disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/50"
+                        >
+                            {walletCopy.revoke}
+                        </button>
+                    </div>
+                </div>
+            </Modal>
         </div>
     )
 }
