@@ -107,9 +107,9 @@ export function AccountOverview({
                             </span>
                         )}
                     </div>
-                    <h1 className="text-3xl font-black text-black dark:text-white tracking-tighter mb-1">
+                    <h2 className="text-3xl font-black text-black dark:text-white tracking-tighter mb-1">
                         {currentUser.name}
-                    </h1>
+                    </h2>
                     <p className="text-black/60 dark:text-white/60 font-bold tracking-tight">
                         {currentUser.email}
                     </p>
@@ -140,7 +140,8 @@ export function AccountOverview({
                         <div className="flex p-2 bg-black/80 backdrop-blur-md rounded-2xl border border-white/5">
                             <button
                                 onClick={() => onSwitchRole?.('policyholder')}
-                                className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${isPolicyholder
+                                aria-pressed={isPolicyholder}
+                                className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint focus-visible:ring-offset-2 focus-visible:ring-offset-black ${isPolicyholder
                                     ? 'bg-white text-black shadow-xl'
                                     : 'text-white/65 hover:text-white'
                                     }`}
@@ -149,7 +150,8 @@ export function AccountOverview({
                             </button>
                             <button
                                 onClick={() => onSwitchRole?.('agent')}
-                                className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${!isPolicyholder
+                                aria-pressed={!isPolicyholder}
+                                className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-mint focus-visible:ring-offset-2 focus-visible:ring-offset-black ${!isPolicyholder
                                     ? 'bg-white text-black shadow-xl'
                                     : 'text-white/65 hover:text-white'
                                     }`}

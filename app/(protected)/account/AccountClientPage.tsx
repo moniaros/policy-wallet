@@ -59,8 +59,8 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
     const [activeTab, setActiveTab] = useState<'overview' | 'billing' | 'settings'>('overview')
 
     const handleSwitchRole = (role: 'policyholder' | 'agent') => {
-        // In a real dual-role system, this might update a session cookie or redirect
-        console.log(`Switching role context to: ${role}`)
+        // Dual-role accounts switch context by navigating to that role's home.
+        router.push(role === 'agent' ? '/dashboard/agent' : '/home')
     }
 
     const handleUpgrade = async (planId: string) => {

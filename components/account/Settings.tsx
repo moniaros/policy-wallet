@@ -247,7 +247,7 @@ export function Settings({
                                 ) : (
                                     <div className="flex items-center justify-between p-4 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl group/item hover:border-primary/35 transition-all">
                                         <span className="text-sm font-black text-black dark:text-white tracking-tight">{currentUser.name || t.settings.setYourName}</span>
-                                        <button onClick={() => setIsEditingName(true)} className="opacity-0 group-hover/item:opacity-100 text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint transition-all">{t.billing.edit}</button>
+                                        <button onClick={() => setIsEditingName(true)} className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint transition-all rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">{t.billing.edit}</button>
                                     </div>
                                 )}
                             </div>
@@ -274,7 +274,7 @@ export function Settings({
                                 ) : (
                                     <div className="flex items-center justify-between p-4 bg-black/5 dark:bg-black border border-black/10 dark:border-white/15 rounded-2xl group/item hover:border-primary/35 transition-all">
                                         <span className="text-sm font-black text-black dark:text-white tracking-tight">{currentUser.email}</span>
-                                        <button onClick={() => setIsEditingEmail(true)} className="opacity-0 group-hover/item:opacity-100 text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint transition-all">{t.billing.edit}</button>
+                                        <button onClick={() => setIsEditingEmail(true)} className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-mint transition-all rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">{t.billing.edit}</button>
                                     </div>
                                 )}
                             </div>
@@ -353,7 +353,7 @@ export function Settings({
                                 {t.settings.securityFirstDesc}
                             </p>
                             <button
-                                onClick={() => withProcessing("Terminating all sessions...", async () => { await onLogoutAllSessions?.() })}
+                                onClick={() => withProcessing(t.settings.masterSignOut, async () => { await onLogoutAllSessions?.() })}
                                 className="w-full py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:border-red-500 transition-all text-white/80 hover:text-white"
                             >
                                 {t.settings.masterSignOut}
