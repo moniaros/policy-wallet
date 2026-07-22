@@ -124,9 +124,9 @@ export function TokenUsageCard({ language = "en", className = "" }: Props) {
         return (
             <div className={`arc-card p-6 ${className}`}>
                 <div className="animate-pulse space-y-3">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
-                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full" />
-                    <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-full" />
+                    <div className="h-4 bg-muted rounded w-1/2" />
+                    <div className="h-3 bg-muted rounded w-full" />
+                    <div className="h-8 bg-muted rounded-full" />
                 </div>
             </div>
         )
@@ -163,7 +163,7 @@ export function TokenUsageCard({ language = "en", className = "" }: Props) {
                         {formatTokens(subscription.tokens_used)} / {formatTokens(subscription.monthly_limit)}
                     </span>
                 </div>
-                <div className="w-full h-2 bg-[#F1F5F9] dark:bg-slate-700 rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                     <div
                         className={`h-full rounded-full transition-all duration-700 ${barColor}`}
                         style={{ width: `${usagePct}%` }}
@@ -213,7 +213,7 @@ export function TokenUsageCard({ language = "en", className = "" }: Props) {
                             key={pkg.key}
                             onClick={() => handlePurchase(pkg.key)}
                             disabled={purchasing !== null}
-                            className="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-primary hover:bg-primary-tint dark:hover:bg-primary/15 transition-colors text-sm arc-text disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-border hover:border-primary hover:bg-primary-tint dark:hover:bg-primary/15 transition-colors text-sm arc-text disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <div className="flex items-center gap-3">
                                 <span className="font-bold">{pkg.label}</span>
