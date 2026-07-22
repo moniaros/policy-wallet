@@ -78,7 +78,7 @@ export class PolicyService extends BaseService {
         data: CreatePolicyInput & { status?: string },
         language: 'en' | 'el' = 'en'
     ): Promise<Policy> {
-        return this.withTransaction(async (tx) => {
+        const policy = await this.withTransaction(async (tx) => {
             // Verify user exists
             const user = await tx.user.findUnique({
                 where: { id: userId },
@@ -90,7 +90,7 @@ export class PolicyService extends BaseService {
             }
 
             // Create policy
-            const policy = await tx.policy.create({
+            const created = await tx.policy.create({
                 data: {
                     ownerUserId: userId,
                     createdByUserId: userId,
@@ -121,14 +121,14 @@ export class PolicyService extends BaseService {
                         logger('warn', 'Skipping document with invalid extension', {
                             userId,
                             fileName,
-                            policyId: policy.id
+                            policyId: created.id
                         })
                         continue
                     }
 
                     await tx.policyDocument.create({
                         data: {
-                            policyId: policy.id,
+                            policyId: created.id,
                             fileUrl: doc.url,
                             fileName,
                             fileSize: doc.size,
@@ -140,27 +140,34 @@ export class PolicyService extends BaseService {
                 }
             }
 
-            // Log activity
-            await this.logActivity(
-                userId,
-                'POLICY_CREATED',
-                `Created policy ${policy.policyNumber} for ${policy.insurerName}`,
-                {
-                    policyId: policy.id,
-                    insurerName: policy.insurerName,
-                    policyNumber: policy.policyNumber
-                }
-            )
+            return created
+        })
 
-            logger('info', 'Policy created successfully', {
-                userId,
+        // Activity logging runs AFTER the transaction commits — never inside it.
+        // logActivity issues its own this.db queries (a second pool connection);
+        // awaiting it inside the interactive tx while that tx holds a connection
+        // deadlocks under the serverless connection limit and expires the tx at
+        // 15s (the onboarding-upload "Transaction already closed" failure). It is
+        // non-critical (swallows its own errors), so post-commit is correct.
+        await this.logActivity(
+            userId,
+            'POLICY_CREATED',
+            `Created policy ${policy.policyNumber} for ${policy.insurerName}`,
+            {
                 policyId: policy.id,
                 insurerName: policy.insurerName,
-                status: policy.status
-            })
+                policyNumber: policy.policyNumber
+            }
+        )
 
-            return policy
+        logger('info', 'Policy created successfully', {
+            userId,
+            policyId: policy.id,
+            insurerName: policy.insurerName,
+            status: policy.status
         })
+
+        return policy
     }
 
     /**
@@ -182,77 +189,79 @@ export class PolicyService extends BaseService {
         data: Partial<CreatePolicyInput> & { status?: string },
         language: 'en' | 'el' = 'en'
     ): Promise<Policy> {
-        const result = await this.withTransaction(async (tx) => {
-            // 1. Verify policy exists
-            const policy = await tx.policy.findUnique({
-                where: { id: policyId },
-                select: {
-                    id: true,
-                    ownerUserId: true,
-                    policyNumber: true,
-                    insurerName: true
-                }
-            })
-
-            if (!policy) {
-                throw AppError.notFound('Policy', policyId)
+        // Verify existence, write access, and validate the payload BEFORE the
+        // write. getPolicyAccess issues its own this.db queries, so these reads
+        // must NOT run inside an interactive transaction — a nested pool
+        // connection there deadlocks under the serverless connection limit (the
+        // "Transaction already closed" failure). A single policy update is
+        // atomic on its own and needs no interactive tx.
+        const policy = await this.db.policy.findUnique({
+            where: { id: policyId },
+            select: {
+                id: true,
+                ownerUserId: true,
+                policyNumber: true,
+                insurerName: true
             }
-
-            // 2. Verify write access: owner, or an active policy-scoped grant
-            // with edit/manage permission (agent-managed policies).
-            const { getPolicyAccess } = await import('@/lib/policy-access')
-            const access = await getPolicyAccess(policyId, { id: userId })
-            if (!access.canWrite) {
-                throw AppError.forbidden(
-                    language === 'el'
-                        ? 'Δεν έχετε δικαίωμα επεξεργασίας αυτού του συμβολαίου'
-                        : 'You do not have permission to edit this policy'
-                )
-            }
-
-            // 3. Build update data
-            const updateData: any = {}
-            if (data.insurerName !== undefined) updateData.insurerName = data.insurerName
-            if (data.policyNumber !== undefined) updateData.policyNumber = data.policyNumber
-            if (data.lineOfBusiness !== undefined) updateData.lineOfBusiness = data.lineOfBusiness
-            if (data.startDate !== undefined) updateData.startDate = new Date(data.startDate)
-            if (data.endDate !== undefined) updateData.endDate = new Date(data.endDate)
-            if (data.premiumAmount !== undefined) updateData.premiumAmount = data.premiumAmount
-            if (data.premiumCurrency !== undefined) updateData.premiumCurrency = data.premiumCurrency
-            if (data.coverageSummary !== undefined) updateData.coverageSummary = data.coverageSummary
-            if (data.status !== undefined) updateData.status = data.status
-
-            // 4. Validate date logic if both dates are provided or inferred
-            if (updateData.startDate && updateData.endDate) {
-                if (updateData.endDate <= updateData.startDate) {
-                    throw AppError.validation({
-                        endDate: [language === 'el'
-                            ? 'Η ημερομηνία λήξης πρέπει να είναι μετά την ημερομηνία έναρξης'
-                            : 'End date must be after start date']
-                    })
-                }
-            }
-
-            // 5. Update policy
-            const updatedPolicy = await tx.policy.update({
-                where: { id: policyId },
-                data: {
-                    ...updateData,
-                    updatedAt: new Date()
-                }
-            })
-
-            // 6. Log activity
-            const changes = Object.keys(updateData).filter(k => k !== 'updatedAt')
-            await this.logActivity(
-                userId,
-                'POLICY_UPDATED',
-                `Updated policy ${policy.policyNumber}`,
-                { policyId, changes }
-            )
-
-            return updatedPolicy
         })
+
+        if (!policy) {
+            throw AppError.notFound('Policy', policyId)
+        }
+
+        // Verify write access: owner, or an active policy-scoped grant with
+        // edit/manage permission (agent-managed policies).
+        const { getPolicyAccess } = await import('@/lib/policy-access')
+        const access = await getPolicyAccess(policyId, { id: userId })
+        if (!access.canWrite) {
+            throw AppError.forbidden(
+                language === 'el'
+                    ? 'Δεν έχετε δικαίωμα επεξεργασίας αυτού του συμβολαίου'
+                    : 'You do not have permission to edit this policy'
+            )
+        }
+
+        // Build update data
+        const updateData: any = {}
+        if (data.insurerName !== undefined) updateData.insurerName = data.insurerName
+        if (data.policyNumber !== undefined) updateData.policyNumber = data.policyNumber
+        if (data.lineOfBusiness !== undefined) updateData.lineOfBusiness = data.lineOfBusiness
+        if (data.startDate !== undefined) updateData.startDate = new Date(data.startDate)
+        if (data.endDate !== undefined) updateData.endDate = new Date(data.endDate)
+        if (data.premiumAmount !== undefined) updateData.premiumAmount = data.premiumAmount
+        if (data.premiumCurrency !== undefined) updateData.premiumCurrency = data.premiumCurrency
+        if (data.coverageSummary !== undefined) updateData.coverageSummary = data.coverageSummary
+        if (data.status !== undefined) updateData.status = data.status
+
+        // Validate date logic if both dates are provided or inferred
+        if (updateData.startDate && updateData.endDate) {
+            if (updateData.endDate <= updateData.startDate) {
+                throw AppError.validation({
+                    endDate: [language === 'el'
+                        ? 'Η ημερομηνία λήξης πρέπει να είναι μετά την ημερομηνία έναρξης'
+                        : 'End date must be after start date']
+                })
+            }
+        }
+
+        // Single atomic write — no interactive tx needed.
+        const result = await this.db.policy.update({
+            where: { id: policyId },
+            data: {
+                ...updateData,
+                updatedAt: new Date()
+            }
+        })
+
+        // Activity logging runs after the write (its own this.db queries).
+        const logPolicyNumber = policy.policyNumber
+        const logChanges = Object.keys(updateData).filter(k => k !== 'updatedAt')
+        await this.logActivity(
+            userId,
+            'POLICY_UPDATED',
+            `Updated policy ${logPolicyNumber}`,
+            { policyId, changes: logChanges }
+        )
 
         // M6: Re-sync gap recommendations after policy data changes.
         // Fire-and-forget so the update response isn't held waiting for gap engine.
@@ -789,33 +798,36 @@ export class PolicyService extends BaseService {
         const isOwner = policy.ownerUserId === userId
 
         if (isOwner) {
-            // Owner deletion - full cleanup
+            // Owner deletion. The DB record is the source of truth, so only the
+            // cascade delete runs inside the transaction. Storage cleanup (slow
+            // network I/O) and the activity log (its own this.db queries) run
+            // AFTER commit — doing them inside the interactive tx held it open on
+            // storage I/O and grabbed a second pool connection, which deadlocks
+            // under the serverless connection limit ("Transaction already closed").
             await this.withTransaction(async (tx) => {
-                // Delete associated files from storage
-                for (const doc of policy.documents) {
-                    try {
-                        await deleteFile(doc.fileUrl)
-                    } catch (error) {
-                        logger('warn', 'Failed to delete file from storage', {
-                            fileUrl: doc.fileUrl,
-                            error: error instanceof Error ? error.message : String(error)
-                        })
-                        // Continue with deletion even if file delete fails
-                    }
-                }
-
                 // Delete policy (cascades to documents, gaps, etc.)
                 await tx.policy.delete({
                     where: { id: policyId }
                 })
-
-                await this.logActivity(
-                    userId,
-                    'POLICY_DELETED',
-                    `Deleted policy ${policy.policyNumber}`,
-                    { policyId, insurerName: policy.insurerName }
-                )
             })
+
+            // Best-effort storage cleanup — an orphaned file is harmless and must
+            // never block or fail the deletion (fileUrls captured before delete).
+            for (const doc of policy.documents) {
+                await deleteFile(doc.fileUrl).catch((error) => {
+                    logger('warn', 'Failed to delete file from storage', {
+                        fileUrl: doc.fileUrl,
+                        error: error instanceof Error ? error.message : String(error)
+                    })
+                })
+            }
+
+            await this.logActivity(
+                userId,
+                'POLICY_DELETED',
+                `Deleted policy ${policy.policyNumber}`,
+                { policyId, insurerName: policy.insurerName }
+            )
 
             logger('info', 'Policy deleted by owner', {
                 userId,
