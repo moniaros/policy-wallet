@@ -168,6 +168,7 @@ export function PolicyWallet({
                     <div className="relative group w-full sm:max-w-md">
                         <input
                             type="text"
+                            aria-label={t.wallet.searchPlaceholder}
                             placeholder={t.wallet.searchPlaceholder}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -224,6 +225,7 @@ export function PolicyWallet({
                 heading inside itself; the rewrite dropped it, which left the whole
                 list unnamed to a screen reader (the only heading on the page was the
                 "welcome back" greeting). It lives here now so grid and list share it. */}
+            {filteredPolicies.length > 0 && (
             <section aria-labelledby="wallet-policy-list-heading">
                 <h2
                     id="wallet-policy-list-heading"
@@ -261,6 +263,7 @@ export function PolicyWallet({
                     </div>
                 )}
             </section>
+            )}
 
             {filteredPolicies.length === 0 && policies.length > 0 && (
                 <div className="py-20 text-center">

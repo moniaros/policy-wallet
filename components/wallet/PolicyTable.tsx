@@ -109,12 +109,12 @@ export function PolicyTable({
                                                 <Icon className="h-4 w-4" />
                                             </span>
                                             <div className="min-w-0">
-                                                <p className="truncate text-[13px] font-semibold text-[#0F172A] dark:text-white">
+                                                <p className="truncate text-[13px] font-semibold text-foreground">
                                                     {summary.assetTitle}
                                                 </p>
                                                 {/* assetTitle falls back to the insurer when there is no
                                                     vehicle/property to name — don't print it twice. */}
-                                                <p className="truncate text-[11px] text-[#94A3B8]">
+                                                <p className="truncate text-[11px] text-muted-foreground">
                                                     {summary.assetTitle === policy.insurerName
                                                         ? policy.policyNumber
                                                         : policy.insurerName}
@@ -131,10 +131,10 @@ export function PolicyTable({
 
                                     <td className="px-4 py-2.5">
                                         <span className="inline-flex items-center gap-1.5 text-[12px] whitespace-nowrap text-black/70 dark:text-white/70">
-                                            <CalendarDays className="h-3.5 w-3.5 shrink-0 text-[#94A3B8]" />
+                                            <CalendarDays className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                                             <span className="tabular-nums">{renewalLabel}</span>
                                             {daysLeft !== null && (
-                                                <span className="tabular-nums text-[11px] text-[#94A3B8]">
+                                                <span className="tabular-nums text-[11px] text-muted-foreground">
                                                     ({daysLeft}
                                                     {lang === 'el' ? 'η' : 'd'})
                                                 </span>
@@ -143,7 +143,7 @@ export function PolicyTable({
                                     </td>
 
                                     <td className="px-4 py-2.5 text-right">
-                                        <span className="text-[13px] font-semibold tabular-nums text-[#0F172A] dark:text-white">
+                                        <span className="text-[13px] font-semibold tabular-nums text-foreground">
                                             {summary.premiumDisplay}
                                         </span>
                                     </td>

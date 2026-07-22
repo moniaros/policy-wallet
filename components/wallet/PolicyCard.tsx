@@ -80,7 +80,7 @@ export function PolicyCard({ policy, onView, id }: PolicyCardProps) {
                     {/* Row 1: insurer name + status badge */}
                     <div className="mb-0.5 flex items-center justify-between gap-2">
                         <div className="flex min-w-0 items-center gap-1.5">
-                            <span className="truncate text-[13px] font-semibold text-[#0F172A] dark:text-white">
+                            <span className="truncate text-[13px] font-semibold text-foreground">
                                 {displayInsurer}
                             </span>
                             {policy.verified && !isAnalyzing && (
@@ -91,7 +91,7 @@ export function PolicyCard({ policy, onView, id }: PolicyCardProps) {
                     </div>
 
                     {/* Row 2: LOB type + expiry inline */}
-                    <p className="text-[11px] text-[#94A3B8]">
+                    <p className="text-[11px] text-muted-foreground">
                         {localizedLob}
                         {expiryInline && <> · {expiryInline}</>}
                     </p>
