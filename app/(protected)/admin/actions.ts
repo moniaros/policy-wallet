@@ -324,6 +324,11 @@ export async function getUserDetails(userId: string) {
                 activeSessions: {
                     orderBy: { lastActiveAt: "desc" },
                     take: 5
+                },
+                tokenBalance: true,
+                invoices: {
+                    orderBy: { billingDate: "desc" },
+                    take: 5
                 }
             }
         })

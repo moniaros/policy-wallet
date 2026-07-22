@@ -241,10 +241,7 @@ export default function UsersClient({
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">
                                                 <button
-                                                    onClick={() => {
-                                                        setSelectedUser(user)
-                                                        setShowDetailModal(true)
-                                                    }}
+                                                    onClick={() => router.push(`/admin/users/${user.id}`)}
                                                     className="p-2 text-primary dark:text-mint hover:bg-primary-tint dark:hover:bg-primary/15 rounded-lg transition-colors"
                                                     title="View Details"
                                                 >
