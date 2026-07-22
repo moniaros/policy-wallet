@@ -131,8 +131,6 @@ export function calculateProtectionScore(
     let totalWeight = 0
 
     for (const cat of SCORE_CATEGORIES) {
-        const applicable = cat.appliesWhen(profile)
-
         // Which LOBs from this category does the user have?
         const coveredLobs = cat.coveredByLobs.filter((lob) =>
             normalizedLobs.has(lob)
@@ -140,6 +138,13 @@ export function calculateProtectionScore(
         const missingLobs = cat.coveredByLobs.filter(
             (lob) => !normalizedLobs.has(lob) && gapLobs.has(lob)
         )
+
+        // A category is applicable if the profile implies it OR the user already
+        // holds a policy in it. Never ignore coverage the user actually has: a
+        // motor policy makes Property relevant even when the profile's
+        // vehiclesCount is 0. Without this, a real policy contributed nothing and
+        // the overall score sat at 0 / "Critical" despite active coverage.
+        const applicable = cat.appliesWhen(profile) || coveredLobs.length > 0
 
         let categoryScore = 100
 

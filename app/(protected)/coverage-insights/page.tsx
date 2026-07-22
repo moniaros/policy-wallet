@@ -224,16 +224,21 @@ export default async function CoverageInsightsPage() {
                             />
                         )}
 
-                        <ProtectionScoreCard
-                            overallScore={engineResult.protectionScore.overallScore}
-                            tier={engineResult.scoreTier}
-                            categoryScores={engineResult.protectionScore.categoryScores as any}
-                            gapCount={engineResult.protectionScore.gapCount}
-                            expectedLines={engineResult.protectionScore.expectedLines}
-                            actualLines={engineResult.protectionScore.actualLines}
-                            profileCompleteness={engineResult.profileCompleteness}
-                            language={userLanguage}
-                        />
+                        {/* The protection score only makes sense once there is a
+                            policy to score — with none it read "0 / Critical",
+                            which is noise, not a verdict. */}
+                        {hasPolicies && (
+                            <ProtectionScoreCard
+                                overallScore={engineResult.protectionScore.overallScore}
+                                tier={engineResult.scoreTier}
+                                categoryScores={engineResult.protectionScore.categoryScores as any}
+                                gapCount={engineResult.protectionScore.gapCount}
+                                expectedLines={engineResult.protectionScore.expectedLines}
+                                actualLines={engineResult.protectionScore.actualLines}
+                                profileCompleteness={engineResult.profileCompleteness}
+                                language={userLanguage}
+                            />
+                        )}
                     </div>
                 </div>
             )}
