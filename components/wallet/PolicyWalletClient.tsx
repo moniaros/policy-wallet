@@ -8,13 +8,14 @@ import { PageHeader } from "@/components/ui/PageHeader"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { isInForceKey, resolvePolicyStatusKey } from "@/lib/wallet/policy-status-view"
 import { toast } from "sonner"
-import { deletePolicy, runPolicyAnalysis } from "@/app/(protected)/wallet/actions"
+import { runPolicyAnalysis } from "@/app/(protected)/wallet/actions"
 import DashboardTour from '@/components/onboarding/DashboardTour'
 import { dismissTour } from '@/app/onboarding/actions'
 import { useIsMobile } from "@/hooks/useResponsive"
 import { MobileAppShell } from "@/components/layout/MobileAppShell"
 import { BatchUploadModal } from "@/components/wallet/BatchUploadModal"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
+import { DeletePolicyDialog } from "@/components/wallet/DeletePolicy"
 import { PolicyComparison } from "@/components/wallet/PolicyComparison"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
@@ -52,6 +53,9 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
     // AI-processing consent: policy awaiting analysis while the consent modal is open
     const [consentPendingPolicyId, setConsentPendingPolicyId] = React.useState<string | null>(null)
     const [analysisUpgradeOpen, setAnalysisUpgradeOpen] = React.useState(false)
+    // Policy pending deletion — drives the branded confirm dialog (replaced a
+    // native confirm() that had no loading state and ignored the design system).
+    const [deletePolicyId, setDeletePolicyId] = React.useState<string | null>(null)
 
     const runAnalysis = async (policyId: string) => {
         const toastId = toast.loading(t.toast.analysisStarting)
@@ -271,7 +275,7 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
-                        {t.wallet.comparePolicies || 'Compare policies'}
+                        {t.wallet.comparePolicies}
                     </button>
                 </div>
             )}
@@ -285,18 +289,13 @@ export function PolicyWalletClient({ policies, user, agent, showTour = false, ti
                 onBatchUpload={() => setIsBatchUploadOpen(true)}
                 onShareWithAgent={(policyId) => router.push(`/wallet/${policyId}/share`)}
                 onRunAnalysis={runAnalysis}
-                onDeletePolicy={async (policyId) => {
-                    if (confirm(t.toast.confirmDelete)) {
-                        const toastId = toast.loading(t.toast.policyDeleting)
-                        const result = await deletePolicy(policyId)
-                        if (result.error) {
-                            toast.error(mapWalletErrorToMessage(result.error, t, "deletePolicy"), { id: toastId })
-                        } else {
-                            toast.success(t.toast.policyDeleted, { id: toastId })
-                            router.refresh()
-                        }
-                    }
-                }}
+                onDeletePolicy={(policyId) => setDeletePolicyId(policyId)}
+            />
+
+            <DeletePolicyDialog
+                policyId={deletePolicyId ?? ''}
+                open={deletePolicyId !== null}
+                onOpenChange={(o) => { if (!o) setDeletePolicyId(null) }}
             />
 
             <BatchUploadModal
