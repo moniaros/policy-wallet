@@ -24,6 +24,8 @@ const OPEN_DELETION_STATUSES = ["requested", "in_review", "approved", "processin
 // verifyAdminRole + logAdminAction moved to lib/admin/admin-guard.ts (shared
 // with the /admin/plans and /admin/partners action files).
 import { logAdminAction, verifyAdminRole } from "@/lib/admin/admin-guard"
+import { z } from "zod"
+import { createAdminClient, getSupabaseAuthUserByEmail } from "@/lib/supabase/admin"
 
 /**
  * DASHBOARD METRICS
@@ -337,57 +339,99 @@ export async function getUserDetails(userId: string) {
     }
 }
 
-const VALID_ROLES = new Set(["policyholder", "agent", "admin"])
+const VALID_ROLES = ["policyholder", "agent", "admin"] as const
+const changeUserRoleSchema = z.object({
+    userId: z.string().min(1),
+    newRole: z.string().min(1),
+})
 
-export async function changeUserRole(userId: string, newRole: string) {
+export type ChangeUserRoleResult =
+    | { ok: true; jwtSynced: true }
+    | { ok: false; error: "INVALID_INPUT" | "INVALID_ROLE" | "USER_NOT_FOUND" | "DB_UPDATE_FAILED" | "ROLE_SAVED_JWT_SYNC_FAILED" }
+
+export async function changeUserRole(userId: string, newRole: string): Promise<ChangeUserRoleResult> {
     const admin = await verifyAdminRole()
+
+    const parsed = changeUserRoleSchema.safeParse({ userId, newRole })
+    if (!parsed.success) {
+        return { ok: false, error: "INVALID_INPUT" }
+    }
 
     // The roles column is a comma-separated string checked all over the
     // codebase — an arbitrary value here (typo, junk, embedded substring)
     // would silently corrupt every downstream role check.
-    const normalizedRoles = newRole
+    const normalizedRoles = parsed.data.newRole
         .split(",")
         .map((r) => r.trim())
         .filter(Boolean)
     if (
         normalizedRoles.length === 0 ||
-        normalizedRoles.some((r) => !VALID_ROLES.has(r))
+        normalizedRoles.some((r) => !(VALID_ROLES as readonly string[]).includes(r))
     ) {
-        throw new Error(`Invalid role value. Allowed: ${[...VALID_ROLES].join(", ")}`)
+        return { ok: false, error: "INVALID_ROLE" }
     }
     const validatedRoles = [...new Set(normalizedRoles)].join(",")
 
+    const user = await db.user.findUnique({
+        where: { id: parsed.data.userId },
+        select: { email: true, roles: true },
+    })
+    if (!user) {
+        return { ok: false, error: "USER_NOT_FOUND" }
+    }
+
     try {
-        const user = await db.user.findUnique({
-            where: { id: userId },
-            select: { email: true, roles: true }
+        await db.user.update({
+            where: { id: parsed.data.userId },
+            data: { roles: validatedRoles },
         })
-
-        if (!user) {
-            throw new Error("User not found")
-        }
-
-        // Update user role
-        const updatedUser = await db.user.update({
-            where: { id: userId },
-            data: { roles: validatedRoles }
-        })
-
-        // Log the action
-        await logAdminAction(
-            admin.id,
-            admin.email,
-            "CHANGE_USER_ROLE",
-            `Changed role for user ${user.email} from ${user.roles} to ${validatedRoles}`,
-            { userId, oldRole: user.roles, newRole: validatedRoles }
-        )
-
-        revalidatePath("/admin/users")
-        return { success: true, user: updatedUser }
     } catch (error) {
         Sentry.captureException(error)
-        throw new Error("Failed to change user role")
+        return { ok: false, error: "DB_UPDATE_FAILED" }
     }
+
+    // The DB roles string is what server-side guards read (lib/admin/admin-guard),
+    // but middleware (proxy.ts) gates /admin on the Supabase JWT
+    // user_metadata.role — so a DB-only change leaves a promoted admin bounced
+    // until someone edits Supabase by hand. Sync the JWT metadata via the
+    // service-role admin API, resolving the AUTH user by email (User.id is a
+    // Prisma cuid, NOT the Supabase auth UUID) and MERGING metadata so language /
+    // email_verified survive. Takes effect on the user's next token refresh /
+    // re-login, not for an already-open session.
+    let jwtSynced = false
+    try {
+        const authUser = await getSupabaseAuthUserByEmail(user.email)
+        if (authUser) {
+            const { error: metaError } = await createAdminClient().auth.admin.updateUserById(
+                authUser.id,
+                { user_metadata: { ...authUser.user_metadata, role: validatedRoles } }
+            )
+            if (metaError) {
+                Sentry.captureException(metaError)
+            } else {
+                jwtSynced = true
+            }
+        }
+    } catch (error) {
+        Sentry.captureException(error)
+    }
+
+    await logAdminAction(
+        admin.id,
+        admin.email,
+        "CHANGE_USER_ROLE",
+        `Changed role for user ${user.email} from ${user.roles} to ${validatedRoles}`,
+        { userId: parsed.data.userId, oldRole: user.roles, newRole: validatedRoles, jwtSynced }
+    )
+
+    revalidatePath("/admin/users")
+
+    // DB is updated either way; report the sync gap honestly so the operator can
+    // retry (which re-syncs) rather than believing the promotion fully took.
+    if (!jwtSynced) {
+        return { ok: false, error: "ROLE_SAVED_JWT_SYNC_FAILED" }
+    }
+    return { ok: true, jwtSynced: true }
 }
 
 export async function deleteUser(userId: string, reason?: string) {

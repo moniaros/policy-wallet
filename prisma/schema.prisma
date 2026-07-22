@@ -758,6 +758,12 @@ model SecurityEvent {
   @@map("security_events")
 }
 
+// NOTE (2026-07): `adminLevel` and `permissions` are NOT enforced anywhere.
+// Admin authorization is entirely role-string based — a user is an admin iff
+// `User.roles` contains "admin" (see lib/admin/admin-guard.ts `verifyAdminRole`
+// and proxy.ts). Do NOT gate any feature on these columns; they are reserved for
+// a future granular-permission model. Removing them would need a dedicated
+// (destructive) migration.
 model AdminUser {
   id          String   @id @default(cuid()) @map("admin_user_id")
   userId      String   @unique @map("user_id")

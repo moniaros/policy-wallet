@@ -55,6 +55,7 @@ export default function UsersClient({
     const [showApproveModal, setShowApproveModal] = useState(false)
     const [showRejectModal, setShowRejectModal] = useState(false)
     const [verificationReason, setVerificationReason] = useState("")
+    const [roleSelection, setRoleSelection] = useState("policyholder")
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault()
@@ -248,6 +249,13 @@ export default function UsersClient({
                                                 <button
                                                     onClick={() => {
                                                         setSelectedUser(user)
+                                                        setRoleSelection(
+                                                            user.roles.includes("admin")
+                                                                ? "admin"
+                                                                : user.roles.includes("agent")
+                                                                    ? "agent"
+                                                                    : "policyholder"
+                                                        )
                                                         setShowRoleModal(true)
                                                     }}
                                                     className="p-2 text-primary dark:text-mint hover:bg-primary-tint dark:hover:bg-primary/15 rounded-lg transition-colors"
@@ -397,11 +405,11 @@ export default function UsersClient({
                                     if (!selectedUser.agentProfile) return
                                     const res = await approveAgent(selectedUser.agentProfile.id, verificationReason)
                                     if (res?.success) {
-                                        toast.success("Agent approved")
+                                        toast.success("Agent approved") // i18n-hardcoded-ignore
                                         setShowApproveModal(false)
                                         router.refresh()
                                     } else {
-                                        toast.error("Failed to approve")
+                                        toast.error("Failed to approve") // i18n-hardcoded-ignore
                                     }
                                 }}
                                 className="px-4 py-2 bg-primary text-white dark:text-[#1A2420] rounded hover:bg-primary-hover"
@@ -436,20 +444,75 @@ export default function UsersClient({
                             </button>
                             <button
                                 onClick={async () => {
-                                    if (!verificationReason) return toast.error("Reason is required")
+                                    if (!verificationReason) return toast.error("Reason is required") // i18n-hardcoded-ignore
                                     if (!selectedUser.agentProfile) return
                                     const res = await rejectAgent(selectedUser.agentProfile.id, verificationReason)
                                     if (res?.success) {
-                                        toast.success("Agent rejected")
+                                        toast.success("Agent rejected") // i18n-hardcoded-ignore
                                         setShowRejectModal(false)
                                         router.refresh()
                                     } else {
-                                        toast.error("Failed to reject")
+                                        toast.error("Failed to reject") // i18n-hardcoded-ignore
                                     }
                                 }}
                                 className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
                             >
                                 Reject
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Role Modal */}
+            {showRoleModal && selectedUser && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-stone-800 rounded-lg max-w-md w-full p-6">
+                        <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-2">Change Role</h2>
+                        <p className="text-stone-600 dark:text-stone-400 mb-4">
+                            {selectedUser.name || selectedUser.email} — current role:{" "}
+                            <span className="font-medium">{selectedUser.roles}</span>
+                        </p>
+                        <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">
+                            New role
+                        </label>
+                        <select
+                            className="w-full p-2 border rounded mb-2 dark:bg-stone-700 dark:border-stone-600 dark:text-white"
+                            value={roleSelection}
+                            onChange={e => setRoleSelection(e.target.value)}
+                        >
+                            <option value="policyholder">Policyholder</option>
+                            <option value="agent">Agent</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                        <p className="text-xs text-stone-500 dark:text-stone-400 mb-4">
+                            Also syncs the user&apos;s login session role — it takes effect the next time they sign in.
+                        </p>
+                        <div className="flex justify-end gap-2">
+                            <button
+                                onClick={() => setShowRoleModal(false)}
+                                className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={async () => {
+                                    const res = await changeUserRole(selectedUser.id, roleSelection)
+                                    if (res.ok) {
+                                        toast.success("Role updated") // i18n-hardcoded-ignore
+                                        setShowRoleModal(false)
+                                        router.refresh()
+                                    } else if (res.error === "ROLE_SAVED_JWT_SYNC_FAILED") {
+                                        toast.warning("Role saved, but the login session didn't sync. Ask the user to sign out and back in, or retry.") // i18n-hardcoded-ignore
+                                        setShowRoleModal(false)
+                                        router.refresh()
+                                    } else {
+                                        toast.error("Failed to change role") // i18n-hardcoded-ignore
+                                    }
+                                }}
+                                className="px-4 py-2 bg-primary text-white dark:text-[#1A2420] rounded hover:bg-primary-hover disabled:opacity-50"
+                            >
+                                Save
                             </button>
                         </div>
                     </div>
