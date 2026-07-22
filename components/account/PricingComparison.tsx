@@ -130,25 +130,31 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
 
             {/* Billing toggle — drives the checkout's billingPeriod, not just the price label. */}
             <div className="flex justify-center mb-12">
-                <div className="bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl flex items-center relative">
+                <div className="bg-muted p-1 rounded-2xl flex items-center relative" role="radiogroup" aria-label={copy.headings.pricing.badge[language]}>
                     <button
+                        type="button"
+                        role="radio"
+                        aria-checked={billingPeriod === 'monthly'}
                         onClick={() => selectBillingPeriod('monthly')}
-                        className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all relative z-10 ${billingPeriod === 'monthly'
-                            ? 'text-slate-900 dark:text-white shadow-sm bg-white dark:bg-slate-700'
-                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
+                        className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all relative z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${billingPeriod === 'monthly'
+                            ? 'text-foreground shadow-sm bg-card'
+                            : 'text-muted-foreground hover:text-foreground'
                             }`}
                     >
                         {copy.billing.monthly[language]}
                     </button>
                     <button
+                        type="button"
+                        role="radio"
+                        aria-checked={billingPeriod === 'annual'}
                         onClick={() => selectBillingPeriod('annual')}
-                        className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all relative z-10 ${billingPeriod === 'annual'
-                            ? 'text-slate-900 dark:text-white shadow-sm bg-white dark:bg-slate-700'
-                            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700'
+                        className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all relative z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${billingPeriod === 'annual'
+                            ? 'text-foreground shadow-sm bg-card'
+                            : 'text-muted-foreground hover:text-foreground'
                             }`}
                     >
                         {copy.billing.annual[language]}
-                        <span className="absolute -top-3 -right-3 bg-primary text-white dark:text-[#1A2420] text-[9px] font-black uppercase px-2 py-0.5 rounded-full shadow-lg">
+                        <span className="absolute -top-3 -right-3 bg-primary text-primary-foreground text-[9px] font-black uppercase px-2 py-0.5 rounded-full shadow-lg">
                             -20%
                         </span>
                     </button>
@@ -156,7 +162,8 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                     {/* Animated Background */}
                     <motion.div
                         layoutId="billingToggle"
-                        className="absolute inset-y-1 rounded-xl bg-white dark:bg-slate-700 shadow-sm z-0"
+                        aria-hidden
+                        className="absolute inset-y-1 rounded-xl bg-card shadow-sm z-0"
                         initial={false}
                         transition={{ type: "spring", stiffness: 500, damping: 30 }}
                         style={{
@@ -171,6 +178,12 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                 {tiers.map((tier, index) => {
                     const isCurrent = currentPlanId === tier.id
                     const isPopular = tier.popular
+                    // Free is the floor, not a checkout target — offering "Upgrade"
+                    // to a paid user routed to a server call that always errored
+                    // ("Plan is not purchasable"). Present it as the non-actionable
+                    // base plan instead.
+                    const isFreeNonCurrent = tier.id === 'ph-free' && !isCurrent
+                    const isNeutral = isCurrent || isFreeNonCurrent
 
                     return (
                         <motion.div
@@ -179,41 +192,41 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.1 }}
                             className={`relative rounded-2xl p-6 border hover:shadow-2xl transition-all duration-300 group flex flex-col ${isPopular
-                                ? 'bg-white dark:bg-slate-900 border-primary dark:border-primary shadow-xl shadow-primary/10 scale-105 z-10'
-                                : 'bg-slate-50 dark:bg-slate-900/50 border-slate-200 dark:border-slate-800 hover:border-primary/40 dark:hover:border-primary/40'
+                                ? 'bg-card border-primary shadow-xl shadow-primary/10 scale-105 z-10'
+                                : 'bg-muted/40 border-border hover:border-primary/40'
                                 }`}
                         >
                             {tier.id === 'ph-pro' && (
-                                <div className="absolute top-0 right-0 bg-primary text-white dark:text-[#1A2420] text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-bl-2xl rounded-tr-[30px] shadow-lg z-20">
+                                <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-bl-2xl rounded-tr-[30px] shadow-lg z-20">
                                     {copy.trial.badge[language]}
                                 </div>
                             )}
 
                             {isPopular && (
-                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-white dark:text-[#1A2420] px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest shadow-lg">
-                                    {tier.badge?.[language] || 'Popular'}
+                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest shadow-lg">
+                                    {tier.badge?.[language] ?? copy.cta.upgrade[language]}
                                 </div>
                             )}
 
                             <div className="mb-6">
-                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${isPopular ? 'bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'
+                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-4 ${isPopular ? 'bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint' : 'bg-muted text-muted-foreground'
                                     }`}>
                                     <tier.icon className="w-6 h-6" />
                                 </div>
-                                <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">
+                                <h3 className="text-xl font-black text-foreground mb-2">
                                     {tier.name[language]}
                                 </h3>
-                                <p className="text-sm text-slate-500 h-10">
+                                <p className="text-sm text-muted-foreground min-h-10">
                                     {tier.description[language]}
                                 </p>
                             </div>
 
                             <div className="mb-8">
                                 <div className="flex items-baseline gap-1">
-                                    <span className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter">
+                                    <span className="text-4xl font-black text-foreground tracking-tighter">
                                         {billingPeriod === 'annual' ? tier.annual?.price[language] : tier.price[language]}
                                     </span>
-                                    <span className="text-sm font-bold text-slate-400">
+                                    <span className="text-sm font-bold text-muted-foreground">
                                         {billingPeriod === 'annual' ? tier.annual?.period[language] : tier.period[language]}
                                     </span>
                                 </div>
@@ -227,12 +240,12 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                             <div className="space-y-4 mb-8 flex-1">
                                 {tier.features.map((feature, i) => (
                                     <div key={i} className={`flex items-start gap-3 text-sm ${feature.included
-                                        ? 'text-slate-700 dark:text-slate-300'
-                                        : 'text-slate-400 line-through decoration-slate-300'
+                                        ? 'text-foreground'
+                                        : 'text-muted-foreground line-through decoration-muted-foreground/40'
                                         }`}>
                                         <div className={`mt-0.5 w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 ${feature.included
                                             ? 'bg-primary-soft dark:bg-primary/15 text-primary dark:text-mint'
-                                            : 'bg-slate-100 dark:bg-slate-800 text-slate-300'
+                                            : 'bg-muted text-muted-foreground'
                                             }`}>
                                             {feature.included ? <Check className="w-2.5 h-2.5" /> : <X className="w-2.5 h-2.5" />}
                                         </div>
@@ -243,23 +256,25 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
 
                             <button
                                 onClick={() => selectPlan(tier.id)}
-                                disabled={isCurrent || !!loadingPlanId}
-                                className={`w-full py-4 rounded-xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer ${isCurrent
-                                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-default'
+                                disabled={isNeutral || !!loadingPlanId}
+                                className={`w-full py-4 rounded-xl font-black text-xs uppercase tracking-widest transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background ${isNeutral
+                                    ? 'bg-muted text-muted-foreground cursor-default'
                                     : loadingPlanId === tier.id
-                                        ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 border-none animate-pulse'
+                                        ? 'bg-primary text-primary-foreground animate-pulse cursor-wait'
                                         : isPopular
-                                            ? 'bg-primary dark:bg-primary text-white dark:text-[#1A2420] hover:bg-primary-hover dark:hover:bg-mint shadow-lg shadow-primary/25 hover:shadow-primary/40 active:scale-95'
-                                            : 'bg-white dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-700 text-slate-900 dark:text-white hover:border-primary dark:hover:border-primary active:scale-95'
+                                            ? 'bg-primary text-primary-foreground hover:bg-primary-hover shadow-lg shadow-primary/25 hover:shadow-primary/40 active:scale-95 cursor-pointer'
+                                            : 'bg-card border-2 border-border text-foreground hover:border-primary active:scale-95 cursor-pointer'
                                     }`}
                             >
                                 {isCurrent
                                     ? copy.cta.currentPlan[language]
-                                    : loadingPlanId === tier.id
-                                        ? copy.cta.processing[language]
-                                        : (tier.id === 'ph-pro'
-                                            ? copy.trial.cta[language]
-                                            : copy.cta.upgrade[language])}
+                                    : isFreeNonCurrent
+                                        ? copy.cta.basePlan[language]
+                                        : loadingPlanId === tier.id
+                                            ? copy.cta.processing[language]
+                                            : (tier.id === 'ph-pro'
+                                                ? copy.trial.cta[language]
+                                                : copy.cta.upgrade[language])}
                             </button>
                         </motion.div>
                     )
@@ -269,32 +284,33 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
             {/* In-depth Comparison Table */}
             <div className="mt-24 mb-16 overflow-hidden">
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                    <h2 className="text-3xl font-black text-foreground tracking-tight">
                         {copy.headings.comparison.title[language]}
                     </h2>
                 </div>
 
-                <div className="overflow-x-auto rounded-2xl border border-slate-100 dark:border-slate-800">
+                <div className="overflow-x-auto rounded-2xl border border-border">
                     <table className="w-full text-left border-collapse">
+                        <caption className="sr-only">{copy.headings.comparison.title[language]}</caption>
                         <thead>
-                            <tr className="bg-slate-50 dark:bg-slate-900/50">
-                                <th className="px-8 py-6 text-sm font-black text-slate-400 uppercase tracking-widest">Feature</th>
-                                <th className="px-8 py-6 text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">Free</th>
-                                <th className="px-8 py-6 text-sm font-black text-primary dark:text-mint uppercase tracking-widest">Plus</th>
-                                <th className="px-8 py-6 text-sm font-black text-primary dark:text-mint uppercase tracking-widest">Pro</th>
+                            <tr className="bg-muted/50">
+                                <th scope="col" className="px-8 py-6 text-sm font-black text-muted-foreground uppercase tracking-widest">{copy.headings.comparison.featureColumn[language]}</th>
+                                <th scope="col" className="px-8 py-6 text-sm font-black text-foreground uppercase tracking-widest">{copy.tiers.free.name[language]}</th>
+                                <th scope="col" className="px-8 py-6 text-sm font-black text-primary dark:text-mint uppercase tracking-widest">{copy.tiers.plus.name[language]}</th>
+                                <th scope="col" className="px-8 py-6 text-sm font-black text-primary dark:text-mint uppercase tracking-widest">{copy.tiers.pro.name[language]}</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
+                        <tbody className="divide-y divide-border">
                             {comparisonFeatures.map((feat, i) => (
-                                <tr key={i} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors">
-                                    <td className="px-8 py-5 text-sm font-bold text-slate-700 dark:text-slate-300">{feat.name}</td>
+                                <tr key={i} className="hover:bg-muted/40 transition-colors">
+                                    <th scope="row" className="px-8 py-5 text-sm font-bold text-left text-foreground">{feat.name}</th>
                                     <td className="px-8 py-5">
                                         {typeof feat.free === 'string' ? (
-                                            <span className="text-sm font-bold text-slate-500">{feat.free}</span>
+                                            <span className="text-sm font-bold text-muted-foreground">{feat.free}</span>
                                         ) : feat.free ? (
                                             <Check className="w-5 h-5 text-primary dark:text-mint" />
                                         ) : (
-                                            <X className="w-5 h-5 text-slate-300" />
+                                            <X className="w-5 h-5 text-muted-foreground/50" />
                                         )}
                                     </td>
                                     <td className="px-8 py-5">
@@ -303,7 +319,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                         ) : feat.plus ? (
                                             <Check className="w-5 h-5 text-primary dark:text-mint" />
                                         ) : (
-                                            <X className="w-5 h-5 text-slate-200" />
+                                            <X className="w-5 h-5 text-muted-foreground/40" />
                                         )}
                                     </td>
                                     <td className="px-8 py-5">
@@ -312,7 +328,7 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                                         ) : feat.pro ? (
                                             <Check className="w-5 h-5 text-primary dark:text-mint" />
                                         ) : (
-                                            <X className="w-5 h-5 text-slate-200" />
+                                            <X className="w-5 h-5 text-muted-foreground/40" />
                                         )}
                                     </td>
                                 </tr>
@@ -322,16 +338,16 @@ export function PricingComparison({ currentPlanId, onSelectPlan, loadingPlanId }
                 </div>
             </div>
 
-            <div className="mt-16 bg-slate-50 dark:bg-slate-900/50 rounded-2xl p-8 md:p-12 text-center relative overflow-hidden">
+            <div className="mt-16 bg-muted/50 rounded-2xl p-8 md:p-12 text-center relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full -mr-32 -mt-32"></div>
-                <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-8 relative z-10">
+                <h2 className="text-2xl font-black text-foreground mb-8 relative z-10">
                     {copy.headings.faq.title[language]}
                 </h2>
                 <div className="grid md:grid-cols-2 gap-8 text-left max-w-4xl mx-auto relative z-10">
                     {copy.faq.map((item, i) => (
                         <div key={i}>
-                            <h4 className="font-bold text-slate-900 dark:text-white mb-2">{item.question[language]}</h4>
-                            <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+                            <h4 className="font-bold text-foreground mb-2">{item.question[language]}</h4>
+                            <p className="text-sm text-muted-foreground leading-relaxed">
                                 {item.answer[language]
                                     .replace('{starterAnnual}', formatEur(starterFacts.annualEur))
                                     .replace('{plusAnnual}', formatEur(plusFacts.annualEur))}

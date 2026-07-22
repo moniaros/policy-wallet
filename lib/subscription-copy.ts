@@ -132,6 +132,7 @@ export const subscriptionCopy = {
     cta: {
         upgrade: { el: 'Αναβάθμιση', en: 'Upgrade' },
         processing: { el: 'ΠΕΡΙΜΕΝΕΤΕ...', en: 'PROCESSING...' },
+        basePlan: { el: 'Βασικό πλάνο', en: 'Base plan' },
         upgradeToPlus: { el: 'Αναβάθμιση σε Starter', en: 'Upgrade to Starter' },
         upgradeToPro: { el: 'Αναβάθμιση σε Plus', en: 'Upgrade to Plus' },
         getStarted: { el: 'Ξεκινήστε Δωρεάν', en: 'Get Started Free' },
@@ -166,6 +167,10 @@ export const subscriptionCopy = {
             title: {
                 el: 'Σύγκριση Χαρακτηριστικών',
                 en: 'Feature Comparison'
+            },
+            featureColumn: {
+                el: 'Χαρακτηριστικό',
+                en: 'Feature'
             },
         },
         faq: {
