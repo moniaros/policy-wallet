@@ -69,7 +69,7 @@ Retire `.arc-card` + `.arc-btn-*` (map to `.pw-*`); fold in and delete shadcn `B
 
 Every batch ran the CI-blocking set green: `type-check`, `lint`, `lint:i18n-changed`, `lint:utf8`, `lint:encoding`, `audit:api-auth`, `vitest --run tests/unit` (1227), and the production `build`. No API routes changed, so the route-policy inventory is untouched. New i18n keys were added to **both** `lib/i18n/translations/{el,en}.ts`.
 
-**Not yet run — local follow-up:** Playwright. E2E requires the local-dev Supabase (`global-setup` refuses a non-local target). Before merging, run:
+**Not run — BLOCKED, not skipped:** Playwright. `tests/global-setup.ts` provisions its users against the dev Supabase in `.env.local`, and that project (`db.lzqvtvjggylcujenlelh.supabase.co`) **no longer resolves in DNS** — it is the idle project STATUS flags under Housekeeping, now paused or deleted. Every project aborts in global setup, so this is a pre-existing environment problem, unrelated to these changes. Restore or repoint the dev database first, then run:
 
 ```bash
 npx playwright test --project=chromium --project=agent-chromium
