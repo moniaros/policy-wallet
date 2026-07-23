@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { AnimatePresence, motion } from "framer-motion"
 import { usePathname } from "next/navigation"
+import { useLanguage } from "@/contexts/LanguageContext"
 
 const DISMISS_KEY = "pwa_prompt_dismissed_at"
 const SNOOZE_MS = 7 * 24 * 60 * 60 * 1000
@@ -29,6 +30,7 @@ function shouldHidePrompt(pathname: string | null) {
 }
 
 export function InstallPrompt() {
+    const { t } = useLanguage()
     const pathname = usePathname()
     const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
     const [showPrompt, setShowPrompt] = useState(false)
@@ -121,8 +123,8 @@ export function InstallPrompt() {
                             <Download className="w-4 h-4" />
                         </div>
                         <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-sm text-stone-900 dark:text-white">Install PolicyWallet</h3>
-                            <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">Faster access from your home screen.</p>
+                            <h3 className="font-bold text-sm text-stone-900 dark:text-white">{t.notifications.pwaInstallTitle}</h3>
+                            <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">{t.notifications.pwaInstallSubtitle}</p>
                         </div>
                         <button
                             onClick={dismissPrompt}
@@ -136,7 +138,7 @@ export function InstallPrompt() {
                     {isIOS ? (
                         <div className="mt-3 text-xs flex items-start gap-2 p-2.5 bg-stone-50 dark:bg-stone-800/70 rounded-lg text-stone-600 dark:text-stone-300">
                             <Share className="w-4 h-4 mt-0.5" />
-                            <span>Tap Share and choose Add to Home Screen.</span>
+                            <span>{t.notifications.pwaInstallIos}</span>
                         </div>
                     ) : (
                         <Button
@@ -144,7 +146,7 @@ export function InstallPrompt() {
                             className="w-full mt-3 gap-2 h-9 text-sm font-semibold"
                         >
                             <Download className="w-4 h-4" />
-                            Install App
+                            {t.notifications.pwaInstallCta}
                         </Button>
                     )}
                 </Card>

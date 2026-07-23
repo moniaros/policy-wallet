@@ -1005,6 +1005,11 @@ export const el = {
     },
 
     notifications: {
+        backToNotifications: 'Πίσω στις ειδοποιήσεις',
+        pwaInstallTitle: 'Εγκατάσταση PolicyWallet',
+        pwaInstallSubtitle: 'Ταχύτερη πρόσβαση από την αρχική οθόνη σας.',
+        pwaInstallCta: 'Εγκατάσταση εφαρμογής',
+        pwaInstallIos: 'Πατήστε Κοινή χρήση και επιλέξτε «Προσθήκη στην αρχική οθόνη».',
         communicationCenter: 'Κέντρο επικοινωνίας',
         markAllRead: 'Σήμανση όλων ως αναγνωσμένα',
         noNotificationsYet: 'Δεν υπάρχουν ειδοποιήσεις ακόμη',

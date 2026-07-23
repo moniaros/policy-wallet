@@ -1008,6 +1008,11 @@ export const en: TranslationKeys = {
     },
 
     notifications: {
+        backToNotifications: 'Back to notifications',
+        pwaInstallTitle: 'Install PolicyWallet',
+        pwaInstallSubtitle: 'Faster access from your home screen.',
+        pwaInstallCta: 'Install app',
+        pwaInstallIos: 'Tap Share and choose Add to Home Screen.',
         communicationCenter: 'Communication centre',
         markAllRead: 'Mark all read',
         noNotificationsYet: 'No notifications yet',

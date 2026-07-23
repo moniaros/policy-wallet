@@ -9,6 +9,7 @@ import { ThreadActionPanel } from "@/components/collaboration/ThreadActionPanel"
 import { collaborationService } from "@/lib/services/collaboration.service"
 import type { DocumentRequestData, ProposalData } from "@/components/collaboration/types"
 
+import { getTranslations } from "@/lib/i18n"
 export default async function CollaborationThreadPage({
     params,
 }: {
@@ -18,6 +19,7 @@ export default async function CollaborationThreadPage({
     const { dbUser } = await getAuthenticatedUser()
 
     const thread = await collaborationService.getThreadDetail(dbUser.id, dbUser.roles, id)
+    const t = getTranslations(dbUser.preferredLanguage === "en" ? "en" : "el")
     if (!thread) notFound()
 
     const viewerRole =
@@ -91,7 +93,7 @@ export default async function CollaborationThreadPage({
                     href="/notifications"
                     className="rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
-                    Back to notifications
+                    {t.notifications.backToNotifications}
                 </Link>
             </div>
 
