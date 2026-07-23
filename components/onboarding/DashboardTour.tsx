@@ -93,6 +93,18 @@ export default function DashboardTour({ onComplete }: DashboardTourProps) {
 
     const stepData = steps[currentStep]
 
+    // A coach-mark tour is not a modal — trapping focus would defeat its purpose
+    // of pointing AT the page. What it did lack was any keyboard dismissal, and
+    // step changes were silent to screen readers.
+    useEffect(() => {
+        if (!isVisible) return
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') onComplete()
+        }
+        document.addEventListener('keydown', onKeyDown)
+        return () => document.removeEventListener('keydown', onKeyDown)
+    }, [isVisible, onComplete])
+
     if (!isVisible) return null
 
     return (
@@ -155,6 +167,9 @@ export default function DashboardTour({ onComplete }: DashboardTourProps) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 key={currentStep}
+                role="dialog"
+                aria-live="polite"
+                aria-label={stepData.title[lang]}
                 className="absolute pointer-events-auto bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-2xl max-w-sm border border-slate-200 dark:border-slate-800"
                 style={{
                     top: stepData.position === 'bottom'
