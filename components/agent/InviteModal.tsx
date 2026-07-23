@@ -18,11 +18,18 @@ export function InviteModal({
     const [email, setEmail] = useState('')
     const [scope, setScope] = useState<AccessScope>('upload_only')
     const [sending, setSending] = useState(false)
+    const [emailError, setEmailError] = useState(false)
 
     if (!isOpen) return null
 
     const handleSend = async () => {
-        if (!email) return
+        // Button onClick, not a form submit, so type="email" never validates —
+        // an agent could send an invite to a mistyped address that goes nowhere.
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+            setEmailError(true)
+            return
+        }
+        setEmailError(false)
         setSending(true)
         await onSendInvite?.(email, scope)
         setSending(false)
@@ -52,10 +59,17 @@ export function InviteModal({
                             <input id="invitemodal-f1"
                                 type="email"
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                onChange={(e) => { setEmail(e.target.value); if (emailError) setEmailError(false) }}
+                                aria-invalid={emailError || undefined}
+                                aria-describedby={emailError ? "invitemodal-f1-error" : undefined}
                                 placeholder="customer@example.com"
                                 className="pw-input tracking-tight"
                             />
+                            {emailError && (
+                                <p id="invitemodal-f1-error" role="alert" className="mt-2 pl-2 text-caption font-semibold text-red-600 dark:text-red-400">
+                                    {t.invite.emailInvalid}
+                                </p>
+                            )}
                         </div>
 
                         <div>

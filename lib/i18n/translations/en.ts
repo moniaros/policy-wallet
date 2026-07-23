@@ -1537,19 +1537,20 @@ export const en: TranslationKeys = {
     },
 
     invite: {
-        growthProtocol: 'Growth Protocol',
+        growthProtocol: 'Client invitation',
         title: 'Invite',
-        subtitle: 'Collaborator.',
-        desc: 'Send a magic link to invite a customer to their PolicyWallet.',
-        emailLabel: 'Customer Email',
-        contextLabel: 'Initial Shared Context',
-        uploadOnly: 'Upload-Only',
-        uploadDesc: 'Agent uploads policies to customer wallet.',
-        fullPortfolio: 'Full Portfolio',
-        portfolioDesc: 'Mutual visibility into all customer policies.',
+        subtitle: 'a client.',
+        desc: 'Send a secure link to invite a client to their PolicyWallet.',
+        emailLabel: 'Client email',
+        emailInvalid: 'Enter a valid email address.',
+        contextLabel: 'Access level',
+        uploadOnly: 'Upload only',
+        uploadDesc: 'You upload policies to the client’s wallet.',
+        fullPortfolio: 'Full portfolio',
+        portfolioDesc: 'Mutual visibility into all the client’s policies.',
         cancel: 'Cancel',
-        dispatching: 'Dispatching...',
-        dispatch: 'Dispatch Magic Link'
+        dispatching: 'Sending...',
+        dispatch: 'Send invitation'
     },
 
     agentModals: {

@@ -1535,19 +1535,20 @@ export const el = {
     },
 
     invite: {
-        growthProtocol: 'Πρωτόκολλο Ανάπτυξης',
+        growthProtocol: 'Πρόσκληση πελάτη',
         title: 'Πρόσκληση',
-        subtitle: 'Συνεργάτη.',
-        desc: 'Στείλτε έναν μαγικό σύνδεσμο για να προσκαλέσετε έναν πελάτη στο PolicyWallet του.',
-        emailLabel: 'Email Πελάτη',
-        contextLabel: 'Αρχικό κοινό πλαίσιο',
+        subtitle: 'πελάτη.',
+        desc: 'Στείλτε έναν ασφαλή σύνδεσμο για να προσκαλέσετε έναν πελάτη στο PolicyWallet του.',
+        emailLabel: 'Email πελάτη',
+        emailInvalid: 'Εισαγάγετε μια έγκυρη διεύθυνση email.',
+        contextLabel: 'Επίπεδο πρόσβασης',
         uploadOnly: 'Μόνο μεταφόρτωση',
-        uploadDesc: 'Ο πράκτορας μεταφορτώνει συμβόλαια στο πορτοφόλι του πελάτη.',
-        fullPortfolio: 'Πλήρες Χαρτοφυλάκιο',
+        uploadDesc: 'Ανεβάζετε συμβόλαια στο πορτοφόλι του πελάτη.',
+        fullPortfolio: 'Πλήρες χαρτοφυλάκιο',
         portfolioDesc: 'Αμοιβαία ορατότητα σε όλα τα συμβόλαια του πελάτη.',
         cancel: 'Ακύρωση',
         dispatching: 'Αποστολή...',
-        dispatch: 'Αποστολή μαγικού συνδέσμου'
+        dispatch: 'Αποστολή πρόσκλησης'
     },
 
     agentModals: {
