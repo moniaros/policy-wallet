@@ -13,6 +13,7 @@ import { resolveUserEntitlements } from "@/lib/subscription-entitlements"
 import { normalizeRemindersSent } from "@/lib/wallet/policy-detail"
 import { OPEN_GAP_STATUSES } from "@/lib/wallet/gap-status"
 import { FREE_LIFETIME_QUESTIONS } from "@/lib/monetization/feature-gates"
+import { resolveGlossaryHint } from "@/lib/glossary/hints"
 import {
     computeReportUnlocked,
     dedupeGaps,
@@ -273,6 +274,7 @@ export default async function PolicyDetailPage({
             canReviewExtraction={isAgentRole(dbUser.roles) && access.canWrite}
             relationshipId={relationshipId}
             t={t}
+            exclusionHint={resolveGlossaryHint('exairesi', language, t.wallet.policyDetailsPage.exclusionsTitle)}
             tier={entitlements.tier}
             tierLimits={entitlements.limits}
             relatedRecommendations={relatedRecommendations}

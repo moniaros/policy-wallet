@@ -47,6 +47,7 @@ import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { resolveInsurerDisplay } from "@/lib/wallet/insurer-registry"
 import { FREE_GAP_PREVIEW_COUNT, type GapReportItem } from "@/lib/wallet/gap-report"
 
+import type { GlossaryHintData } from "@/components/insurance/GlossaryHint"
 // Trigger J: savings-report export (Pro). Bilingual copy kept as a pair map
 // so the changed-file i18n lint stays clean.
 const EXPORT_COPY = {
@@ -82,6 +83,9 @@ const TYPE_SECTION_KEYS: Record<string, readonly string[]> = {
 
 interface PolicyDetailsClientProps {
     policy: any
+    /** Inline "Εξαίρεση" definition, resolved on the server so the glossary
+        module never reaches the client bundle. */
+    exclusionHint?: GlossaryHintData | null
     serializedShares: any[]
     aiUsageStats: {
         count: number
@@ -138,6 +142,7 @@ export function PolicyDetailsClient({
     reportUnlocked = true,
     mergeRequest = null,
     canReviewExtraction = false,
+    exclusionHint = null,
 }: PolicyDetailsClientProps) {
     const locale = t.common?.locale || "en-GB"
     const lang: "el" | "en" = locale.startsWith("el") ? "el" : "en"
@@ -771,6 +776,7 @@ export function PolicyDetailsClient({
                                         riskLevels: detailsCopy.riskLevels,
                                     }}
                                     disclaimer={t.coverageDetails.exclusionsDisclaimer}
+                                    termHint={exclusionHint}
                                 />
                             </section>
                         )}

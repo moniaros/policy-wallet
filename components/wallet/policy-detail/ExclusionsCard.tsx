@@ -21,6 +21,7 @@ import {
 
 import { pickLang, type FinePrintClause, type NotableCondition } from "@/lib/wallet/policy-detail"
 
+import { GlossaryHint, type GlossaryHintData } from "@/components/insurance/GlossaryHint"
 interface ExclusionsCardProps {
     exclusions: string[]
     conditions: NotableCondition[]
@@ -43,6 +44,8 @@ interface ExclusionsCardProps {
         riskLevels: Record<string, string>
     }
     disclaimer: string
+    /** Inline definition of "Εξαίρεση", resolved server-side. */
+    termHint?: GlossaryHintData | null
 }
 
 const CONDITION_ICON: Record<string, typeof Clock> = {
@@ -87,7 +90,7 @@ const EXCLUSIONS_PREVIEW_COUNT = 8
  * (waiting periods, deadlines, sub-limits) and fine-print clauses that
  * commonly surprise policyholders at claim time.
  */
-export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, disclaimer }: ExclusionsCardProps) {
+export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, disclaimer, termHint }: ExclusionsCardProps) {
     const [showAllFinePrint, setShowAllFinePrint] = useState(false)
     const [showAllExclusions, setShowAllExclusions] = useState(false)
 
@@ -103,7 +106,11 @@ export function ExclusionsCard({ exclusions, conditions, finePrint, lang, copy, 
         <div className="pw-card pw-pad sm:p-7">
             <div className="mb-1 flex items-center gap-2">
                 <ShieldOff className="h-4 w-4 text-black/45 dark:text-white/50" />
-                <h2 className="text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">{copy.exclusionsTitle}</h2>
+                <h2 className="text-sm font-black uppercase tracking-widest text-black/60 dark:text-white/70">
+                    {/* The heading itself explains the term — "Εξαίρεση" decides
+                        what does NOT get paid, and was shown as a bare label. */}
+                    {termHint ? <GlossaryHint hint={termHint} /> : copy.exclusionsTitle}
+                </h2>
             </div>
             <p className="mb-5 text-xs text-black/55 dark:text-white/60">{copy.exclusionsSubtitle}</p>
 
