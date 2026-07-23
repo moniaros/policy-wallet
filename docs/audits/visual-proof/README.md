@@ -36,3 +36,28 @@ at 375.
 Still owed: a full authenticated render of the actual routes at these widths,
 which needs the pooler credentials and the `agent-viewport-overflow.spec.ts`
 already committed for that purpose.
+
+## Authenticated run (23 Jul)
+
+The dev-Supabase pooler password was in `.env.local` all along (the `db.*`
+direct host is IPv6-only and unreachable from this machine, but the same
+password works through the IPv4 pooler). So `agent-viewport-overflow.spec.ts`
+WAS run against the live authenticated agent session:
+
+- 36/38 passed first time; the two failures were **real bugs the harness could
+  not have caught**: `/customers` overflowed horizontally at 375px and 390px,
+  because its three header actions (Import / Add client / Upload policy) sat in a
+  non-wrapping `flex` row. Fixed (stack on mobile, inline from sm); both cases
+  now pass, and a direct measurement of the authenticated page reports 0px
+  overflow.
+- `customers-375-authenticated.png` is that real render — live data, real chrome,
+  the actual route — not a harness.
+
+Run it yourself:
+```bash
+PW=$(grep -E '^DATABASE_URL=' .env.local | sed -E 's/.*postgres:([^@]+)@.*/\1/')
+export DATABASE_URL="postgresql://postgres.lzqvtvjggylcujenlelh:${PW}@aws-1-eu-west-3.pooler.supabase.com:5432/postgres?connection_limit=2&pool_timeout=60"
+export DIRECT_URL="$DATABASE_URL"
+export PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+npx playwright test --project=agent-chromium agent-viewport-overflow --workers=3
+```

@@ -112,27 +112,32 @@ export function CustomersClient({ initialCustomers, portalStats }: Props) {
                             {cust_t.subtitle}
                         </p>
                     </div>
-                    <div className="flex gap-3">
+                    {/* Three icon+label actions overflowed a 375px phone in a
+                        non-wrapping row (caught by the authenticated 375px E2E).
+                        On mobile they go full-width and stack; from sm they sit
+                        inline. `min-w-0` lets them shrink rather than push the
+                        page wide. */}
+                    <div className="grid grid-cols-1 gap-2 sm:flex sm:gap-3">
                         <button
                             onClick={() => setIsBulkImportOpen(true)}
-                            className="pw-secondary-button"
+                            className="pw-secondary-button min-w-0 justify-center"
                         >
-                            <Upload className="w-4 h-4" />
-                            <span>{cust_t.import}</span>
+                            <Upload className="w-4 h-4 shrink-0" />
+                            <span className="truncate">{cust_t.import}</span>
                         </button>
                         <button
                             onClick={() => setIsAddModalOpen(true)}
-                            className="pw-secondary-button"
+                            className="pw-secondary-button min-w-0 justify-center"
                         >
-                            <User className="w-4 h-4" />
-                            <span>{cust_t.addClient}</span>
+                            <User className="w-4 h-4 shrink-0" />
+                            <span className="truncate">{cust_t.addClient}</span>
                         </button>
                         <button
                             onClick={() => setIsUploadModalOpen(true)}
-                            className="pw-primary-button"
+                            className="pw-primary-button min-w-0 justify-center"
                         >
-                            <FileText className="w-4 h-4" />
-                            <span>{cust_t.uploadPolicy}</span>
+                            <FileText className="w-4 h-4 shrink-0" />
+                            <span className="truncate">{cust_t.uploadPolicy}</span>
                         </button>
                     </div>
                 </header>
