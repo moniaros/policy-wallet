@@ -6,6 +6,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { Car, Home, HeartPulse, Shield, PawPrint, FileQuestion } from "lucide-react"
 import { useDialog } from "@/hooks/useDialog"
 
+import { Alert } from "@/components/ui/Alert"
 interface QuestionnaireSenderProps {
     relationshipId: string
     customerName: string
@@ -213,9 +214,7 @@ export function QuestionnaireSender({ relationshipId, customerName, open, onOpen
                                 </div>
                             )}
                             {status === 'error' && (
-                                <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-2xl text-sm font-bold animate-in fade-in slide-in-from-top-2">
-                                    {t.sendFailed}
-                                </div>
+                                <Alert variant="error" className="mt-6 animate-in fade-in slide-in-from-top-2">{t.sendFailed}</Alert>
                             )}
                         </div>
 

@@ -279,6 +279,41 @@ pre {
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Mobile form-control floor.
+     ------------------------------------------------------------------
+     Only 2 of ~215 text-entry controls in the app go through the shared
+     form kit; the rest are hand-written, so per-component fixes would be
+     re-broken by the next page someone writes. These two rules enforce the
+     floor at the base layer instead, where a control cannot opt out of it
+     by accident.
+
+     1. iOS Safari ZOOMS THE WHOLE PAGE when a control smaller than 16px
+        receives focus, and does not zoom back out. Seven inputs and one
+        select carried `text-sm`/`text-xs` and would do this on every
+        focus. Forcing 16px on small screens costs nothing visually — the
+        difference between 14px and 16px on a phone is invisible next to a
+        viewport that never comes back.
+     2. A 44px minimum keeps a control tappable. Both are scoped to small
+        screens: on a pointer device compact controls are fine, and this
+        way no desktop layout shifts.
+
+     Checkboxes and radios are excluded — they get their real target from
+     the row wrapper in components/ui/form/Choice.tsx, and a 44px box would
+     look clumsy. */
+  @media (max-width: 767px) {
+    input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]),
+    select,
+    textarea {
+      font-size: 16px;
+      min-height: 44px;
+    }
+
+    textarea {
+      /* min-height above would otherwise fight an author's `rows`. */
+      min-height: 5rem;
+    }
+  }
 }
 
 @layer utilities {

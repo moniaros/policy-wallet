@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { CheckCircle2, Save, AlertCircle } from "lucide-react"
 
+import { Alert } from "@/components/ui/Alert"
 interface Question {
     id: string
     type: 'text' | 'boolean' | 'number' | 'select'
@@ -214,10 +215,7 @@ export function QuestionnaireForm({ instanceId, templateName, questions }: Quest
                 </div>
 
                 {submitError && (
-                    <div className="mt-8 flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-900/40 dark:bg-red-900/20 dark:text-red-300">
-                        <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                        {t.tasks.submitError}
-                    </div>
+                    <Alert variant="error" className="mt-8">{t.tasks.submitError}</Alert>
                 )}
 
                 <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 md:flex-row">
