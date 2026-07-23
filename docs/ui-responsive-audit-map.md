@@ -29,6 +29,11 @@
 | All 4 native `confirm()`s (Cluster F destructive half) | `6274954` — new shared `components/ui/ConfirmDialog.tsx` on top of `Modal`; zero `window.confirm` remain |
 | Sign-in bilingual literals ("worst file in repo") | `6274954` — 30 strings → `t.auth.signInPage` (el+en); 0 ternaries left |
 | Admin route states (Cluster G) | `915d82d` — see correction 3; scoped admin boundary + table-shaped skeleton |
+| Locale drift + hydration-unsafe dates (`lib/i18n/format.ts`) | `1cf83ea` — see correction 5; new format module pinning locale AND Europe/Athens; 41 `en-US` sites normalized; 22 bare `toLocale*` calls migrated |
+| Cluster F — modal focus traps | `5e604d9`, `f054024`, `609baed` — new `AdminDialog` (6 admin overlays), traps on the destructive + wallet dialogs, menu semantics on the dropdowns, Escape + announcement on the tour |
+| Cluster H — polling | `448d349` — new `hooks/usePolling.ts` (backoff + hidden-tab pause); adopted by the wallet and upload pollers, AnalysisCard guarded in place |
+| Cluster D — form kit | `20ccffe` — new `components/ui/form/` (Field + Input/Textarea/Select with automatic aria-invalid/describedby); AddPolicyClient's toast-only validation now inline |
+| Cluster E — table keyboard access | `4838d62` — new `TableShell`; 6 tables adopted; BulkImportModal's clipped preview now scrolls |
 
 ### Corrections — rows that are wrong as written
 
@@ -38,7 +43,9 @@
 
 3. **Route states are NOT missing — they are inherited.** The map says the 20+ listed routes (incl. all 14 admin ones) "show blank screens / uncaught errors" and that an error "bubbles to the root and drops the shell". Both `app/(protected)/error.tsx` **and** `app/(protected)/loading.tsx` exist, so every protected route already has a localized `RouteError` boundary that keeps the shell, and a skeleton during navigation. The real — much smaller — issue is that those boundaries are not *scoped*: a failure on one screen replaces the whole protected content area. Severity: **L/M**, not H. Acted on where it pays: `/admin` now has its own `error.tsx` (recovery lands on `/admin/dashboard` rather than sending an admin through the `/dashboard` redirect chain) and a table-shaped `loading.tsx`. Blanketing the other ~25 routes with near-identical files was judged churn and deliberately skipped.
 
-4. **The wallet fork had a second layer the map missed.** Removing `if (isMobile) return <MobileAppShell/>` mounts the five modals, but `PolicyCard` **accepted `onShare`/`onViewDocuments`/`onRunAnalysis`/`onDelete` and silently ignored all four** — it destructured only `{ policy, onView, id }`. Those actions existed solely in `PolicyTable`'s desktop-only context menu, so un-forking alone would have left the modals mounted with nothing able to open them. Both layers are fixed in `6fa6074`.
+4. **`en-GB` is not drift — `en-US` is.** The map reads "`en-US` in 10+ files vs hardcoded `en-GB` on the home dashboard", implying en-GB is the outlier. `t.common.locale` in `translations/en.ts` **declares `en-GB`**, and 25 sites already used it across the wallet, agent and legal layers against 41 using `en-US`. For a euro-denominated, day-month-year market en-GB is also the correct answer, so the 41 were normalized to it — not the reverse.
+
+5. **The wallet fork had a second layer the map missed.** Removing `if (isMobile) return <MobileAppShell/>` mounts the five modals, but `PolicyCard` **accepted `onShare`/`onViewDocuments`/`onRunAnalysis`/`onDelete` and silently ignored all four** — it destructured only `{ policy, onView, id }`. Those actions existed solely in `PolicyTable`'s desktop-only context menu, so un-forking alone would have left the modals mounted with nothing able to open them. Both layers are fixed in `6fa6074`.
 
 ### Decisions taken
 
@@ -47,7 +54,14 @@
 
 ### Still open
 
-Everything in §3 not listed above — most substantially: **Cluster D** (form kit / toast-only validation), **Cluster E** (`ResponsiveTable` + the 6 table clients), the **remainder of Cluster F** (the ~21 focus-trap-less overlays that are not `confirm()`s — admin modal trio, `UsersClient`, `PoliciesClient`, `QuestionnaireSender`, `PolicyTable`'s menu, `DashboardTour`, `PublicHeader`'s menu), **Cluster H** (the three separate pollers), `lib/i18n/format.ts` (the `en-US`/`en-GB` drift), the remaining palette/hex sweep, and the landing Server-Components refactor.
+The **shared layers are done** — Clusters A(partial)/B/C/D/E/F/G/H/I all have their primitive built and at least a first adopter. What remains is **adoption breadth and two large, separable pieces**:
+
+- **Table card fallbacks (Cluster E remainder).** `TableShell` makes the six agent tables keyboard-reachable, but which columns survive on a phone is a per-table product decision — deliberately not invented here.
+- **Form-kit adoption breadth (Cluster D remainder).** The kit exists and `AddPolicyClient` uses it; the 17× agent-modal recipe, `EditPolicyForm`, the auth pages and onboarding are still hand-rolled.
+- **`PolicyTable`'s context menu** — needs menu semantics + arrow-key nav (the dropdowns got theirs; this one is positioned with `window.innerWidth` maths and wants its own pass).
+- **Palette/hex sweep (Cluster A remainder)** — ~60 hex-bearing files, the `.arc-*`→`.pw-*` retirement, and the shadcn `button`/`card` decision.
+- **Landing Server-Components refactor (Stage B)** — the ~448 KB first-load lever; a perf project, not a UI-foundation one.
+- **The `/en` duplicate route tree** — noted as out of scope by both audits.
 
 ---
 
