@@ -53,9 +53,9 @@
 
 ### Not mechanical — blocked on a decision, not on effort
 
-- **Landing Server-Components refactor (Stage B).** The remaining lever is the two components that call `useLanguage()`. Making them server components means taking the locale from the route rather than a client context — which is the **`/en` duplicate-route-tree decision** both audits list as out of scope. Until that is made, "convert the landing to RSC" is not a task that can be executed, only a design change that can be proposed.
-- **`EmptyState`'s remaining 16 hexes.** These are the ones whose token equivalent has a *different* dark value (`dark:border-white/10` — translucent — vs `--border`'s solid `#1e293b`). Converging them changes how 23 surfaces look in dark mode: a visual decision needing review, not a refactor. The exact-match subset was done.
-- **Table card fallbacks.** Which columns survive on a phone is per-table product judgement.
+- **Landing Server-Components refactor (Stage B).** The only genuinely blocked item. The remaining lever is the two components that call `useLanguage()`; making them server components means threading locale as a prop through ~32 marketing route files, which is the **`/en` duplicate-route-tree decision** in disguise. **Owner decision (23 Jul): leave it, write up the plan** → `docs/design/LANDING_RSC_PROPOSAL.md`, which also records that the measurement should come first (this Next build emits no First Load JS figures, so the stated ~448 KB benefit is currently unverifiable).
+- ~~**`EmptyState`'s remaining hexes.**~~ **Done** (`ca961fe`). The earlier "would shift dark mode on 23 surfaces" call was wrong: it compared against the shadcn `--card` token, but this system's card surface is `--pw-surface-dark` (`#111111`) — exactly what EmptyState already hardcoded. Converted to `--pw-*` variables with byte-identical output, verified by a dark-mode screenshot before/after. Only the MASTER-sanctioned status pairs remain.
+- ~~**Table card fallbacks.**~~ **Done for the customer list** (`ca961fe`). No product judgement was needed there after all — `CustomerList` already had a full card grid behind a desktop-only toggle. The remaining five tables (renewals, opportunities, team, commissions, questionnaires) have no existing card representation, so those still need the per-table column decision.
 
 ### Decisions taken
 
