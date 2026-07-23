@@ -25,10 +25,12 @@ import { useDialog } from "@/hooks/useDialog"
 import { TableShell } from "@/components/ui/TableShell"
 import { RowCheckbox } from "@/components/ui/form"
 
-import { SortableColumn, useTableSort, applySort } from "@/components/ui/SortableColumn"
+import { SortableColumn, MobileSortControl, useTableSort, applySort } from "@/components/ui/SortableColumn"
 const copy = {
     en: {
         title: "Renewals",
+        sortLabel: "Sort",
+        defaultOrder: "Default order",
         subtitle: "Track and manage upcoming policy renewals across your portfolio.",
         kicker: "PIPELINE",
         pending: "Pending",
@@ -78,6 +80,8 @@ const copy = {
     },
     el: {
         title: "Ανανεώσεις",
+        sortLabel: "Ταξινόμηση",
+        defaultOrder: "Προεπιλεγμένη σειρά",
         subtitle: "Παρακολούθηση και διαχείριση ανανεώσεων ασφαλιστηρίων.",
         kicker: "PIPELINE",
         pending: "Εκκρεμεί",
@@ -155,7 +159,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
     const [timeframe, setTimeframe] = useState<"7" | "15" | "30" | "60" | "90" | "all">("all")
     // The server order (expiry ascending) is the meaningful default, so the
     // third toggle state returns to it rather than cycling asc/desc forever.
-    const { sort, toggle } = useTableSort<RenewalSortKey>()
+    const { sort, toggle, setSort } = useTableSort<RenewalSortKey>()
     const renewals = useMemo(
         () => applySort<RenewalView, RenewalSortKey>(renewalRows, sort, {
             customer: (r) => r.customerName,
@@ -375,6 +379,17 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                     )
                 ) : (
                     <div className="pw-card overflow-hidden">
+                        {/* thead is sr-only below lg, so the column headers cannot be used
+                            on a phone — this drives the same sort state. */}
+                        <MobileSortControl
+                            sort={sort}
+                            onSort={toggle}
+                            onClear={() => setSort(null)}
+                            columns={[{ key: "customer", label: t.customer }, { key: "insurer", label: t.insurer }, { key: "lob", label: t.lob }, { key: "premium", label: t.premium }, { key: "expires", label: t.expires }]}
+                            label={t.sortLabel}
+                            defaultLabel={t.defaultOrder}
+                            className="mb-3"
+                        />
                         <TableShell label={t.title}>
                             <table className="pw-stacked-table w-full text-sm">
                                 <thead>

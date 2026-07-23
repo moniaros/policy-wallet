@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useId, useState } from "react"
 import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react"
 
 /**
@@ -105,5 +105,77 @@ export function SortableColumn<K extends string>({
                 />
             </button>
         </th>
+    )
+}
+
+/**
+ * Sorting for the stacked-card view.
+ *
+ * Below 1024px `.pw-stacked-table` turns each row into a card and makes `thead`
+ * `sr-only` — so the sortable headers above are invisible on a phone, and worse,
+ * still focusable, meaning keyboard focus would disappear off-screen. An agent
+ * on mobile had no way to sort at all.
+ *
+ * A native <select> rather than a custom menu: it gets the platform picker, and
+ * the base-layer mobile floor already gives it 16px text (no iOS zoom) and a
+ * 44px target. Same sort state as the headers, so the two views cannot disagree.
+ */
+export function MobileSortControl<K extends string>({
+    sort,
+    onSort,
+    onClear,
+    columns,
+    label,
+    defaultLabel,
+    className = "",
+}: {
+    sort: SortState<K>
+    onSort: (key: K) => void
+    /** Restores the server's default order (pass the hook's `setSort` bound to null). */
+    onClear: () => void
+    columns: { key: K; label: string }[]
+    /** Accessible name for the control, e.g. "Ταξινόμηση". */
+    label: string
+    /** Option representing the server's default order. */
+    defaultLabel: string
+    className?: string
+}) {
+    // Generated, not hardcoded: two sortable tables on one page would otherwise
+    // share an id and the second label would point at the first control.
+    const id = useId()
+    const current = sort?.key ?? ""
+
+    return (
+        <div className={`flex items-center gap-2 lg:hidden ${className}`}>
+            <label className="sr-only" htmlFor={id}>{label}</label>
+            <select
+                id={id}
+                className="pw-input pw-input-sm flex-1"
+                value={current}
+                onChange={(e) => {
+                    const next = e.target.value as K | ""
+                    if (!next) onClear()
+                    else if (next !== sort?.key) onSort(next)
+                }}
+            >
+                <option value="">{defaultLabel}</option>
+                {columns.map((c) => (
+                    <option key={c.key} value={c.key}>{c.label}</option>
+                ))}
+            </select>
+            {sort && (
+                <button
+                    type="button"
+                    onClick={() => onSort(sort.key)}
+                    aria-label={`${label} — ${sort.direction === "asc" ? "↑" : "↓"}`}
+                    aria-pressed={sort.direction === "desc"}
+                    className="pw-secondary-button pw-btn-sm shrink-0"
+                >
+                    {sort.direction === "asc"
+                        ? <ArrowUp className="h-4 w-4" aria-hidden="true" />
+                        : <ArrowDown className="h-4 w-4" aria-hidden="true" />}
+                </button>
+            )}
+        </div>
     )
 }

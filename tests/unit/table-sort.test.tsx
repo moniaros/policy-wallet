@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { renderHook, act } from '@testing-library/react'
-import { applySort, useTableSort, SortableColumn } from '@/components/ui/SortableColumn'
+import { applySort, useTableSort, SortableColumn, MobileSortControl } from '@/components/ui/SortableColumn'
 
 type Row = { name: string; premium: number | null; expires: Date | null }
 const ROWS: Row[] = [
@@ -117,5 +117,50 @@ describe('SortableColumn', () => {
         )
         await userEvent.click(screen.getByRole('button', { name: /Premium/ }))
         expect(onSort).toHaveBeenCalledWith('premium')
+    })
+})
+
+describe('MobileSortControl', () => {
+    const COLS = [
+        { key: 'premium' as const, label: 'Premium' },
+        { key: 'name' as const, label: 'Name' },
+    ]
+
+    it('lets a phone user sort where the sr-only headers cannot be reached', () => {
+        // Below lg, .pw-stacked-table makes thead sr-only, so the column headers
+        // are invisible and off-screen; this select is the only sort affordance.
+        const onSort = vi.fn()
+        render(
+            <MobileSortControl
+                sort={null} onSort={onSort} onClear={() => {}}
+                columns={COLS} label="Sort" defaultLabel="Default order"
+            />
+        )
+        expect(screen.getByLabelText('Sort')).toBeTruthy()
+        expect(screen.getByRole('option', { name: 'Default order' })).toBeTruthy()
+    })
+
+    it('restores the default order when the default option is chosen', async () => {
+        const onClear = vi.fn()
+        render(
+            <MobileSortControl
+                sort={{ key: 'premium', direction: 'asc' }} onSort={() => {}} onClear={onClear}
+                columns={COLS} label="Sort" defaultLabel="Default order"
+            />
+        )
+        await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Sort' }), '')
+        expect(onClear).toHaveBeenCalled()
+    })
+
+    it('gives each instance a unique control id', () => {
+        // Two sortable tables on one page must not share a label target.
+        const { container } = render(
+            <>
+                <MobileSortControl sort={null} onSort={() => {}} onClear={() => {}} columns={COLS} label="A" defaultLabel="d" />
+                <MobileSortControl sort={null} onSort={() => {}} onClear={() => {}} columns={COLS} label="B" defaultLabel="d" />
+            </>
+        )
+        const ids = [...container.querySelectorAll('select')].map((s) => s.id)
+        expect(new Set(ids).size).toBe(2)
     })
 })

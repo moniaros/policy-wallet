@@ -10,7 +10,7 @@ import {
 } from "lucide-react"
 import type { TeamOverview } from "@/lib/services/team.service"
 import { TableShell } from "@/components/ui/TableShell"
-import { SortableColumn, useTableSort, applySort } from "@/components/ui/SortableColumn"
+import { SortableColumn, MobileSortControl, useTableSort, applySort } from "@/components/ui/SortableColumn"
 import {
     createAgencyAction, inviteMemberAction, removeMemberAction,
     updateRoleAction, transferCustomerAction
@@ -52,6 +52,8 @@ const copy = {
         sharedPipeline: "Shared Pipeline",
         agent: "Agent",
         customer: "Customer",
+        sortLabel: "Sort",
+        defaultOrder: "Default order",
         status: "Status",
         value: "Value",
         lob: "LoB",
@@ -96,8 +98,10 @@ const copy = {
         totalPipeline: "Αξία Pipeline",
         totalWon: "Κερδισμένα Έσοδα",
         sharedPipeline: "Κοινός Σωλήνας",
-        agent: "Πράκτορας",
+        agent: "Σύμβουλος",
         customer: "Πελάτης",
+        sortLabel: "Ταξινόμηση",
+        defaultOrder: "Προεπιλεγμένη σειρά",
         status: "Κατάσταση",
         value: "Αξία",
         lob: "Κλάδος",
@@ -404,7 +408,7 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
     t: typeof copy.en
     fmt: (n: number) => string
 }) {
-    const { sort, toggle } = useTableSort<TeamSortKey>()
+    const { sort, toggle, setSort } = useTableSort<TeamSortKey>()
     const sortedPipeline = useMemo(
         () => applySort(pipeline, sort, {
         customer: (r: any) => r.customerName ?? r.customer,
@@ -438,6 +442,18 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
                     description={t.noOppsDesc}
                 />
             ) : (
+                <>
+                {/* thead is sr-only below lg, so the column headers cannot be used
+                    on a phone — this drives the same sort state. */}
+                <MobileSortControl
+                    sort={sort}
+                    onSort={toggle}
+                    onClear={() => setSort(null)}
+                    columns={[{ key: "customer", label: t.customer }, { key: "agent", label: t.agent }, { key: "lob", label: t.lob }, { key: "status", label: t.status }, { key: "value", label: t.value }]}
+                    label={t.sortLabel}
+                    defaultLabel={t.defaultOrder}
+                    className="mb-3"
+                />
                 <TableShell label={t.title}>
                     <table className="pw-stacked-table w-full text-sm">
                         <thead>
@@ -479,6 +495,7 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
                         </tbody>
                     </table>
                 </TableShell>
+                </>
             )}
         </div>
     )

@@ -13,7 +13,7 @@ import { EmptyState } from "@/components/ui/EmptyState"
 import { useDialog } from "@/hooks/useDialog"
 import { TableShell } from "@/components/ui/TableShell"
 
-import { SortableColumn, useTableSort, applySort } from "@/components/ui/SortableColumn"
+import { SortableColumn, MobileSortControl, useTableSort, applySort } from "@/components/ui/SortableColumn"
 const copy = {
     en: {
         kicker: "QUESTIONNAIRES",
@@ -41,6 +41,8 @@ const copy = {
         save: "Save Template",
         cancel: "Cancel",
         customer: "Customer",
+        sortLabel: "Sort",
+        defaultOrder: "Default order",
         template: "Template",
         status: "Status",
         sentAt: "Sent",
@@ -89,6 +91,8 @@ const copy = {
         save: "Αποθήκευση",
         cancel: "Ακύρωση",
         customer: "Πελάτης",
+        sortLabel: "Ταξινόμηση",
+        defaultOrder: "Προεπιλεγμένη σειρά",
         template: "Πρότυπο",
         status: "Κατάσταση",
         sentAt: "Αποστολή",
@@ -530,7 +534,7 @@ function SentList({ instances, t, language }: {
     t: typeof copy.en
     language: string
 }) {
-    const { sort, toggle } = useTableSort<QSortKey>()
+    const { sort, toggle, setSort } = useTableSort<QSortKey>()
     const sortedInstances = useMemo(
         () => applySort(instances, sort, {
         customer: (r: any) => r.customerName ?? r.customer,
@@ -567,6 +571,17 @@ function SentList({ instances, t, language }: {
     return (
         <>
             <div className="pw-card">
+                {/* thead is sr-only below lg, so the column headers cannot be used
+                    on a phone — this drives the same sort state. */}
+                <MobileSortControl
+                    sort={sort}
+                    onSort={toggle}
+                    onClear={() => setSort(null)}
+                    columns={[{ key: "customer", label: t.customer }, { key: "template", label: t.template }, { key: "status", label: t.status }, { key: "sentAt", label: t.sentAt }]}
+                    label={t.sortLabel}
+                    defaultLabel={t.defaultOrder}
+                    className="mb-3"
+                />
                 <TableShell label={t.sent}>
                 <table className="pw-stacked-table w-full text-sm">
                     <thead>
