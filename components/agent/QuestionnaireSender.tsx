@@ -1,9 +1,10 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useRef, useId, useState, useEffect, useCallback } from "react"
 import { getQuestionnaireTemplates, sendQuestionnaire } from "@/app/(protected)/agent/actions"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { Car, Home, HeartPulse, Shield, PawPrint, FileQuestion } from "lucide-react"
+import { useDialog } from "@/hooks/useDialog"
 
 interface QuestionnaireSenderProps {
     relationshipId: string
@@ -64,9 +65,15 @@ export function QuestionnaireSender({ relationshipId, customerName, open, onOpen
         if (!isControlled) setInternalOpen(next)
         onOpenChange?.(next)
     }, [isControlled, onOpenChange])
+    // Ad-hoc overlay with no trap/Escape/dialog role until now. Sending guards the
+    // close, matching the backdrop's existing `!isSending` behaviour.
+    const qsDialogRef = useDialog<HTMLDivElement>(() => { if (!isSendingRef.current) setIsOpen(false) }, isOpen)
+    const qsTitleId = useId()
     const [templates, setTemplates] = useState<any[]>([])
     const [selectedTemplate, setSelectedTemplate] = useState("")
     const [isSending, setIsSending] = useState(false)
+    const isSendingRef = useRef(false)
+    useEffect(() => { isSendingRef.current = isSending }, [isSending])
     const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
     const { language } = useLanguage()
     const t = copy[language === "el" ? "el" : "en"]
@@ -129,7 +136,7 @@ export function QuestionnaireSender({ relationshipId, customerName, open, onOpen
                         onClick={() => !isSending && setIsOpen(false)}
                     />
 
-                    <div className="relative bg-white dark:bg-neutral-800 rounded-[32px] w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-neutral-200 dark:border-neutral-700 animate-in zoom-in-95 slide-in-from-bottom-8 duration-500">
+                    <div ref={qsDialogRef} role="dialog" aria-modal="true" aria-labelledby={qsTitleId} tabIndex={-1} className="relative bg-white dark:bg-neutral-800 rounded-[32px] w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-neutral-200 dark:border-neutral-700 animate-in zoom-in-95 slide-in-from-bottom-8 duration-500">
                         <div className="p-10 overflow-y-auto flex-1 min-h-0">
                             <div className="w-12 h-12 bg-primary-soft dark:bg-primary/15 rounded-2xl flex items-center justify-center text-primary dark:text-mint mb-6">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -137,7 +144,7 @@ export function QuestionnaireSender({ relationshipId, customerName, open, onOpen
                                 </svg>
                             </div>
 
-                            <h3 className="text-3xl font-black text-foreground tracking-tight mb-3">
+                            <h3 id={qsTitleId} className="text-3xl font-black text-foreground tracking-tight mb-3">
                                 {t.gatherInsights}
                             </h3>
                             <p className="text-muted-foreground text-sm mb-10 leading-relaxed">

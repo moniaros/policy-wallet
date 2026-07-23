@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useTransition, useEffect } from 'react'
+import React, { useId, useRef, useState, useTransition, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { ThemeToggle } from '../ThemeToggle'
@@ -26,6 +26,21 @@ export function UserMenu({
     compact = false,
 }: UserMenuProps) {
     const [isOpen, setIsOpen] = useState(false)
+    const menuTriggerRef = useRef<HTMLButtonElement>(null)
+    const menuId = useId()
+
+    // The dropdown had no keyboard exit: Escape did nothing and focus never came
+    // back to the trigger. (A menu wants menu semantics, not a dialog trap.)
+    useEffect(() => {
+        if (!isOpen) return
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key !== 'Escape') return
+            setIsOpen(false)
+            menuTriggerRef.current?.focus()
+        }
+        document.addEventListener('keydown', onKeyDown)
+        return () => document.removeEventListener('keydown', onKeyDown)
+    }, [isOpen])
     const [isPending, startTransition] = useTransition()
     const router = useRouter()
     const { language, setLanguage, t } = useLanguage()
@@ -74,6 +89,10 @@ export function UserMenu({
     return (
         <div className="relative">
             <button
+                ref={menuTriggerRef}
+                aria-haspopup="menu"
+                aria-expanded={isOpen}
+                aria-controls={menuId}
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors"
             >
@@ -103,10 +122,11 @@ export function UserMenu({
             {isOpen && (
                 <>
                     <div
+                        aria-hidden="true"
                         className="fixed inset-0 z-10"
                         onClick={() => setIsOpen(false)}
                     />
-                    <div className="absolute bottom-full left-0 right-0 mb-3 z-20 bg-white/90 dark:bg-stone-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-stone-200/50 dark:border-stone-700/50 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+                    <div id={menuId} role="menu" className="absolute bottom-full left-0 right-0 mb-3 z-20 bg-white/90 dark:bg-stone-900/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-stone-200/50 dark:border-stone-700/50 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
                         {/* Notifications */}
                         <button
                             className="w-full px-4 py-2 text-left text-sm text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-700 flex items-center justify-between"

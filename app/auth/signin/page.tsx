@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useId, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { AlertCircle, ArrowRight, Loader2, Lock, Mail, Phone, ShieldCheck } from "lucide-react"
@@ -9,6 +9,7 @@ import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { resolveAuthEmailIdentifier } from "@/lib/auth/phone-auth"
 import { getPostLoginRedirectByRole } from "@/lib/auth/role-routing"
+import { useDialog } from "@/hooks/useDialog"
 
 const LOCALE_TABS = [
     { value: "el" as const, label: "ΕΛ" },
@@ -48,6 +49,9 @@ export default function SignInPage() {
     const [resendMessage, setResendMessage] = useState<string | null>(null)
 
     const [showReset, setShowReset] = useState(false)
+    // The password-reset overlay was a bare div: no trap, no Escape.
+    const resetDialogRef = useDialog<HTMLDivElement>(() => setShowReset(false), showReset)
+    const resetTitleId = useId()
     const [resetStep, setResetStep] = useState<ResetStep>("request")
     const [resetEmail, setResetEmail] = useState("")
     const [resetOtp, setResetOtp] = useState("")
@@ -307,8 +311,8 @@ export default function SignInPage() {
             {/* Reset password modal */}
             {showReset && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
-                    <div className="w-full max-w-[400px] rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0_24px_64px_rgba(0,0,0,0.12)] dark:border-white/10 dark:bg-[#111111]">
-                        <h2 className="mb-1 text-[17px] font-semibold text-[#0F172A] dark:text-white">
+                    <div ref={resetDialogRef} role="dialog" aria-modal="true" aria-labelledby={resetTitleId} tabIndex={-1} className="w-full max-w-[400px] rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0_24px_64px_rgba(0,0,0,0.12)] dark:border-white/10 dark:bg-[#111111]">
+                        <h2 id={resetTitleId} className="mb-1 text-[17px] font-semibold text-[#0F172A] dark:text-white">
                             {copy.resetTitle}
                         </h2>
                         <p className="mb-4 text-[13px] text-[#64748B] dark:text-white/65">

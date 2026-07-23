@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useId, useState } from "react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import {
     ClipboardList, Plus, Trash2, GripVertical, Eye, Send,
@@ -10,6 +10,7 @@ import {
 import type { TemplateData, InstanceData, TemplateQuestion } from "./actions"
 import { createTemplate, updateTemplate, deleteTemplate, analyzeQuestionnaireResponse } from "./actions"
 import { EmptyState } from "@/components/ui/EmptyState"
+import { useDialog } from "@/hooks/useDialog"
 
 const copy = {
     en: {
@@ -293,6 +294,8 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
     onClose: () => void
 }) {
     const [name, setName] = useState(editingTemplate?.name || "")
+    // Mounted only while open, so the trap is unconditional here.
+    const builderDialogRef = useDialog<HTMLDivElement>(onClose)
     const [lob, setLob] = useState(editingTemplate?.lineOfBusiness || "motor")
     const [questions, setQuestions] = useState<TemplateQuestion[]>(
         editingTemplate?.questions || []
@@ -349,7 +352,13 @@ function TemplateBuilder({ t, language, editingTemplate, onClose }: {
     return (
         <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 overflow-y-auto">
             <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-md" onClick={onClose} />
-            <div className="relative bg-white dark:bg-slate-900 rounded-3xl w-full max-w-2xl shadow-2xl border border-slate-200 dark:border-slate-700 mb-16">
+            <div
+                ref={builderDialogRef}
+                role="dialog"
+                aria-modal="true"
+                tabIndex={-1}
+                className="relative bg-white dark:bg-slate-900 rounded-3xl w-full max-w-2xl shadow-2xl border border-slate-200 dark:border-slate-700 mb-16"
+            >
                 <div className="p-8">
                     <div className="flex items-center justify-between mb-6">
                         <h3 className="text-2xl font-black text-slate-900 dark:text-white">
@@ -517,6 +526,7 @@ function SentList({ instances, t, language }: {
     language: string
 }) {
     const [analysisData, setAnalysisData] = useState<any>(null)
+    const analysisDialogRef = useDialog<HTMLDivElement>(() => setAnalysisData(null), Boolean(analysisData))
     const [analyzingId, setAnalyzingId] = useState<string | null>(null)
 
     const handleAnalyze = async (instanceId: string) => {
@@ -593,7 +603,13 @@ function SentList({ instances, t, language }: {
             {analysisData && (
                 <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 overflow-y-auto">
                     <div className="absolute inset-0 bg-stone-900/40 backdrop-blur-md" onClick={() => setAnalysisData(null)} />
-                    <div className="relative bg-white dark:bg-slate-900 rounded-3xl w-full max-w-2xl shadow-2xl border border-slate-200 dark:border-slate-700 mb-16">
+                    <div
+                        ref={analysisDialogRef}
+                        role="dialog"
+                        aria-modal="true"
+                        tabIndex={-1}
+                        className="relative bg-white dark:bg-slate-900 rounded-3xl w-full max-w-2xl shadow-2xl border border-slate-200 dark:border-slate-700 mb-16"
+                    >
                         <div className="p-8">
                             <div className="flex items-center justify-between mb-6">
                                 <div className="flex items-center gap-3">

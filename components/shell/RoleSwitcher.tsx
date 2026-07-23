@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useId, useRef, useState } from 'react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
 import type { UserRole } from './AppShell'
@@ -16,10 +16,28 @@ export function RoleSwitcher({ currentRole, availableRoles, onRoleSwitch }: Role
     const { language } = useLanguage()
     const roleCopy = getRoleCopy(language)
     const [isOpen, setIsOpen] = useState(false)
+    const menuTriggerRef = useRef<HTMLButtonElement>(null)
+    const menuId = useId()
+
+    // Escape-to-close with focus return; the dropdown had neither.
+    useEffect(() => {
+        if (!isOpen) return
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key !== 'Escape') return
+            setIsOpen(false)
+            menuTriggerRef.current?.focus()
+        }
+        document.addEventListener('keydown', onKeyDown)
+        return () => document.removeEventListener('keydown', onKeyDown)
+    }, [isOpen])
 
     return (
         <div className="relative">
             <button
+                ref={menuTriggerRef}
+                aria-haspopup="menu"
+                aria-expanded={isOpen}
+                aria-controls={menuId}
                 onClick={() => setIsOpen(!isOpen)}
                 className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/10 border border-black/10 dark:border-white/15 hover:bg-black/10 dark:hover:bg-white/15 transition-all group"
             >
@@ -41,10 +59,11 @@ export function RoleSwitcher({ currentRole, availableRoles, onRoleSwitch }: Role
             {isOpen && (
                 <>
                     <div
+                        aria-hidden="true"
                         className="fixed inset-0 z-10"
                         onClick={() => setIsOpen(false)}
                     />
-                    <div className="absolute top-full left-0 right-0 mt-3 z-20 bg-white/95 dark:bg-black/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-black/10 dark:border-white/15 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div id={menuId} role="menu" className="absolute top-full left-0 right-0 mt-3 z-20 bg-white/95 dark:bg-black/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-black/10 dark:border-white/15 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-300">
                         {availableRoles.map((role) => (
                             <button
                                 key={role.role}

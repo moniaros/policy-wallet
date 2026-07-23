@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useId, useState } from "react"
 import { useRouter } from "next/navigation"
 import {
     CalendarClock,
@@ -21,6 +21,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { EmptyState, RenewalPreviewRow } from "@/components/ui/EmptyState"
 import type { RenewalView } from "./actions"
 import { updateRenewalOutcome, getAgentRenewals, sendBatchRenewalReminder } from "./actions"
+import { useDialog } from "@/hooks/useDialog"
 
 const copy = {
     en: {
@@ -149,6 +150,9 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
     const [timeframe, setTimeframe] = useState<"7" | "15" | "30" | "60" | "90" | "all">("all")
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
     const [outcomeModal, setOutcomeModal] = useState<{ renewalId: string; customerName: string } | null>(null)
+    // The outcome modal was a bare overlay: no trap, no Escape, no dialog role.
+    const renewDialogRef = useDialog<HTMLDivElement>(() => setOutcomeModal(null), Boolean(outcomeModal))
+    const renewTitleId = useId()
     const [outcomeChoice, setOutcomeChoice] = useState<OutcomeType>("renewed_same_insurer")
     const [outcomeNotes, setOutcomeNotes] = useState("")
     const [isSaving, setIsSaving] = useState(false)
@@ -440,8 +444,8 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                 {/* Outcome Modal */}
                 {outcomeModal && (
                     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                        <div className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-5">
-                            <h3 className="text-lg font-black text-foreground">
+                        <div ref={renewDialogRef} role="dialog" aria-modal="true" aria-labelledby={renewTitleId} tabIndex={-1} className="bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-5">
+                            <h3 id={renewTitleId} className="text-lg font-black text-foreground">
                                 {t.markOutcome}
                             </h3>
                             <p className="text-sm text-neutral-500">{outcomeModal.customerName}</p>
