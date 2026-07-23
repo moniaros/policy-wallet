@@ -11,6 +11,7 @@ const policyholderIgnores = [
     '**/tests/unit/**',
     '**/sentry-*.spec.ts',
     '**/agent-journey.spec.ts',
+    '**/agent-viewport-overflow.spec.ts',
 ];
 
 export default defineConfig({
@@ -93,7 +94,7 @@ export default defineConfig({
         },
         {
             name: 'agent-chromium',
-            testMatch: /agent-journey\.spec\.ts/,
+            testMatch: /(agent-journey|agent-viewport-overflow)\.spec\.ts/,
             use: {
                 ...devices['Desktop Chrome'],
                 storageState: 'playwright/.auth/agent.json',
