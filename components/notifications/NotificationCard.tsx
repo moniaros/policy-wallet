@@ -10,7 +10,7 @@ interface NotificationCardProps {
 }
 
 export function NotificationCard({ event, onNavigate }: NotificationCardProps) {
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
     const lang = language as 'el' | 'en'
     const isFailed = event.status === 'failed'
 
@@ -48,7 +48,7 @@ export function NotificationCard({ event, onNavigate }: NotificationCardProps) {
                             onClick={() => onNavigate('policy', event.related_policy_id)}
                             className="text-kicker font-bold text-primary dark:text-mint uppercase tracking-wide flex items-center gap-1 hover:underline"
                         >
-                            View Policy
+                            {t.notifications.viewPolicy}
                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" /></svg>
                         </button>
                     )}

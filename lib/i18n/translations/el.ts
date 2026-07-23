@@ -1005,7 +1005,12 @@ export const el = {
     },
 
     notifications: {
-        communicationCenter: 'Κέντρο Επικοινωνίας',
+        communicationCenter: 'Κέντρο επικοινωνίας',
+        markAllRead: 'Σήμανση όλων ως αναγνωσμένα',
+        noNotificationsYet: 'Δεν υπάρχουν ειδοποιήσεις ακόμη',
+        viewAllNotifications: 'Προβολή όλων των ειδοποιήσεων',
+        viewPolicy: 'Προβολή συμβολαίου',
+        alwaysActiveEmail: 'Πάντα ενεργό μέσω email',
     },
 
     tasks: {

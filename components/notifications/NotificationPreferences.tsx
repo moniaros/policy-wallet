@@ -1,5 +1,6 @@
 "use client"
 
+import { useLanguage } from '@/contexts/LanguageContext'
 import type { NotificationPreferencesProps } from './types'
 
 export function NotificationPreferences({
@@ -10,6 +11,7 @@ export function NotificationPreferences({
     onToggleChannel,
     onSwitchRole
 }: NotificationPreferencesProps) {
+    const { t } = useLanguage()
     const getPreference = (eventType: string) => {
         return preferences.find(p => p.event_type === eventType && p.role === activeRole)
     }
@@ -175,7 +177,7 @@ export function NotificationPreferences({
                                                 ) : (
                                                     <div className="flex items-center gap-2 text-stone-300 dark:text-stone-700">
                                                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" strokeWidth="2.5" /></svg>
-                                                        <span className="text-kicker font-black uppercase tracking-widest italic">Always active via email</span>
+                                                        <span className="text-kicker font-black uppercase tracking-widest italic">{t.notifications.alwaysActiveEmail}</span>
                                                     </div>
                                                 )}
                                             </div>

@@ -23,7 +23,7 @@ interface NotificationBellProps {
 
 export function NotificationBell({ initialNotifications = [], initialUnreadCount = 0 }: NotificationBellProps) {
     const router = useRouter()
-    const { language } = useLanguage()
+    const { language, t } = useLanguage()
     const [isOpen, setIsOpen] = useState(false)
     const [notifications, setNotifications] = useState<Notification[]>(initialNotifications)
     const [unreadCount, setUnreadCount] = useState(initialUnreadCount)
@@ -166,7 +166,7 @@ export function NotificationBell({ initialNotifications = [], initialUnreadCount
                                 onClick={handleMarkAllRead}
                                 className="text-xs font-bold text-primary dark:text-mint hover:underline"
                             >
-                                Mark all read
+                                {t.notifications.markAllRead}
                             </button>
                         )}
                     </div>
@@ -180,7 +180,7 @@ export function NotificationBell({ initialNotifications = [], initialUnreadCount
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                                     </svg>
                                 </div>
-                                <p className="text-sm text-stone-500 dark:text-stone-400">No notifications yet</p>
+                                <p className="text-sm text-stone-500 dark:text-stone-400">{t.notifications.noNotificationsYet}</p>
                             </div>
                         ) : (
                             <div className="divide-y divide-stone-100 dark:divide-stone-800">
@@ -229,7 +229,7 @@ export function NotificationBell({ initialNotifications = [], initialUnreadCount
                             }}
                             className="w-full py-2 text-sm font-bold text-center text-primary dark:text-mint hover:text-primary-hover dark:hover:text-mint transition-colors"
                         >
-                            View all notifications
+                            {t.notifications.viewAllNotifications}
                         </button>
                     </div>
                 </div>

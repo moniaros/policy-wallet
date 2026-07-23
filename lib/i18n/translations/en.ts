@@ -1008,7 +1008,12 @@ export const en: TranslationKeys = {
     },
 
     notifications: {
-        communicationCenter: 'Communication Center',
+        communicationCenter: 'Communication centre',
+        markAllRead: 'Mark all read',
+        noNotificationsYet: 'No notifications yet',
+        viewAllNotifications: 'View all notifications',
+        viewPolicy: 'View policy',
+        alwaysActiveEmail: 'Always active via email',
     },
 
     tasks: {
