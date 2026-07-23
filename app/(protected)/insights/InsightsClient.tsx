@@ -216,7 +216,7 @@ export function InsightsClient({ data }: InsightsClientProps) {
     }, [data.opportunityMetrics, p])
 
     return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-neutral-950">
+        <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
             {/* ── Header ── */}
             <div className="relative overflow-hidden bg-white/70 dark:bg-neutral-900/70 backdrop-blur-xl border-b border-neutral-200/60 dark:border-neutral-800/60">
                 <div className="absolute inset-0 bg-primary/5" />
