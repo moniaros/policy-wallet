@@ -45,7 +45,17 @@
 
 4. **`en-GB` is not drift — `en-US` is.** The map reads "`en-US` in 10+ files vs hardcoded `en-GB` on the home dashboard", implying en-GB is the outlier. `t.common.locale` in `translations/en.ts` **declares `en-GB`**, and 25 sites already used it across the wallet, agent and legal layers against 41 using `en-US`. For a euro-denominated, day-month-year market en-GB is also the correct answer, so the 41 were normalized to it — not the reverse.
 
-5. **The wallet fork had a second layer the map missed.** Removing `if (isMobile) return <MobileAppShell/>` mounts the five modals, but `PolicyCard` **accepted `onShare`/`onViewDocuments`/`onRunAnalysis`/`onDelete` and silently ignored all four** — it destructured only `{ policy, onView, id }`. Those actions existed solely in `PolicyTable`'s desktop-only context menu, so un-forking alone would have left the modals mounted with nothing able to open them. Both layers are fixed in `6fa6074`.
+5. **`PolicyTable`'s row menu already had menu semantics.** The map calls it "a hand-rolled overlay without `role="menu"`/keyboard support". It had `role="menu"`, `role="menuitem"`, `aria-expanded` and `aria-haspopup` already. What it genuinely lacked was Escape-to-close, which was added.
+
+6. **The landing is 9 client / 4 server, not "11 of 13 client"** — and every one of the 9 has a real reason: hooks (`AgentWidgets`, `AudienceTabs`, `LandingHeader`, `PolicyWalletWidget`, `PublicMegaFooter`, `SolutionsDropdown`), the language context (`LoBPageShell`, `ProductCategoryExplorer`), or a deliberate analytics island (`LandingCtaLink`, whose own doc comment explains it exists so the hero and final-CTA sections can stay server-rendered). See "Not mechanical" below.
+
+7. **The wallet fork had a second layer the map missed.** Removing `if (isMobile) return <MobileAppShell/>` mounts the five modals, but `PolicyCard` **accepted `onShare`/`onViewDocuments`/`onRunAnalysis`/`onDelete` and silently ignored all four** — it destructured only `{ policy, onView, id }`. Those actions existed solely in `PolicyTable`'s desktop-only context menu, so un-forking alone would have left the modals mounted with nothing able to open them. Both layers are fixed in `6fa6074`.
+
+### Not mechanical — blocked on a decision, not on effort
+
+- **Landing Server-Components refactor (Stage B).** The remaining lever is the two components that call `useLanguage()`. Making them server components means taking the locale from the route rather than a client context — which is the **`/en` duplicate-route-tree decision** both audits list as out of scope. Until that is made, "convert the landing to RSC" is not a task that can be executed, only a design change that can be proposed.
+- **`EmptyState`'s remaining 16 hexes.** These are the ones whose token equivalent has a *different* dark value (`dark:border-white/10` — translucent — vs `--border`'s solid `#1e293b`). Converging them changes how 23 surfaces look in dark mode: a visual decision needing review, not a refactor. The exact-match subset was done.
+- **Table card fallbacks.** Which columns survive on a phone is per-table product judgement.
 
 ### Decisions taken
 
