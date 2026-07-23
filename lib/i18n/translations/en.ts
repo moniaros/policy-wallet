@@ -2354,6 +2354,8 @@ export const en: TranslationKeys = {
             title: 'Opportunities',
             subtitle: 'Track potential sales and coverage improvements for your customers.',
             colCustomer: 'Customer',
+            sortLabel: 'Sort',
+            defaultOrder: 'Default order',
             colOpportunity: 'Opportunity',
             colStatus: 'Status',
             colLikelihood: 'Likelihood',

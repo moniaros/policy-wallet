@@ -2352,6 +2352,8 @@ export const el = {
             title: 'Ευκαιρίες',
             subtitle: 'Παρακολουθήστε πιθανές πωλήσεις και βελτιώσεις κάλυψης για τους πελάτες σας.',
             colCustomer: 'Πελάτης',
+            sortLabel: 'Ταξινόμηση',
+            defaultOrder: 'Προεπιλεγμένη σειρά',
             colOpportunity: 'Ευκαιρία',
             colStatus: 'Κατάσταση',
             colLikelihood: 'Πιθανότητα',

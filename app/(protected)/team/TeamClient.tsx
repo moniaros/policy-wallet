@@ -410,12 +410,13 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
 }) {
     const { sort, toggle, setSort } = useTableSort<TeamSortKey>()
     const sortedPipeline = useMemo(
-        () => applySort(pipeline, sort, {
-        customer: (r: any) => r.customerName ?? r.customer,
-        agent: (r: any) => r.agentName ?? r.agent,
-        lob: (r: any) => r.lineOfBusiness ?? r.lob,
-        status: (r: any) => r.status,
-        value: (r: any) => r.value ?? r.estimatedValue,
+        () => applySort<PipelineItem, TeamSortKey>(pipeline, sort, {
+            customer: (r) => r.customerName,
+            agent: (r) => r.agentName,
+            lob: (r) => r.lineOfBusiness,
+            status: (r) => r.status,
+            // The value column shows won premium, falling back to estimated.
+            value: (r) => r.wonPremium ?? r.estimatedPremium,
         }),
         [pipeline, sort]
     )

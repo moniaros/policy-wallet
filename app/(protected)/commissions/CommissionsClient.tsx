@@ -1,11 +1,13 @@
 "use client"
 
+import { useMemo } from "react"
 import { Euro, TrendingUp, Briefcase, BarChart3 } from "lucide-react"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
 import type { CommissionSummary } from "./actions"
 import { TableShell } from "@/components/ui/TableShell"
 
+import { SortableColumn, MobileSortControl, useTableSort, applySort } from "@/components/ui/SortableColumn"
 const copy = {
     en: {
         title: "Commission Tracker",
@@ -16,6 +18,8 @@ const copy = {
         byLine: "By Line of Business",
         monthlyTrend: "Monthly Trend",
         lob: "Line",
+        sortLabel: "Sort",
+        defaultOrder: "Default order",
         premium: "Premium",
         commission: "Commission",
         opportunities: "Opps",
@@ -33,6 +37,8 @@ const copy = {
         byLine: "Ανά Κλάδο",
         monthlyTrend: "Μηνιαία Τάση",
         lob: "Κλάδος",
+        sortLabel: "Ταξινόμηση",
+        defaultOrder: "Προεπιλεγμένη σειρά",
         premium: "Ασφάλιστρο",
         commission: "Προμήθεια",
         opportunities: "Ευκ.",
@@ -47,9 +53,21 @@ interface Props {
     data: CommissionSummary
 }
 
+type CommissionSortKey = "lob" | "premium" | "commission" | "opportunities"
+
 export function CommissionsClient({ data }: Props) {
     const { language } = useLanguage()
     const t = copy[language === "el" ? "el" : "en"]
+    const { sort, toggle, setSort } = useTableSort<CommissionSortKey>()
+    const sortedByLob = useMemo(
+        () => applySort<any, CommissionSortKey>(data.byLob, sort, {
+        lob: (r: any) => r.lob,
+        premium: (r: any) => r.wonPremium,
+        commission: (r: any) => r.wonCommission,
+        opportunities: (r: any) => r.opportunityCount,
+        }),
+        [data.byLob, sort]
+    )
 
     const fmt = (n: number) =>
         new Intl.NumberFormat(language === "el" ? "el-GR" : "en-GB", {
@@ -114,18 +132,20 @@ export function CommissionsClient({ data }: Props) {
                                 description={t.noDataDesc}
                             />
                         ) : (
+                          <>
+                            <MobileSortControl sort={sort} onSort={toggle} onClear={() => setSort(null)} columns={[{ key: "lob", label: t.lob }, { key: "premium", label: t.premium }, { key: "commission", label: t.commission }, { key: "opportunities", label: t.opportunities }]} label={t.sortLabel} defaultLabel={t.defaultOrder} className="mb-3" />
                             <TableShell label={t.title}>
                                 <table className="pw-stacked-table w-full text-sm">
                                     <thead>
                                         <tr className="border-b border-neutral-100 dark:border-neutral-800">
-                                            <th className="text-left text-kicker font-black text-neutral-400 uppercase tracking-widest pb-3">{t.lob}</th>
-                                            <th className="text-right text-kicker font-black text-neutral-400 uppercase tracking-widest pb-3">{t.premium}</th>
-                                            <th className="text-right text-kicker font-black text-neutral-400 uppercase tracking-widest pb-3">{t.commission}</th>
-                                            <th className="text-right text-kicker font-black text-neutral-400 uppercase tracking-widest pb-3">{t.opportunities}</th>
+                                            <SortableColumn columnKey="lob" sort={sort} onSort={toggle} label={t.lob} align="left" className="pb-3" />
+                                            <SortableColumn columnKey="premium" sort={sort} onSort={toggle} label={t.premium} align="right" className="pb-3" />
+                                            <SortableColumn columnKey="commission" sort={sort} onSort={toggle} label={t.commission} align="right" className="pb-3" />
+                                            <SortableColumn columnKey="opportunities" sort={sort} onSort={toggle} label={t.opportunities} align="right" className="pb-3" />
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {data.byLob.map((row) => (
+                                        {sortedByLob.map((row) => (
                                             <tr key={row.lob} className="border-b border-neutral-50 dark:border-neutral-800/50">
                                                 <td data-label={t.lob} className="py-3 font-bold text-foreground capitalize">{row.lob.replace(/_/g, " ")}</td>
                                                 <td data-label={t.premium} className="py-3 text-right text-neutral-600 dark:text-neutral-400">
@@ -146,6 +166,7 @@ export function CommissionsClient({ data }: Props) {
                                     </tbody>
                                 </table>
                             </TableShell>
+                          </>
                         )}
                     </div>
 

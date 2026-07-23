@@ -536,11 +536,11 @@ function SentList({ instances, t, language }: {
 }) {
     const { sort, toggle, setSort } = useTableSort<QSortKey>()
     const sortedInstances = useMemo(
-        () => applySort(instances, sort, {
-        customer: (r: any) => r.customerName ?? r.customer,
-        template: (r: any) => r.templateName ?? r.template,
-        status: (r: any) => r.status,
-        sentAt: (r: any) => (r.sentAt ? new Date(r.sentAt) : null),
+        () => applySort<InstanceData, QSortKey>(instances, sort, {
+        customer: (r) => r.customerName,
+            template: (r) => r.templateName,
+            status: (r) => r.status,
+            sentAt: (r) => (r.sentAt ? new Date(r.sentAt) : null),
         }),
         [instances, sort]
     )

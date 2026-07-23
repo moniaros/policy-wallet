@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { TableShell } from "@/components/ui/TableShell"
 
+import { SortableColumn, MobileSortControl, useTableSort, applySort } from "@/components/ui/SortableColumn"
 interface Opportunity {
     id: string
     customerName: string
@@ -26,6 +27,8 @@ interface Opportunity {
 interface OpportunitiesClientProps {
     initialOpportunities: Opportunity[]
 }
+
+type OppSortKey = "customer" | "status" | "likelihood" | "nextAction"
 
 export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClientProps) {
     const [opportunities, setOpportunities] = useState(initialOpportunities)
@@ -56,9 +59,16 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
         router.refresh()
     }
 
+    const { sort, toggle, setSort } = useTableSort<OppSortKey>()
     const filteredOpportunities = opportunities.filter(opp => {
         if (filter === 'all') return true
         return opp.status === filter
+    })
+    const sortedOpportunities = applySort<Opportunity, OppSortKey>(filteredOpportunities, sort, {
+        customer: (o: Opportunity) => o.customerName,
+        status: (o: Opportunity) => o.status,
+        likelihood: (o: Opportunity) => o.conversionScore,
+        nextAction: (o: Opportunity) => (o.nextActionAt ? new Date(o.nextActionAt) : null),
     })
 
     const statusCounts = {
@@ -127,19 +137,20 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                 ) : (
                 <div className="pw-card overflow-hidden border-t-4 border-t-primary">
                     <TableShell label={opp_t.title}>
+                        <MobileSortControl sort={sort} onSort={toggle} onClear={() => setSort(null)} columns={[{ key: "customer", label: opp_t.colCustomer }, { key: "status", label: opp_t.colStatus }, { key: "likelihood", label: opp_t.colLikelihood }, { key: "nextAction", label: opp_t.colNextAction }]} label={opp_t.sortLabel} defaultLabel={opp_t.defaultOrder} className="mb-3" />
                         <table className="pw-stacked-table w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-neutral-50/50 dark:bg-neutral-900/20 border-b border-neutral-100 dark:border-neutral-800/60">
-                                    <th className="px-6 py-5 text-micro font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest pl-8">{opp_t.colCustomer}</th>
+                                    <SortableColumn columnKey="customer" sort={sort} onSort={toggle} label={opp_t.colCustomer} align="left" className="px-6 py-5 pl-8" />
                                     <th className="px-6 py-5 text-micro font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">{opp_t.colOpportunity}</th>
-                                    <th className="px-6 py-5 text-micro font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">{opp_t.colStatus}</th>
-                                    <th className="px-6 py-5 text-micro font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">{opp_t.colLikelihood}</th>
-                                    <th className="px-6 py-5 text-micro font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest">{opp_t.colNextAction}</th>
+                                    <SortableColumn columnKey="status" sort={sort} onSort={toggle} label={opp_t.colStatus} align="left" className="px-6 py-5" />
+                                    <SortableColumn columnKey="likelihood" sort={sort} onSort={toggle} label={opp_t.colLikelihood} align="left" className="px-6 py-5" />
+                                    <SortableColumn columnKey="nextAction" sort={sort} onSort={toggle} label={opp_t.colNextAction} align="left" className="px-6 py-5" />
                                     <th className="px-6 py-5 text-micro font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest text-right pr-8">{opp_t.colActions}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/50">
-                                {filteredOpportunities.map((opp) => (
+                                {sortedOpportunities.map((opp) => (
                                         <tr key={opp.id} className="hover:bg-neutral-50/80 dark:hover:bg-neutral-800/30 transition-colors group">
                                             <td data-label={opp_t.colCustomer} className="px-6 py-6 pl-8">
                                                 <div className="font-bold text-foreground capitalize tracking-tight">{opp.customerName}</div>
