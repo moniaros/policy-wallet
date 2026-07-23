@@ -15,6 +15,8 @@ interface ModalProps {
     /** Accessible name for the dialog (aria-label) or id of its heading. */
     ariaLabel?: string
     ariaLabelledBy?: string
+    /** Id of the element describing the dialog (announced after its name). */
+    ariaDescribedBy?: string
     /** Accessible label for the close button (localize per caller). */
     closeLabel?: string
 }
@@ -27,6 +29,7 @@ export function Modal({
     showCloseButton = true,
     ariaLabel,
     ariaLabelledBy,
+    ariaDescribedBy,
     closeLabel = "Close"
 }: ModalProps) {
     const [mounted, setMounted] = useState(false)
@@ -56,7 +59,7 @@ export function Modal({
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        className="fixed inset-0 bg-black/40 dark:bg-black/60 backdrop-blur-sm z-50"
                     />
 
                     {/* Content */}
@@ -66,12 +69,15 @@ export function Modal({
                         aria-modal="true"
                         aria-label={ariaLabelledBy ? undefined : ariaLabel}
                         aria-labelledby={ariaLabelledBy}
+                        aria-describedby={ariaDescribedBy}
                         tabIndex={-1}
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
                         transition={{ type: "spring", duration: 0.5, bounce: 0.3 }}
-                        className={`fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-lg bg-card rounded-[32px] shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto ${className}`}
+                        /* w-[calc(100%-2rem)] keeps a 1rem gutter on narrow viewports — the panel is
+                           fixed-positioned, so a backdrop padding would not have constrained it. */
+                        className={`fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[calc(100%-2rem)] max-w-lg bg-card rounded-[32px] shadow-2xl max-h-[90vh] overflow-y-auto ${className}`}
                     >
                         {showCloseButton && (
                             <button

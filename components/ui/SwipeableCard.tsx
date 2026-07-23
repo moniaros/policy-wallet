@@ -143,9 +143,14 @@ export function SwipeableCard({
             {/* Left actions */}
             {leftActions.length > 0 && (
                 <div
+                    /* Until the swipe reveals them these buttons are only opacity-0 — still
+                       focusable and still announced. Hide them from AT and take them out of
+                       the tab order so they are not an invisible trap ahead of the card. */
+                    aria-hidden={!showLeftActions}
                     className="absolute left-0 top-0 bottom-0 flex items-center gap-2 pl-4"
                     style={{
                         opacity: showLeftActions ? 1 : 0,
+                        pointerEvents: showLeftActions ? 'auto' : 'none',
                         transform: `translateX(${Math.min(swipeDistance - 80, 0)}px)`,
                         transition: isAnimating || !isSwiping ? 'all 0.3s ease' : 'none'
                     }}
@@ -153,6 +158,7 @@ export function SwipeableCard({
                     {leftActions.map((action) => (
                         <button
                             key={action.id}
+                            tabIndex={showLeftActions ? 0 : -1}
                             onClick={() => handleActionClick(action)}
                             className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm shadow-lg ${getActionColor(action.color)}`}
                         >
@@ -166,9 +172,11 @@ export function SwipeableCard({
             {/* Right actions */}
             {rightActions.length > 0 && (
                 <div
+                    aria-hidden={!showRightActions}
                     className="absolute right-0 top-0 bottom-0 flex items-center gap-2 pr-4"
                     style={{
                         opacity: showRightActions ? 1 : 0,
+                        pointerEvents: showRightActions ? 'auto' : 'none',
                         transform: `translateX(${Math.max(swipeDistance + 80, 0)}px)`,
                         transition: isAnimating || !isSwiping ? 'all 0.3s ease' : 'none'
                     }}
@@ -176,6 +184,7 @@ export function SwipeableCard({
                     {rightActions.map((action) => (
                         <button
                             key={action.id}
+                            tabIndex={showRightActions ? 0 : -1}
                             onClick={() => handleActionClick(action)}
                             className={`flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-semibold text-sm shadow-lg ${getActionColor(action.color)}`}
                         >

@@ -11,6 +11,8 @@ export const en: TranslationKeys = {
         relationshipTerminated: 'The connection has been ended',
         terminationFailed: 'The action failed. Please try again.',
         loading: 'Loading...',
+        pleaseWait: 'Please wait',
+        processingAction: 'Processing your request...',
         save: 'Save',
         saving: 'Saving...',
         cancel: 'Cancel',

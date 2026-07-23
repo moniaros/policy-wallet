@@ -9,6 +9,7 @@
       "Read(//c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New/ folder/product-plan/policy-wallet/docs/planning/**)",
       "Bash(find \"/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/app/\\(protected\\)\" -maxdepth 2 -name \"page.tsx\")",
       "Bash(npx next:*)",
+      "Bash(git push:*)",
       "Bash(npx prisma:*)",
       "Bash(grep -r \"Send Message\\\\|Request Callback\" '/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/app/\\(protected\\)/agent/' --include=*.tsx --include=*.ts)",
       "Bash(grep -r \"PolicyComparison\\\\|import.*Comparison\" '/c/Users/admin/Documents/GitHub/PolicyWalletPlatform/New folder/product-plan/policy-wallet/components/wallet' --include=*.tsx)",
@@ -25,7 +26,10 @@
       "Bash(curl *)",
       "Bash(mv *)",
       "Bash(node -e \"require\\('sharp'\\)\")",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "Bash(xargs -I{} sh -c 'rg -n \"export \\(async \\)?function findSupabaseUserIdByEmail\" {} ')",
+      "Bash(grep -rn \"\\\\\"/agent\\\\\"\\\\|'/agent'\\\\|href=\\\\\"/agent\\\\|push\\('/agent'\\)\\\\|href={\\\\`/agent\" --include=\"*.ts\" --include=\"*.tsx\" .)",
+      "Bash(grep -rn \"invite?token\\\\|/invite\\\\|acceptInvite\\\\|invite/accept\\\\|token=\\\\${\" --include=\"*.ts\" --include=\"*.tsx\" app lib)"
     ]
   },
   "enabledMcpjsonServers": [

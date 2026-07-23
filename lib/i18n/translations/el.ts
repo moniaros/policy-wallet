@@ -9,6 +9,8 @@ export const el = {
         relationshipTerminated: 'Η σύνδεση τερματίστηκε',
         terminationFailed: 'Η ενέργεια απέτυχε. Δοκιμάστε ξανά.',
         loading: 'Φόρτωση...',
+        pleaseWait: 'Παρακαλώ περιμένετε',
+        processingAction: 'Η ενέργεια εκτελείται...',
         save: 'Αποθήκευση',
         saving: 'Αποθήκευση...',
         cancel: 'Ακύρωση',

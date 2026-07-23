@@ -50,20 +50,26 @@ export function AiConsentModal({ isOpen, onClose, onConsented, source = "ai_cons
     }
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} showCloseButton={false}>
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            showCloseButton={false}
+            ariaLabelledBy="ai-consent-title"
+            ariaDescribedBy="ai-consent-body"
+        >
             <div className="p-6 md:p-8">
                 <div className="flex items-start gap-4">
                     <div className="rounded-2xl bg-primary-soft p-3 text-primary dark:bg-primary/15 dark:text-mint">
                         <ShieldCheck className="h-6 w-6" />
                     </div>
                     <div>
-                        <h2 className="text-lg font-black text-slate-900 dark:text-white">{t.common.aiConsentTitle}</h2>
-                        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{t.common.aiConsentBody}</p>
+                        <h2 id="ai-consent-title" className="text-lg font-bold text-slate-900 dark:text-white">{t.common.aiConsentTitle}</h2>
+                        <p id="ai-consent-body" className="mt-2 text-sm text-slate-600 dark:text-slate-300">{t.common.aiConsentBody}</p>
                     </div>
                 </div>
 
                 {failed && (
-                    <p className="mt-4 text-sm font-semibold text-red-600 dark:text-red-400">{t.common.aiConsentSaveFailed}</p>
+                    <p role="alert" className="mt-4 text-sm font-semibold text-red-600 dark:text-red-400">{t.common.aiConsentSaveFailed}</p>
                 )}
 
                 <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
