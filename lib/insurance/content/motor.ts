@@ -155,8 +155,8 @@ export const motorContent: BranchContent = {
             en: 'Photograph the vehicles, the plates and the scene. If there are injuries or a dispute, also call the traffic police.',
         },
         {
-            el: 'Συμπλήρωσε φιλική δήλωση αν συμφωνείτε — επιταχύνει σημαντικά τη διαδικασία.',
-            en: 'Fill in the amicable accident statement if you both agree — it speeds up the process significantly.',
+            el: 'Συμπληρώστε φιλική δήλωση μόνο αν συμφωνείτε για το τι συνέβη — επιταχύνει τη διαδικασία. Αν δεν είστε σίγουροι ποιος φταίει, μην υπογράψετε δήλωση υπαιτιότητας· καταγράψτε μόνο τα γεγονότα και αφήστε τους ασφαλιστές να κρίνουν.',
+            en: 'Fill in the amicable accident statement only if you agree on what happened — it speeds things up. If you are unsure who is at fault, do not sign an admission of fault; record only the facts and let the insurers assess.',
         },
         {
             el: 'Κράτα το συμβόλαιο και τον αριθμό του πρόχειρα — θα σου ζητηθούν σε κάθε επικοινωνία.',
