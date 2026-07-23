@@ -69,11 +69,43 @@ Retire `.arc-card` + `.arc-btn-*` (map to `.pw-*`); fold in and delete shadcn `B
 
 Every batch ran the CI-blocking set green: `type-check`, `lint`, `lint:i18n-changed`, `lint:utf8`, `lint:encoding`, `audit:api-auth`, `vitest --run tests/unit` (1227), and the production `build`. No API routes changed, so the route-policy inventory is untouched. New i18n keys were added to **both** `lib/i18n/translations/{el,en}.ts`.
 
-**Not run — BLOCKED, not skipped:** Playwright. `tests/global-setup.ts` provisions its users against the dev Supabase in `.env.local`, and that project (`db.lzqvtvjggylcujenlelh.supabase.co`) **no longer resolves in DNS** — it is the idle project STATUS flags under Housekeeping, now paused or deleted. Every project aborts in global setup, so this is a pre-existing environment problem, unrelated to these changes. Restore or repoint the dev database first, then run:
+**Playwright — run via the IPv4 pooler.** The dev Supabase direct host (`db.lzqvtvjggylcujenlelh.supabase.co`) is **IPv6-only**, and this machine currently has no global IPv6 address, so `global-setup` first died with a misleading "Can't reach database server". The project is not paused — it resolves fine on AAAA. The working fallback is the IPv4 session pooler:
 
 ```bash
-npx playwright test --project=chromium --project=agent-chromium
-RUN_UX_AUDIT=1 npx playwright test --project=chromium
+export DATABASE_URL="postgresql://postgres.lzqvtvjggylcujenlelh:<pw>@aws-1-eu-west-3.pooler.supabase.com:5432/postgres?connection_limit=2&pool_timeout=60"
+export DIRECT_URL="$DATABASE_URL"
+export PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+```
+
+The pooler caps at 15 clients, so pass `--workers=3`.
+
+Through the pooler, `global-setup` provisioned both users and **both auth setups signed in successfully** (`/dashboard` and `/dashboard/agent` reached) — so the app boots, auth works and both shells render under these changes. The test run itself then **stalled** with idle workers, and a follow-up single-spec run failed in `page.goto` with `net::ERR_ABORTED` — both traced to the leftover wedged dev server from the killed run holding port 3000, plus the system-Chrome executable this machine has to use. That is test-harness flakiness, not a product failure, but **the suite has still not been run to completion — do that before merging**:
+
+```bash
+npx playwright test --project=chromium --project=agent-chromium --workers=3
+RUN_UX_AUDIT=1 npx playwright test --project=chromium --workers=3
 ```
 
 Priority checks, given what changed: the admin section renders with a single sidebar and no empty bottom bar; nav links still navigate and close the mobile drawer; `/wallet` on a phone does not flash the desktop layout; the mobile profile screen's actions land on `/account` and sign-out works.
+
+### Verified directly against a running dev server
+
+Using the session cookies the auth setups produced, both shells were fetched and their markup asserted:
+
+| Check | `/dashboard` (policyholder) | `/dashboard/agent` |
+|---|---|---|
+| HTTP | 200 | 200 |
+| Skip link `href="#main-content"` | 1 | 1 |
+| `id="main-content"` target | 1 | 1 |
+| `<main>` elements (was 2 under admin) | 1 | 1 |
+| Labelled nav landmarks | «Κύρια πλοήγηση» + «Γρήγορη πλοήγηση» | same |
+| Sidebar rows as real `<a href>` / `<button>` | 8 / **0** | 13 / **0** |
+| `aria-current="page"` | 1 | 1 |
+| Bottom-nav rows as real `<a href>` | 5 | — |
+| `AdminSidebar` markup present | no | no |
+
+Skip-link copy rendered in Greek («Μετάβαση στο περιεχόμενο»), confirming the new keys resolve.
+
+**B1 confirmed at the CSS layer:** `calc(100%-2rem)` is invalid CSS if emitted verbatim, so the gutter fix depended on Tailwind normalising it. The built stylesheet contains `.w-\[calc\(100\%-2rem\)\]{width:calc(100% - 2rem)}` — it does.
+
+**Not directly renderable here:** the admin surface. `/admin/*` needs both the DB role and the Supabase JWT `user_metadata.role` claim (`proxy.ts`), and granting that meant mutating a user, which was declined. The admin fix is nonetheless structurally certain: `admin/layout.tsx` now returns only `<>{children}</>`, `AdminSidebar.tsx` is deleted with zero importers, and the surrounding AppShell provably renders exactly one `<main>` (above). **Still worth an eyeball on the preview deploy.**
