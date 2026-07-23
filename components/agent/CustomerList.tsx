@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useMemo, useState } from "react"
-import { Search, Phone, Mail, LayoutList, LayoutGrid, Download, UserPlus, Sparkles, FileText, ChevronRight } from "lucide-react"
+import { Search, Phone, Mail, LayoutList, LayoutGrid, Download, UserPlus, Sparkles, FileText, ChevronRight, ArrowDownUp } from "lucide-react"
 
 import { Customer, CustomerListProps } from "./types"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -44,7 +44,9 @@ export function CustomerList({
         }
 
         filtered = [...filtered].sort((a, b) => {
-            if (sortBy === "name") return `${a.name} ${a.surname}`.localeCompare(`${b.name} ${b.surname}`)
+            // 'el' collation, matching the shared table sort — the default puts
+            // Greek names after z, so a Greek client list would order wrongly.
+            if (sortBy === "name") return `${a.name} ${a.surname}`.localeCompare(`${b.name} ${b.surname}`, "el", { sensitivity: "base" })
             if (sortBy === "policyCount") return b.policyCount - a.policyCount
             if (!a.lastInteractionDate) return 1
             if (!b.lastInteractionDate) return -1
@@ -255,13 +257,28 @@ export function CustomerList({
                                     <th className="px-4 py-3.5 w-10">
                                         <RowCheckbox label={t.common.all} checked={selectedIds.size === filteredCustomers.length && filteredCustomers.length > 0} onChange={toggleAll} />
                                     </th>
-                                    <th className="px-4 py-3.5 cursor-pointer hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors" onClick={() => setSortBy("name")}>{roleCopy.customerList.tableClient}</th>
-                                    <th className="px-4 py-3.5 text-center cursor-pointer hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors" onClick={() => setSortBy("policyCount")}>{roleCopy.customerList.tablePolicies}</th>
+                                    <th aria-sort={sortBy === "name" ? "ascending" : "none"} className="px-4 py-3.5">
+                                        <button type="button" onClick={() => setSortBy("name")} className="inline-flex items-center gap-1 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:hover:text-neutral-300">
+                                            {roleCopy.customerList.tableClient}
+                                            {sortBy === "name" && <ArrowDownUp className="h-3 w-3 shrink-0" aria-hidden="true" />}
+                                        </button>
+                                    </th>
+                                    <th aria-sort={sortBy === "policyCount" ? "descending" : "none"} className="px-4 py-3.5 text-center">
+                                        <button type="button" onClick={() => setSortBy("policyCount")} className="inline-flex items-center gap-1 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:hover:text-neutral-300">
+                                            {roleCopy.customerList.tablePolicies}
+                                            {sortBy === "policyCount" && <ArrowDownUp className="h-3 w-3 shrink-0" aria-hidden="true" />}
+                                        </button>
+                                    </th>
                                     <th className="px-4 py-3.5 text-center">{roleCopy.customerList.tableHealth}</th>
                                     <th className="px-4 py-3.5">{roleCopy.customerList.tableNextRenewal}</th>
                                     <th className="px-4 py-3.5 text-center">{roleCopy.customerList.tableGaps}</th>
                                     <th className="px-4 py-3.5">{roleCopy.customerList.tableConsent}</th>
-                                    <th className="px-4 py-3.5 text-right cursor-pointer hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors" onClick={() => setSortBy("lastInteractionDate")}>{roleCopy.customerList.tableLastActivity}</th>
+                                    <th aria-sort={sortBy === "lastInteractionDate" ? "descending" : "none"} className="px-4 py-3.5 text-right">
+                                        <button type="button" onClick={() => setSortBy("lastInteractionDate")} className="inline-flex items-center gap-1 transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:hover:text-neutral-300">
+                                            {roleCopy.customerList.tableLastActivity}
+                                            {sortBy === "lastInteractionDate" && <ArrowDownUp className="h-3 w-3 shrink-0" aria-hidden="true" />}
+                                        </button>
+                                    </th>
                                     <th className="px-4 py-3.5">{roleCopy.customerList.tableAction}</th>
                                     <th className="px-4 py-3.5 w-10"></th>
                                 </tr>
