@@ -1006,6 +1006,13 @@ export const el = {
     },
 
     notifications: {
+        catSystemConfirmation: 'Επιβεβαιώσεις συστήματος',
+        catSystemConfirmationDesc: 'Αποστέλλονται πάντα — δεν απενεργοποιούνται.',
+        catReminder: 'Υπενθυμίσεις',
+        catReminderDesc: 'Υπενθυμίσεις για ενέργειες που χρειάζονται προσοχή.',
+        catIntelligence: 'Ανάλυση κάλυψης',
+        catIntelligenceDesc: 'Ενημερώσεις από την ανάλυση κάλυψης — προαιρετικές.',
+        dualRole: 'Διπλός ρόλος',
         backToNotifications: 'Πίσω στις ειδοποιήσεις',
         pwaInstallTitle: 'Εγκατάσταση PolicyWallet',
         pwaInstallSubtitle: 'Ταχύτερη πρόσβαση από την αρχική οθόνη σας.',

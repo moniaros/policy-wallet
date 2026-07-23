@@ -1009,6 +1009,13 @@ export const en: TranslationKeys = {
     },
 
     notifications: {
+        catSystemConfirmation: 'System confirmations',
+        catSystemConfirmationDesc: 'Always sent — cannot be turned off.',
+        catReminder: 'Reminders',
+        catReminderDesc: 'Reminders for actions that need your attention.',
+        catIntelligence: 'Coverage analysis',
+        catIntelligenceDesc: 'Updates from coverage analysis — optional.',
+        dualRole: 'Dual role',
         backToNotifications: 'Back to notifications',
         pwaInstallTitle: 'Install PolicyWallet',
         pwaInstallSubtitle: 'Faster access from your home screen.',

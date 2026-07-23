@@ -18,27 +18,19 @@ export function NotificationPreferences({
 
     const getCategoryLabel = (category: string) => {
         switch (category) {
-            case 'system_confirmation':
-                return 'Επιβεβαιώσεις Συστήματος'
-            case 'reminder':
-                return 'Υπενθυμίσεις'
-            case 'intelligence':
-                return 'AI Ανάλυση Κάλυψης'
-            default:
-                return category
+            case 'system_confirmation': return t.notifications.catSystemConfirmation
+            case 'reminder': return t.notifications.catReminder
+            case 'intelligence': return t.notifications.catIntelligence
+            default: return category
         }
     }
 
     const getCategoryDescription = (category: string) => {
         switch (category) {
-            case 'system_confirmation':
-                return 'Πάντα αποστέλλονται - δεν μπορούν να απενεργοποιηθούν'
-            case 'reminder':
-                return 'Υπενθυμίσεις για ενέργειες που χρειάζονται προσοχή'
-            case 'intelligence':
-                return 'Ενημερώσεις από την ανάλυση κάλυψης - προαιρετικές'
-            default:
-                return ''
+            case 'system_confirmation': return t.notifications.catSystemConfirmationDesc
+            case 'reminder': return t.notifications.catReminderDesc
+            case 'intelligence': return t.notifications.catIntelligenceDesc
+            default: return ''
         }
     }
 
@@ -56,7 +48,7 @@ export function NotificationPreferences({
                         <div>
                             <div className="flex items-center gap-3 mb-2">
                                 <span className="w-8 h-px bg-mint" />
-                                <span className="text-kicker font-black uppercase tracking-[0.3em] text-mint">Dual-Role Context</span>
+                                <span className="text-kicker font-black uppercase tracking-[0.3em] text-mint">{t.notifications.dualRole}</span>
                             </div>
                             <h3 className="text-2xl font-black tracking-tight mb-2">
                                 Προτιμήσεις για <span className="text-stone-400 italic">τον Ρόλο σας</span>
