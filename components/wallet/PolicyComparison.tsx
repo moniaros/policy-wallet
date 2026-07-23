@@ -1,6 +1,7 @@
 "use client"
 
 import { useId, useState, useMemo } from "react"
+import { Info } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { parseDocumentDate } from "@/lib/dates/document-date"
 import { useLanguage } from "@/contexts/LanguageContext"
@@ -356,6 +357,16 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                                         <p className="text-sm text-muted-foreground">{selectedPolicies.length} {c.policiesCompared}</p>
                                     </div>
                                 </div>
+
+                                {/* Underwriting-accurate framing: "Lowest premium" is
+                                    shown in a positive colour, which reads as
+                                    "cheapest = best". Within the same product a lower
+                                    premium usually buys less cover or a higher excess,
+                                    so this says price alone is not value. */}
+                                <p className="mt-4 flex items-start gap-2 text-caption leading-relaxed text-muted-foreground">
+                                    <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                                    {c.lowestPremiumCaveat}
+                                </p>
                             </div>
                         </div>
                     )}

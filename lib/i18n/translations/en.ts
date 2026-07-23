@@ -313,6 +313,7 @@ export const en: TranslationKeys = {
             perYear: '/year',
             perYearShort: '/yr',
             quickInsights: 'Quick Insights',
+            lowestPremiumCaveat: 'A lower premium does not always mean better value — a cheaper policy may carry less cover or a higher deductible. Compare the coverage, not only the price.',
             lowestPremium: 'Lowest Premium',
             expiresSoonest: 'Expires Soonest',
             inPrefix: 'in',
