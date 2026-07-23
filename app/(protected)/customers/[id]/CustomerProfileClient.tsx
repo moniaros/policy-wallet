@@ -21,6 +21,8 @@ import { FileText, Send, Plus, ClipboardList, Sparkles } from "lucide-react"
 import type { AgentTier } from "@/types/subscription-entitlements"
 import type { DocumentRequestData, ProposalData, DocumentTypeKey, DocumentUrgency } from "@/components/collaboration/types"
 
+import { Modal } from "@/components/ui/Modal"
+
 interface Props {
     initialCustomer: Customer
     agentTier: AgentTier
@@ -268,34 +270,41 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
             />
 
             {/* Document Request Modal */}
-            {isDocRequestFormOpen && (
-                <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center">
-                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsDocRequestFormOpen(false)} />
-                    <div className="relative z-10 w-full max-w-lg mx-4 mb-4 sm:mb-0 max-h-[90vh] overflow-y-auto">
-                        <DocumentRequestCreate
-                            clientName={customerFullName}
-                            onSend={handleSendDocRequest}
-                            onCancel={() => setIsDocRequestFormOpen(false)}
-                            isSending={isSendingDocRequest}
-                        />
-                    </div>
-                </div>
-            )}
+            {/* Both of these were hand-rolled `fixed inset-0` overlays with no
+                focus trap, no Escape, and no scroll-lock — inaccessible dialogs
+                on the agent's busiest screen. They now use the shared Modal
+                (useDialog under the hood). The forms render their own BrandCard,
+                so the Modal's chrome is turned off (showCloseButton, transparent
+                panel) to avoid a card-in-a-card. */}
+            <Modal
+                isOpen={isDocRequestFormOpen}
+                onClose={() => setIsDocRequestFormOpen(false)}
+                showCloseButton={false}
+                ariaLabel={PROFILE_COPY.newRequest[language]}
+                className="!bg-transparent !shadow-none !rounded-none"
+            >
+                <DocumentRequestCreate
+                    clientName={customerFullName}
+                    onSend={handleSendDocRequest}
+                    onCancel={() => setIsDocRequestFormOpen(false)}
+                    isSending={isSendingDocRequest}
+                />
+            </Modal>
 
-            {/* Proposal Creation Modal */}
-            {isProposalFormOpen && (
-                <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center">
-                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setIsProposalFormOpen(false)} />
-                    <div className="relative z-10 w-full max-w-lg mx-4 mb-4 sm:mb-0 max-h-[90vh] overflow-y-auto">
-                        <ProposalCreate
-                            clientName={customerFullName}
-                            onSubmit={handleSendProposal}
-                            onCancel={() => setIsProposalFormOpen(false)}
-                            isSubmitting={isSendingProposal}
-                        />
-                    </div>
-                </div>
-            )}
+            <Modal
+                isOpen={isProposalFormOpen}
+                onClose={() => setIsProposalFormOpen(false)}
+                showCloseButton={false}
+                ariaLabel={PROFILE_COPY.newProposal[language]}
+                className="!bg-transparent !shadow-none !rounded-none"
+            >
+                <ProposalCreate
+                    clientName={customerFullName}
+                    onSubmit={handleSendProposal}
+                    onCancel={() => setIsProposalFormOpen(false)}
+                    isSubmitting={isSendingProposal}
+                />
+            </Modal>
 
             <ClientDetailView
                 customer={initialCustomer}

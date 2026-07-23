@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useId, useRef, useState } from "react"
 import { ArrowLeft, LayoutDashboard, Shield, Activity, Euro } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -19,6 +19,7 @@ const TAB_COPY = {
     policies: { el: "Ασφαλιστήρια", en: "Policies" },
     activity: { el: "Δραστηριότητα", en: "Activity" },
     financials: { el: "Οικονομικά", en: "Financials" },
+    tablistLabel: { el: "Ενότητες πελάτη", en: "Client sections" },
 } as const
 
 const pick = (pair: { el: string; en: string }, language: string) =>
@@ -68,6 +69,8 @@ export function ClientDetailView({
 }: ClientDetailViewProps) {
     const { language } = useLanguage()
     const [activeTab, setActiveTab] = useState<TabId>("overview")
+    const tabBaseId = useId()
+    const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({})
 
     const tabs: Array<{ id: TabId; label: string; icon: React.ElementType; agentOnly?: boolean }> = [
         {
@@ -101,11 +104,32 @@ export function ClientDetailView({
 
     const initials = `${customer.name.charAt(0)}${customer.surname.charAt(0)}`.toUpperCase()
 
+    const tabId = (id: TabId) => `${tabBaseId}-tab-${id}`
+    const panelId = (id: TabId) => `${tabBaseId}-panel-${id}`
+
+    // Roving arrow-key navigation, as the WAI-ARIA tabs pattern requires: Left/
+    // Right move between tabs (and Home/End to the ends), moving focus AND
+    // selection so the panel follows.
+    const onTabKeyDown = (e: React.KeyboardEvent, index: number) => {
+        const keys: Record<string, number> = {
+            ArrowRight: (index + 1) % visibleTabs.length,
+            ArrowLeft: (index - 1 + visibleTabs.length) % visibleTabs.length,
+            Home: 0,
+            End: visibleTabs.length - 1,
+        }
+        const next = keys[e.key]
+        if (next === undefined) return
+        e.preventDefault()
+        const nextTab = visibleTabs[next]
+        setActiveTab(nextTab.id)
+        tabRefs.current[nextTab.id]?.focus()
+    }
+
     return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-neutral-950">
+        <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
             {/* Header */}
             <div className="bg-white/70 dark:bg-neutral-900/70 backdrop-blur-xl border-b border-neutral-200/60 dark:border-neutral-800/60">
-                <div className="max-w-page mx-auto px-6 py-5">
+                <div className="max-w-page mx-auto px-4 py-5 sm:px-6">
                     <div className="flex items-center gap-4">
                         {onBack && (
                             <button
@@ -138,23 +162,41 @@ export function ClientDetailView({
                         </div>
                     </div>
 
-                    {/* Tabs */}
-                    <div className="flex gap-1 mt-4 -mb-px">
-                        {visibleTabs.map((tab) => {
+                    {/* Tabs.
+                        - Real tablist semantics: role tablist/tab, aria-selected,
+                          aria-controls, roving tabindex + arrow keys (they were
+                          plain buttons a screen reader announced as unrelated).
+                        - `overflow-x-auto` + `whitespace-nowrap` so four tabs with
+                          icons do not overflow or wrap on a 375px phone; the row
+                          scrolls sideways instead. `-mx-6 px-6` lets it bleed to
+                          the card edge so a partly-hidden tab is a visible hint. */}
+                    <div
+                        role="tablist"
+                        aria-label={pick(TAB_COPY.tablistLabel, language)}
+                        className="mt-4 -mb-px -mx-4 flex gap-1 overflow-x-auto px-4 sm:-mx-6 sm:px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+                    >
+                        {visibleTabs.map((tab, index) => {
                             const Icon = tab.icon
                             const isActive = activeTab === tab.id
                             return (
                                 <button
                                     key={tab.id}
+                                    ref={(el) => { tabRefs.current[tab.id] = el }}
                                     type="button"
+                                    role="tab"
+                                    id={tabId(tab.id)}
+                                    aria-selected={isActive}
+                                    aria-controls={panelId(tab.id)}
+                                    tabIndex={isActive ? 0 : -1}
                                     onClick={() => setActiveTab(tab.id)}
-                                    className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-t-xl border-b-2 transition cursor-pointer ${
+                                    onKeyDown={(e) => onTabKeyDown(e, index)}
+                                    className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-t-xl border-b-2 px-4 py-2.5 text-sm font-medium transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                                         isActive
                                             ? "border-primary dark:border-mint text-primary dark:text-mint bg-white/50 dark:bg-neutral-800/50"
                                             : "border-transparent text-muted-foreground hover:text-neutral-700 dark:hover:text-neutral-300"
                                     }`}
                                 >
-                                    <Icon className="h-4 w-4" />
+                                    <Icon className="h-4 w-4" aria-hidden="true" />
                                     {tab.label}
                                 </button>
                             )
@@ -163,8 +205,14 @@ export function ClientDetailView({
                 </div>
             </div>
 
-            {/* Tab Content */}
-            <div className="max-w-page mx-auto px-6 py-6">
+            {/* Tab Content — each pane is a labelled tabpanel bound to its tab. */}
+            <div
+                role="tabpanel"
+                id={panelId(activeTab)}
+                aria-labelledby={tabId(activeTab)}
+                tabIndex={0}
+                className="max-w-page mx-auto px-4 py-6 sm:px-6 focus-visible:outline-none"
+            >
                 {activeTab === "overview" && (
                     <ClientOverviewTab
                         customer={customer}
@@ -203,9 +251,9 @@ export function ClientDetailView({
 
 export function ClientDetailViewSkeleton() {
     return (
-        <div className="min-h-screen bg-[#F8FAFC] dark:bg-neutral-950">
+        <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
             <div className="bg-white/70 dark:bg-neutral-900/70 border-b border-neutral-200/60 dark:border-neutral-800/60">
-                <div className="max-w-page mx-auto px-6 py-5">
+                <div className="max-w-page mx-auto px-4 py-5 sm:px-6">
                     <div className="flex items-center gap-4">
                         <Skeleton className="h-12 w-12 rounded-full" />
                         <div>
