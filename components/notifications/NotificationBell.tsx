@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { formatDate } from '@/lib/i18n/format'
 
+import { formatRelativeDate } from "@/lib/agent/format"
 interface Notification {
     id: string
     eventType: string
@@ -74,22 +75,6 @@ export function NotificationBell({ initialNotifications = [], initialUnreadCount
                     </div>
                 )
         }
-    }
-
-    const formatTimeAgo = (dateString: string) => {
-        const date = new Date(dateString)
-        const now = new Date()
-        const diffMs = now.getTime() - date.getTime()
-        const diffMins = Math.floor(diffMs / 60000)
-        const diffHours = Math.floor(diffMs / 3600000)
-        const diffDays = Math.floor(diffMs / 86400000)
-
-        if (diffMins < 1) return 'Just now'
-        if (diffMins < 60) return `${diffMins}m ago`
-        if (diffHours < 24) return `${diffHours}h ago`
-        if (diffDays === 1) return 'Yesterday'
-        if (diffDays < 7) return `${diffDays}d ago`
-        return formatDate(date, language as 'el' | 'en')
     }
 
     const handleNotificationClick = async (notification: Notification) => {
@@ -208,7 +193,7 @@ export function NotificationBell({ initialNotifications = [], initialUnreadCount
                                                 {notification.message}
                                             </p>
                                             <p className="text-xs text-stone-400 dark:text-stone-500 mt-1">
-                                                {formatTimeAgo(notification.createdAt)}
+                                                {formatRelativeDate(notification.createdAt, language === 'el' ? 'el' : 'en')}
                                             </p>
                                         </div>
                                     </button>
