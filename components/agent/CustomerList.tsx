@@ -9,6 +9,7 @@ import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { EmptyState, CustomerPreviewRow } from "@/components/ui/EmptyState"
 import { ConsentStatusBadge, type ConsentStatus } from "@/components/ui/ConsentStatusBadge"
 import { TableShell } from "@/components/ui/TableShell"
+import { RowCheckbox } from "@/components/ui/form"
 
 export function CustomerList({
     customers,
@@ -252,7 +253,7 @@ export function CustomerList({
                             <thead className="bg-neutral-50/80 dark:bg-neutral-950/50 text-micro font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 border-b border-neutral-200/60 dark:border-neutral-800/60">
                                 <tr>
                                     <th className="px-4 py-3.5 w-10">
-                                        <input type="checkbox" checked={selectedIds.size === filteredCustomers.length && filteredCustomers.length > 0} onChange={toggleAll} className="rounded border-neutral-300 text-primary focus:ring-primary" />
+                                        <RowCheckbox label={t.common.all} checked={selectedIds.size === filteredCustomers.length && filteredCustomers.length > 0} onChange={toggleAll} />
                                     </th>
                                     <th className="px-4 py-3.5 cursor-pointer hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors" onClick={() => setSortBy("name")}>{roleCopy.customerList.tableClient}</th>
                                     <th className="px-4 py-3.5 text-center cursor-pointer hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors" onClick={() => setSortBy("policyCount")}>{roleCopy.customerList.tablePolicies}</th>
@@ -271,7 +272,7 @@ export function CustomerList({
                                     return (
                                     <tr key={customer.id} onClick={() => onCustomerClick(customer.id)} className="group hover:bg-neutral-50/80 dark:hover:bg-neutral-800/30 transition-all cursor-pointer">
                                         <td className="px-4 py-3.5" onClick={(e) => e.stopPropagation()}>
-                                            <input type="checkbox" checked={selectedIds.has(customer.id)} onChange={() => toggleSelection(customer.id)} className="rounded border-neutral-300 text-primary focus:ring-primary" />
+                                            <RowCheckbox label={`${customer.name} ${customer.surname}`} checked={selectedIds.has(customer.id)} onChange={() => toggleSelection(customer.id)} />
                                         </td>
                                         <td className="px-4 py-3.5">
                                             <div className="flex items-center gap-1.5">
@@ -345,7 +346,7 @@ export function CustomerList({
                                         {roleCopy.customerList[customer.activationStatus]}
                                     </span>
                                 </div>
-                                <input type="checkbox" checked={selectedIds.has(customer.id)} onChange={(e) => { e.stopPropagation(); toggleSelection(customer.id) }} className="rounded border-neutral-300 text-primary focus:ring-primary" />
+                                <RowCheckbox label={`${customer.name} ${customer.surname}`} checked={selectedIds.has(customer.id)} onChange={(e) => { e.stopPropagation(); toggleSelection(customer.id) }} />
                             </div>
                             <div className="flex justify-between items-center text-caption text-muted-foreground mb-4">
                                 <span className="flex items-center gap-1"><FileText className="w-3 h-3" />{customer.policyCount} {roleCopy.customerList.policies}</span>

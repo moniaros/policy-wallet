@@ -1,10 +1,9 @@
 import React from 'react'
+import { Skeleton } from '@/components/ui/skeleton'
 
-export function Skeleton({ className }: { className?: string }) {
-    return (
-        <div className={`animate-pulse bg-stone-200 dark:bg-stone-800 rounded-xl ${className}`} />
-    )
-}
+// Re-exported so the 14 modules importing Skeleton from here keep working.
+// The definition lives in components/ui/skeleton.tsx — there is only one.
+export { Skeleton }
 
 /**
  * Generic skeleton for the agent's data-heavy list/insight routes (customers,
@@ -13,7 +12,7 @@ export function Skeleton({ className }: { className?: string }) {
  */
 export function AgentListSkeleton() {
     return (
-        <div className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-page-wide mx-auto animate-in fade-in duration-500">
+        <div role="status" aria-busy="true" className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-page-wide mx-auto animate-in fade-in duration-500">
             <div className="flex items-center justify-between flex-wrap gap-3">
                 <div className="space-y-2">
                     <Skeleton className="h-8 w-56" />
@@ -49,7 +48,7 @@ export function AgentListSkeleton() {
 
 export function DashboardSkeleton() {
     return (
-        <div className="p-4 md:p-6 space-y-8 max-w-page-wide mx-auto animate-in fade-in duration-500">
+        <div role="status" aria-busy="true" className="p-4 md:p-6 space-y-8 max-w-page-wide mx-auto animate-in fade-in duration-500">
             {/* Header */}
             <div className="flex justify-between items-end mb-12">
                 <div className="space-y-2">
@@ -115,7 +114,7 @@ export function DashboardSkeleton() {
 
 export function WalletSkeleton() {
     return (
-        <div className="p-4 md:p-6 space-y-8 max-w-7xl mx-auto py-12 animate-in fade-in duration-500">
+        <div role="status" aria-busy="true" className="p-4 md:p-6 space-y-8 max-w-7xl mx-auto py-12 animate-in fade-in duration-500">
             {/* Page Header Skeleton */}
             <div className="mb-12 space-y-3">
                 <Skeleton className="h-10 w-72 mx-auto" />
@@ -166,7 +165,7 @@ export function WalletSkeleton() {
 }
 export function TasksSkeleton() {
     return (
-        <div className="p-4 md:p-6 space-y-8 max-w-7xl mx-auto py-12 animate-in fade-in duration-500">
+        <div role="status" aria-busy="true" className="p-4 md:p-6 space-y-8 max-w-7xl mx-auto py-12 animate-in fade-in duration-500">
             {/* Header */}
             <div className="mb-12 space-y-4">
                 <Skeleton className="h-6 w-32" />
@@ -210,7 +209,7 @@ export function TasksSkeleton() {
 
 export function QuestionnaireSkeleton() {
     return (
-        <div className="max-w-4xl mx-auto px-4 py-16 md:py-24 space-y-12 animate-in fade-in duration-500">
+        <div role="status" aria-busy="true" className="max-w-4xl mx-auto px-4 py-16 md:py-24 space-y-12 animate-in fade-in duration-500">
             <div className="space-y-6">
                 <div className="flex items-center gap-3">
                     <Skeleton className="h-6 w-32 rounded-full" />

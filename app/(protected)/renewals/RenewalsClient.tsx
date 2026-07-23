@@ -23,6 +23,7 @@ import type { RenewalView } from "./actions"
 import { updateRenewalOutcome, getAgentRenewals, sendBatchRenewalReminder } from "./actions"
 import { useDialog } from "@/hooks/useDialog"
 import { TableShell } from "@/components/ui/TableShell"
+import { RowCheckbox } from "@/components/ui/form"
 
 const copy = {
     en: {
@@ -362,11 +363,10 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                 <thead>
                                     <tr className="border-b border-neutral-100 dark:border-neutral-800">
                                         <th className="px-4 py-3 text-left">
-                                            <input
-                                                type="checkbox"
+                                            <RowCheckbox
+                                                label={t.all}
                                                 checked={selectedIds.size > 0 && selectedIds.size === renewals.filter(r => r.status === "pending" || r.status === "overdue").length}
                                                 onChange={toggleSelectAll}
-                                                className="rounded border-neutral-300 dark:border-neutral-600"
                                             />
                                         </th>
                                         <th className="px-4 py-3 text-left text-kicker font-black text-neutral-400 uppercase tracking-widest">{t.customer}</th>
@@ -385,11 +385,10 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                             <tr key={r.id} className="border-b border-neutral-50 dark:border-neutral-800/50 hover:bg-neutral-50/50 dark:hover:bg-neutral-800/30 transition-colors">
                                                 <td className="px-4 py-3">
                                                     {isActionable && (
-                                                        <input
-                                                            type="checkbox"
+                                                        <RowCheckbox
+                                                            label={r.customerName}
                                                             checked={selectedIds.has(r.id)}
                                                             onChange={() => toggleSelect(r.id)}
-                                                            className="rounded border-neutral-300 dark:border-neutral-600"
                                                         />
                                                     )}
                                                 </td>
