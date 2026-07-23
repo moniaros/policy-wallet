@@ -354,6 +354,12 @@ export function AnalysisCard({
         let cancelled = false
 
         const pollRun = async () => {
+            // Skip while the tab is hidden — this fired every 2.5s regardless, so a
+            // backgrounded phone kept polling the analysis endpoint indefinitely.
+            // (The shared hooks/usePolling covers the wallet and upload pollers;
+            // this effect's cancellation flag and ~20 dependencies make a full
+            // migration riskier than the win, so it takes the guard in place.)
+            if (typeof document !== "undefined" && document.hidden) return
             try {
                 const response = await fetch(`/api/v1/policies/${policyId}/analysis-runs/${runId}`, {
                     method: "GET",
@@ -457,10 +463,13 @@ export function AnalysisCard({
 
         pollRun()
         const interval = setInterval(pollRun, 2500)
+        const onVisible = () => { if (!document.hidden) void pollRun() }
+        document.addEventListener("visibilitychange", onVisible)
 
         return () => {
             cancelled = true
             clearInterval(interval)
+            document.removeEventListener("visibilitychange", onVisible)
         }
     }, [
         errorCopy.auth,

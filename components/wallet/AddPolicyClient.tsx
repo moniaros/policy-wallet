@@ -12,6 +12,7 @@ import { AiConsentModal } from "@/components/ui/AiConsentModal"
 import { UploadDropzone } from "@/components/ui/UploadDropzone"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
 import type { PolicyReviewData } from "@/lib/wallet/policy-review"
+import { usePolling } from "@/hooks/usePolling"
 import {
     UploadCloud,
     FileText,
@@ -191,26 +192,10 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
         }
     }, [createdPolicyId])
 
-    useEffect(() => {
-        if (phase !== 'reviewing' || !createdPolicyId) return
-        if (reviewData) return // already got data
-
-        const getInterval = () => {
-            const elapsed = Date.now() - pollingStartRef.current
-            if (elapsed < 30_000) return 2000
-            if (elapsed < 120_000) return 5000
-            return 10_000
-        }
-
-        let timeout: ReturnType<typeof setTimeout>
-        const poll = () => {
-            pollReviewData()
-            timeout = setTimeout(poll, getInterval())
-        }
-        timeout = setTimeout(poll, getInterval())
-
-        return () => clearTimeout(timeout)
-    }, [phase, createdPolicyId, reviewData, pollReviewData])
+    // Shared backoff + hidden-tab pause (was a hand-rolled copy of the wallet's).
+    usePolling(pollReviewData, {
+        enabled: phase === 'reviewing' && Boolean(createdPolicyId) && !reviewData,
+    })
 
     const reviewCopy = t.wallet.review
 

@@ -18,6 +18,7 @@ import { PolicyComparison } from "@/components/wallet/PolicyComparison"
 import { AiConsentModal } from "@/components/ui/AiConsentModal"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
 import { UpgradeTriggerCard } from "@/components/monetization/UpgradeTriggerCard"
+import { usePolling } from "@/hooks/usePolling"
 
 interface PolicyWalletClientProps {
     policies: Policy[]
@@ -97,8 +98,6 @@ export function PolicyWalletClient({ policies, user, showTour = false, tier = 'f
         }
     }
 
-    // Polling with backoff: 2s for first 30s, 5s until 2min, 10s after
-    const pollingStartRef = useRef<number>(0)
     // The poll below calls router.refresh(), which yields a new `policies`
     // reference and re-runs this effect every 2–10s. Without this guard the
     // browser-notification prompt toast re-fired on every poll (a fresh copy
@@ -106,29 +105,18 @@ export function PolicyWalletClient({ policies, user, showTour = false, tier = 'f
     // nothing is analyzing so a later upload can prompt again.
     const notifyPromptShownRef = useRef(false)
 
+    const hasAnalyzing = policies.some((p) => p.status === 'analyzing')
+
+    // Backoff + hidden-tab pause now live in the shared hook. This poll calls
+    // router.refresh(), which re-runs the whole server tree, so polling a
+    // backgrounded phone was pure waste.
+    usePolling(() => router.refresh(), { enabled: hasAnalyzing })
+
     React.useEffect(() => {
-        const hasAnalyzing = policies.some((p) => p.status === 'analyzing')
         if (!hasAnalyzing) {
-            pollingStartRef.current = 0
             notifyPromptShownRef.current = false
             return
         }
-
-        if (pollingStartRef.current === 0) pollingStartRef.current = Date.now()
-
-        const getInterval = () => {
-            const elapsed = Date.now() - pollingStartRef.current
-            if (elapsed < 30_000) return 2000
-            if (elapsed < 120_000) return 5000
-            return 10_000
-        }
-
-        let timeout: ReturnType<typeof setTimeout>
-        const poll = () => {
-            router.refresh()
-            timeout = setTimeout(poll, getInterval())
-        }
-        timeout = setTimeout(poll, getInterval())
 
         if (!notifyPromptShownRef.current && 'Notification' in window && Notification.permission === 'default') {
             notifyPromptShownRef.current = true
@@ -151,8 +139,7 @@ export function PolicyWalletClient({ policies, user, showTour = false, tier = 'f
             })
         }
 
-        return () => clearTimeout(timeout)
-    }, [policies, router, copy.inProgress, copy.notifyPrompt, copy.notifyMe, copy.notificationsEnabled])
+    }, [hasAnalyzing, copy.inProgress, copy.notifyPrompt, copy.notifyMe, copy.notificationsEnabled])
 
     React.useEffect(() => {
         const previousStatuses = previousStatusesRef.current
