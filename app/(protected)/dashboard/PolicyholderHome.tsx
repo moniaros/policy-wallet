@@ -453,6 +453,7 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                                 medium: home.severityMedium,
                                 low: home.severityLow,
                             },
+                            note: home.severityNote,
                         }}
                     />
                 </div>

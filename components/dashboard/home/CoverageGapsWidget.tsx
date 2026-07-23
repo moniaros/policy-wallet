@@ -25,6 +25,8 @@ export function CoverageGapsWidget({
         kicker: string
         noGaps: string
         severity: Record<keyof GapSeverityCounts, string>
+        /** Honest framing: these levels are a profile-based priority, not a risk grade. */
+        note: string
     }
 }) {
     const total = counts.critical + counts.high + counts.medium + counts.low
@@ -39,17 +41,25 @@ export function CoverageGapsWidget({
                 {total === 0 ? (
                     <p className="text-sm text-black/55 dark:text-white/65">{labels.noGaps}</p>
                 ) : (
-                    <div className="flex flex-wrap gap-2">
-                        {SEVERITY_DOTS.filter(({ key }) => counts[key] > 0).map(({ key, dot }) => (
-                            <span
-                                key={key}
-                                className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 text-xs font-bold text-black/70 dark:border-white/15 dark:bg-white/5 dark:text-white/75"
-                            >
-                                <span className={`h-1.5 w-1.5 rounded-full ${dot}`} aria-hidden />
-                                {counts[key]} {labels.severity[key]}
-                            </span>
-                        ))}
-                    </div>
+                    <>
+                        <div className="flex flex-wrap gap-2">
+                            {SEVERITY_DOTS.filter(({ key }) => counts[key] > 0).map(({ key, dot }) => (
+                                <span
+                                    key={key}
+                                    className="inline-flex items-center gap-1.5 rounded-full border border-black/10 bg-black/5 px-3 py-1.5 text-xs font-bold text-black/70 dark:border-white/15 dark:bg-white/5 dark:text-white/75"
+                                >
+                                    <span className={`h-1.5 w-1.5 rounded-full ${dot}`} aria-hidden />
+                                    {counts[key]} {labels.severity[key]}
+                                </span>
+                            ))}
+                        </div>
+                        {/* "Critical/high" read as a risk verdict; the gap engine treats
+                            them as a profile-based priority (the report itself omits
+                            severity as "unvalidated"). This says so plainly. */}
+                        <p className="mt-2 text-micro leading-snug text-black/45 dark:text-white/45">
+                            {labels.note}
+                        </p>
+                    </>
                 )}
             </div>
         </Link>

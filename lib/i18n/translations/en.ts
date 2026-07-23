@@ -1432,6 +1432,7 @@ export const en: TranslationKeys = {
             coverageMapKicker: 'Coverage map',
             viewAllBranches: 'All branches',
             gapsKicker: 'Coverage gaps',
+            severityNote: 'Priorities are based on your profile and the gaps we detected — they are not a definitive risk assessment.',
             noGaps: 'No open gaps detected.',
             actionsKicker: 'Recommended actions',
             noActions: 'No pending recommendations right now.',
