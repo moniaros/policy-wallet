@@ -19,7 +19,6 @@ export function Settings({
     pendingDeletion,
     onUpdateEmail,
     onUpdateProfile,
-    onChangePassword,
     onUpdateLanguage,
     onToggleNotification,
     onLogoutSession,
@@ -36,10 +35,6 @@ export function Settings({
     // Email State
     const [isEditingEmail, setIsEditingEmail] = useState(false)
     const [emailDraft, setEmailDraft] = useState(currentUser.email || '')
-
-    // Password State
-    const [isEditingPassword, setIsEditingPassword] = useState(false)
-    const [passwordDraft, setPasswordDraft] = useState('')
 
     const [isDeleting, setIsDeleting] = useState(false)
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
@@ -86,18 +81,6 @@ export function Settings({
             })
         } else {
             setIsEditingEmail(false)
-        }
-    }
-
-    const handleSavePassword = () => {
-        if (passwordDraft) {
-            withProcessing(t.settings.securingPassword, async () => {
-                await (onChangePassword as any)?.(passwordDraft)
-                setIsEditingPassword(false)
-                setPasswordDraft('')
-            })
-        } else {
-            setIsEditingPassword(false)
         }
     }
 

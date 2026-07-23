@@ -15,7 +15,6 @@ import {
     createBillingPortalSession,
     updateProfile,
     updateEmail,
-    updatePassword,
     toggleNotificationPreference
 } from "./actions"
 import { toast } from "sonner"
@@ -141,13 +140,6 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
         else toast.success(t.settings.updateSuccess)
     }
 
-    const handleChangePassword = async (password?: string) => {
-        if (!password) return
-        const res = await updatePassword(password)
-        if ('error' in res && res.error) toast.error(t.settings.updateFailed)
-        else toast.success(t.settings.updateSuccess)
-    }
-
     const handleToggleNotification = async (eventType: string, channel: string, enabled: boolean) => {
         await toggleNotificationPreference(eventType, channel, enabled)
     }
@@ -251,7 +243,6 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                             onUpdateLanguage={handleLanguageUpdate}
                             onUpdateProfile={handleUpdateProfile}
                             onUpdateEmail={handleUpdateEmail}
-                            onChangePassword={handleChangePassword}
                             onToggleNotification={handleToggleNotification}
                             onLogoutSession={handleLogoutSession}
                             onLogoutAllSessions={handleLogoutAll}
