@@ -27,3 +27,19 @@ describe('invite flow uses professional insurance language', () => {
         expect(src).toContain('role="alert"')
     })
 })
+
+describe('no startup jargon anywhere in customer copy', () => {
+    it.each(['lib/i18n/translations/el.ts', 'lib/i18n/translations/en.ts'])(
+        '%s uses professional insurance language, not growth-hacking terms',
+        (file) => {
+            const src = readFileSync(file, 'utf-8')
+            // "magic link", "Growth Protocol", "Manual Entry Protocol" etc. read
+            // as consumer-app / startup jargon on an insurance platform. A
+            // market-leading insurer says "secure link", "sign-in link",
+            // "manual entry".
+            const offenders = [...src.matchAll(/(\w+):\s*'([^']*(?:magic|Growth Protocol|Entry Protocol|Πρωτόκολλο|μαγικ)[^']*)'/gi)]
+                .map((m) => `${m[1]}: ${m[2]}`)
+            expect(offenders, `startup jargon in copy:\n${offenders.join('\n')}`).toEqual([])
+        }
+    )
+})
