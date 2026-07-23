@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 import type { Policy } from "@/components/wallet/types"
 import { Mail, Phone, Globe, ShieldCheck, ShieldOff, Building2, MessageSquare, FileText, Send, Inbox, Handshake } from "lucide-react"
 import { EmptyState as SharedEmptyState } from "@/components/ui/EmptyState"
@@ -460,13 +461,15 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
 
     const [revokingGrantId, setRevokingGrantId] = useState<string | null>(null)
     const [isDisconnecting, setIsDisconnecting] = useState(false)
+    const [disconnectConfirmOpen, setDisconnectConfirmOpen] = useState(false)
 
+    // Was a native confirm(); now the shared branded dialog.
     const handleDisconnect = async () => {
         if (!relationshipId) return
-        if (!confirm(pick(PAGE_COPY.disconnectConfirm, language))) return
         setIsDisconnecting(true)
         const result = await disconnectFromAgent(relationshipId)
         setIsDisconnecting(false)
+        setDisconnectConfirmOpen(false)
         if (result.success) {
             router.refresh()
         } else {
@@ -558,7 +561,7 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
                                 <button
                                     type="button"
                                     disabled={isDisconnecting}
-                                    onClick={handleDisconnect}
+                                    onClick={() => setDisconnectConfirmOpen(true)}
                                     className="shrink-0 rounded-xl border border-red-500/40 px-4 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/15 disabled:opacity-50"
                                 >
                                     {isDisconnecting ? pick(PAGE_COPY.disconnecting, language) : pick(PAGE_COPY.disconnect, language)}
@@ -599,6 +602,16 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
                     />
                 )}
             </div>
+
+            <ConfirmDialog
+                open={disconnectConfirmOpen}
+                onOpenChange={setDisconnectConfirmOpen}
+                destructive
+                title={pick(PAGE_COPY.disconnect, language)}
+                description={pick(PAGE_COPY.disconnectConfirm, language)}
+                confirmLabel={pick(PAGE_COPY.disconnect, language)}
+                onConfirm={handleDisconnect}
+            />
         </div>
     )
 }

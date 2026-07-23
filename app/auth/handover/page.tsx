@@ -6,6 +6,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { IBM_Plex_Sans } from "next/font/google"
 import { Loader2 } from "lucide-react"
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 
 const ibmPlexSans = IBM_Plex_Sans({
     subsets: ["latin", "greek"],
@@ -18,6 +19,7 @@ function HandoverContent() {
     const { language } = useLanguage()
     const t = (el: string, en: string) => (language === "el" ? el : en)
     const [isMobile, setIsMobile] = useState(false)
+    const [appFallbackOpen, setAppFallbackOpen] = useState(false)
     const token = searchParams.get("token")
     const email = searchParams.get("email")
     const callbackUrl = searchParams.get("callbackUrl")
@@ -35,15 +37,14 @@ function HandoverContent() {
         }
     }
 
+    // The deep-link fallback used a native confirm(). It fires 2s after the app
+    // launch attempt, so on a device that DID switch apps the OS dialog was
+    // queued behind the user's back; the branded dialog is dismissible in-page.
     const handleOpenApp = () => {
         const deepLink = `policywallet://login?token=${token}&email=${email}`
         window.location.href = deepLink
 
-        setTimeout(() => {
-            if (confirm(t("Η εφαρμογή δεν ανοίγει; Θέλετε να συνεχίσετε στον browser;", "App not opening? Would you like to stay on the web?"))) {
-                handleContinueWeb()
-            }
-        }, 2000)
+        setTimeout(() => setAppFallbackOpen(true), 2000)
     }
 
     return (
@@ -100,6 +101,15 @@ function HandoverContent() {
                     </p>
                 </div>
             </div>
+
+            <ConfirmDialog
+                open={appFallbackOpen}
+                onOpenChange={setAppFallbackOpen}
+                title={t("Η εφαρμογή δεν ανοίγει;", "App not opening?")}
+                description={t("Θέλετε να συνεχίσετε στον browser;", "Would you like to stay on the web?")}
+                confirmLabel={t("Συνέχεια στον browser", "Continue on the web")}
+                onConfirm={handleContinueWeb}
+            />
         </div>
     )
 }

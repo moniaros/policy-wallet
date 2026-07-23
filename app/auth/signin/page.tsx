@@ -3,12 +3,17 @@
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { AlertCircle, ArrowRight, Fingerprint, KeyRound, Loader2, Lock, Mail, Phone, ShieldCheck } from "lucide-react"
+import { AlertCircle, ArrowRight, Loader2, Lock, Mail, Phone, ShieldCheck } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { PolicyWalletLogo } from "@/components/branding/Logo"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { resolveAuthEmailIdentifier } from "@/lib/auth/phone-auth"
 import { getPostLoginRedirectByRole } from "@/lib/auth/role-routing"
+
+const LOCALE_TABS = [
+    { value: "el" as const, label: "ΕΛ" },
+    { value: "en" as const, label: "EN" },
+]
 
 type Tab = "email" | "phone"
 type ResetStep = "request" | "verify" | "success"
@@ -29,7 +34,7 @@ function sanitizeCallbackUrl(callbackUrl: string | null): string | null {
 export default function SignInPage() {
     const router = useRouter()
     const { language, setLanguage, t } = useLanguage()
-    const isGreek = language === "el"
+    const copy = t.auth.signInPage
     const pwdRef = useRef<HTMLInputElement | null>(null)
 
     const [tab, setTab] = useState<Tab>("email")
@@ -52,55 +57,25 @@ export default function SignInPage() {
     const [resetNotice, setResetNotice] = useState<string | null>(null)
     const [resetLoading, setResetLoading] = useState(false)
 
-    const [biometricRegistered, setBiometricRegistered] = useState(false)
-    const [storedIdentifier, setStoredIdentifier] = useState("")
-    const [pinPrompt, setPinPrompt] = useState("")
-    const [showPinPrompt, setShowPinPrompt] = useState(false)
-    const [quickError, setQuickError] = useState<string | null>(null)
-
+    /**
+     * Remember-this-device: a successful sign-in stores the identifier (see
+     * `pw_quick_identifier` below), so prefill it and put the cursor in the
+     * password field. This is the honest half of what used to be a fake
+     * "Biometric / PIN" unlock — that block never authenticated anything, it just
+     * called this same prefill.
+     */
     useEffect(() => {
         if (typeof window === "undefined") return
-        setBiometricRegistered(window.localStorage.getItem("biometric_registered") === "true")
-        setStoredIdentifier(window.localStorage.getItem("pw_quick_identifier") || "")
-    }, [])
-
-    const hashPin = async (pin: string) => {
-        if (typeof window === "undefined" || !window.crypto?.subtle) return pin
-        const digest = await window.crypto.subtle.digest("SHA-256", new TextEncoder().encode(pin))
-        return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, "0")).join("")
-    }
-
-    const applyStoredIdentifier = () => {
-        if (!storedIdentifier) {
-            setQuickError(isGreek ? "Δεν υπάρχει αποθηκευμένος λογαριασμός στη συσκευή." : "No saved account on this device.")
-            return
-        }
-        if (isPhoneLike(storedIdentifier)) {
+        const saved = window.localStorage.getItem("pw_quick_identifier")
+        if (!saved) return
+        if (isPhoneLike(saved)) {
             setTab("phone")
-            setPhone(storedIdentifier)
+            setPhone(saved)
         } else {
             setTab("email")
-            setEmail(storedIdentifier)
+            setEmail(saved)
         }
-        setQuickError(null)
-        setTimeout(() => pwdRef.current?.focus(), 50)
-    }
-
-    const handlePinUnlock = async () => {
-        const storedPinHash = typeof window !== "undefined" ? window.localStorage.getItem("pw_quick_pin_hash") : null
-        if (!storedPinHash || pinPrompt.length !== 4) {
-            setQuickError(isGreek ? "Λάθος PIN." : "Invalid PIN.")
-            return
-        }
-        const enteredHash = await hashPin(pinPrompt)
-        if (enteredHash !== storedPinHash) {
-            setQuickError(isGreek ? "Λάθος PIN." : "Invalid PIN.")
-            return
-        }
-        setShowPinPrompt(false)
-        setPinPrompt("")
-        applyStoredIdentifier()
-    }
+    }, [])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -117,7 +92,7 @@ export default function SignInPage() {
             const { data, error: signInError } = await supabase.auth.signInWithPassword({ email: resolved.email, password })
             if (signInError) {
                 if (signInError.message.toLowerCase().includes("confirm")) {
-                    setError(isGreek ? "Ο λογαριασμός δεν έχει επιβεβαιωθεί." : "Account is not verified.")
+                    setError(copy.accountNotVerified)
                     setShowResend(true)
                 } else {
                     setError(signInError.message)
@@ -136,7 +111,7 @@ export default function SignInPage() {
             router.refresh()
             router.push(callbackUrl || roleRoute)
         } catch {
-            setError(isGreek ? "Αποτυχία σύνδεσης." : "Sign in failed.")
+            setError(copy.signInFailed)
         } finally {
             setLoading(false)
         }
@@ -150,7 +125,7 @@ export default function SignInPage() {
             const { resendVerificationEmail } = await import("../actions")
             const resolved = resolveAuthEmailIdentifier(identifier)
             const result = await resendVerificationEmail(resolved.email, language)
-            setResendMessage(result.success ? (isGreek ? "Στάλθηκε email επιβεβαίωσης." : "Verification email sent.") : (result.error || "Error"))
+            setResendMessage(result.success ? (copy.verificationEmailSent) : (result.error || "Error"))
         } finally {
             setResending(false)
         }
@@ -168,13 +143,13 @@ export default function SignInPage() {
             if (!response.ok || !payload.success) { setResetError(payload.message || "OTP error"); return }
             setResetNotice(payload.message || "OTP sent")
             setResetStep("verify")
-        } catch { setResetError(isGreek ? "Σφάλμα αποστολής OTP." : "OTP request failed.") } finally { setResetLoading(false) }
+        } catch { setResetError(copy.otpRequestFailed) } finally { setResetLoading(false) }
     }
 
     const submitReset = async () => {
         setResetError(null); setResetNotice(null)
-        if (resetPassword.length < 8) { setResetError(isGreek ? "Ο κωδικός πρέπει να έχει τουλάχιστον 8 χαρακτήρες." : "Min 8 chars."); return }
-        if (resetPassword !== resetConfirmPassword) { setResetError(isGreek ? "Οι κωδικοί δεν ταιριάζουν." : "Passwords do not match."); return }
+        if (resetPassword.length < 8) { setResetError(copy.passwordMinLength); return }
+        if (resetPassword !== resetConfirmPassword) { setResetError(copy.passwordsDoNotMatch); return }
         setResetLoading(true)
         try {
             const response = await fetch("/api/auth/reset-password", {
@@ -185,7 +160,7 @@ export default function SignInPage() {
             const payload = await response.json()
             if (!response.ok || !payload.success) { setResetError(payload.message || "Reset failed."); return }
             setResetNotice(payload.message); setResetStep("success")
-        } catch { setResetError(isGreek ? "Σφάλμα επαναφοράς." : "Reset failed.") } finally { setResetLoading(false) }
+        } catch { setResetError(copy.resetFailed) } finally { setResetLoading(false) }
     }
 
     const inputBase = "w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-[14px] text-[#0F172A] outline-none transition placeholder:text-[#94A3B8] focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 dark:border-white/15 dark:bg-black dark:text-white dark:placeholder:text-white/40"
@@ -197,12 +172,22 @@ export default function SignInPage() {
                 {/* Back to home */}
                 <div className="mb-6 flex items-center justify-between">
                     <Link href="/" className="inline-flex items-center gap-1.5 text-[13px] font-medium text-[#64748B] transition-colors hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white">
-                        ← {isGreek ? "Αρχική" : "Home"}
+                        ← {copy.backHome}
                     </Link>
                     <div className="flex items-center gap-2">
-                        <button type="button" onClick={() => setLanguage("el")} className={`text-[12px] font-semibold transition-colors ${language === "el" ? "text-[#0F172A] dark:text-white" : "text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"}`}>ΕΛ</button>
-                        <span className="text-[#E2E8F0] dark:text-white/20">|</span>
-                        <button type="button" onClick={() => setLanguage("en")} className={`text-[12px] font-semibold transition-colors ${language === "en" ? "text-[#0F172A] dark:text-white" : "text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"}`}>EN</button>
+                        {LOCALE_TABS.map(({ value, label }, i) => (
+                            <span key={value} className="flex items-center gap-2">
+                                {i > 0 && <span aria-hidden="true" className="text-[#E2E8F0] dark:text-white/20">|</span>}
+                                <button
+                                    type="button"
+                                    onClick={() => setLanguage(value)}
+                                    aria-pressed={language === value}
+                                    className={`text-[12px] font-semibold transition-colors ${language === value ? "text-[#0F172A] dark:text-white" : "text-[#94A3B8] hover:text-[#0F172A] dark:hover:text-white"}`}
+                                >
+                                    {label}
+                                </button>
+                            </span>
+                        ))}
                     </div>
                 </div>
 
@@ -217,7 +202,7 @@ export default function SignInPage() {
                             {t.auth.welcomeBack}
                         </h1>
                         <p className="mt-1 text-[14px] text-[#64748B] dark:text-white/65">
-                            {isGreek ? "Συνδεθείτε για να συνεχίσετε." : "Sign in to continue."}
+                            {copy.signInToContinue}
                         </p>
                     </div>
 
@@ -230,7 +215,7 @@ export default function SignInPage() {
                     )}
                     {showResend && (
                         <button type="button" onClick={resendVerification} className="mb-4 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] py-2.5 text-[13px] font-semibold text-[#0F172A] transition hover:bg-[#F1F5F9] dark:border-white/10 dark:bg-white/5 dark:text-white dark:hover:bg-white/10">
-                            {resending ? (isGreek ? "Αποστολή..." : "Sending...") : (isGreek ? "Επαναποστολή επιβεβαίωσης" : "Resend verification")}
+                            {resending ? (copy.sending) : (copy.resendVerification)}
                         </button>
                     )}
                     {resendMessage && <p className="mb-4 text-[13px] text-[#475569] dark:text-white/65">{resendMessage}</p>}
@@ -242,7 +227,7 @@ export default function SignInPage() {
                                 Email
                             </button>
                             <button type="button" onClick={() => setTab("phone")} className={`flex-1 rounded-lg py-2 text-[13px] font-semibold transition-all ${tab === "phone" ? "bg-white text-[#0F172A] shadow-sm dark:bg-white/10 dark:text-white" : "text-[#64748B] hover:text-[#0F172A] dark:text-white/60 dark:hover:text-white"}`}>
-                                {isGreek ? "Τηλέφωνο" : "Phone"}
+                                {copy.phoneTab}
                             </button>
                         </div>
 
@@ -257,7 +242,7 @@ export default function SignInPage() {
                             </div>
                         ) : (
                             <div>
-                                <label className="mb-1.5 block text-[12px] font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65">{isGreek ? "Κινητό" : "Phone"}</label>
+                                <label className="mb-1.5 block text-[12px] font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65">{copy.phonePlaceholder}</label>
                                 <div className="relative">
                                     <Phone className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#94A3B8]" />
                                     <input type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)} className={`${inputBase} pl-9`} placeholder="+30 69X XXX XXXX" />
@@ -267,7 +252,7 @@ export default function SignInPage() {
 
                         {/* Password */}
                         <div>
-                            <label htmlFor="signin-password" className="mb-1.5 block text-[12px] font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65">{isGreek ? "Κωδικός" : "Password"}</label>
+                            <label htmlFor="signin-password" className="mb-1.5 block text-[12px] font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65">{copy.passwordLabel}</label>
                             <div className="relative">
                                 <Lock className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-[#94A3B8]" />
                                 <input id="signin-password" ref={pwdRef} type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className={`${inputBase} pl-9`} />
@@ -277,54 +262,43 @@ export default function SignInPage() {
                         {/* Forgot password */}
                         <div className="flex justify-end">
                             <button type="button" onClick={() => { setShowReset(true); setResetStep("request"); setResetEmail(email) }} className="text-[12px] font-semibold text-primary hover:underline">
-                                {isGreek ? "Ξέχασα τον κωδικό μου" : "Forgot password?"}
+                                {copy.forgotPassword}
                             </button>
                         </div>
 
                         {/* Submit */}
                         <button type="submit" disabled={loading} className="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-primary-hover disabled:opacity-70 dark:text-[#1A2420]">
                             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
-                            {loading ? (isGreek ? "Σύνδεση..." : "Signing in...") : t.auth.signIn}
+                            {loading ? (copy.signingIn) : t.auth.signIn}
                         </button>
                     </form>
 
-                    {/* Biometric / PIN */}
-                    {biometricRegistered && (
-                        <div className="mt-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] p-3 text-[12px] dark:border-white/10 dark:bg-white/5">
-                            <p className="mb-2 font-semibold uppercase tracking-wide text-[#64748B] dark:text-white/65">{isGreek ? "Βιομετρικό / PIN" : "Biometric / PIN"}</p>
-                            <div className="grid grid-cols-2 gap-2">
-                                <button type="button" onClick={applyStoredIdentifier} className="flex items-center justify-center gap-1.5 rounded-xl border border-[#E2E8F0] bg-white py-2.5 font-semibold text-[#0F172A] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white dark:hover:bg-white/10">
-                                    <Fingerprint className="h-3.5 w-3.5 text-primary" />{isGreek ? "Βιομετρικό" : "Biometric"}
-                                </button>
-                                <button type="button" onClick={() => setShowPinPrompt((v) => !v)} className="flex items-center justify-center gap-1.5 rounded-xl border border-[#E2E8F0] bg-white py-2.5 font-semibold text-[#0F172A] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white dark:hover:bg-white/10">
-                                    <KeyRound className="h-3.5 w-3.5 text-primary" />PIN
-                                </button>
-                            </div>
-                            {showPinPrompt && (
-                                <div className="mt-2 flex gap-2">
-                                    <input type="password" maxLength={4} value={pinPrompt} onChange={(e) => setPinPrompt(e.target.value.replace(/\D/g, ""))} className="flex-1 rounded-xl border border-[#E2E8F0] px-3 py-2 text-[13px] outline-none focus-visible:ring-2 focus-visible:ring-primary/20 dark:border-white/15 dark:bg-black dark:text-white" placeholder="••••" />
-                                    <button type="button" onClick={handlePinUnlock} className="rounded-xl bg-primary px-4 py-2 text-[12px] font-bold text-white dark:text-[#1A2420]">OK</button>
-                                </div>
-                            )}
-                            {quickError && <p className="mt-2 text-rose-600 dark:text-rose-400">{quickError}</p>}
-                        </div>
-                    )}
+                    {/* A "Biometric / PIN" quick-unlock block used to sit here. It was
+                        NOT biometric authentication: the "Biometric" button only
+                        pre-filled the saved email/phone into the form, and the whole
+                        block was gated on localStorage keys (`biometric_registered`,
+                        `pw_quick_pin_hash`) that NOTHING in the codebase ever writes —
+                        so it was unreachable dead UI that, if ever reached, would have
+                        imitated an auth factor the product does not implement. On a
+                        sign-in page for an insurance product that is a trust claim we
+                        cannot back, so it is removed rather than restyled. Reintroduce
+                        only with real WebAuthn. */}
 
                     {/* Trust badge */}
                     <div className="mt-4 flex items-center gap-2 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 dark:border-white/10 dark:bg-white/5">
                         <Lock className="h-4 w-4 flex-shrink-0 text-primary" />
                         <div className="min-w-0">
-                            <p className="text-[12px] font-semibold text-[#0F172A] dark:text-white">{isGreek ? "AES-256 κρυπτογράφηση" : "AES-256 encryption"}</p>
-                            <p className="text-[11px] text-[#64748B] dark:text-white/60">{isGreek ? "Δεν αποθηκεύουμε κωδικούς σε plaintext." : "Passwords are never stored in plaintext."}</p>
+                            <p className="text-[12px] font-semibold text-[#0F172A] dark:text-white">{copy.encryptionTitle}</p>
+                            <p className="text-[11px] text-[#64748B] dark:text-white/60">{copy.encryptionSubtitle}</p>
                         </div>
                         <span className="flex-shrink-0 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-2 py-0.5 text-[10px] font-bold text-primary dark:border-primary/30 dark:bg-primary/15">GDPR</span>
                     </div>
 
                     {/* Sign up link */}
                     <p className="mt-5 text-center text-[13px] text-[#64748B] dark:text-white/65">
-                        {isGreek ? "Δεν έχετε λογαριασμό;" : "No account yet?"}{" "}
+                        {copy.noAccountYet}{" "}
                         <Link href="/auth/signup" className="font-semibold text-primary hover:underline">
-                            {isGreek ? "Εγγραφή" : "Create account"}
+                            {copy.createAccount}
                         </Link>
                     </p>
                 </div>
@@ -335,12 +309,12 @@ export default function SignInPage() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
                     <div className="w-full max-w-[400px] rounded-2xl border border-[#E2E8F0] bg-white p-6 shadow-[0_24px_64px_rgba(0,0,0,0.12)] dark:border-white/10 dark:bg-[#111111]">
                         <h2 className="mb-1 text-[17px] font-semibold text-[#0F172A] dark:text-white">
-                            {isGreek ? "Επαναφορά κωδικού" : "Reset password"}
+                            {copy.resetTitle}
                         </h2>
                         <p className="mb-4 text-[13px] text-[#64748B] dark:text-white/65">
                             {resetStep === "request"
-                                ? (isGreek ? "Εισάγετε email για να σας στείλουμε OTP." : "Enter your email to receive an OTP.")
-                                : (isGreek ? "Εισάγετε τον OTP και τον νέο κωδικό." : "Enter the OTP and your new password.")}
+                                ? (copy.resetStepRequest)
+                                : (copy.resetStepVerify)}
                         </p>
 
                         {resetError && <p className="mb-3 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[13px] text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">{resetError}</p>}
@@ -350,7 +324,7 @@ export default function SignInPage() {
                             <div className="space-y-3">
                                 <input type="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} placeholder="name@example.com" className={inputBase} />
                                 <button type="button" onClick={requestOtp} disabled={resetLoading} className="w-full rounded-full bg-primary px-4 py-3 text-[14px] font-bold text-white transition hover:bg-primary-hover disabled:opacity-70 dark:text-[#1A2420]">
-                                    {resetLoading ? (isGreek ? "Αποστολή..." : "Sending...") : (isGreek ? "Αποστολή OTP" : "Send OTP")}
+                                    {resetLoading ? (copy.sending) : (copy.sendOtp)}
                                 </button>
                             </div>
                         )}
@@ -358,10 +332,10 @@ export default function SignInPage() {
                         {resetStep === "verify" && (
                             <div className="space-y-3">
                                 <input type="text" inputMode="numeric" maxLength={6} value={resetOtp} onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, ""))} placeholder="OTP" className={inputBase} />
-                                <input type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder={isGreek ? "Νέος κωδικός" : "New password"} className={inputBase} />
-                                <input type="password" value={resetConfirmPassword} onChange={(e) => setResetConfirmPassword(e.target.value)} placeholder={isGreek ? "Επιβεβαίωση" : "Confirm password"} className={inputBase} />
+                                <input type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder={copy.newPassword} className={inputBase} />
+                                <input type="password" value={resetConfirmPassword} onChange={(e) => setResetConfirmPassword(e.target.value)} placeholder={copy.confirmPassword} className={inputBase} />
                                 <button type="button" onClick={submitReset} disabled={resetLoading} className="w-full rounded-full bg-primary px-4 py-3 text-[14px] font-bold text-white transition hover:bg-primary-hover disabled:opacity-70 dark:text-[#1A2420]">
-                                    {resetLoading ? (isGreek ? "Επεξεργασία..." : "Processing...") : (isGreek ? "Επιβεβαίωση & Αλλαγή" : "Verify & reset")}
+                                    {resetLoading ? (copy.processing) : (copy.verifyAndReset)}
                                 </button>
                             </div>
                         )}
@@ -369,12 +343,12 @@ export default function SignInPage() {
                         {resetStep === "success" && (
                             <div className="mb-3 flex items-center gap-2 rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-2.5 text-[13px] text-[#065F46] dark:border-primary/30 dark:bg-primary/15 dark:text-mint">
                                 <ShieldCheck className="h-4 w-4 flex-shrink-0" />
-                                {isGreek ? "Ο κωδικός ενημερώθηκε επιτυχώς." : "Password updated successfully."}
+                                {copy.passwordUpdated}
                             </div>
                         )}
 
                         <button type="button" onClick={() => setShowReset(false)} className="mt-3 w-full rounded-full border border-[#E2E8F0] bg-white px-4 py-2.5 text-[14px] font-semibold text-[#475569] transition hover:bg-[#F8FAFC] dark:border-white/15 dark:bg-[#111111] dark:text-white/70 dark:hover:bg-white/10">
-                            {isGreek ? "Κλείσιμο" : "Close"}
+                            {copy.closeLabel}
                         </button>
                     </div>
                 </div>

@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Shield, Smartphone, Globe, Bell, Lock, AlertTriangle, CheckCircle2, Zap, Loader2, ChevronRight, LogIn, LogOut, KeyRound, Mail, X } from 'lucide-react'
 import { ProcessingHUD } from '@/components/ui/ProcessingHUD'
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { toast } from 'sonner'
 
@@ -41,6 +42,7 @@ export function Settings({
     const [passwordDraft, setPasswordDraft] = useState('')
 
     const [isDeleting, setIsDeleting] = useState(false)
+    const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
     const [deletionRequested, setDeletionRequested] = useState(!!pendingDeletion)
     const [isCancellingDeletion, setIsCancellingDeletion] = useState(false)
     const [isExporting, setIsExporting] = useState(false)
@@ -140,25 +142,27 @@ export function Settings({
         }
     }
 
+    // Account deletion — the single most destructive action in the B2C product —
+    // was guarded by a native confirm(): OS chrome, no pending state, nothing a
+    // screen reader could tie to the page. It now uses the shared ConfirmDialog.
     const handleDeleteAccount = async () => {
-        if (confirm(t.settings.deleteAccountConfirm)) {
-            setIsDeleting(true)
-            setProcessingMessage(t.settings.finalizingDeletion)
-            setIsProcessing(true)
-            const res = await deleteAccount()
-            setIsDeleting(false)
-            setIsProcessing(false)
-            if (res.success) {
-                // The request enters a review queue — nothing is deleted yet, so
-                // stay on the page and say exactly that instead of pretending
-                // the account is gone.
-                setDeletionRequested(true)
-            } else if (res.error === 'DELETION_ALREADY_PENDING') {
-                setDeletionRequested(true)
-                toast.info(t.settings.deletionAlreadyPending)
-            } else {
-                toast.error(t.settings.deleteFailed)
-            }
+        setIsDeleting(true)
+        setProcessingMessage(t.settings.finalizingDeletion)
+        setIsProcessing(true)
+        const res = await deleteAccount()
+        setIsDeleting(false)
+        setIsProcessing(false)
+        setDeleteConfirmOpen(false)
+        if (res.success) {
+            // The request enters a review queue — nothing is deleted yet, so
+            // stay on the page and say exactly that instead of pretending
+            // the account is gone.
+            setDeletionRequested(true)
+        } else if (res.error === 'DELETION_ALREADY_PENDING') {
+            setDeletionRequested(true)
+            toast.info(t.settings.deletionAlreadyPending)
+        } else {
+            toast.error(t.settings.deleteFailed)
         }
     }
 
@@ -518,7 +522,7 @@ export function Settings({
                                 </p>
                             </div>
                             <button
-                                onClick={handleDeleteAccount}
+                                onClick={() => setDeleteConfirmOpen(true)}
                                 disabled={isDeleting}
                                 className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-red-600/20 hover:shadow-red-600/40 active:scale-95 transition-all disabled:opacity-50 whitespace-nowrap"
                             >
@@ -528,6 +532,17 @@ export function Settings({
                     )}
                 </div>
             </div>
+
+            <ConfirmDialog
+                open={deleteConfirmOpen}
+                onOpenChange={setDeleteConfirmOpen}
+                destructive
+                title={t.settings.nuclearDeletion}
+                description={t.settings.deleteAccountConfirm}
+                consequences={[t.settings.nuclearDesc]}
+                confirmLabel={t.settings.deletePermanently}
+                onConfirm={handleDeleteAccount}
+            />
 
             <ProcessingHUD
                 isVisible={isProcessing}

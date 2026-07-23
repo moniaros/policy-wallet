@@ -15,6 +15,7 @@ import { AgentInbox } from "@/components/collaboration/AgentInbox"
 import { Skeleton } from "@/components/ui/skeleton"
 import { FloatingActionButton, type FABAction } from "@/components/ui/FloatingActionButton"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 import { toast } from "sonner"
 import { FileText, Send, Plus, ClipboardList, Sparkles } from "lucide-react"
 import type { AgentTier } from "@/types/subscription-entitlements"
@@ -57,12 +58,15 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
     const { language } = useLanguage()
     const [isTaskModalOpen, setIsTaskModalOpen] = useState(false)
     const [isRemovingCustomer, setIsRemovingCustomer] = useState(false)
+    const [removeConfirmOpen, setRemoveConfirmOpen] = useState(false)
 
+    // Was a native confirm() on a relationship-severing action; now the shared
+    // branded dialog, which also gives the in-flight state this never had.
     const handleRemoveCustomer = async () => {
-        if (!confirm(PROFILE_COPY.removeCustomerConfirm[language])) return
         setIsRemovingCustomer(true)
         const result = await terminateRelationshipAsAgent(initialCustomer.relationshipId)
         setIsRemovingCustomer(false)
+        setRemoveConfirmOpen(false)
         if (result.success) {
             router.push("/customers")
         } else {
@@ -414,13 +418,23 @@ export function CustomerProfileClient({ initialCustomer, agentTier, canBrandedRe
                     <button
                         type="button"
                         disabled={isRemovingCustomer}
-                        onClick={handleRemoveCustomer}
+                        onClick={() => setRemoveConfirmOpen(true)}
                         className="shrink-0 rounded-xl border border-red-500/40 px-4 py-2 text-xs font-semibold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/15 disabled:opacity-50"
                     >
                         {isRemovingCustomer ? PROFILE_COPY.removing[language] : PROFILE_COPY.removeCustomer[language]}
                     </button>
                 </div>
             </div>
+
+            <ConfirmDialog
+                open={removeConfirmOpen}
+                onOpenChange={setRemoveConfirmOpen}
+                destructive
+                title={PROFILE_COPY.removeCustomer[language]}
+                description={PROFILE_COPY.removeCustomerConfirm[language]}
+                confirmLabel={PROFILE_COPY.removeCustomer[language]}
+                onConfirm={handleRemoveCustomer}
+            />
         </>
     )
 }
