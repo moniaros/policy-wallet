@@ -159,7 +159,7 @@ export function CustomerList({
                         })}
                     </div>
 
-                    <div className="hidden lg:flex bg-neutral-100/80 dark:bg-neutral-800/80 p-1 rounded-xl">
+                    <div className="hidden xl:flex bg-neutral-100/80 dark:bg-neutral-800/80 p-1 rounded-xl">
                         <button
                             onClick={() => setViewMode("table")}
                             className={`p-1.5 rounded-lg transition-all cursor-pointer ${viewMode === "table" ? "bg-white dark:bg-neutral-700 shadow-sm text-foreground" : "text-neutral-400"}`}
@@ -246,7 +246,7 @@ export function CustomerList({
                    table. `viewMode` only decides what DESKTOP shows. */
                 <>
                 {viewMode === "table" && (
-                <div className="hidden lg:block bg-white/80 dark:bg-neutral-900/80 rounded-2xl border border-neutral-200/60 dark:border-neutral-800/60 overflow-hidden shadow-sm">
+                <div className="hidden xl:block bg-white/80 dark:bg-neutral-900/80 rounded-2xl border border-neutral-200/60 dark:border-neutral-800/60 overflow-hidden shadow-sm">
                     <TableShell label={t.nav.customers}>
                         <table className="w-full text-sm text-left">
                             <thead className="bg-neutral-50/80 dark:bg-neutral-950/50 text-micro font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 border-b border-neutral-200/60 dark:border-neutral-800/60">
@@ -335,7 +335,7 @@ export function CustomerList({
                 </div>
                 )}
 
-                <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 ${viewMode === "table" ? "lg:hidden" : ""}`}>
+                <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 ${viewMode === "table" ? "xl:hidden" : ""}`}>
                     {filteredCustomers.map((customer) => (
                         <div key={customer.id} onClick={() => onCustomerClick(customer.id)} className="group relative bg-white/80 dark:bg-neutral-900/80 p-5 rounded-2xl border border-neutral-200/60 dark:border-neutral-800/60 transition-all duration-300 cursor-pointer">
                             <div className="flex justify-between items-start mb-4">

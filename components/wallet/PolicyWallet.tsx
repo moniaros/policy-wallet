@@ -195,9 +195,10 @@ export function PolicyWallet({
                             ))}
                         </div>
 
-                        {/* lg:flex — below the desktop breakpoint the list is always
-                            cards, so offering a toggle there would be a no-op control. */}
-                        <div className="hidden lg:flex bg-black/5 dark:bg-black p-1 rounded-lg border border-black/10 dark:border-white/15">
+                        {/* xl:flex — the dense table only appears at xl (at lg the sidebar
+                            leaves ~736px and the actions column clipped), so below that a
+                            view toggle would be a no-op control. */}
+                        <div className="hidden xl:flex bg-black/5 dark:bg-black p-1 rounded-lg border border-black/10 dark:border-white/15">
                             <button
                                 onClick={() => {
                                     setViewMode('grid')
@@ -241,7 +242,7 @@ export function PolicyWallet({
                     phone and the view toggle is itself desktop-only. `viewMode` only
                     decides what desktop shows. Doing this with a JS breakpoint would
                     reintroduce the hydration fork this change exists to remove. */}
-                <div className={`grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 ${viewMode === 'list' ? 'lg:hidden' : ''}`}>
+                <div className={`grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 ${viewMode === 'list' ? 'xl:hidden' : ''}`}>
                     {filteredPolicies.map((policy, index) => (
                         <PolicyCard
                             key={policy.id}
@@ -258,7 +259,7 @@ export function PolicyWallet({
                 </div>
 
                 {viewMode === 'list' && (
-                    <div className="hidden lg:block">
+                    <div className="hidden xl:block">
                         <PolicyTable
                             policies={filteredPolicies}
                             onViewPolicy={onViewPolicy}

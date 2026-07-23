@@ -9,7 +9,7 @@ import { RoleSwitcher } from './RoleSwitcher'
 import { ThemeToggle } from '../ThemeToggle'
 import { PolicyWalletLogo } from '@/components/branding/Logo'
 import { InstallPrompt } from "@/components/pwa/InstallPrompt"
-import { Users, Lightbulb, LayoutDashboard, MoreHorizontal, Wallet, Shield, Settings, TrendingUp } from 'lucide-react'
+import { Users, Lightbulb, LayoutDashboard, MoreHorizontal, Wallet, Shield, Settings, TrendingUp, Bell } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
 import { useDialog } from '@/hooks/useDialog'
 import { toast } from 'sonner'
@@ -207,13 +207,34 @@ export function AppShell({
                         </svg>
                     </button>
 
-                    <Link href={roleHomeHref} onClick={() => handleNavigate(roleHomeHref)} className="hover:opacity-80 transition-opacity">
+                    <Link
+                        href={roleHomeHref}
+                        onClick={() => handleNavigate(roleHomeHref)}
+                        className="flex h-11 items-center rounded-lg px-2 transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                    >
                         <PolicyWalletLogo size="sm" language={user.preferred_language || 'el'} />
                     </Link>
 
-                    <div className="w-10 h-10 flex items-center justify-center">
-                        {/* Placeholder for future specific actions like search, but kept balanced for now */}
-                    </div>
+                    {/* Notifications. This was an empty 40px spacer "kept balanced for
+                        now" — dead space on the most valuable strip of a phone screen,
+                        while the unread count was reachable only by opening the drawer.
+                        A 44px target (the iOS/Android minimum) keeps the logo optically
+                        centred and gives the badge somewhere to live. */}
+                    <Link
+                        href="/notifications"
+                        onClick={() => handleNavigate('/notifications')}
+                        aria-label={notificationCount > 0
+                            ? `${t.nav.notifications} (${notificationCount})`
+                            : t.nav.notifications}
+                        className="relative -mr-2 flex h-11 w-11 items-center justify-center rounded-lg text-black/60 transition-colors hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:text-white/70 dark:hover:text-white"
+                    >
+                        <Bell className="h-6 w-6" strokeWidth={2} />
+                        {notificationCount > 0 && (
+                            <span className="absolute right-1.5 top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[0.5625rem] font-bold leading-none text-white dark:text-[#1A2420]">
+                                {notificationCount > 9 ? '9+' : notificationCount}
+                            </span>
+                        )}
+                    </Link>
                 </header>
 
 
@@ -230,7 +251,7 @@ export function AppShell({
                         ? { role: 'dialog' as const, 'aria-modal': true, 'aria-label': t.nav.primaryNavigation, tabIndex: -1 }
                         : {})}
                     className={`
-          fixed top-0 left-0 z-50 h-full w-72 bg-white/95 dark:bg-black/95 border-r border-black/10 dark:border-white/10
+          fixed top-0 left-0 z-50 h-full w-[17rem] lg:w-64 xl:w-72 bg-white/95 dark:bg-black/95 border-r border-black/10 dark:border-white/10
           transform transition-transform duration-300 ease-in-out shadow-xl
           lg:translate-x-0
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
@@ -345,7 +366,7 @@ export function AppShell({
                 )}
 
                 {/* Main content — pb-24 only clears a bottom bar that actually renders. */}
-                <main id="main-content" className={`lg:pl-72 lg:pb-0 ${hasBottomNav ? 'pb-24' : ''}`}>
+                <main id="main-content" className={`lg:pl-64 xl:pl-72 lg:pb-0 ${hasBottomNav ? 'pb-24' : ''}`}>
                     <div className="min-h-screen">
                         {children}
                     </div>

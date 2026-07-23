@@ -122,8 +122,10 @@ export function StatusSummary({
             ).replace('{count}', String(unknownDurationCount))
             : undefined
 
+    // 4-up only from xl. At lg the sidebar takes ~240px, leaving ~170px per tile,
+    // which truncated every hint ("1/1 προστε…"). Two-up reads properly there.
     return (
-        <div className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <div className="mb-5 grid grid-cols-2 gap-3 xl:grid-cols-4">
             <KpiCard
                 label={t.status.activePolicies}
                 value={activeCount}

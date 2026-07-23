@@ -14,7 +14,8 @@ export interface MainNavProps {
 
 /** Shared classes for every nav row, so the <Link> and the '#' <button> match. */
 const ROW_CLASSES = `
-    w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold
+    w-full flex items-center gap-2.5 px-3 py-3 rounded-2xl text-sm font-semibold
+    xl:gap-3 xl:px-4
     transition-all duration-300 group relative isolate
     focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2
 `
@@ -59,7 +60,12 @@ export function MainNav({ navigation, onNavigate }: MainNavProps) {
                                         </span>
                                     )}
 
-                                    <span className="flex-1 text-left truncate tracking-tight">{item.label}</span>
+                                    {/* Wraps rather than truncates. At the lg band the row has ~100px for
+                                        text while a plan badge takes 43px, so "Ανάλυση Κάλυψης"
+                                        was rendering as "Ανάλυση…". An ellipsis in PRIMARY navigation
+                                        hides where a link goes; a second line costs 20px and hides
+                                        nothing. */}
+                                    <span className="min-w-0 flex-1 text-left tracking-tight">{item.label}</span>
 
                                     {/* Badges */}
                                     {item.variant === 'pro' && !item.isLocked && (
