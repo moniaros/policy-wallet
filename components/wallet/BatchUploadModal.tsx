@@ -1,12 +1,13 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useId, useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 import { UploadDropzone } from "@/components/ui/UploadDropzone"
 import { UpgradeModal } from "@/components/monetization/UpgradeModal"
+import { useDialog } from "@/hooks/useDialog"
 
 interface ExtractedPolicy {
     id: string
@@ -45,6 +46,10 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
     const [isProcessing, setIsProcessing] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
     const [showUpgrade, setShowUpgrade] = useState(false)
+
+    // Hooks must precede the early return below — rules-of-hooks.
+    const dialogRef = useDialog<HTMLDivElement>(() => handleClose(), isOpen)
+    const titleId = useId()
 
     if (!isOpen) return null
 
@@ -237,7 +242,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleClose} />
 
-            <div data-testid="batch-upload-modal" className="relative w-full max-w-3xl bg-card rounded-[40px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} data-testid="batch-upload-modal" className="relative w-full max-w-3xl bg-card rounded-[40px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
                 <div className="p-8 pb-0">
                     <div className="flex items-center gap-3 mb-4 text-primary dark:text-mint">
                         <div className="w-8 h-8 rounded-xl bg-primary-soft dark:bg-primary/15 flex items-center justify-center">
@@ -247,7 +252,7 @@ export function BatchUploadModal({ isOpen, onClose, onSuccess }: BatchUploadModa
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-[0.2em]">{copy.badge}</span>
                     </div>
-                    <h2 className="text-3xl font-black text-foreground tracking-tighter mb-2">{copy.title}</h2>
+                    <h2 id={titleId} className="text-3xl font-black text-foreground tracking-tighter mb-2">{copy.title}</h2>
                     <p className="text-base text-muted-foreground font-medium">{copy.subtitle}</p>
                 </div>
 

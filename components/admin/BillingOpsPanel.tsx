@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { issueRefund, cancelSubscriptionAsAdmin, applyCredit } from "@/app/(protected)/admin/billing-actions"
+import { AdminDialog } from "@/components/admin/AdminDialog"
 
 type ConfirmState = {
     title: string
@@ -160,9 +161,7 @@ export default function BillingOpsPanel() {
             </div>
 
             {confirm && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-stone-800 rounded-lg max-w-md w-full p-6">
-                        <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-3">{confirm.title}</h2>
+                <AdminDialog open onClose={() => setConfirm(null)} title={confirm.title}>
                         <p className="text-stone-600 dark:text-stone-400 mb-6">{confirm.description}</p>
                         <div className="flex justify-end gap-2">
                             <button
@@ -176,8 +175,7 @@ export default function BillingOpsPanel() {
                                 {busy ? "Working…" : "Confirm"}
                             </button>
                         </div>
-                    </div>
-                </div>
+                </AdminDialog>
             )}
         </section>
     )

@@ -1,11 +1,12 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useId, useState, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { parseDocumentDate } from "@/lib/dates/document-date"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { getPolicyStatusView } from "@/lib/wallet/policy-status-view"
 import { StatusPill } from "@/components/ui/StatusPill"
+import { useDialog } from "@/hooks/useDialog"
 
 interface PolicyForComparison {
     id: string
@@ -58,6 +59,15 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
 
     const selectedPolicies = policies.filter(p => selectedIds.includes(p.id))
 
+    const handleClearAndClose = () => {
+        setSelectedIds([])
+        onClose()
+    }
+
+    // Hooks must precede the early return below — rules-of-hooks.
+    const dialogRef = useDialog<HTMLDivElement>(handleClearAndClose, isOpen)
+    const titleId = useId()
+
     if (!isOpen) return null
 
     const toggleSelect = (id: string) => {
@@ -109,10 +119,6 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
         }).format(amount)
     }
 
-    const handleClearAndClose = () => {
-        setSelectedIds([])
-        onClose()
-    }
 
     // Define comparison rows based on line of business
     const getCoverageRows = () => {
@@ -146,7 +152,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={handleClearAndClose} />
 
-            <div className="relative w-full max-w-6xl bg-card rounded-[40px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
+            <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} className="relative w-full max-w-6xl bg-card rounded-[40px] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
                 {/* Header */}
                 <div className="p-8 pb-0 border-b border-border">
                     <div className="flex items-center justify-between mb-4">
@@ -168,7 +174,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
                             </svg>
                         </button>
                     </div>
-                    <h2 className="text-3xl font-black text-foreground tracking-tighter mb-2">
+                    <h2 id={titleId} className="text-3xl font-black text-foreground tracking-tighter mb-2">
                         {c.headingLead} <span className="text-muted-foreground italic">{c.headingEmphasis}</span>
                     </h2>
                     <p className="text-base text-muted-foreground font-medium pb-6">

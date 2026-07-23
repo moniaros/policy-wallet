@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { Search, RefreshCw, Pencil, Trash2, GitMerge } from "lucide-react"
 import { requeuePolicy, deletePolicy, updatePolicyFields, mergePolicies, type AdminPolicyRow } from "../policy-actions"
 import { formatDate } from "@/lib/i18n/format"
+import { AdminDialog } from "@/components/admin/AdminDialog"
 
 const STATUS_OPTIONS = ["all", "analyzing", "active", "action_needed", "incomplete", "expiring_soon", "cancelled", "deleted"]
 const inputClass = "w-full p-2 border rounded text-sm dark:bg-stone-700 dark:border-stone-600 dark:text-white"
@@ -235,9 +236,7 @@ export default function PoliciesClient({
 
             {/* Edit modal */}
             {editRow && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-stone-800 rounded-lg max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
-                        <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-4">Edit policy</h2>
+                <AdminDialog open onClose={() => setEditRow(null)} title="Edit policy" className="max-w-lg">
                         <div className="grid grid-cols-2 gap-3">
                             {[
                                 ["insurerName", "Insurer"],
@@ -267,15 +266,12 @@ export default function PoliciesClient({
                             <button onClick={() => setEditRow(null)} disabled={modalBusy} className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded disabled:opacity-50">Cancel</button>
                             <button onClick={saveEdit} disabled={modalBusy} className={primaryBtn}>{modalBusy ? "Saving…" : "Save"}</button>
                         </div>
-                    </div>
-                </div>
+                </AdminDialog>
             )}
 
             {/* Delete confirm */}
             {deleteRow && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-stone-800 rounded-lg max-w-md w-full p-6">
-                        <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-3">Delete policy</h2>
+                <AdminDialog open onClose={() => setDeleteRow(null)} title="Delete policy">
                         <p className="text-stone-600 dark:text-stone-400 mb-6">
                             Permanently delete <span className="font-medium">{deleteRow.policyNumber}</span> ({deleteRow.insurerName}) and all its analysis, gaps, documents and renewals? This cannot be undone.
                         </p>
@@ -283,15 +279,12 @@ export default function PoliciesClient({
                             <button onClick={() => setDeleteRow(null)} disabled={modalBusy} className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded disabled:opacity-50">Cancel</button>
                             <button onClick={confirmDelete} disabled={modalBusy} className="px-4 py-2 text-sm bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50">{modalBusy ? "Deleting…" : "Delete"}</button>
                         </div>
-                    </div>
-                </div>
+                </AdminDialog>
             )}
 
             {/* Merge confirm */}
             {mergeConfirm && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-stone-800 rounded-lg max-w-md w-full p-6">
-                        <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-3">Confirm merge</h2>
+                <AdminDialog open onClose={() => setMergeConfirm(false)} title="Confirm merge">
                         <p className="text-stone-600 dark:text-stone-400 mb-6">
                             Merge source <span className="font-mono text-xs">{mergeSource.trim()}</span> into target <span className="font-mono text-xs">{mergeTarget.trim()}</span>? The source policy will be deleted.
                         </p>
@@ -299,8 +292,7 @@ export default function PoliciesClient({
                             <button onClick={() => setMergeConfirm(false)} disabled={modalBusy} className="px-4 py-2 text-stone-600 hover:bg-stone-100 rounded disabled:opacity-50">Cancel</button>
                             <button onClick={confirmMerge} disabled={modalBusy} className={primaryBtn}>{modalBusy ? "Merging…" : "Merge"}</button>
                         </div>
-                    </div>
-                </div>
+                </AdminDialog>
             )}
         </div>
     )

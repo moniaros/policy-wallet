@@ -6,6 +6,7 @@ import { Search, Filter, Eye, Trash2, Shield, UserX, CheckCircle, XCircle, Coins
 import { toast } from "sonner"
 import { changeUserRole, deleteUser, approveAgent, rejectAgent, grantTokens } from "../actions"
 import { formatDate } from "@/lib/i18n/format"
+import { AdminDialog } from "@/components/admin/AdminDialog"
 
 interface User {
     id: string
@@ -351,9 +352,7 @@ export default function UsersClient({
 
             {/* Approve Modal */}
             {showApproveModal && selectedUser && selectedUser.agentProfile && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-stone-800 rounded-lg max-w-md w-full p-6">
-                        <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-4">Approve Agent</h2>
+                <AdminDialog open onClose={() => setShowApproveModal(false)} title="Approve Agent">
                         <p className="text-stone-600 dark:text-stone-400 mb-4">
                             Are you sure you want to approve {selectedUser.name || selectedUser.email}? They will gain full agent access.
                         </p>
@@ -387,15 +386,12 @@ export default function UsersClient({
                                 Approve
                             </button>
                         </div>
-                    </div>
-                </div>
+                </AdminDialog>
             )}
 
             {/* Reject Modal */}
             {showRejectModal && selectedUser && selectedUser.agentProfile && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-stone-800 rounded-lg max-w-md w-full p-6">
-                        <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-4">Reject Agent</h2>
+                <AdminDialog open onClose={() => setShowRejectModal(false)} title="Reject Agent">
                         <p className="text-stone-600 dark:text-stone-400 mb-4">
                             Please provide a reason for rejecting {selectedUser.name || selectedUser.email}.
                         </p>
@@ -430,15 +426,12 @@ export default function UsersClient({
                                 Reject
                             </button>
                         </div>
-                    </div>
-                </div>
+                </AdminDialog>
             )}
 
             {/* Role Modal */}
             {showRoleModal && selectedUser && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-stone-800 rounded-lg max-w-md w-full p-6">
-                        <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-2">Change Role</h2>
+                <AdminDialog open onClose={() => setShowRoleModal(false)} title="Change Role">
                         <p className="text-stone-600 dark:text-stone-400 mb-4">
                             {selectedUser.name || selectedUser.email} — current role:{" "}
                             <span className="font-medium">{selectedUser.roles}</span>
@@ -485,15 +478,12 @@ export default function UsersClient({
                                 Save
                             </button>
                         </div>
-                    </div>
-                </div>
+                </AdminDialog>
             )}
 
             {/* Grant Tokens Modal */}
             {showTokenModal && selectedUser && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-stone-800 rounded-lg max-w-md w-full p-6">
-                        <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-2">Grant Tokens</h2>
+                <AdminDialog open onClose={() => setShowTokenModal(false)} title="Grant Tokens">
                         <p className="text-stone-600 dark:text-stone-400 mb-4">
                             Add AI tokens to {selectedUser.name || selectedUser.email}.
                         </p>
@@ -549,8 +539,7 @@ export default function UsersClient({
                                 {tokenBusy ? "Working…" : "Grant"}
                             </button>
                         </div>
-                    </div>
-                </div>
+                </AdminDialog>
             )}
         </div>
     )

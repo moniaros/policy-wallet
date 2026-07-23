@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useId, useState } from "react"
+import { useDialog } from "@/hooks/useDialog"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { grantTokens } from "@/app/(protected)/admin/actions"
@@ -8,6 +9,8 @@ import { grantTokens } from "@/app/(protected)/admin/actions"
 export default function GrantTokensButton({ userId, label }: { userId: string; label: string }) {
     const router = useRouter()
     const [open, setOpen] = useState(false)
+    const dialogRef = useDialog<HTMLDivElement>(() => setOpen(false), open)
+    const titleId = useId()
     const [amount, setAmount] = useState("")
     const [reason, setReason] = useState("")
     const [busy, setBusy] = useState(false)
@@ -22,8 +25,8 @@ export default function GrantTokensButton({ userId, label }: { userId: string; l
             </button>
             {open && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-stone-800 rounded-lg max-w-md w-full p-6">
-                        <h2 className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-2">Grant Tokens</h2>
+                    <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} className="bg-white dark:bg-stone-800 rounded-lg max-w-md w-full p-6">
+                        <h2 id={titleId} className="text-xl font-bold text-stone-900 dark:text-stone-100 mb-2">Grant Tokens</h2>
                         <p className="text-stone-600 dark:text-stone-400 mb-4">Add AI tokens to {label}.</p>
                         <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">Amount (tokens)</label>
                         <input

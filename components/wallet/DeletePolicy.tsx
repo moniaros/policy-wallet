@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useId, useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { deletePolicy } from "@/app/(protected)/wallet/actions"
 import { Trash2, AlertTriangle, X } from "lucide-react"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { useDialog } from "@/hooks/useDialog"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
 
 interface DeletePolicyDialogProps {
@@ -25,6 +26,8 @@ export function DeletePolicyDialog({ policyId, open, onOpenChange }: DeletePolic
     const { t } = useLanguage()
 
     const copy = t.wallet.deletePolicyModal
+    const dialogRef = useDialog<HTMLDivElement>(() => onOpenChange(false), open)
+    const titleId = useId()
 
     const handleDelete = async () => {
         setIsDeleting(true)
@@ -51,7 +54,17 @@ export function DeletePolicyDialog({ policyId, open, onOpenChange }: DeletePolic
 
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-card rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-border">
+            {/* Focus trap + Escape + focus-return. This is a destructive dialog that
+                previously had none of the three: keyboard users could tab out of it
+                onto the page behind, and Escape did nothing. */}
+            <div
+                ref={dialogRef}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby={titleId}
+                tabIndex={-1}
+                className="bg-card rounded-3xl shadow-2xl max-w-md w-full overflow-hidden border border-border"
+            >
                 <div className="bg-red-500 p-6 text-white">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -59,7 +72,7 @@ export function DeletePolicyDialog({ policyId, open, onOpenChange }: DeletePolic
                                 <AlertTriangle className="w-6 h-6" />
                             </div>
                             <div>
-                                <h2 className="text-xl font-black">{copy.confirmDeletion}</h2>
+                                <h2 id={titleId} className="text-xl font-black">{copy.confirmDeletion}</h2>
                                 <p className="text-sm text-red-100 mt-0.5">{copy.permanentAction}</p>
                             </div>
                         </div>

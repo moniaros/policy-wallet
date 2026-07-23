@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useId, useState } from "react"
+import { useDialog } from "@/hooks/useDialog"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { cancelSubscriptionAsAdmin } from "@/app/(protected)/admin/billing-actions"
@@ -8,6 +9,8 @@ import { cancelSubscriptionAsAdmin } from "@/app/(protected)/admin/billing-actio
 export default function CancelSubscriptionButton({ subscriptionId }: { subscriptionId: string }) {
     const router = useRouter()
     const [open, setOpen] = useState(false)
+    const dialogRef = useDialog<HTMLDivElement>(() => setOpen(false), open)
+    const titleId = useId()
     const [immediate, setImmediate] = useState(false)
     const [busy, setBusy] = useState(false)
 
@@ -21,8 +24,8 @@ export default function CancelSubscriptionButton({ subscriptionId }: { subscript
             </button>
             {open && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-stone-800 rounded-lg max-w-md w-full p-6">
-                        <h2 className="text-lg font-bold text-stone-900 dark:text-stone-100 mb-2">Cancel subscription</h2>
+                    <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1} className="bg-white dark:bg-stone-800 rounded-lg max-w-md w-full p-6">
+                        <h2 id={titleId} className="text-lg font-bold text-stone-900 dark:text-stone-100 mb-2">Cancel subscription</h2>
                         <p className="text-xs text-stone-500 dark:text-stone-400 mb-4 font-mono break-all">{subscriptionId}</p>
                         <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-300 mb-6">
                             <input type="checkbox" checked={immediate} onChange={e => setImmediate(e.target.checked)} />
