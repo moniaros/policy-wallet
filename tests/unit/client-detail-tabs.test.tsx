@@ -22,7 +22,7 @@ function renderView() {
             <ClientDetailView
                 customer={CUSTOMER}
                 viewerRole="agent"
-                agentTier="free"
+                agentTier="agent_free"
                 healthScore={0}
                 policies={[]}
                 opportunities={[]}

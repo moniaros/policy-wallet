@@ -18,6 +18,7 @@ import { ProposalView, type ProposalDeclineData } from "@/components/collaborati
 import { AgentInbox } from "@/components/collaboration/AgentInbox"
 import type { DocumentRequestData, ProposalData } from "@/components/collaboration/types"
 
+import { useTabs } from "@/hooks/useTabs"
 interface AgentBranding {
     agencyName?: string | null
     licenseNumber?: string | null
@@ -61,6 +62,7 @@ interface AgentClientProps {
 type Tab = "overview" | "messages" | "documents" | "proposals"
 
 const PAGE_COPY = {
+    tablistLabel: { el: "Ενότητες", en: "Sections" },
     kicker: { el: "Ο Σύμβουλός μου", en: "My Agent" },
     disconnect: { el: "Αποσύνδεση από τον σύμβουλο", en: "Disconnect from advisor" },
     disconnectDesc: { el: "Η σύνδεση τερματίζεται και η πρόσβαση του συμβούλου στα συμβόλαιά σας ανακαλείται.", en: "The connection ends and your advisor's access to your policies is revoked." },
@@ -318,6 +320,8 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
     const { language } = useLanguage()
     const router = useRouter()
     const [activeTab, setActiveTab] = useState<Tab>("overview")
+    const TAB_IDS: Tab[] = ["overview", "messages", "documents", "proposals"]
+    const { tabProps, panelProps } = useTabs(TAB_IDS, activeTab, setActiveTab)
     const [documentRequests, setDocumentRequests] = useState<DocumentRequestData[]>([])
     const [proposals, setProposals] = useState<ProposalData[]>([])
     const [isLoadingDocs, setIsLoadingDocs] = useState(false)
@@ -514,8 +518,13 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
             <div className="pw-card rounded-3xl p-6 sm:p-8">
                 <p className="pw-kicker mb-4">{pick(PAGE_COPY.kicker, language)}</p>
 
-                {/* Tabs */}
-                <div className="flex gap-1 mb-6 overflow-x-auto scrollbar-hide -mx-2 px-2">
+                {/* Tabs — real tablist semantics via useTabs (role tab/tabpanel,
+                    roving tabindex, arrow keys). */}
+                <div
+                    role="tablist"
+                    aria-label={pick(PAGE_COPY.tablistLabel, language)}
+                    className="flex gap-1 mb-6 overflow-x-auto scrollbar-hide -mx-2 px-2"
+                >
                     {tabs.map(tab => {
                         const Icon = tab.icon
                         const isActive = activeTab === tab.id
@@ -523,14 +532,14 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
                             <button
                                 type="button"
                                 key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all min-h-[44px] ${
+                                {...tabProps(tab.id)}
+                                className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold whitespace-nowrap transition-all min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                                     isActive
                                         ? 'bg-primary/15 text-primary dark:text-mint'
                                         : 'text-black/50 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/5'
                                 }`}
                             >
-                                <Icon className="w-4 h-4" />
+                                <Icon className="w-4 h-4" aria-hidden="true" />
                                 {tab.label}
                                 {tab.count && tab.count > 0 && (
                                     <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-kicker font-bold text-white">
@@ -542,7 +551,8 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
                     })}
                 </div>
 
-                {/* Tab content */}
+                {/* Tab content — one panel bound to the active tab. */}
+                <div {...panelProps}>
                 {activeTab === "overview" && (
                     <>
                         <OverviewTab
@@ -601,6 +611,7 @@ export function AgentClient({ policies, user, agent, relationshipId, sharedPolic
                         language={language}
                     />
                 )}
+                </div>
             </div>
 
             <ConfirmDialog
