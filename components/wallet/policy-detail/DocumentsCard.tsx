@@ -20,7 +20,13 @@ interface DocumentsCardProps {
     copy: {
         documentsArea: string
         noDocuments: string
-        contract: string
+        /** Factual file-format labels — the product does not know a document's
+            insurance TYPE (no schema field), so it states the format it can see
+            rather than labelling every upload "Contract", which mislabels a
+            receipt or a photo. */
+        documentFormatPdf: string
+        documentFormatImage: string
+        documentFormatOther: string
         preview: string
         upgradeToPlusPreview: string
         previewLabels: {
@@ -74,7 +80,9 @@ export function DocumentsCard({ policyId, documents, isFreeTier, copy }: Documen
                                     </div>
                                     <div className="min-w-0 flex-1">
                                         <p className="truncate text-sm font-semibold text-black dark:text-white">{doc.fileName}</p>
-                                        <p className="text-xs text-black/55 dark:text-white/60">{copy.contract}</p>
+                                        <p className="text-xs text-black/55 dark:text-white/60">
+                                            {isPdf ? copy.documentFormatPdf : isImage ? copy.documentFormatImage : copy.documentFormatOther}
+                                        </p>
                                     </div>
                                     <div className="flex items-center gap-1.5">
                                         {canPreview && (

@@ -1020,7 +1020,9 @@ export function PolicyDetailsClient({
                                 copy={{
                                     documentsArea: detailsCopy.documentsArea,
                                     noDocuments: t.wallet.noDocuments,
-                                    contract: t.wallet.contract,
+                                    documentFormatPdf: t.wallet.documentFormatPdf,
+                                    documentFormatImage: t.wallet.documentFormatImage,
+                                    documentFormatOther: t.wallet.documentFormatOther,
                                     preview: t.wallet.preview,
                                     upgradeToPlusPreview: t.wallet.upgradeToPlusPreview,
                                     previewLabels: t.wallet.documentPreview,
