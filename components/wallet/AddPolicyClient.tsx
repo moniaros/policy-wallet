@@ -50,6 +50,9 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
     const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+    // Inline field errors. These were toast-only: the message named a problem
+    // but pointed at no field, and vanished when the toast timed out.
+    const [fieldErrors, setFieldErrors] = useState<{ files?: string; lineOfBusiness?: string }>({})
     const formCopy = t.wallet.addPolicyForm
 
     // AI-processing consent (GDPR): analysis starts in the background right after
@@ -76,13 +79,16 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
         e.preventDefault()
         const formData = new FormData(e.currentTarget)
 
-        if (selectedFiles.length === 0) {
-            toast.error(formCopy.uploadDocumentRequired)
-            return
-        }
+        const nextErrors: { files?: string; lineOfBusiness?: string } = {}
+        if (selectedFiles.length === 0) nextErrors.files = formCopy.uploadDocumentRequired
+        if (!formData.get("lineOfBusiness")) nextErrors.lineOfBusiness = formCopy.coverageTypeRequired
+        setFieldErrors(nextErrors)
 
-        if (!formData.get("lineOfBusiness")) {
-            toast.error(formCopy.coverageTypeRequired)
+        if (Object.keys(nextErrors).length > 0) {
+            // Toast stays for discoverability when the field is off-screen; the
+            // inline message beside the field is the durable one.
+            toast.error(nextErrors.files ?? nextErrors.lineOfBusiness!)
+            document.getElementById(nextErrors.files ? "add-policy-files-error" : "add-lineOfBusiness")?.scrollIntoView({ block: "center", behavior: "smooth" })
             return
         }
 
@@ -411,13 +417,19 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                             </div>
 
                             <UploadDropzone
-                                onFiles={(files) => setSelectedFiles(prev => [...prev, ...files])}
+                                onFiles={(files) => { setSelectedFiles(prev => [...prev, ...files]); setFieldErrors(prev => ({ ...prev, files: undefined })) }}
                                 accept=".pdf,.png,.jpg,.jpeg"
                                 inputId="file-upload"
                                 inputName="files"
                                 title={t.wallet.tapToUpload}
                                 hint={t.wallet.dragDrop}
                             />
+
+                            {fieldErrors.files && (
+                                <p id="add-policy-files-error" role="alert" className="mt-2 ml-1 text-xs font-semibold text-red-600 dark:text-red-400">
+                                    {fieldErrors.files}
+                                </p>
+                            )}
 
                             {selectedFiles.length > 0 && (
                                 <div className="mt-4 space-y-2">
@@ -471,7 +483,10 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                         id="add-lineOfBusiness"
                                         name="lineOfBusiness"
                                         required
-                                        className="w-full appearance-none bg-primary-tint dark:bg-primary/10 border border-primary-soft dark:border-primary/30 rounded-xl px-4 py-3.5 text-sm font-bold text-foreground focus:ring-2 focus:ring-primary focus:bg-card transition-all"
+                                        aria-invalid={fieldErrors.lineOfBusiness ? true : undefined}
+                                        aria-describedby={fieldErrors.lineOfBusiness ? "add-lineOfBusiness-error" : undefined}
+                                        onChange={() => setFieldErrors(prev => ({ ...prev, lineOfBusiness: undefined }))}
+                                        className={`w-full appearance-none bg-primary-tint dark:bg-primary/10 border rounded-xl px-4 py-3.5 text-sm font-bold text-foreground focus:ring-2 focus:ring-primary focus:bg-card transition-all ${fieldErrors.lineOfBusiness ? "border-red-500 ring-2 ring-red-500/40" : "border-primary-soft dark:border-primary/30"}`}
                                     >
                                         <option value="">{t.wallet.selectTypePlaceholder}</option>
                                         {types.map(typeItem => (
@@ -480,6 +495,11 @@ export function AddPolicyClient({ insurers, types, hasAiConsent }: AddPolicyClie
                                             </option>
                                         ))}
                                     </select>
+                                    {fieldErrors.lineOfBusiness && (
+                                        <p id="add-lineOfBusiness-error" role="alert" className="ml-1 text-xs font-semibold text-red-600 dark:text-red-400">
+                                            {fieldErrors.lineOfBusiness}
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Insurer - OPTIONAL */}
