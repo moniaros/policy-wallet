@@ -64,6 +64,19 @@ test.describe('Accessibility Audit - WCAG 2.1 AA', () => {
 
         assertNoSevereViolations(accessibilityScanResults.violations);
     });
+
+    // The high-traffic analytical pages — the score, gaps and recommendations a
+    // policyholder actually reads — were not axe-scanned before.
+    for (const path of ['/dashboard', '/coverage-insights']) {
+        test(`${path} should have no accessibility violations`, async ({ page }) => {
+            await page.goto(path);
+            await page.waitForLoadState('networkidle');
+            const results = await new AxeBuilder({ page })
+                .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+                .analyze();
+            assertNoSevereViolations(results.violations);
+        });
+    }
 });
 
 test.describe('Keyboard Navigation', () => {
