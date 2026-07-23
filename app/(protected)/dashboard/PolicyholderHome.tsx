@@ -177,19 +177,35 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
 
     const openGapCount = openGaps.length
 
-    // When the cached score is absent, fall back to the lightweight penalty
-    // estimate (fetched in the parallel batch above).
-    let healthScore: number
-    if (cachedScore) {
+    /* Protection score.
+     *
+     * Three states, because there were previously only one and it lied in two
+     * of them:
+     *
+     *  - No policies at all -> NO score. It used to render `0` with the red
+     *    "Χρειάζεται προσοχή" verdict, which tells someone who has simply not
+     *    uploaded anything yet that they are badly protected. The same bug was
+     *    fixed on /coverage-insights in 65183b7; this page kept it, and this is
+     *    the page people land on.
+     *  - Engine score present -> the real, weighted, category-based figure.
+     *  - Engine score absent but policies exist -> a DIFFERENT formula (flat
+     *    penalties per gap severity). It is not the same measure and can differ
+     *    materially for the same portfolio, so it is now labelled a provisional
+     *    estimate instead of being passed off as the score.
+     */
+    const hasPolicies = policies.length > 0
+    const isProvisionalScore = hasPolicies && !cachedScore
+    let healthScore: number | null
+    if (!hasPolicies) {
+        healthScore = null
+    } else if (cachedScore) {
         healthScore = cachedScore.overallScore
     } else {
         const criticalGaps = openGaps.filter(g => g.severity === "critical").length
         const highGaps = openGaps.filter(g => g.severity === "high").length
         const mediumGaps = openGaps.filter(g => g.severity === "medium").length
         const lowGaps = openGaps.filter(g => g.severity === "low").length
-        healthScore = policies.length === 0
-            ? 0
-            : Math.max(0, Math.min(100, 100 - (criticalGaps * 25 + highGaps * 15 + mediumGaps * 8 + lowGaps * 3)))
+        healthScore = Math.max(0, Math.min(100, 100 - (criticalGaps * 25 + highGaps * 15 + mediumGaps * 8 + lowGaps * 3)))
     }
 
     // Precomputed view models — components stay presentational
@@ -218,11 +234,13 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
         }
     })
 
-    const scoreSummary = healthScore >= 70
-        ? home.scoreGood
-        : healthScore >= 40
-            ? home.scoreNeedsImprovement
-            : home.scoreNeedsAttention
+    const scoreSummary = healthScore === null
+        ? ''
+        : healthScore >= 70
+            ? home.scoreGood
+            : healthScore >= 40
+                ? home.scoreNeedsImprovement
+                : home.scoreNeedsAttention
 
     const agentName = customerRelationship
         ? customerRelationship.agent.name || customerRelationship.agent.email || ""
@@ -326,11 +344,20 @@ export default async function PolicyholderHomePage({ preloadedDbUser }: { preloa
                         activeCount={activePolicies.length}
                         healthScore={healthScore}
                         openGapCount={openGapCount}
+                        isProvisional={isProvisionalScore}
                         labels={{
                             activePolicies: home.activePolicies,
                             protectionScore: home.protectionScore,
                             scoreSummary,
                             gapsCount: home.coverageGapsCount.replace('{count}', String(openGapCount)),
+                            scoreUnavailable: home.scoreUnavailable,
+                            scoreUnavailableHint: home.scoreUnavailableHint,
+                            provisional: home.scoreProvisional,
+                            provisionalHint: home.scoreProvisionalHint,
+                            methodologyTitle: home.scoreMethodologyTitle,
+                            methodologyBody: home.scoreMethodologyBody,
+                            methodologyLimits: home.scoreMethodologyLimits,
+                            methodologyNotAdvice: home.scoreMethodologyNotAdvice,
                         }}
                     />
 
