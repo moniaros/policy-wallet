@@ -1,6 +1,6 @@
 "use client"
 
-import { useId, useState } from "react"
+import { useId, useMemo, useState } from "react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import {
     ClipboardList, Plus, Trash2, GripVertical, Eye, Send,
@@ -13,6 +13,7 @@ import { EmptyState } from "@/components/ui/EmptyState"
 import { useDialog } from "@/hooks/useDialog"
 import { TableShell } from "@/components/ui/TableShell"
 
+import { SortableColumn, useTableSort, applySort } from "@/components/ui/SortableColumn"
 const copy = {
     en: {
         kicker: "QUESTIONNAIRES",
@@ -128,12 +129,15 @@ interface Props {
     instances: InstanceData[]
 }
 
+type QSortKey = "customer" | "template" | "status" | "sentAt"
+
 export function QuestionnairesClient({ templates, instances }: Props) {
     const { language } = useLanguage()
     const t = copy[language === "el" ? "el" : "en"]
     const [tab, setTab] = useState<"templates" | "sent">("templates")
     const [showBuilder, setShowBuilder] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
+
 
     return (
         <div className="pw-page-shell min-h-screen">
@@ -526,6 +530,16 @@ function SentList({ instances, t, language }: {
     t: typeof copy.en
     language: string
 }) {
+    const { sort, toggle } = useTableSort<QSortKey>()
+    const sortedInstances = useMemo(
+        () => applySort(instances, sort, {
+        customer: (r: any) => r.customerName ?? r.customer,
+        template: (r: any) => r.templateName ?? r.template,
+        status: (r: any) => r.status,
+        sentAt: (r: any) => (r.sentAt ? new Date(r.sentAt) : null),
+        }),
+        [instances, sort]
+    )
     const [analysisData, setAnalysisData] = useState<any>(null)
     const analysisDialogRef = useDialog<HTMLDivElement>(() => setAnalysisData(null), Boolean(analysisData))
     const [analyzingId, setAnalyzingId] = useState<string | null>(null)
@@ -557,15 +571,15 @@ function SentList({ instances, t, language }: {
                 <table className="pw-stacked-table w-full text-sm">
                     <thead>
                         <tr className="border-b border-slate-100 dark:border-slate-800">
-                            <th className="text-left text-kicker font-black text-slate-400 uppercase tracking-widest p-4">{t.customer}</th>
-                            <th className="text-left text-kicker font-black text-slate-400 uppercase tracking-widest p-4">{t.template}</th>
-                            <th className="text-left text-kicker font-black text-slate-400 uppercase tracking-widest p-4">{t.status}</th>
-                            <th className="text-left text-kicker font-black text-slate-400 uppercase tracking-widest p-4">{t.sentAt}</th>
+                            <SortableColumn columnKey="customer" sort={sort} onSort={toggle} label={t.customer} align="left" className="pb-3" />
+                            <SortableColumn columnKey="template" sort={sort} onSort={toggle} label={t.template} align="left" className="pb-3" />
+                            <SortableColumn columnKey="status" sort={sort} onSort={toggle} label={t.status} align="left" className="pb-3" />
+                            <SortableColumn columnKey="sentAt" sort={sort} onSort={toggle} label={t.sentAt} align="left" className="pb-3" />
                             <th className="text-right text-kicker font-black text-slate-400 uppercase tracking-widest p-4"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        {instances.map((inst) => (
+                        {sortedInstances.map((inst) => (
                             <tr key={inst.id} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
                                 <td data-label={t.customer} className="p-4 font-bold text-slate-900 dark:text-white">{inst.customerName}</td>
                                 <td data-label={t.template} className="p-4 text-slate-600 dark:text-slate-400">{inst.templateName}</td>

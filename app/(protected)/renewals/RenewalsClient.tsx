@@ -1,6 +1,6 @@
 "use client"
 
-import { useId, useState } from "react"
+import { useId, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import {
     CalendarClock,
@@ -25,6 +25,7 @@ import { useDialog } from "@/hooks/useDialog"
 import { TableShell } from "@/components/ui/TableShell"
 import { RowCheckbox } from "@/components/ui/form"
 
+import { SortableColumn, useTableSort, applySort } from "@/components/ui/SortableColumn"
 const copy = {
     en: {
         title: "Renewals",
@@ -142,14 +143,30 @@ interface Props {
 
 type OutcomeType = "renewed_same_insurer" | "renewed_different_insurer" | "lapsed" | "cancelled"
 
+type RenewalSortKey = "customer" | "insurer" | "lob" | "premium" | "expires"
+
 export function RenewalsClient({ initialRenewals, stats }: Props) {
     const { language, t: gt } = useLanguage()
     const t = copy[language === "el" ? "el" : "en"]
     const router = useRouter()
 
-    const [renewals, setRenewals] = useState(initialRenewals)
+    const [renewalRows, setRenewals] = useState(initialRenewals)
     const [statusFilter, setStatusFilter] = useState("all")
     const [timeframe, setTimeframe] = useState<"7" | "15" | "30" | "60" | "90" | "all">("all")
+    // The server order (expiry ascending) is the meaningful default, so the
+    // third toggle state returns to it rather than cycling asc/desc forever.
+    const { sort, toggle } = useTableSort<RenewalSortKey>()
+    const renewals = useMemo(
+        () => applySort<RenewalView, RenewalSortKey>(renewalRows, sort, {
+            customer: (r) => r.customerName,
+            insurer: (r) => r.insurerName,
+            lob: (r) => r.lineOfBusiness,
+            premium: (r) => r.premiumAmount,
+            expires: (r) => (r.policyEndDate ? new Date(r.policyEndDate) : null),
+        }),
+        [renewalRows, sort]
+    )
+
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
     const [outcomeModal, setOutcomeModal] = useState<{ renewalId: string; customerName: string } | null>(null)
     // The outcome modal was a bare overlay: no trap, no Escape, no dialog role.
@@ -369,11 +386,11 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                                 onChange={toggleSelectAll}
                                             />
                                         </th>
-                                        <th className="px-4 py-3 text-left text-kicker font-black text-neutral-400 uppercase tracking-widest">{t.customer}</th>
-                                        <th className="px-4 py-3 text-left text-kicker font-black text-neutral-400 uppercase tracking-widest">{t.insurer}</th>
-                                        <th className="px-4 py-3 text-left text-kicker font-black text-neutral-400 uppercase tracking-widest">{t.lob}</th>
-                                        <th className="px-4 py-3 text-right text-kicker font-black text-neutral-400 uppercase tracking-widest">{t.premium}</th>
-                                        <th className="px-4 py-3 text-center text-kicker font-black text-neutral-400 uppercase tracking-widest">{t.expires}</th>
+                                        <SortableColumn columnKey="customer" sort={sort} onSort={toggle} label={t.customer} align="left" />
+                                        <SortableColumn columnKey="insurer" sort={sort} onSort={toggle} label={t.insurer} align="left" />
+                                        <SortableColumn columnKey="lob" sort={sort} onSort={toggle} label={t.lob} align="left" />
+                                        <SortableColumn columnKey="premium" sort={sort} onSort={toggle} label={t.premium} align="right" />
+                                        <SortableColumn columnKey="expires" sort={sort} onSort={toggle} label={t.expires} align="center" />
                                         <th className="px-4 py-3 text-center text-kicker font-black text-neutral-400 uppercase tracking-widest">{t.status}</th>
                                         <th className="px-4 py-3 text-right text-kicker font-black text-neutral-400 uppercase tracking-widest">{t.actions}</th>
                                     </tr>

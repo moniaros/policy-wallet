@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { EmptyState } from "@/components/ui/EmptyState"
 import {
@@ -10,6 +10,7 @@ import {
 } from "lucide-react"
 import type { TeamOverview } from "@/lib/services/team.service"
 import { TableShell } from "@/components/ui/TableShell"
+import { SortableColumn, useTableSort, applySort } from "@/components/ui/SortableColumn"
 import {
     createAgencyAction, inviteMemberAction, removeMemberAction,
     updateRoleAction, transferCustomerAction
@@ -129,6 +130,8 @@ interface Props {
     pipeline: PipelineItem[]
 }
 
+type TeamSortKey = "customer" | "agent" | "lob" | "status" | "value"
+
 export function TeamClient({ team, pipeline }: Props) {
     const { language } = useLanguage()
     const t = copy[language === "el" ? "el" : "en"]
@@ -144,6 +147,7 @@ export function TeamClient({ team, pipeline }: Props) {
     if (!team) {
         return <CreateAgencyView t={t} />
     }
+
 
     return (
         <div className="pw-page-shell min-h-screen">
@@ -400,6 +404,17 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
     t: typeof copy.en
     fmt: (n: number) => string
 }) {
+    const { sort, toggle } = useTableSort<TeamSortKey>()
+    const sortedPipeline = useMemo(
+        () => applySort(pipeline, sort, {
+        customer: (r: any) => r.customerName ?? r.customer,
+        agent: (r: any) => r.agentName ?? r.agent,
+        lob: (r: any) => r.lineOfBusiness ?? r.lob,
+        status: (r: any) => r.status,
+        value: (r: any) => r.value ?? r.estimatedValue,
+        }),
+        [pipeline, sort]
+    )
     const statusColor: Record<string, string> = {
         open: "bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400",
         contacted: "bg-mint/25 text-primary dark:bg-primary/15 dark:text-mint",
@@ -427,15 +442,15 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
                     <table className="pw-stacked-table w-full text-sm">
                         <thead>
                             <tr className="border-b border-neutral-100 dark:border-neutral-800">
-                                <th className="text-left text-kicker font-black text-neutral-400 uppercase tracking-widest pb-3">{t.customer}</th>
-                                <th className="text-left text-kicker font-black text-neutral-400 uppercase tracking-widest pb-3">{t.agent}</th>
-                                <th className="text-left text-kicker font-black text-neutral-400 uppercase tracking-widest pb-3">{t.lob}</th>
-                                <th className="text-left text-kicker font-black text-neutral-400 uppercase tracking-widest pb-3">{t.status}</th>
-                                <th className="text-right text-kicker font-black text-neutral-400 uppercase tracking-widest pb-3">{t.value}</th>
+                                <SortableColumn columnKey="customer" sort={sort} onSort={toggle} label={t.customer} align="left" className="pb-3" />
+                                <SortableColumn columnKey="agent" sort={sort} onSort={toggle} label={t.agent} align="left" className="pb-3" />
+                                <SortableColumn columnKey="lob" sort={sort} onSort={toggle} label={t.lob} align="left" className="pb-3" />
+                                <SortableColumn columnKey="status" sort={sort} onSort={toggle} label={t.status} align="left" className="pb-3" />
+                                <SortableColumn columnKey="value" sort={sort} onSort={toggle} label={t.value} align="right" className="pb-3" />
                             </tr>
                         </thead>
                         <tbody>
-                            {pipeline.map((item) => (
+                            {sortedPipeline.map((item) => (
                                 <tr key={item.id} className="border-b border-neutral-50 dark:border-neutral-800/50">
                                     <td data-label={t.customer} className="py-3 font-bold text-foreground">{item.customerName}</td>
                                     <td data-label={t.agent} className="py-3">
