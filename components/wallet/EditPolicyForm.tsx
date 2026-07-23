@@ -86,7 +86,7 @@ export function EditPolicyForm({ policy, t, returnTo }: EditPolicyFormProps) {
 
     const policyTypes = ["motor", "health", "home", "life", "travel", "business", "liability", "pet", "other"] as const
 
-    const inputClass = "flex h-10 w-full rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50"
+    const inputClass = "pw-input pw-input-sm flex"
     const labelClass = "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-foreground"
 
     return (

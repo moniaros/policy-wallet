@@ -146,7 +146,7 @@ Style through the runtime tokens in `app/globals.css`, never raw palette values:
 - **`bg-primary-soft`** (`#DCEBDA`) and **`bg-primary-tint`** (`#F0FDF4`) — green-tinted surfaces for success chips and highlighted rows.
 - **`text-mint`** (`#89D9B2`) — mint accents on dark surfaces.
 - **`ring-primary`** — focus rings.
-- **`.pw-card`** — the standard card: white surface, 16px radius, border-first and flat at rest (see Shadow Depths), dark-mode-aware. **`.pw-pill`** for pill badges, **`.pw-primary-button`** for the primary CTA. (`.arc-card` was a byte-for-byte duplicate of `.pw-card` and has been deleted; the remaining `.arc-btn*` utilities are `rounded-xl` and still contradict the pill rule — retiring them is tracked in the UI-foundation backlog.)
+- **`.pw-card`** — the standard card: white surface, 16px radius, border-first and flat at rest (see Shadow Depths), dark-mode-aware. **`.pw-pill`** for pill badges, **`.pw-primary-button`** for the primary CTA. (`.arc-card` was a byte-for-byte duplicate of `.pw-card` and has been deleted. `.arc-btn*` — a second button system at `rounded-xl` that contradicted the pill rule — has now also been deleted; its call sites use the canonical pair.)
 - **`border-border`** (resolves to `#E2E8F0` light / `rgba(255,255,255,0.14)` dark) — the sanctioned hairline. Prefer it over the literal `border-[#E2E8F0]`, which does not flip in dark mode.
 - In TS/TSX, a raw hex literal has **no sanctioned escape hatch** — there is no token module to import from. If you need a value the utilities don't cover, add it to `globals.css` as a variable and reference it, rather than inlining a hex.
 
@@ -231,15 +231,18 @@ Style through the runtime tokens in `app/globals.css`, never raw palette values:
 
 ### Inputs
 
-> ⚠️ **There is no shared Input/Select/Textarea/Label primitive yet** — ~111 raw `<input>` elements across 33 files hand-roll their styling. Building one is tracked in the UI-foundation backlog (see `docs/audits/ui-foundation-audit-2026-07.md`). Until it lands, match the dominant shipped recipe rather than the older 12px-radius spec that used to live here:
+**Use `.pw-input`.** The recipe below is now a utility in `app/globals.css`, so it is stated in one place instead of retyped per form. 107 controls with a static className previously used 48 distinct appearance signatures; 105 are now on the utility.
 
 ```
-w-full h-14 px-6
-bg-neutral-50 dark:bg-neutral-800
-border-none rounded-2xl
-outline-none focus:ring-4 focus:ring-primary/10
-transition-all text-sm font-bold
+.pw-input       /* w-full rounded-2xl border-none bg-neutral-50 px-6 py-4 text-sm
+                   outline-none focus:ring-4 focus:ring-primary/10, dark-aware */
+.pw-input-sm    /* compact: dense toolbars and table filters */
 ```
+
+`.pw-input` deliberately sets **no fixed height** — `h-14` would fight the 44px
+mobile floor in the base layer and stop a textarea growing. Padding sets the
+height; the floor guarantees the minimum. Style the invalid state by setting
+`aria-invalid` on the control, which `.pw-input[aria-invalid="true"]` picks up.
 
 Every input needs a real `<label>` (or `aria-label`) and a visible focus ring — the `focus:ring-4 focus:ring-primary/10` above is the sanctioned one.
 

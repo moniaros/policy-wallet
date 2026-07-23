@@ -115,15 +115,16 @@ describe('form control consistency', () => {
 
     it('defines the canonical control utility with the sanctioned focus ring', () => {
         const css = readFileSync('app/globals.css', 'utf-8')
-        expect(css).toContain('.pw-input {')
-        expect(css).toContain('.pw-input-sm {')
+        expect(css).toContain(':where(.pw-input) {')
+        expect(css).toContain(':where(.pw-input-sm) {')
         // MASTER.md names focus:ring-4 focus:ring-primary/10 as the sanctioned ring.
         expect(css).toMatch(/focus:ring-4 focus:ring-primary\/10/)
     })
 
     it('does not pin a fixed height that would fight the 44px mobile floor', () => {
         const css = readFileSync('app/globals.css', 'utf-8')
-        const block = /\.pw-input \{[\s\S]*?\n {2}\}/.exec(css)?.[0] || ''
+        const block = /:where\(\.pw-input\) \{[\s\S]*?\n {2}\}/.exec(css)?.[0] || ''
+        expect(block, '.pw-input block not found — did the selector change?').not.toBe('')
         expect(block).not.toMatch(/\bh-\d+\b/)
     })
 })
@@ -148,4 +149,24 @@ describe('chip toggles', () => {
         })
         expect(offenders, `hand-rolled chips in:\n${offenders.join('\n')}`).toEqual([])
     })
+})
+
+/**
+ * Tailwind 4 emits globals.css AFTER its own utilities in this setup, so a
+ * plain `.pw-input` / `.pw-primary-button` selector beat every per-instance
+ * override. The signin icon-inputs carried `pl-9` and still computed
+ * padding-left: 24px, putting the mail icon on top of the placeholder. A text
+ * search of the stylesheet could not see this — only the rendered page could.
+ */
+describe('shared recipes must not outrank per-instance overrides', () => {
+    const css = readFileSync('app/globals.css', 'utf-8')
+
+    it.each(['.pw-input', '.pw-input-sm', '.pw-primary-button', '.pw-secondary-button'])(
+        '%s is declared at zero specificity',
+        (util) => {
+            expect(css, `${util} must be wrapped in :where()`).toContain(`:where(${util})`)
+            // A bare `\n  .pw-input {` declaration would reintroduce the bug.
+            expect(css).not.toMatch(new RegExp(`\\n {2}\\${util} \\{`))
+        }
+    )
 })

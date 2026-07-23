@@ -203,8 +203,7 @@ export function PolicyReviewScreen({ data, insurers, types, onDone }: PolicyRevi
         })
     }
 
-    const inputClasses =
-        "w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition-colors focus:border-primary dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:focus:border-mint"
+    const inputClasses = "pw-input pw-input-sm dark:focus:border-mint"
 
     const renderEditor = (field: EditableField) => {
         const commonProps = {

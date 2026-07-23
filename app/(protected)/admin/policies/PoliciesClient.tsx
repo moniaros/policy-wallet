@@ -9,7 +9,7 @@ import { formatDate } from "@/lib/i18n/format"
 import { AdminDialog } from "@/components/admin/AdminDialog"
 
 const STATUS_OPTIONS = ["all", "analyzing", "active", "action_needed", "incomplete", "expiring_soon", "cancelled", "deleted"]
-const inputClass = "w-full p-2 border rounded text-sm dark:bg-stone-700 dark:border-stone-600 dark:text-white"
+const inputClass = "pw-input pw-input-sm"
 const labelClass = "block text-xs font-medium text-stone-600 dark:text-stone-400 mb-1"
 const primaryBtn = "px-4 py-2 text-sm bg-primary text-white dark:text-[#1A2420] rounded hover:bg-primary-hover disabled:opacity-50"
 const iconBtn = "p-2 text-primary dark:text-mint hover:bg-primary-tint dark:hover:bg-primary/15 rounded-lg transition-colors disabled:opacity-50"

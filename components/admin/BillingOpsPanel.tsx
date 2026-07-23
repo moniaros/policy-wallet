@@ -13,8 +13,7 @@ type ConfirmState = {
     successMessage: string
 } | null
 
-const inputClass =
-    "w-full p-2 border rounded text-sm dark:bg-stone-700 dark:border-stone-600 dark:text-white"
+const inputClass = "pw-input pw-input-sm"
 const labelClass = "block text-xs font-medium text-stone-600 dark:text-stone-400 mb-1"
 const sectionClass = "rounded-lg border border-stone-200 dark:border-stone-700 p-4 space-y-3"
 const primaryBtn =

@@ -280,57 +280,6 @@ pre {
     @apply bg-background text-foreground;
   }
 
-  /* Mobile form-control floor.
-     ------------------------------------------------------------------
-     Only 2 of ~215 text-entry controls in the app go through the shared
-     form kit; the rest are hand-written, so per-component fixes would be
-     re-broken by the next page someone writes. These two rules enforce the
-     floor at the base layer instead, where a control cannot opt out of it
-     by accident.
-
-     1. iOS Safari ZOOMS THE WHOLE PAGE when a control smaller than 16px
-        receives focus, and does not zoom back out. Seven inputs and one
-        select carried `text-sm`/`text-xs` and would do this on every
-        focus. Forcing 16px on small screens costs nothing visually — the
-        difference between 14px and 16px on a phone is invisible next to a
-        viewport that never comes back.
-     2. A 44px minimum keeps a control tappable. Both are scoped to small
-        screens: on a pointer device compact controls are fine, and this
-        way no desktop layout shifts.
-
-     Checkboxes and radios are excluded — they get their real target from
-     the row wrapper in components/ui/form/Choice.tsx, and a 44px box would
-     look clumsy. */
-  @media (max-width: 767px) {
-    input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]),
-    select,
-    textarea {
-      font-size: 16px;
-      min-height: 44px;
-    }
-
-    textarea {
-      /* min-height above would otherwise fight an author's `rows`. */
-      min-height: 5rem;
-    }
-
-    /* Same argument for buttons: 57 of 151 sit under 44px on a phone, mostly
-       at py-2 or p-2, and they are spread over 47 distinct styling signatures
-       — so there is no single component to fix them in. A button already
-       taller than 44px is unaffected, and a <button> centres its own content
-       vertically, so growing one does not misalign its label. */
-    button:not([hidden]),
-    [role="button"]:not([hidden]) {
-      min-height: 44px;
-    }
-
-    /* Opt-out for the genuinely inline cases — a button used as a link inside
-       a sentence, where 44px would break the line box. */
-    button.pw-inline-action,
-    .pw-inline-action button {
-      min-height: 0;
-    }
-  }
 }
 
 @layer utilities {
@@ -402,20 +351,28 @@ pre {
      No `h-14` here: a fixed height fights the base-layer 44px mobile floor and
      stops a textarea growing. Padding sets the height and the floor guarantees
      the minimum. */
-  .pw-input {
+  /* `:where()` drops these to zero specificity ON PURPOSE.
+     Tailwind 4 emits this file's rules AFTER its utilities here, so a plain
+     `.pw-input` beat every per-instance override: an icon-input carrying
+     `pl-9` still computed padding-left: 24px and the icon sat on top of the
+     placeholder. At zero specificity any utility class wins, which is the
+     behaviour a base recipe should have. Verified in the browser, not just in
+     the stylesheet — source order made this invisible to a text search. */
+  :where(.pw-input) {
     @apply w-full rounded-2xl border-none bg-neutral-50 px-6 py-4 text-sm outline-none transition-all;
     @apply focus:ring-4 focus:ring-primary/10;
     @apply disabled:cursor-not-allowed disabled:opacity-60;
   }
 
-  .dark .pw-input {
+  :where(.dark .pw-input) {
     @apply bg-neutral-800;
   }
 
   /* Compact variant for dense toolbars and table filters, where the roomy
      default would push a row out of its container. Still clears 44px on
      mobile via the base layer. */
-  .pw-input-sm {
+  /* Also zero-specificity, and declared after .pw-input so it wins the tie. */
+  :where(.pw-input-sm) {
     @apply rounded-xl px-4 py-2.5;
   }
 
@@ -424,7 +381,7 @@ pre {
     @apply ring-2 ring-red-500/40 focus:ring-4 focus:ring-red-500/20;
   }
 
-  .pw-primary-button {
+  :where(.pw-primary-button) {
     @apply inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-60 disabled:pointer-events-none;
     border-radius: var(--pw-radius-button);
     background: var(--pw-primary);
@@ -438,7 +395,7 @@ pre {
     background: var(--pw-primary-hover);
   }
 
-  .pw-secondary-button {
+  :where(.pw-secondary-button) {
     @apply inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-60 disabled:pointer-events-none;
     border-radius: var(--pw-radius-button);
     border: 1px solid var(--pw-border);
@@ -450,6 +407,12 @@ pre {
     color: var(--pw-text-primary-dark);
     border-color: rgba(255, 255, 255, 0.18);
   }
+
+  /* The two bases above use :where() for the same reason .pw-input does —
+     Tailwind 4 emits this file after its utilities, so a plain class would beat
+     every per-instance override (a button carrying `px-8` would still render
+     the base's px-5). Zero specificity lets utilities and the size modifiers
+     below win. */
 
   /* Size modifiers for the CTA pair — nav/footer (sm) and hero/final (lg).
      Declared after the button bases so they win within the layer. */
@@ -593,5 +556,67 @@ pre {
 
   100% {
     transform: translate(0px, 0px) scale(1);
+  }
+}
+
+/* ─── Mobile control floor — deliberately UNLAYERED ────────────────────────────
+   This lived in `@layer base` and the 44px min-height worked, because nothing
+   else sets min-height on these elements. The 16px font-size did NOT: `text-sm`
+   is a Tailwind utility in `@layer utilities`, which outranks `base`, so every
+   control kept its 14px and iOS Safari would still have zoomed. Measuring the
+   rendered page is what caught it — the rule was present in the CSS and simply
+   losing the cascade.
+
+   Unlayered rules beat every layered rule, so these win over utilities while
+   staying scoped to small screens. */
+/* Mobile form-control floor.
+   ------------------------------------------------------------------
+   Only 2 of ~215 text-entry controls in the app go through the shared
+   form kit; the rest are hand-written, so per-component fixes would be
+   re-broken by the next page someone writes. These two rules enforce the
+   floor at the base layer instead, where a control cannot opt out of it
+   by accident.
+
+   1. iOS Safari ZOOMS THE WHOLE PAGE when a control smaller than 16px
+      receives focus, and does not zoom back out. Seven inputs and one
+      select carried `text-sm`/`text-xs` and would do this on every
+      focus. Forcing 16px on small screens costs nothing visually — the
+      difference between 14px and 16px on a phone is invisible next to a
+      viewport that never comes back.
+   2. A 44px minimum keeps a control tappable. Both are scoped to small
+      screens: on a pointer device compact controls are fine, and this
+      way no desktop layout shifts.
+
+   Checkboxes and radios are excluded — they get their real target from
+   the row wrapper in components/ui/form/Choice.tsx, and a 44px box would
+   look clumsy. */
+@media (max-width: 767px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: 16px;
+    min-height: 44px;
+  }
+
+  textarea {
+    /* min-height above would otherwise fight an author's `rows`. */
+    min-height: 5rem;
+  }
+
+  /* Same argument for buttons: 57 of 151 sit under 44px on a phone, mostly
+     at py-2 or p-2, and they are spread over 47 distinct styling signatures
+     — so there is no single component to fix them in. A button already
+     taller than 44px is unaffected, and a <button> centres its own content
+     vertically, so growing one does not misalign its label. */
+  button:not([hidden]),
+  [role="button"]:not([hidden]) {
+    min-height: 44px;
+  }
+
+  /* Opt-out for the genuinely inline cases — a button used as a link inside
+     a sentence, where 44px would break the line box. */
+  button.pw-inline-action,
+  .pw-inline-action button {
+    min-height: 0;
   }
 }

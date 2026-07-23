@@ -80,8 +80,7 @@ export default function ForgotPasswordPage() {
         setSubmittedEmail(values.email)
     }
 
-    const inputBase =
-        "w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-body text-[#0F172A] outline-none transition placeholder:text-[#94A3B8] focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 dark:border-white/15 dark:bg-black dark:text-white dark:placeholder:text-white/40"
+    const inputBase = "pw-input text-[#0F172A]"
 
     return (
         <div className={`${inter.className} flex min-h-screen flex-col bg-[#F8FAFC] dark:bg-black`}>

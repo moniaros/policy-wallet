@@ -167,7 +167,7 @@ export default function SignInPage() {
         } catch { setResetError(copy.resetFailed) } finally { setResetLoading(false) }
     }
 
-    const inputBase = "w-full rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-body text-[#0F172A] outline-none transition placeholder:text-[#94A3B8] focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 dark:border-white/15 dark:bg-black dark:text-white dark:placeholder:text-white/40"
+    const inputBase = "pw-input text-[#0F172A]"
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC] px-4 py-12 dark:bg-black">

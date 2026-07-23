@@ -55,7 +55,7 @@ describe('mobile form-control floor (globals.css)', () => {
     const css = readFileSync('app/globals.css', 'utf-8')
 
     it('forces 16px on small screens so iOS Safari does not zoom the page on focus', () => {
-        const block = css.match(/@media \(max-width: 767px\) \{[\s\S]*?\n {2}\}/)?.[0] || ''
+        const block = css.match(/@media \(max-width: 767px\) \{[\s\S]*?\n\}/)?.[0] || ''
         expect(block, 'mobile control floor block missing').toBeTruthy()
         expect(block).toContain('font-size: 16px')
         expect(block).toMatch(/input:not\(\[type="checkbox"\]\)/)
@@ -68,7 +68,7 @@ describe('mobile form-control floor (globals.css)', () => {
     })
 
     it('exempts checkboxes and radios, which get their target from the row wrapper', () => {
-        const block = css.match(/@media \(max-width: 767px\) \{[\s\S]*?\n {2}\}/)?.[0] || ''
+        const block = css.match(/@media \(max-width: 767px\) \{[\s\S]*?\n\}/)?.[0] || ''
         expect(block).toContain(':not([type="radio"])')
     })
 })
@@ -80,7 +80,7 @@ describe('mobile form-control floor (globals.css)', () => {
  */
 describe('mobile button floor (globals.css)', () => {
     const css = readFileSync('app/globals.css', 'utf-8')
-    const block = css.match(/@media \(max-width: 767px\) \{[\s\S]*?\n {2}\}/)?.[0] || ''
+    const block = css.match(/@media \(max-width: 767px\) \{[\s\S]*?\n\}/)?.[0] || ''
 
     it('gives every button a 44px tap target on small screens only', () => {
         expect(block).toMatch(/button:not\(\[hidden\]\)/)
@@ -97,5 +97,21 @@ describe('mobile button floor (globals.css)', () => {
         // change every desktop toolbar in the product.
         const outside = css.replace(block, '')
         expect(outside).not.toMatch(/^\s*button:not\(\[hidden\]\)/m)
+    })
+})
+
+describe('the mobile floor must outrank Tailwind utilities', () => {
+    const css = readFileSync('app/globals.css', 'utf-8')
+
+    it('is declared unlayered, not inside @layer base', () => {
+        // It started in @layer base. The 44px min-height worked there (nothing
+        // else sets min-height), but `font-size: 16px` silently lost to the
+        // `text-sm` utility in @layer utilities — every control still rendered
+        // at 14px and iOS Safari would still have zoomed. Unlayered rules beat
+        // every layered rule. Caught by measuring the rendered page: the CSS
+        // text looked correct the whole time.
+        const base = /@layer base \{[\s\S]*?\n\}/.exec(css)?.[0] || ''
+        expect(base).not.toContain('max-width: 767px')
+        expect(css).toMatch(/\n@media \(max-width: 767px\) \{/)
     })
 })

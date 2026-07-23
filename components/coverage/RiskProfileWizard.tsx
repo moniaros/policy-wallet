@@ -160,8 +160,7 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
         }
     }
 
-    const inputClass =
-        "mt-1 block w-full rounded-xl border border-black/10 dark:border-white/15 bg-black/[0.03] dark:bg-white/[0.05] px-3 py-2.5 text-sm text-black dark:text-white placeholder:text-black/40 dark:placeholder:text-white/40 focus:border-primary focus:ring-1 focus:ring-primary outline-none"
+    const inputClass = "pw-input pw-input-sm mt-1 block border-black/10 bg-black/[0.03] text-black"
     const checkboxClass =
         "rounded border-black/20 dark:border-white/25 text-primary focus:ring-primary"
     const labelClass = "block text-sm font-medium text-black/75 dark:text-white/75"

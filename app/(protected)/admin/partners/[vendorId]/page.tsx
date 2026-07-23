@@ -9,8 +9,7 @@ import { TIER_KEYS } from "@/lib/pricing/plan-defaults"
 import { PROFILE_TAG_VALUES } from "@/lib/services/gap-engine/recommendation-generator"
 import { WRITE_BRANCH_IDS } from "@/lib/insurance/taxonomy"
 
-const inputClass =
-    "w-full px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-primary text-sm"
+const inputClass = "pw-input pw-input-sm"
 const labelClass = "block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1"
 
 type OfferRow = {
