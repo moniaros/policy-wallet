@@ -436,10 +436,10 @@ export default function UsersClient({
                             {selectedUser.name || selectedUser.email} — current role:{" "}
                             <span className="font-medium">{selectedUser.roles}</span>
                         </p>
-                        <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">
+                        <label htmlFor="usersclient-f1" className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">
                             New role
                         </label>
-                        <select
+                        <select id="usersclient-f1"
                             className="w-full p-2 border rounded mb-2 dark:bg-stone-700 dark:border-stone-600 dark:text-white"
                             value={roleSelection}
                             onChange={e => setRoleSelection(e.target.value)}
@@ -487,10 +487,10 @@ export default function UsersClient({
                         <p className="text-stone-600 dark:text-stone-400 mb-4">
                             Add AI tokens to {selectedUser.name || selectedUser.email}.
                         </p>
-                        <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">
+                        <label htmlFor="usersclient-f2" className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">
                             Amount (tokens)
                         </label>
-                        <input
+                        <input id="usersclient-f2"
                             type="number"
                             min="1"
                             step="1"
@@ -498,10 +498,10 @@ export default function UsersClient({
                             value={tokenAmount}
                             onChange={e => setTokenAmount(e.target.value)}
                         />
-                        <label className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">
+                        <label htmlFor="usersclient-f3" className="block text-sm font-medium text-stone-600 dark:text-stone-400 mb-1">
                             Reason
                         </label>
-                        <input
+                        <input id="usersclient-f3"
                             className="w-full p-2 border rounded mb-6 dark:bg-stone-700 dark:border-stone-600 dark:text-white"
                             placeholder="e.g. goodwill / support comp"
                             value={tokenReason}

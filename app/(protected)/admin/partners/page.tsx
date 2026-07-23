@@ -30,43 +30,43 @@ export default async function AdminPartnersPage() {
                     <form action={createVendor} className="space-y-3">
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className={labelClass}>Name</label>
-                                <input name="name" required maxLength={80} className={inputClass} />
+                                <label htmlFor="page-f1" className={labelClass}>Name</label>
+                                <input id="page-f1" name="name" required maxLength={80} className={inputClass} />
                             </div>
                             <div>
-                                <label className={labelClass}>Slug</label>
-                                <input name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="affidea" className={inputClass} />
+                                <label htmlFor="page-f2" className={labelClass}>Slug</label>
+                                <input id="page-f2" name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" placeholder="affidea" className={inputClass} />
                             </div>
                         </div>
                         <div>
-                            <label className={labelClass}>Description (EL)</label>
-                            <input name="descriptionEl" required className={inputClass} />
+                            <label htmlFor="page-f3" className={labelClass}>Description (EL)</label>
+                            <input id="page-f3" name="descriptionEl" required className={inputClass} />
                         </div>
                         <div>
-                            <label className={labelClass}>Description (EN)</label>
-                            <input name="descriptionEn" required className={inputClass} />
+                            <label htmlFor="page-f4" className={labelClass}>Description (EN)</label>
+                            <input id="page-f4" name="descriptionEn" required className={inputClass} />
                         </div>
                         <div className="grid grid-cols-2 gap-3">
                             <div>
-                                <label className={labelClass}>Category</label>
-                                <select name="category" className={inputClass} defaultValue="health">
+                                <label htmlFor="page-f5" className={labelClass}>Category</label>
+                                <select id="page-f5" name="category" className={inputClass} defaultValue="health">
                                     {VENDOR_CATEGORIES.map((c) => (
                                         <option key={c} value={c}>{c}</option>
                                     ))}
                                 </select>
                             </div>
                             <div>
-                                <label className={labelClass}>Sort order</label>
-                                <input name="sortOrder" type="number" min="0" max="99" defaultValue={0} className={inputClass} />
+                                <label htmlFor="page-f6" className={labelClass}>Sort order</label>
+                                <input id="page-f6" name="sortOrder" type="number" min="0" max="99" defaultValue={0} className={inputClass} />
                             </div>
                         </div>
                         <div>
-                            <label className={labelClass}>Website URL (https)</label>
-                            <input name="websiteUrl" type="url" placeholder="https://…" className={inputClass} />
+                            <label htmlFor="page-f7" className={labelClass}>Website URL (https)</label>
+                            <input id="page-f7" name="websiteUrl" type="url" placeholder="https://…" className={inputClass} />
                         </div>
                         <div>
-                            <label className={labelClass}>Logo URL (https)</label>
-                            <input name="logoUrl" type="url" placeholder="https://…" className={inputClass} />
+                            <label htmlFor="page-f8" className={labelClass}>Logo URL (https)</label>
+                            <input id="page-f8" name="logoUrl" type="url" placeholder="https://…" className={inputClass} />
                         </div>
                         <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-300">
                             <input name="isActive" type="checkbox" className="h-4 w-4" />

@@ -142,10 +142,10 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
             <form onSubmit={(e) => { e.preventDefault(); setShowPreview(true) }} className="space-y-4">
                 <div className="grid grid-cols-2 gap-3">
                     <div>
-                        <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                        <label htmlFor="proposalcard-f1" className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                             {t.collaboration.proposals.proposalType}
                         </label>
-                        <select
+                        <select id="proposalcard-f1"
                             value={proposalType}
                             onChange={(e) => setProposalType(e.target.value as ProposalType)}
                             className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm"
@@ -158,10 +158,10 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                         </select>
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                        <label htmlFor="proposalcard-f2" className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                             {t.collaboration.proposals.lineOfBusiness}
                         </label>
-                        <select
+                        <select id="proposalcard-f2"
                             value={lineOfBusiness}
                             onChange={(e) => setLineOfBusiness(e.target.value)}
                             className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm"
@@ -177,10 +177,10 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
 
                 <div className="grid grid-cols-2 gap-3">
                     <div>
-                        <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                        <label htmlFor="proposalcard-f3" className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                             {t.collaboration.proposals.insurer}
                         </label>
-                        <input
+                        <input id="proposalcard-f3"
                             type="text"
                             value={insurerName}
                             onChange={(e) => setInsurerName(e.target.value)}
@@ -190,10 +190,10 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                        <label htmlFor="proposalcard-f4" className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                             {t.collaboration.proposals.annualPremium}
                         </label>
-                        <input
+                        <input id="proposalcard-f4"
                             type="number"
                             step="0.01"
                             value={premiumAmount}
@@ -206,10 +206,10 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                 </div>
 
                 <div>
-                    <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                    <label htmlFor="proposalcard-f5" className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                         {t.collaboration.proposals.coverageSummary}
                     </label>
-                    <textarea
+                    <textarea id="proposalcard-f5"
                         value={coverageSummary}
                         onChange={(e) => setCoverageSummary(e.target.value)}
                         required
@@ -219,10 +219,10 @@ export function ProposalCreate({ clientName, onSubmit, onCancel, isSubmitting }:
                 </div>
 
                 <div>
-                    <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                    <label htmlFor="proposalcard-f6" className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                         {t.collaboration.proposals.plainLanguageSummary}
                     </label>
-                    <textarea
+                    <textarea id="proposalcard-f6"
                         value={plainLanguageSummary}
                         onChange={(e) => setPlainLanguageSummary(e.target.value)}
                         rows={2}
@@ -457,10 +457,10 @@ export function ProposalView({
                         className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm resize-none placeholder:text-neutral-400"
                     />
                     <div>
-                        <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                        <label htmlFor="proposalcard-f7" className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                             {t.collaboration.proposals.counterOfferLabel}
                         </label>
-                        <textarea
+                        <textarea id="proposalcard-f7"
                             value={counterOffer}
                             onChange={(e) => setCounterOffer(e.target.value)}
                             rows={2}

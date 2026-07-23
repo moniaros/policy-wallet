@@ -50,12 +50,12 @@ function OfferFields({ offer }: { offer?: OfferRow }) {
         <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
                 <div>
-                    <label className={labelClass}>Slug (permanent)</label>
-                    <input name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" defaultValue={offer?.slug ?? ""} className={inputClass} readOnly={!!offer} />
+                    <label htmlFor="page-f1" className={labelClass}>Slug (permanent)</label>
+                    <input id="page-f1" name="slug" required pattern="[a-z0-9]+(-[a-z0-9]+)*" defaultValue={offer?.slug ?? ""} className={inputClass} readOnly={!!offer} />
                 </div>
                 <div>
-                    <label className={labelClass}>Offer type</label>
-                    <select name="offerType" className={inputClass} defaultValue={offer?.offerType ?? "free_service"}>
+                    <label htmlFor="page-f2" className={labelClass}>Offer type</label>
+                    <select id="page-f2" name="offerType" className={inputClass} defaultValue={offer?.offerType ?? "free_service"}>
                         <option value="free_service">free_service</option>
                         <option value="discount">discount</option>
                         <option value="gift">gift</option>
@@ -64,42 +64,42 @@ function OfferFields({ offer }: { offer?: OfferRow }) {
             </div>
             <div className="grid grid-cols-2 gap-3">
                 <div>
-                    <label className={labelClass}>Title (EL)</label>
-                    <input name="titleEl" required defaultValue={localized(offer?.title, "el")} className={inputClass} />
+                    <label htmlFor="page-f3" className={labelClass}>Title (EL)</label>
+                    <input id="page-f3" name="titleEl" required defaultValue={localized(offer?.title, "el")} className={inputClass} />
                 </div>
                 <div>
-                    <label className={labelClass}>Title (EN)</label>
-                    <input name="titleEn" required defaultValue={localized(offer?.title, "en")} className={inputClass} />
+                    <label htmlFor="page-f4" className={labelClass}>Title (EN)</label>
+                    <input id="page-f4" name="titleEn" required defaultValue={localized(offer?.title, "en")} className={inputClass} />
                 </div>
             </div>
             <div>
-                <label className={labelClass}>Description (EL)</label>
-                <textarea name="descriptionEl" required rows={2} defaultValue={localized(offer?.description, "el")} className={inputClass} />
+                <label htmlFor="page-f5" className={labelClass}>Description (EL)</label>
+                <textarea id="page-f5" name="descriptionEl" required rows={2} defaultValue={localized(offer?.description, "el")} className={inputClass} />
             </div>
             <div>
-                <label className={labelClass}>Description (EN)</label>
-                <textarea name="descriptionEn" required rows={2} defaultValue={localized(offer?.description, "en")} className={inputClass} />
+                <label htmlFor="page-f6" className={labelClass}>Description (EN)</label>
+                <textarea id="page-f6" name="descriptionEn" required rows={2} defaultValue={localized(offer?.description, "en")} className={inputClass} />
             </div>
             <div className="grid grid-cols-2 gap-3">
                 <div>
-                    <label className={labelClass}>Redemption method</label>
-                    <select name="redemptionMethod" className={inputClass} defaultValue={offer?.redemptionMethod ?? "link"}>
+                    <label htmlFor="page-f7" className={labelClass}>Redemption method</label>
+                    <select id="page-f7" name="redemptionMethod" className={inputClass} defaultValue={offer?.redemptionMethod ?? "link"}>
                         <option value="link">link</option>
                         <option value="code">code</option>
                         <option value="phone">phone</option>
                     </select>
                 </div>
                 <div>
-                    <label className={labelClass}>Redemption URL (https, for link)</label>
-                    <input name="redemptionUrl" type="url" defaultValue={offer?.redemptionUrl ?? ""} className={inputClass} />
+                    <label htmlFor="page-f8" className={labelClass}>Redemption URL (https, for link)</label>
+                    <input id="page-f8" name="redemptionUrl" type="url" defaultValue={offer?.redemptionUrl ?? ""} className={inputClass} />
                 </div>
                 <div>
-                    <label className={labelClass}>Redemption code (for code)</label>
-                    <input name="redemptionCode" defaultValue={offer?.redemptionCode ?? ""} className={inputClass} />
+                    <label htmlFor="page-f9" className={labelClass}>Redemption code (for code)</label>
+                    <input id="page-f9" name="redemptionCode" defaultValue={offer?.redemptionCode ?? ""} className={inputClass} />
                 </div>
                 <div>
-                    <label className={labelClass}>Redemption phone (for phone)</label>
-                    <input name="redemptionPhone" defaultValue={offer?.redemptionPhone ?? ""} className={inputClass} />
+                    <label htmlFor="page-f10" className={labelClass}>Redemption phone (for phone)</label>
+                    <input id="page-f10" name="redemptionPhone" defaultValue={offer?.redemptionPhone ?? ""} className={inputClass} />
                 </div>
             </div>
             <fieldset>
@@ -155,20 +155,20 @@ function OfferFields({ offer }: { offer?: OfferRow }) {
             </fieldset>
             <div className="grid grid-cols-2 gap-3">
                 <div>
-                    <label className={labelClass}>Valid from (optional)</label>
-                    <input name="validFrom" type="date" defaultValue={dateValue(offer?.validFrom ?? null)} className={inputClass} />
+                    <label htmlFor="page-f11" className={labelClass}>Valid from (optional)</label>
+                    <input id="page-f11" name="validFrom" type="date" defaultValue={dateValue(offer?.validFrom ?? null)} className={inputClass} />
                 </div>
                 <div>
-                    <label className={labelClass}>Valid until (optional)</label>
-                    <input name="validUntil" type="date" defaultValue={dateValue(offer?.validUntil ?? null)} className={inputClass} />
+                    <label htmlFor="page-f12" className={labelClass}>Valid until (optional)</label>
+                    <input id="page-f12" name="validUntil" type="date" defaultValue={dateValue(offer?.validUntil ?? null)} className={inputClass} />
                 </div>
                 <div>
-                    <label className={labelClass}>Terms URL (https, optional)</label>
-                    <input name="termsUrl" type="url" defaultValue={offer?.termsUrl ?? ""} className={inputClass} />
+                    <label htmlFor="page-f13" className={labelClass}>Terms URL (https, optional)</label>
+                    <input id="page-f13" name="termsUrl" type="url" defaultValue={offer?.termsUrl ?? ""} className={inputClass} />
                 </div>
                 <div>
-                    <label className={labelClass}>Sort order</label>
-                    <input name="sortOrder" type="number" min="0" max="99" defaultValue={offer?.sortOrder ?? 0} className={inputClass} />
+                    <label htmlFor="page-f14" className={labelClass}>Sort order</label>
+                    <input id="page-f14" name="sortOrder" type="number" min="0" max="99" defaultValue={offer?.sortOrder ?? 0} className={inputClass} />
                 </div>
             </div>
             <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-300">
@@ -220,42 +220,42 @@ export default async function AdminPartnerVendorPage({
                     <input type="hidden" name="vendorId" value={vendor.id} />
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className={labelClass}>Name</label>
-                            <input name="name" required maxLength={80} defaultValue={vendor.name} className={inputClass} />
+                            <label htmlFor="page-f15" className={labelClass}>Name</label>
+                            <input id="page-f15" name="name" required maxLength={80} defaultValue={vendor.name} className={inputClass} />
                         </div>
                         <div>
-                            <label className={labelClass}>Slug (permanent)</label>
-                            <input name="slug" required defaultValue={vendor.slug} className={inputClass} readOnly />
+                            <label htmlFor="page-f16" className={labelClass}>Slug (permanent)</label>
+                            <input id="page-f16" name="slug" required defaultValue={vendor.slug} className={inputClass} readOnly />
                         </div>
                         <div>
-                            <label className={labelClass}>Category</label>
-                            <select name="category" className={inputClass} defaultValue={vendor.category}>
+                            <label htmlFor="page-f17" className={labelClass}>Category</label>
+                            <select id="page-f17" name="category" className={inputClass} defaultValue={vendor.category}>
                                 {VENDOR_CATEGORIES.map((c) => (
                                     <option key={c} value={c}>{c}</option>
                                 ))}
                             </select>
                         </div>
                         <div>
-                            <label className={labelClass}>Sort order</label>
-                            <input name="sortOrder" type="number" min="0" max="99" defaultValue={vendor.sortOrder} className={inputClass} />
+                            <label htmlFor="page-f18" className={labelClass}>Sort order</label>
+                            <input id="page-f18" name="sortOrder" type="number" min="0" max="99" defaultValue={vendor.sortOrder} className={inputClass} />
                         </div>
                     </div>
                     <div>
-                        <label className={labelClass}>Description (EL)</label>
-                        <input name="descriptionEl" required defaultValue={localized(vendor.description, "el")} className={inputClass} />
+                        <label htmlFor="page-f19" className={labelClass}>Description (EL)</label>
+                        <input id="page-f19" name="descriptionEl" required defaultValue={localized(vendor.description, "el")} className={inputClass} />
                     </div>
                     <div>
-                        <label className={labelClass}>Description (EN)</label>
-                        <input name="descriptionEn" required defaultValue={localized(vendor.description, "en")} className={inputClass} />
+                        <label htmlFor="page-f20" className={labelClass}>Description (EN)</label>
+                        <input id="page-f20" name="descriptionEn" required defaultValue={localized(vendor.description, "en")} className={inputClass} />
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className={labelClass}>Website URL</label>
-                            <input name="websiteUrl" type="url" defaultValue={vendor.websiteUrl ?? ""} className={inputClass} />
+                            <label htmlFor="page-f21" className={labelClass}>Website URL</label>
+                            <input id="page-f21" name="websiteUrl" type="url" defaultValue={vendor.websiteUrl ?? ""} className={inputClass} />
                         </div>
                         <div>
-                            <label className={labelClass}>Logo URL</label>
-                            <input name="logoUrl" type="url" defaultValue={vendor.logoUrl ?? ""} className={inputClass} />
+                            <label htmlFor="page-f22" className={labelClass}>Logo URL</label>
+                            <input id="page-f22" name="logoUrl" type="url" defaultValue={vendor.logoUrl ?? ""} className={inputClass} />
                         </div>
                     </div>
                     <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-300">

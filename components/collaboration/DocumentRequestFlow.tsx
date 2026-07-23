@@ -63,10 +63,10 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Document type */}
                 <div>
-                    <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                    <label htmlFor="documentrequestflow-f1" className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                         {t.collaboration.documentRequests.documentType}
                     </label>
-                    <select
+                    <select id="documentrequestflow-f1"
                         value={documentType}
                         onChange={(e) => setDocumentType(e.target.value as DocumentTypeKey)}
                         className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm text-foreground"
@@ -81,10 +81,10 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
 
                 {/* Instruction */}
                 <div>
-                    <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                    <label htmlFor="documentrequestflow-f2" className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                         {t.collaboration.documentRequests.instructions}
                     </label>
-                    <textarea
+                    <textarea id="documentrequestflow-f2"
                         value={instruction}
                         onChange={(e) => setInstruction(e.target.value)}
                         rows={2}
@@ -96,10 +96,10 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
                 {/* Urgency + Due date */}
                 <div className="grid grid-cols-2 gap-3">
                     <div>
-                        <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                        <label htmlFor="documentrequestflow-f3" className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                             {t.collaboration.documentRequests.urgency}
                         </label>
-                        <select
+                        <select id="documentrequestflow-f3"
                             value={urgency}
                             onChange={(e) => setUrgency(e.target.value as DocumentUrgency)}
                             className="w-full rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 px-4 py-2.5 text-sm"
@@ -110,10 +110,10 @@ export function DocumentRequestCreate({ clientName, onSend, onCancel, isSending 
                         </select>
                     </div>
                     <div>
-                        <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
+                        <label htmlFor="documentrequestflow-f4" className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1.5">
                             {t.collaboration.documentRequests.dueDate}
                         </label>
-                        <input
+                        <input id="documentrequestflow-f4"
                             type="date"
                             value={dueDate}
                             onChange={(e) => setDueDate(e.target.value)}

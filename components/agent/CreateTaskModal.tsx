@@ -115,10 +115,10 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
 
                     {/* Title */}
                     <div>
-                        <label className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">
+                        <label htmlFor="createtaskmodal-f1" className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">
                             {tt.titleLabel} <span className="text-red-500">*</span>
                         </label>
-                        <input
+                        <input id="createtaskmodal-f1"
                             type="text"
                             required
                             value={title}
@@ -130,10 +130,10 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
 
                     {/* Description */}
                     <div>
-                        <label className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">
+                        <label htmlFor="createtaskmodal-f2" className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">
                             {tt.descriptionLabel}
                         </label>
-                        <textarea
+                        <textarea id="createtaskmodal-f2"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             rows={3}
@@ -145,10 +145,10 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
                     {/* Priority & Due Date */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">
+                            <label htmlFor="createtaskmodal-f3" className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">
                                 {tt.priorityLabel}
                             </label>
-                            <select
+                            <select id="createtaskmodal-f3"
                                 value={priority}
                                 onChange={(e) => setPriority(e.target.value)}
                                 className="w-full px-4 py-3 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-foreground focus:outline-none focus:ring-2 focus:ring-neutral-900 dark:focus:ring-white transition-all appearance-none"
@@ -159,10 +159,10 @@ export function CreateTaskModal({ isOpen, onClose, userId, customerName }: Creat
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">
+                            <label htmlFor="createtaskmodal-f4" className="block text-sm font-bold text-neutral-700 dark:text-neutral-300 mb-2">
                                 {tt.dueDateLabel}
                             </label>
-                            <input
+                            <input id="createtaskmodal-f4"
                                 type="date"
                                 value={dueDate}
                                 onChange={(e) => setDueDate(e.target.value)}

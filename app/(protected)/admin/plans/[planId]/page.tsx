@@ -96,24 +96,24 @@ export default async function AdminPlanEditPage({
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label className={labelClass}>Display name</label>
-                            <input name="displayName" defaultValue={plan.displayName} required maxLength={60} className={inputClass} />
+                            <label htmlFor="page-f1" className={labelClass}>Display name</label>
+                            <input id="page-f1" name="displayName" defaultValue={plan.displayName} required maxLength={60} className={inputClass} />
                         </div>
                         <div>
-                            <label className={labelClass}>Monthly price (€, incl. VAT)</label>
-                            <input name="price" type="number" step="0.01" min="0" max="999" required defaultValue={Number(plan.price)} className={inputClass} />
+                            <label htmlFor="page-f2" className={labelClass}>Monthly price (€, incl. VAT)</label>
+                            <input id="page-f2" name="price" type="number" step="0.01" min="0" max="999" required defaultValue={Number(plan.price)} className={inputClass} />
                         </div>
                         <div>
-                            <label className={labelClass}>Annual price (€, incl. VAT — empty = 12× monthly)</label>
-                            <input name="annualPrice" type="number" step="0.01" min="0" max="9999" defaultValue={plan.annualPrice == null ? "" : Number(plan.annualPrice)} className={inputClass} />
+                            <label htmlFor="page-f3" className={labelClass}>Annual price (€, incl. VAT — empty = 12× monthly)</label>
+                            <input id="page-f3" name="annualPrice" type="number" step="0.01" min="0" max="9999" defaultValue={plan.annualPrice == null ? "" : Number(plan.annualPrice)} className={inputClass} />
                         </div>
                         <div>
-                            <label className={labelClass}>Trial days (0 = no trial)</label>
-                            <input name="trialDays" type="number" step="1" min="0" max="90" required defaultValue={plan.trialDays} className={inputClass} />
+                            <label htmlFor="page-f4" className={labelClass}>Trial days (0 = no trial)</label>
+                            <input id="page-f4" name="trialDays" type="number" step="1" min="0" max="90" required defaultValue={plan.trialDays} className={inputClass} />
                         </div>
                         <div>
-                            <label className={labelClass}>Sort order</label>
-                            <input name="sortOrder" type="number" step="1" min="0" max="99" required defaultValue={plan.sortOrder} className={inputClass} />
+                            <label htmlFor="page-f5" className={labelClass}>Sort order</label>
+                            <input id="page-f5" name="sortOrder" type="number" step="1" min="0" max="99" required defaultValue={plan.sortOrder} className={inputClass} />
                         </div>
                         <div className="flex items-end gap-6 pb-1">
                             <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-300">

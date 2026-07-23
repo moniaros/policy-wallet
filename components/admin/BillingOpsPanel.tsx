@@ -72,16 +72,16 @@ export default function BillingOpsPanel() {
                 <div className={sectionClass}>
                     <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Issue refund</h3>
                     <div>
-                        <label className={labelClass}>Payment intent ID</label>
-                        <input className={inputClass} placeholder="pi_..." value={refundPi} onChange={e => setRefundPi(e.target.value)} />
+                        <label htmlFor="billingopspanel-f1" className={labelClass}>Payment intent ID</label>
+                        <input id="billingopspanel-f1" className={inputClass} placeholder="pi_..." value={refundPi} onChange={e => setRefundPi(e.target.value)} />
                     </div>
                     <div>
-                        <label className={labelClass}>Amount (€) — blank = full</label>
-                        <input className={inputClass} type="number" min="0" step="0.01" placeholder="Full refund" value={refundAmount} onChange={e => setRefundAmount(e.target.value)} />
+                        <label htmlFor="billingopspanel-f2" className={labelClass}>Amount (€) — blank = full</label>
+                        <input id="billingopspanel-f2" className={inputClass} type="number" min="0" step="0.01" placeholder="Full refund" value={refundAmount} onChange={e => setRefundAmount(e.target.value)} />
                     </div>
                     <div>
-                        <label className={labelClass}>Reason (optional)</label>
-                        <input className={inputClass} placeholder="e.g. goodwill" value={refundReason} onChange={e => setRefundReason(e.target.value)} />
+                        <label htmlFor="billingopspanel-f3" className={labelClass}>Reason (optional)</label>
+                        <input id="billingopspanel-f3" className={inputClass} placeholder="e.g. goodwill" value={refundReason} onChange={e => setRefundReason(e.target.value)} />
                     </div>
                     <button
                         className={primaryBtn}
@@ -104,8 +104,8 @@ export default function BillingOpsPanel() {
                 <div className={sectionClass}>
                     <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Cancel subscription</h3>
                     <div>
-                        <label className={labelClass}>Subscription ID</label>
-                        <input className={inputClass} placeholder="subscription row id" value={cancelSubId} onChange={e => setCancelSubId(e.target.value)} />
+                        <label htmlFor="billingopspanel-f4" className={labelClass}>Subscription ID</label>
+                        <input id="billingopspanel-f4" className={inputClass} placeholder="subscription row id" value={cancelSubId} onChange={e => setCancelSubId(e.target.value)} />
                     </div>
                     <label className="flex items-center gap-2 text-sm text-stone-700 dark:text-stone-300">
                         <input type="checkbox" checked={cancelImmediate} onChange={e => setCancelImmediate(e.target.checked)} />
@@ -131,16 +131,16 @@ export default function BillingOpsPanel() {
                 <div className={sectionClass}>
                     <h3 className="text-sm font-semibold text-stone-900 dark:text-stone-100">Apply credit</h3>
                     <div>
-                        <label className={labelClass}>User ID</label>
-                        <input className={inputClass} placeholder="user id" value={creditUserId} onChange={e => setCreditUserId(e.target.value)} />
+                        <label htmlFor="billingopspanel-f5" className={labelClass}>User ID</label>
+                        <input id="billingopspanel-f5" className={inputClass} placeholder="user id" value={creditUserId} onChange={e => setCreditUserId(e.target.value)} />
                     </div>
                     <div>
-                        <label className={labelClass}>Amount (€)</label>
-                        <input className={inputClass} type="number" min="0" step="0.01" value={creditAmount} onChange={e => setCreditAmount(e.target.value)} />
+                        <label htmlFor="billingopspanel-f6" className={labelClass}>Amount (€)</label>
+                        <input id="billingopspanel-f6" className={inputClass} type="number" min="0" step="0.01" value={creditAmount} onChange={e => setCreditAmount(e.target.value)} />
                     </div>
                     <div>
-                        <label className={labelClass}>Memo</label>
-                        <input className={inputClass} placeholder="reason shown on the account" value={creditMemo} onChange={e => setCreditMemo(e.target.value)} />
+                        <label htmlFor="billingopspanel-f7" className={labelClass}>Memo</label>
+                        <input id="billingopspanel-f7" className={inputClass} placeholder="reason shown on the account" value={creditMemo} onChange={e => setCreditMemo(e.target.value)} />
                     </div>
                     <button
                         className={primaryBtn}

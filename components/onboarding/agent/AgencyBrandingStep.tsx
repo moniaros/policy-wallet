@@ -122,12 +122,12 @@ export function AgencyBrandingStep({ onNext, onBack }: StepProps) {
                 {/* Contact Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                        <label className="block text-xs font-bold text-slate-500 uppercase">
+                        <label htmlFor="agencybrandingstep-f1" className="block text-xs font-bold text-slate-500 uppercase">
                             {t("Τηλέφωνο Επιχείρησης", "Business Phone")}
                         </label>
                         <div className="relative">
                             <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
-                            <input
+                            <input id="agencybrandingstep-f1"
                                 type="tel"
                                 placeholder="+30 690 000 0000"
                                 value={phone}
@@ -137,12 +137,12 @@ export function AgencyBrandingStep({ onNext, onBack }: StepProps) {
                         </div>
                     </div>
                     <div className="space-y-1">
-                        <label className="block text-xs font-bold text-slate-500 uppercase">
+                        <label htmlFor="agencybrandingstep-f2" className="block text-xs font-bold text-slate-500 uppercase">
                             {t("Ιστοσελίδα (Προαιρετικό)", "Website (Optional)")}
                         </label>
                         <div className="relative">
                             <Globe className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
-                            <input
+                            <input id="agencybrandingstep-f2"
                                 type="url"
                                 placeholder="https://myagency.com"
                                 value={website}

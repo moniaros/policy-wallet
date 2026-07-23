@@ -199,10 +199,10 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                         </select>
                     </div>
                     <div>
-                        <label className={labelClass}>
+                        <label htmlFor="riskprofilewizard-f1" className={labelClass}>
                             {t("Εξαρτώμενα μέλη", "Dependents")}
                         </label>
-                        <input type="number" min="0" max="20" value={dependentsCount} onChange={(e) => setDependentsCount(e.target.value as any)} className={inputClass} placeholder="0" />
+                        <input id="riskprofilewizard-f1" type="number" min="0" max="20" value={dependentsCount} onChange={(e) => setDependentsCount(e.target.value as any)} className={inputClass} placeholder="0" />
                     </div>
                 </div>
 
@@ -220,20 +220,20 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                         </select>
                     </div>
                     <div>
-                        <label className={labelClass}>
+                        <label htmlFor="riskprofilewizard-f2" className={labelClass}>
                             {t("Επάγγελμα", "Occupation")}
                         </label>
-                        <input type="text" value={occupation} onChange={(e) => setOccupation(e.target.value)} className={inputClass} placeholder={t("π.χ. Μηχανικός", "e.g. Engineer")} />
+                        <input id="riskprofilewizard-f2" type="text" value={occupation} onChange={(e) => setOccupation(e.target.value)} className={inputClass} placeholder={t("π.χ. Μηχανικός", "e.g. Engineer")} />
                     </div>
                 </div>
 
                 {/* Row 3: Financial */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label className={labelClass}>
+                        <label htmlFor="riskprofilewizard-f3" className={labelClass}>
                             {t("Ετήσιο εισόδημα (€)", "Annual income (€)")}
                         </label>
-                        <input type="number" min="0" value={annualIncome} onChange={(e) => setAnnualIncome(e.target.value as any)} className={inputClass} placeholder="30000" />
+                        <input id="riskprofilewizard-f3" type="number" min="0" value={annualIncome} onChange={(e) => setAnnualIncome(e.target.value as any)} className={inputClass} placeholder="30000" />
                     </div>
                     <div>
                         <label htmlFor="smokingStatus" className={labelClass}>
@@ -284,8 +284,8 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                     {/* Height + Weight */}
                     <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                            <label className={labelClass}>{t("Ύψος (cm)", "Height (cm)")}</label>
-                            <input
+                            <label htmlFor="riskprofilewizard-f4" className={labelClass}>{t("Ύψος (cm)", "Height (cm)")}</label>
+                            <input id="riskprofilewizard-f4"
                                 type="number" min="50" max="250"
                                 value={heightCm}
                                 onChange={(e) => setHeightCm(e.target.value as any)}
@@ -294,8 +294,8 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
                             />
                         </div>
                         <div>
-                            <label className={labelClass}>{t("Βάρος (kg)", "Weight (kg)")}</label>
-                            <input
+                            <label htmlFor="riskprofilewizard-f5" className={labelClass}>{t("Βάρος (kg)", "Weight (kg)")}</label>
+                            <input id="riskprofilewizard-f5"
                                 type="number" min="20" max="500"
                                 value={weightKg}
                                 onChange={(e) => setWeightKg(e.target.value as any)}
@@ -429,19 +429,19 @@ export function RiskProfileWizard({ initialData, language = "en" }: RiskProfileW
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
-                            <label className={labelClass}>{t("Αριθμός οχημάτων", "Vehicles")}</label>
-                            <input type="number" min="0" max="10" value={vehiclesCount} onChange={(e) => setVehiclesCount(e.target.value as any)} className={inputClass} placeholder="0" />
+                            <label htmlFor="riskprofilewizard-f6" className={labelClass}>{t("Αριθμός οχημάτων", "Vehicles")}</label>
+                            <input id="riskprofilewizard-f6" type="number" min="0" max="10" value={vehiclesCount} onChange={(e) => setVehiclesCount(e.target.value as any)} className={inputClass} placeholder="0" />
                         </div>
                         {ownsHome && (
                             <div>
-                                <label className={labelClass}>{t("Στεγαστικό δάνειο (€)", "Mortgage (€)")}</label>
-                                <input type="number" min="0" value={mortgageAmount} onChange={(e) => setMortgageAmount(e.target.value as any)} className={inputClass} placeholder="0" />
+                                <label htmlFor="riskprofilewizard-f7" className={labelClass}>{t("Στεγαστικό δάνειο (€)", "Mortgage (€)")}</label>
+                                <input id="riskprofilewizard-f7" type="number" min="0" value={mortgageAmount} onChange={(e) => setMortgageAmount(e.target.value as any)} className={inputClass} placeholder="0" />
                             </div>
                         )}
                         {hasLoans && (
                             <div>
-                                <label className={labelClass}>{t("Ποσό δανείων (€)", "Loan amount (€)")}</label>
-                                <input type="number" min="0" value={loanAmount} onChange={(e) => setLoanAmount(e.target.value as any)} className={inputClass} placeholder="0" />
+                                <label htmlFor="riskprofilewizard-f8" className={labelClass}>{t("Ποσό δανείων (€)", "Loan amount (€)")}</label>
+                                <input id="riskprofilewizard-f8" type="number" min="0" value={loanAmount} onChange={(e) => setLoanAmount(e.target.value as any)} className={inputClass} placeholder="0" />
                             </div>
                         )}
                     </div>

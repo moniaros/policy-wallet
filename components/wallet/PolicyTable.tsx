@@ -55,6 +55,21 @@ export function PolicyTable({
         setMenuPosition(null)
     }
 
+    // The row menu already had role="menu"/menuitem and aria-expanded; what it
+    // lacked was any keyboard exit — Escape did nothing, so a keyboard user who
+    // opened it was stuck inside. Focus returns to the row's trigger on close.
+    useEffect(() => {
+        if (!openMenuId) return
+        const trigger = document.getElementById(`policy-actions-${openMenuId}`)
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key !== 'Escape') return
+            closeMenu()
+            trigger?.focus()
+        }
+        document.addEventListener('keydown', onKeyDown)
+        return () => document.removeEventListener('keydown', onKeyDown)
+    }, [openMenuId])
+
     const columns = t.wallet.columns
 
     return (
@@ -195,6 +210,7 @@ export function PolicyTable({
                                                         ? 'bg-black/5 dark:bg-white/10'
                                                         : 'hover:bg-black/5 dark:hover:bg-white/10'
                                                 )}
+                                                id={`policy-actions-${policy.id}`}
                                                 aria-label={columns.actions}
                                                 aria-expanded={isMenuOpen}
                                                 aria-haspopup="menu"
@@ -206,7 +222,7 @@ export function PolicyTable({
                                                 typeof document !== 'undefined' &&
                                                 createPortal(
                                                     <>
-                                                        <div className="fixed inset-0 z-[9998]" onClick={closeMenu} />
+                                                        <div aria-hidden="true" className="fixed inset-0 z-[9998]" onClick={closeMenu} />
                                                         <div
                                                             role="menu"
                                                             className="animate-in fade-in zoom-in-95 fixed z-[9999] w-60 rounded-2xl border border-black/10 bg-white py-1.5 shadow-2xl duration-150 dark:border-white/15 dark:bg-black"

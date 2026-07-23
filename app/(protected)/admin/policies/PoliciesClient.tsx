@@ -138,15 +138,15 @@ export default function PoliciesClient({
                 className="flex flex-wrap gap-3 items-end"
             >
                 <div className="flex-1 min-w-[220px]">
-                    <label className={labelClass}>Search (policy #, insurer, owner email)</label>
+                    <label htmlFor="policiesclient-f1" className={labelClass}>Search (policy #, insurer, owner email)</label>
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-                        <input className={`${inputClass} pl-9`} value={search} onChange={e => setSearch(e.target.value)} />
+                        <input id="policiesclient-f1" className={`${inputClass} pl-9`} value={search} onChange={e => setSearch(e.target.value)} />
                     </div>
                 </div>
                 <div>
-                    <label className={labelClass}>Status</label>
-                    <select
+                    <label htmlFor="policiesclient-f2" className={labelClass}>Status</label>
+                    <select id="policiesclient-f2"
                         className={inputClass}
                         value={status}
                         onChange={e => { setStatus(e.target.value); applyFilters(e.target.value, search) }}
@@ -167,12 +167,12 @@ export default function PoliciesClient({
                 </p>
                 <div className="flex flex-wrap gap-3 items-end">
                     <div className="flex-1 min-w-[180px]">
-                        <label className={labelClass}>Source policy ID (deleted)</label>
-                        <input className={inputClass} value={mergeSource} onChange={e => setMergeSource(e.target.value)} />
+                        <label htmlFor="policiesclient-f3" className={labelClass}>Source policy ID (deleted)</label>
+                        <input id="policiesclient-f3" className={inputClass} value={mergeSource} onChange={e => setMergeSource(e.target.value)} />
                     </div>
                     <div className="flex-1 min-w-[180px]">
-                        <label className={labelClass}>Target policy ID (survivor)</label>
-                        <input className={inputClass} value={mergeTarget} onChange={e => setMergeTarget(e.target.value)} />
+                        <label htmlFor="policiesclient-f4" className={labelClass}>Target policy ID (survivor)</label>
+                        <input id="policiesclient-f4" className={inputClass} value={mergeTarget} onChange={e => setMergeTarget(e.target.value)} />
                     </div>
                     <button
                         className={primaryBtn}
@@ -245,21 +245,21 @@ export default function PoliciesClient({
                                 ["status", "Status"],
                             ].map(([key, label]) => (
                                 <div key={key}>
-                                    <label className={labelClass}>{label}</label>
-                                    <input className={inputClass} value={edit[key] ?? ""} onChange={e => setEdit(s => ({ ...s, [key]: e.target.value }))} />
+                                    <label htmlFor="policiesclient-f5" className={labelClass}>{label}</label>
+                                    <input id="policiesclient-f5" className={inputClass} value={edit[key] ?? ""} onChange={e => setEdit(s => ({ ...s, [key]: e.target.value }))} />
                                 </div>
                             ))}
                             <div>
-                                <label className={labelClass}>Premium (€)</label>
-                                <input type="number" min="0" step="0.01" className={inputClass} value={edit.premiumAmount ?? ""} onChange={e => setEdit(s => ({ ...s, premiumAmount: e.target.value }))} />
+                                <label htmlFor="policiesclient-f6" className={labelClass}>Premium (€)</label>
+                                <input id="policiesclient-f6" type="number" min="0" step="0.01" className={inputClass} value={edit.premiumAmount ?? ""} onChange={e => setEdit(s => ({ ...s, premiumAmount: e.target.value }))} />
                             </div>
                             <div>
-                                <label className={labelClass}>Start date</label>
-                                <input type="date" className={inputClass} value={edit.startDate ?? ""} onChange={e => setEdit(s => ({ ...s, startDate: e.target.value }))} />
+                                <label htmlFor="policiesclient-f7" className={labelClass}>Start date</label>
+                                <input id="policiesclient-f7" type="date" className={inputClass} value={edit.startDate ?? ""} onChange={e => setEdit(s => ({ ...s, startDate: e.target.value }))} />
                             </div>
                             <div>
-                                <label className={labelClass}>End date</label>
-                                <input type="date" className={inputClass} value={edit.endDate ?? ""} onChange={e => setEdit(s => ({ ...s, endDate: e.target.value }))} />
+                                <label htmlFor="policiesclient-f8" className={labelClass}>End date</label>
+                                <input id="policiesclient-f8" type="date" className={inputClass} value={edit.endDate ?? ""} onChange={e => setEdit(s => ({ ...s, endDate: e.target.value }))} />
                             </div>
                         </div>
                         <div className="flex justify-end gap-2 mt-6">

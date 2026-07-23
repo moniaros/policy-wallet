@@ -48,8 +48,8 @@ export function InviteModal({
 
                     <div className="space-y-8">
                         <div>
-                            <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-3 block pl-2">{t.invite.emailLabel}</label>
-                            <input
+                            <label htmlFor="invitemodal-f1" className="text-[10px] font-black uppercase tracking-widest text-neutral-400 mb-3 block pl-2">{t.invite.emailLabel}</label>
+                            <input id="invitemodal-f1"
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
