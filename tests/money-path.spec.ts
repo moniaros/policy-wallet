@@ -395,16 +395,20 @@ test.describe('Billing management (cancel honesty)', () => {
     })
 
     test('cancel from the Billing tab stops auto-renewal in the DB', async ({ page }) => {
-        // handleCancel confirms via a blocking alert() — auto-accept it.
-        page.on('dialog', (dialog) => dialog.accept().catch(() => {}))
-
         await page.goto('/account')
         await dismissCookieBanner(page)
 
-        await page.getByRole('button', { name: /Χρέωση|Billing/i }).first().click()
+        await page.getByRole('tab', { name: /Χρέωση|Billing/i }).first().click()
+        // The trigger now opens a branded confirmation that discloses the
+        // consequences (access until period end, no partial refund) instead of
+        // cancelling instantly — click through it.
         await page
-            .getByRole('button', { name: /Τερματισμός Κύκλου|Terminate Cycle/i })
+            .getByRole('button', { name: /Ακύρωση ανανέωσης|Cancel renewal/i })
             .first()
+            .click()
+        await page
+            .getByRole('dialog')
+            .getByRole('button', { name: /Ακύρωση ανανέωσης|Cancel renewal/i })
             .click()
 
         // The observable contract is the DB flip, not UI copy.

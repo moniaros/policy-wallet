@@ -19,6 +19,7 @@ import {
     toggleNotificationPreference
 } from "./actions"
 import { toast } from "sonner"
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
@@ -55,6 +56,7 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
     // program has no earn/redeem loop yet (credits could never be paid out).
     // Re-add the tab when the loop is real (see PXA audit §8.2 / B18).
     const [activeTab, setActiveTab] = useState<'overview' | 'billing' | 'settings'>('overview')
+    const [cancelConfirmOpen, setCancelConfirmOpen] = useState(false)
 
     const handleSwitchRole = (role: 'policyholder' | 'agent') => {
         // Dual-role accounts switch context by navigating to that role's home.
@@ -73,7 +75,13 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
         }
     }
 
-    const handleCancel = async () => {
+    // Cancelling a paid plan used to fire immediately on click — no confirmation
+    // and no disclosure of what happens (access continues to period end, no
+    // partial refund). A compliance/CPO review flags both: accidental-cancel
+    // risk and a missing consequence statement. The button now opens a
+    // confirmation that states the outcome plainly; this runs only on confirm.
+    const performCancel = async () => {
+        setCancelConfirmOpen(false)
         const result = await cancelSubscription()
         if ('error' in result && result.error) {
             // Stripe refused the cancellation — never pretend it worked.
@@ -227,7 +235,7 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                             currentPlan={initialData.currentPlan}
                             paymentMethods={initialData.paymentMethods}
                             invoices={initialData.invoices}
-                            onCancel={handleCancel}
+                            onCancel={() => setCancelConfirmOpen(true)}
                             onDowngrade={() => router.push(initialData.currentPlan?.plan_type === 'agent' ? '/agent/pricing' : '/upgrade')}
                             onOpenPortal={handleOpenPortal}
                             onSwitchToAnnual={handleSwitchToAnnual}
@@ -251,6 +259,16 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
                     )}
                 </div>
             </div>
+
+            <ConfirmDialog
+                open={cancelConfirmOpen}
+                onOpenChange={setCancelConfirmOpen}
+                destructive
+                title={t.billing.cancelConfirmTitle}
+                description={t.billing.cancelConfirmBody}
+                confirmLabel={t.billing.cancelConfirmCta}
+                onConfirm={performCancel}
+            />
         </div>
     )
 }
