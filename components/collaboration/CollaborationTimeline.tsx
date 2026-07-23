@@ -379,7 +379,15 @@ export function CollaborationTimeline({
                                 </div>
                             )}
 
-                            <div className="rounded-lg border border-neutral-200 dark:border-neutral-700 p-3 max-h-[220px] overflow-auto space-y-2">
+                            {/* role="log" + aria-live: a screen-reader user hears a
+                                message when it posts (their own or the client's)
+                                instead of the thread updating silently. */}
+                            <div
+                                role="log"
+                                aria-live="polite"
+                                aria-relevant="additions"
+                                className="rounded-lg border border-neutral-200 dark:border-neutral-700 p-3 max-h-[220px] overflow-auto space-y-2"
+                            >
                                 {visibleMessages.length === 0 ? (
                                     <p className="text-xs text-neutral-500">{t.collaboration.timeline.noMessages}</p>
                                 ) : (
@@ -425,15 +433,21 @@ export function CollaborationTimeline({
                                 )}
                                 <div className="flex gap-2">
                                     <div className="flex-1 flex flex-col gap-1">
-                                        <input
+                                        {/* Textarea, not input: the keydown handler already
+                                            treats Enter as send and Shift+Enter as newline,
+                                            which a single-line input cannot honour — a message
+                                            longer than one line had nowhere to go and no way to
+                                            break. `pw-input` for design-system consistency (the
+                                            rest of this composer already uses it); the amber ring
+                                            is the private-note affordance layered on top. */}
+                                        <textarea
                                             value={message}
                                             onChange={(e) => setMessage(e.target.value)}
                                             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); addMessage() } }}
+                                            rows={2}
                                             placeholder={isPrivateMessage ? t.collaboration.timeline.privateNotePlaceholder : t.collaboration.timeline.postUpdatePlaceholder}
-                                            className={`w-full rounded-lg border px-3 py-2 text-sm bg-white dark:bg-neutral-950 ${
-                                                isPrivateMessage
-                                                    ? "border-amber-300 dark:border-amber-700"
-                                                    : "border-neutral-300 dark:border-neutral-600"
+                                            className={`pw-input pw-input-sm min-h-0 resize-y ${
+                                                isPrivateMessage ? "!border !border-amber-300 dark:!border-amber-700" : ""
                                             }`}
                                         />
                                         {viewerRole === "agent" && (
@@ -450,7 +464,7 @@ export function CollaborationTimeline({
                                                         type="checkbox"
                                                         checked={isPrivateMessage}
                                                         onChange={(e) => setIsPrivateMessage(e.target.checked)}
-                                                        className="w-3 h-3 rounded border-neutral-300 text-amber-500 focus:ring-amber-500"
+                                                        className="h-4 w-4 rounded border-neutral-300 accent-amber-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
                                                     />
                                                     <span className="text-kicker font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-0.5">
                                                         <Lock className="w-3 h-3" />
@@ -460,7 +474,7 @@ export function CollaborationTimeline({
                                             </div>
                                         )}
                                     </div>
-                                    <button type="button" onClick={addMessage} className="rounded-lg bg-neutral-800 hover:bg-neutral-900 text-white text-sm px-3 py-2 self-start">{t.collaboration.timeline.send}</button>
+                                    <button type="button" onClick={addMessage} className="pw-primary-button pw-btn-sm self-start">{t.collaboration.timeline.send}</button>
                                 </div>
                             </div>
 
