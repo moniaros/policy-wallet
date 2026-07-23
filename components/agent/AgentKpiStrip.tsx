@@ -67,7 +67,7 @@ function KpiCard({
 export function AgentKpiStrip({ stats, className = "" }: AgentKpiStripProps) {
     const { language } = useLanguage()
     const copy = getRoleCopy(language).agentKpis
-    const locale = language === "el" ? "el-GR" : "en-US"
+    const locale = language === "el" ? "el-GR" : "en-GB"
 
     const money = new Intl.NumberFormat(locale, {
         style: "currency",

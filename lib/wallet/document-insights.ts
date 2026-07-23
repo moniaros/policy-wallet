@@ -41,7 +41,7 @@ export function getDocumentPolicySummary(
     language: Lang,
     policyTypeLabel: string
 ): DocumentPolicySummary {
-    const locale = language === "el" ? "el-GR" : "en-US"
+    const locale = language === "el" ? "el-GR" : "en-GB"
     const vehicle = (policy.acordData as any)?.vehicle
     const property = (policy.acordData as any)?.property
     const acordPolicy = (policy.acordData as any)?.policy

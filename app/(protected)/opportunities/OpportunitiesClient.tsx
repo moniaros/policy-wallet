@@ -183,7 +183,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                 )}
                                             </td>
                                             <td className="px-6 py-6 text-sm font-bold text-muted-foreground">
-                                                {opp.nextActionAt ? new Date(opp.nextActionAt).toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US') : '—'}
+                                                {opp.nextActionAt ? new Date(opp.nextActionAt).toLocaleDateString(language === 'el' ? 'el-GR' : 'en-GB') : '—'}
                                             </td>
                                             <td className="px-6 py-6 text-right pr-8">
                                                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

@@ -8,6 +8,7 @@ import { usePathname, useSearchParams } from "next/navigation"
 import { getBranchQuestions } from "@/lib/insurance/content"
 import { usePolicyQaPrefill } from "@/components/wallet/policy-detail/PolicyQaPrefillContext"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { formatTime } from "@/lib/i18n/format"
 import { AiDisclaimer } from "@/components/ui/AiDisclaimer"
 import { trackJourneyEvent } from "@/lib/journey/funnel"
 import { mapWalletErrorToMessage } from "@/lib/i18n/wallet-error"
@@ -145,7 +146,7 @@ export function PolicyQA({
                                 <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                     <div className={`max-w-[80%] rounded-2xl p-4 ${msg.role === 'user' ? 'bg-black text-white' : 'bg-black/5 dark:bg-white/10 text-black dark:text-white'}`}>
                                         <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
-                                        <p className="text-xs opacity-70 mt-2">{msg.timestamp.toLocaleTimeString()}</p>
+                                        <p className="text-xs opacity-70 mt-2">{formatTime(msg.timestamp, language as 'el' | 'en')}</p>
                                     </div>
                                 </div>
                             ))}

@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { useLanguage } from '@/contexts/LanguageContext'
+import { formatDate } from '@/lib/i18n/format'
 
 interface Notification {
     id: string
@@ -21,6 +23,7 @@ interface NotificationBellProps {
 
 export function NotificationBell({ initialNotifications = [], initialUnreadCount = 0 }: NotificationBellProps) {
     const router = useRouter()
+    const { language } = useLanguage()
     const [isOpen, setIsOpen] = useState(false)
     const [notifications, setNotifications] = useState<Notification[]>(initialNotifications)
     const [unreadCount, setUnreadCount] = useState(initialUnreadCount)
@@ -86,7 +89,7 @@ export function NotificationBell({ initialNotifications = [], initialUnreadCount
         if (diffHours < 24) return `${diffHours}h ago`
         if (diffDays === 1) return 'Yesterday'
         if (diffDays < 7) return `${diffDays}d ago`
-        return date.toLocaleDateString()
+        return formatDate(date, language as 'el' | 'en')
     }
 
     const handleNotificationClick = async (notification: Notification) => {

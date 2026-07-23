@@ -55,7 +55,7 @@ export function AchievementsPanel({ language }: AchievementsProps) {
     const formatDate = (dateStr: string | null) => {
         if (!dateStr) return ""
         return new Date(dateStr).toLocaleDateString(
-            language === "el" ? "el-GR" : "en-US",
+            language === "el" ? "el-GR" : "en-GB",
             { month: "short", day: "numeric", year: "numeric" }
         )
     }

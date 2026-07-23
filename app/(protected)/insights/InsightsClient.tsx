@@ -31,7 +31,7 @@ interface InsightsClientProps {
 /* ─── Helpers ─────────────────────────────────────── */
 
 const fmt = (n: number, lang: string) =>
-    new Intl.NumberFormat(lang === "el" ? "el-GR" : "en-US", {
+    new Intl.NumberFormat(lang === "el" ? "el-GR" : "en-GB", {
         style: "currency",
         currency: "EUR",
         minimumFractionDigits: 0,
@@ -39,7 +39,7 @@ const fmt = (n: number, lang: string) =>
     }).format(n)
 
 const fmtCompact = (n: number, lang: string) =>
-    new Intl.NumberFormat(lang === "el" ? "el-GR" : "en-US", {
+    new Intl.NumberFormat(lang === "el" ? "el-GR" : "en-GB", {
         style: "currency",
         currency: "EUR",
         notation: "compact",
@@ -48,7 +48,7 @@ const fmtCompact = (n: number, lang: string) =>
     }).format(n)
 
 const fmtNum = (n: number, lang: string) =>
-    new Intl.NumberFormat(lang === "el" ? "el-GR" : "en-US", {
+    new Intl.NumberFormat(lang === "el" ? "el-GR" : "en-GB", {
         minimumFractionDigits: 0,
         maximumFractionDigits: 1,
     }).format(n)
@@ -157,7 +157,7 @@ function DonutChart({
 
 export function InsightsClient({ data }: InsightsClientProps) {
     const { language, t } = useLanguage()
-    const locale = language === "el" ? "el-GR" : "en-US"
+    const locale = language === "el" ? "el-GR" : "en-GB"
     const lang = language || "en"
     const p = t.insights.practice
 

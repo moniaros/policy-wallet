@@ -57,7 +57,7 @@ export function BillingHistory({ invoices, language, className = '' }: BillingHi
                                 <div className="flex items-center gap-3 mb-1">
                                     <FileText className="w-5 h-5 text-slate-400 dark:text-slate-600" />
                                     <span className="font-semibold text-slate-900 dark:text-white">
-                                        {invoice.date.toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US', {
+                                        {invoice.date.toLocaleDateString(language === 'el' ? 'el-GR' : 'en-GB', {
                                             year: 'numeric',
                                             month: 'long',
                                             day: 'numeric',

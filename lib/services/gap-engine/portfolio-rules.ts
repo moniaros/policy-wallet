@@ -116,7 +116,7 @@ function expiringMotorRule(
             el: "Η κυκλοφορία χωρίς ενεργή ασφάλιση είναι παράνομη στην Ελλάδα και ακόμα και μία ημέρα κενού σας αφήνει προσωπικά υπεύθυνους για οποιοδήποτε ατύχημα.",
         },
         evidence: {
-            en: `Your policy ${ref} expires on ${formatDate(expiring.endDate!, "en-US")} — in ${daysLeft} day${daysLeft === 1 ? "" : "s"}.`,
+            en: `Your policy ${ref} expires on ${formatDate(expiring.endDate!, "en-GB")} — in ${daysLeft} day${daysLeft === 1 ? "" : "s"}.`,
             el: `Το συμβόλαιό σας ${ref} λήγει στις ${formatDate(expiring.endDate!, "el-GR")} — σε ${daysLeft} ${daysLeft === 1 ? "ημέρα" : "ημέρες"}.`,
         },
         nextAction: {
@@ -150,7 +150,7 @@ function lowHealthCoverageRule(
     const limit = Number(candidate.acordData.health.annualLimit)
     const ref = policyRef(candidate)
     const limitFmtEl = new Intl.NumberFormat("el-GR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(limit)
-    const limitFmtEn = new Intl.NumberFormat("en-US", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(limit)
+    const limitFmtEn = new Intl.NumberFormat("en-GB", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(limit)
 
     return {
         ruleId: "health_low_coverage",

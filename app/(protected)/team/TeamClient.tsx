@@ -133,7 +133,7 @@ export function TeamClient({ team, pipeline }: Props) {
     const t = copy[language === "el" ? "el" : "en"]
 
     const fmt = (n: number) =>
-        new Intl.NumberFormat(language === "el" ? "el-GR" : "en-US", {
+        new Intl.NumberFormat(language === "el" ? "el-GR" : "en-GB", {
             style: "currency",
             currency: "EUR",
             minimumFractionDigits: 0,

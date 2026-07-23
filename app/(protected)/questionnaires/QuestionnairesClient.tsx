@@ -569,7 +569,7 @@ function SentList({ instances, t, language }: {
                                     )}
                                 </td>
                                 <td className="p-4 text-xs text-slate-500">
-                                    {new Date(inst.sentAt).toLocaleDateString(language === "el" ? "el-GR" : "en-US")}
+                                    {new Date(inst.sentAt).toLocaleDateString(language === "el" ? "el-GR" : "en-GB")}
                                 </td>
                                 <td className="p-4 text-right">
                                     {inst.status === "completed" && inst.responseCount > 0 && (

@@ -9,7 +9,7 @@ import { localizeHref } from "@/lib/seo/locale-links"
 
 function formatDate(iso: string, language: string): string {
     return new Date(`${iso}T00:00:00Z`).toLocaleDateString(
-        language === "el" ? "el-GR" : "en-US",
+        language === "el" ? "el-GR" : "en-GB",
         { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }
     )
 }

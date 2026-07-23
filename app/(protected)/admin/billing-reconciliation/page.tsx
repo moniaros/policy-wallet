@@ -5,10 +5,11 @@ import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { getBillingReconciliation } from "../actions"
 import BillingOpsPanel from "@/components/admin/BillingOpsPanel"
 import CancelSubscriptionButton from "@/components/admin/CancelSubscriptionButton"
+import { formatDateTime } from "@/lib/i18n/format"
 
 function formatDate(value: string | null | undefined) {
     if (!value) return "-"
-    return new Date(value).toLocaleString()
+    return formatDateTime(value, 'en')
 }
 
 export default async function BillingReconciliationPage() {

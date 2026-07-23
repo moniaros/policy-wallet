@@ -47,7 +47,7 @@ const formatRelativeTime = (date: Date, t: any, lang: string) => {
     if (diffInDays === 1) return t.activity.yesterday
     if (diffInDays < 7) return t.activity.daysAgo.replace('{d}', diffInDays.toString())
     
-    return new Intl.DateTimeFormat(lang === "el" ? "el-GR" : "en-US", {
+    return new Intl.DateTimeFormat(lang === "el" ? "el-GR" : "en-GB", {
         month: "short", day: "numeric"
     }).format(d)
 }

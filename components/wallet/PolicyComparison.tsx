@@ -43,7 +43,7 @@ export function PolicyComparison({ policies, isOpen, onClose, selectedPolicyIds 
     const router = useRouter()
     const { t, language } = useLanguage()
     const c = t.wallet.comparison
-    const locale = language === 'el' ? 'el-GR' : 'en-US'
+    const locale = language === 'el' ? 'el-GR' : 'en-GB'
     const [selectedIds, setSelectedIds] = useState<string[]>(selectedPolicyIds)
 
     // Filter to only show comparable policies (same line of business)

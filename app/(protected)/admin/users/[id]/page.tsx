@@ -5,10 +5,11 @@ import { redirect } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { getUserDetails } from "../../actions"
 import GrantTokensButton from "@/components/admin/GrantTokensButton"
+import { formatDateTime } from "@/lib/i18n/format"
 
 function fmt(v: Date | string | null | undefined) {
     if (!v) return "-"
-    return new Date(v).toLocaleString()
+    return formatDateTime(v, 'en')
 }
 
 function Card({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {

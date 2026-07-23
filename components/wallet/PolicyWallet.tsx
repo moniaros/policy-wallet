@@ -100,7 +100,7 @@ export function PolicyWallet({
             .sort((a, b) => (a.view.daysUntilExpiry ?? 9999) - (b.view.daysUntilExpiry ?? 9999))
             .map(({ policy, view }) => {
                 const name = `${normalizeBranch(policy.lineOfBusiness).label[language === 'el' ? 'el' : 'en']} · ${policy.insurerName}`
-                const date = view.endDate?.toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US', { timeZone: 'UTC' }) ?? ''
+                const date = view.endDate?.toLocaleDateString(language === 'el' ? 'el-GR' : 'en-GB', { timeZone: 'UTC' }) ?? ''
                 const template =
                     view.key === 'expired' ? copy.expired
                         : view.key === 'expiring_soon' ? copy.expiringSoon

@@ -73,7 +73,7 @@ export function CollaborationPanel({ policyId, policyNumber: _policyNumber, init
     const [revokingId, setRevokingId] = useState<string | null>(null)
     const [isRevoking, setIsRevoking] = useState(false)
     const copy = walletCopy.collaboration ?? DEFAULT_WALLET_COPY.collaboration
-    const locale = t.common.locale || "en-US"
+    const locale = t.common.locale || "en-GB"
     const [shares, setShares] = useState<Share[]>(initialShares)
     const [email, setEmail] = useState("")
     const [permissions, setPermissions] = useState<"view" | "edit">("view")

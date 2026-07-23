@@ -16,11 +16,11 @@ export function Referrals({
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString)
-        return date.toLocaleDateString(language === "el" ? "el-GR" : "en-US", { day: "numeric", month: "short", year: "numeric" })
+        return date.toLocaleDateString(language === "el" ? "el-GR" : "en-GB", { day: "numeric", month: "short", year: "numeric" })
     }
 
     const formatPrice = (price: number) => {
-        return new Intl.NumberFormat(language === "el" ? "el-GR" : "en-US", {
+        return new Intl.NumberFormat(language === "el" ? "el-GR" : "en-GB", {
             style: "currency",
             currency: "EUR",
         }).format(price)

@@ -370,7 +370,7 @@ export function NotificationsClient({ initialData, userLanguage = "en" }: Notifi
                                     const createdAtDate = new Date(event.created_at)
                                     const createdAtText = Number.isNaN(createdAtDate.getTime())
                                         ? event.created_at
-                                        : createdAtDate.toLocaleString(isGreek ? "el-GR" : "en-US", { dateStyle: "short", timeStyle: "short" })
+                                        : createdAtDate.toLocaleString(isGreek ? "el-GR" : "en-GB", { dateStyle: "short", timeStyle: "short" })
                                     const isRead = readIds.has(event.event_id)
 
                                     return (

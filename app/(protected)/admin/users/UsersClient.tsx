@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Search, Filter, Eye, Trash2, Shield, UserX, CheckCircle, XCircle, Coins } from "lucide-react"
 import { toast } from "sonner"
 import { changeUserRole, deleteUser, approveAgent, rejectAgent, grantTokens } from "../actions"
+import { formatDate } from "@/lib/i18n/format"
 
 interface User {
     id: string
@@ -235,7 +236,7 @@ export default function UsersClient({
                                             )}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-stone-500 dark:text-stone-400">
-                                            {new Date(user.createdAt).toLocaleDateString()}
+                                            {formatDate(user.createdAt, 'en')}
                                         </td>
                                         <td className="px-6 py-4 text-right">
                                             <div className="flex items-center justify-end gap-2">

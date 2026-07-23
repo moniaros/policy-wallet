@@ -36,7 +36,7 @@ export function PolicyTable({
 }: PolicyTableProps) {
     const { language, t } = useLanguage()
     const lang: 'el' | 'en' = language === 'el' ? 'el' : 'en'
-    const locale = lang === 'el' ? 'el-GR' : 'en-US'
+    const locale = lang === 'el' ? 'el-GR' : 'en-GB'
 
     const [currentPage, setCurrentPage] = useState(1)
     const [openMenuId, setOpenMenuId] = useState<string | null>(null)

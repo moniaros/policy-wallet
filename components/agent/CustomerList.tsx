@@ -81,7 +81,7 @@ export function CustomerList({
         if (diffDays === 0) return roleCopy.customerList.today
         if (diffDays === 1) return roleCopy.customerList.yesterday
         if (diffDays < 7) return roleCopy.customerList.daysAgo(diffDays)
-        return date.toLocaleDateString(language === "el" ? "el-GR" : "en-US")
+        return date.toLocaleDateString(language === "el" ? "el-GR" : "en-GB")
     }
 
     const ACTION_LABELS: Record<string, string> = {
@@ -119,7 +119,7 @@ export function CustomerList({
 
     const formatRenewal = (iso: string | null | undefined) => {
         if (!iso) return "—"
-        return new Date(iso).toLocaleDateString(language === "el" ? "el-GR" : "en-US")
+        return new Date(iso).toLocaleDateString(language === "el" ? "el-GR" : "en-GB")
     }
 
     const renewalSoon = (iso: string | null | undefined) => {

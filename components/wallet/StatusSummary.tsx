@@ -108,7 +108,7 @@ export function StatusSummary({
 }: StatusSummaryProps) {
     const { t, language } = useLanguage()
 
-    const premiumLabel = new Intl.NumberFormat(language === 'el' ? 'el-GR' : 'en-US', {
+    const premiumLabel = new Intl.NumberFormat(language === 'el' ? 'el-GR' : 'en-GB', {
         style: 'currency',
         currency: 'EUR',
         maximumFractionDigits: 0,

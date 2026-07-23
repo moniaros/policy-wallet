@@ -139,7 +139,7 @@ export function PolicyDetailsClient({
     mergeRequest = null,
     canReviewExtraction = false,
 }: PolicyDetailsClientProps) {
-    const locale = t.common?.locale || "en-US"
+    const locale = t.common?.locale || "en-GB"
     const lang: "el" | "en" = locale.startsWith("el") ? "el" : "en"
     const detailsCopy = t.wallet.policyDetailsPage
 

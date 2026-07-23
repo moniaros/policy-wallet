@@ -2,6 +2,7 @@
 
 import { GapSeverity, getSeverityColor, getSeverityLabel } from "@/lib/gap-detection"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { formatDate } from "@/lib/i18n/format"
 import { updateGapStatus } from "@/app/(protected)/coverage-insights/actions"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -53,7 +54,7 @@ export function GapCard({ gap }: GapCardProps) {
                     </span>
                 </div>
                 <span className="text-xs text-stone-500 font-medium whitespace-nowrap">
-                    {new Date(gap.detectedAt).toLocaleDateString()}
+                    {formatDate(gap.detectedAt, language as 'el' | 'en')}
                 </span>
             </div>
 

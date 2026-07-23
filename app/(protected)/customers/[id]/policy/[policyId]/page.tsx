@@ -65,7 +65,7 @@ export default async function AgentPolicyDetailPage({ params }: { params: Promis
     const language = ((dbUser.preferredLanguage as 'el' | 'en') || 'el')
     const t = getTranslations(language)
     const pd = t.agentPages.policyDetail
-    const locale = language === 'el' ? 'el-GR' : 'en-US'
+    const locale = language === 'el' ? 'el-GR' : 'en-GB'
     const branch = getBranch(policy.lineOfBusiness) ?? normalizeBranch(policy.lineOfBusiness)
     const lobPhrase = { el: `Κάλυψη ${branch.genitiveEl}`, en: `${branch.label.en} Protection` }[language]
     const isManagedByViewer = access.grantLevel === 'manage' || policy.createdByUserId === dbUser.id

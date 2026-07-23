@@ -29,7 +29,7 @@ interface PolicyCardProps {
 function formatRelativeExpiry(lifecycle: PolicyLifecycle, locale: 'el' | 'en'): string {
     const { endDate, daysUntilExpiry: days } = lifecycle
     if (!endDate || days === null) return ''
-    const dateDisplay = endDate.toLocaleDateString(locale === 'el' ? 'el-GR' : 'en-US', { timeZone: 'UTC' })
+    const dateDisplay = endDate.toLocaleDateString(locale === 'el' ? 'el-GR' : 'en-GB', { timeZone: 'UTC' })
     if (days < 0) return locale === 'el' ? `Έληξε στις ${dateDisplay}` : `Expired on ${dateDisplay}`
     if (days <= 60) return locale === 'el' ? `σε ${days} ημέρες` : `in ${days} days`
     return dateDisplay

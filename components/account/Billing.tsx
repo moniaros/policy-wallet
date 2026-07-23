@@ -41,11 +41,11 @@ export function Billing({
     const formatDate = (dateString: string | null) => {
         if (!dateString) return "-"
         const date = new Date(dateString)
-        return date.toLocaleDateString(language === "el" ? "el-GR" : "en-US", { day: "numeric", month: "short", year: "numeric" })
+        return date.toLocaleDateString(language === "el" ? "el-GR" : "en-GB", { day: "numeric", month: "short", year: "numeric" })
     }
 
     const formatPrice = (price: number, currency: string = "EUR") => {
-        return new Intl.NumberFormat(language === "el" ? "el-GR" : "en-US", {
+        return new Intl.NumberFormat(language === "el" ? "el-GR" : "en-GB", {
             style: "currency",
             currency,
         }).format(price)

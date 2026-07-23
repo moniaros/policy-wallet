@@ -26,7 +26,7 @@ export function HtmlLang() {
         const html = document.documentElement
         if (isEnglishRoute) {
             html.setAttribute("lang", "en")
-            html.setAttribute("data-locale", "en-US")
+            html.setAttribute("data-locale", "en-GB")
         } else if (html.dataset.htmlLangEnRoute === "true") {
             // We set "en" for a previous /en/* route — restore the Greek
             // default instead of leaking English onto Greek pages.

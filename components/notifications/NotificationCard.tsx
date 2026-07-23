@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
+import { formatDate, formatTime } from '@/lib/i18n/format'
 
 interface NotificationCardProps {
     event: any
@@ -8,6 +10,8 @@ interface NotificationCardProps {
 }
 
 export function NotificationCard({ event, onNavigate }: NotificationCardProps) {
+    const { language } = useLanguage()
+    const lang = language as 'el' | 'en'
     const isFailed = event.status === 'failed'
 
     return (
@@ -19,7 +23,7 @@ export function NotificationCard({ event, onNavigate }: NotificationCardProps) {
             <div className="pl-3">
                 <div className="flex justify-between items-start mb-2">
                     <span className="text-[10px] font-black tracking-widest uppercase text-stone-400">
-                        {new Date(event.created_at).toLocaleDateString()} • {new Date(event.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {formatDate(event.created_at, lang)} • {formatTime(event.created_at, lang)}
                     </span>
                     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isFailed
                             ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { CheckCircle2, Flag, RefreshCw, Sparkles } from "lucide-react"
 import { toast } from "sonner"
 import { resolveExtractionFlag, type ExtractionFlagQueueItem } from "../actions"
+import { formatDateTime } from "@/lib/i18n/format"
 
 interface ExtractionFlagsClientProps {
     items: ExtractionFlagQueueItem[]
@@ -16,7 +17,7 @@ const MSG_FAILED = "Action failed"
 
 function formatDate(value: string | null) {
     if (!value) return "-"
-    return new Date(value).toLocaleString()
+    return formatDateTime(value, 'en')
 }
 
 function reviewStatePill(state: string | null, handled: boolean) {

@@ -101,7 +101,7 @@ export async function getCommissionDashboard(): Promise<CommissionSummary | null
     for (let i = 5; i >= 0; i--) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
         const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0, 23, 59, 59)
-        const label = d.toLocaleDateString("en-US", { month: "short", year: "2-digit" })
+        const label = d.toLocaleDateString("en-GB", { month: "short", year: "2-digit" })
 
         let won = 0
         let estimated = 0

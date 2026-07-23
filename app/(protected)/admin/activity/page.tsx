@@ -4,6 +4,7 @@ import Link from "next/link"
 import { redirect } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { getActivityLogs } from "../actions"
+import { formatDateTime } from "@/lib/i18n/format"
 
 export default async function AdminActivityPage({
     searchParams,
@@ -44,7 +45,7 @@ export default async function AdminActivityPage({
                         ) : (
                             logs.map((log) => (
                                 <tr key={log.id} className="border-b border-stone-100 dark:border-stone-700 align-top">
-                                    <td className="py-2 px-4 text-stone-600 dark:text-stone-400 whitespace-nowrap">{new Date(log.timestamp).toLocaleString()}</td>
+                                    <td className="py-2 px-4 text-stone-600 dark:text-stone-400 whitespace-nowrap">{formatDateTime(log.timestamp, 'en')}</td>
                                     <td className="py-2 px-4 text-stone-900 dark:text-stone-100">{log.adminEmail}</td>
                                     <td className="py-2 px-4"><span className="font-mono text-xs bg-stone-100 dark:bg-stone-700 rounded px-2 py-1">{log.actionType}</span></td>
                                     <td className="py-2 px-4 text-stone-700 dark:text-stone-300">{log.description}</td>

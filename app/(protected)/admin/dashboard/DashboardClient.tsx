@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { Users, FileText, TrendingUp, UserCheck, AlertCircle, Activity } from "lucide-react"
+import { formatDateTime } from "@/lib/i18n/format"
 
 interface DashboardMetrics {
     users: {
@@ -316,7 +317,7 @@ export default function DashboardClient({ metrics, activityLogs, pendingAgentsCo
                                             {log.description}
                                         </p>
                                         <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                                            by {log.adminEmail} • {new Date(log.timestamp).toLocaleString()}
+                                            by {log.adminEmail} • {formatDateTime(log.timestamp, 'en')}
                                         </p>
                                     </div>
                                     <span className="text-xs px-2 py-1 bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300 rounded">

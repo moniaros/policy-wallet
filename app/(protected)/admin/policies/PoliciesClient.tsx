@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { Search, RefreshCw, Pencil, Trash2, GitMerge } from "lucide-react"
 import { requeuePolicy, deletePolicy, updatePolicyFields, mergePolicies, type AdminPolicyRow } from "../policy-actions"
+import { formatDate } from "@/lib/i18n/format"
 
 const STATUS_OPTIONS = ["all", "analyzing", "active", "action_needed", "incomplete", "expiring_soon", "cancelled", "deleted"]
 const inputClass = "w-full p-2 border rounded text-sm dark:bg-stone-700 dark:border-stone-600 dark:text-white"
@@ -13,7 +14,7 @@ const primaryBtn = "px-4 py-2 text-sm bg-primary text-white dark:text-[#1A2420] 
 const iconBtn = "p-2 text-primary dark:text-mint hover:bg-primary-tint dark:hover:bg-primary/15 rounded-lg transition-colors disabled:opacity-50"
 
 function fmt(iso: string | null) {
-    return iso ? new Date(iso).toLocaleDateString() : "-"
+    return iso ? formatDate(iso, 'en') : "-"
 }
 
 export default function PoliciesClient({

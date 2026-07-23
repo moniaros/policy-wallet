@@ -148,7 +148,7 @@ export function InlineMessagesTab({
         if (diffMins < 1) return t("Τώρα", "Now")
         if (diffMins < 60) return `${diffMins}m`
         if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h`
-        return d.toLocaleDateString(language === "el" ? "el-GR" : "en-US", { month: "short", day: "numeric" })
+        return d.toLocaleDateString(language === "el" ? "el-GR" : "en-GB", { month: "short", day: "numeric" })
     }
 
     return (

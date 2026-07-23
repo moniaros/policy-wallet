@@ -25,7 +25,7 @@ export function formatExtractedAmount(
     if (/^\d+(\.\d{1,2})?$/.test(numericText)) {
         const value = Number(numericText)
         if (Number.isFinite(value)) {
-            const formatted = value.toLocaleString(lang === 'el' ? 'el-GR' : 'en-US', {
+            const formatted = value.toLocaleString(lang === 'el' ? 'el-GR' : 'en-GB', {
                 maximumFractionDigits: 2,
             })
             return `${formatted} €`

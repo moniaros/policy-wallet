@@ -174,7 +174,7 @@ export function Settings({
 
     const formatDateTime = (dateString: string) => {
         const date = new Date(dateString)
-        return date.toLocaleDateString(language === 'el' ? 'el-GR' : 'en-US', {
+        return date.toLocaleDateString(language === 'el' ? 'el-GR' : 'en-GB', {
             day: 'numeric',
             month: 'short',
             year: 'numeric',
