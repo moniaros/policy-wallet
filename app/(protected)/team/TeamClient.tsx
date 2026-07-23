@@ -9,6 +9,7 @@ import {
     ChevronDown, X, AlertCircle
 } from "lucide-react"
 import type { TeamOverview } from "@/lib/services/team.service"
+import { TableShell } from "@/components/ui/TableShell"
 import {
     createAgencyAction, inviteMemberAction, removeMemberAction,
     updateRoleAction, transferCustomerAction
@@ -422,7 +423,7 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
                     description={t.noOppsDesc}
                 />
             ) : (
-                <div className="overflow-x-auto">
+                <TableShell label={t.title}>
                     <table className="w-full text-sm">
                         <thead>
                             <tr className="border-b border-neutral-100 dark:border-neutral-800">
@@ -462,7 +463,7 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
                             ))}
                         </tbody>
                     </table>
-                </div>
+                </TableShell>
             )}
         </div>
     )

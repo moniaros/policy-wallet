@@ -22,6 +22,7 @@ import { EmptyState, RenewalPreviewRow } from "@/components/ui/EmptyState"
 import type { RenewalView } from "./actions"
 import { updateRenewalOutcome, getAgentRenewals, sendBatchRenewalReminder } from "./actions"
 import { useDialog } from "@/hooks/useDialog"
+import { TableShell } from "@/components/ui/TableShell"
 
 const copy = {
     en: {
@@ -356,7 +357,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                     )
                 ) : (
                     <div className="arc-card overflow-hidden">
-                        <div className="overflow-x-auto">
+                        <TableShell label={t.title}>
                             <table className="w-full text-sm">
                                 <thead>
                                     <tr className="border-b border-neutral-100 dark:border-neutral-800">
@@ -437,7 +438,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                     })}
                                 </tbody>
                             </table>
-                        </div>
+                        </TableShell>
                     </div>
                 )}
 

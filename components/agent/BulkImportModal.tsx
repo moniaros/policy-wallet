@@ -5,6 +5,7 @@ import * as Sentry from "@sentry/nextjs"
 import { toast } from "sonner"
 import { useLanguage } from "@/contexts/LanguageContext"
 import { useDialog } from "@/hooks/useDialog"
+import { TableShell } from "@/components/ui/TableShell"
 
 interface BulkImportModalProps {
     isOpen: boolean
@@ -209,7 +210,10 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                             </div>
 
                             {/* Preview Table */}
-                            <div className="border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden max-h-96 overflow-y-auto">
+                            {/* overflow-x was missing entirely here, so a wide preview was CLIPPED
+                                    rather than scrollable. */}
+                            <div className="border border-neutral-200 dark:border-neutral-700 rounded-xl max-h-96 overflow-y-auto">
+                                <TableShell label={tt.title}>
                                 <table className="w-full text-sm">
                                     <thead className="bg-neutral-50 dark:bg-neutral-900/50 sticky top-0">
                                         <tr>
@@ -242,6 +246,7 @@ export function BulkImportModal({ isOpen, onClose, onSuccess }: BulkImportModalP
                                         ))}
                                     </tbody>
                                 </table>
+                                </TableShell>
                             </div>
 
                             {/* Actions */}

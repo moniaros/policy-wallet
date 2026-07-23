@@ -4,6 +4,7 @@ import { Euro, TrendingUp, Briefcase, BarChart3 } from "lucide-react"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { useLanguage } from "@/contexts/LanguageContext"
 import type { CommissionSummary } from "./actions"
+import { TableShell } from "@/components/ui/TableShell"
 
 const copy = {
     en: {
@@ -113,7 +114,7 @@ export function CommissionsClient({ data }: Props) {
                                 description={t.noDataDesc}
                             />
                         ) : (
-                            <div className="overflow-x-auto">
+                            <TableShell label={t.title}>
                                 <table className="w-full text-sm">
                                     <thead>
                                         <tr className="border-b border-neutral-100 dark:border-neutral-800">
@@ -144,7 +145,7 @@ export function CommissionsClient({ data }: Props) {
                                         ))}
                                     </tbody>
                                 </table>
-                            </div>
+                            </TableShell>
                         )}
                     </div>
 

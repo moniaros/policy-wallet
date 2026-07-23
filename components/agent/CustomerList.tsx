@@ -8,6 +8,7 @@ import { useLanguage } from "@/contexts/LanguageContext"
 import { getRoleCopy } from "@/lib/i18n/role-copy"
 import { EmptyState, CustomerPreviewRow } from "@/components/ui/EmptyState"
 import { ConsentStatusBadge, type ConsentStatus } from "@/components/ui/ConsentStatusBadge"
+import { TableShell } from "@/components/ui/TableShell"
 
 export function CustomerList({
     customers,
@@ -240,7 +241,7 @@ export function CustomerList({
                 />
             ) : viewMode === "table" ? (
                 <div className="bg-white/80 dark:bg-neutral-900/80 rounded-2xl border border-neutral-200/60 dark:border-neutral-800/60 overflow-hidden shadow-sm">
-                    <div className="overflow-x-auto">
+                    <TableShell label={t.nav.customers}>
                         <table className="w-full text-sm text-left">
                             <thead className="bg-neutral-50/80 dark:bg-neutral-950/50 text-[11px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 border-b border-neutral-200/60 dark:border-neutral-800/60">
                                 <tr>
@@ -324,7 +325,7 @@ export function CustomerList({
                                 })}
                             </tbody>
                         </table>
-                    </div>
+                    </TableShell>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

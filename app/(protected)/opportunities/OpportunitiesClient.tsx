@@ -7,6 +7,7 @@ import { EmptyState, RecommendationPreviewCard } from "@/components/ui/EmptyStat
 import { updateOpportunityStatus } from "../agent/actions"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/contexts/LanguageContext"
+import { TableShell } from "@/components/ui/TableShell"
 
 interface Opportunity {
     id: string
@@ -125,7 +126,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                     />
                 ) : (
                 <div className="arc-card overflow-hidden border-t-4 border-t-primary">
-                    <div className="overflow-x-auto">
+                    <TableShell label={opp_t.title}>
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-neutral-50/50 dark:bg-neutral-900/20 border-b border-neutral-100 dark:border-neutral-800/60">
@@ -208,7 +209,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                     ))}
                             </tbody>
                         </table>
-                    </div>
+                    </TableShell>
                 </div>
                 )}
             </div>
