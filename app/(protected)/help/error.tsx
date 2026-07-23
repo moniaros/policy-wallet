@@ -8,5 +8,5 @@ export default function HelpRouteError(props: {
     error: Error & { digest?: string }
     reset: () => void
 }) {
-    return <RouteError {...props} homeHref="/home" />
+    return <RouteError {...props} homeHref="/dashboard" />
 }

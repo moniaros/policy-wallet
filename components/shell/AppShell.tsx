@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useTransition } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { MainNav } from './MainNav'
@@ -11,6 +11,9 @@ import { PolicyWalletLogo } from '@/components/branding/Logo'
 import { InstallPrompt } from "@/components/pwa/InstallPrompt"
 import { Users, Lightbulb, LayoutDashboard, MoreHorizontal, Wallet, Shield, Settings, TrendingUp } from 'lucide-react'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useDialog } from '@/hooks/useDialog'
+import { toast } from 'sonner'
+import { setActiveRole } from '@/app/(protected)/role-actions'
 import { getRoleCopy } from '@/lib/i18n/role-copy'
 import { track } from '@vercel/analytics'
 
@@ -52,15 +55,35 @@ export interface AppShellProps {
     onLogout?: () => void
 }
 
+/** The two locales, as the mobile footer toggle renders them. "GR"/"EN" are
+ *  locale codes shown verbatim in both languages, not translatable copy. */
+const LANGUAGE_OPTIONS = [
+    { value: 'el' as const, label: 'GR' },
+    { value: 'en' as const, label: 'EN' },
+]
+
+interface BottomNavItem {
+    href: string
+    icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
+    label: string
+    id: string
+    /** Show the unread-notification count on this tab. */
+    showsNotificationBadge?: boolean
+}
+
 // Bottom navigation items based on role
-const getBottomNavItems = (role: UserRole['role'], t: any) => {
+const getBottomNavItems = (role: UserRole['role'], t: any): BottomNavItem[] => {
     if (role === 'policyholder') {
         return [
             { href: '/dashboard', icon: LayoutDashboard, label: t.nav.home, id: 'home' },
             { href: '/wallet', icon: Wallet, label: t.nav.wallet, id: 'wallet' },
             { href: '/coverage-insights', icon: Shield, label: t.nav.insightsShort, id: 'analysis' },
             { href: '/agent', icon: Users, label: t.nav.agentShort, id: 'agent' },
-            { href: '/account', icon: Settings, label: t.userMenu.settings, id: 'settings' }
+            // The unread badge used to be hardcoded to `item.id === 'notifications'`,
+            // an id NO bottom-nav item has — so on mobile the badge could never
+            // render for any role. It now rides on whichever tab owns notifications;
+            // /account is where the policyholder reaches them.
+            { href: '/account', icon: Settings, label: t.userMenu.settings, id: 'settings', showsNotificationBadge: true }
         ]
     } else if (role === 'agent') {
         const translations = {
@@ -75,7 +98,7 @@ const getBottomNavItems = (role: UserRole['role'], t: any) => {
             { href: '/customers', icon: Users, label: translations.customers, id: 'customers' },
             { href: '/opportunities', icon: TrendingUp, label: translations.opportunities, id: 'opportunities' },
             { href: '/insights', icon: Lightbulb, label: translations.insights, id: 'insights' },
-            { href: '/account', icon: MoreHorizontal, label: translations.more, id: 'more' }
+            { href: '/account', icon: MoreHorizontal, label: translations.more, id: 'more', showsNotificationBadge: true }
         ]
     }
     return []
@@ -92,12 +115,14 @@ export function AppShell({
     onRoleSwitch,
     onLogout,
 }: AppShellProps) {
-    const { t, language } = useLanguage()
+    const { t, language, setLanguage } = useLanguage()
     const roleCopy = getRoleCopy(language)
     const pathname = usePathname()
     const router = useRouter()
     const [sidebarOpen, setSidebarOpen] = useState(false)
-    const [roleChangeToast, setRoleChangeToast] = useState<string | null>(null)
+    // Focus trap + Escape + focus-return for the mobile drawer.
+    const drawerRef = useDialog<HTMLElement>(() => setSidebarOpen(false), sidebarOpen)
+    const [, startRoleSwitch] = useTransition()
 
     /**
      * Side effects that accompany a navigation. Nav items are real <Link>s now
@@ -129,10 +154,28 @@ export function AppShell({
             ? '/admin/dashboard'
             : '/dashboard/agent'
 
+    /**
+     * This used to call an `onRoleSwitch` prop that the protected layout never
+     * passed, then show a "viewing as X" toast anyway — the switcher reported a
+     * change that never happened. It now persists the active role server-side
+     * (validated against the roles the user actually holds) and lands on that
+     * role's home, so the shell's navigation genuinely changes.
+     */
     const handleRoleSwitch = (role: UserRole) => {
         onRoleSwitch?.(role)
-        setRoleChangeToast(roleCopy.shell.roleViewingAs(role.label))
-        setTimeout(() => setRoleChangeToast(null), 3000)
+        startRoleSwitch(async () => {
+            const result = await setActiveRole(role.role)
+            if ('error' in result) {
+                toast.error(t.errors.somethingWentWrong)
+                return
+            }
+            toast.success(roleCopy.shell.roleViewingAs(role.label))
+            router.push(
+                role.role === 'policyholder' ? '/dashboard'
+                    : role.role === 'admin' ? '/admin/dashboard'
+                        : '/dashboard/agent'
+            )
+        })
     }
 
     const bottomNavItems = getBottomNavItems(currentRole.role, t)
@@ -153,7 +196,12 @@ export function AppShell({
 
                 {/* Mobile Top Header */}
                 <header className="lg:hidden sticky top-0 z-40 w-full h-16 bg-white/95 dark:bg-black/95 backdrop-blur-xl border-b border-black/10 dark:border-white/10 px-4 flex items-center justify-between">
-                    <button onClick={() => setSidebarOpen(true)} className="p-2 -ml-2 text-black/60 hover:text-black dark:text-white/70 dark:hover:text-white transition-colors">
+                    <button
+                        onClick={() => setSidebarOpen(true)}
+                        aria-label={t.nav.primaryNavigation}
+                        aria-expanded={sidebarOpen}
+                        aria-controls="app-sidebar"
+                        className="p-2 -ml-2 text-black/60 hover:text-black dark:text-white/70 dark:hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-lg">
                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
@@ -168,18 +216,19 @@ export function AppShell({
                     </div>
                 </header>
 
-                {/* Role change confirmation toast */}
-                {roleChangeToast && (
-                    <div className="fixed top-4 right-4 z-50 bg-primary text-white dark:text-[#1A2420] px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
-                        <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
-                        <span className="text-sm font-semibold">{roleChangeToast}</span>
-                    </div>
-                )}
 
-                {/* Desktop Sidebar */}
+                {/* Sidebar — a static landmark at lg+, a modal drawer below it.
+                    The drawer had no focus trap, no dialog semantics and no Escape:
+                    opening it on a phone left focus behind it on the page. useDialog
+                    supplies all three (and returns focus to the hamburger on close);
+                    the dialog role is applied only while it is actually behaving as
+                    an overlay, i.e. when open below lg. */}
                 <aside
+                    id="app-sidebar"
+                    ref={drawerRef}
+                    {...(sidebarOpen
+                        ? { role: 'dialog' as const, 'aria-modal': true, 'aria-label': t.nav.primaryNavigation, tabIndex: -1 }
+                        : {})}
                     className={`
           fixed top-0 left-0 z-50 h-full w-72 bg-white/95 dark:bg-black/95 border-r border-black/10 dark:border-white/10
           transform transition-transform duration-300 ease-in-out shadow-xl
@@ -238,20 +287,29 @@ export function AppShell({
                             <div className="flex items-center justify-between">
                                 <span className="text-sm font-semibold text-black/70 dark:text-white/70">{t.userMenu.settings}</span>
                                 <div className="flex items-center gap-3">
-                                    {/* Language */}
-                                    <div className="flex bg-black/5 dark:bg-white/10 rounded-lg p-0.5">
-                                        <button
-                                            onClick={() => user.preferred_language !== 'el' && onNavigate?.('/?lang=el')}
-                                            className={`px-2.5 py-1.5 text-xs font-bold rounded-md transition-all ${user.preferred_language === 'el' ? 'bg-white dark:bg-black shadow-sm text-black dark:text-mint' : 'text-black/50 dark:text-white/60'}`}
-                                        >
-                                            GR
-                                        </button>
-                                        <button
-                                            onClick={() => user.preferred_language !== 'en' && onNavigate?.('/?lang=en')}
-                                            className={`px-2.5 py-1.5 text-xs font-bold rounded-md transition-all ${user.preferred_language === 'en' ? 'bg-white dark:bg-black shadow-sm text-black dark:text-mint' : 'text-black/50 dark:text-white/60'}`}
-                                        >
-                                            EN
-                                        </button>
+                                    {/* Language — this was a DEAD control: it called
+                                        onNavigate?.('/?lang=el'), and the protected layout
+                                        never passes onNavigate, so tapping it did nothing.
+                                        (Even wired, it would have navigated the user away to
+                                        `/`.) setLanguage from the context is the real
+                                        mechanism — it persists to localStorage AND
+                                        POST /api/user/language. Active state now reads the
+                                        live context value rather than the server-rendered
+                                        prop, which could disagree with it. */}
+                                    <div className="flex bg-black/5 dark:bg-white/10 rounded-lg p-0.5" role="group" aria-label={t.userMenu.language}>
+                                        {LANGUAGE_OPTIONS.map(({ value, label }) => {
+                                            const isActive = language === value
+                                            return (
+                                                <button
+                                                    key={value}
+                                                    onClick={() => setLanguage(value)}
+                                                    aria-pressed={isActive}
+                                                    className={`px-2.5 py-1.5 text-xs font-bold rounded-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${isActive ? 'bg-white dark:bg-black shadow-sm text-black dark:text-mint' : 'text-black/50 dark:text-white/60'}`}
+                                                >
+                                                    {label}
+                                                </button>
+                                            )
+                                        })}
                                     </div>
                                     <ThemeToggle />
                                 </div>
@@ -318,7 +376,12 @@ export function AppShell({
                                             ? 'text-primary dark:text-mint bg-primary/15 dark:bg-primary/15'
                                             : 'text-black/55 dark:text-white/60 hover:text-black dark:hover:text-white'
                                             }`}
-                                        aria-label={item.label}
+                                        /* The badge is purely visual, so fold the count into
+                                           the accessible name — otherwise a screen-reader
+                                           user never learns there are unread items. */
+                                        aria-label={item.showsNotificationBadge && notificationCount > 0
+                                            ? `${item.label} (${notificationCount} ${t.nav.notifications})`
+                                            : item.label}
                                         aria-current={isActive ? 'page' : undefined}
                                     >
                                         <div className="relative">
@@ -326,8 +389,8 @@ export function AppShell({
                                                 className="w-6 h-6"
                                                 strokeWidth={2.5}
                                             />
-                                            {item.id === 'notifications' && notificationCount > 0 && (
-                                                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-white dark:text-[#1A2420] text-[10px] font-black rounded-full flex items-center justify-center shadow-lg">
+                                            {item.showsNotificationBadge && notificationCount > 0 && (
+                                                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-white dark:text-[#1A2420] text-[10px] font-bold rounded-full flex items-center justify-center shadow-lg">
                                                     {notificationCount > 9 ? '9+' : notificationCount}
                                                 </span>
                                             )}

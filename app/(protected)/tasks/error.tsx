@@ -10,5 +10,5 @@ export default function TasksRouteError(props: {
     error: Error & { digest?: string }
     reset: () => void
 }) {
-    return <RouteError {...props} homeHref="/home" />
+    return <RouteError {...props} homeHref="/dashboard" />
 }

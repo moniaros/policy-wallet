@@ -2,6 +2,10 @@ export const runtime = 'nodejs'
 
 import { getAuthenticatedUser, getIsPayingUser, emailVerificationRequired } from "@/lib/auth-helpers"
 import { redirect } from "next/navigation"
+import { cookies } from "next/headers"
+import { parseRoles } from "@/lib/api-auth"
+import { getPrimaryRole } from "@/lib/auth/role-routing"
+import { ACTIVE_ROLE_COOKIE } from "@/lib/auth/active-role"
 import { AppShell } from "@/components/shell"
 import { NotificationWatcher } from "@/components/notifications/NotificationWatcher"
 import { PlanFactsProvider } from "@/components/monetization/PlanFactsProvider"
@@ -40,9 +44,21 @@ export default async function ProtectedLayout({
         where: { userId: dbUser.id, readAt: null }
     })
 
-    // Construct navigation based on roles
-    const roles = dbUser.roles?.split(",") || ["policyholder"]
-    const currentRole = roles[0] as UserRole
+    // Construct navigation based on roles.
+    //
+    // This used to be `dbUser.roles?.split(",")` + `roles[0]` — untrimmed (so
+    // "policyholder, agent" yielded " agent"), unvalidated, and order-dependent:
+    // a dual-role user got whichever role happened to be first in the string and
+    // had NO way to reach the other role's tools from the shell. parseRoles and
+    // getPrimaryRole already existed for exactly this (getPrimaryRole is what
+    // /dashboard uses to route); the active-role cookie lets the RoleSwitcher
+    // actually switch. Nav only — every page and API guards itself server-side.
+    const roles = parseRoles(dbUser.roles)
+    const availableRoles: UserRole[] = roles.length > 0 ? roles : ["policyholder"]
+    const requestedRole = (await cookies()).get(ACTIVE_ROLE_COOKIE)?.value as UserRole | undefined
+    const currentRole: UserRole = requestedRole && availableRoles.includes(requestedRole)
+        ? requestedRole
+        : getPrimaryRole(dbUser.roles)
 
     const navigation: NavigationSection[] = []
     const t = getTranslations(dbUser.preferredLanguage as 'en' | 'el' || 'el')
@@ -140,7 +156,7 @@ export default async function ProtectedLayout({
                 avatarUrl: dbUser.image || undefined,
             }}
             currentRole={userRoleObj}
-            availableRoles={roles.map(r => ({ role: r as UserRole, label: t.roles[r as keyof typeof t.roles] || r }))}
+            availableRoles={availableRoles.map(r => ({ role: r, label: t.roles[r as keyof typeof t.roles] || r }))}
             navigation={navigation}
             notificationCount={unreadNotificationCount}
             onLogout={signOut}

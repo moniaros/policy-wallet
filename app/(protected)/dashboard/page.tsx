@@ -2,7 +2,7 @@ export const runtime = "nodejs"
 
 import { redirect } from "next/navigation"
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
-import PolicyholderHomePage from "../home/page"
+import PolicyholderHomePage from "./PolicyholderHome"
 import { getPrimaryRole } from "@/lib/auth/role-routing"
 
 export default async function DashboardPage() {

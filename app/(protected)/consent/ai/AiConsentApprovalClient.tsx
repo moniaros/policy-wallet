@@ -13,10 +13,10 @@ export function AiConsentApprovalClient() {
         <div className="min-h-[60vh]">
             <AiConsentModal
                 isOpen
-                onClose={() => router.push("/home")}
+                onClose={() => router.push("/dashboard")}
                 onConsented={() => {
                     toast.success(t.common.aiConsentTitle)
-                    router.push("/home")
+                    router.push("/dashboard")
                 }}
                 source="agent_consent_request"
             />

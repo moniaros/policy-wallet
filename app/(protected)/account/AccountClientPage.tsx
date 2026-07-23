@@ -58,7 +58,7 @@ export function AccountClientPage({ initialData, mobileProps }: Props) {
 
     const handleSwitchRole = (role: 'policyholder' | 'agent') => {
         // Dual-role accounts switch context by navigating to that role's home.
-        router.push(role === 'agent' ? '/dashboard/agent' : '/home')
+        router.push(role === 'agent' ? '/dashboard/agent' : '/dashboard')
     }
 
     const handleUpgrade = async (planId: string) => {

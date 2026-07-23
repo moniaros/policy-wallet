@@ -233,7 +233,7 @@ function SignupConfirmationContent() {
             step: 1,
             location: "signup_checkpoint",
         })
-        router.push("/home")
+        router.push("/dashboard")
     }
 
     const showVerificationCard = Boolean(email) && needsEmailVerification && !isVerified

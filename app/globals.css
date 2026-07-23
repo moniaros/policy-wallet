@@ -233,6 +233,13 @@ pre {
 }
 
 @layer utilities {
+  /* The mobile bottom nav has always carried `safe-area-inset-bottom`, but the
+     class was never defined anywhere — so on notched iPhones the nav sat under
+     the home indicator. This is that class. */
+  .safe-area-inset-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
   .pw-app-canvas {
     @apply bg-[radial-gradient(circle_at_top_right,_rgba(41,104,91,0.06),_transparent_40%),linear-gradient(to_bottom_right,#f8fafc,#ffffff)];
   }

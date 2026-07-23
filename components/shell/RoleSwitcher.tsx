@@ -1,6 +1,8 @@
 "use client"
 
 import React, { useState } from 'react'
+import { useLanguage } from '@/contexts/LanguageContext'
+import { getRoleCopy } from '@/lib/i18n/role-copy'
 import type { UserRole } from './AppShell'
 import { CheckCircle2 } from 'lucide-react'
 
@@ -11,6 +13,8 @@ export interface RoleSwitcherProps {
 }
 
 export function RoleSwitcher({ currentRole, availableRoles, onRoleSwitch }: RoleSwitcherProps) {
+    const { language } = useLanguage()
+    const roleCopy = getRoleCopy(language)
     const [isOpen, setIsOpen] = useState(false)
 
     return (
@@ -21,7 +25,7 @@ export function RoleSwitcher({ currentRole, availableRoles, onRoleSwitch }: Role
             >
                 <div className="flex flex-col items-start min-w-0">
                     <span className="text-[10px] font-bold uppercase tracking-widest text-black/45 dark:text-white/50 group-hover:text-black/65 dark:group-hover:text-white/75 transition-colors">
-                        Viewing as
+                        {roleCopy.shell.roleViewingAsLabel}
                     </span>
                     <span className="text-xs font-semibold text-black dark:text-white truncate tracking-tight">
                         {currentRole.label}

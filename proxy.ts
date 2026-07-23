@@ -178,11 +178,26 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL(`/auth/signin?callbackUrl=${encodedCallbackUrl}`, nextUrl))
     }
 
+    // Canonical dashboard URL. /home and /dashboard rendered the SAME policyholder
+    // dashboard, splitting analytics and breaking nav active-state (the sidebar
+    // links to /dashboard, so /home visitors saw nothing highlighted). The page
+    // component now lives at dashboard/PolicyholderHome.tsx. Doing this here
+    // rather than with redirect() in the page gives a real 307 before any render
+    // — a page-level redirect streams inside the RSC payload as a 200.
+    if (nextUrl.pathname === "/home" || nextUrl.pathname === "/home/") {
+        return NextResponse.redirect(new URL(`/dashboard${nextUrl.search}`, nextUrl))
+    }
+
     // Role-based route protection for authenticated users
     if (isLoggedIn && user) {
         const userRole = getPrimaryRole((user.user_metadata?.role as string) || "")
 
         const agentRoutes = ["/dashboard/agent", "/customers", "/opportunities", "/renewals", "/commissions", "/questionnaires", "/tasks", "/insights", "/team"]
+        // "/home" stays listed: it still exists as a redirect to /dashboard, and an
+        // agent landing on it must be bounced to their own home first. "/dashboard"
+        // is deliberately NOT in this array — `startsWith` would also match
+        // "/dashboard/agent" and bounce agents off their own home in a loop; it is
+        // handled by the explicit guard below.
         const policyholderRoutes = ["/home", "/wallet", "/coverage-insights"]
 
         // /agent path is shared: /agent is policyholder's "My Agent", /agent/settings is agent settings

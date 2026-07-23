@@ -8,6 +8,7 @@ type RoleCopy = {
         closeMenu: string
         theme: string
         roleViewingAs: (roleLabel: string) => string
+        roleViewingAsLabel: string
     }
     defaults: {
         userName: string
@@ -210,6 +211,7 @@ const roleCopy: Record<Language, RoleCopy> = {
             closeMenu: "Κλείσιμο μενού",
             theme: "Θέμα εμφάνισης",
             roleViewingAs: (roleLabel: string) => `Προβολή ως ${roleLabel}`,
+            roleViewingAsLabel: "Προβολή ως",
         },
         defaults: {
             userName: "Χρήστης",
@@ -414,6 +416,7 @@ const roleCopy: Record<Language, RoleCopy> = {
             closeMenu: "Close menu",
             theme: "Theme",
             roleViewingAs: (roleLabel: string) => `Viewing as ${roleLabel}`,
+            roleViewingAsLabel: "Viewing as",
         },
         defaults: {
             userName: "User",

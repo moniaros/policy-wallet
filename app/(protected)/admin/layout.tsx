@@ -2,6 +2,7 @@ export const runtime = 'nodejs'
 
 import { getAuthenticatedUser } from "@/lib/auth-helpers"
 import { redirect } from "next/navigation"
+import { hasAnyRole } from "@/lib/api-auth"
 
 /**
  * Auth gate only. The admin navigation lives in the parent (protected) layout's
@@ -17,9 +18,11 @@ export default async function AdminLayout({
     // 1. Authenticate user
     const { dbUser } = await getAuthenticatedUser()
 
-    // 2. Authorization check
-    // Assuming 'roles' is a string that might contain 'admin', e.g., "admin" or "policyholder,admin"
-    if (!dbUser.roles.includes('admin')) {
+    // 2. Authorization check.
+    // `dbUser.roles.includes('admin')` was a raw SUBSTRING match on the
+    // comma-separated string — the pattern CLAUDE.md bans, since it matches any
+    // role merely containing "admin". hasAnyRole parses and compares whole roles.
+    if (!hasAnyRole(dbUser.roles, ['admin'])) {
         // Log security event could happen here
         redirect("/wallet")
     }
