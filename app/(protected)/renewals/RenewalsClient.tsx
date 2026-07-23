@@ -358,7 +358,7 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                 ) : (
                     <div className="pw-card overflow-hidden">
                         <TableShell label={t.title}>
-                            <table className="w-full text-sm">
+                            <table className="pw-stacked-table w-full text-sm">
                                 <thead>
                                     <tr className="border-b border-neutral-100 dark:border-neutral-800">
                                         <th className="px-4 py-3 text-left">
@@ -393,27 +393,27 @@ export function RenewalsClient({ initialRenewals, stats }: Props) {
                                                         />
                                                     )}
                                                 </td>
-                                                <td className="px-4 py-3">
+                                                <td data-label={t.customer} className="px-4 py-3">
                                                     <span className="font-bold text-foreground">{r.customerName}</span>
                                                     <br />
                                                     <span className="text-xs text-neutral-400">{r.policyNumber}</span>
                                                 </td>
-                                                <td className="px-4 py-3 text-neutral-700 dark:text-neutral-300">{r.insurerName}</td>
-                                                <td className="px-4 py-3">
+                                                <td data-label={t.insurer} className="px-4 py-3 text-neutral-700 dark:text-neutral-300">{r.insurerName}</td>
+                                                <td data-label={t.lob} className="px-4 py-3">
                                                     <span className="text-xs font-bold text-neutral-500 bg-muted dark:text-neutral-400 px-2 py-0.5 rounded">
                                                         {r.lineOfBusiness}
                                                     </span>
                                                 </td>
-                                                <td className="px-4 py-3 text-right font-bold text-foreground">
+                                                <td data-label={t.premium} className="px-4 py-3 text-right font-bold text-foreground">
                                                     {r.premiumAmount ? `€${r.premiumAmount.toLocaleString()}` : "—"}
                                                 </td>
-                                                <td className="px-4 py-3 text-center text-neutral-600 dark:text-neutral-400">
+                                                <td data-label={t.expires} className="px-4 py-3 text-center text-neutral-600 dark:text-neutral-400">
                                                     {formatDate(r.policyEndDate)}
                                                 </td>
-                                                <td className="px-4 py-3 text-center">
+                                                <td data-label={t.status} className="px-4 py-3 text-center">
                                                     {getStatusBadge(r.status, r.daysBeforeExpiry)}
                                                 </td>
-                                                <td className="px-4 py-3 text-right">
+                                                <td data-label={t.actions} className="px-4 py-3 text-right">
                                                     {isActionable && (
                                                         <button
                                                             onClick={() => {

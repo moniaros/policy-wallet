@@ -127,7 +127,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                 ) : (
                 <div className="pw-card overflow-hidden border-t-4 border-t-primary">
                     <TableShell label={opp_t.title}>
-                        <table className="w-full text-left border-collapse">
+                        <table className="pw-stacked-table w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-neutral-50/50 dark:bg-neutral-900/20 border-b border-neutral-100 dark:border-neutral-800/60">
                                     <th className="px-6 py-5 text-[11px] font-black text-neutral-400 dark:text-neutral-500 uppercase tracking-widest pl-8">{opp_t.colCustomer}</th>
@@ -141,11 +141,11 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                             <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800/50">
                                 {filteredOpportunities.map((opp) => (
                                         <tr key={opp.id} className="hover:bg-neutral-50/80 dark:hover:bg-neutral-800/30 transition-colors group">
-                                            <td className="px-6 py-6 pl-8">
+                                            <td data-label={opp_t.colCustomer} className="px-6 py-6 pl-8">
                                                 <div className="font-bold text-foreground capitalize tracking-tight">{opp.customerName}</div>
                                                 <div className="text-xs font-medium text-muted-foreground mt-1">{opp.customerEmail}</div>
                                             </td>
-                                            <td className="px-6 py-6">
+                                            <td data-label={opp_t.colOpportunity} className="px-6 py-6">
                                                 <div className="text-sm font-bold text-neutral-800 dark:text-neutral-200">{opp.title}</div>
                                                 {opp.notes && (
                                                     <div className="text-[13px] text-muted-foreground mt-1.5 line-clamp-1 max-w-[300px]">
@@ -153,7 +153,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                     </div>
                                                 )}
                                             </td>
-                                            <td className="px-6 py-6">
+                                            <td data-label={opp_t.colStatus} className="px-6 py-6">
                                                 <span className={`pw-pill uppercase tracking-widest ${opp.status === 'won' ? 'bg-primary-soft text-[#166534] dark:bg-primary/15 dark:text-mint' :
                                                     opp.status === 'lost' ? 'bg-rose-100 text-rose-800 dark:bg-rose-900/30 dark:text-rose-400' :
                                                         opp.status === 'quoted' ? 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-400' :
@@ -163,7 +163,7 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                     {statusLabel(opp.status)}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-6">
+                                            <td data-label={opp_t.colLikelihood} className="px-6 py-6">
                                                 {opp.conversionLikelihood ? (
                                                     <div className="flex items-center gap-1.5">
                                                         <span className={`inline-block h-2 w-2 rounded-full ${
@@ -183,10 +183,10 @@ export function OpportunitiesClient({ initialOpportunities }: OpportunitiesClien
                                                     <span className="text-xs text-neutral-400">—</span>
                                                 )}
                                             </td>
-                                            <td className="px-6 py-6 text-sm font-bold text-muted-foreground">
+                                            <td data-label={opp_t.colNextAction} className="px-6 py-6 text-sm font-bold text-muted-foreground">
                                                 {opp.nextActionAt ? new Date(opp.nextActionAt).toLocaleDateString(language === 'el' ? 'el-GR' : 'en-GB') : '—'}
                                             </td>
-                                            <td className="px-6 py-6 text-right pr-8">
+                                            <td data-label={opp_t.colActions} className="px-6 py-6 text-right pr-8">
                                                 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     <button
                                                         onClick={() => setSelectedOpp(opp)}

@@ -11,6 +11,7 @@ import type { TemplateData, InstanceData, TemplateQuestion } from "./actions"
 import { createTemplate, updateTemplate, deleteTemplate, analyzeQuestionnaireResponse } from "./actions"
 import { EmptyState } from "@/components/ui/EmptyState"
 import { useDialog } from "@/hooks/useDialog"
+import { TableShell } from "@/components/ui/TableShell"
 
 const copy = {
     en: {
@@ -551,8 +552,9 @@ function SentList({ instances, t, language }: {
 
     return (
         <>
-            <div className="pw-card overflow-x-auto">
-                <table className="w-full text-sm">
+            <div className="pw-card">
+                <TableShell label={t.sent}>
+                <table className="pw-stacked-table w-full text-sm">
                     <thead>
                         <tr className="border-b border-slate-100 dark:border-slate-800">
                             <th className="text-left text-[10px] font-black text-slate-400 uppercase tracking-widest p-4">{t.customer}</th>
@@ -565,9 +567,9 @@ function SentList({ instances, t, language }: {
                     <tbody>
                         {instances.map((inst) => (
                             <tr key={inst.id} className="border-b border-slate-50 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                                <td className="p-4 font-bold text-slate-900 dark:text-white">{inst.customerName}</td>
-                                <td className="p-4 text-slate-600 dark:text-slate-400">{inst.templateName}</td>
-                                <td className="p-4">
+                                <td data-label={t.customer} className="p-4 font-bold text-slate-900 dark:text-white">{inst.customerName}</td>
+                                <td data-label={t.template} className="p-4 text-slate-600 dark:text-slate-400">{inst.templateName}</td>
+                                <td data-label={t.status} className="p-4">
                                     {inst.status === "completed" ? (
                                         <span className="inline-flex items-center gap-1 text-[10px] font-black text-[#166534] bg-primary-soft dark:bg-primary/15 dark:text-mint px-2.5 py-1 rounded-full uppercase tracking-widest">
                                             <CheckCircle2 className="w-3 h-3" /> {t.completed}
@@ -578,7 +580,7 @@ function SentList({ instances, t, language }: {
                                         </span>
                                     )}
                                 </td>
-                                <td className="p-4 text-xs text-slate-500">
+                                <td data-label={t.sentAt} className="p-4 text-xs text-slate-500">
                                     {new Date(inst.sentAt).toLocaleDateString(language === "el" ? "el-GR" : "en-GB")}
                                 </td>
                                 <td className="p-4 text-right">
@@ -597,6 +599,7 @@ function SentList({ instances, t, language }: {
                         ))}
                     </tbody>
                 </table>
+                </TableShell>
             </div>
 
             {/* Analysis modal */}

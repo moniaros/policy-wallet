@@ -424,7 +424,7 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
                 />
             ) : (
                 <TableShell label={t.title}>
-                    <table className="w-full text-sm">
+                    <table className="pw-stacked-table w-full text-sm">
                         <thead>
                             <tr className="border-b border-neutral-100 dark:border-neutral-800">
                                 <th className="text-left text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.customer}</th>
@@ -437,8 +437,8 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
                         <tbody>
                             {pipeline.map((item) => (
                                 <tr key={item.id} className="border-b border-neutral-50 dark:border-neutral-800/50">
-                                    <td className="py-3 font-bold text-foreground">{item.customerName}</td>
-                                    <td className="py-3">
+                                    <td data-label={t.customer} className="py-3 font-bold text-foreground">{item.customerName}</td>
+                                    <td data-label={t.agent} className="py-3">
                                         <div className="flex items-center gap-2">
                                             {item.agentPhoto ? (
                                                 <img src={item.agentPhoto} alt="" className="w-6 h-6 rounded-lg object-cover" />
@@ -450,13 +450,13 @@ function PipelinePanel({ pipeline, team, t, fmt }: {
                                             <span className="text-sm text-neutral-600 dark:text-neutral-400">{item.agentName}</span>
                                         </div>
                                     </td>
-                                    <td className="py-3 text-neutral-500 capitalize">{(item.lineOfBusiness || "—").replace(/_/g, " ")}</td>
-                                    <td className="py-3">
+                                    <td data-label={t.lob} className="py-3 text-neutral-500 capitalize">{(item.lineOfBusiness || "—").replace(/_/g, " ")}</td>
+                                    <td data-label={t.status} className="py-3">
                                         <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full ${statusColor[item.status] || statusColor.open}`}>
                                             {item.status}
                                         </span>
                                     </td>
-                                    <td className="py-3 text-right font-bold text-foreground">
+                                    <td data-label={t.value} className="py-3 text-right font-bold text-foreground">
                                         {item.estimatedPremium ? fmt(item.wonPremium || item.estimatedPremium) : "—"}
                                     </td>
                                 </tr>

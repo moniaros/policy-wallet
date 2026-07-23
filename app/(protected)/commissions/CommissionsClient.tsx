@@ -115,7 +115,7 @@ export function CommissionsClient({ data }: Props) {
                             />
                         ) : (
                             <TableShell label={t.title}>
-                                <table className="w-full text-sm">
+                                <table className="pw-stacked-table w-full text-sm">
                                     <thead>
                                         <tr className="border-b border-neutral-100 dark:border-neutral-800">
                                             <th className="text-left text-[10px] font-black text-neutral-400 uppercase tracking-widest pb-3">{t.lob}</th>
@@ -127,20 +127,20 @@ export function CommissionsClient({ data }: Props) {
                                     <tbody>
                                         {data.byLob.map((row) => (
                                             <tr key={row.lob} className="border-b border-neutral-50 dark:border-neutral-800/50">
-                                                <td className="py-3 font-bold text-foreground capitalize">{row.lob.replace(/_/g, " ")}</td>
-                                                <td className="py-3 text-right text-neutral-600 dark:text-neutral-400">
+                                                <td data-label={t.lob} className="py-3 font-bold text-foreground capitalize">{row.lob.replace(/_/g, " ")}</td>
+                                                <td data-label={t.premium} className="py-3 text-right text-neutral-600 dark:text-neutral-400">
                                                     <div>{fmt(row.wonPremium)}</div>
                                                     {row.estimatedPremium > 0 && (
                                                         <div className="text-xs text-neutral-400">+{fmt(row.estimatedPremium)}</div>
                                                     )}
                                                 </td>
-                                                <td className="py-3 text-right">
+                                                <td data-label={t.commission} className="py-3 text-right">
                                                     <span className="font-bold text-primary dark:text-mint">{fmt(row.wonCommission)}</span>
                                                     {row.estimatedCommission > 0 && (
                                                         <div className="text-xs text-primary/60 dark:text-mint/70">+{fmt(row.estimatedCommission)}</div>
                                                     )}
                                                 </td>
-                                                <td className="py-3 text-right text-neutral-500">{row.opportunityCount}</td>
+                                                <td data-label={t.opportunities} className="py-3 text-right text-neutral-500">{row.opportunityCount}</td>
                                             </tr>
                                         ))}
                                     </tbody>
